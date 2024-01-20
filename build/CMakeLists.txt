@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../src/")
 set(HEADER_DIR "${PROJECT_SOURCE_DIR}/../include/")
 set(BINOUT_DIR "${PROJECT_SOURCE_DIR}/../bin/out/")
-set(LIB_DIR "${PROJECT_SOURCE_DIR}/../lib/")
+set(LIB_DIR    "${PROJECT_SOURCE_DIR}/../lib/")
 set(LINK_LIB "")
 
 file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/*.cpp")
