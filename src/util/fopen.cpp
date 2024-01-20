@@ -1,8 +1,8 @@
 #include "util/fopen.hpp"
+#include "util/error.hpp"
 
 #include <stdio.h>
 #include <string>
-#include <stdexcept>
 
 namespace Fopen {
 
@@ -15,7 +15,7 @@ void Fopen::file_open_read(const std::string& filename) {
 
     file_in = fopen(filename.c_str(), "rb");
     if(file_in == nullptr) {
-        throw std::runtime_error("File " + filename + " does not exist\n");
+        Error::raise_runtime_error("File \"" + filename + "\" does not exist");
     }
 }
 

@@ -1,0 +1,11 @@
+#ifndef _UTIL_ERROR_HPP
+#define _UTIL_ERROR_HPP
+
+#include <string>
+
+namespace Error
+{
+    void raise_runtime_error(const std::string message);
+}
+
+#endif
