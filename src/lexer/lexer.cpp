@@ -1,15 +1,17 @@
 #include "lexer/lexer.hpp"
+#include "util/error.hpp"
 #include "util/fopen.hpp"
 
 #include <string>
 #include <array>
+#include <vector>
 #include <boost/regex.hpp>
 
-#include <iostream>
+namespace lexer {
 
-namespace Lexer {
+constexpr int NUM_TOKEN = TOKEN_KIND::error + 1;
 
-static std::array<std::string, TOKEN_KIND::error+1> TOKEN_REGEX = {
+static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(\()",
     R"(\))",
     R"({)",
@@ -24,60 +26,55 @@ static std::array<std::string, TOKEN_KIND::error+1> TOKEN_REGEX = {
     R"(.)"
 };
 
-static void tokenize(const std::string& filename) {
-    Fopen::file_open_read(filename);
+static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
+    fileio::file_open_read(filename);
 
     std::string regexp_string = "";
-    for(size_t i = 0; i < TOKEN_KIND::error+1; i++) {
-        // regexp_string += "(?<" + std::to_string(i) + ">" + TOKEN_REGEX[i] + ")|";
+    for(size_t i = 0; i < NUM_TOKEN; i++) {
         regexp_string += "(" + TOKEN_REGEX[i] + ")|";
     }
     regexp_string.pop_back();
 
-    std::cout << regexp_string << std::endl;
-
     const boost::regex token_pattern(regexp_string);
+
+    boost::smatch match;
+    boost::sregex_iterator it_begin;
+    boost::sregex_iterator it_end;
+
+    int last_group;
 
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
-    while(Fopen::read_line(line)) {
+    while(fileio::read_line(line)) {
 
-        boost::smatch match;
+        for(it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
+            it_begin != it_end; it_begin++) {
 
-//            regex.assign(regex_string, boost::regex_constants::icase);
-            boost::sregex_iterator  res(line.begin(), line.end(), token_pattern);
-            //pattern in line above is string which I'm parsing
-            boost::sregex_iterator  end;
-            for(; res != end; ++res) {
-                match = *res;
-                std::cout <<  match.get_last_closed_paren() << std::endl;
-                //I want to know if the thing that was just written to output is from group describing time string
-                for(int i = 0; i < 12; i++) {
-                    if(match[i+1].matched) {
-                        std::cout <<  "match is: " << std::to_string(i) << std::endl;
-                    }
+            match = *it_begin;
+            for(last_group = 0; last_group < NUM_TOKEN; last_group++) {
+                if(match[last_group+1].matched) {
+                    break;
                 }
-
             }
-//        while (boost::regex_search(start, end, what, r))
-//        {
-//            string stest(what[1].first, what[1].second);
-//            cout << stest << endl;
-//            // Update the beginning of the range to the character
-//            // following the whole match
-//            start = what[0].second;
-//        }
 
+            if(last_group == TOKEN_KIND::error) {
+                error::raise_runtime_error(
+                    "Invalid token \"" + match.get_last_closed_paren() + "\" found in line: " + line);
+            }
 
+            if(last_group == TOKEN_KIND::skip) {
+                continue;
+            }
 
-        // std::cout << line << std::endl;
+            tokens.emplace_back(match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group));
+        }
     }
 
-    Fopen::file_close_read();
+    fileio::file_close_read();
 }
 
 }
 
-void Lexer::lexing(const std::string& filename) {
-    tokenize(filename);
+void lexer::lexing(const std::string& filename, std::vector<Token>& tokens) {
+    tokenize(filename, tokens);
 }

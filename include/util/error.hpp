@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Error
+namespace error
 {
     void raise_runtime_error(const std::string message);
 }

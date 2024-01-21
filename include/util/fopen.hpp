@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Fopen
+namespace fileio
 {
     void file_open_read(const std::string& filename);
     bool read_line(std::string& line);

@@ -4,22 +4,22 @@
 #include <stdio.h>
 #include <string>
 
-namespace Fopen {
+namespace fileio {
 
 static FILE* file_in = nullptr;
 
 }
 
-void Fopen::file_open_read(const std::string& filename) {
+void fileio::file_open_read(const std::string& filename) {
     file_in = nullptr;
 
     file_in = fopen(filename.c_str(), "rb");
     if(file_in == nullptr) {
-        Error::raise_runtime_error("File \"" + filename + "\" does not exist");
+        error::raise_runtime_error("File \"" + filename + "\" does not exist");
     }
 }
 
-bool Fopen::read_line(std::string& line) {
+bool fileio::read_line(std::string& line) {
     size_t l = 0;
     char* buffer = nullptr;
 
@@ -32,6 +32,6 @@ bool Fopen::read_line(std::string& line) {
     return true;
 }
 
-void Fopen::file_close_read() {
+void fileio::file_close_read() {
     fclose(file_in);
 }
