@@ -12,16 +12,22 @@ namespace lexer {
 constexpr int NUM_TOKEN = TOKEN_KIND::error + 1;
 
 static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
+    R"(--)",
+
     R"(\()",
     R"(\))",
     R"({)",
     R"(})",
     R"(;)",
+    R"(~)",
+    R"(-)",
+
     R"(int\b)",
     R"(void\b)",
     R"(return\b)",
     R"([a-zA-Z_]\w*\b)",
     R"([0-9]+(?![\w.]))",
+
     R"([ \n\r\t\f\v])",
     R"(.)"
 };
