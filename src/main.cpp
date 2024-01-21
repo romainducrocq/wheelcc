@@ -7,7 +7,7 @@
 
 int main(int, char **argv) {
 
-    std::string filename(argv[1]);
+    std::string filename(argv[2]);
 
     std::vector<lexer::Token> tokens;
     lexer::lexing(filename, tokens);
