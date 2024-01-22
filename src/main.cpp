@@ -8,14 +8,14 @@
 
 static bool VERBOSE = false;
 
-//static void verbose(const std::string& out, bool end) {
-//    if(VERBOSE) {
-//        std::cout << out;
-//        if(end) {
-//            std::cout << std::endl;
-//        }
-//    }
-//}
+static void verbose(const std::string& out, bool end) {
+    if(VERBOSE) {
+        std::cout << out;
+        if(end) {
+            std::cout << std::endl;
+        }
+    }
+}
 
 static void debug_tokens(const std::vector<Token>& tokens) {
     if(VERBOSE) {
@@ -100,13 +100,18 @@ cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
     verbose("OK")
 */
 
-static void do_compile(const std::string& filename, int /*opt_code*/, int /*opt_s_code*/) {
-    /* TODO */
+static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
 
+    verbose("-- Lexing ... ", false);
     std::vector<Token> tokens;
     lexing(filename, tokens);
+    verbose("OK", true);
+    if(opt_code == 255) {
+        debug_tokens(tokens);
+        return;
+    }
 
-    debug_tokens(tokens);
+    return;
 }
 
 static std::vector<std::string> args;
