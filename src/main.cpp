@@ -1,4 +1,4 @@
-#include "lexer/lexer.hpp"
+#include "parser/lexer.hpp"
 #include "util/error.hpp"
 #include "util/pprint.hpp"
 

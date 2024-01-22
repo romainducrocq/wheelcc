@@ -1,5 +1,5 @@
 #include "util/pprint.hpp"
-#include "lexer/lexer.hpp"
+#include "parser/lexer.hpp"
 
 #include <vector>
 #include <iostream>

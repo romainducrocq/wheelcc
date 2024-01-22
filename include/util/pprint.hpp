@@ -1,7 +1,7 @@
 #ifndef _UTIL_PPRINT_HPP
 #define _UTIL_PPRINT_HPP
 
-#include "lexer/lexer.hpp"
+#include "parser/lexer.hpp"
 
 #include <vector>
 

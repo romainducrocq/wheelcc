@@ -1,5 +1,5 @@
-#ifndef _LEXER_LEXER_HPP
-#define _LEXER_LEXER_HPP
+#ifndef _PARSER_LEXER_HPP
+#define _PARSER_LEXER_HPP
 
 #include <string>
 #include <vector>
