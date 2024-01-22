@@ -59,16 +59,16 @@ double string_to_double(const std::string& s_double) {
     std::vector<char> buffer(s_double.begin(), s_double.end());
     char* end_ptr = nullptr;
     errno = 0;
-    double dblieee754 = strtod(&buffer[0], &end_ptr);
+    double float64 = strtod(&buffer[0], &end_ptr);
 
     if(end_ptr == &buffer[0]) {
         raise_runtime_error("String \"" + s_double + "\" is not a floating point number");
     }
-    if(errno == ERANGE || (errno != 0 && dblieee754 == 0)) {
+    if(errno == ERANGE || (errno != 0 && float64 == 0)) {
         raise_runtime_error("String \"" + s_double + "\" is out of range");
     }
 
-    return dblieee754;
+    return float64;
 }
 
 // TODO check if type punning -> OK
