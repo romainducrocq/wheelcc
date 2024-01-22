@@ -7,5 +7,7 @@ int32_t string_to_int32(const std::string& s_int32);
 int64_t string_to_int64(const std::string& s_int64);
 uint32_t string_to_uint32(const std::string& s_uint32);
 uint64_t string_to_uint64(const std::string& s_uint64);
+double string_to_double(const std::string& s_double);
+uint64_t double_to_binary(double decimal);
 
 #endif

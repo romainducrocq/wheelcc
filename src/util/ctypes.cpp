@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <cstring>
 
 static intmax_t string_to_intmax(const std::string& s_int) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
@@ -54,34 +55,25 @@ uint64_t string_to_uint64(const std::string& s_uint64) {
     return static_cast<uint64_t>(string_to_uintmax(s_uint64));
 }
 
-/** TODO
-cdef double str_to_double(str str_double):
-    cdef bytes b_str_double = str_double.encode("UTF-8")
-    cdef char *c_str_double = b_str_double
-    cdef char *end_ptr = NULL
-    errno = 0
-    cdef double val_double = strtod(c_str_double, &end_ptr)
-    if end_ptr == c_str_double:
+double string_to_double(const std::string& s_double) {
+    std::vector<char> buffer(s_double.begin(), s_double.end());
+    char* end_ptr = nullptr;
+    errno = 0;
+    double dblieee754 = strtod(&buffer[0], &end_ptr);
 
-        raise RuntimeError(
-            f"String \"{str_double}\" is not a floating point number")
+    if(end_ptr == &buffer[0]) {
+        raise_runtime_error("String \"" + s_double + "\" is not a floating point number");
+    }
+    if(errno == ERANGE || (errno != 0 && dblieee754 == 0)) {
+        raise_runtime_error("String \"" + s_double + "\" is out of range");
+    }
 
-    if (errno == ERANGE) \
-       or (errno != 0 and val_double == 0):
+    return dblieee754;
+}
 
-        raise RuntimeError(
-            f"String \"{str_double}\" is out of range")
-
-    return val_double
-*/
-
-/** TODO
-cdef union DoubleRepr:
-    double decimal
-    uint64_t binary
-*/
-
-/** TODO
-cdef uint64_t double_to_binary(double decimal):
-    return DoubleRepr(decimal=decimal).binary
-*/
+// TODO check if type punning -> OK
+uint64_t double_to_binary(double decimal) {
+    uint64_t binary;
+    std::memcpy(&binary, &decimal, sizeof(uint64_t));
+    return binary;
+}
