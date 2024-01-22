@@ -4,6 +4,7 @@ PACKAGE_NAME="ccc2"
 
 sudo apt-get update
 apt-get install gcc \
+    g++ \
     cmake
 
 echo -n "${PACKAGE_NAME}" > ./package_name.txt

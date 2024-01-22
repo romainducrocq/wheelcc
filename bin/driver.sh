@@ -175,7 +175,7 @@ parse_args
 
 preprocess
 compile
-#link
+link
 
 clean
 exit 0
