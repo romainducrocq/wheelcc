@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#PACKAGE_NAME="$(cat $(dirname $(readlink -f ${0}))/package_name.txt)"
-#PYTHON_VERSION="$(cat $(dirname $(readlink -f ${0}))/python_version.txt)"
+PACKAGE_DIR="$(echo $(dirname $(readlink -f ${0})))"
+PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
 
 ARGC=${#}
 ARGV=(${@})
@@ -11,46 +11,30 @@ function verbose () {
         echo "${1}"
     fi
 }
-#
-#function usage () {
-#    if [ -f "$HOME/.${PACKAGE_NAME}/${PACKAGE_NAME}/${PACKAGE_NAME}" ]; then
-#        echo "Usage: ${PACKAGE_NAME} [Help] [Link] [Lib] FILE"
-#        echo ""
-#        echo "[Help]:"
-#        echo "    --help       print help and exit"
-#        echo "    -v           enable verbose mode"
-#        echo ""
-#        echo "[Link]:"
-#        echo "    -c           compile, but do not link"
-#        echo ""
-#        echo "[Lib]:"
-#        echo "    -l<libname>  links with a library file"
-#        echo ""
-#        echo "FILE:            .c file to compile"
-#    else
-#        echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Link] [Lib] FILE"
-#        echo ""
-#        echo "[Help]:"
-#        echo "    --help       print help and exit"
-#        echo ""
-#        echo "[Debug]:"
-#        echo "    --lex        print lexing and exit"
-#        echo "    --parse      print parsing and exit"
-#        echo "    --validate   print semantic analysis and exit"
-#        echo "    --tacky      print tac representation and exit"
-#        echo "    --codegen    print assembly generation and exit"
-#        echo "    --codeemit   print code emission and exit"
-#        echo ""
-#        echo "[Link]:"
-#        echo "    -c           compile, but do not link"
-#        echo ""
-#        echo "[Lib]:"
-#        echo "    -l<libname>  links with a library file"
-#        echo ""
-#        echo "FILE:            .c file to compile"
-#    fi
-#    exit 0
-#}
+
+function usage () {
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Link] [Lib] FILE"
+    echo ""
+    echo "[Help]:"
+    echo "    --help       print help and exit"
+    echo ""
+    echo "[Debug]:"
+    echo "    --lex        print lexing and exit"
+    echo "    --parse      print parsing and exit"
+    echo "    --validate   print semantic analysis and exit"
+    echo "    --tacky      print tac representation and exit"
+    echo "    --codegen    print assembly generation and exit"
+    echo "    --codeemit   print code emission and exit"
+    echo ""
+    echo "[Link]:"
+    echo "    -c           compile, but do not link"
+    echo ""
+    echo "[Lib]:"
+    echo "    -l<libname>  links with a library file"
+    echo ""
+    echo "FILE:            .c file to compile"
+    exit 0
+}
 
 function clean () {
     if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
@@ -160,25 +144,9 @@ function preprocess () {
 }
 
 function compile () {
-#    if [[ ! "${PYTHONPATH}" == *":$HOME/.${PACKAGE_NAME}:"* ]] ; then
-#        export PYTHONPATH="$PYTHONPATH:$HOME/.${PACKAGE_NAME}"
-#    fi
-
     verbose "Compile    -> ${FILE}.i"
 
-    DIR=$(pwd)
-    cd /home/romain/proj/writing-a-c-compiler/cpp/bin/
-    ./run.sh ${OPT_CODE} ${FILE}.i
-    if [ ${?} -ne 0 ]; then echo "ERROR"; clean; exit 1; fi
-    cd ${DIR}
-
-#    if [ -f "$HOME/.${PACKAGE_NAME}/${PACKAGE_NAME}/${PACKAGE_NAME}" ]; then
-#        $HOME/.${PACKAGE_NAME}/${PACKAGE_NAME}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.i
-#        if [ ${?} -ne 0 ]; then echo "ERROR"; clean; exit 1; fi
-#    else
-#        python${PYTHON_VERSION} -c "from ${PACKAGE_NAME}.main_compiler import main_py; main_py()" ${OPT_CODE} ${FILE}.i
-#        if [ ${?} -ne 0 ]; then echo "ERROR"; clean; exit 1; fi
-#    fi
+    ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.i
 }
 
 function link () {
