@@ -145,8 +145,8 @@ function preprocess () {
 
 function compile () {
     verbose "Compile    -> ${FILE}.i"
-
     ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.i
+    if [ ${?} -ne 0 ]; then clean; exit 1; fi
 }
 
 function link () {
