@@ -1,27 +1,27 @@
 #include "lexer/lexer.hpp"
 #include "util/error.hpp"
+#include "util/pprint.hpp"
 
 #include <string>
 #include <vector>
-
 #include <iostream>
 
 static bool VERBOSE = false;
 
-static void verbose(std::string& out, bool end) {
+//static void verbose(const std::string& out, bool end) {
+//    if(VERBOSE) {
+//        std::cout << out;
+//        if(end) {
+//            std::cout << std::endl;
+//        }
+//    }
+//}
+
+static void debug_tokens(const std::vector<Token>& tokens) {
     if(VERBOSE) {
-        std::cout << out;
-        if(end) {
-            std::cout << std::endl;
-        }
+        pretty_print_tokens(tokens);
     }
 }
-
-/** TODO
-cdef void debug_tokens(list[Token] tokens): #
-    if VERBOSE: #
-        pretty_print_tokens(tokens) #
-*/
 
 /** TODO
 cdef void debug_ast(AST ast): #
@@ -100,8 +100,13 @@ cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
     verbose("OK")
 */
 
-static void do_compile(const std::string& /*filename*/, int /*opt_code*/, int /*opt_s_code*/) {
+static void do_compile(const std::string& filename, int /*opt_code*/, int /*opt_s_code*/) {
+    /* TODO */
 
+    std::vector<Token> tokens;
+    lexing(filename, tokens);
+
+    debug_tokens(tokens);
 }
 
 static std::vector<std::string> args;
@@ -134,29 +139,6 @@ static void arg_parse(std::string& filename, int& opt_code, int& opt_s_code) {
     opt_s_code = 0;
 }
 
-/** TODO
-cdef void entry(list[str] args):
-    global VERBOSE
-
-    cdef str filename
-    cdef int32 opt_code
-    cdef int32 opt_s_code
-    filename, opt_code, opt_s_code = arg_parse(args)
-    if opt_code > 0:
-        VERBOSE = True
-
-    do_compile(filename, opt_code, opt_s_code)
-
-
-cdef public int main_c(int argc, char **argv):
-    cdef Py_ssize_t i
-    cdef list[str] args = []
-    for i in range(argc):
-        args.append(str(argv[i].decode("UTF-8")))
-
-    entry(args)
- */
-
 int main(int argc, char **argv) {
 
     for(size_t i = static_cast<size_t>(argc); i-- > 0 ;){
@@ -172,17 +154,6 @@ int main(int argc, char **argv) {
     }
 
     do_compile(filename, opt_code, opt_s_code);
-
-    /* TODO */
-
-    std::vector<Token> tokens;
-    lexing(filename, tokens);
-
-    std::string out;
-    for(const auto& token: tokens) {
-        out = std::to_string(token.token_kind) + ", " + token.token;
-        verbose(out, true);
-    }
 
     return 0;
 }
