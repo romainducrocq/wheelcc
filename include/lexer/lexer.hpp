@@ -7,6 +7,7 @@
 enum TOKEN_KIND {
     assignment_bitshiftleft,
     assignment_bitshiftright,
+
     unop_decrement,
     binop_bitshiftleft,
     binop_bitshiftright,
@@ -23,6 +24,7 @@ enum TOKEN_KIND {
     assignment_remainder,
     assignment_bitand,
     assignment_bitor,
+
     assignment_bitxor,
     parenthesis_open,
     parenthesis_close,
@@ -45,6 +47,7 @@ enum TOKEN_KIND {
     ternary_if,
     ternary_else,
     separator_comma,
+
     key_int,
     key_long,
     key_double,
@@ -62,12 +65,14 @@ enum TOKEN_KIND {
     key_continue,
     key_static,
     key_extern,
+
     identifier,
     float_constant,
     unsigned_long_constant,
     unsigned_constant,
     long_constant,
     constant,
+
     skip,
     error
 };

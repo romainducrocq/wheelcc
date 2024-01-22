@@ -12,6 +12,7 @@ constexpr int NUM_TOKEN = TOKEN_KIND::error + 1;
 static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(<<=)",
     R"(>>=)",
+
     R"(--)",
     R"(<<)",
     R"(>>)",
@@ -29,6 +30,7 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(&=)",
     R"(\|=)",
     R"(\^=)",
+
     R"(\()",
     R"(\))",
     R"({)",
@@ -50,6 +52,7 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(\?)",
     R"(:)",
     R"(,)",
+
     R"(int\b)",
     R"(long\b)",
     R"(double\b)",
@@ -67,12 +70,14 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(continue\b)",
     R"(static\b)",
     R"(extern\b)",
+
     R"([a-zA-Z_]\w*\b)",
     R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))",
     R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))",
     R"([0-9]+[uU](?![\w.]))",
     R"([0-9]+[lL](?![\w.]))",
     R"([0-9]+(?![\w.]))",
+
     R"([ \n\r\t\f\v])",
     R"(.)"
 };
