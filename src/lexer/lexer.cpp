@@ -10,8 +10,25 @@
 constexpr int NUM_TOKEN = TOKEN_KIND::error + 1;
 
 static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
+    R"(<<=)",
+    R"(>>=)",
     R"(--)",
-
+    R"(<<)",
+    R"(>>)",
+    R"(&&)",
+    R"(\|\|)",
+    R"(==)",
+    R"(!=)",
+    R"(<=)",
+    R"(>=)",
+    R"(\+=)",
+    R"(-=)",
+    R"(\*=)",
+    R"(/=)",
+    R"(%=)",
+    R"(&=)",
+    R"(\|=)",
+    R"(\^=)",
     R"(\()",
     R"(\))",
     R"({)",
@@ -19,13 +36,43 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(;)",
     R"(~)",
     R"(-)",
-
+    R"(!)",
+    R"(\+)",
+    R"(\*)",
+    R"(/)",
+    R"(%)",
+    R"(&)",
+    R"(\|)",
+    R"(\^)",
+    R"(<)",
+    R"(>)",
+    R"(=)",
+    R"(\?)",
+    R"(:)",
+    R"(,)",
     R"(int\b)",
+    R"(long\b)",
+    R"(double\b)",
+    R"(signed\b)",
+    R"(unsigned\b)",
     R"(void\b)",
     R"(return\b)",
+    R"(if\b)",
+    R"(else\b)",
+    R"(goto\b)",
+    R"(do\b)",
+    R"(while\b)",
+    R"(for\b)",
+    R"(break\b)",
+    R"(continue\b)",
+    R"(static\b)",
+    R"(extern\b)",
     R"([a-zA-Z_]\w*\b)",
+    R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))",
+    R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))",
+    R"([0-9]+[uU](?![\w.]))",
+    R"([0-9]+[lL](?![\w.]))",
     R"([0-9]+(?![\w.]))",
-
     R"([ \n\r\t\f\v])",
     R"(.)"
 };
@@ -60,11 +107,6 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
                 if(match[groups[last_group]].matched) {
                     break;
                 }
-            }
-
-            if(last_group == 0) {
-                raise_runtime_error(
-                        "No token found in line: " + line);
             }
 
             if(last_group == TOKEN_KIND::error) {
