@@ -33,9 +33,11 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
 static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
     file_open_read(filename);
 
+    std::string groups[NUM_TOKEN];
     std::string regexp_string = "";
     for(size_t i = 0; i < NUM_TOKEN; i++) {
-        regexp_string += "(" + TOKEN_REGEX[i] + ")|";
+        groups[i] = std::to_string(i);
+        regexp_string += "(?<" + groups[i] + ">" + TOKEN_REGEX[i] + ")|";
     }
     regexp_string.pop_back();
     const boost::regex token_pattern(regexp_string);
@@ -55,7 +57,7 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
 
             match = *it_begin;
             for(last_group = NUM_TOKEN; last_group-- > 0 ;) {
-                if(match[last_group+1].matched) {
+                if(match[groups[last_group]].matched) {
                     break;
                 }
             }
