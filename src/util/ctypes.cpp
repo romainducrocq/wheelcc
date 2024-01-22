@@ -71,7 +71,6 @@ double string_to_double(const std::string& s_double) {
     return float64;
 }
 
-// TODO check if type punning -> OK
 uint64_t double_to_binary(double decimal) {
     uint64_t binary;
     std::memcpy(&binary, &decimal, sizeof(uint64_t));
