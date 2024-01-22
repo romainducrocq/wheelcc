@@ -4,22 +4,18 @@
 #include <stdio.h>
 #include <string>
 
-namespace fileio {
-
 static FILE* file_in = nullptr;
 
-}
-
-void fileio::file_open_read(const std::string& filename) {
+void file_open_read(const std::string& filename) {
     file_in = nullptr;
 
     file_in = fopen(filename.c_str(), "rb");
     if(file_in == nullptr) {
-        error::raise_runtime_error("File \"" + filename + "\" does not exist");
+        raise_runtime_error("File \"" + filename + "\" does not exist");
     }
 }
 
-bool fileio::read_line(std::string& line) {
+bool read_line(std::string& line) {
     size_t l = 0;
     char* buffer = nullptr;
 
@@ -32,6 +28,6 @@ bool fileio::read_line(std::string& line) {
     return true;
 }
 
-void fileio::file_close_read() {
+void file_close_read() {
     fclose(file_in);
 }

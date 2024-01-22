@@ -3,9 +3,6 @@
 
 #include <string>
 
-namespace error
-{
-    void raise_runtime_error(const std::string message);
-}
+void raise_runtime_error(const std::string message);
 
 #endif

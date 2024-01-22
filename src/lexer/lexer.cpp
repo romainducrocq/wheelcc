@@ -7,8 +7,6 @@
 #include <vector>
 #include <boost/regex.hpp>
 
-namespace lexer {
-
 constexpr int NUM_TOKEN = TOKEN_KIND::error + 1;
 
 static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
@@ -33,38 +31,42 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
 };
 
 static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
-    fileio::file_open_read(filename);
+    file_open_read(filename);
 
     std::string regexp_string = "";
     for(size_t i = 0; i < NUM_TOKEN; i++) {
         regexp_string += "(" + TOKEN_REGEX[i] + ")|";
     }
     regexp_string.pop_back();
-
     const boost::regex token_pattern(regexp_string);
 
     boost::smatch match;
     boost::sregex_iterator it_begin;
     boost::sregex_iterator it_end;
 
-    int last_group;
+    size_t last_group;
 
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
-    while(fileio::read_line(line)) {
+    while(read_line(line)) {
 
         for(it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
             it_begin != it_end; it_begin++) {
 
             match = *it_begin;
-            for(last_group = 0; last_group < NUM_TOKEN; last_group++) {
+            for(last_group = NUM_TOKEN; last_group-- > 0 ;) {
                 if(match[last_group+1].matched) {
                     break;
                 }
             }
 
+            if(last_group == 0) {
+                raise_runtime_error(
+                        "No token found in line: " + line);
+            }
+
             if(last_group == TOKEN_KIND::error) {
-                error::raise_runtime_error(
+                raise_runtime_error(
                     "Invalid token \"" + match.get_last_closed_paren() + "\" found in line: " + line);
             }
 
@@ -76,11 +78,9 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
         }
     }
 
-    fileio::file_close_read();
+    file_close_read();
 }
 
-}
-
-void lexer::lexing(const std::string& filename, std::vector<Token>& tokens) {
+void lexing(const std::string& filename, std::vector<Token>& tokens) {
     tokenize(filename, tokens);
 }
