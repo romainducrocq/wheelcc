@@ -5,7 +5,7 @@
 - Writing a C Compiler - Build a Real Programming Language from Scratch, Nora Sandler: https://nostarch.com/writing-c-compiler  
     - Test suite: https://github.com/nlsandler/writing-a-c-compiler-tests.git  
     - OCaml reference implementation: https://github.com/nlsandler/nqcc2  
-- Migrated from Cython implementation after `floating-point numbers`: https://github.com/romainducrocq/LANG-CCC/
+- Migrated from Cython implementation after `[13] floating-point numbers`: https://github.com/romainducrocq/LANG-CCC/
 
 ****
 
