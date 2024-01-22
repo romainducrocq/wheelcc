@@ -76,7 +76,8 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
                 continue;
             }
 
-            tokens.emplace_back(match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group));
+            Token token = { match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group) };
+            tokens.emplace_back(std::move(token));
         }
     }
 

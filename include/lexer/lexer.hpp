@@ -29,9 +29,6 @@ enum TOKEN_KIND {
 struct Token {
     std::string token;
     TOKEN_KIND token_kind;
-
-    Token(std::string&& token, TOKEN_KIND token_kind)
-        : token(std::move(token)), token_kind(token_kind) {}
 };
 
 void lexing(const std::string& filename, std::vector<Token>& tokens);
