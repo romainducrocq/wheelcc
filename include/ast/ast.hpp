@@ -4,7 +4,32 @@
 #include <inttypes.h>
 #include <string>
 
-enum Ast_t {
+enum AST_T {
+    // Symbol table
+    Type_t,
+    Int_t,
+    Long_t,
+    Double_t,
+    UInt_t,
+    ULong_t,
+    FunType_t,
+    StaticInit_t,
+    IntInit_t,
+    LongInit_t,
+    DoubleInit_t,
+    UIntInit_t,
+    ULongInit_t,
+    InitialValue_t,
+    Tentative_t,
+    Initial_t,
+    NoInitializer_t,
+    IdentifierAttr_t,
+    FunAttr_t,
+    StaticAttr_t,
+    LocalAttr_t,
+    Symbol_t,
+
+    // C ast
     CConst_t,
     CConstInt_t,
     CConstLong_t,
@@ -82,15 +107,16 @@ enum Ast_t {
 
 struct Ast {
     virtual ~Ast() = 0;
-    virtual Ast_t type() = 0;
+    virtual AST_T type() = 0;
 };
 
 using TIdentifier = std::string;
-using int_t = int32_t;
-using long_t = int64_t;
-using uint_t = uint32_t;
-using ulong_t = uint64_t;
+using TInt = int32_t;
+using TLong = int64_t;
+using TDouble = double;
+using TUInt = uint32_t;
+using TULong = uint64_t;
 
-bool is_instance(Ast_t t1, Ast_t t2);
+bool is_instance(AST_T t1, AST_T t2);
 
 #endif

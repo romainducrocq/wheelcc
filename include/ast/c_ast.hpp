@@ -1,7 +1,8 @@
-#ifndef _AST_C_HPP
-#define _AST_C_HPP
+#ifndef _AST_C_AST_HPP
+#define _AST_C_AST_HPP
 
-#include <inttypes.h>
+#include "ast/ast.hpp"
+
 #include <memory>
 
 // https://mkhan45.github.io/2021/05/10/Modeling-ASTs-in-Different-Languages.html
@@ -13,31 +14,69 @@
 cdef class CConst(AST):
     pass
 */
+struct CConst : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CConstInt(CConst):
     cdef public TInt value
 */
+struct CConstInt : CConst {
+    AST_T type() override;
+    CConstInt() = default;
+    CConstInt(TInt value);
+
+    TInt value;
+};
 
 /** TODO
 cdef class CConstLong(CConst):
     cdef public TLong value
 */
+struct CConstLong : CConst {
+    AST_T type() override;
+    CConstLong() = default;
+    CConstLong(TLong value);
+
+    TLong value;
+};
 
 /** TODO
 cdef class CConstUInt(CConst):
     cdef public TUInt value
 */
+struct CConstUInt : CConst {
+    AST_T type() override;
+    CConstUInt() = default;
+    CConstUInt(TUInt value);
+
+    TUInt value;
+};
 
 /** TODO
 cdef class CConstULong(CConst):
     cdef public TULong value
 */
+struct CConstULong : CConst {
+    AST_T type() override;
+    CConstULong() = default;
+    CConstULong(TULong value);
+
+    TULong value;
+};
 
 /** TODO
 cdef class CConstDouble(CConst):
     cdef public TDouble value
 */
+struct CConstDouble : CConst {
+    AST_T type() override;
+    CConstDouble() = default;
+    CConstDouble(TDouble value);
+
+    TDouble value;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
