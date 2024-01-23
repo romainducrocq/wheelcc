@@ -7,7 +7,7 @@
 #include <vector>
 #include <cstring>
 
-static intmax_t string_to_intmax(const std::string& s_int) {
+intmax_t string_to_intmax(const std::string& s_int) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
     char* end_ptr = nullptr;
     errno = 0;
@@ -23,7 +23,7 @@ static intmax_t string_to_intmax(const std::string& s_int) {
     return intmax;
 }
 
-static uintmax_t string_to_uintmax(const std::string& s_uint) {
+uintmax_t string_to_uintmax(const std::string& s_uint) {
     std::vector<char> buffer(s_uint.begin(), s_uint.end());
     char* end_ptr = nullptr;
     errno = 0;
@@ -39,20 +39,20 @@ static uintmax_t string_to_uintmax(const std::string& s_uint) {
     return uintmax;
 }
 
-int32_t string_to_int32(const std::string& s_int32) {
-    return static_cast<int32_t>(string_to_intmax(s_int32));
+int32_t intmax_to_int32(intmax_t intmax) {
+    return static_cast<int32_t>(intmax);
 }
 
-int64_t string_to_int64(const std::string& s_int64) {
-    return static_cast<int64_t>(string_to_intmax(s_int64));
+int64_t intmax_to_int64(intmax_t intmax) {
+    return static_cast<int64_t>(intmax);
 }
 
-uint32_t string_to_uint32(const std::string& s_uint32) {
-    return static_cast<uint32_t>(string_to_uintmax(s_uint32));
+uint32_t uintmax_to_uint32(uintmax_t uintmax) {
+    return static_cast<uint32_t>(uintmax);
 }
 
-uint64_t string_to_uint64(const std::string& s_uint64) {
-    return static_cast<uint64_t>(string_to_uintmax(s_uint64));
+uint64_t uintmax_to_uint64(uintmax_t uintmax) {
+    return static_cast<uint64_t>(uintmax);
 }
 
 double string_to_double(const std::string& s_double) {

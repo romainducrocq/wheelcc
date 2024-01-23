@@ -7,6 +7,7 @@
 #include "parser/lexer.hpp"
 #include "parser/precedence.hpp"
 
+#include <inttypes.h>
 #include <string>
 #include <memory>
 #include <vector>
@@ -141,62 +142,13 @@ static void parse_identifier(TIdentifier& r) {
 }
 
 /** TODO
-cdef TInt parse_int():
-    # <int> ::= ? A constant token ?
-    return TInt(str_to_int32(next_token.token))
-*/
-// <int> ::= ? A constant token ?
-static TInt parse_int() {
-    return string_to_int32(next_token->token);
-}
-
-/** TODO
-cdef TLong parse_long():
-    # <long> ::= ? A constant token ?
-    return TLong(str_to_int64(next_token.token))
-*/
-// <long> ::= ? A constant token ?
-static TLong parse_long() {
-    return string_to_int64(next_token->token);
-}
-
-/** TODO
-cdef TDouble parse_double():
-    # <double> ::= ? A constant token ?
-    return TDouble(str_to_double(next_token.token))
-*/
-// <double> ::= ? A constant token ?
-static TDouble parse_double() {
-    return string_to_double(next_token->token);
-}
-
-/** TODO
-cdef TUInt parse_uint():
-    # <uint> ::= ? A constant token ?
-    return TUInt(str_to_uint32(next_token.token))
-*/
-// <uint> ::= ? A constant token ?
-static TUInt parse_uint() {
-    return string_to_uint32(next_token->token);
-}
-
-/** TODO
-cdef TULong parse_ulong():
-    # <ulong> ::= ? A constant token ?
-    return TULong(str_to_uint64(next_token.token))
-*/
-// <ulong> ::= ? A constant token ?
-static TULong parse_ulong() {
-    return string_to_uint64(next_token->token);
-}
-
-/** TODO
 cdef CConstInt parse_int_constant():
     cdef TInt value = parse_int()
     return CConstInt(value)
 */
-static std::unique_ptr<CConstInt> parse_int_constant() {
-    return std::make_unique<CConstInt>(parse_int());
+// <int> ::= ? A constant token ?
+static std::unique_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
+    return std::make_unique<CConstInt>(intmax_to_int32(intmax));
 }
 
 /** TODO
@@ -204,8 +156,9 @@ cdef CConstLong parse_long_constant():
     cdef TLong value = parse_long()
     return CConstLong(value)
 */
-static std::unique_ptr<CConstLong> parse_long_constant() {
-    return std::make_unique<CConstLong>(parse_long());
+// <long> ::= ? A constant token ?
+static std::unique_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
+    return std::make_unique<CConstLong>(intmax_to_int64(intmax));
 }
 
 /** TODO
@@ -213,8 +166,9 @@ cdef CConstDouble parse_double_constant():
     cdef TDouble value = parse_double()
     return CConstDouble(value)
 */
+// <double> ::= ? A constant token ?
 static std::unique_ptr<CConstDouble> parse_double_constant() {
-    return std::make_unique<CConstDouble>(parse_double());
+    return std::make_unique<CConstDouble>(string_to_double(next_token->token));
 }
 
 /** TODO
@@ -222,8 +176,9 @@ cdef CConstUInt parse_uint_constant():
     cdef TUInt value = parse_uint()
     return CConstUInt(value)
 */
-static std::unique_ptr<CConstUInt> parse_uint_constant() {
-    return std::make_unique<CConstUInt>(parse_uint());
+// <uint> ::= ? A constant token ?
+static std::unique_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
+    return std::make_unique<CConstUInt>(uintmax_to_uint32(uintmax));
 }
 
 /** TODO
@@ -231,8 +186,9 @@ cdef CConstULong parse_ulong_constant():
     cdef TULong value = parse_ulong()
     return CConstULong(value)
 */
-static std::unique_ptr<CConstULong> parse_ulong_constant() {
-    return std::make_unique<CConstULong>(parse_ulong());
+// <ulong> ::= ? A constant token ?
+static std::unique_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
+    return std::make_unique<CConstULong>(uintmax_to_uint64(uintmax));
 }
 
 /** TODO
@@ -257,15 +213,24 @@ cdef CConst parse_constant():
 
     return parse_long_constant()
 */
+// TODO see if can return unique ptr
 // <const> ::= <int> | <long> | <double>
 static std::unique_ptr<CConst> parse_constant() {
-    //     if pop_next().token_kind == TOKEN_KIND.get('float_constant'):
-    //        return parse_double_constant()
     if(pop_next().token_kind == TOKEN_KIND::float_constant) {
         return parse_double_constant();
     } else if (next_token->token_kind == TOKEN_KIND::long_constant) {
         next_token->token.pop_back();
     }
+
+    intmax_t value = string_to_intmax(next_token->token);
+    if(value > 9223372036854775807) {
+        raise_runtime_error("Constant \"" + next_token->token + "\" is too large to be represented " +
+                            "as an int or a long");
+    }
+    if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647) {
+        return parse_int_constant(value);
+    }
+    return parse_long_constant(value);
 }
 
 /** TODO
