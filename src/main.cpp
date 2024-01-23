@@ -109,6 +109,17 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     verbose("OK", true);
     if(opt_code == 255) {
         debug_tokens(tokens);
+        tokens.clear();
+        return;
+    }
+
+    verbose("-- Parsing ... ", false);
+    CProgram c_ast;
+    parsing(tokens, c_ast);
+    tokens.clear();
+    verbose("OK", true);
+    if(opt_code == 254) {
+        // TODO debug_ast(c_ast);
         return;
     }
 
