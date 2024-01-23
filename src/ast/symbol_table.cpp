@@ -56,3 +56,5 @@ StaticAttr::StaticAttr(std::unique_ptr<InitialValue>&& init, bool is_global)
 
 Symbol::Symbol(std::unique_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&& attrs)
     : type_t(std::move(type_t)), attrs(std::move(attrs)) {}
+
+std::unordered_map<std::string, std::unique_ptr<Symbol>> symbol_table;

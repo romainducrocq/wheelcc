@@ -2,6 +2,7 @@
 #define _AST_C_AST_HPP
 
 #include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
 
 #include <memory>
 
@@ -84,21 +85,33 @@ struct CConstDouble : CConst {
 cdef class CUnaryOp(AST):
     pass
 */
+struct CUnaryOp : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CComplement(CUnaryOp):
     pass
 */
+struct CComplement : CUnaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CNegate(CUnaryOp):
     pass
 */
+struct CNegate : CUnaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CNot(CUnaryOp):
     pass
 */
+struct CNot : CUnaryOp {
+    AST_T type() override;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,96 +119,153 @@ cdef class CNot(CUnaryOp):
 cdef class CBinaryOp(AST):
     pass
 */
+struct CBinaryOp : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CAdd(CBinaryOp):
     pass
 */
+struct CAdd : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CSubtract(CBinaryOp):
     pass
 */
+struct CSubtract : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CMultiply(CBinaryOp):
     pass
 */
+struct CMultiply : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CDivide(CBinaryOp):
     pass
 */
+struct CDivide : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CRemainder(CBinaryOp):
     pass
 */
+struct CRemainder : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CBitAnd(CBinaryOp):
     pass
 */
+struct CBitAnd : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CBitOr(CBinaryOp):
     pass
 */
+struct CBitOr : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CBitXor(CBinaryOp):
     pass
 */
+struct CBitXor : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CBitShiftLeft(CBinaryOp):
     pass
 */
+struct CBitShiftLeft : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CBitShiftRight(CBinaryOp):
     pass
 */
+struct CBitShiftRight : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CAnd(CBinaryOp):
     pass
 */
+struct CAnd : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class COr(CBinaryOp):
     pass
 */
+struct COr : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CEqual(CBinaryOp):
     pass
 */
+struct CEqual : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CNotEqual(CBinaryOp):
     pass
 */
+struct CNotEqual : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CLessThan(CBinaryOp):
     pass
 */
+struct CLessThan : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CLessOrEqual(CBinaryOp):
     pass
 */
+struct CLessOrEqual : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CGreaterThan(CBinaryOp):
     pass
 */
+struct CGreaterThan : CBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class CGreaterOrEqual(CBinaryOp):
     pass
 */
+struct CGreaterOrEqual : CBinaryOp {
+    AST_T type() override;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -203,6 +273,12 @@ cdef class CGreaterOrEqual(CBinaryOp):
 cdef class CExp(AST):
     cdef public Type exp_type
 */
+struct CExp : Ast {
+    AST_T type() override;
+    CExp() = default;
+
+    std::unique_ptr<Type> exp_type;
+};
 
 /** TODO
 cdef class CConstant(CExp):

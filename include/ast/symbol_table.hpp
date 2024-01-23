@@ -1,5 +1,5 @@
-#ifndef _AST_C_AST_HPP
-#define _AST_C_AST_HPP
+#ifndef _AST_SYMBOL_TABLE_HPP
+#define _AST_SYMBOL_TABLE_HPP
 
 #include "ast/ast.hpp"
 
@@ -154,10 +154,10 @@ struct Symbol : Ast {
     Symbol() = default;
     Symbol(std::unique_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&& attrs);
 
-    std::unique_ptr<Type>&& type_t;
-    std::unique_ptr<IdentifierAttr>&& attrs;
+    std::unique_ptr<Type> type_t;
+    std::unique_ptr<IdentifierAttr> attrs;
 };
 
-std::unordered_map<std::string, std::unique_ptr<Symbol>> symbol_table;
+extern std::unordered_map<std::string, std::unique_ptr<Symbol>> symbol_table;
 
 #endif
