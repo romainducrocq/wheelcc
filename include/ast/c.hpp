@@ -1,8 +1,11 @@
-#ifndef _PARSER_C_AST_HPP
-#define _PARSER_C_AST_HPP
+#ifndef _AST_C_HPP
+#define _AST_C_HPP
 
 #include <inttypes.h>
 #include <memory>
+
+// https://mkhan45.github.io/2021/05/10/Modeling-ASTs-in-Different-Languages.html
+// https://github.com/agentcooper/cpp-ast-example/blob/main/ast_inheritance.cpp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
