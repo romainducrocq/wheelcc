@@ -7,6 +7,7 @@
 #include <vector>
 #include <unordered_map>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // type = Int
 //      | Long
@@ -46,6 +47,8 @@ struct FunType : Type {
     std::vector<std::unique_ptr<Type>> param_types;
     std::unique_ptr<Type> ret_type;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // static_init = IntInit(int)
 //             | LongInit(int)
@@ -96,6 +99,8 @@ struct ULongInit : StaticInit {
     TULong value;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // initial_value = Tentative
 //               | Initial(static_init)
 //               | NoInitializer
@@ -118,6 +123,8 @@ struct Initial : InitialValue {
 struct NoInitializer : InitialValue {
     AST_T type() override;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // identifier_attrs = FunAttr(bool defined, bool global)
 //                  | StaticAttr(initial_value init, bool global)
@@ -147,6 +154,8 @@ struct StaticAttr : IdentifierAttr {
 struct LocalAttr : IdentifierAttr {
     AST_T type() override;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // symbol = Symbol(type type_t, identifier_attrs attrs)
 struct Symbol : Ast {

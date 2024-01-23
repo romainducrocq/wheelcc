@@ -11,18 +11,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CConst(AST):
-    pass
-*/
+// const = ConstInt(int)
+//       | ConstLong(long)
+//       | ConstUInt(uint)
+//       | ConstULong(ulong)
+//       | ConstDouble(double)
 struct CConst : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CConstInt(CConst):
-    cdef public TInt value
-*/
 struct CConstInt : CConst {
     AST_T type() override;
     CConstInt() = default;
@@ -31,10 +28,6 @@ struct CConstInt : CConst {
     TInt value;
 };
 
-/** TODO
-cdef class CConstLong(CConst):
-    cdef public TLong value
-*/
 struct CConstLong : CConst {
     AST_T type() override;
     CConstLong() = default;
@@ -43,10 +36,6 @@ struct CConstLong : CConst {
     TLong value;
 };
 
-/** TODO
-cdef class CConstDouble(CConst):
-    cdef public TDouble value
-*/
 struct CConstDouble : CConst {
     AST_T type() override;
     CConstDouble() = default;
@@ -55,10 +44,6 @@ struct CConstDouble : CConst {
     TDouble value;
 };
 
-/** TODO
-cdef class CConstUInt(CConst):
-    cdef public TUInt value
-*/
 struct CConstUInt : CConst {
     AST_T type() override;
     CConstUInt() = default;
@@ -67,10 +52,6 @@ struct CConstUInt : CConst {
     TUInt value;
 };
 
-/** TODO
-cdef class CConstULong(CConst):
-    cdef public TULong value
-*/
 struct CConstULong : CConst {
     AST_T type() override;
     CConstULong() = default;
@@ -81,198 +62,132 @@ struct CConstULong : CConst {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CUnaryOp(AST):
-    pass
-*/
+// unary_operator = Complement
+//                | Negate
+//                | Not
 struct CUnaryOp : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CComplement(CUnaryOp):
-    pass
-*/
 struct CComplement : CUnaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CNegate(CUnaryOp):
-    pass
-*/
 struct CNegate : CUnaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CNot(CUnaryOp):
-    pass
-*/
 struct CNot : CUnaryOp {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CBinaryOp(AST):
-    pass
-*/
+// binary_operator = Add
+//                 | Subtract
+//                 | Multiply
+//                 | Divide
+//                 | Remainder
+//                 | BitAnd
+//                 | BitOr
+//                 | BitXor
+//                 | BitShiftLeft
+//                 | BitShiftRight
+//                 | And
+//                 | Or
+//                 | Equal
+//                 | NotEqual
+//                 | LessThan
+//                 | LessOrEqual
+//                 | GreaterThan
+//                 | GreaterOrEqual
 struct CBinaryOp : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CAdd(CBinaryOp):
-    pass
-*/
 struct CAdd : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CSubtract(CBinaryOp):
-    pass
-*/
 struct CSubtract : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CMultiply(CBinaryOp):
-    pass
-*/
 struct CMultiply : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CDivide(CBinaryOp):
-    pass
-*/
 struct CDivide : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CRemainder(CBinaryOp):
-    pass
-*/
 struct CRemainder : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CBitAnd(CBinaryOp):
-    pass
-*/
 struct CBitAnd : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CBitOr(CBinaryOp):
-    pass
-*/
 struct CBitOr : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CBitXor(CBinaryOp):
-    pass
-*/
 struct CBitXor : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CBitShiftLeft(CBinaryOp):
-    pass
-*/
 struct CBitShiftLeft : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CBitShiftRight(CBinaryOp):
-    pass
-*/
 struct CBitShiftRight : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CAnd(CBinaryOp):
-    pass
-*/
 struct CAnd : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class COr(CBinaryOp):
-    pass
-*/
 struct COr : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CEqual(CBinaryOp):
-    pass
-*/
 struct CEqual : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CNotEqual(CBinaryOp):
-    pass
-*/
 struct CNotEqual : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CLessThan(CBinaryOp):
-    pass
-*/
 struct CLessThan : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CLessOrEqual(CBinaryOp):
-    pass
-*/
 struct CLessOrEqual : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CGreaterThan(CBinaryOp):
-    pass
-*/
 struct CGreaterThan : CBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CGreaterOrEqual(CBinaryOp):
-    pass
-*/
 struct CGreaterOrEqual : CBinaryOp {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CExp(AST):
-    cdef public Type exp_type
-*/
+// exp = Constant(const, type)
+//     | Var(identifier, type)
+//     | Cast(type, exp, type)
+//     | Unary(unary_operator, exp, type)
+//     | Binary(binary_operator, exp, exp, type)
+//     | Assignment(exp, exp, type)
+//     | AssignmentCompound(binary_operator, exp, exp, type)
+//     | Conditional(exp, exp, exp, type)
+//     | FunctionCall(identifier, exp*, type)
 struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
@@ -280,10 +195,6 @@ struct CExp : Ast {
     std::unique_ptr<Type> exp_type;
 };
 
-/** TODO
-cdef class CConstant(CExp):
-    cdef public CConst constant
-*/
 struct CConstant : CExp {
     AST_T type() override;
     CConstant() = default;
@@ -292,10 +203,6 @@ struct CConstant : CExp {
     std::unique_ptr<CConst> constant;
 };
 
-/** TODO
-cdef class CVar(CExp):
-    cdef public TIdentifier name
-*/
 struct CVar : CExp {
     AST_T type() override;
     CVar() = default;
@@ -304,11 +211,6 @@ struct CVar : CExp {
     TIdentifier name;
 };
 
-/** TODO
-cdef class CCast(CExp):
-    cdef public CExp exp
-    cdef public Type target_type
-*/
 struct CCast : CExp {
     AST_T type() override;
     CCast() = default;
@@ -318,11 +220,6 @@ struct CCast : CExp {
     std::unique_ptr<Type> target_type;
 };
 
-/** TODO
-cdef class CUnary(CExp):
-    cdef public CUnaryOp unary_op
-    cdef public CExp exp
-*/
 struct CUnary : CExp {
     AST_T type() override;
     CUnary() = default;
@@ -332,12 +229,6 @@ struct CUnary : CExp {
     std::unique_ptr<CExp> exp;
 };
 
-/** TODO
-cdef class CBinary(CExp):
-    cdef public CBinaryOp binary_op
-    cdef public CExp exp_left
-    cdef public CExp exp_right
-*/
 struct CBinary : CExp {
     AST_T type() override;
     CBinary() = default;
@@ -349,11 +240,6 @@ struct CBinary : CExp {
     std::unique_ptr<CExp> exp_right;
 };
 
-/** TODO
-cdef class CAssignment(CExp):
-    cdef public CExp exp_left
-    cdef public CExp exp_right
-*/
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
@@ -363,12 +249,6 @@ struct CAssignment : CExp {
     std::unique_ptr<CExp> exp_right;
 };
 
-/** TODO
-cdef class CConditional(CExp):
-    cdef public CExp condition
-    cdef public CExp exp_middle
-    cdef public CExp exp_right
-*/
 struct CConditional : CExp {
     AST_T type() override;
     CConditional() = default;
@@ -380,12 +260,6 @@ struct CConditional : CExp {
     std::unique_ptr<CExp> exp_right;
 };
 
-/** TODO
-cdef class CAssignmentCompound(CExp):
-    cdef public CBinaryOp binary_op
-    cdef public CExp exp_left
-    cdef public CExp exp_right
-*/
 struct CAssignmentCompound : CExp {
     AST_T type() override;
     CAssignmentCompound() = default;
@@ -397,11 +271,6 @@ struct CAssignmentCompound : CExp {
     std::unique_ptr<CExp> exp_right;
 };
 
-/** TODO
-cdef class CFunctionCall(CExp):
-    cdef public TIdentifier name
-    cdef public list[CExp] args
- */
 struct CFunctionCall : CExp {
     AST_T type() override;
     CFunctionCall() = default;
@@ -413,18 +282,22 @@ struct CFunctionCall : CExp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CStatement(AST):
-    pass
-*/
+// statement = Return(exp)
+//           | Expression(exp)
+//           | If(exp, statement, statement?)
+//           | Goto(identifier)
+//           | Label(identifier, target)
+//           | Compound(block)
+//           | While(exp, statement, identifier)
+//           | DoWhile(statement, exp, identifier)
+//           | For(for_init, exp?, exp?, statement, identifier)
+//           | Break(identifier)
+//           | Continue(identifier)
+//           | Null
 struct CStatement : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CReturn(CStatement):
-    cdef public CExp exp
-*/
 struct CReturn : CStatement {
     AST_T type() override;
     CReturn() = default;
@@ -433,10 +306,6 @@ struct CReturn : CStatement {
     std::unique_ptr<CExp> exp;
 };
 
-/** TODO
-cdef class CExpression(CStatement):
-    cdef public CExp exp
-*/
 struct CExpression : CStatement {
     AST_T type() override;
     CExpression() = default;
@@ -445,13 +314,6 @@ struct CExpression : CStatement {
     std::unique_ptr<CExp> exp;
 };
 
-/** TODO
-cdef class CIf(CStatement):
-    cdef public CExp condition
-    cdef public CStatement then
-    # Optional
-    cdef public CStatement else_fi
-*/
 struct CIf : CStatement {
     AST_T type() override;
     CIf() = default;
@@ -464,10 +326,6 @@ struct CIf : CStatement {
     std::unique_ptr<CStatement> else_fi;
 };
 
-/** TODO
-cdef class CGoto(CStatement):
-    cdef public TIdentifier target
-*/
 struct CGoto : CStatement {
     AST_T type() override;
     CGoto() = default;
@@ -476,11 +334,6 @@ struct CGoto : CStatement {
     TIdentifier target;
 };
 
-/** TODO
-cdef class CLabel(CStatement):
-    cdef public TIdentifier target
-    cdef public CStatement jump_to
-*/
 struct CLabel : CStatement {
     AST_T type() override;
     CLabel() = default;
@@ -490,10 +343,6 @@ struct CLabel : CStatement {
     std::unique_ptr<CStatement> jump_to;
 };
 
-/** TODO
-cdef class CCompound(CStatement):
-    cdef public CBlock block
-*/
 struct CBlock;
 struct CCompound : CStatement {
     AST_T type() override;
@@ -503,12 +352,6 @@ struct CCompound : CStatement {
     std::unique_ptr<CBlock> block;
 };
 
-/** TODO
-cdef class CWhile(CStatement):
-    cdef public CExp condition
-    cdef public CStatement body
-    cdef public TIdentifier target
-*/
 struct CWhile : CStatement {
     AST_T type() override;
     CWhile() = default;
@@ -519,12 +362,6 @@ struct CWhile : CStatement {
     TIdentifier target;
 };
 
-/** TODO
-cdef class CDoWhile(CStatement):
-    cdef public CExp condition
-    cdef public CStatement body
-    cdef public TIdentifier target
-*/
 struct CDoWhile : CStatement {
     AST_T type() override;
     CDoWhile() = default;
@@ -535,16 +372,6 @@ struct CDoWhile : CStatement {
     TIdentifier target;
 };
 
-/** TODO
-cdef class CFor(CStatement):
-    cdef public CForInit init
-    # Optional
-    cdef public CExp condition
-    # Optional
-    cdef public CExp post
-    cdef public CStatement body
-    cdef public TIdentifier target
-*/
 struct CForInit;
 struct CFor : CStatement {
     AST_T type() override;
@@ -559,10 +386,6 @@ struct CFor : CStatement {
     TIdentifier target;
 };
 
-/** TODO
-cdef class CBreak(CStatement):
-    cdef public TIdentifier target
-*/
 struct CBreak : CStatement {
     AST_T type() override;
     CBreak() = default;
@@ -570,10 +393,6 @@ struct CBreak : CStatement {
     TIdentifier target;
 };
 
-/** TODO
-cdef class CContinue(CStatement):
-    cdef public TIdentifier target
-*/
 struct CContinue : CStatement {
     AST_T type() override;
     CContinue() = default;
@@ -581,28 +400,18 @@ struct CContinue : CStatement {
     TIdentifier target;
 };
 
-/** TODO
-cdef class CNull(CStatement):
-    pass
-*/
 struct CNull : CStatement {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CForInit(AST):
-    pass
-*/
+// for_init = InitDecl(variable_declaration)
+//          | InitExp(exp?)
 struct CForInit : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CInitDecl(CForInit):
-    cdef public CVariableDeclaration init
-*/
 struct CVariableDeclaration;
 struct CInitDecl : CForInit {
     AST_T type() override;
@@ -612,11 +421,6 @@ struct CInitDecl : CForInit {
     std::unique_ptr<CVariableDeclaration> init;
 };
 
-/** TODO
-cdef class CInitExp(CForInit):
-    # Optional
-    cdef public CExp init
-*/
 struct CInitExp : CForInit {
     AST_T type() override;
     CInitExp() = default;
@@ -628,18 +432,11 @@ struct CInitExp : CForInit {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CBlock(AST):
-    pass
-*/
+// block = B(block_item*)
 struct CBlock : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CB(CBlock):
-    cdef public list[CBlockItem] block_items
-*/
 struct CBlockItem;
 struct CB : CBlock {
     AST_T type() override;
@@ -651,18 +448,12 @@ struct CB : CBlock {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CBlockItem(AST):
-    pass
-*/
+// block_item = S(statement)
+//            | D(declaration)
 struct CBlockItem : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CS(CBlockItem):
-    cdef public CStatement statement
-*/
 struct CS : CBlockItem {
     AST_T type() override;
     CS() = default;
@@ -671,10 +462,6 @@ struct CS : CBlockItem {
     std::unique_ptr<CStatement> statement;
 };
 
-/** TODO
-cdef class CD(CBlockItem):
-    cdef public CDeclaration declaration
-*/
 struct CDeclaration;
 struct CD : CBlockItem {
     AST_T type() override;
@@ -686,42 +473,24 @@ struct CD : CBlockItem {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CStorageClass(AST):
-    pass
-*/
+// storage_class = Static
+//               | Extern
 struct CStorageClass : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CStatic(CStorageClass):
-    pass
-*/
 struct CStatic : CStorageClass {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CExtern(CStorageClass):
-    pass
-*/
 struct CExtern : CStorageClass {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CFunctionDeclaration(AST):
-    cdef public TIdentifier name
-    cdef public list[TIdentifier] params
-    # Optional
-    cdef public CBlock body
-    cdef public Type fun_type
-    # Optional
-    cdef public CStorageClass storage_class
-*/
+// function_declaration =
+// FunctionDeclaration(identifier name, identifier* params, block? body, type fun_type, storage_class?)
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
@@ -740,15 +509,7 @@ struct CFunctionDeclaration : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CVariableDeclaration(AST):
-    cdef public TIdentifier name
-    # Optional
-    cdef public CExp init
-    cdef public Type var_type
-    # Optional
-    cdef public CStorageClass storage_class
-*/
+// variable_declaration = VariableDeclaration(identifier name, exp? init, type var_type, storage_class?)
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
@@ -763,18 +524,12 @@ struct CVariableDeclaration : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CDeclaration(AST):
-    pass
-*/
+// declaration = FunDecl(function_declaration)
+//             | VarDecl(variable_declaration)
 struct CDeclaration : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class CFunDecl(CDeclaration):
-    cdef public CFunctionDeclaration function_decl
-*/
 struct CFunDecl : CDeclaration {
     AST_T type() override;
     CFunDecl() = default;
@@ -783,10 +538,6 @@ struct CFunDecl : CDeclaration {
     std::unique_ptr<CFunctionDeclaration> function_decl;
 };
 
-/** TODO
-cdef class CVarDecl(CDeclaration):
-    cdef public CVariableDeclaration variable_decl
-*/
 struct CVarDecl : CDeclaration {
     AST_T type() override;
     CVarDecl() = default;
@@ -797,10 +548,7 @@ struct CVarDecl : CDeclaration {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class CProgram(AST):
-    cdef public list[CDeclaration] declarations
-*/
+// AST = Program(declaration*)
 struct CProgram : Ast {
     AST_T type() override;
     CProgram() = default;
