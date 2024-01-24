@@ -441,7 +441,8 @@ static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
     args.push_back(parse_exp(0));
     while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
         pop_next();
-        args.push_back(parse_exp(0));
+        std::unique_ptr<CExp> arg = parse_exp(0);
+        args.push_back(std::move(arg));
     }
     return args;
 }
@@ -1180,7 +1181,7 @@ static std::unique_ptr<CBlockItem> parse_block_item() {
     }
 }
 
-/** TODO
+/**
 cdef CB parse_b_block():
     cdef CBlockItem block_item
     cdef list[CBlockItem] block_items = []
@@ -1189,6 +1190,14 @@ cdef CB parse_b_block():
         block_items.append(block_item)
     return CB(block_items)
 */
+static std::unique_ptr<CB> parse_b_block() {
+    std::vector<std::unique_ptr<CBlockItem>> block_items;
+    while(peek_next().token_kind != TOKEN_KIND::brace_close) {
+        std::unique_ptr<CBlockItem> block_item = parse_block_item();
+        block_items.push_back(std::move(block_item));
+    }
+    return std::make_unique<CB>(std::move(block_items));
+}
 
 /** TODO
 cdef CBlock parse_block():
