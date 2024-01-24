@@ -327,6 +327,62 @@ cdef CBinaryOp parse_binary_op():
         raise RuntimeError(
             f"Expected token type \"binary_op\" but found token \"{next_token.token}\"")
 */
+// binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!="
+//          | "<" | "<=" | ">" | ">="
+static std::unique_ptr<CBinaryOp> parse_binary_op() {
+    switch (pop_next().token_kind) {
+        case TOKEN_KIND::unop_negation:
+        case TOKEN_KIND::assignment_difference:
+            return std::make_unique<CSubtract>();
+        case TOKEN_KIND::binop_addition:
+        case TOKEN_KIND::assignment_plus:
+            return std::make_unique<CAdd>();
+        case TOKEN_KIND::binop_multiplication:
+        case TOKEN_KIND::assignment_product:
+            return std::make_unique<CMultiply>();
+        case TOKEN_KIND::binop_division:
+        case TOKEN_KIND::assignment_quotient:
+            return std::make_unique<CDivide>();
+        case TOKEN_KIND::binop_remainder:
+        case TOKEN_KIND::assignment_remainder:
+            return std::make_unique<CRemainder>();
+        case TOKEN_KIND::binop_bitand:
+        case TOKEN_KIND::assignment_bitand:
+            return std::make_unique<CBitAnd>();
+        case TOKEN_KIND::binop_bitor:
+        case TOKEN_KIND::assignment_bitor:
+            return std::make_unique<CBitOr>();
+        case TOKEN_KIND::binop_bitxor:
+        case TOKEN_KIND::assignment_bitxor:
+            return std::make_unique<CBitXor>();
+        case TOKEN_KIND::binop_bitshiftleft:
+        case TOKEN_KIND::assignment_bitshiftleft:
+            return std::make_unique<CBitShiftLeft>();
+        case TOKEN_KIND::binop_bitshiftright:
+        case TOKEN_KIND::assignment_bitshiftright:
+            return std::make_unique<CBitShiftRight>();
+        case TOKEN_KIND::binop_and:
+            return std::make_unique<CAnd>();
+        case TOKEN_KIND::binop_or:
+            return std::make_unique<COr>();
+        case TOKEN_KIND::binop_equalto:
+            return std::make_unique<CEqual>();
+        case TOKEN_KIND::binop_notequal:
+            return std::make_unique<CNotEqual>();
+        case TOKEN_KIND::binop_lessthan:
+            return std::make_unique<CLessThan>();
+        case TOKEN_KIND::binop_lessthanorequal:
+            return std::make_unique<CLessOrEqual>();
+        case TOKEN_KIND::binop_greaterthan:
+            return std::make_unique<CGreaterThan>();
+        case TOKEN_KIND::binop_greaterthanorequal:
+            return std::make_unique<CGreaterOrEqual>();
+        default:
+            raise_runtime_error("Expected token type \"binary_op\" but found token \"" +
+                                next_token->token + "\"");
+            return nullptr;
+    }
+}
 
 /** TODO
 cdef CUnaryOp parse_unary_op():
