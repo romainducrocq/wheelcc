@@ -27,7 +27,7 @@ AST_T StaticAttr::type() { return AST_T::StaticAttr_t; }
 AST_T LocalAttr::type() { return AST_T::LocalAttr_t; }
 AST_T Symbol::type() { return AST_T::Symbol_t; }
 
-FunType::FunType(std::vector<std::unique_ptr<Type>>&& param_types, std::unique_ptr<Type>&& ret_type)
+FunType::FunType(std::vector<std::unique_ptr<Type>> param_types, std::unique_ptr<Type> ret_type)
     : param_types(std::move(param_types)), ret_type(std::move(ret_type)) {}
 
 IntInit::IntInit(TInt value)
@@ -45,16 +45,16 @@ UIntInit::UIntInit(TUInt value)
 ULongInit::ULongInit(TULong value)
     : value(value) {}
 
-Initial::Initial(std::unique_ptr<StaticInit>&& static_init)
+Initial::Initial(std::unique_ptr<StaticInit> static_init)
     : static_init(std::move(static_init)) {}
 
 FunAttr::FunAttr(bool is_defined, bool is_global)
     : is_defined(is_defined), is_global(is_global) {}
 
-StaticAttr::StaticAttr(std::unique_ptr<InitialValue>&& init, bool is_global)
+StaticAttr::StaticAttr(std::unique_ptr<InitialValue> init, bool is_global)
     : init(std::move(init)), is_global(is_global) {}
 
-Symbol::Symbol(std::unique_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&& attrs)
+Symbol::Symbol(std::unique_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
     : type_t(std::move(type_t)), attrs(std::move(attrs)) {}
 
-std::unordered_map<std::string, std::unique_ptr<Symbol>> symbol_table;
+std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;

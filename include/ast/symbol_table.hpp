@@ -42,7 +42,7 @@ struct ULong : Type {
 struct FunType : Type {
     AST_T type() override;
     FunType() = default;
-    FunType(std::vector<std::unique_ptr<Type>>&& param_types, std::unique_ptr<Type>&& ret_type);
+    FunType(std::vector<std::unique_ptr<Type>> param_types, std::unique_ptr<Type> ret_type);
 
     std::vector<std::unique_ptr<Type>> param_types;
     std::unique_ptr<Type> ret_type;
@@ -115,7 +115,7 @@ struct Tentative : InitialValue {
 struct Initial : InitialValue {
     AST_T type() override;
     Initial() = default;
-    Initial(std::unique_ptr<StaticInit>&& static_init);
+    Initial(std::unique_ptr<StaticInit> static_init);
 
     std::unique_ptr<StaticInit> static_init;
 };
@@ -145,7 +145,7 @@ struct FunAttr : IdentifierAttr {
 struct StaticAttr : IdentifierAttr {
     AST_T type() override;
     StaticAttr() = default;
-    StaticAttr(std::unique_ptr<InitialValue>&& init, bool is_global);
+    StaticAttr(std::unique_ptr<InitialValue> init, bool is_global);
 
     std::unique_ptr<InitialValue> init;
     bool is_global;
@@ -161,12 +161,12 @@ struct LocalAttr : IdentifierAttr {
 struct Symbol : Ast {
     AST_T type() override;
     Symbol() = default;
-    Symbol(std::unique_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&& attrs);
+    Symbol(std::unique_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs);
 
     std::unique_ptr<Type> type_t;
     std::unique_ptr<IdentifierAttr> attrs;
 };
 
-extern std::unordered_map<std::string, std::unique_ptr<Symbol>> symbol_table;
+extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
 #endif

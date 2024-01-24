@@ -138,9 +138,9 @@ cdef TIdentifier parse_identifier():
     return TIdentifier(next_token.token)
 */
 // <identifier> ::= ? An identifier token ?
-static void parse_identifier(TIdentifier& r) {
+static void parse_identifier(TIdentifier& identifier) {
     expect_next_is(pop_next(), TOKEN_KIND::identifier);
-    r = std::move(next_token->token);
+    identifier = std::move(next_token->token);
 }
 
 /**
@@ -431,6 +431,11 @@ cdef CVar parse_var_factor():
     cdef TIdentifier name = parse_identifier()
     return CVar(name)
 */
+static std::unique_ptr<CVar> parse_var_factor() {
+    std::string name;
+    parse_identifier(name);
+    return std::make_unique<CVar>(name);
+}
 
 /** TODO
 cdef CCast parse_cast_factor():
