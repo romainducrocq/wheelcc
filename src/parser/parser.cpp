@@ -641,7 +641,7 @@ static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr
     return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2));
 }
 
-/** TODO
+/**
 cdef CConditional parse_ternary_exp(CExp exp_left, int32 precedence):
     _ = pop_next()
     cdef CExp exp_middle = parse_exp()
@@ -649,13 +649,25 @@ cdef CConditional parse_ternary_exp(CExp exp_left, int32 precedence):
     cdef CExp exp_right = parse_exp(precedence)
     return CConditional(exp_left, exp_middle, exp_right)
 */
+static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    pop_next();
+    std::unique_ptr<CExp> exp_middle = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    std::unique_ptr<CExp> exp_right = parse_exp(precedence);
+    return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right));
+}
 
-/** TODO
+/**
 cdef CBinary parse_binary_exp(CExp exp_left, int32 precedence):
     cdef CBinaryOp binary_op = parse_binary_op()
     cdef CExp exp_right = parse_exp(precedence + 1)
     return CBinary(binary_op, exp_left, exp_right)
 */
+static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
+    std::unique_ptr<CExp> exp_right = parse_exp(precedence + 1);
+    return std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right));
+}
 
 /** TODO
 cdef CExp parse_exp(int32 min_precedence = 0):
