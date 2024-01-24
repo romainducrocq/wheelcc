@@ -12,15 +12,15 @@
 #include <memory>
 #include <vector>
 
-/** TODO
+/**
 cdef list[Token] tokens = []
 */
 
-/** TODO
+/**
 cdef Token next_token = Token('', TOKEN_KIND.get('error'))
 */
 
-/** TODO
+/**
 cdef Token peek_token = Token('', TOKEN_KIND.get('error'))
 */
 
@@ -29,7 +29,7 @@ static Token* next_token;
 static Token* peek_token;
 static size_t pop_index = 0;
 
-/** TODO
+/**
 cdef void expect_next_is(Token next_token_is, int32 expected_token):
     if next_token_is.token_kind != expected_token:
         raise RuntimeError(
@@ -45,7 +45,7 @@ static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token
     }
 }
 
-/** TODO
+/**
 cdef Token pop_next():
     global next_token
 
@@ -67,7 +67,7 @@ static const Token& pop_next() {
     return *next_token;
 }
 
-/** TODO
+/**
 cdef Token pop_next_i(Py_ssize_t i):
     if i < len(tokens):
         return tokens.pop(i)
@@ -93,7 +93,7 @@ static const Token& pop_next_i(size_t i) {
     return (*p_tokens)[pop_index-2];
 }
 
-/** TODO
+/**
 cdef Token peek_next():
     global peek_token
 
@@ -114,7 +114,7 @@ static const Token& peek_next() {
     return *peek_token;
 }
 
-/** TODO
+/**
 cdef Token peek_next_i(Py_ssize_t i):
     if i < len(tokens):
         return tokens[i]
@@ -131,7 +131,7 @@ static const Token& peek_next_i(size_t i) {
     return (*p_tokens)[pop_index + i];
 }
 
-/** TODO
+/**
 cdef TIdentifier parse_identifier():
     # <identifier> ::= ? An identifier token ?
     expect_next_is(pop_next(), TOKEN_KIND.get('identifier'))
@@ -143,7 +143,7 @@ static void parse_identifier(TIdentifier& r) {
     r = std::move(next_token->token);
 }
 
-/** TODO
+/**
 cdef CConstInt parse_int_constant():
     cdef TInt value = parse_int()
     return CConstInt(value)
@@ -153,7 +153,7 @@ static std::unique_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
     return std::make_unique<CConstInt>(intmax_to_int32(intmax));
 }
 
-/** TODO
+/**
 cdef CConstLong parse_long_constant():
     cdef TLong value = parse_long()
     return CConstLong(value)
@@ -163,7 +163,7 @@ static std::unique_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
     return std::make_unique<CConstLong>(intmax_to_int64(intmax));
 }
 
-/** TODO
+/**
 cdef CConstDouble parse_double_constant():
     cdef TDouble value = parse_double()
     return CConstDouble(value)
@@ -173,7 +173,7 @@ static std::unique_ptr<CConstDouble> parse_double_constant() {
     return std::make_unique<CConstDouble>(string_to_double(next_token->token));
 }
 
-/** TODO
+/**
 cdef CConstUInt parse_uint_constant():
     cdef TUInt value = parse_uint()
     return CConstUInt(value)
@@ -183,7 +183,7 @@ static std::unique_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
     return std::make_unique<CConstUInt>(uintmax_to_uint32(uintmax));
 }
 
-/** TODO
+/**
 cdef CConstULong parse_ulong_constant():
     cdef TULong value = parse_ulong()
     return CConstULong(value)
@@ -193,7 +193,7 @@ static std::unique_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
     return std::make_unique<CConstULong>(uintmax_to_uint64(uintmax));
 }
 
-/** TODO
+/**
 cdef CConst parse_constant():
     # <const> ::= <int> | <long> | <double>
     if pop_next().token_kind == TOKEN_KIND.get('float_constant'):
@@ -234,7 +234,7 @@ static std::unique_ptr<CConst> parse_constant() {
     return parse_long_constant(value);
 }
 
-/** TODO
+/**
 cdef CConst parse_unsigned_constant():
     # <const> ::= <uint> | <ulong>
     if pop_next().token_kind == TOKEN_KIND.get('unsigned_long_constant'):
@@ -272,7 +272,7 @@ static std::unique_ptr<CConst> parse_unsigned_constant() {
     return parse_ulong_constant(value);
 }
 
-/** TODO
+/**
 cdef CBinaryOp parse_binary_op():
     # <binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!="
     #                 | "<" | "<=" | ">" | ">="
@@ -384,7 +384,7 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
     }
 }
 
-/** TODO
+/**
 cdef CUnaryOp parse_unary_op():
     # <unop> ::= "-" | "~" | "!"
     if pop_next().token_kind == TOKEN_KIND.get('unop_complement'):
@@ -398,6 +398,22 @@ cdef CUnaryOp parse_unary_op():
         raise RuntimeError(
             f"Expected token type \"unary_op\" but found token \"{next_token.token}\"")
 */
+// <unop> ::= "-" | "~" | "!"
+static std::unique_ptr<CUnaryOp> parse_unary_op() {
+    switch (pop_next().token_kind) {
+        case TOKEN_KIND::unop_complement:
+            return std::make_unique<CComplement>();
+        case TOKEN_KIND::unop_negation:
+            return std::make_unique<CNegate>();
+        case TOKEN_KIND::unop_not:
+            return std::make_unique<CNot>();
+
+        default:
+            raise_runtime_error("Expected token type \"unary_op\" but found token \"" +
+                                next_token->token + "\"");
+            return nullptr;
+    }
+}
 
 /** TODO
 cdef list[CExp] parse_argument_list():
