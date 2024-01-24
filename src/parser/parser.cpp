@@ -150,7 +150,8 @@ cdef CConstInt parse_int_constant():
 */
 // <int> ::= ? A constant token ?
 static std::unique_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
-    return std::make_unique<CConstInt>(intmax_to_int32(intmax));
+    TInt value = intmax_to_int32(intmax);
+    return std::make_unique<CConstInt>(value);
 }
 
 /**
@@ -160,7 +161,8 @@ cdef CConstLong parse_long_constant():
 */
 // <long> ::= ? A constant token ?
 static std::unique_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
-    return std::make_unique<CConstLong>(intmax_to_int64(intmax));
+    TLong value = intmax_to_int64(intmax);
+    return std::make_unique<CConstLong>(value);
 }
 
 /**
@@ -170,7 +172,8 @@ cdef CConstDouble parse_double_constant():
 */
 // <double> ::= ? A constant token ?
 static std::unique_ptr<CConstDouble> parse_double_constant() {
-    return std::make_unique<CConstDouble>(string_to_double(next_token->token));
+    TDouble value = string_to_double(next_token->token);
+    return std::make_unique<CConstDouble>(value);
 }
 
 /**
@@ -180,7 +183,8 @@ cdef CConstUInt parse_uint_constant():
 */
 // <uint> ::= ? A constant token ?
 static std::unique_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
-    return std::make_unique<CConstUInt>(uintmax_to_uint32(uintmax));
+    TUInt value = uintmax_to_uint32(uintmax);
+    return std::make_unique<CConstUInt>(value);
 }
 
 /**
@@ -190,7 +194,8 @@ cdef CConstULong parse_ulong_constant():
 */
 // <ulong> ::= ? A constant token ?
 static std::unique_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
-    return std::make_unique<CConstULong>(uintmax_to_uint64(uintmax));
+    TULong value = uintmax_to_uint64(uintmax);
+    return std::make_unique<CConstULong>(value);
 }
 
 /**
@@ -426,14 +431,13 @@ cdef list[CExp] parse_argument_list():
     return args
 */
 
-/** TODO
+/**
 cdef CVar parse_var_factor():
     cdef TIdentifier name = parse_identifier()
     return CVar(name)
 */
 static std::unique_ptr<CVar> parse_var_factor() {
-    std::string name;
-    parse_identifier(name);
+    std::string name; parse_identifier(name);
     return std::make_unique<CVar>(name);
 }
 
@@ -445,17 +449,25 @@ cdef CCast parse_cast_factor():
     return CCast(exp, target_type)
 */
 
-/** TODO
+/**
 cdef CConstant parse_constant_factor():
     cdef CConst constant = parse_constant()
     return CConstant(constant)
 */
+static std::unique_ptr<CConstant> parse_constant_factor() {
+    std::unique_ptr<CConst> constant = parse_constant();
+    return std::make_unique<CConstant>(std::move(constant));
+}
 
-/** TODO
+/**
 cdef CConstant parse_unsigned_constant_factor():
     cdef CConst constant = parse_unsigned_constant()
     return CConstant(constant)
 */
+static std::unique_ptr<CConstant> parse_unsigned_constant_factor() {
+    std::unique_ptr<CConst> constant = parse_unsigned_constant();
+    return std::make_unique<CConstant>(std::move(constant));
+}
 
 /** TODO
 cdef CUnary parse_unary_factor():
