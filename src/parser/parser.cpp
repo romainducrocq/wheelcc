@@ -412,7 +412,6 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
             return std::make_unique<CNegate>();
         case TOKEN_KIND::unop_not:
             return std::make_unique<CNot>();
-
         default:
             raise_runtime_error("Expected token type \"unary_op\" but found token \"" +
                                 next_token->token + "\"");
