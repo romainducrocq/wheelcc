@@ -76,9 +76,11 @@ cdef Token pop_next_i(Py_ssize_t i):
         raise RuntimeError(
             "An error occurred in parser, all Tokens were consumed before end of program")
 */
-// TODO does not work if i = 0
 static const Token& pop_next_i(size_t i) {
-    if(pop_index + i >= p_tokens->size() || i == 0) {
+    if(i == 0) {
+        return pop_next();
+    }
+    if(pop_index + i >= p_tokens->size()) {
         raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
     }
 
@@ -213,7 +215,6 @@ cdef CConst parse_constant():
 
     return parse_long_constant()
 */
-// TODO see if can return unique ptr
 // <const> ::= <int> | <long> | <double>
 static std::unique_ptr<CConst> parse_constant() {
     if(pop_next().token_kind == TOKEN_KIND::float_constant) {
@@ -223,11 +224,11 @@ static std::unique_ptr<CConst> parse_constant() {
     }
 
     intmax_t value = string_to_intmax(next_token->token);
-    if(value > 9223372036854775807) {
+    if(value > 9223372036854775807ll) {
         raise_runtime_error("Constant \"" + next_token->token + "\" is too large to be represented " +
                             "as an int or a long");
     }
-    if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647) {
+    if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
         return parse_int_constant(value);
     }
     return parse_long_constant(value);
@@ -253,6 +254,23 @@ cdef CConst parse_unsigned_constant():
 
     return parse_ulong_constant()
 */
+// <const> ::= <uint> | <ulong>
+static std::unique_ptr<CConst> parse_unsigned_constant() {
+    if(pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
+        next_token->token.pop_back();
+    }
+    next_token->token.pop_back();
+
+    uintmax_t value = string_to_uintmax(next_token->token);
+    if(value > 18446744073709551615ull) {
+        raise_runtime_error("Constant \"" + next_token->token + "\" is too large to be represented " +
+                            "as an unsigned int or a unsigned long");
+    }
+    if(next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
+        return parse_uint_constant(value);
+    }
+    return parse_ulong_constant(value);
+}
 
 /** TODO
 cdef CBinaryOp parse_binary_op():
