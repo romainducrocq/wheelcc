@@ -776,6 +776,8 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     return exp_left;
 }
 
+static std::unique_ptr<CStatement> parse_statement();
+
 /**
 cdef CNull parse_null_statement():
     _ = pop_next()
@@ -786,7 +788,7 @@ static std::unique_ptr<CNull> parse_null_statement() {
     return std::make_unique<CNull>();
 }
 
-/** TODO
+/**
 cdef CReturn parse_return_statement():
     _ = pop_next()
     cdef CExp exp = parse_exp()
@@ -800,7 +802,7 @@ static std::unique_ptr<CReturn> parse_return_statement() {
     return std::make_unique<CReturn>(std::move(exp));
 }
 
-/** TODO
+/**
 cdef CIf parse_if_statement():
     _ = pop_next()
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_open'))
@@ -817,6 +819,21 @@ cdef CIf parse_if_statement():
         else_fi = None
     return CIf(condition, then, else_fi)
 */
+static std::unique_ptr<CIf> parse_if_statement() {
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<CExp> condition = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    peek_next();
+    std::unique_ptr<CStatement> then = parse_statement();
+    std::unique_ptr<CStatement> else_fi;
+    if(peek_next().token_kind == TOKEN_KIND::key_else) {
+        pop_next();
+        peek_next();
+        else_fi = parse_statement();
+    }
+    return std::make_unique<CIf>(std::move(condition), std::move(then), std::move(else_fi));
+}
 
 /** TODO
 cdef CGoto parse_goto_statement():
@@ -939,6 +956,9 @@ cdef CStatement parse_statement():
 
     return parse_expression_statement()
 */
+static std::unique_ptr<CStatement> parse_statement() {
+    return std::make_unique<CStatement>(); // TODO empty for forward declare
+}
 
 /** TODO
 cdef CInitDecl parse_decl_for_init():
