@@ -421,7 +421,7 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
 }
 
 static std::unique_ptr<CExp> parse_factor();
-static std::unique_ptr<CExp> parse_exp(int32_t precedence);
+static std::unique_ptr<CExp> parse_exp(int32_t min_precedence);
 
 static std::unique_ptr<Type> parse_type_specifier();
 
@@ -1065,12 +1065,19 @@ static std::unique_ptr<CStatement> parse_statement() {
     return parse_expression_statement();
 }
 
-/** TODO
+static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<Type> var_type);
+
+/**
 cdef CInitDecl parse_decl_for_init():
     cdef Type type_specifier = parse_type_specifier()
     cdef CVariableDeclaration init = parse_variable_declaration(type_specifier)
     return CInitDecl(init)
 */
+static std::unique_ptr<CInitDecl> parse_decl_for_init() {
+    std::unique_ptr<Type> type_specifier = parse_type_specifier();
+    std::unique_ptr<CVariableDeclaration> init = parse_variable_declaration(std::move(type_specifier));
+    return std::make_unique<CInitDecl>(std::move(init));
+}
 
 /** TODO
 cdef CInitExp parse_exp_for_init():
@@ -1285,6 +1292,9 @@ cdef CVariableDeclaration parse_variable_declaration(Type var_type):
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CVariableDeclaration(name, init, var_type, storage_class)
 */
+static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<Type> var_type) {
+    return std::make_unique<CVariableDeclaration>(); // TODO empty only for forward declare
+}
 
 /** TODO
 cdef CFunDecl parse_fun_decl_declaration(Type ret_type):
