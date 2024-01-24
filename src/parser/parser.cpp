@@ -776,6 +776,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     return exp_left;
 }
 
+static std::unique_ptr<CForInit> parse_for_init();
 static std::unique_ptr<CBlock> parse_block();
 static std::unique_ptr<CStatement> parse_statement();
 
@@ -941,6 +942,24 @@ cdef CFor parse_for_statement():
     body = parse_statement()
     return CFor(init, condition, post, body)
 */
+static std::unique_ptr<CFor> parse_for_statement() {
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<CForInit> init = parse_for_init();
+    std::unique_ptr<CExp> condition;
+    if(peek_next().token_kind != TOKEN_KIND::semicolon) {
+        condition = parse_exp(0);
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    std::unique_ptr<CExp> post;
+    if(peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
+        post = parse_exp(0);
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    peek_next();
+    std::unique_ptr<CStatement> body = parse_statement();
+    return std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
+}
 
 /** TODO
 cdef CBreak parse_break_statement():
@@ -1030,6 +1049,9 @@ cdef CForInit parse_for_init():
     else:
         return parse_exp_for_init()
 */
+static std::unique_ptr<CForInit> parse_for_init() {
+    return std::make_unique<CForInit>(); // TODO for forward declare
+}
 
 /** TODO
 cdef CD parse_d_block_item():
