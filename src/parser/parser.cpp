@@ -850,7 +850,7 @@ static std::unique_ptr<CGoto> parse_goto_statement() {
     return std::make_unique<CGoto>(target);
 }
 
-/** TODO
+/**
 cdef CLabel parse_label_statement():
     cdef TIdentifier target = parse_identifier()
     expect_next_is(pop_next(), TOKEN_KIND.get('ternary_else'))
@@ -866,7 +866,7 @@ static std::unique_ptr<CLabel> parse_label_statement() {
     return std::make_unique<CLabel>(target, std::move(jump_to));
 }
 
-/** TODO
+/**
 cdef CCompound parse_compound_statement():
     cdef CBlock block = parse_block()
     return CCompound(block)
@@ -876,7 +876,7 @@ static std::unique_ptr<CCompound> parse_compound_statement() {
     return std::make_unique<CCompound>(std::move(block));
 }
 
-/** TODO
+/**
 cdef CWhile parse_while_statement():
     _ = pop_next()
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_open'))
@@ -896,7 +896,7 @@ static std::unique_ptr<CWhile> parse_while_statement() {
     return std::make_unique<CWhile>(std::move(condition), std::move(body));
 }
 
-/** TODO
+/**
 cdef CDoWhile parse_do_while_statement():
     _ = pop_next()
     _ = peek_next()
@@ -908,6 +908,17 @@ cdef CDoWhile parse_do_while_statement():
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CDoWhile(condition, body)
 */
+static std::unique_ptr<CDoWhile> parse_do_while_statement() {
+    pop_next();
+    peek_next();
+    std::unique_ptr<CStatement> body = parse_statement();
+    expect_next_is(pop_next(), TOKEN_KIND::key_while);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<CExp> condition = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CDoWhile>(std::move(condition), std::move(body));
+}
 
 /** TODO
 cdef CFor parse_for_statement():
