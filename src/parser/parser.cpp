@@ -1079,7 +1079,7 @@ static std::unique_ptr<CInitDecl> parse_decl_for_init() {
     return std::make_unique<CInitDecl>(std::move(init));
 }
 
-/** TODO
+/**
 cdef CInitExp parse_exp_for_init():
     cdef CExp exp
     if peek_next().token_kind == TOKEN_KIND.get('semicolon'):
@@ -1089,6 +1089,14 @@ cdef CInitExp parse_exp_for_init():
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CInitExp(init)
 */
+static std::unique_ptr<CInitExp> parse_exp_for_init() {
+    std::unique_ptr<CExp> init;
+    if(peek_next().token_kind != TOKEN_KIND::semicolon) {
+        init = parse_exp(0);
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CInitExp>(std::move(init));
+}
 
 /** TODO
 cdef CForInit parse_for_init():
