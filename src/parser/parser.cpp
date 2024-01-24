@@ -997,7 +997,7 @@ static std::unique_ptr<CExpression> parse_expression_statement() {
     return std::make_unique<CExpression>(std::move(exp));
 }
 
-/** TODO
+/**
 cdef CStatement parse_statement():
     # <statement> ::= "return" <exp> ";" | <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | ";"
     #               | <block> | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
@@ -1028,8 +1028,41 @@ cdef CStatement parse_statement():
 
     return parse_expression_statement()
 */
+// <statement> ::= "return" <exp> ";" | <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | ";"
+//               | <block> | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
+//               | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | "break" ";" | "continue" ";"
 static std::unique_ptr<CStatement> parse_statement() {
-    return std::make_unique<CStatement>(); // TODO empty for forward declare
+    switch(peek_token->token_kind) {
+        case TOKEN_KIND::semicolon:
+            return parse_null_statement();
+        case TOKEN_KIND::key_return:
+            return parse_return_statement();
+        case TOKEN_KIND::key_if:
+            return parse_if_statement();
+        case TOKEN_KIND::key_goto:
+            return parse_goto_statement();
+        case TOKEN_KIND::identifier: {
+            if(peek_next_i(1).token_kind == TOKEN_KIND::ternary_else) {
+                return parse_label_statement();
+            }
+            break;
+        }
+        case TOKEN_KIND::brace_open:
+            return parse_compound_statement();
+        case TOKEN_KIND::key_while:
+            return parse_while_statement();
+        case TOKEN_KIND::key_do:
+            return parse_do_while_statement();
+        case TOKEN_KIND::key_for:
+            return parse_for_statement();
+        case TOKEN_KIND::key_break:
+            return parse_break_statement();
+        case TOKEN_KIND::key_continue:
+            return parse_continue_statement();
+        default:
+            break;
+    }
+    return parse_expression_statement();
 }
 
 /** TODO
