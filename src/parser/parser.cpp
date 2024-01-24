@@ -1291,7 +1291,7 @@ static std::unique_ptr<Type> parse_type_specifier() {
             //            break
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
-                goto end;
+                goto end_1;
             //        elif peek_next_i(specifier).token_kind in (TOKEN_KIND.get('key_int'),
             //                                                   TOKEN_KIND.get('key_long'),
             //                                                   TOKEN_KIND.get('key_double'),
@@ -1323,22 +1323,34 @@ static std::unique_ptr<Type> parse_type_specifier() {
             //
         }
     }
-    end:
+    end_1:
     switch(type_token_kinds.size()) {
+        //    if len(type_token_kinds) == 1:
         case 1: {
-            // TODO
-            //
-            //    if len(type_token_kinds) == 1:
-            //        if type_token_kinds[0] == TOKEN_KIND.get('key_int'):
-            //            return Int()
-            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_long'):
-            //            return Long()
-            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_double'):
-            //            return Double()
-            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_unsigned'):
-            //            return UInt()
-            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_signed'):
-            //            return Int()
+            switch(type_token_kinds[0]) {
+                //        if type_token_kinds[0] == TOKEN_KIND.get('key_int'):
+                //            return Int()
+                case TOKEN_KIND::key_int:
+                    return std::make_unique<Int>();
+                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_long'):
+                //            return Long()
+                case TOKEN_KIND::key_long:
+                    return std::make_unique<Long>();
+                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_double'):
+                //            return Double()
+                case TOKEN_KIND::key_double:
+                    return std::make_unique<Double>();
+                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_unsigned'):
+                //            return UInt()
+                case TOKEN_KIND::key_unsigned:
+                    return std::make_unique<UInt>();
+                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_signed'):
+                //            return Int()
+                case TOKEN_KIND::key_signed:
+                    return std::make_unique<Int>();
+                default:
+                    goto end_2;
+            }
         }
         case 2: {
             // TODO
@@ -1376,14 +1388,15 @@ static std::unique_ptr<Type> parse_type_specifier() {
         default:
             break;
     }
+    end_2:
     //    raise RuntimeError(
     //            f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
     std::string type_token_kinds_string = "";
     for(const auto& s: type_token_kinds_string) {
         type_token_kinds_string += std::to_string(s) + ",";
     }
-    raise_runtime_error("Expected token type \"type specifier\" but found tokens \"(" +
-                        type_token_kinds_string + ")\"");
+    raise_runtime_error("Expected token type \"type specifier\" but found token kinds \"(" +
+                        type_token_kinds_string + ")\""); // TODO print token
     return nullptr;
 }
 
