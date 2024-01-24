@@ -1278,8 +1278,110 @@ cdef Type parse_type_specifier():
     raise RuntimeError(
             f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
 */
+// <type-specifier> ::= "int" | "long"
 static std::unique_ptr<Type> parse_type_specifier() {
-    return std::make_unique<Type>(); // TODO empty only for forward declare
+    //    cdef Py_ssize_t specifier = 0
+    size_t specifier = 0;
+    //    cdef list[int32] type_token_kinds = []
+    std::vector<TOKEN_KIND> type_token_kinds;
+    //    while True:
+    while(true) {
+        switch(peek_next_i(specifier).token_kind) {
+            //        if peek_next_i(specifier).token_kind in (TOKEN_KIND.get('identifier'),
+            //                                                 TOKEN_KIND.get('parenthesis_close')):
+            //            break
+            case TOKEN_KIND::identifier:
+            case TOKEN_KIND::parenthesis_close:
+                goto end;
+            //        elif peek_next_i(specifier).token_kind in (TOKEN_KIND.get('key_int'),
+            //                                                   TOKEN_KIND.get('key_long'),
+            //                                                   TOKEN_KIND.get('key_double'),
+            //                                                   TOKEN_KIND.get('key_unsigned'),
+            //                                                   TOKEN_KIND.get('key_signed')):
+            //            type_token_kinds.append(pop_next_i(specifier).token_kind)
+            case TOKEN_KIND::key_int:
+            case TOKEN_KIND::key_long:
+            case TOKEN_KIND::key_double:
+            case TOKEN_KIND::key_unsigned:
+            case TOKEN_KIND::key_signed:
+                type_token_kinds.push_back(pop_next_i(specifier).token_kind);
+                break;
+            //        elif peek_next_i(specifier).token_kind in (TOKEN_KIND.get('key_static'),
+            //                                                   TOKEN_KIND.get('key_extern')):
+            //            specifier += 1
+            case TOKEN_KIND::key_static:
+            case TOKEN_KIND::key_extern:
+                specifier += 1;
+                break;
+            default:
+                raise_runtime_error("Expected token type \"specifier\" but found token \"" +
+                                    peek_next_i(specifier).token + "\"");
+                return nullptr;
+            //        else:
+            //
+            //            raise RuntimeError(
+            //                f"Expected token type \"specifier\" but found token \"{peek_next_i(specifier).token}\"")
+            //
+        }
+    }
+    end:
+    switch(type_token_kinds.size()) {
+        case 1: {
+            // TODO
+            //
+            //    if len(type_token_kinds) == 1:
+            //        if type_token_kinds[0] == TOKEN_KIND.get('key_int'):
+            //            return Int()
+            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_long'):
+            //            return Long()
+            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_double'):
+            //            return Double()
+            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_unsigned'):
+            //            return UInt()
+            //        elif type_token_kinds[0] == TOKEN_KIND.get('key_signed'):
+            //            return Int()
+        }
+        case 2: {
+            // TODO
+            //
+            //    elif len(type_token_kinds) == 2:
+            //        if TOKEN_KIND.get('key_unsigned') in type_token_kinds:
+            //            if TOKEN_KIND.get('key_int') in type_token_kinds:
+            //                return UInt()
+            //            elif TOKEN_KIND.get('key_long') in type_token_kinds:
+            //                return ULong()
+            //
+            //        elif TOKEN_KIND.get('key_signed') in type_token_kinds:
+            //            if TOKEN_KIND.get('key_int') in type_token_kinds:
+            //                return Int()
+            //            elif TOKEN_KIND.get('key_long') in type_token_kinds:
+            //                return Long()
+            //
+            //        elif TOKEN_KIND.get('key_int') in type_token_kinds and \
+            //             TOKEN_KIND.get('key_long') in type_token_kinds:
+            //            return Long()
+            //
+        }
+        case 3: {
+            // TODO
+            //
+            //    elif len(type_token_kinds) == 3:
+            //        if TOKEN_KIND.get('key_int') in type_token_kinds and \
+            //           TOKEN_KIND.get('key_long') in type_token_kinds:
+            //            if TOKEN_KIND.get('key_unsigned') in type_token_kinds:
+            //                return ULong()
+            //            elif TOKEN_KIND.get('key_signed') in type_token_kinds:
+            //                return Long()
+            //
+        }
+        default:
+            break;
+    }
+    //    raise RuntimeError(
+    //            f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
+    raise_runtime_error("Expected token type \"type specifier\" but found tokens \"" +
+                        std::string("str(type_token_kinds)") + "\""); // TODO print list of type_token_kinds
+    return nullptr;
 }
 
 /** TODO
