@@ -921,7 +921,7 @@ static std::unique_ptr<CDoWhile> parse_do_while_statement() {
     return std::make_unique<CDoWhile>(std::move(condition), std::move(body));
 }
 
-/** TODO
+/**
 cdef CFor parse_for_statement():
     _ = pop_next()
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_open'))
@@ -961,26 +961,41 @@ static std::unique_ptr<CFor> parse_for_statement() {
     return std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
 }
 
-/** TODO
+/**
 cdef CBreak parse_break_statement():
     _ = pop_next()
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CBreak()
 */
+static std::unique_ptr<CBreak> parse_break_statement() {
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CBreak>();
+}
 
-/** TODO
+/**
 cdef CContinue parse_continue_statement():
     _ = pop_next()
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CContinue()
 */
+static std::unique_ptr<CContinue> parse_continue_statement() {
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::unique_ptr<CContinue>();
+}
 
-/** TODO
+/**
 cdef CExpression parse_expression_statement():
     cdef CExp exp = parse_exp()
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CExpression(exp)
 */
+static std::unique_ptr<CExpression> parse_expression_statement() {
+    std::unique_ptr<CExp> exp = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CExpression>(std::move(exp));
+}
 
 /** TODO
 cdef CStatement parse_statement():
