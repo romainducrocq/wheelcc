@@ -669,7 +669,7 @@ static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left,
     return std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right));
 }
 
-/** TODO
+/**
 cdef CExp parse_exp(int32 min_precedence = 0):
     # <exp> ::= <factor> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
     cdef int32 precedence
@@ -776,11 +776,15 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     return exp_left;
 }
 
-/** TODO
+/**
 cdef CNull parse_null_statement():
     _ = pop_next()
     return CNull()
 */
+static std::unique_ptr<CNull> parse_null_statement() {
+    pop_next();
+    return std::make_unique<CNull>();
+}
 
 /** TODO
 cdef CReturn parse_return_statement():
@@ -789,6 +793,12 @@ cdef CReturn parse_return_statement():
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CReturn(exp)
 */
+static std::unique_ptr<CReturn> parse_return_statement() {
+    pop_next();
+    std::unique_ptr<CExp> exp = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CReturn>(std::move(exp));
+}
 
 /** TODO
 cdef CIf parse_if_statement():
