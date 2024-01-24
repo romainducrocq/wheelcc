@@ -335,7 +335,7 @@ cdef CBinaryOp parse_binary_op():
 // binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!="
 //          | "<" | "<=" | ">" | ">="
 static std::unique_ptr<CBinaryOp> parse_binary_op() {
-    switch (pop_next().token_kind) {
+    switch(pop_next().token_kind) {
         case TOKEN_KIND::unop_negation:
         case TOKEN_KIND::assignment_difference:
             return std::make_unique<CSubtract>();
@@ -405,7 +405,7 @@ cdef CUnaryOp parse_unary_op():
 */
 // <unop> ::= "-" | "~" | "!"
 static std::unique_ptr<CUnaryOp> parse_unary_op() {
-    switch (pop_next().token_kind) {
+    switch(pop_next().token_kind) {
         case TOKEN_KIND::unop_complement:
             return std::make_unique<CComplement>();
         case TOKEN_KIND::unop_negation:
@@ -420,9 +420,10 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
-static std::unique_ptr<Type> parse_type_specifier();
 static std::unique_ptr<CExp> parse_factor();
 static std::unique_ptr<CExp> parse_exp();
+
+static std::unique_ptr<Type> parse_type_specifier();
 
 /**
 cdef list[CExp] parse_argument_list():
@@ -536,7 +537,7 @@ static std::unique_ptr<CExp> parse_function_call_factor() {
     return std::make_unique<CFunctionCall>(name, std::move(args));
 }
 
-/** TODO
+/**
 cdef CExp parse_factor():
     # <factor> ::= <const> | <identifier> | "(" { <type-specifier> }+ ")" <factor> | <unop> <factor> | "(" <exp> ")"
     #            | <identifier> "(" [ <argument-list> ] ")"
@@ -570,8 +571,45 @@ cdef CExp parse_factor():
         raise RuntimeError(
             f"Expected token type \"factor\" but found token \"{next_token.token}\"")
 */
+// <factor> ::= <const> | <identifier> | "(" { <type-specifier> }+ ")" <factor> | <unop> <factor> | "(" <exp> ")"
+//            | <identifier> "(" [ <argument-list> ] ")"
 static std::unique_ptr<CExp> parse_factor() {
-    return std::make_unique<CExp>(); // TODO empty only for forward declare
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::identifier: {
+            if(peek_next_i(1).token_kind == TOKEN_KIND::parenthesis_open) {
+                return parse_function_call_factor();
+            }
+            return parse_var_factor();
+        }
+        case TOKEN_KIND::constant:
+        case TOKEN_KIND::long_constant:
+        case TOKEN_KIND::float_constant:
+            return parse_constant_factor();
+        case TOKEN_KIND::unsigned_constant:
+        case TOKEN_KIND::unsigned_long_constant:
+            return parse_unsigned_constant_factor();
+        case::TOKEN_KIND::unop_complement:
+        case::TOKEN_KIND::unop_negation:
+        case::TOKEN_KIND::unop_not:
+            return parse_unary_factor();
+        default:
+            break;
+    }
+    if(pop_next().token_kind == TOKEN_KIND::parenthesis_open) {
+        switch(peek_next().token_kind) {
+            case TOKEN_KIND::key_int:
+            case TOKEN_KIND::key_long:
+            case TOKEN_KIND::key_double:
+            case TOKEN_KIND::key_unsigned:
+            case TOKEN_KIND::key_signed:
+                return parse_cast_factor();
+            default:
+                return parse_inner_exp_factor();
+        }
+    }
+    raise_runtime_error("Expected token type \"factor\" but found token \"" +
+                        next_token->token + "\"");
+    return nullptr;
 }
 
 /** TODO
