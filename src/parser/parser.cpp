@@ -1378,8 +1378,12 @@ static std::unique_ptr<Type> parse_type_specifier() {
     }
     //    raise RuntimeError(
     //            f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
-    raise_runtime_error("Expected token type \"type specifier\" but found tokens \"" +
-                        std::string("str(type_token_kinds)") + "\""); // TODO print list of type_token_kinds
+    std::string type_token_kinds_string = "";
+    for(const auto& s: type_token_kinds_string) {
+        type_token_kinds_string += std::to_string(s) + ",";
+    }
+    raise_runtime_error("Expected token type \"type specifier\" but found tokens \"(" +
+                        type_token_kinds_string + ")\"");
     return nullptr;
 }
 
