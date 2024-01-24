@@ -776,6 +776,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     return exp_left;
 }
 
+static std::unique_ptr<CBlock> parse_block();
 static std::unique_ptr<CStatement> parse_statement();
 
 /**
@@ -835,13 +836,19 @@ static std::unique_ptr<CIf> parse_if_statement() {
     return std::make_unique<CIf>(std::move(condition), std::move(then), std::move(else_fi));
 }
 
-/** TODO
+/**
 cdef CGoto parse_goto_statement():
     _ = pop_next()
     cdef TIdentifier target = parse_identifier()
     expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     return CGoto(target)
 */
+static std::unique_ptr<CGoto> parse_goto_statement() {
+    pop_next();
+    std::string target; parse_identifier(target);
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CGoto>(target);
+}
 
 /** TODO
 cdef CLabel parse_label_statement():
@@ -851,12 +858,23 @@ cdef CLabel parse_label_statement():
     cdef CStatement jump_to = parse_statement()
     return CLabel(target, jump_to)
 */
+static std::unique_ptr<CLabel> parse_label_statement() {
+    std::string target; parse_identifier(target);
+    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    peek_next();
+    std::unique_ptr<CStatement> jump_to = parse_statement();
+    return std::make_unique<CLabel>(target, std::move(jump_to));
+}
 
 /** TODO
 cdef CCompound parse_compound_statement():
     cdef CBlock block = parse_block()
     return CCompound(block)
 */
+static std::unique_ptr<CCompound> parse_compound_statement() {
+    std::unique_ptr<CBlock> block = parse_block();
+    return std::make_unique<CCompound>(std::move(block));
+}
 
 /** TODO
 cdef CWhile parse_while_statement():
@@ -868,6 +886,15 @@ cdef CWhile parse_while_statement():
     body = parse_statement()
     return CWhile(condition, body)
 */
+static std::unique_ptr<CWhile> parse_while_statement() {
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<CExp> condition = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    peek_next();
+    std::unique_ptr<CStatement> body = parse_statement();
+    return std::make_unique<CWhile>(std::move(condition), std::move(body));
+}
 
 /** TODO
 cdef CDoWhile parse_do_while_statement():
@@ -1038,6 +1065,9 @@ cdef CBlock parse_block():
     expect_next_is(pop_next(), TOKEN_KIND.get('brace_close'))
     return block
 */
+static std::unique_ptr<CBlock> parse_block() {
+    return std::make_unique<CBlock>(); // TODO only for forward declare
+}
 
 /** TODO
 cdef Type parse_type_specifier():
