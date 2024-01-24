@@ -1128,19 +1128,29 @@ static std::unique_ptr<CForInit> parse_for_init() {
     }
 }
 
-/** TODO
+static std::unique_ptr<CDeclaration> parse_declaration();
+
+/**
 cdef CD parse_d_block_item():
     cdef CDeclaration declaration = parse_declaration()
     return CD(declaration)
 */
+static std::unique_ptr<CD> parse_d_block_item() {
+    std::unique_ptr<CDeclaration> declaration = parse_declaration();
+    return std::make_unique<CD>(std::move(declaration));
+}
 
-/** TODO
+/**
 cdef CS parse_s_block_item():
     cdef CStatement statement = parse_statement()
     return CS(statement)
 */
+static std::unique_ptr<CS> parse_s_block_item() {
+    std::unique_ptr<CStatement> statement = parse_statement();
+    return std::make_unique<CS>(std::move(statement));
+}
 
-/** TODO
+/**
 cdef CBlockItem parse_block_item():
     # <block-item> ::= <statement> | <declaration>
     if peek_token.token_kind in (TOKEN_KIND.get('key_int'),
@@ -1154,6 +1164,21 @@ cdef CBlockItem parse_block_item():
     else:
         return parse_s_block_item()
 */
+// <block-item> ::= <statement> | <declaration>
+static std::unique_ptr<CBlockItem> parse_block_item() {
+    switch(peek_token->token_kind) {
+        case TOKEN_KIND::key_int:
+        case TOKEN_KIND::key_long:
+        case TOKEN_KIND::key_double:
+        case TOKEN_KIND::key_unsigned:
+        case TOKEN_KIND::key_signed:
+        case TOKEN_KIND::key_static:
+        case TOKEN_KIND::key_extern:
+            return parse_d_block_item();
+        default:
+            return parse_s_block_item();
+    }
+}
 
 /** TODO
 cdef CB parse_b_block():
@@ -1340,6 +1365,9 @@ cdef CDeclaration parse_declaration():
     else:
         return parse_var_decl_declaration(type_specifier)
 */
+static std::unique_ptr<CDeclaration> parse_declaration() {
+    return std::make_unique<CDeclaration>(); // TODO for forward declaration
+}
 
 /** TODO
 cdef CProgram parse_program():
