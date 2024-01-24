@@ -1199,7 +1199,7 @@ static std::unique_ptr<CB> parse_b_block() {
     return std::make_unique<CB>(std::move(block_items));
 }
 
-/** TODO
+/**
 cdef CBlock parse_block():
     # <block> ::= "{" { <block-item> } "}
     expect_next_is(pop_next(), TOKEN_KIND.get('brace_open'))
