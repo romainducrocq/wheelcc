@@ -1207,8 +1207,12 @@ cdef CBlock parse_block():
     expect_next_is(pop_next(), TOKEN_KIND.get('brace_close'))
     return block
 */
+// <block> ::= "{" { <block-item> } "}
 static std::unique_ptr<CBlock> parse_block() {
-    return std::make_unique<CBlock>(); // TODO only for forward declare
+    expect_next_is(pop_next(), TOKEN_KIND::brace_open);
+    std::unique_ptr<CBlock> block = parse_b_block();
+    expect_next_is(pop_next(), TOKEN_KIND::brace_close);
+    return block;
 }
 
 /** TODO
