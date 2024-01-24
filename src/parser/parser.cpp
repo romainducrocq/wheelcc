@@ -420,7 +420,11 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
-/** TODO
+static std::unique_ptr<Type> parse_type_specifier();
+static std::unique_ptr<CExp> parse_factor();
+static std::unique_ptr<CExp> parse_exp();
+
+/**
 cdef list[CExp] parse_argument_list():
     # <exp> { "," <exp> }
     cdef list[CExp] args = []
@@ -430,6 +434,16 @@ cdef list[CExp] parse_argument_list():
         args.append(parse_exp())
     return args
 */
+// <exp> { "," <exp> }
+static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
+    std::vector<std::unique_ptr<CExp>> args;
+    args.push_back(parse_exp());
+    while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
+        pop_next();
+        args.push_back(parse_exp());
+    }
+    return args;
+}
 
 /**
 cdef CVar parse_var_factor():
@@ -441,13 +455,19 @@ static std::unique_ptr<CVar> parse_var_factor() {
     return std::make_unique<CVar>(name);
 }
 
-/** TODO
+/**
 cdef CCast parse_cast_factor():
     cdef Type target_type = parse_type_specifier()
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_close'))
     cdef CExp exp = parse_factor()
     return CCast(exp, target_type)
 */
+static std::unique_ptr<CCast> parse_cast_factor() {
+    std::unique_ptr<Type> target_type = parse_type_specifier();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    std::unique_ptr<CExp> exp = parse_factor();
+    return std::make_unique<CCast>(std::move(exp), std::move(target_type));
+}
 
 /**
 cdef CConstant parse_constant_factor():
@@ -469,21 +489,31 @@ static std::unique_ptr<CConstant> parse_unsigned_constant_factor() {
     return std::make_unique<CConstant>(std::move(constant));
 }
 
-/** TODO
+/**
 cdef CUnary parse_unary_factor():
     cdef CUnaryOp unary_op = parse_unary_op()
     cdef CExp exp = parse_factor()
     return CUnary(unary_op, exp)
 */
+static std::unique_ptr<CUnary> parse_unary_factor() {
+    std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
+    std::unique_ptr<CExp> exp = parse_factor();
+    return std::make_unique<CUnary>(std::move(unary_op), std::move(exp));
+}
 
-/** TODO
+/**
 cdef CExp parse_inner_exp_factor():
     cdef CExp inner_exp = parse_exp()
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_close'))
     return inner_exp
 */
+static std::unique_ptr<CExp> parse_inner_exp_factor() {
+    std::unique_ptr<CExp> inner_exp = parse_exp();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return inner_exp;
+}
 
-/** TODO
+/**
 cdef CExp parse_function_call_factor():
     cdef TIdentifier name = parse_identifier()
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_open'))
@@ -495,6 +525,16 @@ cdef CExp parse_function_call_factor():
     expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_close'))
     return CFunctionCall(name, args)
 */
+static std::unique_ptr<CExp> parse_function_call_factor() {
+    std::string name; parse_identifier(name);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::vector<std::unique_ptr<CExp>> args;
+    if(peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
+        args = parse_argument_list();
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return std::make_unique<CFunctionCall>(name, std::move(args));
+}
 
 /** TODO
 cdef CExp parse_factor():
@@ -530,6 +570,9 @@ cdef CExp parse_factor():
         raise RuntimeError(
             f"Expected token type \"factor\" but found token \"{next_token.token}\"")
 */
+static std::unique_ptr<CExp> parse_factor() {
+    return std::make_unique<CExp>(); // TODO empty only for forward declare
+}
 
 /** TODO
 cdef CAssignment parse_assigment_exp(CExp exp_left, int32 precedence):
@@ -612,6 +655,9 @@ cdef CExp parse_exp(int32 min_precedence = 0):
 
     return exp_left
 */
+static std::unique_ptr<CExp> parse_exp() {
+    return std::make_unique<CExp>(); // TODO empty only for forward declare
+}
 
 /** TODO
 cdef CNull parse_null_statement():
@@ -909,6 +955,9 @@ cdef Type parse_type_specifier():
     raise RuntimeError(
             f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
 */
+static std::unique_ptr<Type> parse_type_specifier() {
+    return std::make_unique<Type>(); // TODO empty only for forward declare
+}
 
 /** TODO
 cdef CStorageClass parse_storage_class():
