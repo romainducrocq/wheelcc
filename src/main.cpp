@@ -104,8 +104,7 @@ cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
 static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens;
-    lexing(filename, tokens);
+    std::vector<Token> tokens = lexing(filename);
     verbose("OK", true);
     if(opt_code == 255) {
         debug_tokens(tokens);

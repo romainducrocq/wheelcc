@@ -82,6 +82,6 @@ struct Token {
     TOKEN_KIND token_kind;
 };
 
-void lexing(const std::string& filename, std::vector<Token>& tokens);
+std::vector<Token> lexing(const std::string& filename);
 
 #endif
