@@ -421,7 +421,7 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
 }
 
 static std::unique_ptr<CExp> parse_factor();
-static std::unique_ptr<CExp> parse_exp();
+static std::unique_ptr<CExp> parse_exp(int32_t precedence);
 
 static std::unique_ptr<Type> parse_type_specifier();
 
@@ -438,10 +438,10 @@ cdef list[CExp] parse_argument_list():
 // <exp> { "," <exp> }
 static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
     std::vector<std::unique_ptr<CExp>> args;
-    args.push_back(parse_exp());
+    args.push_back(parse_exp(0));
     while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
         pop_next();
-        args.push_back(parse_exp());
+        args.push_back(parse_exp(0));
     }
     return args;
 }
@@ -509,7 +509,7 @@ cdef CExp parse_inner_exp_factor():
     return inner_exp
 */
 static std::unique_ptr<CExp> parse_inner_exp_factor() {
-    std::unique_ptr<CExp> inner_exp = parse_exp();
+    std::unique_ptr<CExp> inner_exp = parse_exp(0);
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     return inner_exp;
 }
@@ -612,12 +612,17 @@ static std::unique_ptr<CExp> parse_factor() {
     return nullptr;
 }
 
-/** TODO
+/**
 cdef CAssignment parse_assigment_exp(CExp exp_left, int32 precedence):
     _ = pop_next()
     cdef CExp exp_right = parse_exp(precedence)
     return CAssignment(exp_left, exp_right)
 */
+static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    pop_next();
+    std::unique_ptr<CExp> exp_right = parse_exp(precedence);
+    return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right));
+}
 
 /** TODO
 cdef CAssignment parse_assigment_compound_exp(CExp exp_left, int32 precedence):
@@ -693,7 +698,7 @@ cdef CExp parse_exp(int32 min_precedence = 0):
 
     return exp_left
 */
-static std::unique_ptr<CExp> parse_exp() {
+static std::unique_ptr<CExp> parse_exp(int32_t precedence) {
     return std::make_unique<CExp>(); // TODO empty only for forward declare
 }
 
