@@ -1098,7 +1098,7 @@ static std::unique_ptr<CInitExp> parse_exp_for_init() {
     return std::make_unique<CInitExp>(std::move(init));
 }
 
-/** TODO
+/**
 cdef CForInit parse_for_init():
     # <for-init> ::= <variable-declaration> | [<exp>] ";"
     if peek_next().token_kind in (TOKEN_KIND.get('key_int'),
@@ -1112,8 +1112,20 @@ cdef CForInit parse_for_init():
     else:
         return parse_exp_for_init()
 */
+// <for-init> ::= <variable-declaration> | [<exp>] ";"
 static std::unique_ptr<CForInit> parse_for_init() {
-    return std::make_unique<CForInit>(); // TODO for forward declare
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::key_int:
+        case TOKEN_KIND::key_long:
+        case TOKEN_KIND::key_double:
+        case TOKEN_KIND::key_unsigned:
+        case TOKEN_KIND::key_signed:
+        case TOKEN_KIND::key_static:
+        case TOKEN_KIND::key_extern:
+            return parse_decl_for_init();
+        default:
+            return parse_exp_for_init();
+    }
 }
 
 /** TODO
