@@ -3,6 +3,12 @@ CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
 cmake-build-debug
+.cmake/api/v1/query/client-vscode/query.json
+.ninja_deps
+.ninja_log
+build.ninja
+compile_commands.json
+
 .idea/
 __pycache__/
 .ipynb_checkpoints
