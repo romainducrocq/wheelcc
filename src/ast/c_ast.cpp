@@ -117,6 +117,9 @@ CAssignmentCompound::CAssignmentCompound(std::unique_ptr<CBinaryOp> binary_op, s
                                          std::unique_ptr<CExp> exp_right)
     : binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
+CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args)
+    : name(std::move(name)), args(std::move(args)) {}
+
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
 
