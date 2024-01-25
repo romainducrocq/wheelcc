@@ -1553,10 +1553,7 @@ cdef CDeclaration parse_declaration():
 // <declaration> ::= { <specifier> }+ (<variable-declaration> | <function-declaration>)
 static std::unique_ptr<CDeclaration> parse_declaration() {
     std::unique_ptr<Type> type_specifier = parse_type_specifier();
-    size_t i = 2;
-    if(peek_next().token_kind == TOKEN_KIND::identifier) {
-        i = 1;
-    }
+    size_t i = peek_next().token_kind == TOKEN_KIND::identifier ? 1 : 2;
     if(peek_next_i(i).token_kind == TOKEN_KIND::parenthesis_open) {
         return parse_fun_decl_declaration(std::move(type_specifier));
     }else{
