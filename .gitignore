@@ -3,7 +3,7 @@ CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
 cmake-build-debug
-.cmake/api/v1/query/client-vscode/query.json
+.cmake/
 .ninja_deps
 .ninja_log
 build.ninja
