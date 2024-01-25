@@ -1375,7 +1375,7 @@ static std::unique_ptr<Type> parse_type_specifier() {
     return nullptr;
 }
 
-/** TODO
+/**
 cdef CStorageClass parse_storage_class():
     # <storage_class> ::= "static" | "extern"
     if pop_next().token_kind == TOKEN_KIND.get('key_static'):
@@ -1401,7 +1401,7 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
     }
 }
 
-/** TODO
+/**
 cdef CFunctionDeclaration parse_function_declaration(Type ret_type):
     # <function-declaration> ::= [ <storage-class> ] <identifier> "(" <param-list> ")" ( <block> | ";")
     # <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
@@ -1483,7 +1483,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
                                                   std::move(fun_type), std::move(storage_class));
 }
 
-/** TODO
+/**
 cdef CVariableDeclaration parse_variable_declaration(Type var_type):
     # <variable-declaration> ::= [ <storage-class> ] <identifier> [ "=" <exp> ] ";"
     cdef storage_class
@@ -1518,17 +1518,25 @@ static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::uni
                                                   std::move(storage_class));
 }
 
-/** TODO
+/**
 cdef CFunDecl parse_fun_decl_declaration(Type ret_type):
     cdef CFunctionDeclaration function_decl = parse_function_declaration(ret_type)
     return CFunDecl(function_decl)
 */
+static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(std::unique_ptr<Type> ret_type) {
+    std::unique_ptr<CFunctionDeclaration> function_decl = parse_function_declaration(std::move(ret_type));
+    return std::make_unique<CFunDecl>(std::move(function_decl));
+}
 
-/** TODO
+/**
 cdef CVarDecl parse_var_decl_declaration(Type var_type):
     cdef CVariableDeclaration variable_decl = parse_variable_declaration(var_type)
     return CVarDecl(variable_decl)
 */
+static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::unique_ptr<Type> var_type) {
+    std::unique_ptr<CVariableDeclaration> variable_decl = parse_variable_declaration(std::move(var_type));
+    return std::make_unique<CVarDecl>(std::move(variable_decl));
+}
 
 /** TODO
 cdef CDeclaration parse_declaration():
