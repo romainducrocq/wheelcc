@@ -160,7 +160,7 @@ CS::CS(std::unique_ptr<CStatement> statement)
 CD::CD(std::unique_ptr<CDeclaration> declaration)
     : declaration(std::move(declaration)) {}
 
-CFunctionDeclaration::CFunctionDeclaration(TIdentifier target, std::vector<std::unique_ptr<TIdentifier>> params,
+CFunctionDeclaration::CFunctionDeclaration(TIdentifier target, std::vector<TIdentifier> params,
                                            std::unique_ptr<CBlock> body, std::unique_ptr<Type> fun_type,
                                            std::unique_ptr<CStorageClass> storage_class)
     : target(std::move(target)), params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
