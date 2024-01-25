@@ -1538,7 +1538,7 @@ static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::unique_ptr<Type
     return std::make_unique<CVarDecl>(std::move(variable_decl));
 }
 
-/** TODO
+/**
 cdef CDeclaration parse_declaration():
     # <declaration> ::= { <specifier> }+ (<variable-declaration> | <function-declaration>)
     cdef Type type_specifier = parse_type_specifier()
@@ -1550,8 +1550,18 @@ cdef CDeclaration parse_declaration():
     else:
         return parse_var_decl_declaration(type_specifier)
 */
+// <declaration> ::= { <specifier> }+ (<variable-declaration> | <function-declaration>)
 static std::unique_ptr<CDeclaration> parse_declaration() {
-    return std::make_unique<CDeclaration>(); // TODO for forward declaration
+    std::unique_ptr<Type> type_specifier = parse_type_specifier();
+    size_t i = 2;
+    if(peek_next().token_kind == TOKEN_KIND::identifier) {
+        i = 1;
+    }
+    if(peek_next_i(i).token_kind == TOKEN_KIND::parenthesis_open) {
+        return parse_fun_decl_declaration(std::move(type_specifier));
+    }else{
+        return parse_var_decl_declaration(std::move(type_specifier));
+    }
 }
 
 /** TODO
