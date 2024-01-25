@@ -1440,51 +1440,29 @@ cdef CFunctionDeclaration parse_function_declaration(Type ret_type):
 // <function-declaration> ::= [ <storage-class> ] <identifier> "(" <param-list> ")" ( <block> | ";")
 // <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::unique_ptr<Type> ret_type) {
-//    cdef storage_class
     std::unique_ptr<CStorageClass> storage_class;
-//    if peek_next().token_kind == TOKEN_KIND.get('identifier'):
-//        storage_class = None
-//    else:
-//        storage_class = parse_storage_class()
     if(peek_next().token_kind != TOKEN_KIND::identifier) {
         storage_class = parse_storage_class();
     }
-//    cdef TIdentifier name = parse_identifier()
     TIdentifier name; parse_identifier(name);
-//    expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_open'))
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
-//    cdef list[Type] param_types = []
     std::vector<std::unique_ptr<Type>> param_types;
-//    cdef list[TIdentifier] params = []
     std::vector<TIdentifier> params;
     switch(peek_next().token_kind) {
-        //    if peek_next().token_kind == TOKEN_KIND.get('key_void'):
         case TOKEN_KIND::key_void:
-            //        _ = pop_next()
             pop_next();
             break;
-        //    elif peek_token.token_kind in (TOKEN_KIND.get('key_int'),
-        //                                   TOKEN_KIND.get('key_long'),
-        //                                   TOKEN_KIND.get('key_double'),
-        //                                   TOKEN_KIND.get('key_unsigned'),
-        //                                   TOKEN_KIND.get('key_signed')):
         case TOKEN_KIND::key_int:
         case TOKEN_KIND::key_long:
         case TOKEN_KIND::key_double:
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed: {
-            //        param_types.append(parse_type_specifier())
             param_types.push_back(parse_type_specifier());
-            //        params.append(parse_identifier())
             TIdentifier identifier_1; parse_identifier(identifier_1);
             params.push_back(std::move(identifier_1));
-            //        while peek_next().token_kind == TOKEN_KIND.get('separator_comma'):
             while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
-                //            _ = pop_next()
                 pop_next();
-                //            param_types.append(parse_type_specifier())
                 param_types.push_back(parse_type_specifier());
-                //            params.append(parse_identifier())
                 TIdentifier identifier_2; parse_identifier(identifier_2);
                 params.push_back(std::move(identifier_2));
             }
@@ -1493,23 +1471,14 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
         default:
             break;
     }
-//    expect_next_is(pop_next(), TOKEN_KIND.get('parenthesis_close'))
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-//    cdef CBlock body
     std::unique_ptr<CBlock> body;
-//    if peek_next().token_kind == TOKEN_KIND.get('semicolon'):
     if(peek_next().token_kind == TOKEN_KIND::semicolon) {
-        //        _ = pop_next()
         pop_next();
-        //        body = None
-        //    else:
     }else{
-        //        body = parse_block()
         body = parse_block();
     }
-//    cdef Type fun_type = FunType(param_types, ret_type)
     std::unique_ptr<Type> fun_type = std::make_unique<FunType>(std::move(param_types), std::move(ret_type));
-//    return CFunctionDeclaration(name, params, body, fun_type, storage_class)
     return std::make_unique<CFunctionDeclaration>(std::move(name), std::move(params), std::move(body),
                                                   std::move(fun_type), std::move(storage_class));
 }
