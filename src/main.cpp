@@ -104,7 +104,7 @@ cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
 static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lexing(filename);
+    std::vector<Token> tokens = lexing(filename + ".i");
     verbose("OK", true);
     if(opt_code == 255) {
         debug_tokens(tokens);
@@ -113,8 +113,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     }
 
     verbose("-- Parsing ... ", false);
-    std::unique_ptr<CProgram> c_ast = parsing(tokens);
-    tokens.clear();
+    std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
     verbose("OK", true);
     if(opt_code == 254) {
         // TODO debug_ast(c_ast);

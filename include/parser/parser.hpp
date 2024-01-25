@@ -7,6 +7,6 @@
 #include <memory>
 #include <vector>
 
-std::unique_ptr<CProgram> parsing(std::vector<Token>& tokens);
+std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens);
 
 #endif
