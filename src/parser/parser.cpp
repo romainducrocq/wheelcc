@@ -1570,6 +1570,14 @@ cdef CProgram parse_program():
 
     return CProgram(declarations)
 */
+// <program> ::= { <declaration> }
+static std::unique_ptr<CProgram> parse_program() {
+    std::vector<std::unique_ptr<CDeclaration>> declarations;
+    while(pop_index < p_tokens->size()) { // TODO check this
+        declarations.push_back(parse_declaration());
+    }
+    return std::make_unique<CProgram>(std::move(declarations));
+}
 
 /** TODO
 cdef CProgram parsing(list[Token] lex_tokens):
