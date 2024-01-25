@@ -113,8 +113,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     }
 
     verbose("-- Parsing ... ", false);
-    CProgram c_ast;
-    parsing(tokens, c_ast);
+    std::unique_ptr<CProgram> c_ast = parsing(tokens);
     tokens.clear();
     verbose("OK", true);
     if(opt_code == 254) {

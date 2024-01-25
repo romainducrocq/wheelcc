@@ -1561,7 +1561,7 @@ static std::unique_ptr<CDeclaration> parse_declaration() {
     }
 }
 
-/** TODO
+/**
 cdef CProgram parse_program():
     # <program> ::= { <declaration> }
     cdef list[CDeclaration] declarations = []
@@ -1600,6 +1600,11 @@ cdef CProgram parsing(list[Token] lex_tokens):
 
     return c_ast
 */
-void parsing(std::vector<Token>& tokens, CProgram& /*c_ast*/) {
+std::unique_ptr<CProgram> parsing(std::vector<Token>& tokens) {
     p_tokens = &tokens;
+    std::unique_ptr<CProgram> c_ast = parse_program();
+    if(!c_ast) {
+        raise_runtime_error("An error occurred in parser, Ast was not parsed");
+    }
+    return c_ast;
 }
