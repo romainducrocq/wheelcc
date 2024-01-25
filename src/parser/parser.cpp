@@ -1215,7 +1215,7 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-/** TODO
+/**
 cdef Type parse_type_specifier():
     # <type-specifier> ::= "int" | "long"
     cdef Py_ssize_t specifier = 0
@@ -1280,25 +1280,13 @@ cdef Type parse_type_specifier():
 */
 // <type-specifier> ::= "int" | "long"
 static std::unique_ptr<Type> parse_type_specifier() {
-    //    cdef Py_ssize_t specifier = 0
     size_t specifier = 0;
-    //    cdef list[int32] type_token_kinds = []
     std::vector<TOKEN_KIND> type_token_kinds;
-    //    while True:
     while(true) {
         switch(peek_next_i(specifier).token_kind) {
-            //        if peek_next_i(specifier).token_kind in (TOKEN_KIND.get('identifier'),
-            //                                                 TOKEN_KIND.get('parenthesis_close')):
-            //            break
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
                 goto end;
-            //        elif peek_next_i(specifier).token_kind in (TOKEN_KIND.get('key_int'),
-            //                                                   TOKEN_KIND.get('key_long'),
-            //                                                   TOKEN_KIND.get('key_double'),
-            //                                                   TOKEN_KIND.get('key_unsigned'),
-            //                                                   TOKEN_KIND.get('key_signed')):
-            //            type_token_kinds.append(pop_next_i(specifier).token_kind)
             case TOKEN_KIND::key_int:
             case TOKEN_KIND::key_long:
             case TOKEN_KIND::key_double:
@@ -1306,9 +1294,6 @@ static std::unique_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_signed:
                 type_token_kinds.push_back(pop_next_i(specifier).token_kind);
                 break;
-            //        elif peek_next_i(specifier).token_kind in (TOKEN_KIND.get('key_static'),
-            //                                                   TOKEN_KIND.get('key_extern')):
-            //            specifier += 1
             case TOKEN_KIND::key_static:
             case TOKEN_KIND::key_extern:
                 specifier += 1;
@@ -1317,36 +1302,20 @@ static std::unique_ptr<Type> parse_type_specifier() {
                 raise_runtime_error("Expected token type \"specifier\" but found token \"" +
                                     peek_next_i(specifier).token + "\"");
                 return nullptr;
-            //        else:
-            //
-            //            raise RuntimeError(
-            //                f"Expected token type \"specifier\" but found token \"{peek_next_i(specifier).token}\"")
-            //
         }
     }
     end:
     switch(type_token_kinds.size()) {
-        //    if len(type_token_kinds) == 1:
         case 1: {
             switch(type_token_kinds[0]) {
-                //        if type_token_kinds[0] == TOKEN_KIND.get('key_int'):
-                //            return Int()
                 case TOKEN_KIND::key_int:
                     return std::make_unique<Int>();
-                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_long'):
-                //            return Long()
                 case TOKEN_KIND::key_long:
                     return std::make_unique<Long>();
-                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_double'):
-                //            return Double()
                 case TOKEN_KIND::key_double:
                     return std::make_unique<Double>();
-                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_unsigned'):
-                //            return UInt()
                 case TOKEN_KIND::key_unsigned:
                     return std::make_unique<UInt>();
-                //        elif type_token_kinds[0] == TOKEN_KIND.get('key_signed'):
-                //            return Int()
                 case TOKEN_KIND::key_signed:
                     return std::make_unique<Int>();
                 default:
@@ -1354,14 +1323,7 @@ static std::unique_ptr<Type> parse_type_specifier() {
             }
             break;
         }
-        //    elif len(type_token_kinds) == 2:
         case 2: {
-            //        if TOKEN_KIND.get('key_unsigned') in type_token_kinds:
-            //            if TOKEN_KIND.get('key_int') in type_token_kinds:
-            //                return UInt()
-            //            elif TOKEN_KIND.get('key_long') in type_token_kinds:
-            //                return ULong()
-            //
             if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                          TOKEN_KIND::key_unsigned) != type_token_kinds.end()) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
@@ -1371,12 +1333,6 @@ static std::unique_ptr<Type> parse_type_specifier() {
                                     TOKEN_KIND::key_long) != type_token_kinds.end()) {
                     return std::make_unique<ULong>();
                 }
-            //        elif TOKEN_KIND.get('key_signed') in type_token_kinds:
-            //            if TOKEN_KIND.get('key_int') in type_token_kinds:
-            //                return Int()
-            //            elif TOKEN_KIND.get('key_long') in type_token_kinds:
-            //                return Long()
-            //
             }else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                  TOKEN_KIND::key_signed) != type_token_kinds.end()) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
@@ -1386,9 +1342,6 @@ static std::unique_ptr<Type> parse_type_specifier() {
                                     TOKEN_KIND::key_long) != type_token_kinds.end()) {
                     return std::make_unique<Long>();
                 }
-            //        elif TOKEN_KIND.get('key_int') in type_token_kinds and \
-            //             TOKEN_KIND.get('key_long') in type_token_kinds:
-            //            return Long()
             }else if((std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                 TOKEN_KIND::key_int) != type_token_kinds.end()) &&
                     (std::find(type_token_kinds.begin(), type_token_kinds.end(),
@@ -1397,14 +1350,7 @@ static std::unique_ptr<Type> parse_type_specifier() {
             }
             break;
         }
-        // elif len(type_token_kinds) == 3:
         case 3: {
-            //        if TOKEN_KIND.get('key_int') in type_token_kinds and \
-            //           TOKEN_KIND.get('key_long') in type_token_kinds:
-            //            if TOKEN_KIND.get('key_unsigned') in type_token_kinds:
-            //                return ULong()
-            //            elif TOKEN_KIND.get('key_signed') in type_token_kinds:
-            //                return Long()
             if((std::find(type_token_kinds.begin(), type_token_kinds.end(),
                           TOKEN_KIND::key_int) != type_token_kinds.end()) &&
                (std::find(type_token_kinds.begin(), type_token_kinds.end(),
@@ -1422,8 +1368,6 @@ static std::unique_ptr<Type> parse_type_specifier() {
         default:
             break;
     }
-    //    raise RuntimeError(
-    //            f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
     std::string type_token_kinds_string = "";
     for(const auto& s: type_token_kinds_string) {
         type_token_kinds_string += std::to_string(s) + ",";
@@ -1445,6 +1389,19 @@ cdef CStorageClass parse_storage_class():
         raise RuntimeError(
             f"Expected token type \"storage class\" but found token \"{next_token.token}\"")
 */
+// <storage_class> ::= "static" | "extern"
+static std::unique_ptr<CStorageClass> parse_storage_class() {
+    switch(pop_next().token_kind) {
+        case TOKEN_KIND::key_static:
+            return std::make_unique<CStatic>();
+        case TOKEN_KIND::key_extern:
+            return std::make_unique<CExtern>();
+        default:
+            raise_runtime_error("Expected token type \"storage class\" but found token \"" +
+                                next_token->token + "\"");
+            return nullptr;
+    }
+}
 
 /** TODO
 cdef CFunctionDeclaration parse_function_declaration(Type ret_type):
