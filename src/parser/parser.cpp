@@ -1503,31 +1503,17 @@ cdef CVariableDeclaration parse_variable_declaration(Type var_type):
 */
 // <variable-declaration> ::= [ <storage-class> ] <identifier> [ "=" <exp> ] ";"
 static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<Type> var_type) {
-    //    cdef storage_class
     std::unique_ptr<CStorageClass> storage_class;
-    //    if peek_next().token_kind == TOKEN_KIND.get('identifier'):
     if(peek_next().token_kind != TOKEN_KIND::identifier) {
-        //        storage_class = None
-        //    else:
-        //        storage_class = parse_storage_class()
         storage_class = parse_storage_class();
     }
-    //    cdef TIdentifier name = parse_identifier()
     TIdentifier name; parse_identifier(name);
-    //    cdef CExp init
     std::unique_ptr<CExp> init;
-    //    if peek_next().token_kind == TOKEN_KIND.get('assignment_simple'):
     if(peek_next().token_kind == TOKEN_KIND::assignment_simple) {
-        //        _ = pop_next()
         pop_next();
         init = parse_exp(0);
-        //        init = parse_exp()
-        //    else:
-        //        init = None
     }
-    //    expect_next_is(pop_next(), TOKEN_KIND.get('semicolon'))
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    //    return CVariableDeclaration(name, init, var_type, storage_class)
     return std::make_unique<CVariableDeclaration>(std::move(name), std::move(init), std::move(var_type),
                                                   std::move(storage_class));
 }
