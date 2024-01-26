@@ -41,8 +41,8 @@ cdef void expect_next_is(Token next_token_is, int32 expected_token):
 */
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) { // TODO print token
-        raise_runtime_error("Expected token kind \"" + std::to_string(expected_token) + "\" but found \""
-                            + next_token_is.token + "\"");
+        raise_runtime_error_at_line("Expected token kind " + em(std::to_string(expected_token)) + " but found token " +
+                                    em(next_token_is.token), next_token_is.line);
     }
 }
 
@@ -231,8 +231,8 @@ static std::unique_ptr<CConst> parse_constant() {
 
     intmax_t value = string_to_intmax(next_token->token);
     if(value > 9223372036854775807ll) {
-        raise_runtime_error("Constant \"" + next_token->token + "\" is too large to be represented " +
-                            "as an int or a long");
+        raise_runtime_error_at_line("Constant " + em(next_token->token) + " is too large to be represented " +
+                                    "as an int or a long", next_token->line);
     }
     if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
         return parse_int_constant(value);
@@ -269,8 +269,8 @@ static std::unique_ptr<CConst> parse_unsigned_constant() {
 
     uintmax_t value = string_to_uintmax(next_token->token);
     if(value > 18446744073709551615ull) {
-        raise_runtime_error("Constant \"" + next_token->token + "\" is too large to be represented " +
-                            "as an unsigned int or a unsigned long");
+        raise_runtime_error_at_line("Constant " + em(next_token->token) + " is too large to be represented " +
+                                    "as an unsigned int or a unsigned long", next_token->line);
     }
     if(next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
         return parse_uint_constant(value);
@@ -384,8 +384,8 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
         case TOKEN_KIND::binop_greaterthanorequal:
             return std::make_unique<CGreaterOrEqual>();
         default:
-            raise_runtime_error("Expected token type \"binary_op\" but found token \"" +
-                                next_token->token + "\"");
+            raise_runtime_error_at_line("Expected token type " + em("binary_op") + " but found token " +
+                                        em(next_token->token), next_token->line);
             return nullptr;
     }
 }
@@ -414,8 +414,8 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
         case TOKEN_KIND::unop_not:
             return std::make_unique<CNot>();
         default:
-            raise_runtime_error("Expected token type \"unary_op\" but found token \"" +
-                                next_token->token + "\"");
+            raise_runtime_error_at_line("Expected token type " + em("unary_op") + " but found token " +
+                                        em(next_token->token), next_token->line);
             return nullptr;
     }
 }
@@ -607,8 +607,8 @@ static std::unique_ptr<CExp> parse_factor() {
                 return parse_inner_exp_factor();
         }
     }
-    raise_runtime_error("Expected token type \"factor\" but found token \"" +
-                        next_token->token + "\"");
+    raise_runtime_error_at_line("Expected token type " + em("factor") + " but found token " +
+                                em(next_token->token), next_token->line);
     return nullptr;
 }
 
@@ -768,8 +768,8 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
                 break;
             default:
-                raise_runtime_error("Expected token type \"exp\" but found token \"" +
-                                    peek_token->token + "\"");
+                raise_runtime_error_at_line("Expected token type " + em("exp") + " but found token " +
+                                            em(peek_token->token), peek_token->line);
                 return nullptr;
         }
     }
@@ -1279,6 +1279,7 @@ cdef Type parse_type_specifier():
 // <type-specifier> ::= "int" | "long"
 static std::unique_ptr<Type> parse_type_specifier() {
     size_t specifier = 0;
+    size_t line = peek_next().line;
     std::vector<TOKEN_KIND> type_token_kinds;
     while(true) {
         switch(peek_next_i(specifier).token_kind) {
@@ -1297,8 +1298,8 @@ static std::unique_ptr<Type> parse_type_specifier() {
                 specifier += 1;
                 break;
             default:
-                raise_runtime_error("Expected token type \"specifier\" but found token \"" +
-                                    peek_next_i(specifier).token + "\"");
+                raise_runtime_error_at_line("Expected token type " + em("specifier") + " but found token " +
+                                            peek_next_i(specifier).token, line);
                 return nullptr;
         }
     }
@@ -1370,8 +1371,8 @@ static std::unique_ptr<Type> parse_type_specifier() {
     for(const auto& s: type_token_kinds_string) {
         type_token_kinds_string += std::to_string(s) + ",";
     }
-    raise_runtime_error("Expected token type \"type specifier\" but found token kinds \"(" +
-                        type_token_kinds_string + ")\""); // TODO print token
+    raise_runtime_error_at_line("Expected token types " + em("(type specifier,)") + " but found token kinds " +
+                                em("(" + type_token_kinds_string + ")"), line); // TODO print tokens
     return nullptr;
 }
 
@@ -1395,8 +1396,8 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
         case TOKEN_KIND::key_extern:
             return std::make_unique<CExtern>();
         default:
-            raise_runtime_error("Expected token type \"storage class\" but found token \"" +
-                                next_token->token + "\"");
+            raise_runtime_error_at_line("Expected token type " + em("storage class") + " but found token " +
+                                        em(next_token->token), next_token->line);
             return nullptr;
     }
 }
