@@ -80,6 +80,7 @@ enum TOKEN_KIND {
 struct Token {
     std::string token;
     TOKEN_KIND token_kind;
+    size_t line;
 };
 
 std::vector<Token> lexing(const std::string& filename);

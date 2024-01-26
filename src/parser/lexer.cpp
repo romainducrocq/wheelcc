@@ -115,15 +115,14 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
             }
 
             if(last_group == TOKEN_KIND::error) {
-                raise_runtime_error(
-                    "Invalid token \"" + match.get_last_closed_paren() + "\" found in line: " + line);
+                raise_runtime_error_at_line("Found invalid token " + em(match.get_last_closed_paren()) + "", get_line_number());
             }
 
             if(last_group == TOKEN_KIND::skip) {
                 continue;
             }
 
-            Token token = { match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group) };
+            Token token = { match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group), get_line_number() };
             tokens.emplace_back(std::move(token));
         }
     }

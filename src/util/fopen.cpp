@@ -5,6 +5,7 @@
 #include <string>
 
 static FILE* file_in = nullptr;
+static size_t line_number = 0;
 
 void file_open_read(const std::string& filename) {
     file_in = nullptr;
@@ -26,7 +27,12 @@ bool read_line(std::string& line) {
     }
 
     line = buffer;
+    line_number++;
     return true;
+}
+
+size_t get_line_number() {
+    return line_number;
 }
 
 void file_close_read() {
