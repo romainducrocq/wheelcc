@@ -140,13 +140,13 @@ static void arg_parse(std::string& filename, int& opt_code, int& opt_s_code) {
 
     shift_args(arg);
     if(arg.empty()) {
-        raise_runtime_error("No option code passed in args(0)");
+        raise_runtime_error("No option code passed in " + em("args[0]"));
     }
     opt_code = std::stoi(arg);
 
     shift_args(arg);
     if(arg.empty()) {
-        raise_runtime_error("No file name passed in args(1)");
+        raise_runtime_error("No file name passed in " + em("args[1]"));
     }
     filename = std::move(arg);
 

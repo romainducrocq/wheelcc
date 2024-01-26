@@ -12,7 +12,7 @@ void file_open_read(const std::string& filename) {
 
     file_in = fopen(filename.c_str(), "rb");
     if(file_in == nullptr) {
-        raise_runtime_error("File \"" + filename + "\" does not exist");
+        raise_runtime_error("File " + em(filename) + " does not exist");
     }
     set_filename(filename);
 }

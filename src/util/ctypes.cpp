@@ -14,10 +14,10 @@ intmax_t string_to_intmax(const std::string& s_int) {
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error("String \"" + s_int + "\" is not an integer");
+        raise_runtime_error("String " + em(s_int) + " is not an integer");
     }
     if(errno == ERANGE || (errno != 0 && intmax == 0)) {
-        raise_runtime_error("String \"" + s_int + "\" is out of range");
+        raise_runtime_error("String " + em(s_int) + " is out of range");
     }
 
     return intmax;
@@ -30,10 +30,10 @@ uintmax_t string_to_uintmax(const std::string& s_uint) {
     uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error("String \"" + s_uint + "\" is not an unsigned integer");
+        raise_runtime_error("String " + em(s_uint) + " is not an unsigned integer");
     }
     if(errno == ERANGE || (errno != 0 && uintmax == 0)) {
-        raise_runtime_error("String \"" + s_uint + "\" is out of range");
+        raise_runtime_error("String " + em(s_uint) + " is out of range");
     }
 
     return uintmax;
@@ -62,10 +62,10 @@ double string_to_double(const std::string& s_double) {
     double float64 = strtod(&buffer[0], &end_ptr);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error("String \"" + s_double + "\" is not a floating point number");
+        raise_runtime_error("String " + em(s_double) + " is not a floating point number");
     }
     if(errno == ERANGE || (errno != 0 && float64 == 0)) {
-        raise_runtime_error("String \"" + s_double + "\" is out of range");
+        raise_runtime_error("String " + em(s_double) + " is out of range");
     }
 
     return float64;
