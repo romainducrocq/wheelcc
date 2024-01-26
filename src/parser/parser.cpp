@@ -1299,7 +1299,7 @@ static std::unique_ptr<Type> parse_type_specifier() {
                 break;
             default:
                 raise_runtime_error_at_line("Expected token type " + em("specifier") + " but found token " +
-                                            peek_next_i(specifier).token, line);
+                                            peek_next_i(specifier).token, peek_next_i(specifier).line);
                 return nullptr;
         }
     }
@@ -1368,8 +1368,8 @@ static std::unique_ptr<Type> parse_type_specifier() {
             break;
     }
     std::string type_token_kinds_string = "";
-    for(const auto& s: type_token_kinds_string) {
-        type_token_kinds_string += std::to_string(s) + ",";
+    for(const auto& type_token_kind: type_token_kinds) {
+        type_token_kinds_string += std::to_string(type_token_kind) + ",";
     }
     raise_runtime_error_at_line("Expected token types " + em("(type specifier,)") + " but found token kinds " +
                                 em("(" + type_token_kinds_string + ")"), line); // TODO print tokens
