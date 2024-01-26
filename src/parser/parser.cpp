@@ -12,6 +12,80 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
+
+static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
+    {TOKEN_KIND::assignment_bitshiftleft, "assignment_bitshiftleft"},
+    {TOKEN_KIND::assignment_bitshiftright, "assignment_bitshiftright"},
+
+    {TOKEN_KIND::unop_decrement, "unop_decrement"},
+    {TOKEN_KIND::binop_bitshiftleft, "binop_bitshiftleft"},
+    {TOKEN_KIND::binop_bitshiftright, "binop_bitshiftright"},
+    {TOKEN_KIND::binop_and, "binop_and"},
+    {TOKEN_KIND::binop_or, "binop_or"},
+    {TOKEN_KIND::binop_equalto, "binop_equalto"},
+    {TOKEN_KIND::binop_notequal, "binop_notequal"},
+    {TOKEN_KIND::binop_lessthanorequal, "binop_lessthanorequal"},
+    {TOKEN_KIND::binop_greaterthanorequal, "binop_greaterthanorequal"},
+    {TOKEN_KIND::assignment_plus, "assignment_plus"},
+    {TOKEN_KIND::assignment_difference, "assignment_difference"},
+    {TOKEN_KIND::assignment_product, "assignment_product"},
+    {TOKEN_KIND::assignment_quotient, "assignment_quotient"},
+    {TOKEN_KIND::assignment_remainder, "assignment_remainder"},
+    {TOKEN_KIND::assignment_bitand, "assignment_bitand"},
+    {TOKEN_KIND::assignment_bitor, "assignment_bitor"},
+    {TOKEN_KIND::assignment_bitxor, "assignment_bitxor"},
+
+    {TOKEN_KIND::parenthesis_open, "parenthesis_open"},
+    {TOKEN_KIND::parenthesis_close, "parenthesis_close"},
+    {TOKEN_KIND::brace_open, "brace_open"},
+    {TOKEN_KIND::brace_close, "brace_close"},
+    {TOKEN_KIND::semicolon, "semicolon"},
+    {TOKEN_KIND::unop_complement, "unop_complement"},
+    {TOKEN_KIND::unop_negation, "unop_negation"},
+    {TOKEN_KIND::unop_not, "unop_not"},
+    {TOKEN_KIND::binop_addition, "binop_addition"},
+    {TOKEN_KIND::binop_multiplication, "binop_multiplication"},
+    {TOKEN_KIND::binop_division, "binop_division"},
+    {TOKEN_KIND::binop_remainder, "binop_remainder"},
+    {TOKEN_KIND::binop_bitand, "binop_bitand"},
+    {TOKEN_KIND::binop_bitor, "binop_bitor"},
+    {TOKEN_KIND::binop_bitxor, "binop_bitxor"},
+    {TOKEN_KIND::binop_lessthan, "binop_lessthan"},
+    {TOKEN_KIND::binop_greaterthan, "binop_greaterthan"},
+    {TOKEN_KIND::assignment_simple, "assignment_simple"},
+    {TOKEN_KIND::ternary_if, "ternary_if"},
+    {TOKEN_KIND::ternary_else, "ternary_else"},
+    {TOKEN_KIND::separator_comma, "separator_comma"},
+
+    {TOKEN_KIND::key_int, "key_int"},
+    {TOKEN_KIND::key_long, "key_long"},
+    {TOKEN_KIND::key_double, "key_double"},
+    {TOKEN_KIND::key_signed, "key_signed"},
+    {TOKEN_KIND::key_unsigned, "key_unsigned"},
+    {TOKEN_KIND::key_void, "key_void"},
+    {TOKEN_KIND::key_return, "key_return"},
+    {TOKEN_KIND::key_if, "key_if"},
+    {TOKEN_KIND::key_else, "key_else"},
+    {TOKEN_KIND::key_goto, "key_goto"},
+    {TOKEN_KIND::key_do, "key_do"},
+    {TOKEN_KIND::key_while, "key_while"},
+    {TOKEN_KIND::key_for, "key_for"},
+    {TOKEN_KIND::key_break, "key_break"},
+    {TOKEN_KIND::key_continue, "key_continue"},
+    {TOKEN_KIND::key_static, "key_static"},
+    {TOKEN_KIND::key_extern, "key_extern"},
+    
+    {TOKEN_KIND::identifier, "identifier"},
+    {TOKEN_KIND::float_constant, "float_constant"},
+    {TOKEN_KIND::unsigned_long_constant, "unsigned_long_constant"},
+    {TOKEN_KIND::unsigned_constant, "unsigned_constant"},
+    {TOKEN_KIND::long_constant, "long_constant"},
+    {TOKEN_KIND::constant, "constant"},
+    
+    {TOKEN_KIND::skip, "skip"},
+    {TOKEN_KIND::error, "error"}
+};
 
 /**
 cdef list[Token] tokens = []
@@ -40,8 +114,8 @@ cdef void expect_next_is(Token next_token_is, int32 expected_token):
             ]} but found \"{next_token_is.token}\"""")
 */
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
-    if(next_token_is.token_kind != expected_token) { // TODO print token
-        raise_runtime_error_at_line("Expected token kind " + em(std::to_string(expected_token)) + " but found token " +
+    if(next_token_is.token_kind != expected_token) {
+        raise_runtime_error_at_line("Expected token kind " + em(TOKEN_HUMAN_READABLE[next_token_is.token_kind]) + " but found token " +
                                     em(next_token_is.token), next_token_is.line);
     }
 }
@@ -1369,10 +1443,10 @@ static std::unique_ptr<Type> parse_type_specifier() {
     }
     std::string type_token_kinds_string = "";
     for(const auto& type_token_kind: type_token_kinds) {
-        type_token_kinds_string += std::to_string(type_token_kind) + ",";
+        type_token_kinds_string +=  TOKEN_HUMAN_READABLE[type_token_kind] + ",";
     }
-    raise_runtime_error_at_line("Expected token types " + em("(type specifier,)") + " but found token kinds " +
-                                em("(" + type_token_kinds_string + ")"), line); // TODO print tokens
+    raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)") + " but found token kinds " +
+                                em("(" + type_token_kinds_string + ")"), line);
     return nullptr;
 }
 
@@ -1574,13 +1648,13 @@ cdef CProgram parse_program():
 // <program> ::= { <declaration> }
 static std::unique_ptr<CProgram> parse_program() {
     std::vector<std::unique_ptr<CDeclaration>> declarations;
-    while(pop_index < p_tokens->size()) { // TODO check this
+    while(pop_index < p_tokens->size()) {
         declarations.push_back(parse_declaration());
     }
     return std::make_unique<CProgram>(std::move(declarations));
 }
 
-/** TODO
+/**
 cdef CProgram parsing(list[Token] lex_tokens):
     global tokens
     global next_token
