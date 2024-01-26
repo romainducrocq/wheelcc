@@ -13,6 +13,7 @@ void file_open_read(const std::string& filename) {
     if(file_in == nullptr) {
         raise_runtime_error("File \"" + filename + "\" does not exist");
     }
+    set_filename(filename);
 }
 
 bool read_line(std::string& line) {
