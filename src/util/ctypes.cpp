@@ -1,6 +1,5 @@
 #include "util/error.hpp"
 
-#include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string>
@@ -16,9 +15,6 @@ intmax_t string_to_intmax(const std::string& s_int) {
     if(end_ptr == &buffer[0]) {
         raise_runtime_error("String " + em(s_int) + " is not an integer");
     }
-    if(errno == ERANGE || (errno != 0 && intmax == 0)) {
-        raise_runtime_error("String " + em(s_int) + " is out of range");
-    }
 
     return intmax;
 }
@@ -31,9 +27,6 @@ uintmax_t string_to_uintmax(const std::string& s_uint) {
 
     if(end_ptr == &buffer[0]) {
         raise_runtime_error("String " + em(s_uint) + " is not an unsigned integer");
-    }
-    if(errno == ERANGE || (errno != 0 && uintmax == 0)) {
-        raise_runtime_error("String " + em(s_uint) + " is out of range");
     }
 
     return uintmax;
@@ -63,9 +56,6 @@ double string_to_double(const std::string& s_double) {
 
     if(end_ptr == &buffer[0]) {
         raise_runtime_error("String " + em(s_double) + " is not a floating point number");
-    }
-    if(errno == ERANGE || (errno != 0 && float64 == 0)) {
-        raise_runtime_error("String " + em(s_double) + " is out of range");
     }
 
     return float64;
