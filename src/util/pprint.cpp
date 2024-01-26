@@ -33,25 +33,29 @@ static void field(const std::string& name, const std::string& value, size_t t) {
 
 // TODO
 static void print_ast(Ast* node, size_t t) {
+    if(!node) {
+        field("None", "", ++t);
+        return;
+    }
     switch(node->type()) {
         case AST_T::CAdd_t: {
-            field("Add", "", ++t);
+            field("CAdd", "", ++t);
             break;
         }
         case AST_T::CConstInt_t: {
-            field("ConstInt", "", ++t);
+            field("CConstInt", "", ++t);
             CConstInt* p_node = static_cast<CConstInt*>(node);
-            field("value", std::to_string(p_node->value), t);
+            field("TInt", std::to_string(p_node->value), t+1);
             break;
         }
         case AST_T::CConstLong_t: {
             field("CConstLong", "", ++t);
             CConstLong* p_node = static_cast<CConstLong*>(node);
-            field("value", std::to_string(p_node->value), t);
+            field("TLong", std::to_string(p_node->value), t+1);
             break;
         }
         case AST_T::CConstant_t: {
-            field("Constant", "", ++t);
+            field("CConstant", "", ++t);
             CConstant* p_node = static_cast<CConstant*>(node);
             print_ast(p_node->constant.get(), t);
             break;
@@ -75,17 +79,20 @@ void pretty_print_ast(Ast* node, const std::string& name) {
     std::cout << std::endl;
 }
 
-/* // TODO remove
-    std::unique_ptr<CBinaryOp> bin_op = std::make_unique<CAdd>();
+// TODO rm
+// int main(void) {
+//     std::unique_ptr<CBinaryOp> bin_op = std::make_unique<CAdd>();
 
-    std::unique_ptr<CConst> const_int = std::make_unique<CConstInt>(32);
-    std::unique_ptr<CExp> constant_1 = std::make_unique<CConstant>(std::move(const_int));
+//     std::unique_ptr<CConst> const_int = std::make_unique<CConstInt>(32);
+//     std::unique_ptr<CExp> constant_1 = std::make_unique<CConstant>(std::move(const_int));
 
-    std::unique_ptr<CConst> const_long = std::make_unique<CConstLong>(64);
-    std::unique_ptr<CExp> constant_2 = std::make_unique<CConstant>(std::move(const_long));
+//     std::unique_ptr<CConst> const_long = std::make_unique<CConstLong>(64);
+//     std::unique_ptr<CExp> constant_2 = std::make_unique<CConstant>(std::move(const_long));
 
-    std::unique_ptr<CExp> binary = std::make_unique<CBinary>(std::move(bin_op), std::move(constant_1),
-                                                             std::move(constant_2));
+//     std::unique_ptr<CExp> binary = std::make_unique<CBinary>(std::move(bin_op), nullptr,
+//                                                              std::move(constant_2));
 
-    pretty_print_ast(binary.get(), "C AST");
-*/
+//     pretty_print_ast(binary.get(), "C AST");
+
+//     return 0;
+// }
