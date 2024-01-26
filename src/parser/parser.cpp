@@ -115,7 +115,7 @@ cdef void expect_next_is(Token next_token_is, int32 expected_token):
 */
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) {
-        raise_runtime_error_at_line("Expected token kind " + em(TOKEN_HUMAN_READABLE[next_token_is.token_kind]) + " but found token " +
+        raise_runtime_error_at_line("Expected token kind " + em(TOKEN_HUMAN_READABLE[expected_token]) + " but found token " +
                                     em(next_token_is.token), next_token_is.line);
     }
 }
