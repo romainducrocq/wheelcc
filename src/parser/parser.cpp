@@ -85,13 +85,13 @@ static const Token& pop_next_i(size_t i) {
         raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
     }
 
-    static Token next_token_i = std::move((*p_tokens)[pop_index + i]);
-    for(size_t j = pop_index + i; j-- >= pop_index;) {
+    static Token swap_token_i = std::move((*p_tokens)[pop_index + i]);
+    for(size_t j = pop_index + i; j-- > pop_index;) {
         (*p_tokens)[j+1] = std::move((*p_tokens)[j]);
     }
-    (*p_tokens)[pop_index-1] = std::move(next_token_i);
+    (*p_tokens)[pop_index] = std::move(swap_token_i);
     pop_next();
-    return (*p_tokens)[pop_index-2];
+    return (*p_tokens)[pop_index-1];
 }
 
 /**
@@ -420,10 +420,10 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
+static std::unique_ptr<Type> parse_type_specifier();
+
 static std::unique_ptr<CExp> parse_factor();
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence);
-
-static std::unique_ptr<Type> parse_type_specifier();
 
 /**
 cdef list[CExp] parse_argument_list():
