@@ -159,7 +159,7 @@ static const Token& pop_next_i(size_t i) {
         raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
     }
 
-    static Token swap_token_i = std::move((*p_tokens)[pop_index + i]);
+    Token swap_token_i = std::move((*p_tokens)[pop_index + i]);
     for(size_t j = pop_index + i; j-- > pop_index;) {
         (*p_tokens)[j+1] = std::move((*p_tokens)[j]);
     }
