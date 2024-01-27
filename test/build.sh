@@ -1,7 +1,9 @@
 #!/bin/bash
 
 cd ../build/
-./build.sh
-if [ ${?} -ne 0 ]; then exit 1; fi
+
+cmake -G "Unix Makefiles" -S . -B out/ -DCMAKE_BUILD_TYPE=Release
+cd out/
+make
 
 exit 0

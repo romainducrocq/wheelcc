@@ -1,6 +1,8 @@
 #ifndef _UTIL_PPRINT_HPP
 #define _UTIL_PPRINT_HPP
 
+#ifndef __NDEBUG__
+
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 
@@ -8,5 +10,7 @@
 
 void pretty_print_tokens(const std::vector<Token>& tokens);
 void pretty_print_ast(Ast* node, const std::string& name);
+
+#endif
 
 #endif

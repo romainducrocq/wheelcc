@@ -8,6 +8,10 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++17")
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
+if(__NDEBUG__)
+    list(APPEND PUBLIC_COMPILE_SYMBOLS __NDEBUG__)
+endif(__NDEBUG__)
+
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../src/")
 set(HEADER_DIR "${PROJECT_SOURCE_DIR}/../include/")
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/../lib/")

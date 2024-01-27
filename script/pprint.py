@@ -52,6 +52,9 @@ def print_ast_case(node):
 
 if __name__ == "__main__":
     print(R"""#include "util/pprint.hpp"
+
+#ifndef __NDEBUG__
+
 #include "util/error.hpp"
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
@@ -102,4 +105,7 @@ void pretty_print_ast(Ast* node, const std::string& name) {
     header_string(name);
     print_ast(node, 0);
     std::cout << std::endl;
-}""")    
+}
+
+#endif
+""")    

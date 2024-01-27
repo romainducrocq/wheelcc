@@ -1,7 +1,9 @@
 #include "parser/lexer.hpp"
 #include "parser/parser.hpp"
 #include "util/error.hpp"
+#ifndef __NDEBUG__
 #include "util/pprint.hpp"
+#endif
 
 #include <string>
 #include <vector>
@@ -18,11 +20,15 @@ static void verbose(const std::string& out, bool end) {
     }
 }
 
+#ifndef __NDEBUG__
+
 static void debug_tokens(const std::vector<Token>& tokens) {
     if(VERBOSE) {
         pretty_print_tokens(tokens);
     }
 }
+
+#endif
 
 /** TODO
 cdef void debug_ast(AST ast): #
@@ -102,23 +108,30 @@ cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
 */
 
 static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
+    if(opt_code > 0) {
+        VERBOSE = true;
+    }
 
     verbose("-- Lexing ... ", false);
     std::vector<Token> tokens = lexing(filename + ".i");
     verbose("OK", true);
+#ifndef __NDEBUG__
     if(opt_code == 255) {
         debug_tokens(tokens);
         tokens.clear();
         return;
     }
+#endif
 
     verbose("-- Parsing ... ", false);
     std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
     verbose("OK", true);
+#ifndef __NDEBUG__
     if(opt_code == 254) {
         // TODO debug_ast(c_ast);
         return;
     }
+#endif
 
     return;
 }
@@ -163,9 +176,6 @@ int main(int argc, char **argv) {
     int opt_code;
     int opt_s_code;
     arg_parse(filename, opt_code, opt_s_code);
-    if(opt_code > 0) {
-        VERBOSE = true;
-    }
 
     do_compile(filename, opt_code, opt_s_code);
 
