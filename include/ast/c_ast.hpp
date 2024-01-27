@@ -201,6 +201,7 @@ struct CConstant : CExp {
     CConstant(std::unique_ptr<CConst> constant);
 
     std::unique_ptr<CConst> constant;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CVar : CExp {
@@ -209,6 +210,7 @@ struct CVar : CExp {
     CVar(TIdentifier name);
 
     TIdentifier name;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CCast : CExp {
@@ -218,6 +220,7 @@ struct CCast : CExp {
 
     std::unique_ptr<CExp> exp;
     std::unique_ptr<Type> target_type;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CUnary : CExp {
@@ -227,6 +230,7 @@ struct CUnary : CExp {
 
     std::unique_ptr<CUnaryOp> unary_op;
     std::unique_ptr<CExp> exp;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CBinary : CExp {
@@ -238,6 +242,7 @@ struct CBinary : CExp {
     std::unique_ptr<CBinaryOp> binary_op;
     std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CAssignment : CExp {
@@ -247,6 +252,7 @@ struct CAssignment : CExp {
 
     std::shared_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CConditional : CExp {
@@ -258,6 +264,7 @@ struct CConditional : CExp {
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> exp_middle;
     std::unique_ptr<CExp> exp_right;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CAssignmentCompound : CExp {
@@ -269,6 +276,7 @@ struct CAssignmentCompound : CExp {
     std::unique_ptr<CBinaryOp> binary_op;
     std::shared_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
+    // std::unique_ptr<Type> exp_type;
 };
 
 struct CFunctionCall : CExp {
@@ -278,6 +286,7 @@ struct CFunctionCall : CExp {
 
     TIdentifier name;
     std::vector<std::unique_ptr<CExp>> args;
+    // std::unique_ptr<Type> exp_type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
