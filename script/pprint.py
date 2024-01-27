@@ -30,7 +30,7 @@ def print_ast_case(node):
     
     for field in node.fields:
         if field[1][0] == "[":
-            print(f"            field(\"List\", \"\", t+1);")
+            print(f"            field(\"List[\" + std::to_string(p_node->{field[1][1:]}.size()) + \"]\", \"\", t+1);")
             print(f"            for(const auto& item: p_node->{field[1][1:]}) {{")
             print(f"                field(\"{field[0]().name}\", {to_string(field[0]().name, 'item')}, t+2);")
             print(f"            }}")
@@ -39,7 +39,7 @@ def print_ast_case(node):
     
     for child in node.children:
         if child[0] == "[":
-            print(f"            field(\"List\", \"\", t+1);")
+            print(f"            field(\"List[\" + std::to_string(p_node->{child[1:]}.size()) + \"]\", \"\", t+1);")
             print(f"            for(const auto& item: p_node->{child[1:]}) {{")
             print(f"                print_ast(item.get(), t+1);")
             print(f"            }}")

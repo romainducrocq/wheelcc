@@ -68,7 +68,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::FunType_t: {
             field("FunType", "", ++t);
             FunType* p_node = static_cast<FunType*>(node);
-            field("List", "", t+1);
+            field("List[" + std::to_string(p_node->param_types.size()) + "]", "", t+1);
             for(const auto& item: p_node->param_types) {
                 print_ast(item.get(), t+1);
             }
@@ -357,7 +357,7 @@ static void print_ast(Ast* node, size_t t) {
             field("CFunctionCall", "", ++t);
             CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
             field("TIdentifier", p_node->name, t+1);
-            field("List", "", t+1);
+            field("List[" + std::to_string(p_node->args.size()) + "]", "", t+1);
             for(const auto& item: p_node->args) {
                 print_ast(item.get(), t+1);
             }
@@ -472,7 +472,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CB_t: {
             field("CB", "", ++t);
             CB* p_node = static_cast<CB*>(node);
-            field("List", "", t+1);
+            field("List[" + std::to_string(p_node->block_items.size()) + "]", "", t+1);
             for(const auto& item: p_node->block_items) {
                 print_ast(item.get(), t+1);
             }
@@ -510,7 +510,7 @@ static void print_ast(Ast* node, size_t t) {
             field("CFunctionDeclaration", "", ++t);
             CFunctionDeclaration* p_node = static_cast<CFunctionDeclaration*>(node);
             field("TIdentifier", p_node->target, t+1);
-            field("List", "", t+1);
+            field("List[" + std::to_string(p_node->params.size()) + "]", "", t+1);
             for(const auto& item: p_node->params) {
                 field("TIdentifier", item, t+2);
             }
@@ -547,7 +547,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CProgram_t: {
             field("CProgram", "", ++t);
             CProgram* p_node = static_cast<CProgram*>(node);
-            field("List", "", t+1);
+            field("List[" + std::to_string(p_node->declarations.size()) + "]", "", t+1);
             for(const auto& item: p_node->declarations) {
                 print_ast(item.get(), t+1);
             }
