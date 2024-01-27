@@ -557,4 +557,9 @@ struct CProgram : Ast {
     std::vector<std::unique_ptr<CDeclaration>> declarations;
 };
 
+/*
+struct Dummy : Ast {
+};
+*/
+
 #endif

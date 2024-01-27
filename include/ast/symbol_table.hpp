@@ -167,6 +167,11 @@ struct Symbol : Ast {
     std::unique_ptr<IdentifierAttr> attrs;
 };
 
+/*
+struct Dummy : Ast {
+};
+*/
+
 extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
 #endif

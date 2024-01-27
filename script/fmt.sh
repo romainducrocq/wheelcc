@@ -16,6 +16,7 @@ cat ../include/ast/${FILE}.hpp \
     | sed -e "s/\s*TDouble\s*/(TDouble, \"/g" - \
     | sed -e "s/\s*TUInt\s*/(TUInt, \"/g" - \
     | sed -e "s/\s*TULong\s*/(TULong, \"/g" - \
+    | sed -e "s/\s*bool\s*/(Bool, \"/g" - \
     | grep --invert-match "};" \
     | grep --invert-match -P "^(?=.*struct)(?=.*;)" \
     | tr ";" "\"" \
@@ -52,10 +53,13 @@ cat tmp \
     | sed s/"\[ \]/\[\]/g" \
     | sed s/",\]/\]/g" \
     | sed s/"), \"/)\], \[\"/g" \
-    | sed s/"\", (/'\"\], \[(/g" \
+    | sed s/"\", (/\"\], \[(/g" \
     | sed s/"\")\]\],/\")\]\, \[\]\],/g" \
     | sed s/"\", \[\"/\", \[\], \[\"/g" \
-    | sed s"/\", \[\]\],/\", \[\], \[\]\],/g" > parse_${FILE}.txt
+    | sed s"/\", \[\]\],/\", \[\], \[\]\],/g" > tmp2
 rm tmp
+
+tail -n +2 tmp2 > parse_${FILE}.txt
+rm tmp2
 
 cat parse_${FILE}.txt
