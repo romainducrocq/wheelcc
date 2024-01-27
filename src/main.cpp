@@ -1,4 +1,5 @@
 #include "parser/lexer.hpp"
+#include "ast/ast.hpp"
 #include "parser/parser.hpp"
 #include "util/error.hpp"
 #ifndef __NDEBUG__
@@ -28,13 +29,13 @@ static void debug_tokens(const std::vector<Token>& tokens) {
     }
 }
 
-#endif
+static void debug_ast(Ast* node, const std::string& name) {
+    if(VERBOSE) {
+        pretty_print_ast(node, name);
+    }
+}
 
-/** TODO
-cdef void debug_ast(AST ast): #
-    if VERBOSE: #
-        pretty_print_ast(ast) #
-*/
+#endif
 
 /**  TODO
 cdef void debug_symbol_table(): #
@@ -128,7 +129,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 254) {
-        // TODO debug_ast(c_ast);
+        debug_ast(c_ast.get(), "C AST");
         return;
     }
 #endif
