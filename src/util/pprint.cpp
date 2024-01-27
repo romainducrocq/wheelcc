@@ -31,7 +31,6 @@ static void field(const std::string& name, const std::string& value, size_t t) {
     }
 }
 
-// TODO
 static void print_ast(Ast* node, size_t t) {
     if(!node) {
         field("None", "", ++t);
@@ -68,8 +67,64 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->exp_right.get(), t);
             break;
         }
+        case AST_T::CExpression_t: {
+            field("CExpression", "", ++t);
+            CExpression* p_node = static_cast<CExpression*>(node);
+            print_ast(p_node->exp.get(), t);
+            break;
+        }
+        case AST_T::CS_t: {
+            field("CS", "", ++t);
+            CS* p_node = static_cast<CS*>(node);
+            print_ast(p_node->statement.get(), t);
+            break;
+        }
+        case AST_T::CB_t: {
+            field("CB", "", ++t);
+            CB* p_node = static_cast<CB*>(node);
+            field("List", "", t+1);
+            for(const auto& item: p_node->block_items) {
+                print_ast(item.get(), t+1);
+            }
+            break;
+        }
+        case AST_T::CLabel_t: {
+            field("CLabel", "", ++t);
+            CLabel* p_node = static_cast<CLabel*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            break;
+        }
+        case AST_T::CGoto_t: {
+            field("CGoto", "", ++t);
+            break;
+        }
+        case AST_T::CNull_t: {
+            field("CNull", "", ++t);
+            break;
+        }
+        case AST_T::Int_t: {
+            field("Int", "", ++t);
+            break;
+        }
+        case AST_T::CStatic_t: {
+            field("CStatic", "", ++t);
+            break;
+        }
+        case AST_T::CFunctionDeclaration_t: {
+            field("CFunctionDeclaration", "", ++t);
+            CFunctionDeclaration* p_node = static_cast<CFunctionDeclaration*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            field("List", "", t+1);
+            for(const auto& item: p_node->params) {
+                field("TIdentifier", item, t+2);
+            }
+            print_ast(p_node->body.get(), t);
+            print_ast(p_node->fun_type.get(), t);
+            print_ast(p_node->storage_class.get(), t);
+            break;
+        }
         default:
-            break; // TODO raise runtime exception
+            raise_runtime_error("Ast pretty print not implemented for node type " + em(std::to_string(node->type())));
     }
 }
 
@@ -78,21 +133,3 @@ void pretty_print_ast(Ast* node, const std::string& name) {
     print_ast(node, 0);
     std::cout << std::endl;
 }
-
-// TODO rm
-// int main(void) {
-//     std::unique_ptr<CBinaryOp> bin_op = std::make_unique<CAdd>();
-
-//     std::unique_ptr<CConst> const_int = std::make_unique<CConstInt>(32);
-//     std::unique_ptr<CExp> constant_1 = std::make_unique<CConstant>(std::move(const_int));
-
-//     std::unique_ptr<CConst> const_long = std::make_unique<CConstLong>(64);
-//     std::unique_ptr<CExp> constant_2 = std::make_unique<CConstant>(std::move(const_long));
-
-//     std::unique_ptr<CExp> binary = std::make_unique<CBinary>(std::move(bin_op), nullptr,
-//                                                              std::move(constant_2));
-
-//     pretty_print_ast(binary.get(), "C AST");
-
-//     return 0;
-// }
