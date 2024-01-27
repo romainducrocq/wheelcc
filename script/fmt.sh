@@ -1,8 +1,7 @@
 #!/bin/bash
 
-FILE=${1}
-
-cat ../include/ast/${FILE}.hpp \
+function fmt () {
+cat ../include/ast/${1}.hpp \
     | grep --invert-match ")" \
     | grep --invert-match "(" \
     | grep -e "struct" -e ";" \
@@ -24,7 +23,7 @@ cat ../include/ast/${FILE}.hpp \
     | sed -e "s/\s*:.*{\s*/\", [/g" - > tmp
 
 echo -n "" > tmp2
-while read l ; 
+while read l ;
 do
     if [[ "${l}" == "["* ]]; then
         echo ${l} >> tmp2
@@ -32,20 +31,20 @@ do
         echo ${l}")," >> tmp2
     else
         echo ${l}"," >> tmp2
-    fi  
+    fi
 done < tmp
 rm tmp
 
 line=""
 echo -n "" > tmp
-while read l ; 
+while read l;
 do
     if [[ "${l}" == "["* ]]; then
-        echo "${line}]]," >> tmp 
+        echo "${line}]]," >> tmp
         line="${l} "
     else
         line="${line} ${l}"
-    fi  
+    fi
 done < tmp2
 
 cat tmp \
@@ -59,7 +58,16 @@ cat tmp \
     | sed s"/\", \[\]\],/\", \[\], \[\]\],/g" > tmp2
 rm tmp
 
-tail -n +2 tmp2 > parse_${FILE}.txt
+echo ""
+echo "    # ${2}"
+while read l;
+do
+    echo "    ${l}"
+done < <(tail -n +2 tmp2)
 rm tmp2
+}
 
-cat parse_${FILE}.txt
+echo "ast = ["
+fmt symbol_table "SYMBOL TABLE"
+fmt c_ast "C AST"
+echo "]"
