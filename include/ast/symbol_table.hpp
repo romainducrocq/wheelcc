@@ -147,8 +147,8 @@ struct StaticAttr : IdentifierAttr {
     StaticAttr() = default;
     StaticAttr(std::unique_ptr<InitialValue> init, bool is_global);
 
-    std::unique_ptr<InitialValue> init;
     bool is_global;
+    std::unique_ptr<InitialValue> init;
 };
 
 struct LocalAttr : IdentifierAttr {

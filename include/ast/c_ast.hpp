@@ -366,9 +366,9 @@ struct CWhile : CStatement {
     CWhile() = default;
     CWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body);
 
+    TIdentifier target;
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CStatement> body;
-    TIdentifier target;
 };
 
 struct CDoWhile : CStatement {
@@ -376,9 +376,9 @@ struct CDoWhile : CStatement {
     CDoWhile() = default;
     CDoWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body);
 
+    TIdentifier target;
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CStatement> body;
-    TIdentifier target;
 };
 
 struct CForInit;
@@ -388,11 +388,11 @@ struct CFor : CStatement {
     CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std::unique_ptr<CExp> post,
          std::unique_ptr<CStatement> body);
 
+    TIdentifier target;
     std::unique_ptr<CForInit> init;
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> post;
     std::unique_ptr<CStatement> body;
-    TIdentifier target;
 };
 
 struct CBreak : CStatement {
