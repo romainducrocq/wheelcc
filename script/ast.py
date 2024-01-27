@@ -69,7 +69,7 @@ ast = [
     ["CGreaterOrEqual", [], []],
     ["CExp", [], ["exp_type"]],
     ["CConstant", [], ["constant", "exp_type"]],
-    ["CVar", [(TIdentifier, "name"), "exp_type"]],
+    ["CVar", [(TIdentifier, "name")], ["exp_type"]],
     ["CCast", [], ["exp", "target_type", "exp_type"]],
     ["CUnary", [], ["unary_op", "exp", "exp_type"]],
     ["CBinary", [], ["binary_op", "exp_left", "exp_right", "exp_type"]],
