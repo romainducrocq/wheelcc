@@ -59,7 +59,7 @@ cat tmp \
 rm tmp
 
 echo ""
-echo "    # ${2}"
+echo "    # /include/ast/${1}.hpp"
 while read l;
 do
     echo "    ${l}"
@@ -67,7 +67,16 @@ done < <(tail -n +2 tmp2)
 rm tmp2
 }
 
+function pfmt () {
 echo "ast = ["
-fmt symbol_table "SYMBOL TABLE"
-fmt c_ast "C AST"
+fmt symbol_table
+fmt c_ast
 echo "]"
+}
+
+if [[ "${1}" == "-err" ]]; then
+    pfmt \
+        | grep -P "(?=.*    \[\")(?=.*\", \[\], \[\")(?=.*\"\], \[\()(?=.*\)\], \[\]\])"
+else
+    pfmt
+fi
