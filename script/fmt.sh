@@ -73,11 +73,29 @@ echo "ast = ["
 fmt symbol_table
 fmt c_ast
 echo "]"
+echo ""
+}
+
+function header () {
+echo "#!/bin/python3"
+echo ""
+echo "class TInt: name = \"TInt\""
+echo "class TLong: name = \"TLong\""
+echo "class TDouble: name = \"TDouble\""
+echo "class TUInt: name = \"TUInt\""
+echo "class TULong: name = \"TULong\""
+echo "class TIdentifier: name = \"TIdentifier\""
+echo "class Bool: name = \"Bool\""
+echo "class List: name = \"List\""
+echo ""
+echo "\"\"\" AST \"\"\" ############################################################################################################"
+echo ""
 }
 
 if [[ "${1}" == "-err" ]]; then
     pfmt \
         | grep -P "(?=.*    \[\")(?=.*\", \[\], \[\")(?=.*\"\], \[\()(?=.*\)\], \[\]\])"
 else
-    pfmt
+    header > ast.py
+    pfmt >> ast.py
 fi
