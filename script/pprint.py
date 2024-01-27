@@ -67,15 +67,15 @@ ast = [
     ["CGreaterThan", [], []],
     ["CGreaterOrEqual", [], []],
     ["CExp", [], ["exp_type"]],
-    ["CConstant", [], ["constant"]],
-    ["CVar", [(TIdentifier, "name")], []],
-    ["CCast", [], ["exp", "target_type"]],
-    ["CUnary", [], ["unary_op", "exp"]],
-    ["CBinary", [], ["binary_op", "exp_left", "exp_right"]],
-    ["CAssignment", [], ["exp_left", "exp_right"]],
-    ["CConditional", [], ["condition", "exp_middle", "exp_right"]],
-    ["CAssignmentCompound", [], ["binary_op", "exp_left", "exp_right"]],
-    ["CFunctionCall", [(TIdentifier, "name")], ["[args"]],
+    ["CConstant", [], ["constant", "exp_type"]],
+    ["CVar", [(TIdentifier, "name")], ["exp_type"]],
+    ["CCast", [], ["exp", "target_type", "exp_type"]],
+    ["CUnary", [], ["unary_op", "exp", "exp_type"]],
+    ["CBinary", [], ["binary_op", "exp_left", "exp_right", "exp_type"]],
+    ["CAssignment", [], ["exp_left", "exp_right", "exp_type"]],
+    ["CConditional", [], ["condition", "exp_middle", "exp_right", "exp_type"]],
+    ["CAssignmentCompound", [], ["binary_op", "exp_left", "exp_right", "exp_type"]],
+    ["CFunctionCall", [(TIdentifier, "name")], ["[args", "exp_type"]],
     ["CStatement", [], []],
     ["CReturn", [], ["exp"]],
     ["CExpression", [], ["exp"]],
@@ -160,6 +160,7 @@ def print_ast_case(node):
 
 if __name__ == "__main__":
     print(R"""#include "util/pprint.hpp"
+#include "util/error.hpp"
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
@@ -201,7 +202,7 @@ static void print_ast(Ast* node, size_t t) {
     for node in ast:
         print_ast_case(AstNode(node[0], node[1], node[2]))
     print(R"""        default:
-            raise_runtime_error("Ast pretty print not implemented for node type " + em(std::to_string(node->type())));
+            raise_runtime_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
     }
 }
 

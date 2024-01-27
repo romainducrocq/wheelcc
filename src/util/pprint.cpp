@@ -1,4 +1,5 @@
 #include "util/pprint.hpp"
+#include "util/error.hpp"
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
@@ -288,12 +289,14 @@ static void print_ast(Ast* node, size_t t) {
             field("CConstant", "", ++t);
             CConstant* p_node = static_cast<CConstant*>(node);
             print_ast(p_node->constant.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CVar_t: {
             field("CVar", "", ++t);
             CVar* p_node = static_cast<CVar*>(node);
             field("TIdentifier", p_node->name, t+1);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CCast_t: {
@@ -301,6 +304,7 @@ static void print_ast(Ast* node, size_t t) {
             CCast* p_node = static_cast<CCast*>(node);
             print_ast(p_node->exp.get(), t);
             print_ast(p_node->target_type.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CUnary_t: {
@@ -308,6 +312,7 @@ static void print_ast(Ast* node, size_t t) {
             CUnary* p_node = static_cast<CUnary*>(node);
             print_ast(p_node->unary_op.get(), t);
             print_ast(p_node->exp.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CBinary_t: {
@@ -316,6 +321,7 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->binary_op.get(), t);
             print_ast(p_node->exp_left.get(), t);
             print_ast(p_node->exp_right.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CAssignment_t: {
@@ -323,6 +329,7 @@ static void print_ast(Ast* node, size_t t) {
             CAssignment* p_node = static_cast<CAssignment*>(node);
             print_ast(p_node->exp_left.get(), t);
             print_ast(p_node->exp_right.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CConditional_t: {
@@ -331,6 +338,7 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->condition.get(), t);
             print_ast(p_node->exp_middle.get(), t);
             print_ast(p_node->exp_right.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CAssignmentCompound_t: {
@@ -339,6 +347,7 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->binary_op.get(), t);
             print_ast(p_node->exp_left.get(), t);
             print_ast(p_node->exp_right.get(), t);
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CFunctionCall_t: {
@@ -349,6 +358,7 @@ static void print_ast(Ast* node, size_t t) {
             for(const auto& item: p_node->args) {
                 print_ast(item.get(), t+1);
             }
+            print_ast(p_node->exp_type.get(), t);
             break;
         }
         case AST_T::CStatement_t: {
@@ -541,7 +551,7 @@ static void print_ast(Ast* node, size_t t) {
             break;
         }
         default:
-            raise_runtime_error("Ast pretty print not implemented for node type " + em(std::to_string(node->type())));
+            raise_runtime_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
     }
 }
 
