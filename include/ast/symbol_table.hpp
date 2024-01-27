@@ -145,7 +145,7 @@ struct FunAttr : IdentifierAttr {
 struct StaticAttr : IdentifierAttr {
     AST_T type() override;
     StaticAttr() = default;
-    StaticAttr(std::unique_ptr<InitialValue> init, bool is_global);
+    StaticAttr(bool is_global, std::unique_ptr<InitialValue> init);
 
     bool is_global;
     std::unique_ptr<InitialValue> init;
