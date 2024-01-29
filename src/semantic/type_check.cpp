@@ -1,19 +1,32 @@
 #include "semantic/type_check.hpp"
+#include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
+#include "ast/c_ast.hpp"
 
-/** TODO
+#include <inttypes.h>
+#include <string>
+#include <memory>
+#include <set>
+
+/**
 cdef set[str] defined_set = set()
 */
+static std::set<TIdentifier> defined_set;
 
-/** TODO
+/**
 cdef str function_declaration_name_str = ""
 */
+static TIdentifier function_declaration_name_str;
 
-/** TODO
+/**
 cdef bint is_same_type(Type type1, Type type2):
     return isinstance(type1, type(type2))
 */
+bool is_same_type(Type* type1, Type* type2) {
+    return type1->type() == type2->type();
+}
 
-/** TODO
+/**
 cdef bint is_same_fun_type(FunType fun_type1, FunType fun_type2):
     if len(fun_type1.param_types) != len(fun_type2.param_types):
         return False
@@ -25,8 +38,22 @@ cdef bint is_same_fun_type(FunType fun_type1, FunType fun_type2):
             return False
     return True
 */
+bool is_same_fun_type(FunType* fun_type1, FunType* fun_type2) {
+    if(fun_type1->param_types.size() != fun_type2->param_types.size()) {
+        return false;
+    }
+    if(!is_same_type(fun_type1->ret_type.get(), fun_type2->ret_type.get())) {
+        return false;
+    }
+    for(size_t param_type = 0; param_type < fun_type1->param_types.size(); param_type++) {
+        if(!is_same_type(fun_type1->param_types[param_type].get(), fun_type2->param_types[param_type].get())) {
+            return false;
+        }
+    }
+    return true;
+}
 
-/** TODO
+/**
 cdef int32 get_type_size(Type type1):
     if isinstance(type1, (Int, UInt)):
         return 32
@@ -35,16 +62,47 @@ cdef int32 get_type_size(Type type1):
     else:
         return -1
 */
+int32_t get_type_size(Type* type1) {
+    switch(type1->type()) {
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return 32;
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::ULong_t:
+            return 64;
+        default:
+            return -1;
+    }
+}
 
-/** TODO
+/**
 cdef bint is_type_signed(Type type1):
     return isinstance(type1, (Int, Long))
 */
+bool is_type_signed(Type* type1) {
+    switch(type1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-/** TODO
+/**
 cdef bint is_const_signed(CConst node):
     return isinstance(node, (CConstInt, CConstLong))
 */
+bool is_const_signed(CConst* node) {
+    switch(node->type()) {
+        case AST_T::CConstInt_t:
+        case AST_T::CConstLong_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
 /** TODO
 cdef Type get_joint_type(Type type1, Type type2):
@@ -65,6 +123,7 @@ cdef Type get_joint_type(Type type1, Type type2):
     else:
         return type2
 */
+
 
 /** TODO
 cdef void checktype_cast_expression(CCast node):
