@@ -17,7 +17,7 @@ static std::set<TIdentifier> defined_set;
 /**
 cdef str function_declaration_name_str = ""
 */
-static TIdentifier function_declaration_name_str;
+static TIdentifier function_declaration_name;
 
 /**
 cdef bint is_same_type(Type type1, Type type2):
@@ -391,7 +391,7 @@ void checktype_binary_expression(CBinary* node) {
     }
 }
 
-/** TODO
+/**
 cdef void checktype_conditional_expression(CConditional node):
     cdef Type common_type = get_joint_type(node.exp_middle.exp_type, node.exp_right.exp_type)
     if not is_same_type(node.exp_middle.exp_type, common_type):
@@ -400,12 +400,31 @@ cdef void checktype_conditional_expression(CConditional node):
         node.exp_right = cast_expression(node.exp_right, common_type)
     node.exp_type = common_type
 */
+void checktype_conditional_expression(CConditional* node) {
+    std::shared_ptr<Type> common_type = get_joint_type(node->exp_middle->exp_type, node->exp_right->exp_type);
+    if(!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_middle), common_type);
+        node->exp_middle = std::move(exp);
+    }
+    if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
+        node->exp_right = std::move(exp);
+    }
+    node->exp_type = std::move(common_type);
+}
 
-/** TODO
+/**
 cdef void checktype_return_statement(CReturn node):
     if not is_same_type(node.exp.exp_type, symbol_table[function_declaration_name_str].type_t.ret_type):
         node.exp = cast_expression(node.exp, symbol_table[function_declaration_name_str].type_t.ret_type)
 */
+void checktype_return_statement(CReturn* node) {
+    FunType* symbol = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
+    if(!is_same_type(node->exp->exp_type.get(), symbol->ret_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), symbol->ret_type);
+        node->exp = std::move(exp);
+    }
+}
 
 /** TODO
 cdef Symbol checktype_param(FunType fun_type, Py_ssize_t param):
