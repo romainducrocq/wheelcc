@@ -1,0 +1,4 @@
+#ifndef _SEMANTIC_ID_RESOLVE_HPP
+#define _SEMANTIC_ID_RESOLVE_HPP
+
+#endif

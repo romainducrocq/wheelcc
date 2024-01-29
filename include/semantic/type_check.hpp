@@ -1,0 +1,4 @@
+#ifndef _SEMANTIC_TYPE_CHECK_HPP
+#define _SEMANTIC_TYPE_CHECK_HPP
+
+#endif

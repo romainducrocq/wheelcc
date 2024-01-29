@@ -1,4 +1,0 @@
-#ifndef _SEMANTIC_TYPE_CHECKER_HPP
-#define _SEMANTIC_TYPE_CHECKER_HPP
-
-#endif
