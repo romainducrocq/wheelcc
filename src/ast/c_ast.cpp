@@ -42,7 +42,6 @@ AST_T CUnary::type() { return AST_T::CUnary_t; }
 AST_T CBinary::type() { return AST_T::CBinary_t; }
 AST_T CAssignment::type() { return AST_T::CAssignment_t; }
 AST_T CConditional::type() { return AST_T::CConditional_t; }
-AST_T CAssignmentCompound::type() { return AST_T::CAssignmentCompound_t; }
 AST_T CFunctionCall::type() { return AST_T::CFunctionCall_t; }
 AST_T CStatement::type() { return AST_T::CStatement_t; }
 AST_T CReturn::type() { return AST_T::CReturn_t; }
@@ -106,16 +105,12 @@ CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp
                  std::unique_ptr<CExp> exp_right)
     : binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
-CAssignment::CAssignment(std::shared_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right)
+CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right)
     : exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CConditional::CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle,
                            std::unique_ptr<CExp> exp_right)
     : condition(std::move(condition)), exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
-
-CAssignmentCompound::CAssignmentCompound(std::unique_ptr<CBinaryOp> binary_op, std::shared_ptr<CExp> exp_left,
-                                         std::unique_ptr<CExp> exp_right)
-    : binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args)
     : name(std::move(name)), args(std::move(args)) {}

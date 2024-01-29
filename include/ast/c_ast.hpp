@@ -258,9 +258,9 @@ struct CBinary : CExp {
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
-    CAssignment(std::shared_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right);
+    CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right);
 
-    std::shared_ptr<CExp> exp_left;
+    std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
     std::shared_ptr<Type> exp_type;
@@ -275,20 +275,6 @@ struct CConditional : CExp {
 
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> exp_middle;
-    std::unique_ptr<CExp> exp_right;
-    /*
-    std::shared_ptr<Type> exp_type;
-    */
-};
-
-struct CAssignmentCompound : CExp {
-    AST_T type() override;
-    CAssignmentCompound() = default;
-    CAssignmentCompound(std::unique_ptr<CBinaryOp> binary_op, std::shared_ptr<CExp> exp_left,
-                        std::unique_ptr<CExp> exp_right);
-
-    std::unique_ptr<CBinaryOp> binary_op;
-    std::shared_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
     std::shared_ptr<Type> exp_type;

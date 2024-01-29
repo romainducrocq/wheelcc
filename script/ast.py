@@ -75,7 +75,6 @@ ast = [
     ["CBinary", [], ["binary_op", "exp_left", "exp_right", "exp_type"]],
     ["CAssignment", [], ["exp_left", "exp_right", "exp_type"]],
     ["CConditional", [], ["condition", "exp_middle", "exp_right", "exp_type"]],
-    ["CAssignmentCompound", [], ["binary_op", "exp_left", "exp_right", "exp_type"]],
     ["CFunctionCall", [(TIdentifier, "name")], ["[args", "exp_type"]],
     ["CStatement", [], []],
     ["CReturn", [], ["exp"]],

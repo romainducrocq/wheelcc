@@ -344,15 +344,6 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->exp_type.get(), t);
             break;
         }
-        case AST_T::CAssignmentCompound_t: {
-            field("CAssignmentCompound", "", ++t);
-            CAssignmentCompound* p_node = static_cast<CAssignmentCompound*>(node);
-            print_ast(p_node->binary_op.get(), t);
-            print_ast(p_node->exp_left.get(), t);
-            print_ast(p_node->exp_right.get(), t);
-            print_ast(p_node->exp_type.get(), t);
-            break;
-        }
         case AST_T::CFunctionCall_t: {
             field("CFunctionCall", "", ++t);
             CFunctionCall* p_node = static_cast<CFunctionCall*>(node);

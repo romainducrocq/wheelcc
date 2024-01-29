@@ -698,20 +698,25 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
     return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right));
 }
 
-/** TODO
+/**
 cdef CAssignment parse_assigment_compound_exp(CExp exp_left, int32 precedence):
     cdef CBinaryOp binary_op = parse_binary_op()
     cdef CExp exp_right = parse_exp(precedence)
     cdef CExp exp_left_2 = CVar(TIdentifier(exp_left.name.str_t))
     exp_right = CBinary(binary_op, exp_left, exp_right)
     return CAssignment(exp_left_2, exp_right)
-*/ // TODO
+*/
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    if(exp_left->type() != AST_T::CVar_t) {
+        raise_runtime_error_at_line("Expected token type " + em("factor") + " but found token " +
+                                    em(next_token->token), next_token->line);
+    }
+    TIdentifier name_2 = static_cast<CVar*>(exp_left.get())->name;
     std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
-    std::shared_ptr<CExp> exp_left_2 = std::move(exp_left);
-    std::unique_ptr<CExp> exp_right_1 = parse_exp(precedence);
-    std::unique_ptr<CExp> exp_right_2 = std::make_unique<CAssignmentCompound>(std::move(binary_op),exp_left_2,
-                                                                              std::move(exp_right_1));
+    std::unique_ptr<CExp> exp_right = parse_exp(precedence);
+    std::unique_ptr<CExp> exp_left_2 = std::make_unique<CVar>(name_2);
+    std::unique_ptr<CExp> exp_right_2 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left),
+                                                                  std::move(exp_right));
     return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2));
 }
 

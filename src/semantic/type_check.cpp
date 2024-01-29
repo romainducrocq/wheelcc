@@ -273,30 +273,6 @@ void checktype_assignment_expression(CAssignment* node) {
     node->exp_type = node->exp_left->exp_type;
 }
 
-/** TODO
-cdef void checktype_assignment_compound_expression(CAssignmentCompound node):
-    cdef Type common_type = get_joint_type(node.exp_left.exp_type, node.exp_right.exp_type)
-    if not is_same_type(node.exp_left.exp_type, common_type):
-        node.exp_left = cast_expression(node.exp_left, common_type)
-    if not is_same_type(node.exp_right.exp_type, common_type):
-        node.exp_right = cast_expression(node.exp_right, common_type)
-    node.exp_type = common_type
-*/
-// TODO exp can not be shared
-//void checktype_assignment_compound_expression(CAssignmentCompound* node) {
-//    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get()->exp_type,
-//                                                       node->exp_right.get()->exp_type);
-//    if(!is_same_type(node->exp_left.get()->exp_type.get(), common_type.get())) {
-//        std::unique_ptr<CExp> exp = cast_expression(node->exp_left, common_type);
-//        node->exp_left = std::move(exp);
-//    }
-//    if(!is_same_type(node->exp_right.get()->exp_type.get(), &common_type.get())) {
-//        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-//        node->exp_right = std::move(exp);
-//    }
-//    node->exp_type = std::move(common_type);
-//}
-
 /**
 cdef void checktype_unary_expression(CUnary node):
     if isinstance(node.unary_op, CNot):
