@@ -147,17 +147,25 @@ std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_p
     }
 }
 
-/** TODO
+/**
 cdef void checktype_cast_expression(CCast node):
     node.exp_type = node.target_type
 */
+void checktype_cast_expression(CCast* node) {
+    node->exp_type = node->target_type;
+}
 
-/** TODO
+/**
 cdef CCast cast_expression(CExp node, Type exp_type):
     cdef CExp exp = CCast(node, exp_type)
     checktype_cast_expression(exp)
     return exp
 */
+std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_ptr<Type> exp_type) {
+    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type);
+    checktype_cast_expression(exp.get());
+    return exp;
+}
 
 /** TODO
 cdef void checktype_function_call_expression(CFunctionCall node):
