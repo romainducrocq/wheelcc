@@ -1,20 +1,12 @@
 #ifndef _UTIL_NAMES_HPP
 #define _UTIL_NAMES_HPP
 
-/** TODO
-cdef TIdentifier resolve_label_identifier(TIdentifier label)
-*/
+#include "ast/ast.hpp"
+#include "ast/c_ast.hpp"
 
-/** TODO
-cdef TIdentifier resolve_variable_identifier(TIdentifier variable)
-*/
-
-/** TODO
-cdef TIdentifier represent_label_identifier(str label)
-*/
-
-/** TODO
-cdef TIdentifier represent_variable_identifier(CExp node)
-*/
+TIdentifier resolve_label_identifier(const TIdentifier& label);
+TIdentifier resolve_variable_identifier(const TIdentifier& variable);
+TIdentifier represent_label_identifier(const TIdentifier& label);
+TIdentifier represent_variable_identifier(CExp* node);
 
 #endif

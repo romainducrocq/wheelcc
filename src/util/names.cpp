@@ -1,20 +1,32 @@
 #include "util/names.hpp"
+#include "util/error.hpp"
+#include "ast/ast.hpp"
+#include "ast/c_ast.hpp"
 
-/** TODO
+#include <inttypes.h>
+#include <string>
+
+/**
 cdef int32 label_counter = 0
 */
+static int32_t label_counter = 0;
 
-/** TODO
+/**
 cdef int32 variable_counter = 0
 */
+static int32_t variable_counter = 0;
 
-/** TODO
+/**
 cdef TIdentifier resolve_label_identifier(TIdentifier label):
 
     return represent_label_identifier(label.str_t)
 */
+TIdentifier represent_label_identifier(const TIdentifier& label);
+TIdentifier resolve_label_identifier(const TIdentifier& label) {
+    return represent_label_identifier(label);
+}
 
-/** TODO
+/**
 cdef TIdentifier resolve_variable_identifier(TIdentifier variable):
     global variable_counter
 
@@ -23,8 +35,13 @@ cdef TIdentifier resolve_variable_identifier(TIdentifier variable):
 
     return TIdentifier(name)
 */
+TIdentifier resolve_variable_identifier(const TIdentifier& variable) {
+    variable_counter += 1;
+    TIdentifier name = variable + "." + std::to_string(variable_counter - 1);
+    return name;
+}
 
-/** TODO
+/**
 cdef TIdentifier represent_label_identifier(str label):
     global label_counter
 
@@ -33,8 +50,13 @@ cdef TIdentifier represent_label_identifier(str label):
 
     return TIdentifier(name)
 */
+TIdentifier represent_label_identifier(const TIdentifier& label) {
+    label_counter += 1;
+    TIdentifier name = label + "." + std::to_string(label_counter - 1);
+    return name;
+}
 
-/** TODO
+/**
 cdef TIdentifier represent_variable_identifier(CExp node):
     global variable_counter
 
@@ -67,3 +89,43 @@ cdef TIdentifier represent_variable_identifier(CExp node):
 
     return TIdentifier(name)
 */
+TIdentifier represent_variable_identifier(CExp* node) {
+    TIdentifier name;
+    switch(node->type()) {
+        case AST_T::CFunctionCall_t:
+            name = "funcall";
+            break;
+        case AST_T::CVar_t:
+            name = "var";
+            break;
+        case AST_T::CConstant_t:
+            name = "constant";
+            break;
+        case AST_T::CCast_t:
+            name = "cast";
+            break;
+        case AST_T::CAssignment_t:
+            name = "assignment";
+            break;
+        case AST_T::CAssignmentCompound_t:
+            name = "compound";
+            break;
+        case AST_T::CUnary_t:
+            name = "unary";
+            break;
+        case AST_T::CBinary_t:
+            name = "binary";
+            break;
+        case AST_T::CConditional_t:
+            name = "ternary";
+            break;
+        default:
+            raise_runtime_error("An error occurred in name management, unmanaged type " +
+                                std::to_string(node->type()));
+    }
+
+    variable_counter += 1;
+    name += "." + std::to_string(variable_counter - 1);
+
+    return name;
+}
