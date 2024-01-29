@@ -52,7 +52,8 @@ cdef void annotate_break_loop(CBreak node):
 */
 void annotate_break_loop(CBreak* node) {
     if(loop_labels.empty()) {
-        raise_runtime_error("An error occurred in loop annotation, break is outside of loop");
+        raise_runtime_error("An error occurred in loop annotation, " + em("break") +
+                            "is outside of loop");
     }
     node->target = loop_labels.back();
 }
@@ -68,7 +69,8 @@ cdef void annotate_continue_loop(CContinue node):
 */
 void annotate_continue_loop(CContinue* node) {
     if(loop_labels.empty()) {
-        raise_runtime_error("An error occurred in loop annotation, continue is outside of loop");
+        raise_runtime_error("An error occurred in loop annotation, " + em("continue") +
+                            "is outside of loop");
     }
     node->target = loop_labels.back();
 }

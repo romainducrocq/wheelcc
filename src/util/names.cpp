@@ -121,7 +121,7 @@ TIdentifier represent_variable_identifier(CExp* node) {
             break;
         default:
             raise_internal_error("An error occurred in name management, unmanaged type " +
-                                 std::to_string(node->type()));
+                                 em(std::to_string(node->type())));
     }
 
     variable_counter += 1;

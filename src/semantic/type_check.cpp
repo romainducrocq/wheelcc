@@ -1,4 +1,5 @@
 #include "semantic/type_check.hpp"
+#include "util/error.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
@@ -188,6 +189,24 @@ cdef void checktype_function_call_expression(CFunctionCall node):
 
     node.exp_type = symbol_table[node.name.str_t].type_t.ret_type
 */
+void checktype_function_call_expression(CFunctionCall* node) {
+    if(symbol_table[node->name].get()->type_t.get()->type() != AST_T::FunType_t) {
+        raise_runtime_error("Variable " + em(node->name) + " was used as a function");
+    }
+    FunType* symbol = static_cast<FunType*>(symbol_table[node->name].get()->type_t.get());
+    if(symbol->param_types.size() != node->args.size()) {
+        raise_runtime_error("Function " + em(node->name) + " has " +
+                            em(std::to_string(symbol->param_types.size())) +
+                            " arguments but was called with " + em(std::to_string(node->args.size())));
+    }
+    for(size_t i = 0; i < node->args.size(); i ++) {
+        if(!is_same_type(node->args[i].get()->exp_type.get(), symbol->param_types[i].get())) {
+            std::unique_ptr<CExp> exp = cast_expression(std::move(node->args[i]), symbol->param_types[i]);
+            node->args[i] = std::move(exp);
+        }
+    }
+    node->exp_type = symbol->ret_type;
+}
 
 /** TODO
 cdef void checktype_var_expression(CVar node):
