@@ -30,11 +30,11 @@ const std::string em(const std::string& message) {
     return "\e[1m‘" + message + "’\e[0m";
 }
 
-void raise_runtime_error(const std::string& message) {
+[[ noreturn ]] void raise_runtime_error(const std::string& message) {
     throw std::runtime_error("\n\e[1m" + filename + ":\e[0m\n\033[0;31merror:\033[0m " + message + "\n");
 }
 
-void raise_runtime_error_at_line(const std::string& message, size_t line_number) {
+[[ noreturn ]] void raise_runtime_error_at_line(const std::string& message, size_t line_number) {
     std::string cmd = "sed -n " + std::to_string(line_number) + "p " + filename;
     std::string line = exec(cmd.c_str());
     throw std::runtime_error("\n\e[1m" + filename + ":" + std::to_string(line_number) + ":\e[0m\n\033[0;31merror:\033[0m " + message + "\n" +

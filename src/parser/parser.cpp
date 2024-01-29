@@ -199,6 +199,9 @@ cdef Token peek_next_i(Py_ssize_t i):
             "An error occurred in parser, all Tokens were consumed before end of program")
 */
 static const Token& peek_next_i(size_t i) {
+    if(i == 0) {
+        return peek_next();
+    }
     if(pop_index + i >= p_tokens->size()) {
         raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
     }
@@ -460,7 +463,6 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
         default:
             raise_runtime_error_at_line("Expected token type " + em("binary_op") + " but found token " +
                                         em(next_token->token), next_token->line);
-            return nullptr;
     }
 }
 
@@ -490,7 +492,6 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
         default:
             raise_runtime_error_at_line("Expected token type " + em("unary_op") + " but found token " +
                                         em(next_token->token), next_token->line);
-            return nullptr;
     }
 }
 
@@ -683,7 +684,6 @@ static std::unique_ptr<CExp> parse_factor() {
     }
     raise_runtime_error_at_line("Expected token type " + em("factor") + " but found token " +
                                 em(next_token->token), next_token->line);
-    return nullptr;
 }
 
 /**
@@ -844,7 +844,6 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             default:
                 raise_runtime_error_at_line("Expected token type " + em("exp") + " but found token " +
                                             em(peek_token->token), peek_token->line);
-                return nullptr;
         }
     }
     return exp_left;
@@ -1374,7 +1373,6 @@ static std::unique_ptr<Type> parse_type_specifier() {
             default:
                 raise_runtime_error_at_line("Expected token type " + em("specifier") + " but found token " +
                                             peek_next_i(specifier).token, peek_next_i(specifier).line);
-                return nullptr;
         }
     }
     end:
@@ -1447,7 +1445,6 @@ static std::unique_ptr<Type> parse_type_specifier() {
     }
     raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)") + " but found token kinds " +
                                 em("(" + type_token_kinds_string + ")"), line);
-    return nullptr;
 }
 
 /**
@@ -1472,7 +1469,6 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
         default:
             raise_runtime_error_at_line("Expected token type " + em("storage class") + " but found token " +
                                         em(next_token->token), next_token->line);
-            return nullptr;
     }
 }
 
