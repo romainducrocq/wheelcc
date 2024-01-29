@@ -224,7 +224,7 @@ void checktype_var_expression(CVar* node) {
     node->exp_type = symbol_table[node->name].get()->type_t;
 }
 
-/** TODO
+/**
 cdef void checktype_constant_expression(CConstant node):
     if isinstance(node.constant, CConstInt):
         node.exp_type = Int()
@@ -237,13 +237,41 @@ cdef void checktype_constant_expression(CConstant node):
     elif isinstance(node.constant, CConstULong):
         node.exp_type = ULong()
 */
+void checktype_constant_expression(CConstant* node) {
+    switch(node->type()) {
+        case AST_T::CConstInt_t:
+            node->exp_type = std::make_shared<Int>();
+            break;
+        case AST_T::CConstLong_t:
+            node->exp_type = std::make_shared<Long>();
+            break;
+        case AST_T::CConstDouble_t:
+            node->exp_type = std::make_shared<Double>();
+            break;
+        case AST_T::CConstUInt_t:
+            node->exp_type = std::make_shared<UInt>();
+            break;
+        case AST_T::CConstULong_t:
+            node->exp_type = std::make_shared<ULong>();
+            break;
+        default:
+            break;
+    }
+}
 
-/** TODO
+/**
 cdef void checktype_assignment_expression(CAssignment node):
     if not is_same_type(node.exp_right.exp_type, node.exp_left.exp_type):
         node.exp_right = cast_expression(node.exp_right, node.exp_left.exp_type)
     node.exp_type = node.exp_left.exp_type
 */
+void checktype_assignment_expression(CAssignment* node) {
+    if(!is_same_type(node->exp_right.get()->exp_type.get(), node->exp_left.get()->exp_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left.get()->exp_type);
+        node->exp_right = std::move(exp);
+    }
+    node->exp_type = node->exp_left.get()->exp_type;
+}
 
 /** TODO
 cdef void checktype_assignment_compound_expression(CAssignmentCompound node):
