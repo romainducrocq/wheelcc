@@ -168,7 +168,7 @@ std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_p
     return exp;
 }
 
-/** TODO
+/**
 cdef void checktype_function_call_expression(CFunctionCall node):
 
     if not isinstance(symbol_table[node.name.str_t].type_t, FunType):
@@ -208,7 +208,7 @@ void checktype_function_call_expression(CFunctionCall* node) {
     node->exp_type = symbol->ret_type;
 }
 
-/** TODO
+/**
 cdef void checktype_var_expression(CVar node):
     if isinstance(symbol_table[node.name.str_t].type_t, FunType):
 
@@ -217,6 +217,12 @@ cdef void checktype_var_expression(CVar node):
 
     node.exp_type = symbol_table[node.name.str_t].type_t
 */
+void checktype_var_expression(CVar* node) {
+    if(symbol_table[node->name].get()->type_t.get()->type() == AST_T::FunType_t) {
+        raise_runtime_error("Function " + em(node->name) + " was used as a variable");
+    }
+    node->exp_type = symbol_table[node->name].get()->type_t;
+}
 
 /** TODO
 cdef void checktype_constant_expression(CConstant node):
