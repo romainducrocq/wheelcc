@@ -2,3 +2,9 @@ change unique_ptr to shared_ptr when a resource is shared between multiple objec
     - maybe for types
     - maybe for constants
     - maybe for static inits in symbol table
+
+- fix parse_assignment_compound in parser
+- remove CAssignmentCompound, and set CAssignment exp to unique_ptr
+- remove type checking / id resolve of CAssignmentCompound
+
+- in type check, remove useless intermediary .get()

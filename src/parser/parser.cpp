@@ -698,13 +698,14 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
     return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right));
 }
 
-/**
+/** TODO
 cdef CAssignment parse_assigment_compound_exp(CExp exp_left, int32 precedence):
     cdef CBinaryOp binary_op = parse_binary_op()
     cdef CExp exp_right = parse_exp(precedence)
-    exp_right = CAssignmentCompound(binary_op, exp_left, exp_right)
-    return CAssignment(exp_left, exp_right)
-*/ // TODO check if shared pointer ok
+    cdef CExp exp_left_2 = CVar(TIdentifier(exp_left.name.str_t))
+    exp_right = CBinary(binary_op, exp_left, exp_right)
+    return CAssignment(exp_left_2, exp_right)
+*/ // TODO
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
     std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
     std::shared_ptr<CExp> exp_left_2 = std::move(exp_left);
