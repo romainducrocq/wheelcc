@@ -120,8 +120,8 @@ TIdentifier represent_variable_identifier(CExp* node) {
             name = "ternary";
             break;
         default:
-            raise_runtime_error("An error occurred in name management, unmanaged type " +
-                                std::to_string(node->type()));
+            raise_internal_error("An error occurred in name management, unmanaged type " +
+                                 std::to_string(node->type()));
     }
 
     variable_counter += 1;

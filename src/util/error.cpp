@@ -40,3 +40,7 @@ const std::string em(const std::string& message) {
     throw std::runtime_error("\n\e[1m" + filename + ":" + std::to_string(line_number) + ":\e[0m\n\033[0;31merror:\033[0m " + message + "\n" +
                              "at line " + std::to_string(line_number) + ": \e[1m" + line + "\e[0m");
 }
+
+[[ noreturn ]] void raise_internal_error(const std::string& message) {
+    raise_runtime_error(message);
+}
