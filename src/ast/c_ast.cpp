@@ -96,7 +96,7 @@ CConstant::CConstant(std::unique_ptr<CConst> constant)
 CVar::CVar(TIdentifier name)
     : name(std::move(name)) {}
 
-CCast::CCast(std::unique_ptr<CExp> exp, std::unique_ptr<Type> target_type)
+CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type)
     : exp(std::move(exp)), target_type(std::move(target_type)) {}
 
 CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp)
@@ -164,13 +164,13 @@ CD::CD(std::unique_ptr<CDeclaration> declaration)
     : declaration(std::move(declaration)) {}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier target, std::vector<TIdentifier> params,
-                                           std::unique_ptr<CBlock> body, std::unique_ptr<Type> fun_type,
+                                           std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
                                            std::unique_ptr<CStorageClass> storage_class)
     : target(std::move(target)), params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
       storage_class(std::move(storage_class)) {}
 
 CVariableDeclaration::CVariableDeclaration(TIdentifier target, std::unique_ptr<CExp> init,
-                                           std::unique_ptr<Type> var_type,
+                                           std::shared_ptr<Type> var_type,
                                            std::unique_ptr<CStorageClass> storage_class)
     :  target(std::move(target)), init(std::move(init)), var_type(std::move(var_type)),
        storage_class(std::move(storage_class)) {}

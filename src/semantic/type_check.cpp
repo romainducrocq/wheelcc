@@ -104,7 +104,7 @@ bool is_const_signed(CConst* node) {
     }
 }
 
-/** TODO
+/**
 cdef Type get_joint_type(Type type1, Type type2):
     if is_same_type(type1, type2):
         return type1
@@ -123,7 +123,29 @@ cdef Type get_joint_type(Type type1, Type type2):
     else:
         return type2
 */
-
+std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_ptr<Type>& type2) {
+    if(is_same_type(type1.get(), type2.get())) {
+        return type1;
+    }
+    else if(type1.get()->type() == AST_T::Double_t ||
+            type2.get()->type() == AST_T::Double_t) {
+        return std::make_shared<Double>();
+    }
+    int32_t type1_size = get_type_size(type1.get());
+    int32_t type2_size = get_type_size(type2.get());
+    if(type1_size == type2_size) {
+        if(is_type_signed(type1.get())) {
+            return type2;
+        } else {
+            return type1;
+        }
+    }
+    if(type1_size > type2_size) {
+        return type1;
+    } else {
+        return type2;
+    }
+}
 
 /** TODO
 cdef void checktype_cast_expression(CCast node):

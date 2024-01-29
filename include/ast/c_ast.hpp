@@ -192,7 +192,7 @@ struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
 
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
 };
 
 struct CConstant : CExp {
@@ -202,7 +202,7 @@ struct CConstant : CExp {
 
     std::unique_ptr<CConst> constant;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -213,19 +213,19 @@ struct CVar : CExp {
 
     TIdentifier name;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
 struct CCast : CExp {
     AST_T type() override;
     CCast() = default;
-    CCast(std::unique_ptr<CExp> exp, std::unique_ptr<Type> target_type);
+    CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type);
 
     std::unique_ptr<CExp> exp;
-    std::unique_ptr<Type> target_type;
+    std::shared_ptr<Type> target_type;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -237,7 +237,7 @@ struct CUnary : CExp {
     std::unique_ptr<CUnaryOp> unary_op;
     std::unique_ptr<CExp> exp;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -251,7 +251,7 @@ struct CBinary : CExp {
     std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -263,7 +263,7 @@ struct CAssignment : CExp {
     std::shared_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -277,7 +277,7 @@ struct CConditional : CExp {
     std::unique_ptr<CExp> exp_middle;
     std::unique_ptr<CExp> exp_right;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -291,7 +291,7 @@ struct CAssignmentCompound : CExp {
     std::shared_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -303,7 +303,7 @@ struct CFunctionCall : CExp {
     TIdentifier name;
     std::vector<std::unique_ptr<CExp>> args;
     /*
-    std::unique_ptr<Type> exp_type;
+    std::shared_ptr<Type> exp_type;
     */
 };
 
@@ -522,14 +522,14 @@ struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
     CFunctionDeclaration(TIdentifier target, std::vector<TIdentifier> params,
-                         std::unique_ptr<CBlock> body, std::unique_ptr<Type> fun_type,
+                         std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
                          std::unique_ptr<CStorageClass> storage_class);
 
     TIdentifier target;
     std::vector<TIdentifier> params;
     // Optional
     std::unique_ptr<CBlock> body;
-    std::unique_ptr<Type> fun_type;
+    std::shared_ptr<Type> fun_type;
     // Optional
     std::unique_ptr<CStorageClass> storage_class;
 };
@@ -540,12 +540,12 @@ struct CFunctionDeclaration : Ast {
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
-    CVariableDeclaration(TIdentifier target, std::unique_ptr<CExp> init, std::unique_ptr<Type> var_type,
+    CVariableDeclaration(TIdentifier target, std::unique_ptr<CExp> init, std::shared_ptr<Type> var_type,
                          std::unique_ptr<CStorageClass> storage_class);
 
     TIdentifier target;
     std::unique_ptr<CExp> init;
-    std::unique_ptr<Type> var_type;
+    std::shared_ptr<Type> var_type;
     std::unique_ptr<CStorageClass> storage_class;
 };
 
