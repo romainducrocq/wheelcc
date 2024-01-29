@@ -128,8 +128,8 @@ std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_p
     if(is_same_type(type1.get(), type2.get())) {
         return type1;
     }
-    else if(type1.get()->type() == AST_T::Double_t ||
-            type2.get()->type() == AST_T::Double_t) {
+    else if(type1->type() == AST_T::Double_t ||
+            type2->type() == AST_T::Double_t) {
         return std::make_shared<Double>();
     }
     int32_t type1_size = get_type_size(type1.get());
@@ -190,17 +190,17 @@ cdef void checktype_function_call_expression(CFunctionCall node):
     node.exp_type = symbol_table[node.name.str_t].type_t.ret_type
 */
 void checktype_function_call_expression(CFunctionCall* node) {
-    if(symbol_table[node->name].get()->type_t.get()->type() != AST_T::FunType_t) {
+    if(symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
         raise_runtime_error("Variable " + em(node->name) + " was used as a function");
     }
-    FunType* symbol = static_cast<FunType*>(symbol_table[node->name].get()->type_t.get());
+    FunType* symbol = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
     if(symbol->param_types.size() != node->args.size()) {
         raise_runtime_error("Function " + em(node->name) + " has " +
                             em(std::to_string(symbol->param_types.size())) +
                             " arguments but was called with " + em(std::to_string(node->args.size())));
     }
     for(size_t i = 0; i < node->args.size(); i ++) {
-        if(!is_same_type(node->args[i].get()->exp_type.get(), symbol->param_types[i].get())) {
+        if(!is_same_type(node->args[i]->exp_type.get(), symbol->param_types[i].get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->args[i]), symbol->param_types[i]);
             node->args[i] = std::move(exp);
         }
@@ -218,10 +218,10 @@ cdef void checktype_var_expression(CVar node):
     node.exp_type = symbol_table[node.name.str_t].type_t
 */
 void checktype_var_expression(CVar* node) {
-    if(symbol_table[node->name].get()->type_t.get()->type() == AST_T::FunType_t) {
+    if(symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
         raise_runtime_error("Function " + em(node->name) + " was used as a variable");
     }
-    node->exp_type = symbol_table[node->name].get()->type_t;
+    node->exp_type = symbol_table[node->name]->type_t;
 }
 
 /**
@@ -266,11 +266,11 @@ cdef void checktype_assignment_expression(CAssignment node):
     node.exp_type = node.exp_left.exp_type
 */
 void checktype_assignment_expression(CAssignment* node) {
-    if(!is_same_type(node->exp_right.get()->exp_type.get(), node->exp_left.get()->exp_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left.get()->exp_type);
+    if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
         node->exp_right = std::move(exp);
     }
-    node->exp_type = node->exp_left.get()->exp_type;
+    node->exp_type = node->exp_left->exp_type;
 }
 
 /** TODO
@@ -311,16 +311,16 @@ cdef void checktype_unary_expression(CUnary node):
         node.exp_type = node.exp.exp_type
 */
 void checktype_unary_expression(CUnary* node) {
-    if(node->unary_op.get()->type() == AST_T::CNot_t) {
+    if(node->unary_op->type() == AST_T::CNot_t) {
         node->exp_type = std::make_shared<Int>();
         return;
     }
-    if(node->unary_op.get()->type() == AST_T::CComplement_t &&
-       node->exp.get()->exp_type.get()->type() == AST_T::Double_t) {
+    if(node->unary_op->type() == AST_T::CComplement_t &&
+       node->exp->exp_type->type() == AST_T::Double_t) {
         raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
                             " can not be used on " + em("floating-point number"));
     }
-    node->exp_type = node->exp.get()->exp_type;
+    node->exp_type = node->exp->exp_type;
 }
 
 /**
@@ -359,7 +359,7 @@ cdef void checktype_binary_expression(CBinary node):
         node.exp_type = Int()
 */
 void checktype_binary_expression(CBinary* node) {
-    switch(node->binary_op.get()->type()) {
+    switch(node->binary_op->type()) {
         case AST_T::CAnd_t:
         case AST_T::COr_t:
             node->exp_type = std::make_shared<Int>();
@@ -369,12 +369,12 @@ void checktype_binary_expression(CBinary* node) {
             // Note: https://stackoverflow.com/a/70130146
             // if the value of the right operand is negative or is greater than or equal
             // to the width of the promoted left operand, the behavior is undefined
-            if(!is_same_type(node->exp_left.get()->exp_type.get(), node->exp_right.get()->exp_type.get())){
-                std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left.get()->exp_type);
+            if(!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())){
+                std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
                 node->exp_right = std::move(exp);
             }
-            node->exp_type = node->exp_left.get()->exp_type;
-            if(node->exp_type.get()->type() == AST_T::Double_t) {
+            node->exp_type = node->exp_left->exp_type;
+            if(node->exp_type->type() == AST_T::Double_t) {
                 raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
                                     " can not be used on " + em("floating-point number"));
             }
@@ -383,16 +383,16 @@ void checktype_binary_expression(CBinary* node) {
         default:
             break;
     }
-    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get()->exp_type, node->exp_right.get()->exp_type);
-    if(!is_same_type(node->exp_left.get()->exp_type.get(), common_type.get())) {
+    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left->exp_type, node->exp_right->exp_type);
+    if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
         node->exp_left = std::move(exp);
     }
-    if(!is_same_type(node->exp_right.get()->exp_type.get(), common_type.get())) {
+    if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
         node->exp_right = std::move(exp);
     }
-    switch(node->binary_op.get()->type()) {
+    switch(node->binary_op->type()) {
         case AST_T::CAdd_t:
         case AST_T::CSubtract_t:
         case AST_T::CMultiply_t:
@@ -404,7 +404,7 @@ void checktype_binary_expression(CBinary* node) {
         case AST_T::CBitOr_t:
         case AST_T::CBitXor_t:
             node->exp_type = std::move(common_type);
-            if(node->exp_type.get()->type() == AST_T::Double_t) {
+            if(node->exp_type->type() == AST_T::Double_t) {
                 raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
                                     " can not be used on " + em("floating-point number"));
             }
