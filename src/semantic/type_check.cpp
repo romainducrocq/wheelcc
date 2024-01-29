@@ -360,28 +360,12 @@ cdef void checktype_binary_expression(CBinary node):
 */
 void checktype_binary_expression(CBinary* node) {
     switch(node->binary_op.get()->type()) {
-        //    if isinstance(node.binary_op, (CAnd, COr)):
-        //        node.exp_type = Int()
-        //        return
         case AST_T::CAnd_t:
         case AST_T::COr_t:
             node->exp_type = std::make_shared<Int>();
             return;
-        //    elif isinstance(node.binary_op, (CBitShiftLeft, CBitShiftRight)):
-        //        # Note: https://stackoverflow.com/a/70130146
-        //        # if the value of the right operand is negative or is greater than or equal
-        //        # to the width of the promoted left operand, the behavior is undefined
         case AST_T::CBitShiftLeft_t:
         case AST_T::CBitShiftRight_t: {
-            //        if not is_same_type(node.exp_left.exp_type, node.exp_right.exp_type):
-            //            node.exp_right = cast_expression(node.exp_right, node.exp_left.exp_type)
-            //        node.exp_type = node.exp_left.exp_type
-            //        if isinstance(node.exp_type, Double):
-            //
-            //            raise RuntimeError(
-            //                "An error occurred in type checking, binary operator can not be used on floating-point number")
-            //
-            //        return
             // Note: https://stackoverflow.com/a/70130146
             // if the value of the right operand is negative or is greater than or equal
             // to the width of the promoted left operand, the behavior is undefined
@@ -399,37 +383,22 @@ void checktype_binary_expression(CBinary* node) {
         default:
             break;
     }
-    //    cdef Type common_type = get_joint_type(node.exp_left.exp_type, node.exp_right.exp_type)
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get()->exp_type, node->exp_right.get()->exp_type);
-    //    if not is_same_type(node.exp_left.exp_type, common_type):
-    //        node.exp_left = cast_expression(node.exp_left, common_type)
     if(!is_same_type(node->exp_left.get()->exp_type.get(), common_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
         node->exp_left = std::move(exp);
     }
-    //    if not is_same_type(node.exp_right.exp_type, common_type):
-    //        node.exp_right = cast_expression(node.exp_right, common_type)
     if(!is_same_type(node->exp_right.get()->exp_type.get(), common_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
         node->exp_right = std::move(exp);
     }
     switch(node->binary_op.get()->type()) {
-        //    if isinstance(node.binary_op, (CAdd, CSubtract, CMultiply, CDivide)):
-        //        node.exp_type = common_type
         case AST_T::CAdd_t:
         case AST_T::CSubtract_t:
         case AST_T::CMultiply_t:
         case AST_T::CDivide_t:
             node->exp_type = std::move(common_type);
             return;
-
-        //    elif isinstance(node.binary_op, (CRemainder, CBitAnd, CBitOr, CBitXor)):
-        //        node.exp_type = common_type
-        //        if isinstance(node.exp_type, Double):
-        //
-        //            raise RuntimeError(
-        //                "An error occurred in type checking, binary operator can not be used on floating-point number")
-        //
         case AST_T::CRemainder_t:
         case AST_T::CBitAnd_t:
         case AST_T::CBitOr_t:
@@ -440,25 +409,11 @@ void checktype_binary_expression(CBinary* node) {
                                     " can not be used on " + em("floating-point number"));
             }
             return;
-        //    else:
-        //        node.exp_type = Int()
         default:
             node->exp_type = std::make_shared<Int>();
             return;
     }
 }
-
-
-//    if(!is_same_type(node->exp_left.get()->exp_type.get(), common_type.get())) {
-//        std::unique_ptr<CExp> exp = cast_expression(node->exp_left, common_type);
-//        node->exp_left = std::move(exp);
-//    }
-//    if(!is_same_type(node->exp_right.get()->exp_type.get(), &common_type.get())) {
-//        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-//        node->exp_right = std::move(exp);
-//    }
-//    node->exp_type = std::move(common_type);
-//}
 
 /** TODO
 cdef void checktype_conditional_expression(CConditional node):
