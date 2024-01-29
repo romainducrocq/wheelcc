@@ -42,10 +42,10 @@ struct ULong : Type {
 struct FunType : Type {
     AST_T type() override;
     FunType() = default;
-    FunType(std::vector<std::unique_ptr<Type>> param_types, std::unique_ptr<Type> ret_type);
+    FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type);
 
-    std::vector<std::unique_ptr<Type>> param_types;
-    std::unique_ptr<Type> ret_type;
+    std::vector<std::shared_ptr<Type>> param_types;
+    std::shared_ptr<Type> ret_type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,9 +161,9 @@ struct LocalAttr : IdentifierAttr {
 struct Symbol : Ast {
     AST_T type() override;
     Symbol() = default;
-    Symbol(std::unique_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs);
+    Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs);
 
-    std::unique_ptr<Type> type_t;
+    std::shared_ptr<Type> type_t;
     std::unique_ptr<IdentifierAttr> attrs;
 };
 

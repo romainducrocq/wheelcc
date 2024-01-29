@@ -495,7 +495,7 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
-static std::unique_ptr<Type> parse_type_specifier();
+static std::shared_ptr<Type> parse_type_specifier();
 
 static std::unique_ptr<CExp> parse_factor();
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence);
@@ -539,7 +539,7 @@ cdef CCast parse_cast_factor():
     return CCast(exp, target_type)
 */
 static std::unique_ptr<CCast> parse_cast_factor() {
-    std::unique_ptr<Type> target_type = parse_type_specifier();
+    std::shared_ptr<Type> target_type = parse_type_specifier();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     std::unique_ptr<CExp> exp = parse_factor();
     return std::make_unique<CCast>(std::move(exp), std::move(target_type));
@@ -1138,7 +1138,7 @@ static std::unique_ptr<CStatement> parse_statement() {
     return parse_expression_statement();
 }
 
-static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<Type> var_type);
+static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::shared_ptr<Type> var_type);
 
 /**
 cdef CInitDecl parse_decl_for_init():
@@ -1147,7 +1147,7 @@ cdef CInitDecl parse_decl_for_init():
     return CInitDecl(init)
 */
 static std::unique_ptr<CInitDecl> parse_decl_for_init() {
-    std::unique_ptr<Type> type_specifier = parse_type_specifier();
+    std::shared_ptr<Type> type_specifier = parse_type_specifier();
     std::unique_ptr<CVariableDeclaration> init = parse_variable_declaration(std::move(type_specifier));
     return std::make_unique<CInitDecl>(std::move(init));
 }
@@ -1350,7 +1350,7 @@ cdef Type parse_type_specifier():
             f"Expected token type \"type specifier\" but found token \"{str(type_token_kinds)}\"")
 */
 // <type-specifier> ::= "int" | "long"
-static std::unique_ptr<Type> parse_type_specifier() {
+static std::shared_ptr<Type> parse_type_specifier() {
     size_t specifier = 0;
     size_t line = peek_next().line;
     std::vector<TOKEN_KIND> type_token_kinds;
@@ -1510,14 +1510,14 @@ cdef CFunctionDeclaration parse_function_declaration(Type ret_type):
 */
 // <function-declaration> ::= [ <storage-class> ] <identifier> "(" <param-list> ")" ( <block> | ";")
 // <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
-static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::unique_ptr<Type> ret_type) {
+static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::shared_ptr<Type> ret_type) {
     std::unique_ptr<CStorageClass> storage_class;
     if(peek_next().token_kind != TOKEN_KIND::identifier) {
         storage_class = parse_storage_class();
     }
     TIdentifier name; parse_identifier(name);
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
-    std::vector<std::unique_ptr<Type>> param_types;
+    std::vector<std::shared_ptr<Type>> param_types;
     std::vector<TIdentifier> params;
     switch(peek_next().token_kind) {
         case TOKEN_KIND::key_void:
@@ -1549,7 +1549,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
     }else{
         body = parse_block();
     }
-    std::unique_ptr<Type> fun_type = std::make_unique<FunType>(std::move(param_types), std::move(ret_type));
+    std::shared_ptr<Type> fun_type = std::make_shared<FunType>(std::move(param_types), std::move(ret_type));
     return std::make_unique<CFunctionDeclaration>(std::move(name), std::move(params), std::move(body),
                                                   std::move(fun_type), std::move(storage_class));
 }
@@ -1573,7 +1573,7 @@ cdef CVariableDeclaration parse_variable_declaration(Type var_type):
     return CVariableDeclaration(name, init, var_type, storage_class)
 */
 // <variable-declaration> ::= [ <storage-class> ] <identifier> [ "=" <exp> ] ";"
-static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<Type> var_type) {
+static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::shared_ptr<Type> var_type) {
     std::unique_ptr<CStorageClass> storage_class;
     if(peek_next().token_kind != TOKEN_KIND::identifier) {
         storage_class = parse_storage_class();
@@ -1594,7 +1594,7 @@ cdef CFunDecl parse_fun_decl_declaration(Type ret_type):
     cdef CFunctionDeclaration function_decl = parse_function_declaration(ret_type)
     return CFunDecl(function_decl)
 */
-static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(std::unique_ptr<Type> ret_type) {
+static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(std::shared_ptr<Type> ret_type) {
     std::unique_ptr<CFunctionDeclaration> function_decl = parse_function_declaration(std::move(ret_type));
     return std::make_unique<CFunDecl>(std::move(function_decl));
 }
@@ -1604,7 +1604,7 @@ cdef CVarDecl parse_var_decl_declaration(Type var_type):
     cdef CVariableDeclaration variable_decl = parse_variable_declaration(var_type)
     return CVarDecl(variable_decl)
 */
-static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::unique_ptr<Type> var_type) {
+static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::shared_ptr<Type> var_type) {
     std::unique_ptr<CVariableDeclaration> variable_decl = parse_variable_declaration(std::move(var_type));
     return std::make_unique<CVarDecl>(std::move(variable_decl));
 }
@@ -1623,7 +1623,7 @@ cdef CDeclaration parse_declaration():
 */
 // <declaration> ::= { <specifier> }+ (<variable-declaration> | <function-declaration>)
 static std::unique_ptr<CDeclaration> parse_declaration() {
-    std::unique_ptr<Type> type_specifier = parse_type_specifier();
+    std::shared_ptr<Type> type_specifier = parse_type_specifier();
     size_t i = peek_next().token_kind == TOKEN_KIND::identifier ? 1 : 2;
     if(peek_next_i(i).token_kind == TOKEN_KIND::parenthesis_open) {
         return parse_fun_decl_declaration(std::move(type_specifier));

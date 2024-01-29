@@ -27,7 +27,7 @@ AST_T StaticAttr::type() { return AST_T::StaticAttr_t; }
 AST_T LocalAttr::type() { return AST_T::LocalAttr_t; }
 AST_T Symbol::type() { return AST_T::Symbol_t; }
 
-FunType::FunType(std::vector<std::unique_ptr<Type>> param_types, std::unique_ptr<Type> ret_type)
+FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type)
     : param_types(std::move(param_types)), ret_type(std::move(ret_type)) {}
 
 IntInit::IntInit(TInt value)
@@ -54,7 +54,7 @@ FunAttr::FunAttr(bool is_defined, bool is_global)
 StaticAttr::StaticAttr(bool is_global, std::unique_ptr<InitialValue> init)
     : is_global(is_global), init(std::move(init)) {}
 
-Symbol::Symbol(std::unique_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
+Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
     : type_t(std::move(type_t)), attrs(std::move(attrs)) {}
 
 std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
