@@ -152,17 +152,23 @@ static void resolve_var_expression(CVar* node) {
     raise_runtime_error("Variable " + em(node->name) + " was not declared in this scope");
 }
 
-/** TODO
+/**
 cdef void resolve_cast_expression(CCast node):
     resolve_expression(node.exp)
 */
+static void resolve_cast_expression(CCast* node) {
+    resolve_expression(node->exp.get());
+}
 
-/** TODO
+/**
 cdef void resolve_constant_expression(CConstant node):
     pass
 */
+static void resolve_constant_expression(CConstant* /*node*/) {
+    ;
+}
 
-/** TODO
+/**
 cdef void resolve_assignment_expression(CAssignment node):
     if not isinstance(node.exp_left, CVar):
 
@@ -172,29 +178,43 @@ cdef void resolve_assignment_expression(CAssignment node):
     resolve_expression(node.exp_left)
     resolve_expression(node.exp_right)
 */
+static void resolve_assignment_expression(CAssignment* node) {
+    if(node->exp_left->type() != AST_T::CVar_t) {
+        raise_runtime_error("Left expression is an invalid lvalue");
+    }
+    resolve_expression(node->exp_left.get());
+    resolve_expression(node->exp_right.get());
+}
 
-/** TODO
-cdef void resolve_assignment_compound_expression(CAssignmentCompound node):
-    resolve_expression(node.exp_right)
-*/
-
-/** TODO
+/**
 cdef void resolve_unary_expression(CUnary node):
     resolve_expression(node.exp)
 */
+static void resolve_unary_expression(CUnary* node) {
+    resolve_expression(node->exp.get());
+}
 
-/** TODO
+/**
 cdef void resolve_binary_expression(CBinary node):
     resolve_expression(node.exp_left)
     resolve_expression(node.exp_right)
 */
+static void resolve_binary_expression(CBinary* node) {
+    resolve_expression(node->exp_left.get());
+    resolve_expression(node->exp_right.get());
+}
 
-/** TODO
+/**
 cdef void resolve_conditional_expression(CConditional node):
     resolve_expression(node.condition)
     resolve_expression(node.exp_middle)
     resolve_expression(node.exp_right)
 */
+static void resolve_conditional_expression(CConditional* node) {
+    resolve_expression(node->condition.get());
+    resolve_expression(node->exp_middle.get());
+    resolve_expression(node->exp_right.get());
+}
 
 /** TODO
 cdef void resolve_expression(CExp node):

@@ -708,8 +708,7 @@ cdef CAssignment parse_assigment_compound_exp(CExp exp_left, int32 precedence):
 */
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
     if(exp_left->type() != AST_T::CVar_t) {
-        raise_runtime_error_at_line("Expected token type " + em("factor") + " but found token " +
-                                    em(next_token->token), next_token->line);
+        raise_runtime_error_at_line("Left expression is an invalid lvalue", next_token->line);
     }
     TIdentifier name_2 = static_cast<CVar*>(exp_left.get())->name;
     std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
