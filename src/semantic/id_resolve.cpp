@@ -216,7 +216,7 @@ static void resolve_conditional_expression(CConditional* node) {
     resolve_expression(node->exp_right.get());
 }
 
-/** TODO
+/**
 cdef void resolve_expression(CExp node):
     if isinstance(node, CFunctionCall):
         resolve_function_call_expression(node)
@@ -251,7 +251,58 @@ cdef void resolve_expression(CExp node):
             "An error occurred in variable resolution, not all nodes were visited")
 */
 static void resolve_expression(CExp* node) {
-    // TODO for forward declare only
+    switch(node->type()) {
+        case AST_T::CFunctionCall_t: {
+            CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
+            resolve_function_call_expression(p_node);
+            checktype_function_call_expression(p_node);
+            break;
+        }
+        case AST_T::CVar_t: {
+            CVar* p_node = static_cast<CVar*>(node);
+            resolve_var_expression(p_node);
+            checktype_var_expression(p_node);
+            break;
+        }
+        case AST_T::CCast_t: {
+            CCast* p_node = static_cast<CCast*>(node);
+            resolve_cast_expression(p_node);
+            checktype_cast_expression(p_node);
+            break;
+        }
+        case AST_T::CConstant_t: {
+            CConstant* p_node = static_cast<CConstant*>(node);
+            resolve_constant_expression(p_node);
+            checktype_constant_expression(p_node);
+            break;
+        }
+        case AST_T::CAssignment_t: {
+            CAssignment* p_node = static_cast<CAssignment*>(node);
+            resolve_assignment_expression(p_node);
+            checktype_assignment_expression(p_node);
+            break;
+        }
+        case AST_T::CUnary_t: {
+            CUnary* p_node = static_cast<CUnary*>(node);
+            resolve_unary_expression(p_node);
+            checktype_unary_expression(p_node);
+            break;
+        }
+        case AST_T::CBinary_t: {
+            CBinary* p_node = static_cast<CBinary*>(node);
+            resolve_binary_expression(p_node);
+            checktype_binary_expression(p_node);
+            break;
+        }
+        case AST_T::CConditional_t: {
+            CConditional* p_node = static_cast<CConditional*>(node);
+            resolve_conditional_expression(p_node);
+            checktype_conditional_expression(p_node);
+            break;
+        }
+        default:
+            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+    }
 }
 
 /** TODO
