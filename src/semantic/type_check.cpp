@@ -924,9 +924,9 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     }
     else if(!node->init) {
         if(node->storage_class->type() == AST_T::CExtern_t) {
-            initial_value = std::make_unique<NoInitializer>();
+            initial_value = std::make_shared<NoInitializer>();
         } else {
-            initial_value = std::make_unique<Tentative>();
+            initial_value = std::make_shared<Tentative>();
         }
     }
     else {
@@ -985,6 +985,27 @@ cdef void checktype_extern_block_scope_variable_declaration(CVariableDeclaration
     cdef IdentifierAttr local_var_attrs = StaticAttr(NoInitializer(), True)
     symbol_table[node.name.str_t] = Symbol(local_var_type, local_var_attrs)
 */
+void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
+    if(node->init) {
+        raise_runtime_error("Block scope variable " + em(node->name) +
+                            " with external linkage was defined");
+    }
+    if(symbol_table.find(node->name) != symbol_table.end()) {
+        if(!is_same_type(symbol_table[node->name]->type_t.get(), node->var_type.get())) {
+            raise_runtime_error("Block scope variable " + em(node->name) +
+                                " was redeclared with conflicting type");
+        }
+        return;
+    }
+
+    std::shared_ptr<Type> local_var_type = node->var_type;
+    std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
+    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(true,
+                                                                                   std::move(initial_value));
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
+                                                              std::move(local_var_attrs));
+    symbol_table[node->name] = std::move(symbol);
+}
 
 /** TODO
 cdef void checktype_static_block_scope_variable_declaration(CVariableDeclaration node):
