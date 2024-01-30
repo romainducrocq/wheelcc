@@ -763,7 +763,7 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
     exit_scope();
 }
 
-/** TODO
+/**
 cdef void resolve_file_scope_variable_declaration(CVariableDeclaration node):
     global scoped_identifier_maps
 
@@ -776,6 +776,19 @@ cdef void resolve_file_scope_variable_declaration(CVariableDeclaration node):
     else:
         checktype_block_scope_variable_declaration(node)
 */
+static void resolve_file_scope_variable_declaration(CVariableDeclaration* node) {
+    if(external_linkage_scope_map.find(node->name) == external_linkage_scope_map.end()) {
+        external_linkage_scope_map[node->name] = current_scope_depth();
+    }
+
+    scoped_identifier_maps.back()[node->name] = node->name;
+    if(is_file_scope()) {
+        checktype_file_scope_variable_declaration(node);
+    }
+    else {
+        checktype_block_scope_variable_declaration(node);
+    }
+}
 
 /** TODO
 cdef void resolve_block_scope_variable_declaration(CVariableDeclaration node):
