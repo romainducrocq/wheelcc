@@ -435,7 +435,7 @@ static void resolve_do_while_statement(CDoWhile* node) {
     deannotate_loop();
 }
 
-/** TODO
+/**
 cdef void resolve_for_statement(CFor node):
     annotate_for_loop(node)
     enter_scope()
@@ -448,16 +448,36 @@ cdef void resolve_for_statement(CFor node):
     exit_scope()
     deannotate_loop()
 */
+static void resolve_for_statement(CFor* node) {
+    annotate_for_loop(node);
+    enter_scope();
+    resolve_for_init(node->init.get());
+    if(node->condition) {
+        resolve_expression(node->condition.get());
+    }
+    if(node->post) {
+        resolve_expression(node->post.get());
+    }
+    resolve_statement(node->body.get());
+    exit_scope();
+    deannotate_loop();
+}
 
-/** TODO
+/**
 cdef void resolve_break_statement(CBreak node):
     annotate_break_loop(node)
 */
+static void resolve_break_statement(CBreak* node) {
+    annotate_break_loop(node);
+}
 
-/** TODO
+/**
 cdef void resolve_continue_statement(CContinue node):
     annotate_continue_loop(node)
 */
+static void resolve_continue_statement(CContinue* node) {
+    annotate_continue_loop(node);
+}
 
 /** TODO
 cdef void resolve_label_statement(CLabel node):
