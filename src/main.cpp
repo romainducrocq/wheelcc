@@ -1,6 +1,7 @@
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "parser/parser.hpp"
+#include "semantic/id_resolve.hpp"
 #include "util/error.hpp"
 #ifndef __NDEBUG__
 #include "util/pprint.hpp"
@@ -130,6 +131,17 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
 #ifndef __NDEBUG__
     if(opt_code == 254) {
         debug_ast(c_ast.get(), "C AST");
+        return;
+    }
+#endif
+
+    verbose("-- Semantic analysis ... ", false);
+    analyze_semantic(c_ast.get());
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 253) {
+        debug_ast(c_ast.get(), "C AST");
+        //        debug_symbol_table() TODO
         return;
     }
 #endif
