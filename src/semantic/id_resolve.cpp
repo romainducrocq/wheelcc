@@ -790,7 +790,7 @@ static void resolve_file_scope_variable_declaration(CVariableDeclaration* node) 
     }
 }
 
-/** TODO
+/**
 cdef void resolve_block_scope_variable_declaration(CVariableDeclaration node):
     global scoped_identifier_maps
 
@@ -817,47 +817,25 @@ cdef void resolve_block_scope_variable_declaration(CVariableDeclaration node):
     checktype_init_block_scope_variable_declaration(node)
 */
 static void resolve_block_scope_variable_declaration(CVariableDeclaration* node) {
-    //    if node.name.str_t in scoped_identifier_maps[-1] and \
-    //       not (node.name.str_t in external_linkage_scope_map and
-    //            isinstance(node.storage_class, CExtern)):
-    //
-    //        raise RuntimeError(
-    //            f"Variable {node.name.str_t} was already declared in this scope")
     if(scoped_identifier_maps.back().find(node->name) != scoped_identifier_maps.back().end() &&
        !(external_linkage_scope_map.find(node->name) != external_linkage_scope_map.end() &&
          node->storage_class->type() == AST_T::CExtern_t)) {
        raise_runtime_error("Variable " + em(node->name) +
                            " was already declared in this scope");
     }
-    //
-    //    if isinstance(node.storage_class, CExtern):
-    //        resolve_file_scope_variable_declaration(node)
-    //        return
-    //
-
     if(node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);
         return;
     }
 
-    //    cdef TIdentifier name = resolve_variable_identifier(node.name)
-    //    scoped_identifier_maps[-1][node.name.str_t] = name.str_t
     scoped_identifier_maps.back()[node->name] = resolve_variable_identifier(node->name);
-    //    node.name = name
     node->name = scoped_identifier_maps.back()[node->name];
-    //    checktype_block_scope_variable_declaration(node)
     checktype_block_scope_variable_declaration(node);
 
-    //
-    //    if node.init and \
-        //       not node.storage_class:
-    //        resolve_expression(node.init)
     if(node->init &&
        !node->storage_class) {
         resolve_expression(node->init.get());
     }
-    //
-    //    checktype_init_block_scope_variable_declaration(node)
     checktype_init_block_scope_variable_declaration(node);
 }
 
