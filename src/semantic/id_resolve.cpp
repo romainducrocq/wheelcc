@@ -697,7 +697,7 @@ static void resolve_params(CFunctionDeclaration* node) {
     }
 }
 
-/** TODO
+/**
 cdef void resolve_function_declaration(CFunctionDeclaration node):
     global scoped_identifier_maps
 
@@ -731,64 +731,36 @@ cdef void resolve_function_declaration(CFunctionDeclaration node):
     exit_scope()
 */
 static void resolve_function_declaration(CFunctionDeclaration* node) {
-    //    if not is_file_scope():
     if(!is_file_scope()) {
-        //        if node.body:
-        //
-        //            raise RuntimeError(
-        //                f"Block scoped function definition {node.name.str_t} can not be nested")
-        //
         if(node->body) {
             raise_runtime_error("Block scoped function definition " + em(node->name) +
                                 " can not be nested");
         }
-        //        if isinstance(node.storage_class, CStatic):
-        //
-        //            raise RuntimeError(
-        //                f"Block scoped function definition {node.name.str_t} can not be static")
         if(node->storage_class->type() == AST_T::CStatic_t) {
             raise_runtime_error("Block scoped function definition " + em(node->name) +
                                 " can not be static");
         }
-        //
-
     }
 
-    //    if node.name.str_t not in external_linkage_scope_map:
     if(external_linkage_scope_map.find(node->name) == external_linkage_scope_map.end()) {
-        //        if node.name.str_t in scoped_identifier_maps[-1]:
-        //
-        //            raise RuntimeError(
-        //                f"Function {node.name.str_t} was already declared in this scope")
-        //
         if(scoped_identifier_maps.back().find(node->name) != scoped_identifier_maps.back().end()) {
             raise_runtime_error("Function " + em(node->name) +
                                 " was already declared in this scope");
         }
-        //        external_linkage_scope_map[node.name.str_t] = current_scope_depth()
         external_linkage_scope_map[node->name] = current_scope_depth();
     }
-    //
-    //    scoped_identifier_maps[-1][node.name.str_t] = node.name.str_t
+
     scoped_identifier_maps.back()[node->name] = node->name;
-    //    checktype_function_declaration(node)
     checktype_function_declaration(node);
-    //
-    //    enter_scope()
+
     enter_scope();
-    //    if node.params:
-    //        resolve_params(node)
     if(!node->params.empty()) {
         resolve_params(node);
     }
-    //    if node.body:
-    //        resolve_block(node.body)
     if(node->body) {
         resolve_block(node->body.get());
     }
-    //    exit_scope()
     exit_scope();
-
 }
 
 /** TODO
