@@ -305,7 +305,10 @@ static void resolve_expression(CExp* node) {
     }
 }
 
+static void resolve_block(CBlock* node);
 static void resolve_block_scope_variable_declaration(CVariableDeclaration* node);
+
+static void resolve_statement(CStatement* node);
 
 /**
 cdef void resolve_for_block_scope_variable_declaration(CVariableDeclaration node):
@@ -353,27 +356,41 @@ static void resolve_for_init(CForInit* node) {
     }
 }
 
-/** TODO
+/**
 cdef void resolve_null_statement(CNull node):
     pass
 */
+static void resolve_null_statement(CNull* /*node*/) {
+    ;
+}
 
-/** TODO
+/**
 cdef void resolve_return_statement(CReturn node):
     resolve_expression(node.exp)
 */
+static void resolve_return_statement(CReturn* node) {
+    resolve_expression(node->exp.get());
+}
 
-/** TODO
+/**
 cdef void resolve_expression_statement(CExpression node):
     resolve_expression(node.exp)
 */
+static void resolve_expression_statement(CExpression* node) {
+    resolve_expression(node->exp.get());
+}
 
-/** TODO
+/**
 cdef void resolve_compound_statement(CCompound node):
     enter_scope()
     resolve_block(node.block)
     exit_scope()
 */
+static void resolve_compound_statement(CCompound* node) {
+    enter_scope();
+    resolve_block(node->block.get());
+    exit_scope();
+}
 
 /** TODO
 cdef void resolve_if_statement(CIf node):
@@ -487,6 +504,9 @@ cdef void resolve_statement(CStatement node):
         raise RuntimeError(
             "An error occurred in variable resolution, not all nodes were visited")
 */
+static void resolve_statement(CStatement* node) {
+    // TODO for forward declare only
+}
 
 /** TODO
 cdef void resolve_block_items(list[CBlockItem] list_node):
@@ -512,6 +532,9 @@ cdef void resolve_block(CBlock node):
         raise RuntimeError(
             "An error occurred in variable resolution, not all nodes were visited")
 */
+static void resolve_block(CBlock* node) {
+    // TODO for forward declare only
+}
 
 /** TODO
 cdef void resolve_params(CFunctionDeclaration node):
