@@ -500,7 +500,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CFunctionDeclaration_t: {
             field("CFunctionDeclaration", "", ++t);
             CFunctionDeclaration* p_node = static_cast<CFunctionDeclaration*>(node);
-            field("TIdentifier", p_node->target, t+1);
+            field("TIdentifier", p_node->name, t+1);
             field("List[" + std::to_string(p_node->params.size()) + "]", "", t+1);
             for(const auto& item: p_node->params) {
                 field("TIdentifier", item, t+2);
@@ -513,7 +513,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CVariableDeclaration_t: {
             field("CVariableDeclaration", "", ++t);
             CVariableDeclaration* p_node = static_cast<CVariableDeclaration*>(node);
-            field("TIdentifier", p_node->target, t+1);
+            field("TIdentifier", p_node->name, t+1);
             print_ast(p_node->init.get(), t);
             print_ast(p_node->var_type.get(), t);
             print_ast(p_node->storage_class.get(), t);

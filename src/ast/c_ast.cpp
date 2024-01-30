@@ -158,16 +158,16 @@ CS::CS(std::unique_ptr<CStatement> statement)
 CD::CD(std::unique_ptr<CDeclaration> declaration)
     : declaration(std::move(declaration)) {}
 
-CFunctionDeclaration::CFunctionDeclaration(TIdentifier target, std::vector<TIdentifier> params,
+CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
                                            std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
                                            std::unique_ptr<CStorageClass> storage_class)
-    : target(std::move(target)), params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
+    : name(std::move(name)), params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
       storage_class(std::move(storage_class)) {}
 
-CVariableDeclaration::CVariableDeclaration(TIdentifier target, std::unique_ptr<CExp> init,
+CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CExp> init,
                                            std::shared_ptr<Type> var_type,
                                            std::unique_ptr<CStorageClass> storage_class)
-    :  target(std::move(target)), init(std::move(init)), var_type(std::move(var_type)),
+    :  name(std::move(name)), init(std::move(init)), var_type(std::move(var_type)),
        storage_class(std::move(storage_class)) {}
 
 CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl)

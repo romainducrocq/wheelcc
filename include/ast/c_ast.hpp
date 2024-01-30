@@ -507,11 +507,11 @@ struct CExtern : CStorageClass {
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
-    CFunctionDeclaration(TIdentifier target, std::vector<TIdentifier> params,
+    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
                          std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
                          std::unique_ptr<CStorageClass> storage_class);
 
-    TIdentifier target;
+    TIdentifier name;
     std::vector<TIdentifier> params;
     // Optional
     std::unique_ptr<CBlock> body;
@@ -526,10 +526,10 @@ struct CFunctionDeclaration : Ast {
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
-    CVariableDeclaration(TIdentifier target, std::unique_ptr<CExp> init, std::shared_ptr<Type> var_type,
+    CVariableDeclaration(TIdentifier name, std::unique_ptr<CExp> init, std::shared_ptr<Type> var_type,
                          std::unique_ptr<CStorageClass> storage_class);
 
-    TIdentifier target;
+    TIdentifier name;
     std::unique_ptr<CExp> init;
     std::shared_ptr<Type> var_type;
     std::unique_ptr<CStorageClass> storage_class;

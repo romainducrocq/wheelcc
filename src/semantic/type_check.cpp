@@ -7,12 +7,12 @@
 #include <inttypes.h>
 #include <string>
 #include <memory>
-#include <set>
+#include <unordered_set>
 
 /**
 cdef set[str] defined_set = set()
 */
-static std::set<TIdentifier> defined_set;
+static std::unordered_set<TIdentifier> defined_set;
 
 /**
 cdef str function_declaration_name_str = ""
@@ -494,6 +494,76 @@ cdef void checktype_function_declaration(CFunctionDeclaration node):
 
     function_declaration_name_str = node.name.str_t
 */
+void checktype_function_declaration(CFunctionDeclaration* node) {
+    //    cdef bint is_defined = node.name.str_t in defined_set
+    bool is_defined = defined_set.find(node->name) != defined_set.end();
+    //    cdef bint is_global = not isinstance(node.storage_class, CStatic)
+    bool is_global = node->storage_class->type() != AST_T::CStatic_t;
+    //
+    //    if node.name.str_t in symbol_table:
+    if(symbol_table.find(node->name) != symbol_table.end()) {
+        //        if not
+        //        (isinstance(symbol_table[node.name.str_t].type_t, FunType) and
+        //         len(symbol_table[node.name.str_t].type_t.param_types) == len(node.params) and
+        //         is_same_fun_type(symbol_table[node.name.str_t].type_t, node.fun_type)
+        //        ):
+        //
+        //            raise RuntimeError(
+        //                f"Function declaration {node.name.str_t} was redeclared with conflicting type")
+        //
+        FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
+        if(!(symbol_table[node->name]->type_t->type() == AST_T::FunType_t &&
+            fun_type->param_types.size() == node->params.size() &&
+            is_same_fun_type(fun_type, static_cast<FunType*>(node->fun_type.get())))) {
+            raise_runtime_error("Function declaration " + em(node->name) +
+                                "was redeclared with conflicting type");
+        }
+        //        if is_defined and \
+        //           node.body:
+        //
+        //                raise RuntimeError(
+        //                    f"Function {node.name.str_t} was already defined")
+        //
+        if(is_defined &&
+           node->body) {
+            raise_runtime_error("Function declaration " + em(node->name) + "was already defined");
+        }
+        //        if not is_global and \
+        //           symbol_table[node.name.str_t].attrs.is_global:
+        //
+        //            raise RuntimeError(
+        //                f"Static function {node.name.str_t} was already defined non-static")
+        //
+        FunAttr* fun_attrs = static_cast<FunAttr*>(symbol_table[node->name]->attrs.get());
+        if(!is_global &&
+           fun_attrs->is_global) {
+            raise_runtime_error("Static function " + em(node->name) + "was already defined non-static");
+        }
+        //        is_global = symbol_table[node.name.str_t].attrs.is_global
+        is_global = fun_attrs->is_global;
+        //
+    }
+    //    if node.body:
+    //        defined_set.add(node.name.str_t)
+    //        is_defined = True
+    //
+    if(node->body) {
+        defined_set.insert(node->name);
+        is_defined = true;
+    }
+
+    //    cdef Type fun_type = node.fun_type
+    std::shared_ptr<Type> fun_type = node->fun_type;
+    //    cdef IdentifierAttr fun_attrs = FunAttr(is_defined, is_global)
+    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(is_defined, is_global);
+    //    symbol_table[node.name.str_t] = Symbol(fun_type, fun_attrs)
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
+    symbol_table[node->name] = std::move(symbol);
+    //
+    //    function_declaration_name_str = node.name.str_t
+    function_declaration_name = node->name;
+}
+
 
 /** TODO
 cdef Initial checktype_constant_initial(CConstant node, Type static_init_type):
