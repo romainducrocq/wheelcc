@@ -2,3 +2,5 @@ change unique_ptr to shared_ptr when a resource is shared between multiple objec
     - maybe for types
     - maybe for constants
     - maybe for static inits in symbol table
+
+pprint symbol table

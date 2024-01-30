@@ -36,13 +36,13 @@ static void debug_ast(Ast* node, const std::string& name) {
     }
 }
 
-#endif
+static void debug_symbol_table() {
+    if(VERBOSE) {
+        pretty_print_symbol_table();
+    }
+}
 
-/**  TODO
-cdef void debug_symbol_table(): #
-    if VERBOSE: #
-        pretty_print_symbol_table() #
-*/
+#endif
 
 /** TODO
 cdef void debug_backend_symbol_table(): #
@@ -141,7 +141,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
 #ifndef __NDEBUG__
     if(opt_code == 253) {
         debug_ast(c_ast.get(), "C AST");
-        //        debug_symbol_table() TODO
+        debug_symbol_table();
         return;
     }
 #endif
