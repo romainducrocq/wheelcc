@@ -665,7 +665,7 @@ static void resolve_block(CBlock* node) {
     }
 }
 
-/** TODO
+/**
 cdef void resolve_params(CFunctionDeclaration node):
     cdef Py_ssize_t param
     cdef TIdentifier name
@@ -682,6 +682,20 @@ cdef void resolve_params(CFunctionDeclaration node):
     if node.body:
         checktype_params(node)
 */
+static void resolve_params(CFunctionDeclaration* node) {
+    for(size_t param = 0; param < node->params.size(); param++) {
+        if(scoped_identifier_maps.back().find(node->params[param]) != scoped_identifier_maps.back().end()) {
+            raise_runtime_error("Variable " + node->params[param] +
+                                " was already declared in this scope");
+        }
+        scoped_identifier_maps.back()[node->params[param]] = resolve_variable_identifier(node->params[param]);
+        node->params[param] = scoped_identifier_maps.back()[node->params[param]];
+    }
+
+    if(node->body) {
+        checktype_params(node);
+    }
+}
 
 /** TODO
 cdef void resolve_function_declaration(CFunctionDeclaration node):
