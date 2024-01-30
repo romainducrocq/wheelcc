@@ -839,6 +839,16 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
     checktype_init_block_scope_variable_declaration(node);
 }
 
+/**
+cdef void init_resolve_labels():
+    goto_map.clear()
+    label_set.clear()
+*/
+static void init_resolve_labels() {
+    goto_map.clear();
+    label_set.clear();
+}
+
 /** TODO
 cdef void resolve_fun_decl_declaration(CFunDecl node):
     if is_file_scope():
@@ -848,14 +858,32 @@ cdef void resolve_fun_decl_declaration(CFunDecl node):
     if is_file_scope():
         resolve_label()
 */
+static void resolve_fun_decl_declaration(CFunDecl* node) {
+    if(is_file_scope()) {
+        init_resolve_labels();
+        init_annotate_loops();
+    }
+    resolve_function_declaration(node->function_decl.get());
+    if(is_file_scope()) {
+        resolve_label();
+    }
+}
 
-/** TODO
+/**
 cdef void resolve_var_decl_declaration(CVarDecl node):
     if is_file_scope():
         resolve_file_scope_variable_declaration(node.variable_decl)
     else:
         resolve_block_scope_variable_declaration(node.variable_decl)
 */
+static void resolve_var_decl_declaration(CVarDecl* node) {
+    if(is_file_scope()) {
+        resolve_file_scope_variable_declaration(node->variable_decl.get());
+    }
+    else {
+        resolve_block_scope_variable_declaration(node->variable_decl.get());
+    }
+}
 
 /** TODO
 cdef void resolve_declaration(CDeclaration node):
@@ -871,12 +899,6 @@ cdef void resolve_declaration(CDeclaration node):
 static void resolve_declaration(CDeclaration* node) {
     // TODO for forward declare only
 }
-
-/** TODO
-cdef void init_resolve_labels():
-    goto_map.clear()
-    label_set.clear()
-*/
 
 /** TODO
 cdef void init_resolve_identifiers():
