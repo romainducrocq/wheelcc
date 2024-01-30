@@ -455,7 +455,7 @@ static void checktype_params(CFunctionDeclaration* node) {
     }
 }
 
-/** TODO
+/**
 cdef void checktype_function_declaration(CFunctionDeclaration node):
     global function_declaration_name_str
 
@@ -534,9 +534,7 @@ void checktype_function_declaration(CFunctionDeclaration* node) {
     function_declaration_name = node->name;
 }
 
-
-
-/** TODO
+/**
 cdef TLong copy_int_to_long(TInt node):
     return TLong(<int64>node.int_t)
 
@@ -827,7 +825,7 @@ std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* stati
     return std::make_unique<Initial>(std::move(static_init));
 }
 
-/** TODO
+/**
 cdef Initial checktype_no_init_initial(Type static_init_type):
     if isinstance(static_init_type, Int):
         return Initial(IntInit(TInt(0)))
@@ -840,6 +838,34 @@ cdef Initial checktype_no_init_initial(Type static_init_type):
     elif isinstance(static_init_type, ULong):
         return Initial(ULongInit(TULong(0)))
 */
+std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type) {
+    std::unique_ptr<StaticInit> static_init;
+    switch(static_init_type->type()) {
+        case AST_T::Int_t: {
+            static_init = std::make_unique<IntInit>(0);
+            break;
+        }
+        case AST_T::Long_t: {
+            static_init = std::make_unique<LongInit>(0);
+            break;
+        }
+        case AST_T::Double_t: {
+            static_init = std::make_unique<DoubleInit>(0.0);
+            break;
+        }
+        case AST_T::UInt_t: {
+            static_init = std::make_unique<UIntInit>(0);
+            break;
+        }
+        case AST_T::ULong_t: {
+            static_init = std::make_unique<ULongInit>(0);
+            break;
+        }
+        default:
+            break;
+    }
+    return std::make_unique<Initial>(std::move(static_init));
+}
 
 /** TODO
 cdef void checktype_file_scope_variable_declaration(CVariableDeclaration node):
