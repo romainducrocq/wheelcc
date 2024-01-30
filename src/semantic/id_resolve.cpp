@@ -1,37 +1,59 @@
 #include "semantic/id_resolve.hpp"
+#include "semantic/loops.hpp"
+#include "semantic/type_check.hpp"
+#include "util/error.hpp"
+#include "ast/ast.hpp"
 
-/** TODO
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+/**
 cdef dict[str, Py_ssize_t] external_linkage_scope_map = {}
 */
+static std::unordered_map<TIdentifier, size_t> external_linkage_scope_map;
 
-/** TODO
+/**
 cdef list[dict[str, str]] scoped_identifier_maps = [{}]
 */
+// TODO push_back empty dict in init
+static std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
 
-/** TODO
+/**
 cdef dict[str, str] goto_map = {}
 */
+static std::unordered_map<TIdentifier, TIdentifier> goto_map;
 
-/** TODO
+/**
 cdef set[str] label_set = set()
 */
+static std::unordered_set<TIdentifier> label_set;
 
-/** TODO
+/**
 cdef Py_ssize_t current_scope_depth():
     return len(scoped_identifier_maps)
 */
+static size_t current_scope_depth() {
+    return scoped_identifier_maps.size();
+}
 
-/** TODO
+/**
 cdef bint is_file_scope():
     return current_scope_depth() == 1
 */
+static bool is_file_scope() {
+    return current_scope_depth() == 1;
+}
 
-/** TODO
+/**
 cdef void enter_scope():
     scoped_identifier_maps.append({})
 */
+static void enter_scope() {
+    scoped_identifier_maps.emplace_back();
+}
 
-/** TODO
+/**
 cdef void exit_scope():
     cdef str identifier
     for identifier in scoped_identifier_maps[-1]:
@@ -40,8 +62,17 @@ cdef void exit_scope():
             del external_linkage_scope_map[identifier]
     del scoped_identifier_maps[-1]
 */
+static void exit_scope() {
+    for(const auto& identifier: scoped_identifier_maps.back()) {
+        if(external_linkage_scope_map.find(identifier.first) != external_linkage_scope_map.end() &&
+           external_linkage_scope_map[identifier.first] == current_scope_depth()) {
+            external_linkage_scope_map.erase(identifier.first);
+        }
+    }
+    scoped_identifier_maps.pop_back();
+}
 
-/** TODO
+/**
 cdef void resolve_label():
     cdef str target
     for target in goto_map:
@@ -50,6 +81,14 @@ cdef void resolve_label():
             raise RuntimeError(
                 f"An error occurred in variable resolution, goto \"{target}\" has no target label")
 */
+static void resolve_label() {
+    for(const auto& target: goto_map) {
+        if(label_set.find(target.first) == label_set.end()) {
+            raise_runtime_error("An error occurred in variable resolution, goto " + em(target.first) +
+                                " has no target label");
+        }
+    }
+}
 
 /** TODO
 cdef void resolve_function_call_expression(CFunctionCall node):
