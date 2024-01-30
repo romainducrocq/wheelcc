@@ -193,19 +193,19 @@ void checktype_function_call_expression(CFunctionCall* node) {
     if(symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
         raise_runtime_error("Variable " + em(node->name) + " was used as a function");
     }
-    FunType* symbol = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
-    if(symbol->param_types.size() != node->args.size()) {
+    FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
+    if(fun_type->param_types.size() != node->args.size()) {
         raise_runtime_error("Function " + em(node->name) + " has " +
-                            em(std::to_string(symbol->param_types.size())) +
+                            em(std::to_string(fun_type->param_types.size())) +
                             " arguments but was called with " + em(std::to_string(node->args.size())));
     }
     for(size_t i = 0; i < node->args.size(); i ++) {
-        if(!is_same_type(node->args[i]->exp_type.get(), symbol->param_types[i].get())) {
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->args[i]), symbol->param_types[i]);
+        if(!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
+            std::unique_ptr<CExp> exp = cast_expression(std::move(node->args[i]), fun_type->param_types[i]);
             node->args[i] = std::move(exp);
         }
     }
-    node->exp_type = symbol->ret_type;
+    node->exp_type = fun_type->ret_type;
 }
 
 /**
@@ -419,27 +419,41 @@ cdef void checktype_return_statement(CReturn node):
         node.exp = cast_expression(node.exp, symbol_table[function_declaration_name_str].type_t.ret_type)
 */
 void checktype_return_statement(CReturn* node) {
-    FunType* symbol = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
-    if(!is_same_type(node->exp->exp_type.get(), symbol->ret_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), symbol->ret_type);
+    FunType* fun_type = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
+    if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), fun_type->ret_type);
         node->exp = std::move(exp);
     }
 }
 
-/** TODO
+/**
 cdef Symbol checktype_param(FunType fun_type, Py_ssize_t param):
     cdef Type type_t = fun_type.param_types[param]
     cdef IdentifierAttr param_attrs = LocalAttr()
     return Symbol(type_t, param_attrs)
 */
+static std::unique_ptr<Symbol> checktype_param(FunType* fun_type, size_t param) {
+    std::shared_ptr<Type> type_t = fun_type->param_types[param];
+    std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
+    return std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
+}
 
-/** TODO
+/**
 cdef void checktype_params(CFunctionDeclaration node):
     cdef Py_ssize_t param
     if node.body:
         for param in range(len(node.params)):
             symbol_table[node.params[param].str_t] = checktype_param(node.fun_type, param)
 */
+static void checktype_params(CFunctionDeclaration* node) {
+    if(node->body) {
+        FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
+        for(size_t param = 0; param < node->params.size(); param++) {
+            std::unique_ptr<Symbol> symbol = checktype_param(fun_type, param);
+            symbol_table[node->params[param]] = std::move(symbol);
+        }
+    }
+}
 
 /** TODO
 cdef void checktype_function_declaration(CFunctionDeclaration node):
