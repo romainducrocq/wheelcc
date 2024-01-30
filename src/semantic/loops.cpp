@@ -87,6 +87,6 @@ void deannotate_loop() {
 cdef void init_annotate_loops():
     loop_labels.clear()
 */
-void init_annotate_loops() {
+void clear_annotate_loops() {
     loop_labels.clear();
 }

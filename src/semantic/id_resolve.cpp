@@ -844,12 +844,12 @@ cdef void init_resolve_labels():
     goto_map.clear()
     label_set.clear()
 */
-static void init_resolve_labels() {
+static void clear_resolve_labels() {
     goto_map.clear();
     label_set.clear();
 }
 
-/** TODO
+/**
 cdef void resolve_fun_decl_declaration(CFunDecl node):
     if is_file_scope():
         init_resolve_labels()
@@ -860,8 +860,8 @@ cdef void resolve_fun_decl_declaration(CFunDecl node):
 */
 static void resolve_fun_decl_declaration(CFunDecl* node) {
     if(is_file_scope()) {
-        init_resolve_labels();
-        init_annotate_loops();
+        clear_resolve_labels();
+        clear_annotate_loops();
     }
     resolve_function_declaration(node->function_decl.get());
     if(is_file_scope()) {
@@ -885,7 +885,7 @@ static void resolve_var_decl_declaration(CVarDecl* node) {
     }
 }
 
-/** TODO
+/**
 cdef void resolve_declaration(CDeclaration node):
     if isinstance(node, CFunDecl):
         resolve_fun_decl_declaration(node)
@@ -910,14 +910,14 @@ static void resolve_declaration(CDeclaration* node) {
     }
 }
 
-/** TODO
+/**
 cdef void init_resolve_identifiers():
     external_linkage_scope_map.clear()
     scoped_identifier_maps.clear()
     enter_scope()
 */
 
-/** TODO
+/**
 cdef void resolve_identifiers(CProgram node):
     init_resolve_identifiers()
     init_check_types()
@@ -927,9 +927,20 @@ cdef void resolve_identifiers(CProgram node):
         resolve_declaration(node.declarations[declaration])
         resolve_label()
 */
+static void resolve_identifiers(CProgram* node) {
+    enter_scope();
 
-/** TODO
+    for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
+        resolve_declaration(node->declarations[declaration].get());
+        resolve_label();
+    }
+}
+
+/**
 cdef void analyze_semantic(CProgram c_ast):
 
     resolve_identifiers(c_ast)
 */
+void analyze_semantic(CProgram* node) {
+    resolve_identifiers(node);
+}

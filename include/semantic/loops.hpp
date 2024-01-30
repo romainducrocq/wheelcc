@@ -9,6 +9,6 @@ void annotate_for_loop(CFor* node);
 void annotate_break_loop(CBreak* node);
 void annotate_continue_loop(CContinue* node);
 void deannotate_loop();
-void init_annotate_loops();
+void clear_annotate_loops();
 
 #endif
