@@ -39,7 +39,7 @@ cdef bint is_same_fun_type(FunType fun_type1, FunType fun_type2):
             return False
     return True
 */
-bool is_same_fun_type(FunType* fun_type1, FunType* fun_type2) {
+static bool is_same_fun_type(FunType* fun_type1, FunType* fun_type2) {
     if(fun_type1->param_types.size() != fun_type2->param_types.size()) {
         return false;
     }
@@ -125,7 +125,7 @@ cdef Type get_joint_type(Type type1, Type type2):
     else:
         return type2
 */
-std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_ptr<Type>& type2) {
+static std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_ptr<Type>& type2) {
     if(is_same_type(type1.get(), type2.get())) {
         return type1;
     }
@@ -163,7 +163,7 @@ cdef CCast cast_expression(CExp node, Type exp_type):
     checktype_cast_expression(exp)
     return exp
 */
-std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
+static std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
     std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type);
     checktype_cast_expression(exp.get());
     return exp;
@@ -447,7 +447,7 @@ cdef void checktype_params(CFunctionDeclaration node):
         for param in range(len(node.params)):
             symbol_table[node.params[param].str_t] = checktype_param(node.fun_type, param)
 */
-static void checktype_params(CFunctionDeclaration* node) {
+void checktype_params(CFunctionDeclaration* node) {
     if(node->body) {
         FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
         for(size_t param = 0; param < node->params.size(); param++) {
@@ -675,7 +675,7 @@ cdef TUInt copy_ulong_to_uint(TULong node):
         elif isinstance(node.constant, CConstULong):
             return Initial(ULongInit(copy_ulong(node.constant.value)))
 */
-std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* static_init_type) {
+static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* static_init_type) {
     std::unique_ptr<StaticInit> static_init;
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
@@ -842,7 +842,7 @@ cdef Initial checktype_no_init_initial(Type static_init_type):
     elif isinstance(static_init_type, ULong):
         return Initial(ULongInit(TULong(0)))
 */
-std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type) {
+static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type) {
     std::unique_ptr<StaticInit> static_init;
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
@@ -985,7 +985,7 @@ cdef void checktype_extern_block_scope_variable_declaration(CVariableDeclaration
     cdef IdentifierAttr local_var_attrs = StaticAttr(NoInitializer(), True)
     symbol_table[node.name.str_t] = Symbol(local_var_type, local_var_attrs)
 */
-void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
+static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
     if(node->init) {
         raise_runtime_error("Block scope variable " + em(node->name) +
                             " with external linkage was defined");
@@ -1024,7 +1024,7 @@ cdef void checktype_static_block_scope_variable_declaration(CVariableDeclaration
     cdef IdentifierAttr local_var_attrs = StaticAttr(initial_value, False)
     symbol_table[node.name.str_t] = Symbol(local_var_type, local_var_attrs)
 */
-void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
+static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     std::shared_ptr<InitialValue> initial_value;
 
     if(node->init->type() == AST_T::CConstant_t) {
@@ -1053,7 +1053,7 @@ cdef void checktype_automatic_block_scope_variable_declaration(CVariableDeclarat
     cdef IdentifierAttr local_var_attrs = LocalAttr()
     symbol_table[node.name.str_t] = Symbol(local_var_type, local_var_attrs)
 */
-void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
+static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
     std::shared_ptr<Type> local_var_type = node->var_type;
     std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
