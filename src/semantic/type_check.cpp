@@ -47,7 +47,8 @@ bool is_same_fun_type(FunType* fun_type1, FunType* fun_type2) {
         return false;
     }
     for(size_t param_type = 0; param_type < fun_type1->param_types.size(); param_type++) {
-        if(!is_same_type(fun_type1->param_types[param_type].get(), fun_type2->param_types[param_type].get())) {
+        if(!is_same_type(fun_type1->param_types[param_type].get(),
+                         fun_type2->param_types[param_type].get())) {
             return false;
         }
     }
@@ -346,7 +347,8 @@ void checktype_binary_expression(CBinary* node) {
             // if the value of the right operand is negative or is greater than or equal
             // to the width of the promoted left operand, the behavior is undefined
             if(!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())){
-                std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
+                std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right),
+                                                            node->exp_left->exp_type);
                 node->exp_right = std::move(exp);
             }
             node->exp_type = node->exp_left->exp_type;
@@ -914,7 +916,7 @@ cdef void checktype_file_scope_variable_declaration(CVariableDeclaration node):
 */
 void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     //    cdef InitialValue initial_value
-    std::unique_ptr<InitialValue> initial_value;
+    std::shared_ptr<InitialValue> initial_value;
     //    cdef bint is_global = not isinstance(node.storage_class, CStatic)
     bool is_global = node->storage_class->type() != AST_T::CStatic_t;
     //
@@ -988,9 +990,7 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
             //            else:
             //                initial_value = symbol_table[node.name.str_t].attrs.init
             else {
-                // TODO
-                // initial_value = global_var_attrs->init;
-                ;
+                initial_value = global_var_attrs->init;
             }
         }
         //
@@ -999,9 +999,11 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     //    cdef Type global_var_type = node.var_type
     std::shared_ptr<Type> global_var_type = node->var_type;
     //    cdef IdentifierAttr global_var_attrs = StaticAttr(initial_value, is_global)
-    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(is_global, std::move(initial_value));
+    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(is_global,
+                                                                                    std::move(initial_value));
     //    symbol_table[node.name.str_t] = Symbol(global_var_type, global_var_attrs)
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(global_var_type), std::move(global_var_attrs));
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(global_var_type),
+                                                              std::move(global_var_attrs));
     symbol_table[node->name] = std::move(symbol);
 }
 

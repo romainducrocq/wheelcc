@@ -145,10 +145,10 @@ struct FunAttr : IdentifierAttr {
 struct StaticAttr : IdentifierAttr {
     AST_T type() override;
     StaticAttr() = default;
-    StaticAttr(bool is_global, std::unique_ptr<InitialValue> init);
+    StaticAttr(bool is_global, std::shared_ptr<InitialValue> init);
 
     bool is_global;
-    std::unique_ptr<InitialValue> init;
+    std::shared_ptr<InitialValue> init;
 };
 
 struct LocalAttr : IdentifierAttr {

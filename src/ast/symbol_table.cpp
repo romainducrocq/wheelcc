@@ -51,7 +51,7 @@ Initial::Initial(std::unique_ptr<StaticInit> static_init)
 FunAttr::FunAttr(bool is_defined, bool is_global)
     : is_defined(is_defined), is_global(is_global) {}
 
-StaticAttr::StaticAttr(bool is_global, std::unique_ptr<InitialValue> init)
+StaticAttr::StaticAttr(bool is_global, std::shared_ptr<InitialValue> init)
     : is_global(is_global), init(std::move(init)) {}
 
 Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
