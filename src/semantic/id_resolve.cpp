@@ -517,7 +517,7 @@ static void resolve_label_statement(CLabel* node) {
     resolve_statement(node->jump_to.get());
 }
 
-/** TODO
+/**
 cdef void resolve_goto_statement(CGoto node):
     cdef TIdentifier target
     if node.target.str_t in goto_map:
@@ -528,6 +528,15 @@ cdef void resolve_goto_statement(CGoto node):
         goto_map[node.target.str_t] = target.str_t
         node.target = target
 */
+static void resolve_goto_statement(CGoto* node) {
+    if(goto_map.find(node->target) != goto_map.end()) {
+        node->target = goto_map[node->target];
+    }
+    else {
+        goto_map[node->target] = resolve_label_identifier(node->target);
+        node->target = goto_map[node->target];
+    }
+}
 
 /** TODO
 cdef void resolve_statement(CStatement node):
