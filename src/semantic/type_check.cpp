@@ -510,13 +510,15 @@ void checktype_function_declaration(CFunctionDeclaration* node) {
 
         if(is_defined &&
            node->body) {
-            raise_runtime_error("Function declaration " + em(node->name) + "was already defined");
+            raise_runtime_error("Function declaration " + em(node->name) +
+                                "was already defined");
         }
 
         FunAttr* fun_attrs = static_cast<FunAttr*>(symbol_table[node->name]->attrs.get());
         if(!is_global &&
            fun_attrs->is_global) {
-            raise_runtime_error("Static function " + em(node->name) + "was already defined non-static");
+            raise_runtime_error("Static function " + em(node->name) +
+                                "was already defined non-static");
         }
         is_global = fun_attrs->is_global;
     }
@@ -910,6 +912,99 @@ cdef void checktype_file_scope_variable_declaration(CVariableDeclaration node):
     cdef IdentifierAttr global_var_attrs = StaticAttr(initial_value, is_global)
     symbol_table[node.name.str_t] = Symbol(global_var_type, global_var_attrs)
 */
+void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
+    //    cdef InitialValue initial_value
+    std::unique_ptr<InitialValue> initial_value;
+    //    cdef bint is_global = not isinstance(node.storage_class, CStatic)
+    bool is_global = node->storage_class->type() != AST_T::CStatic_t;
+    //
+    //    if isinstance(node.init, CConstant):
+    //        initial_value = checktype_constant_initial(node.init, node.var_type)
+    if(node->init->type() == AST_T::CConstant_t) {
+        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
+                                                   node->var_type.get());
+    }
+    //    elif not node.init:
+    //        if isinstance(node.storage_class, CExtern):
+    //            initial_value = NoInitializer()
+    //        else:
+    //            initial_value = Tentative()
+    else if(!node->init) {
+        if(node->storage_class->type() == AST_T::CExtern_t) {
+            initial_value = std::make_unique<NoInitializer>();
+        } else {
+            initial_value = std::make_unique<Tentative>();
+        }
+    }
+    //    else:
+    //
+    //        raise RuntimeError(
+    //            f"File scope variable {node.name.str_t} was initialized to a non-constant")
+    //
+    else {
+        raise_runtime_error("File scope variable " + em(node->name) +
+                            " was initialized to a non-constant");
+    }
+
+    //    if node.name.str_t in symbol_table:
+    if(symbol_table.find(node->name) != symbol_table.end()) {
+        //        if not is_same_type(symbol_table[node.name.str_t].type_t, node.var_type):
+        //
+        //            raise RuntimeError(
+        //                f"File scope variable {node.name.str_t} was redeclared with conflicting type")
+        //
+        if(!is_same_type(symbol_table[node->name]->type_t.get(), node->var_type.get())) {
+            raise_runtime_error("File scope variable " + em(node->name) +
+                                " was redeclared with conflicting type");
+        }
+
+        //        if isinstance(node.storage_class, CExtern):
+        //            is_global = symbol_table[node.name.str_t].attrs.is_global
+
+        StaticAttr* global_var_attrs = static_cast<StaticAttr*>(symbol_table[node->name]->attrs.get());
+        if(node->storage_class->type() == AST_T::CExtern_t) {
+            is_global = global_var_attrs->is_global;
+        }
+        //        elif is_global != symbol_table[node.name.str_t].attrs.is_global:
+        //
+        //            raise RuntimeError(
+        //                f"File scope variable {node.name.str_t} was redeclared with conflicting linkage")
+        //
+        else if(is_global != global_var_attrs->is_global) {
+            raise_runtime_error("File scope variable " + em(node->name) +
+                                " was redeclared with conflicting linkage");
+        }
+        //        if isinstance(symbol_table[node.name.str_t].attrs.init, Initial):
+        if(global_var_attrs->init->type() == AST_T::Initial_t) {
+            //            if isinstance(initial_value, Initial):
+            //
+            //                raise RuntimeError(
+            //                    f"File scope variable {node.name.str_t} was defined with conflicting linkage")
+            //
+            if(initial_value->type() == AST_T::Initial_t) {
+                raise_runtime_error("File scope variable " + em(node->name) +
+                                    " was defined with conflicting linkage");
+            }
+            //            else:
+            //                initial_value = symbol_table[node.name.str_t].attrs.init
+            else {
+                // TODO
+                // initial_value = global_var_attrs->init;
+                ;
+            }
+        }
+        //
+    }
+
+    //    cdef Type global_var_type = node.var_type
+    std::shared_ptr<Type> global_var_type = node->var_type;
+    //    cdef IdentifierAttr global_var_attrs = StaticAttr(initial_value, is_global)
+    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(is_global, std::move(initial_value));
+    //    symbol_table[node.name.str_t] = Symbol(global_var_type, global_var_attrs)
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(global_var_type), std::move(global_var_attrs));
+    symbol_table[node->name] = std::move(symbol);
+}
+
 
 /** TODO
 cdef void checktype_extern_block_scope_variable_declaration(CVariableDeclaration node):
