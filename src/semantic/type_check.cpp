@@ -1047,7 +1047,7 @@ void checktype_static_block_scope_variable_declaration(CVariableDeclaration* nod
     symbol_table[node->name] = std::move(symbol);
 }
 
-/** TODO
+/**
 cdef void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration node):
     cdef Type local_var_type = node.var_type
     cdef IdentifierAttr local_var_attrs = LocalAttr()
@@ -1061,7 +1061,7 @@ void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* 
     symbol_table[node->name] = std::move(symbol);
 }
 
-/** TODO
+/**
 cdef void checktype_init_block_scope_variable_declaration(CVariableDeclaration node):
     if node.init and \
        not node.storage_class and \
@@ -1069,6 +1069,14 @@ cdef void checktype_init_block_scope_variable_declaration(CVariableDeclaration n
 
         node.init = cast_expression(node.init, node.var_type)
 */
+void checktype_init_block_scope_variable_declaration(CVariableDeclaration* node) {
+    if(node->init &&
+       !node->storage_class &&
+       !is_same_type(node->var_type.get(), node->init->exp_type.get())) {
+        std::unique_ptr<CExp> exp = cast_expression(std::move(node->init), node->var_type);
+        node->init = std::move(exp);
+    }
+}
 
 /** TODO
 cdef void checktype_block_scope_variable_declaration(CVariableDeclaration node):
