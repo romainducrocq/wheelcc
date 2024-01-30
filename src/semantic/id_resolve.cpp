@@ -127,7 +127,7 @@ static void resolve_function_call_expression(CFunctionCall* node) {
     }
 }
 
-/** TODO
+/**
 cdef void resolve_var_expression(CVar node):
     cdef Py_ssize_t i, scope
     cdef TIdentifier name
@@ -142,6 +142,15 @@ cdef void resolve_var_expression(CVar node):
         raise RuntimeError(
             f"Variable {node.name.str_t} was not declared in this scope")
 */
+static void resolve_var_expression(CVar* node) {
+    for(size_t i = current_scope_depth(); i-- > 0;) {
+        if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
+            node->name = scoped_identifier_maps[i][node->name];
+            return;
+        }
+    }
+    raise_runtime_error("Variable " + em(node->name) + " was not declared in this scope");
+}
 
 /** TODO
 cdef void resolve_cast_expression(CCast node):
