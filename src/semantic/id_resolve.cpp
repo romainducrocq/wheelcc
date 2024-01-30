@@ -392,29 +392,48 @@ static void resolve_compound_statement(CCompound* node) {
     exit_scope();
 }
 
-/** TODO
+/**
 cdef void resolve_if_statement(CIf node):
     resolve_expression(node.condition)
     resolve_statement(node.then)
     if node.else_fi:
         resolve_statement(node.else_fi)
 */
+static void resolve_if_statement(CIf* node) {
+    resolve_expression(node->condition.get());
+    resolve_statement(node->then.get());
+    if(node->else_fi) {
+        resolve_statement(node->else_fi.get());
+    }
+}
 
-/** TODO
+/**
 cdef void resolve_while_statement(CWhile node):
     annotate_while_loop(node)
     resolve_expression(node.condition)
     resolve_statement(node.body)
     deannotate_loop()
 */
+static void resolve_while_statement(CWhile* node) {
+    annotate_while_loop(node);
+    resolve_expression(node->condition.get());
+    resolve_statement(node->body.get());
+    deannotate_loop();
+}
 
-/** TODO
+/**
 cdef void resolve_do_while_statement(CDoWhile node):
     annotate_do_while_loop(node)
     resolve_statement(node.body)
     resolve_expression(node.condition)
     deannotate_loop()
 */
+static void resolve_do_while_statement(CDoWhile* node) {
+    annotate_do_while_loop(node);
+    resolve_statement(node->body.get());
+    resolve_expression(node->condition.get());
+    deannotate_loop();
+}
 
 /** TODO
 cdef void resolve_for_statement(CFor node):
