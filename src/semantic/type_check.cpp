@@ -1053,6 +1053,13 @@ cdef void checktype_automatic_block_scope_variable_declaration(CVariableDeclarat
     cdef IdentifierAttr local_var_attrs = LocalAttr()
     symbol_table[node.name.str_t] = Symbol(local_var_type, local_var_attrs)
 */
+void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
+    std::shared_ptr<Type> local_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
+                                                              std::move(local_var_attrs));
+    symbol_table[node->name] = std::move(symbol);
+}
 
 /** TODO
 cdef void checktype_init_block_scope_variable_declaration(CVariableDeclaration node):
