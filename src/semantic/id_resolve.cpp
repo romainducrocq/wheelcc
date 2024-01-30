@@ -616,7 +616,9 @@ static void resolve_statement(CStatement* node) {
     }
 }
 
-/** TODO
+static void resolve_declaration(CDeclaration* node);
+
+/**
 cdef void resolve_block_items(list[CBlockItem] list_node):
 
     cdef Py_ssize_t block_item
@@ -630,8 +632,22 @@ cdef void resolve_block_items(list[CBlockItem] list_node):
             raise RuntimeError(
                 "An error occurred in variable resolution, not all nodes were visited")
 */
+static void resolve_block_items(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
+    for(size_t block_item = 0; block_item < list_node.size(); block_item++) {
+        switch(list_node[block_item]->type()) {
+            case AST_T::CS_t:
+                resolve_statement(static_cast<CS*>(list_node[block_item].get())->statement.get());
+                break;
+            case AST_T::CD_t:
+                resolve_declaration(static_cast<CD*>(list_node[block_item].get())->declaration.get());
+                break;
+            default:
+                raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+        }
+    }
+}
 
-/** TODO
+/**
 cdef void resolve_block(CBlock node):
     if isinstance(node, CB):
         resolve_block_items(node.block_items)
@@ -641,7 +657,13 @@ cdef void resolve_block(CBlock node):
             "An error occurred in variable resolution, not all nodes were visited")
 */
 static void resolve_block(CBlock* node) {
-    // TODO for forward declare only
+    switch(node->type()) {
+        case AST_T::CB_t:
+            resolve_block_items(static_cast<CB*>(node)->block_items);
+            break;
+        default:
+            raise_runtime_error("An error occurred in variable resolution, not all nodes were visited");
+    }
 }
 
 /** TODO
@@ -769,6 +791,9 @@ cdef void resolve_declaration(CDeclaration node):
         raise RuntimeError(
             "An error occurred in variable resolution, not all nodes were visited")
 */
+static void resolve_declaration(CDeclaration* node) {
+    // TODO for forward declare only
+}
 
 /** TODO
 cdef void init_resolve_labels():
