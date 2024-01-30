@@ -673,7 +673,8 @@ cdef TUInt copy_ulong_to_uint(TULong node):
         elif isinstance(node.constant, CConstULong):
             return Initial(ULongInit(copy_ulong(node.constant.value)))
 */
-std::unique_ptr <Initial> checktype_constant_initial(CConstant* node, Type* static_init_type) {
+std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* static_init_type) {
+    std::unique_ptr<StaticInit> static_init;
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
             //    if isinstance(static_init_type, Int):
@@ -682,36 +683,36 @@ std::unique_ptr <Initial> checktype_constant_initial(CConstant* node, Type* stat
                     //        if isinstance(node.constant, CConstInt):
                     //            return Initial(IntInit(copy_int(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<IntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstLong_t: {
                     //        elif isinstance(node.constant, CConstLong):
                     //            return Initial(IntInit(copy_long_to_int(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<IntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstDouble_t: {
                     //        elif isinstance(node.constant, CConstDouble):
                     //            return Initial(IntInit(copy_double_to_int(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<IntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstUInt_t: {
                     //        elif isinstance(node.constant, CConstUInt):
                     //            return Initial(IntInit(copy_uint_to_int(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<IntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstULong_t: {
                     //        elif isinstance(node.constant, CConstULong):
                     //            return Initial(IntInit(copy_ulong_to_int(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<IntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 default:
                     break;
@@ -725,36 +726,36 @@ std::unique_ptr <Initial> checktype_constant_initial(CConstant* node, Type* stat
                     //        if isinstance(node.constant, CConstInt):
                     //            return Initial(LongInit(copy_int_to_long(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<LongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstLong_t: {
                     //        elif isinstance(node.constant, CConstLong):
                     //            return Initial(LongInit(copy_long(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<LongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstDouble_t: {
                     //        elif isinstance(node.constant, CConstDouble):
                     //            return Initial(LongInit(copy_double_to_long(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<LongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstUInt_t: {
                     //        elif isinstance(node.constant, CConstUInt):
                     //            return Initial(LongInit(copy_uint_to_long(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<LongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstULong_t: {
                     //        elif isinstance(node.constant, CConstULong):
                     //            return Initial(LongInit(copy_ulong_to_long(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<LongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 default:
                     break;
@@ -768,36 +769,36 @@ std::unique_ptr <Initial> checktype_constant_initial(CConstant* node, Type* stat
                     //        if isinstance(node.constant, CConstInt):
                     //            return Initial(DoubleInit(copy_int_to_double(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<DoubleInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstLong_t: {
                     //        elif isinstance(node.constant, CConstLong):
                     //            return Initial(DoubleInit(copy_long_to_double(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<DoubleInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstDouble_t: {
                     //        elif isinstance(node.constant, CConstDouble):
                     //            return Initial(DoubleInit(copy_double(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<DoubleInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstUInt_t: {
                     //        elif isinstance(node.constant, CConstUInt):
                     //            return Initial(DoubleInit(copy_uint_to_double(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<DoubleInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstULong_t: {
                     //        elif isinstance(node.constant, CConstULong):
                     //            return Initial(DoubleInit(copy_ulong_to_double(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<DoubleInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 default:
                     break;
@@ -811,36 +812,36 @@ std::unique_ptr <Initial> checktype_constant_initial(CConstant* node, Type* stat
                     //        if isinstance(node.constant, CConstInt):
                     //            return Initial(UIntInit(copy_int_to_uint(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<UIntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstLong_t: {
                     //        elif isinstance(node.constant, CConstLong):
                     //            return Initial(UIntInit(copy_long_to_uint(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<UIntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstDouble_t: {
                     //        elif isinstance(node.constant, CConstDouble):
                     //            return Initial(UIntInit(copy_double_to_uint(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<UIntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstUInt_t: {
                     //        elif isinstance(node.constant, CConstUInt):
                     //            return Initial(UIntInit(copy_uint(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<UIntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstULong_t: {
                     //        elif isinstance(node.constant, CConstULong):
                     //            return Initial(UIntInit(copy_ulong_to_uint(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<UIntInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 default:
                     break;
@@ -854,36 +855,36 @@ std::unique_ptr <Initial> checktype_constant_initial(CConstant* node, Type* stat
                     //        if isinstance(node.constant, CConstInt):
                     //            return Initial(ULongInit(copy_int_to_ulong(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<ULongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstLong_t: {
                     //        elif isinstance(node.constant, CConstLong):
                     //            return Initial(ULongInit(copy_long_to_ulong(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<ULongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstDouble_t: {
                     //        elif isinstance(node.constant, CConstDouble):
                     //            return Initial(ULongInit(copy_double_to_ulong(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<ULongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstUInt_t: {
                     //        elif isinstance(node.constant, CConstUInt):
                     //            return Initial(ULongInit(copy_uint_to_ulong(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<ULongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 case AST_T::CConstULong_t: {
                     //        elif isinstance(node.constant, CConstULong):
                     //            return Initial(ULongInit(copy_ulong(node.constant.value)))
 
-                    // std::unique_ptr<StaticInit> static_init = std::make_unique</*TODO*/>(/*TODO*/);
-                    // return std::make_unique<Initial>(std::move(init));
+                    // static_init = std::make_unique<ULongInit>(/*TODO*/);
+                    return std::make_unique<Initial>(std::move(static_init));
                 }
                 default:
                     break;
