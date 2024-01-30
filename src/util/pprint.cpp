@@ -555,5 +555,15 @@ void pretty_print_ast(Ast* node, const std::string& name) {
     std::cout << std::endl;
 }
 
+void pretty_print_symbol_table() {
+    header_string("Symbol Table");
+    std::cout << "Dict(" + std::to_string(symbol_table.size()) + "):\n";
+    for(const auto& symbol: symbol_table) {
+        field("[" + symbol.first + "]", "", 0);
+        print_ast(symbol.second.get(), 1);
+    }
+    std::cout << std::endl;
+}
+
 #endif
 
