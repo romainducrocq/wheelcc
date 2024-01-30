@@ -789,7 +789,6 @@ std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* stati
                 default:
                     break;
             }
-
             static_init = std::make_unique<UIntInit>(std::move(value));
             break;
         }
