@@ -1,9 +1,9 @@
 #include "semantic/id_resolve.hpp"
+#include "util/error.hpp"
+#include "util/names.hpp"
 #include "semantic/loops.hpp"
 #include "semantic/type_check.hpp"
-#include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
 
 #include <unordered_map>
@@ -119,7 +119,8 @@ static void resolve_function_call_expression(CFunctionCall* node) {
             goto end;
         }
     }
-    raise_runtime_error("Function " + em(node->name) + " was not declared in this scope");
+    raise_runtime_error("Function " + em(node->name) +
+                        " was not declared in this scope");
     end:
 
     for(size_t i = 0; i < node->args.size(); i++) {
@@ -149,7 +150,8 @@ static void resolve_var_expression(CVar* node) {
             return;
         }
     }
-    raise_runtime_error("Variable " + em(node->name) + " was not declared in this scope");
+    raise_runtime_error("Variable " + em(node->name) +
+                        " was not declared in this scope");
 }
 
 /**
@@ -352,7 +354,7 @@ static void resolve_for_init(CForInit* node) {
             break;
         }
         default:
-            raise_runtime_error("An error occurred in variable resolution, not all nodes were visited");
+            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
     }
 }
 
@@ -479,7 +481,7 @@ static void resolve_continue_statement(CContinue* node) {
     annotate_continue_loop(node);
 }
 
-/** TODO
+/**
 cdef void resolve_label_statement(CLabel node):
     if node.target.str_t in label_set:
 
@@ -498,6 +500,22 @@ cdef void resolve_label_statement(CLabel node):
         node.target = target
     resolve_statement(node.jump_to)
 */
+static void resolve_label_statement(CLabel* node) {
+    if(label_set.find(node->target) != label_set.end()) {
+        raise_runtime_error("Label " + em(node->target) +
+                            " was already declared in this scope");
+    }
+    label_set.insert(node->target);
+
+    if(goto_map.find(node->target) != goto_map.end()) {
+        node->target = goto_map[node->target];
+    }
+    else {
+        goto_map[node->target] = resolve_label_identifier(node->target);
+        node->target = goto_map[node->target];
+    }
+    resolve_statement(node->jump_to.get());
+}
 
 /** TODO
 cdef void resolve_goto_statement(CGoto node):
