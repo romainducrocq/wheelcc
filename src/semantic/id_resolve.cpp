@@ -305,7 +305,9 @@ static void resolve_expression(CExp* node) {
     }
 }
 
-/** TODO
+static void resolve_block_scope_variable_declaration(CVariableDeclaration* node);
+
+/**
 cdef void resolve_for_block_scope_variable_declaration(CVariableDeclaration node):
     if node.storage_class:
 
@@ -314,8 +316,15 @@ cdef void resolve_for_block_scope_variable_declaration(CVariableDeclaration node
 
     resolve_block_scope_variable_declaration(node)
 */
+static void resolve_for_block_scope_variable_declaration(CVariableDeclaration* node) {
+    if(node->storage_class) {
+        raise_runtime_error("Variable " + em(node->name) +
+                            " was not declared with automatic linkage in for loop initializer");
+    }
+    resolve_block_scope_variable_declaration(node);
+}
 
-/** TODO
+/**
 cdef void resolve_for_init(CForInit node):
     if isinstance(node, CInitDecl):
         resolve_for_block_scope_variable_declaration(node.init)
@@ -327,6 +336,22 @@ cdef void resolve_for_init(CForInit node):
         raise RuntimeError(
             "An error occurred in variable resolution, not all nodes were visited")
 */
+static void resolve_for_init(CForInit* node) {
+    switch(node->type()) {
+        case AST_T::CInitDecl_t:
+            resolve_for_block_scope_variable_declaration(static_cast<CInitDecl*>(node)->init.get());
+            break;
+        case AST_T::CInitExp_t: {
+            CInitExp* init_decl = static_cast<CInitExp*>(node);
+            if(init_decl->init) {
+                resolve_expression(init_decl->init.get());
+            }
+            break;
+        }
+        default:
+            raise_runtime_error("An error occurred in variable resolution, not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef void resolve_null_statement(CNull node):
@@ -580,6 +605,9 @@ cdef void resolve_block_scope_variable_declaration(CVariableDeclaration node):
 
     checktype_init_block_scope_variable_declaration(node)
 */
+static void resolve_block_scope_variable_declaration(CVariableDeclaration* node) {
+    // TODO for forward declare only
+}
 
 /** TODO
 cdef void resolve_fun_decl_declaration(CFunDecl node):
