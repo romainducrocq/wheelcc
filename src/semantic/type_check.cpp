@@ -1078,7 +1078,7 @@ void checktype_init_block_scope_variable_declaration(CVariableDeclaration* node)
     }
 }
 
-/** TODO
+/**
 cdef void checktype_block_scope_variable_declaration(CVariableDeclaration node):
     if isinstance(node.storage_class, CExtern):
         checktype_extern_block_scope_variable_declaration(node)
@@ -1087,8 +1087,21 @@ cdef void checktype_block_scope_variable_declaration(CVariableDeclaration node):
     else:
         checktype_automatic_block_scope_variable_declaration(node)
 */
+void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
+    switch(node->storage_class->type()) {
+        case AST_T::CExtern_t:
+            checktype_extern_block_scope_variable_declaration(node);
+            break;
+        case AST_T::CStatic_t:
+            checktype_static_block_scope_variable_declaration(node);
+            break;
+        default:
+            checktype_automatic_block_scope_variable_declaration(node);
+            break;
+    }
+}
 
-/** TODO
+/**
 cdef void init_check_types():
     global function_declaration_name_str
     defined_set.clear()
