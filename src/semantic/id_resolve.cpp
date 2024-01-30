@@ -3,6 +3,8 @@
 #include "semantic/type_check.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
+#include "ast/c_ast.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -90,7 +92,9 @@ static void resolve_label() {
     }
 }
 
-/** TODO
+static void resolve_expression(CExp* node);
+
+/**
 cdef void resolve_function_call_expression(CFunctionCall node):
     cdef Py_ssize_t i, scope
     cdef TIdentifier name
@@ -108,6 +112,20 @@ cdef void resolve_function_call_expression(CFunctionCall node):
     for i in range(len(node.args)):
         resolve_expression(node.args[i])
 */
+static void resolve_function_call_expression(CFunctionCall* node) {
+    for(size_t i = current_scope_depth(); i-- > 0;) {
+        if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
+            node->name = scoped_identifier_maps[i][node->name];
+            goto end;
+        }
+    }
+    raise_runtime_error("Function " + em(node->name) + " was not declared in this scope");
+    end:
+
+    for(size_t i = 0; i < node->args.size(); i++) {
+        resolve_expression(node->args[i].get());
+    }
+}
 
 /** TODO
 cdef void resolve_var_expression(CVar node):
@@ -203,6 +221,9 @@ cdef void resolve_expression(CExp node):
         raise RuntimeError(
             "An error occurred in variable resolution, not all nodes were visited")
 */
+static void resolve_expression(CExp* node) {
+    // TODO for forward declare only
+}
 
 /** TODO
 cdef void resolve_for_block_scope_variable_declaration(CVariableDeclaration node):
