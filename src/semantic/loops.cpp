@@ -83,7 +83,10 @@ void deannotate_loop() {
     loop_labels.pop_back();
 }
 
-/** TODO
+/**
 cdef void init_annotate_loops():
     loop_labels.clear()
 */
+void init_annotate_loops() {
+    loop_labels.clear();
+}

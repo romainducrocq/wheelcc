@@ -18,7 +18,6 @@ static std::unordered_map<TIdentifier, size_t> external_linkage_scope_map;
 /**
 cdef list[dict[str, str]] scoped_identifier_maps = [{}]
 */
-// TODO push_back empty dict in init
 static std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
 
 /**
