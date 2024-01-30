@@ -949,7 +949,7 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     }
 
     //    if node.name.str_t in symbol_table:
-    if(symbol_table.find(node->name) == symbol_table.end()) {
+    if(symbol_table.find(node->name) != symbol_table.end()) {
         //        if not is_same_type(symbol_table[node.name.str_t].type_t, node.var_type):
         //
         //            raise RuntimeError(
