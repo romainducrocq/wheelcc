@@ -897,7 +897,17 @@ cdef void resolve_declaration(CDeclaration node):
             "An error occurred in variable resolution, not all nodes were visited")
 */
 static void resolve_declaration(CDeclaration* node) {
-    // TODO for forward declare only
+    switch(node->type()) {
+        case AST_T::CFunDecl_t:
+            resolve_fun_decl_declaration(static_cast<CFunDecl*>(node));
+            break;
+        case AST_T::CVarDecl_t:
+            resolve_var_decl_declaration(static_cast<CVarDecl*>(node));
+            break;
+        default:
+            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+            break;
+    }
 }
 
 /** TODO
