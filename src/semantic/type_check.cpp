@@ -967,7 +967,7 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     symbol_table[node->name] = std::move(symbol);
 }
 
-/** TODO
+/**
 cdef void checktype_extern_block_scope_variable_declaration(CVariableDeclaration node):
     if node.init:
         raise RuntimeError(
@@ -1007,7 +1007,7 @@ void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* nod
     symbol_table[node->name] = std::move(symbol);
 }
 
-/** TODO
+/**
 cdef void checktype_static_block_scope_variable_declaration(CVariableDeclaration node):
     cdef InitialValue initial_value
 
@@ -1024,6 +1024,28 @@ cdef void checktype_static_block_scope_variable_declaration(CVariableDeclaration
     cdef IdentifierAttr local_var_attrs = StaticAttr(initial_value, False)
     symbol_table[node.name.str_t] = Symbol(local_var_type, local_var_attrs)
 */
+void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
+    std::shared_ptr<InitialValue> initial_value;
+
+    if(node->init->type() == AST_T::CConstant_t) {
+        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
+                                                   node->var_type.get());
+    }
+    else if(!node->init) {
+        initial_value = checktype_no_init_initial(node->var_type.get());
+    }
+    else {
+        raise_runtime_error("Block scope variable " + em(node->name) +
+                            " with static linkage was initialized to a non-constant");
+    }
+
+    std::shared_ptr<Type> local_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
+                                                                                   std::move(initial_value));
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
+                                                              std::move(local_var_attrs));
+    symbol_table[node->name] = std::move(symbol);
+}
 
 /** TODO
 cdef void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration node):
