@@ -538,7 +538,7 @@ static void resolve_goto_statement(CGoto* node) {
     }
 }
 
-/** TODO
+/**
 cdef void resolve_statement(CStatement node):
     if isinstance(node, CNull):
         resolve_null_statement(node)
@@ -571,7 +571,79 @@ cdef void resolve_statement(CStatement node):
             "An error occurred in variable resolution, not all nodes were visited")
 */
 static void resolve_statement(CStatement* node) {
-    // TODO for forward declare only
+    switch(node->type()) {
+        //    if isinstance(node, CNull):
+        //        resolve_null_statement(node)
+        case AST_T::CNull_t:
+            resolve_null_statement(static_cast<CNull*>(node));
+            break;
+        //    elif isinstance(node, CReturn):
+        //        resolve_return_statement(node)
+        //        checktype_return_statement(node)
+        case AST_T::CReturn_t: {
+            CReturn* p_node = static_cast<CReturn*>(node);
+            resolve_return_statement(p_node);
+            checktype_return_statement(p_node);
+            break;
+        }
+        //    elif isinstance(node, CExpression):
+        //        resolve_expression_statement(node)
+        case AST_T::CExpression_t:
+            resolve_expression_statement(static_cast<CExpression*>(node));
+            break;
+        //    elif isinstance(node, CCompound):
+        //        resolve_compound_statement(node)
+        case AST_T::CCompound_t:
+            resolve_compound_statement(static_cast<CCompound*>(node));
+            break;
+        //    elif isinstance(node, CIf):
+        //        resolve_if_statement(node)
+        case AST_T::CIf_t:
+            resolve_if_statement(static_cast<CIf*>(node));
+            break;
+        //    elif isinstance(node, CWhile):
+        //        resolve_while_statement(node)
+        case AST_T::CWhile_t:
+            resolve_while_statement(static_cast<CWhile*>(node));
+            break;
+        //    elif isinstance(node, CDoWhile):
+        //        resolve_do_while_statement(node)
+        case AST_T::CDoWhile_t:
+            resolve_do_while_statement(static_cast<CDoWhile*>(node));
+            break;
+        //    elif isinstance(node, CFor):
+        //        resolve_for_statement(node)
+        case AST_T::CFor_t:
+            resolve_for_statement(static_cast<CFor*>(node));
+            break;
+        //    elif isinstance(node, CBreak):
+        //        resolve_break_statement(node)
+        case AST_T::CBreak_t:
+            resolve_break_statement(static_cast<CBreak*>(node));
+            break;
+        //    elif isinstance(node, CContinue):
+        //        resolve_continue_statement(node)
+        case AST_T::CContinue_t:
+            resolve_continue_statement(static_cast<CContinue*>(node));
+            break;
+        //    elif isinstance(node, CLabel):
+        //        resolve_label_statement(node)
+        case AST_T::CLabel_t:
+            resolve_label_statement(static_cast<CLabel*>(node));
+            break;
+        //    elif isinstance(node, CGoto):
+        //        resolve_goto_statement(node)
+        case AST_T::CGoto_t:
+            resolve_goto_statement(static_cast<CGoto*>(node));
+            break;
+        //    else:
+        //
+        //        raise RuntimeError(
+        //            "An error occurred in variable resolution, not all nodes were visited")
+        default:
+            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+
+    }
 }
 
 /** TODO
