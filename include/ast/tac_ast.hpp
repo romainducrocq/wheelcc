@@ -341,7 +341,8 @@ cdef class TacFunCall(TacInstruction):
 struct TacFunCall : TacInstruction {
     AST_T type() override;
     TacFunCall() = default;
-    TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args, std::unique_ptr<TacValue> dst);
+    TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args,
+               std::unique_ptr<TacValue> dst);
 
     TIdentifier name;
     std::vector<std::unique_ptr<TacValue>> args;
@@ -357,7 +358,8 @@ cdef class TacUnary(TacInstruction):
 struct TacUnary : TacInstruction {
     AST_T type() override;
     TacUnary() = default;
-    TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+    TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src,
+             std::unique_ptr<TacValue> dst);
 
     std::unique_ptr<TacUnaryOp> unary_op;
     std::unique_ptr<TacValue> src;
@@ -374,8 +376,8 @@ cdef class TacBinary(TacInstruction):
 struct TacBinary : TacInstruction {
     AST_T type() override;
     TacBinary() = default;
-    TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1, std::unique_ptr<TacValue> src2,
-              std::unique_ptr<TacValue> dst);
+    TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1,
+              std::unique_ptr<TacValue> src2, std::unique_ptr<TacValue> dst);
 
     std::unique_ptr<TacBinaryOp> binary_op;
     std::unique_ptr<TacValue> src1;
@@ -455,6 +457,9 @@ struct TacLabel : TacInstruction {
 cdef class TacTopLevel(AST):
     pass
 */
+struct TacTopLevel : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacFunction(TacTopLevel):
@@ -463,6 +468,17 @@ cdef class TacFunction(TacTopLevel):
     cdef public list[TIdentifier] params
     cdef public list[TacInstruction] body
 */
+struct TacFunction : TacTopLevel {
+    AST_T type() override;
+    TacFunction() = default;
+    TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
+                std::vector<std::unique_ptr<TacInstruction>> body);
+
+    TIdentifier name;
+    bool is_global;
+    std::vector<TIdentifier> params;
+    std::vector<std::unique_ptr<TacInstruction>> body;
+};
 
 /** TODO
 cdef class TacStaticVariable(TacTopLevel):
@@ -471,11 +487,30 @@ cdef class TacStaticVariable(TacTopLevel):
     cdef public Type static_init_type
     cdef public StaticInit initial_value
 */
+struct TacStaticVariable : TacTopLevel {
+    AST_T type() override;
+    TacStaticVariable() = default;
+    TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
+                      std::shared_ptr<StaticInit> initial_value);
+
+    TIdentifier name;
+    bool is_global;
+    std::shared_ptr<Type> static_init_type;
+    std::shared_ptr<StaticInit> initial_value;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class TacProgram(AST):
     cdef public list[TacTopLevel] top_levels
 */
+struct TacProgram : Ast {
+    AST_T type() override;
+    TacProgram() = default;
+    TacProgram(std::vector<std::unique_ptr<TacTopLevel>> top_levels);
 
+    std::vector<std::unique_ptr<TacTopLevel>> top_levels;
+};
 
 #endif
