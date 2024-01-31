@@ -184,16 +184,35 @@ struct TacGreaterOrEqual : TacBinaryOp {
 cdef class TacValue(AST):
     pass
 */
+struct TacValue : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacConstant(TacValue):
     cdef public CConst constant
 */
+struct TacConstant : TacValue {
+    AST_T type() override;
+    TacConstant() = default;
+    TacConstant(std::shared_ptr<CConst> constant);
+
+    std::shared_ptr<CConst> constant;
+};
 
 /** TODO
 cdef class TacVariable(TacValue):
     cdef public TIdentifier name
 */
+struct TacVariable : TacValue {
+    AST_T type() override;
+    TacVariable() = default;
+    TacVariable(TIdentifier name);
+
+    TIdentifier name;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class TacInstruction(AST):
