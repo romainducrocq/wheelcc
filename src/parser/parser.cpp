@@ -1059,7 +1059,7 @@ cdef CContinue parse_continue_statement():
 static std::unique_ptr<CContinue> parse_continue_statement() {
     pop_next();
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::unique_ptr<CContinue>();
+    return std::make_unique<CContinue>();
 }
 
 /**
