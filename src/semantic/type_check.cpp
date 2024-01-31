@@ -920,7 +920,8 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
-    if(node->init->type() == AST_T::CConstant_t) {
+    if(node->init &&
+       node->init->type() == AST_T::CConstant_t) {
         initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
                                                    node->var_type.get());
     }
@@ -1031,7 +1032,8 @@ cdef void checktype_static_block_scope_variable_declaration(CVariableDeclaration
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     std::shared_ptr<InitialValue> initial_value;
 
-    if(node->init->type() == AST_T::CConstant_t) {
+    if(node->init &&
+       node->init->type() == AST_T::CConstant_t) {
         initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
                                                    node->var_type.get());
     }
