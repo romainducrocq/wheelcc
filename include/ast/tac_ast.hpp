@@ -218,53 +218,119 @@ struct TacVariable : TacValue {
 cdef class TacInstruction(AST):
     pass
 */
+struct TacInstruction : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacReturn(TacInstruction):
     cdef public TacValue val
 */
+struct TacReturn : TacInstruction {
+    AST_T type() override;
+    TacReturn() = default;
+    TacReturn(std::unique_ptr<TacValue> val);
+
+    std::unique_ptr<TacValue> val;
+};
 
 /** TODO
 cdef class TacSignExtend(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacSignExtend : TacInstruction {
+    AST_T type() override;
+    TacSignExtend() = default;
+    TacSignExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacTruncate(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacTruncate : TacInstruction {
+    AST_T type() override;
+    TacTruncate() = default;
+    TacTruncate(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacZeroExtend(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacZeroExtend : TacInstruction {
+    AST_T type() override;
+    TacZeroExtend() = default;
+    TacZeroExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacDoubleToInt(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacDoubleToInt : TacInstruction {
+    AST_T type() override;
+    TacDoubleToInt() = default;
+    TacDoubleToInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacDoubleToUInt(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacDoubleToUInt : TacInstruction {
+    AST_T type() override;
+    TacDoubleToUInt() = default;
+    TacDoubleToUInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacIntToDouble(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacIntToDouble : TacInstruction {
+    AST_T type() override;
+    TacIntToDouble() = default;
+    TacIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacUIntToDouble(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacUIntToDouble : TacInstruction {
+    AST_T type() override;
+    TacUIntToDouble() = default;
+    TacUIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacFunCall(TacInstruction):
@@ -272,6 +338,15 @@ cdef class TacFunCall(TacInstruction):
     cdef public list[TacValue] args
     cdef public TacValue dst
 */
+struct TacFunCall : TacInstruction {
+    AST_T type() override;
+    TacFunCall() = default;
+    TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args, std::unique_ptr<TacValue> dst);
+
+    TIdentifier name;
+    std::vector<std::unique_ptr<TacValue>> args;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacUnary(TacInstruction):
@@ -279,6 +354,15 @@ cdef class TacUnary(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacUnary : TacInstruction {
+    AST_T type() override;
+    TacUnary() = default;
+    TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacUnaryOp> unary_op;
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacBinary(TacInstruction):
@@ -287,34 +371,85 @@ cdef class TacBinary(TacInstruction):
     cdef public TacValue src2
     cdef public TacValue dst
 */
+struct TacBinary : TacInstruction {
+    AST_T type() override;
+    TacBinary() = default;
+    TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1, std::unique_ptr<TacValue> src2,
+              std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacBinaryOp> binary_op;
+    std::unique_ptr<TacValue> src1;
+    std::unique_ptr<TacValue> src2;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacCopy(TacInstruction):
     cdef public TacValue src
     cdef public TacValue dst
 */
+struct TacCopy : TacInstruction {
+    AST_T type() override;
+    TacCopy() = default;
+    TacCopy(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst);
+
+    std::unique_ptr<TacValue> src;
+    std::unique_ptr<TacValue> dst;
+};
 
 /** TODO
 cdef class TacJump(TacInstruction):
     cdef public TIdentifier target
 */
+struct TacJump : TacInstruction {
+    AST_T type() override;
+    TacJump() = default;
+    TacJump(TIdentifier target);
+
+    TIdentifier target;
+};
 
 /** TODO
 cdef class TacJumpIfZero(TacInstruction):
     cdef public TacValue condition
     cdef public TIdentifier target
 */
+struct TacJumpIfZero : TacInstruction {
+    AST_T type() override;
+    TacJumpIfZero() = default;
+    TacJumpIfZero(TIdentifier target, std::unique_ptr<TacValue> condition);
+
+    TIdentifier target;
+    std::unique_ptr<TacValue> condition;
+};
 
 /** TODO
 cdef class TacJumpIfNotZero(TacInstruction):
     cdef public TacValue condition
     cdef public TIdentifier target
 */
+struct TacJumpIfNotZero : TacInstruction {
+    AST_T type() override;
+    TacJumpIfNotZero() = default;
+    TacJumpIfNotZero(TIdentifier target, std::unique_ptr<TacValue> condition);
+
+    TIdentifier target;
+    std::unique_ptr<TacValue> condition;
+};
 
 /** TODO
 cdef class TacLabel(TacInstruction):
     cdef public TIdentifier name
 */
+struct TacLabel : TacInstruction {
+    AST_T type() override;
+    TacLabel() = default;
+    TacLabel(TIdentifier name);
+
+    TIdentifier name;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class TacTopLevel(AST):
