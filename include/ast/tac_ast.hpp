@@ -6,110 +6,179 @@
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /** TODO
 cdef class TacUnaryOp(AST):
     pass
 */
+struct TacUnaryOp : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacComplement(TacUnaryOp):
     pass
 */
+struct TacComplement : TacUnaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacNegate(TacUnaryOp):
     pass
 */
+struct TacNegate : TacUnaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacNot(TacUnaryOp):
     pass
 */
+struct TacNot : TacUnaryOp {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class TacBinaryOp(AST):
     pass
 */
+struct TacBinaryOp : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacAdd(TacBinaryOp):
     pass
 */
+struct TacAdd : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacSubtract(TacBinaryOp):
     pass
 */
+struct TacSubtract : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacMultiply(TacBinaryOp):
     pass
 */
+struct TacMultiply : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacDivide(TacBinaryOp):
     pass
 */
+struct TacDivide : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacRemainder(TacBinaryOp):
     pass
 */
+struct TacRemainder : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacBitAnd(TacBinaryOp):
     pass
 */
+struct TacBitAnd : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacBitOr(TacBinaryOp):
     pass
 */
+struct TacBitOr : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacBitXor(TacBinaryOp):
     pass
 */
+struct TacBitXor : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacBitShiftLeft(TacBinaryOp):
     pass
 */
+struct TacBitShiftLeft : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacBitShiftRight(TacBinaryOp):
     pass
 */
+struct TacBitShiftRight : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacEqual(TacBinaryOp):
     pass
 */
+struct TacEqual : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacNotEqual(TacBinaryOp):
     pass
 */
+struct TacNotEqual : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacLessThan(TacBinaryOp):
     pass
 */
+struct TacLessThan : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacLessOrEqual(TacBinaryOp):
     pass
 */
+struct TacLessOrEqual : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacGreaterThan(TacBinaryOp):
     pass
 */
+struct TacGreaterThan : TacBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class TacGreaterOrEqual(TacBinaryOp):
     pass
 */
+struct TacGreaterOrEqual : TacBinaryOp {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class TacValue(AST):
