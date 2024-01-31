@@ -1,11 +1,11 @@
-#include "parser/lexer.hpp"
-#include "ast/ast.hpp"
-#include "parser/parser.hpp"
-#include "semantic/id_resolve.hpp"
 #include "util/error.hpp"
 #ifndef __NDEBUG__
 #include "util/pprint.hpp"
 #endif
+#include "parser/lexer.hpp"
+#include "ast/ast.hpp"
+#include "parser/parser.hpp"
+#include "semantic/id_resolve.hpp"
 
 #include <string>
 #include <vector>

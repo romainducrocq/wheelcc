@@ -117,6 +117,4 @@ using TDouble = double;
 using TUInt = uint32_t;
 using TULong = uint64_t;
 
-bool is_instance(AST_T t1, AST_T t2);
-
 #endif
