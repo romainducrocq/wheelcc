@@ -141,7 +141,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
 #ifndef __NDEBUG__
     if(opt_code == 253) {
         debug_ast(c_ast.get(), "C AST");
-        debug_symbol_table();
+        // debug_symbol_table();
         return;
     }
 #endif

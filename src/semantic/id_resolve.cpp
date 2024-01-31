@@ -736,7 +736,8 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
             raise_runtime_error("Block scoped function definition " + em(node->name) +
                                 " can not be nested");
         }
-        if(node->storage_class->type() == AST_T::CStatic_t) {
+        if(node->storage_class && 
+           node->storage_class->type() == AST_T::CStatic_t) {
             raise_runtime_error("Block scoped function definition " + em(node->name) +
                                 " can not be static");
         }
@@ -819,11 +820,13 @@ cdef void resolve_block_scope_variable_declaration(CVariableDeclaration node):
 static void resolve_block_scope_variable_declaration(CVariableDeclaration* node) {
     if(scoped_identifier_maps.back().find(node->name) != scoped_identifier_maps.back().end() &&
        !(external_linkage_scope_map.find(node->name) != external_linkage_scope_map.end() &&
-         node->storage_class->type() == AST_T::CExtern_t)) {
+         (node->storage_class && 
+          node->storage_class->type() == AST_T::CExtern_t))) {
        raise_runtime_error("Variable " + em(node->name) +
                            " was already declared in this scope");
     }
-    if(node->storage_class->type() == AST_T::CExtern_t) {
+    if(node->storage_class && 
+       node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);
         return;
     }

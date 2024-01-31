@@ -239,7 +239,7 @@ cdef void checktype_constant_expression(CConstant node):
         node.exp_type = ULong()
 */
 void checktype_constant_expression(CConstant* node) {
-    switch(node->type()) {
+    switch(node->constant->type()) {
         case AST_T::CConstInt_t:
             node->exp_type = std::make_shared<Int>();
             break;
@@ -498,7 +498,8 @@ cdef void checktype_function_declaration(CFunctionDeclaration node):
 */
 void checktype_function_declaration(CFunctionDeclaration* node) {
     bool is_defined = defined_set.find(node->name) != defined_set.end();
-    bool is_global = node->storage_class->type() != AST_T::CStatic_t;
+    bool is_global = !(node->storage_class && 
+                       node->storage_class->type() == AST_T::CStatic_t);
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
 
@@ -916,14 +917,16 @@ cdef void checktype_file_scope_variable_declaration(CVariableDeclaration node):
 */
 void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     std::shared_ptr<InitialValue> initial_value;
-    bool is_global = node->storage_class->type() != AST_T::CStatic_t;
+    bool is_global = !(node->storage_class && 
+                       node->storage_class->type() == AST_T::CStatic_t);
 
     if(node->init->type() == AST_T::CConstant_t) {
         initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
                                                    node->var_type.get());
     }
     else if(!node->init) {
-        if(node->storage_class->type() == AST_T::CExtern_t) {
+        if(node->storage_class && 
+           node->storage_class->type() == AST_T::CExtern_t) {
             initial_value = std::make_shared<NoInitializer>();
         } else {
             initial_value = std::make_shared<Tentative>();
@@ -941,7 +944,8 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
         }
 
         StaticAttr* global_var_attrs = static_cast<StaticAttr*>(symbol_table[node->name]->attrs.get());
-        if(node->storage_class->type() == AST_T::CExtern_t) {
+        if(node->storage_class &&
+           node->storage_class->type() == AST_T::CExtern_t) {
             is_global = global_var_attrs->is_global;
         }
         else if(is_global != global_var_attrs->is_global) {
@@ -1088,16 +1092,20 @@ cdef void checktype_block_scope_variable_declaration(CVariableDeclaration node):
         checktype_automatic_block_scope_variable_declaration(node)
 */
 void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
-    switch(node->storage_class->type()) {
-        case AST_T::CExtern_t:
-            checktype_extern_block_scope_variable_declaration(node);
-            break;
-        case AST_T::CStatic_t:
-            checktype_static_block_scope_variable_declaration(node);
-            break;
-        default:
-            checktype_automatic_block_scope_variable_declaration(node);
-            break;
+    if(node->storage_class) {
+        switch(node->storage_class->type()) {
+            case AST_T::CExtern_t:
+                checktype_extern_block_scope_variable_declaration(node);
+                break;
+            case AST_T::CStatic_t:
+                checktype_static_block_scope_variable_declaration(node);
+                break;
+            default:
+                break;
+        }
+    }
+    else {
+        checktype_automatic_block_scope_variable_declaration(node);
     }
 }
 
