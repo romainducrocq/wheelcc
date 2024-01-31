@@ -8,6 +8,9 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// unary_operator = Complement
+//                | Negate
+//                | Not
 struct TacUnaryOp : Ast {
     AST_T type() override;
 };
@@ -26,6 +29,22 @@ struct TacNot : TacUnaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// binary_operator = Add
+//                 | Subtract
+//                 | Multiply
+//                 | Divide
+//                 | Remainder
+//                 | BitAnd
+//                 | BitOr
+//                 | BitXor
+//                 | BitShiftLeft
+//                 | BitShiftRight
+//                 | Equal
+//                 | NotEqual
+//                 | LessThan
+//                 | LessOrEqual
+//                 | GreaterThan
+//                 | GreaterOrEqual
 struct TacBinaryOp : Ast {
     AST_T type() override;
 };
@@ -96,6 +115,8 @@ struct TacGreaterOrEqual : TacBinaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// val = Constant(int)
+//     | Var(identifier)
 struct TacValue : Ast {
     AST_T type() override;
 };
@@ -118,6 +139,22 @@ struct TacVariable : TacValue {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// instruction = Return(val)
+//             | SignExtend(val src, val dst)
+//             | Truncate(val src, val dst)
+//             | ZeroExtend(val src, val dst)
+//             | TacDoubleToInt(val src, val dst)
+//             | TacDoubleToUInt(val src, val dst)
+//             | TacIntToDouble(val src, val dst)
+//             | TacUIntToDouble(val src, val dst)
+//             | FunCall(identifier fun_name, val* args, val dst)
+//             | Unary(unary_operator, val src, val dst)
+//             | Binary(binary_operator, val src1, val src2, val dst)
+//             | Copy(val src, val dst)
+//             | Jump(identifier target)
+//             | JumpIfZero(val condition, identifier target)
+//             | JumpIfNotZero(val condition, identifier target)
+//             | Label(identifier name)
 struct TacInstruction : Ast {
     AST_T type() override;
 };
@@ -272,6 +309,8 @@ struct TacLabel : TacInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// top_level = Function(identifier, bool global, identifier* params, instruction* body)
+//           | StaticVariable(identifier, bool global, type t, static_init init)
 struct TacTopLevel : Ast {
     AST_T type() override;
 };
@@ -302,6 +341,7 @@ struct TacStaticVariable : TacTopLevel {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// AST = Program(top_level*)
 struct TacProgram : Ast {
     AST_T type() override;
     TacProgram() = default;
