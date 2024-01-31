@@ -1,6 +1,11 @@
 #ifndef _AST_TAC_AST_HPP
 #define _AST_TAC_AST_HPP
 
+#include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
+#include "ast/c_ast.hpp"
+#include "ast/tac_ast.hpp"
+
 /** TODO
 cdef class TacUnaryOp(AST):
     pass

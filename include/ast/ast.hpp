@@ -98,12 +98,55 @@ enum AST_T {
     CDeclaration_t,
     CFunDecl_t,
     CVarDecl_t,
-    CProgram_t
-};
+    CProgram_t,
 
-#define NODE_PTR(TYPE) TYPE*
-#define MAKE_NODE(TYPE, NODE) static_cast<TYPE*>(NODE.get())
-#define NODE_GET(TYPE, NODE, GET) MAKE_NODE(TYPE, NODE)->GET
+    // TAC ast
+    TacUnaryOp_t,
+    TacComplement_t,
+    TacNegate_t,
+    TacNot_t,
+    TacBinaryOp_t,
+    TacAdd_t,
+    TacSubtract_t,
+    TacMultiply_t,
+    TacDivide_t,
+    TacRemainder_t,
+    TacBitAnd_t,
+    TacBitOr_t,
+    TacBitXor_t,
+    TacBitShiftLeft_t,
+    TacBitShiftRight_t,
+    TacEqual_t,
+    TacNotEqual_t,
+    TacLessThan_t,
+    TacLessOrEqual_t,
+    TacGreaterThan_t,
+    TacGreaterOrEqual_t,
+    TacValue_t,
+    TacConstant_t,
+    TacVariable_t,
+    TacInstruction_t,
+    TacReturn_t,
+    TacSignExtend_t,
+    TacTruncate_t,
+    TacZeroExtend_t,
+    TacDoubleToInt_t,
+    TacDoubleToUInt_t,
+    TacIntToDouble_t,
+    TacUIntToDouble_t,
+    TacFunCall_t,
+    TacUnary_t,
+    TacBinary_t,
+    TacCopy_t,
+    TacJump_t,
+    TacJumpIfZero_t,
+    TacJumpIfNotZero_t,
+    TacLabel_t,
+    TacTopLevel_t,
+    TacFunction_t,
+    TacStaticVariable_t,
+    TacProgram_t
+};
 
 struct Ast {
     virtual ~Ast() = 0;
