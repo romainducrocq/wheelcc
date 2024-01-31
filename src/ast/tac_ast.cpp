@@ -1,4 +1,7 @@
 #include "ast/tac_ast.hpp"
+#include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
+#include "ast/c_ast.hpp"
 
 AST_T TacUnaryOp::type() { return AST_T::TacUnaryOp_t; }
 AST_T TacComplement::type() { return AST_T::TacComplement_t; }
@@ -46,3 +49,70 @@ AST_T TacFunction::type() { return AST_T::TacFunction_t; }
 AST_T TacStaticVariable::type() { return AST_T::TacStaticVariable_t; }
 AST_T TacProgram::type() { return AST_T::TacProgram_t; }
 
+//TacConstant::TacConstant(std::shared_ptr<CConst> constant)
+//    : {}
+//
+//TacVariable::TacVariable(TIdentifier name)
+//    : {}
+//
+//TacReturn::TacReturn(std::unique_ptr<TacValue> val)
+//    : {}
+//
+//TacSignExtend::TacSignExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacTruncate::TacTruncate(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacZeroExtend::TacZeroExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacDoubleToInt::TacDoubleToInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacDoubleToUInt::TacDoubleToUInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacIntToDouble::TacIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacUIntToDouble::TacUIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacFunCall::TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args,
+//                       std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src,
+//                   std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1,
+//                     std::unique_ptr<TacValue> src2, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacCopy::TacCopy(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+//    : {}
+//
+//TacJump::TacJump(TIdentifier target)
+//    : {}
+//
+//TacJumpIfZero::TacJumpIfZero(TIdentifier target, std::unique_ptr<TacValue> condition)
+//    : {}
+//
+//TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::unique_ptr<TacValue> condition)
+//    : {}
+//
+//TacLabel::TacLabel(TIdentifier name)
+//    : {}
+//
+//TacFunction::TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
+//                         std::vector<std::unique_ptr<TacInstruction>> body)
+//    : {}
+//
+//TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
+//                                     std::shared_ptr<StaticInit> initial_value)
+//    : {}
+//
+//TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> top_levels)
+//    : {}
