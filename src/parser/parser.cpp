@@ -255,7 +255,7 @@ cdef CConstDouble parse_double_constant():
 */
 // <double> ::= ? A constant token ?
 static std::shared_ptr<CConstDouble> parse_double_constant() {
-    TDouble value = string_to_double(next_token->token);
+    TDouble value = string_to_double(next_token->token, next_token->line);
     return std::make_shared<CConstDouble>(value);
 }
 
@@ -311,7 +311,7 @@ static std::shared_ptr<CConst> parse_constant() {
         next_token->token.pop_back();
     }
 
-    intmax_t value = string_to_intmax(next_token->token);
+    intmax_t value = string_to_intmax(next_token->token, next_token->line);
     if(value > 9223372036854775807ll) {
         raise_runtime_error_at_line("Constant " + em(next_token->token) +
                                     " is too large to be represent as an int or a long",
@@ -350,7 +350,7 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
     }
     next_token->token.pop_back();
 
-    uintmax_t value = string_to_uintmax(next_token->token);
+    uintmax_t value = string_to_uintmax(next_token->token, next_token->line);
     if(value > 18446744073709551615ull) {
         raise_runtime_error_at_line("Constant " + em(next_token->token) +
                                     " is too large to be represented as an unsigned int or a unsigned long",

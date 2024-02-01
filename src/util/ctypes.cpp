@@ -6,27 +6,29 @@
 #include <vector>
 #include <cstring>
 
-intmax_t string_to_intmax(const std::string& s_int) {
+intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
     char* end_ptr = nullptr;
     errno = 0;
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error("String " + em(s_int) + " is not an integer");
+        raise_runtime_error_at_line("String " + em(s_int) + " is not an integer",
+                                    line);
     }
 
     return intmax;
 }
 
-uintmax_t string_to_uintmax(const std::string& s_uint) {
+uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     std::vector<char> buffer(s_uint.begin(), s_uint.end());
     char* end_ptr = nullptr;
     errno = 0;
     uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error("String " + em(s_uint) + " is not an unsigned integer");
+        raise_runtime_error_at_line("String " + em(s_uint) + " is not an unsigned integer",
+                                    line);
     }
 
     return uintmax;
@@ -48,14 +50,15 @@ uint64_t uintmax_to_uint64(uintmax_t uintmax) {
     return static_cast<uint64_t>(uintmax);
 }
 
-double string_to_double(const std::string& s_double) {
+double string_to_double(const std::string& s_double, size_t line) {
     std::vector<char> buffer(s_double.begin(), s_double.end());
     char* end_ptr = nullptr;
     errno = 0;
     double float64 = strtod(&buffer[0], &end_ptr);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error("String " + em(s_double) + " is not a floating point number");
+        raise_runtime_error_at_line("String " + em(s_double) + " is not a floating point number",
+                                    line);
     }
 
     return float64;
