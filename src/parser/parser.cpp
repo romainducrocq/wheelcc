@@ -115,8 +115,9 @@ cdef void expect_next_is(Token next_token_is, int32 expected_token):
 */
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) {
-        raise_runtime_error_at_line("Expected token kind " + em(TOKEN_HUMAN_READABLE[expected_token]) + " but found token " +
-                                    em(next_token_is.token), next_token_is.line);
+        raise_runtime_error_at_line("Expected token kind " + em(TOKEN_HUMAN_READABLE[expected_token]) +
+                                    " but found token " + em(next_token_is.token),
+                                    next_token_is.line);
     }
 }
 
@@ -134,7 +135,8 @@ cdef Token pop_next():
 */
 static const Token& pop_next() {
     if(pop_index >= p_tokens->size()) {
-        raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
+        raise_runtime_error_at_line("All Tokens were consumed before end of program",
+                                    p_tokens->back().line);
     }
 
     next_token = &(*p_tokens)[pop_index];
@@ -156,7 +158,8 @@ static const Token& pop_next_i(size_t i) {
         return pop_next();
     }
     if(pop_index + i >= p_tokens->size()) {
-        raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
+        raise_runtime_error_at_line("All Tokens were consumed before end of program",
+                                    p_tokens->back().line);
     }
 
     Token swap_token_i = std::move((*p_tokens)[pop_index + i]);
@@ -182,7 +185,8 @@ cdef Token peek_next():
 */
 static const Token& peek_next() {
     if(pop_index >= p_tokens->size()) {
-        raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
+        raise_runtime_error_at_line("All Tokens were consumed before end of program",
+                                    p_tokens->back().line);
     }
 
     peek_token = &(*p_tokens)[pop_index];
@@ -203,7 +207,8 @@ static const Token& peek_next_i(size_t i) {
         return peek_next();
     }
     if(pop_index + i >= p_tokens->size()) {
-        raise_runtime_error("An error occurred in parser, all Tokens were consumed before end of program");
+        raise_runtime_error_at_line("All Tokens were consumed before end of program",
+                                    p_tokens->back().line);
     }
 
     return (*p_tokens)[pop_index + i];
@@ -308,8 +313,9 @@ static std::shared_ptr<CConst> parse_constant() {
 
     intmax_t value = string_to_intmax(next_token->token);
     if(value > 9223372036854775807ll) {
-        raise_runtime_error_at_line("Constant " + em(next_token->token) + " is too large to be represented " +
-                                    "as an int or a long", next_token->line);
+        raise_runtime_error_at_line("Constant " + em(next_token->token) +
+                                    " is too large to be represent as an int or a long",
+                                    next_token->line);
     }
     if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
         return parse_int_constant(value);
@@ -346,8 +352,9 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
 
     uintmax_t value = string_to_uintmax(next_token->token);
     if(value > 18446744073709551615ull) {
-        raise_runtime_error_at_line("Constant " + em(next_token->token) + " is too large to be represented " +
-                                    "as an unsigned int or a unsigned long", next_token->line);
+        raise_runtime_error_at_line("Constant " + em(next_token->token) +
+                                    " is too large to be represented as an unsigned int or a unsigned long",
+                                    next_token->line);
     }
     if(next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
         return parse_uint_constant(value);
@@ -461,8 +468,9 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
         case TOKEN_KIND::binop_greaterthanorequal:
             return std::make_unique<CGreaterOrEqual>();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("binary_op") + " but found token " +
-                                        em(next_token->token), next_token->line);
+            raise_runtime_error_at_line("Expected token type " + em("binary_op") +
+                                        " but found token " + em(next_token->token),
+                                        next_token->line);
     }
 }
 
@@ -490,8 +498,9 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
         case TOKEN_KIND::unop_not:
             return std::make_unique<CNot>();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("unary_op") + " but found token " +
-                                        em(next_token->token), next_token->line);
+            raise_runtime_error_at_line("Expected token type " + em("unary_op") +
+                                        " but found token " + em(next_token->token),
+                                        next_token->line);
     }
 }
 
@@ -682,8 +691,9 @@ static std::unique_ptr<CExp> parse_factor() {
                 return parse_inner_exp_factor();
         }
     }
-    raise_runtime_error_at_line("Expected token type " + em("factor") + " but found token " +
-                                em(next_token->token), next_token->line);
+    raise_runtime_error_at_line("Expected token type " + em("factor") +
+                                " but found token " + em(next_token->token),
+                                next_token->line);
 }
 
 /**
@@ -846,8 +856,9 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
                 break;
             default:
-                raise_runtime_error_at_line("Expected token type " + em("exp") + " but found token " +
-                                            em(peek_token->token), peek_token->line);
+                raise_runtime_error_at_line("Expected token type " + em("exp") +
+                                            " but found token " + em(peek_token->token),
+                                            peek_token->line);
         }
     }
     return exp_left;
@@ -1375,8 +1386,9 @@ static std::shared_ptr<Type> parse_type_specifier() {
                 specifier += 1;
                 break;
             default:
-                raise_runtime_error_at_line("Expected token type " + em("specifier") + " but found token " +
-                                            peek_next_i(specifier).token, peek_next_i(specifier).line);
+                raise_runtime_error_at_line("Expected token type " + em("specifier") +
+                                            " but found token " + peek_next_i(specifier).token,
+                                            peek_next_i(specifier).line);
         }
     }
     end:
@@ -1447,8 +1459,9 @@ static std::shared_ptr<Type> parse_type_specifier() {
     for(const auto& type_token_kind: type_token_kinds) {
         type_token_kinds_string +=  TOKEN_HUMAN_READABLE[type_token_kind] + ",";
     }
-    raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)") + " but found token kinds " +
-                                em("(" + type_token_kinds_string + ")"), line);
+    raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)") +
+                                " but found token kinds " + em("(" + type_token_kinds_string + ")"),
+                                line);
 }
 
 /**
@@ -1471,8 +1484,9 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
         case TOKEN_KIND::key_extern:
             return std::make_unique<CExtern>();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("storage class") + " but found token " +
-                                        em(next_token->token), next_token->line);
+            raise_runtime_error_at_line("Expected token type " + em("storage class") +
+                                        " but found token " + em(next_token->token),
+                                        next_token->line);
     }
 }
 
@@ -1679,11 +1693,11 @@ std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
     p_tokens = &tokens;
     std::unique_ptr<CProgram> c_ast = parse_program();
     if(pop_index != tokens.size()) {
-        raise_runtime_error("An error occurred in parser, not all Tokens were consumed");
+        raise_internal_error("An error occurred in parser, not all Tokens were consumed");
     }
     tokens.clear();
     if(!c_ast) {
-        raise_runtime_error("An error occurred in parser, Ast was not parsed");
+        raise_internal_error("An error occurred in parser, Ast was not parsed");
     }
     return c_ast;
 }

@@ -803,7 +803,8 @@ static void print_ast(Ast* node, size_t t) {
             break;
         }
         default:
-            raise_internal_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
+            raise_internal_error("Pretty print not implemented for ast node type " +
+                                 em(std::to_string(node->type())));
     }
 }
 

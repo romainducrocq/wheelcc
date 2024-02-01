@@ -661,7 +661,7 @@ static void resolve_block(CBlock* node) {
             resolve_block_items(static_cast<CB*>(node)->block_items);
             break;
         default:
-            raise_runtime_error("An error occurred in variable resolution, not all nodes were visited");
+            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
     }
 }
 
@@ -909,7 +909,6 @@ static void resolve_declaration(CDeclaration* node) {
             break;
         default:
             raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
-            break;
     }
 }
 
