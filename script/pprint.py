@@ -60,6 +60,7 @@ if __name__ == "__main__":
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
+#include "ast/tac_ast.hpp"
 
 #include <vector>
 #include <iostream>
@@ -97,7 +98,7 @@ static void print_ast(Ast* node, size_t t) {
     for node in ast:
         print_ast_case(AstNode(node[0], node[1], node[2]))
     print(R"""        default:
-            raise_runtime_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
+            raise_internal_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
     }
 }
 

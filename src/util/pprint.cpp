@@ -7,6 +7,7 @@
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
+#include "ast/tac_ast.hpp"
 
 #include <vector>
 #include <iostream>
@@ -544,8 +545,265 @@ static void print_ast(Ast* node, size_t t) {
             }
             break;
         }
+        case AST_T::TacUnaryOp_t: {
+            field("TacUnaryOp", "", ++t);
+            break;
+        }
+        case AST_T::TacComplement_t: {
+            field("TacComplement", "", ++t);
+            break;
+        }
+        case AST_T::TacNegate_t: {
+            field("TacNegate", "", ++t);
+            break;
+        }
+        case AST_T::TacNot_t: {
+            field("TacNot", "", ++t);
+            break;
+        }
+        case AST_T::TacBinaryOp_t: {
+            field("TacBinaryOp", "", ++t);
+            break;
+        }
+        case AST_T::TacAdd_t: {
+            field("TacAdd", "", ++t);
+            break;
+        }
+        case AST_T::TacSubtract_t: {
+            field("TacSubtract", "", ++t);
+            break;
+        }
+        case AST_T::TacMultiply_t: {
+            field("TacMultiply", "", ++t);
+            break;
+        }
+        case AST_T::TacDivide_t: {
+            field("TacDivide", "", ++t);
+            break;
+        }
+        case AST_T::TacRemainder_t: {
+            field("TacRemainder", "", ++t);
+            break;
+        }
+        case AST_T::TacBitAnd_t: {
+            field("TacBitAnd", "", ++t);
+            break;
+        }
+        case AST_T::TacBitOr_t: {
+            field("TacBitOr", "", ++t);
+            break;
+        }
+        case AST_T::TacBitXor_t: {
+            field("TacBitXor", "", ++t);
+            break;
+        }
+        case AST_T::TacBitShiftLeft_t: {
+            field("TacBitShiftLeft", "", ++t);
+            break;
+        }
+        case AST_T::TacBitShiftRight_t: {
+            field("TacBitShiftRight", "", ++t);
+            break;
+        }
+        case AST_T::TacEqual_t: {
+            field("TacEqual", "", ++t);
+            break;
+        }
+        case AST_T::TacNotEqual_t: {
+            field("TacNotEqual", "", ++t);
+            break;
+        }
+        case AST_T::TacLessThan_t: {
+            field("TacLessThan", "", ++t);
+            break;
+        }
+        case AST_T::TacLessOrEqual_t: {
+            field("TacLessOrEqual", "", ++t);
+            break;
+        }
+        case AST_T::TacGreaterThan_t: {
+            field("TacGreaterThan", "", ++t);
+            break;
+        }
+        case AST_T::TacGreaterOrEqual_t: {
+            field("TacGreaterOrEqual", "", ++t);
+            break;
+        }
+        case AST_T::TacValue_t: {
+            field("TacValue", "", ++t);
+            break;
+        }
+        case AST_T::TacConstant_t: {
+            field("TacConstant", "", ++t);
+            TacConstant* p_node = static_cast<TacConstant*>(node);
+            print_ast(p_node->constant.get(), t);
+            break;
+        }
+        case AST_T::TacVariable_t: {
+            field("TacVariable", "", ++t);
+            TacVariable* p_node = static_cast<TacVariable*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::TacInstruction_t: {
+            field("TacInstruction", "", ++t);
+            break;
+        }
+        case AST_T::TacReturn_t: {
+            field("TacReturn", "", ++t);
+            TacReturn* p_node = static_cast<TacReturn*>(node);
+            print_ast(p_node->val.get(), t);
+            break;
+        }
+        case AST_T::TacSignExtend_t: {
+            field("TacSignExtend", "", ++t);
+            TacSignExtend* p_node = static_cast<TacSignExtend*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacTruncate_t: {
+            field("TacTruncate", "", ++t);
+            TacTruncate* p_node = static_cast<TacTruncate*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacZeroExtend_t: {
+            field("TacZeroExtend", "", ++t);
+            TacZeroExtend* p_node = static_cast<TacZeroExtend*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacDoubleToInt_t: {
+            field("TacDoubleToInt", "", ++t);
+            TacDoubleToInt* p_node = static_cast<TacDoubleToInt*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacDoubleToUInt_t: {
+            field("TacDoubleToUInt", "", ++t);
+            TacDoubleToUInt* p_node = static_cast<TacDoubleToUInt*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacIntToDouble_t: {
+            field("TacIntToDouble", "", ++t);
+            TacIntToDouble* p_node = static_cast<TacIntToDouble*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacUIntToDouble_t: {
+            field("TacUIntToDouble", "", ++t);
+            TacUIntToDouble* p_node = static_cast<TacUIntToDouble*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacFunCall_t: {
+            field("TacFunCall", "", ++t);
+            TacFunCall* p_node = static_cast<TacFunCall*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("List[" + std::to_string(p_node->args.size()) + "]", "", t+1);
+            for(const auto& item: p_node->args) {
+                print_ast(item.get(), t+1);
+            }
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacUnary_t: {
+            field("TacUnary", "", ++t);
+            TacUnary* p_node = static_cast<TacUnary*>(node);
+            print_ast(p_node->unary_op.get(), t);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacBinary_t: {
+            field("TacBinary", "", ++t);
+            TacBinary* p_node = static_cast<TacBinary*>(node);
+            print_ast(p_node->binary_op.get(), t);
+            print_ast(p_node->src1.get(), t);
+            print_ast(p_node->src2.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacCopy_t: {
+            field("TacCopy", "", ++t);
+            TacCopy* p_node = static_cast<TacCopy*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacJump_t: {
+            field("TacJump", "", ++t);
+            TacJump* p_node = static_cast<TacJump*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            break;
+        }
+        case AST_T::TacJumpIfZero_t: {
+            field("TacJumpIfZero", "", ++t);
+            TacJumpIfZero* p_node = static_cast<TacJumpIfZero*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            print_ast(p_node->condition.get(), t);
+            break;
+        }
+        case AST_T::TacJumpIfNotZero_t: {
+            field("TacJumpIfNotZero", "", ++t);
+            TacJumpIfNotZero* p_node = static_cast<TacJumpIfNotZero*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            print_ast(p_node->condition.get(), t);
+            break;
+        }
+        case AST_T::TacLabel_t: {
+            field("TacLabel", "", ++t);
+            TacLabel* p_node = static_cast<TacLabel*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::TacTopLevel_t: {
+            field("TacTopLevel", "", ++t);
+            break;
+        }
+        case AST_T::TacFunction_t: {
+            field("TacFunction", "", ++t);
+            TacFunction* p_node = static_cast<TacFunction*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("Bool", std::to_string(p_node->is_global), t+1);
+            field("List[" + std::to_string(p_node->params.size()) + "]", "", t+1);
+            for(const auto& item: p_node->params) {
+                field("TIdentifier", item, t+2);
+            }
+            field("List[" + std::to_string(p_node->body.size()) + "]", "", t+1);
+            for(const auto& item: p_node->body) {
+                print_ast(item.get(), t+1);
+            }
+            break;
+        }
+        case AST_T::TacStaticVariable_t: {
+            field("TacStaticVariable", "", ++t);
+            TacStaticVariable* p_node = static_cast<TacStaticVariable*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("Bool", std::to_string(p_node->is_global), t+1);
+            print_ast(p_node->static_init_type.get(), t);
+            print_ast(p_node->initial_value.get(), t);
+            break;
+        }
+        case AST_T::TacProgram_t: {
+            field("TacProgram", "", ++t);
+            TacProgram* p_node = static_cast<TacProgram*>(node);
+            field("List[" + std::to_string(p_node->top_levels.size()) + "]", "", t+1);
+            for(const auto& item: p_node->top_levels) {
+                print_ast(item.get(), t+1);
+            }
+            break;
+        }
         default:
-            raise_runtime_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
+            raise_internal_error("Pretty print not implemented for ast node type " + em(std::to_string(node->type())));
     }
 }
 
