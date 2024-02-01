@@ -55,7 +55,8 @@ cat tmp \
     | sed s/"\", (/\"\], \[(/g" \
     | sed s/"\")\]\],/\")\]\, \[\]\],/g" \
     | sed s/"\", \[\"/\", \[\], \[\"/g" \
-    | sed s"/\", \[\]\],/\", \[\], \[\]\],/g" > tmp2
+    | sed s/"\", \[\]\],/\", \[\], \[\]\],/g" \
+    | sed s"/TacIn\[\"ion/TacInstruction/g" > tmp2
 rm tmp
 
 echo ""
@@ -71,6 +72,7 @@ function pfmt () {
 echo "ast = ["
 fmt symbol_table
 fmt c_ast
+fmt tac_ast
 echo "]"
 echo ""
 }
