@@ -677,7 +677,7 @@ cdef TUInt copy_ulong_to_uint(TULong node):
             return Initial(ULongInit(copy_ulong(node.constant.value)))
 */
 static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* static_init_type) {
-    std::unique_ptr<StaticInit> static_init;
+    std::shared_ptr<StaticInit> static_init;
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
             TInt value;
@@ -705,7 +705,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     break;
             }
-            static_init = std::make_unique<IntInit>(std::move(value));
+            static_init = std::make_shared<IntInit>(std::move(value));
             break;
         }
         case AST_T::Long_t: {
@@ -734,7 +734,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     break;
             }
-            static_init = std::make_unique<LongInit>(std::move(value));
+            static_init = std::make_shared<LongInit>(std::move(value));
             break;
         }
         case AST_T::Double_t: {
@@ -763,7 +763,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     break;
             }
-            static_init = std::make_unique<DoubleInit>(std::move(value));
+            static_init = std::make_shared<DoubleInit>(std::move(value));
             break;
         }
         case AST_T::UInt_t: {
@@ -792,7 +792,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     break;
             }
-            static_init = std::make_unique<UIntInit>(std::move(value));
+            static_init = std::make_shared<UIntInit>(std::move(value));
             break;
         }
         case AST_T::ULong_t: {
@@ -821,7 +821,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     break;
             }
-            static_init = std::make_unique<ULongInit>(std::move(value));
+            static_init = std::make_shared<ULongInit>(std::move(value));
             break;
         }
         default:
@@ -844,26 +844,26 @@ cdef Initial checktype_no_init_initial(Type static_init_type):
         return Initial(ULongInit(TULong(0)))
 */
 static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type) {
-    std::unique_ptr<StaticInit> static_init;
+    std::shared_ptr<StaticInit> static_init;
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
-            static_init = std::make_unique<IntInit>(0);
+            static_init = std::make_shared<IntInit>(0);
             break;
         }
         case AST_T::Long_t: {
-            static_init = std::make_unique<LongInit>(0);
+            static_init = std::make_shared<LongInit>(0);
             break;
         }
         case AST_T::Double_t: {
-            static_init = std::make_unique<DoubleInit>(0.0);
+            static_init = std::make_shared<DoubleInit>(0.0);
             break;
         }
         case AST_T::UInt_t: {
-            static_init = std::make_unique<UIntInit>(0);
+            static_init = std::make_shared<UIntInit>(0);
             break;
         }
         case AST_T::ULong_t: {
-            static_init = std::make_unique<ULongInit>(0);
+            static_init = std::make_shared<ULongInit>(0);
             break;
         }
         default:

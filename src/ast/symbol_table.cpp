@@ -45,7 +45,7 @@ UIntInit::UIntInit(TUInt value)
 ULongInit::ULongInit(TULong value)
     : value(value) {}
 
-Initial::Initial(std::unique_ptr<StaticInit> static_init)
+Initial::Initial(std::shared_ptr<StaticInit> static_init)
     : static_init(std::move(static_init)) {}
 
 FunAttr::FunAttr(bool is_defined, bool is_global)

@@ -115,9 +115,9 @@ struct Tentative : InitialValue {
 struct Initial : InitialValue {
     AST_T type() override;
     Initial() = default;
-    Initial(std::unique_ptr<StaticInit> static_init);
+    Initial(std::shared_ptr<StaticInit> static_init);
 
-    std::unique_ptr<StaticInit> static_init;
+    std::shared_ptr<StaticInit> static_init;
 };
 
 struct NoInitializer : InitialValue {
