@@ -103,14 +103,16 @@ CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp)
 
 CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left,
                  std::unique_ptr<CExp> exp_right)
-    : binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+    : binary_op(std::move(binary_op)), exp_left(std::move(exp_left)),
+      exp_right(std::move(exp_right)) {}
 
 CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right)
     : exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CConditional::CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle,
                            std::unique_ptr<CExp> exp_right)
-    : condition(std::move(condition)), exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
+    : condition(std::move(condition)), exp_middle(std::move(exp_middle)),
+      exp_right(std::move(exp_right)) {}
 
 CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args)
     : name(std::move(name)), args(std::move(args)) {}
@@ -141,7 +143,8 @@ CDoWhile::CDoWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> 
 
 CFor::CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std::unique_ptr<CExp> post,
            std::unique_ptr<CStatement> body)
-    : init(std::move(init)), condition(std::move(condition)), post(std::move(post)), body(std::move(body)) {}
+    : init(std::move(init)), condition(std::move(condition)), post(std::move(post)),
+      body(std::move(body)) {}
 
 CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init)
     : init(std::move(init)) {}

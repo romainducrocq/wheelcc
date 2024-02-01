@@ -49,70 +49,72 @@ AST_T TacFunction::type() { return AST_T::TacFunction_t; }
 AST_T TacStaticVariable::type() { return AST_T::TacStaticVariable_t; }
 AST_T TacProgram::type() { return AST_T::TacProgram_t; }
 
-//TacConstant::TacConstant(std::shared_ptr<CConst> constant)
-//    : {}
-//
-//TacVariable::TacVariable(TIdentifier name)
-//    : {}
-//
-//TacReturn::TacReturn(std::unique_ptr<TacValue> val)
-//    : {}
-//
-//TacSignExtend::TacSignExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacTruncate::TacTruncate(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacZeroExtend::TacZeroExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacDoubleToInt::TacDoubleToInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacDoubleToUInt::TacDoubleToUInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacIntToDouble::TacIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacUIntToDouble::TacUIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacFunCall::TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args,
-//                       std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src,
-//                   std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1,
-//                     std::unique_ptr<TacValue> src2, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacCopy::TacCopy(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
-//    : {}
-//
-//TacJump::TacJump(TIdentifier target)
-//    : {}
-//
-//TacJumpIfZero::TacJumpIfZero(TIdentifier target, std::unique_ptr<TacValue> condition)
-//    : {}
-//
-//TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::unique_ptr<TacValue> condition)
-//    : {}
-//
-//TacLabel::TacLabel(TIdentifier name)
-//    : {}
-//
-//TacFunction::TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
-//                         std::vector<std::unique_ptr<TacInstruction>> body)
-//    : {}
-//
-//TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
-//                                     std::shared_ptr<StaticInit> initial_value)
-//    : {}
-//
-//TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> top_levels)
-//    : {}
+TacConstant::TacConstant(std::shared_ptr<CConst> constant)
+    : constant(std::move(constant)) {}
+
+TacVariable::TacVariable(TIdentifier name)
+    : name(std::move(name)) {}
+
+TacReturn::TacReturn(std::unique_ptr<TacValue> val)
+    : val(std::move(val)) {}
+
+TacSignExtend::TacSignExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacTruncate::TacTruncate(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacZeroExtend::TacZeroExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacDoubleToInt::TacDoubleToInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacDoubleToUInt::TacDoubleToUInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacIntToDouble::TacIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacUIntToDouble::TacUIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacFunCall::TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args,
+                       std::unique_ptr<TacValue> dst)
+    : name(std::move(name)), args(std::move(args)), dst(std::move(dst)) {}
+
+TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src,
+                   std::unique_ptr<TacValue> dst)
+    : unary_op(std::move(unary_op)), src(std::move(src)), dst(std::move(dst)) {}
+
+TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1,
+                     std::unique_ptr<TacValue> src2, std::unique_ptr<TacValue> dst)
+    : binary_op(std::move(binary_op)), src1(std::move(src1)), src2(std::move(src2)),
+      dst(std::move(dst)) {}
+
+TacCopy::TacCopy(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacJump::TacJump(TIdentifier target)
+    : target(std::move(target)) {}
+
+TacJumpIfZero::TacJumpIfZero(TIdentifier target, std::unique_ptr<TacValue> condition)
+    : target(std::move(target)), condition(std::move(condition)) {}
+
+TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::unique_ptr<TacValue> condition)
+    : target(std::move(target)), condition(std::move(condition)) {}
+
+TacLabel::TacLabel(TIdentifier name)
+    : name(std::move(name)) {}
+
+TacFunction::TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
+                         std::vector<std::unique_ptr<TacInstruction>> body)
+    : name(std::move(name)), is_global(is_global), params(std::move(params)), body(std::move(body)) {}
+
+TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
+                                     std::shared_ptr<StaticInit> initial_value)
+    : name(std::move(name)), is_global(is_global), static_init_type(std::move(static_init_type)),
+      initial_value(std::move(initial_value)) {}
+
+TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> top_levels)
+    : top_levels(std::move(top_levels)) {}
