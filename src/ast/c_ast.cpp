@@ -89,7 +89,7 @@ CConstUInt::CConstUInt(TUInt value)
 CConstULong::CConstULong(TULong value)
     : value(value) {}
 
-CConstant::CConstant(std::unique_ptr<CConst> constant)
+CConstant::CConstant(std::shared_ptr<CConst> constant)
     : constant(std::move(constant)) {}
 
 CVar::CVar(TIdentifier name)

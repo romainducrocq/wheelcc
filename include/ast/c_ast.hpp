@@ -198,9 +198,9 @@ struct CExp : Ast {
 struct CConstant : CExp {
     AST_T type() override;
     CConstant() = default;
-    CConstant(std::unique_ptr<CConst> constant);
+    CConstant(std::shared_ptr<CConst> constant);
 
-    std::unique_ptr<CConst> constant;
+    std::shared_ptr<CConst> constant;
     /*
     std::shared_ptr<Type> exp_type;
     */

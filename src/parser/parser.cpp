@@ -227,9 +227,9 @@ cdef CConstInt parse_int_constant():
     return CConstInt(value)
 */
 // <int> ::= ? A constant token ?
-static std::unique_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
+static std::shared_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
-    return std::make_unique<CConstInt>(value);
+    return std::make_shared<CConstInt>(value);
 }
 
 /**
@@ -238,9 +238,9 @@ cdef CConstLong parse_long_constant():
     return CConstLong(value)
 */
 // <long> ::= ? A constant token ?
-static std::unique_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
+static std::shared_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
     TLong value = intmax_to_int64(intmax);
-    return std::make_unique<CConstLong>(value);
+    return std::make_shared<CConstLong>(value);
 }
 
 /**
@@ -249,9 +249,9 @@ cdef CConstDouble parse_double_constant():
     return CConstDouble(value)
 */
 // <double> ::= ? A constant token ?
-static std::unique_ptr<CConstDouble> parse_double_constant() {
+static std::shared_ptr<CConstDouble> parse_double_constant() {
     TDouble value = string_to_double(next_token->token);
-    return std::make_unique<CConstDouble>(value);
+    return std::make_shared<CConstDouble>(value);
 }
 
 /**
@@ -260,9 +260,9 @@ cdef CConstUInt parse_uint_constant():
     return CConstUInt(value)
 */
 // <uint> ::= ? A constant token ?
-static std::unique_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
+static std::shared_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
     TUInt value = uintmax_to_uint32(uintmax);
-    return std::make_unique<CConstUInt>(value);
+    return std::make_shared<CConstUInt>(value);
 }
 
 /**
@@ -271,9 +271,9 @@ cdef CConstULong parse_ulong_constant():
     return CConstULong(value)
 */
 // <ulong> ::= ? A constant token ?
-static std::unique_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
+static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
     TULong value = uintmax_to_uint64(uintmax);
-    return std::make_unique<CConstULong>(value);
+    return std::make_shared<CConstULong>(value);
 }
 
 /**
@@ -299,7 +299,7 @@ cdef CConst parse_constant():
     return parse_long_constant()
 */
 // <const> ::= <int> | <long> | <double>
-static std::unique_ptr<CConst> parse_constant() {
+static std::shared_ptr<CConst> parse_constant() {
     if(pop_next().token_kind == TOKEN_KIND::float_constant) {
         return parse_double_constant();
     } else if (next_token->token_kind == TOKEN_KIND::long_constant) {
@@ -338,7 +338,7 @@ cdef CConst parse_unsigned_constant():
     return parse_ulong_constant()
 */
 // <const> ::= <uint> | <ulong>
-static std::unique_ptr<CConst> parse_unsigned_constant() {
+static std::shared_ptr<CConst> parse_unsigned_constant() {
     if(pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
         next_token->token.pop_back();
     }
@@ -551,7 +551,7 @@ cdef CConstant parse_constant_factor():
     return CConstant(constant)
 */
 static std::unique_ptr<CConstant> parse_constant_factor() {
-    std::unique_ptr<CConst> constant = parse_constant();
+    std::shared_ptr<CConst> constant = parse_constant();
     return std::make_unique<CConstant>(std::move(constant));
 }
 
@@ -561,7 +561,7 @@ cdef CConstant parse_unsigned_constant_factor():
     return CConstant(constant)
 */
 static std::unique_ptr<CConstant> parse_unsigned_constant_factor() {
-    std::unique_ptr<CConst> constant = parse_unsigned_constant();
+    std::shared_ptr<CConst> constant = parse_unsigned_constant();
     return std::make_unique<CConstant>(std::move(constant));
 }
 
