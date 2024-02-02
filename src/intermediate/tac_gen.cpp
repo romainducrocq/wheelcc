@@ -202,6 +202,8 @@ cdef list[TacInstruction] instructions = []
 */
 static std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
 
+static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node);
+
 /**
 cdef TacConstant represent_exp_constant_instructions(CConstant node):
     return represent_value(node)
@@ -218,7 +220,7 @@ static std::shared_ptr<TacValue> represent_exp_var_instructions(CVar* node) {
     return represent_value(node);
 }
 
-/** TODO
+/**
 cdef TacValue represent_exp_fun_call_instructions(CFunctionCall node):
     cdef TIdentifier name = copy_identifier(node.name)
     cdef Py_ssize_t i
@@ -229,16 +231,18 @@ cdef TacValue represent_exp_fun_call_instructions(CFunctionCall node):
     instructions.append(TacFunCall(name, args, dst))
     return dst
 */
-//static std::shared_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCall* node) {
-////    cdef TIdentifier name = copy_identifier(node.name)
-////    cdef Py_ssize_t i
-////    cdef list[TacValue] args = []
-////    for i in range(len(node.args)):
-////        args.append(represent_exp_instructions(node.args[i]))
-////    cdef TacValue dst = represent_inner_value(node)
-////    instructions.append(TacFunCall(name, args, dst))
-////    return dst
-//}
+static std::shared_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCall* node) {
+    TIdentifier name = node->name;
+    std::vector<std::shared_ptr<TacValue>> args;
+    for(size_t i = 0; i < node->args.size(); i++) {
+        std::shared_ptr<TacValue> arg = represent_exp_instructions(node->args[i].get());
+        args.push_back(std::move(arg));
+    }
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::unique_ptr<TacInstruction> instruction = std::make_unique<TacFunCall>(std::move(name), std::move(args), dst);
+    p_instructions->push_back(std::move(instruction));
+    return dst;
+}
 
 /** TODO
 cdef TacValue represent_exp_cast_instructions(CCast node):
@@ -400,6 +404,10 @@ cdef TacValue represent_exp_instructions(CExp node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+// cdef TacValue represent_exp_instructions(CExp node):
+static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
+    return std::make_shared<TacValue>(); // TODO for forward declare only
+}
 
 /** TODO
 cdef void represent_statement_null_instructions(CNull node):
