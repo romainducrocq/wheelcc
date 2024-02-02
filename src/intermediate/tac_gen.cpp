@@ -573,6 +573,8 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
 
 static void represent_block(CBlock* node);
 
+static void represent_statement_instructions(CStatement* node);
+
 /**
 cdef void represent_statement_null_instructions(CNull node):
     pass
@@ -607,7 +609,7 @@ static void represent_statement_expression_instructions(CExpression* node) {
     represent_exp_instructions(node->exp.get());
 }
 
-/** TODO
+/**
 cdef void represent_statement_if_instructions(CIf node):
     cdef TIdentifier target_false = represent_label_identifier("if_false")
     cdef TacValue condition = represent_exp_instructions(node.condition)
@@ -615,6 +617,15 @@ cdef void represent_statement_if_instructions(CIf node):
     represent_statement_instructions(node.then)
     instructions.append(TacLabel(target_false))
 */
+static void represent_statement_if_instructions(CIf* node) {
+    TIdentifier target_false = represent_label_identifier("if_false");
+    {
+        std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
+        push_instruction(std::make_unique<TacJumpIfZero>(target_false, std::move(condition)));
+    }
+    represent_statement_instructions(node->then.get());
+    push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
+}
 
 /** TODO
 cdef void represent_statement_if_else_instructions(CIf node):
@@ -755,6 +766,9 @@ cdef void represent_statement_instructions(CStatement node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+static void represent_statement_instructions(CStatement* node) {
+    ; // TODO for forward declare only
+}
 
 /** TODO
 cdef void represent_variable_declaration_instructions(CVariableDeclaration node):
