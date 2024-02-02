@@ -851,7 +851,7 @@ static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type
             break;
         }
         case AST_T::Long_t: {
-            static_init = std::make_shared<LongInit>(0);
+            static_init = std::make_shared<LongInit>(0l);
             break;
         }
         case AST_T::Double_t: {
@@ -859,11 +859,11 @@ static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type
             break;
         }
         case AST_T::UInt_t: {
-            static_init = std::make_shared<UIntInit>(0);
+            static_init = std::make_shared<UIntInit>(0u);
             break;
         }
         case AST_T::ULong_t: {
-            static_init = std::make_shared<ULongInit>(0);
+            static_init = std::make_shared<ULongInit>(0ul);
             break;
         }
         default:

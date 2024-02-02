@@ -1130,11 +1130,12 @@ static void represent_declaration_top_level(CDeclaration* node) {
     }
 }
 
-/** TODO
+/**
 cdef list[TacTopLevel] static_variable_top_levels = []
 */
+static std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
 
-/** TODO
+/**
 cdef StaticInit represent_tentative_static_init(Type static_init_type):
     if isinstance(static_init_type, Int):
         return IntInit(TInt(0))
@@ -1151,6 +1152,23 @@ cdef StaticInit represent_tentative_static_init(Type static_init_type):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_init_type) {
+    switch(static_init_type->type()) {
+        case AST_T::Int_t:
+            return std::make_shared<IntInit>(0);
+        case AST_T::Long_t:
+            return std::make_shared<LongInit>(0l);
+        case AST_T::Double_t:
+            return std::make_shared<DoubleInit>(0.0);
+        case AST_T::UInt_t:
+            return std::make_shared<UIntInit>(0u);
+        case AST_T::ULong_t:
+            return std::make_shared<ULongInit>(0ul);
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef void represent_static_variable_top_level(StaticAttr node, Type static_init_type, str symbol):
