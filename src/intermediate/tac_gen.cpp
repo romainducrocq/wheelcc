@@ -571,16 +571,23 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     }
 }
 
-/** TODO
+/**
 cdef void represent_statement_null_instructions(CNull node):
     pass
 */
+static void represent_statement_null_instructions(CNull* /*node*/) {
+    ;
+}
 
-/** TODO
+/**
 cdef void represent_statement_return_instructions(CReturn node):
     cdef TacValue val = represent_exp_instructions(node.exp)
     instructions.append(TacReturn(val))
 */
+static void represent_statement_return_instructions(CReturn* node) {
+    std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
+    push_instruction(std::make_unique<TacReturn>(std::move(val)));
+}
 
 /** TODO
 cdef void represent_statement_compound_instructions(CCompound node):
