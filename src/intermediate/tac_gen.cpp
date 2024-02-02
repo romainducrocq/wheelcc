@@ -571,6 +571,8 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     }
 }
 
+static void represent_block(CBlock* node);
+
 /**
 cdef void represent_statement_null_instructions(CNull node):
     pass
@@ -589,15 +591,21 @@ static void represent_statement_return_instructions(CReturn* node) {
     push_instruction(std::make_unique<TacReturn>(std::move(val)));
 }
 
-/** TODO
+/**
 cdef void represent_statement_compound_instructions(CCompound node):
     represent_block(node.block)
 */
+static void represent_statement_compound_instructions(CCompound* node) {
+    represent_block(node->block.get());
+}
 
-/** TODO
+/**
 cdef void represent_statement_expression_instructions(CExpression node):
     _ = represent_exp_instructions(node.exp)
 */
+static void represent_statement_expression_instructions(CExpression* node) {
+    represent_exp_instructions(node->exp.get());
+}
 
 /** TODO
 cdef void represent_statement_if_instructions(CIf node):
@@ -809,6 +817,9 @@ cdef void represent_block(CBlock node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+static void represent_block(CBlock* node) {
+    ; // TODO for forward declare only
+}
 
 /** TODO
 cdef TacFunction represent_function_top_level(CFunctionDeclaration node):
