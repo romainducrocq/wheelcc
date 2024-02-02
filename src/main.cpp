@@ -120,7 +120,6 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
 #ifndef __NDEBUG__
     if(opt_code == 255) {
         debug_tokens(tokens);
-        tokens.clear();
         return;
     }
 #endif

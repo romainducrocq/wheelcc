@@ -12,8 +12,6 @@
 #include <memory>
 #include <vector>
 
-// https://stackoverflow.com/questions/201718/concatenating-two-stdvectors
-
 /**
 cdef TacBinaryOp represent_binary_op(CBinaryOp node):
     # binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor
@@ -1268,7 +1266,7 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     return std::make_unique<TacProgram>(std::move(function_top_levels), std::move(static_variable_top_levels));
 }
 
-/** TODO
+/**
 cdef TacProgram three_address_code_representation(CProgram c_ast):
 
     cdef TacProgram tac_ast = represent_program(c_ast)
@@ -1279,3 +1277,11 @@ cdef TacProgram three_address_code_representation(CProgram c_ast):
 
     return tac_ast
 */
+std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast) {
+    std::unique_ptr<TacProgram> tac_ast = represent_program(c_ast.get());
+    c_ast.reset();
+    if(!tac_ast) {
+        raise_internal_error("An error occurred in three address code representation, Asm was not generated");
+    }
+    return tac_ast;
+}
