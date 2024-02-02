@@ -627,7 +627,7 @@ static void represent_statement_if_instructions(CIf* node) {
     push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
 }
 
-/** TODO
+/**
 cdef void represent_statement_if_else_instructions(CIf node):
     cdef TIdentifier target_else = represent_label_identifier("if_else")
     cdef TacValue condition = represent_exp_instructions(node.condition)
@@ -639,6 +639,19 @@ cdef void represent_statement_if_else_instructions(CIf node):
     represent_statement_instructions(node.else_fi)
     instructions.append(TacLabel(target_false))
 */
+static void represent_statement_if_else_instructions(CIf* node) {
+    TIdentifier target_else = represent_label_identifier("if_else");
+    TIdentifier target_false = represent_label_identifier("if_false");
+    {
+        std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
+        push_instruction(std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
+    }
+    represent_statement_instructions(node->then.get());
+    push_instruction(std::make_unique<TacJump>(target_false));
+    push_instruction(std::make_unique<TacLabel>(std::move(target_else)));
+    represent_statement_instructions(node->else_fi.get());
+    push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
+}
 
 /** TODO
 cdef void represent_statement_while_instructions(CWhile node):
