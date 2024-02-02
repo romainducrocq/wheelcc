@@ -954,7 +954,7 @@ static void represent_declaration_fun_decl_instructions(CFunDecl* /*node*/) {
     ;
 }
 
-/** TODO
+/**
 cdef void represent_declaration_instructions(CDeclaration node):
     if isinstance(node, CFunDecl):
         represent_declaration_fun_decl_instructions(node)
@@ -965,6 +965,19 @@ cdef void represent_declaration_instructions(CDeclaration node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+static void represent_declaration_instructions(CDeclaration* node) {
+    switch(node->type()) {
+        case AST_T::CFunDecl_t:
+            represent_declaration_fun_decl_instructions(static_cast<CFunDecl*>(node));
+            break;
+        case AST_T::CVarDecl_t:
+            represent_declaration_var_decl_instructions(static_cast<CVarDecl*>(node));
+            break;
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef void represent_list_instructions(list[CBlockItem] list_node):
