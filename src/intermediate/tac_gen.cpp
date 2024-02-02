@@ -767,6 +767,39 @@ cdef void represent_statement_for_instructions(CFor node):
     instructions.append(TacJump(target_for_start))
     instructions.append(TacLabel(target_break))
 */
+static void represent_statement_for_instructions(CFor* node) {
+    //    represent_statement_for_init_instructions(node.init)
+    represent_statement_for_init_instructions(node->init.get());
+    //    cdef TIdentifier target_for_start = represent_label_identifier("for_start")
+    TIdentifier target_for_start = represent_label_identifier("for_start");
+    //    instructions.append(TacLabel(target_for_start))
+    push_instruction(std::make_unique<TacLabel>(target_for_start));
+    //    cdef TIdentifier target_break = TIdentifier("break_" + node.target.str_t)
+    TIdentifier target_break = "break_" + node->target;
+    //    cdef TacValue condition
+    //    if node.condition:
+    if(node->condition) {
+        //        condition = represent_exp_instructions(node.condition)
+        std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
+        //        instructions.append(TacJumpIfZero(condition, target_break))
+        push_instruction(std::make_unique<TacJumpIfZero>(target_break, std::move(condition)));
+    }
+    //    represent_statement_instructions(node.body)
+    represent_statement_instructions(node->body.get());
+    //    cdef TIdentifier target_continue = TIdentifier("continue_" + node.target.str_t)
+    TIdentifier target_continue = "continue_" + node->target;
+    //    instructions.append(TacLabel(target_continue))
+    push_instruction(std::make_unique<TacLabel>(std::move(target_continue)));
+    //    if node.post:
+    //        _ = represent_exp_instructions(node.post)
+    if(node->post) {
+        represent_exp_instructions(node->post.get());
+    }
+    //    instructions.append(TacJump(target_for_start))
+    push_instruction(std::make_unique<TacJump>(std::move(target_for_start)));
+    //    instructions.append(TacLabel(target_break))
+    push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
+}
 
 /** TODO
 cdef void represent_statement_break_instructions(CBreak node):
