@@ -4,8 +4,11 @@
 #endif
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
+#include "ast/c_ast.hpp"
+#include "ast/tac_ast.hpp"
 #include "parser/parser.hpp"
 #include "semantic/id_resolve.hpp"
+#include "intermediate/tac_gen.hpp"
 
 #include <string>
 #include <vector>
@@ -140,6 +143,17 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
 #ifndef __NDEBUG__
     if(opt_code == 253) {
         debug_ast(c_ast.get(), "C AST");
+        debug_symbol_table();
+        return;
+    }
+#endif
+
+    verbose("-- TAC representation ... ", false);
+    std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 252) {
+        debug_ast(tac_ast.get(), "TAC AST");
         debug_symbol_table();
         return;
     }
