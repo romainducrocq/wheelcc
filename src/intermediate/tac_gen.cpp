@@ -197,19 +197,26 @@ static std::unique_ptr<TacValue> represent_value(CExp* node) {
     }
 }
 
-/** TODO
+/**
 cdef list[TacInstruction] instructions = []
 */
+static std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
 
-/** TODO
+/**
 cdef TacConstant represent_exp_constant_instructions(CConstant node):
     return represent_value(node)
 */
+static std::unique_ptr<TacValue> represent_exp_constant_instructions(CConstant* node) {
+    return represent_value(node);
+}
 
-/** TODO
+/**
 cdef TacVariable represent_exp_var_instructions(CVar node):
     return represent_value(node)
 */
+static std::unique_ptr<TacValue> represent_exp_var_instructions(CVar* node) {
+    return represent_value(node);
+}
 
 /** TODO
 cdef TacValue represent_exp_fun_call_instructions(CFunctionCall node):
