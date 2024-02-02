@@ -1068,12 +1068,13 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     std::vector<std::unique_ptr<TacInstruction>> body;
     p_instructions = &body;
     represent_block(node->body.get());
-
     {
         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
         std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
         push_instruction(std::make_unique<TacReturn>(std::move(val)));
     }
+    p_instructions = nullptr;
+
     return std::make_unique<TacFunction>(std::move(name), is_global, std::move(params), std::move(body));
 }
 
