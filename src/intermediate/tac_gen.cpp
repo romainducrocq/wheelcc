@@ -913,14 +913,21 @@ static void represent_statement_instructions(CStatement* node) {
     }
 }
 
-/** TODO
+/**
 cdef void represent_variable_declaration_instructions(CVariableDeclaration node):
     cdef TacValue src = represent_exp_instructions(node.init)
     cdef TacValue dst = represent_value(CVar(node.name))
     instructions.append(TacCopy(src, dst))
 */
 static void represent_variable_declaration_instructions(CVariableDeclaration* node) {
-    ; // TODO for forward declare only
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->init.get());
+    std::shared_ptr<TacValue> dst;
+    {
+        TIdentifier name = node->name;
+        std::unique_ptr<CExp> exp = std::make_unique<CVar>(std::move(name));
+        dst = represent_value(exp.get());
+    }
+    push_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
 }
 
 /** TODO
