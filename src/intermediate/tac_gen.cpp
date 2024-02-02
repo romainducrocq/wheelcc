@@ -482,7 +482,7 @@ static std::shared_ptr<TacValue> represent_exp_binary_or_instructions(CBinary* n
     return dst;
 }
 
-/** TODO
+/**
 cdef TacValue represent_exp_binary_instructions(CBinary node):
     cdef TacValue src1 = represent_exp_instructions(node.exp_left)
     cdef TacValue src2 = represent_exp_instructions(node.exp_right)
@@ -491,6 +491,14 @@ cdef TacValue represent_exp_binary_instructions(CBinary node):
     instructions.append(TacBinary(binary_op, src1, src2, dst))
     return dst
 */
+static std::shared_ptr<TacValue> represent_exp_binary_instructions(CBinary* node) {
+    std::shared_ptr<TacValue> src1 = represent_exp_instructions(node->exp_left.get());
+    std::shared_ptr<TacValue> src2 = represent_exp_instructions(node->exp_right.get());
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::unique_ptr<TacBinaryOp> binary_op = represent_binary_op(node->binary_op.get());
+    push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src1), std::move(src2), dst));
+    return dst;
+}
 
 /** TODO
 cdef TacValue represent_exp_instructions(CExp node):
