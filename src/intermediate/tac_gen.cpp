@@ -863,7 +863,85 @@ cdef void represent_statement_instructions(CStatement node):
             "An error occurred in three address code representation, not all nodes were visited")
 */
 static void represent_statement_instructions(CStatement* node) {
-    ; // TODO for forward declare only
+    switch(node->type()) {
+        //    if isinstance(node, CNull):
+        //        represent_statement_null_instructions(node)
+        case AST_T::CNull_t:
+            represent_statement_null_instructions(static_cast<CNull*>(node));
+            break;
+        //    elif isinstance(node, CReturn):
+        //        represent_statement_return_instructions(node)
+        case AST_T::CReturn_t:
+            represent_statement_return_instructions(static_cast<CReturn*>(node));
+            break;
+        //    elif isinstance(node, CCompound):
+        //        represent_statement_compound_instructions(node)
+        case AST_T::CCompound_t:
+            represent_statement_compound_instructions(static_cast<CCompound*>(node));
+            break;
+        //    elif isinstance(node, CExpression):
+        //        represent_statement_expression_instructions(node)
+        case AST_T::CExpression_t:
+            represent_statement_expression_instructions(static_cast<CExpression*>(node));
+            break;
+        //    elif isinstance(node, CIf):
+        case AST_T::CIf_t: {
+            //        if node.else_fi:
+            //            represent_statement_if_else_instructions(node)
+            CIf* p_node = static_cast<CIf*>(node);
+            if(p_node->else_fi) {
+                represent_statement_if_else_instructions(p_node);
+            }
+            //        else:
+            //            represent_statement_if_instructions(node)
+            else {
+                represent_statement_if_instructions(p_node);
+            }
+            break;
+        }
+        //    elif isinstance(node, CWhile):
+        //        represent_statement_while_instructions(node)
+        case AST_T::CWhile_t:
+            represent_statement_while_instructions(static_cast<CWhile*>(node));
+            break;
+        //    elif isinstance(node, CDoWhile):
+        //        represent_statement_do_while_instructions(node)
+        case AST_T::CDoWhile_t:
+            represent_statement_do_while_instructions(static_cast<CDoWhile*>(node));
+            break;
+        //    elif isinstance(node, CFor):
+        //        represent_statement_for_instructions(node)
+        case AST_T::CFor_t:
+            represent_statement_for_instructions(static_cast<CFor*>(node));
+            break;
+        //    elif isinstance(node, CBreak):
+        //        represent_statement_break_instructions(node)
+        case AST_T::CBreak_t:
+            represent_statement_break_instructions(static_cast<CBreak*>(node));
+            break;
+        //    elif isinstance(node, CContinue):
+        //        represent_statement_continue_instructions(node)
+        case AST_T::CContinue_t:
+            represent_statement_continue_instructions(static_cast<CContinue*>(node));
+            break;
+        //    elif isinstance(node, CGoto):
+        //        represent_statement_goto_instructions(node)
+        case AST_T::CGoto_t:
+            represent_statement_goto_instructions(static_cast<CGoto*>(node));
+            break;
+        //    elif isinstance(node, CLabel):
+        //        represent_statement_label_instructions(node)
+        case AST_T::CLabel_t:
+            represent_statement_label_instructions(static_cast<CLabel*>(node));
+            break;
+        //    else:
+        //
+        //        raise RuntimeError(
+        //            "An error occurred in three address code representation, not all nodes were visited")
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
 }
 
 /** TODO
