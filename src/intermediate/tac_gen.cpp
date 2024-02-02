@@ -930,18 +930,29 @@ static void represent_variable_declaration_instructions(CVariableDeclaration* no
     push_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
 }
 
-/** TODO
+/**
 cdef void represent_declaration_var_decl_instructions(CVarDecl node):
     if isinstance(symbol_table[node.variable_decl.name.str_t].attrs, StaticAttr):
         return
     if node.variable_decl.init:
         represent_variable_declaration_instructions(node.variable_decl)
 */
+static void represent_declaration_var_decl_instructions(CVarDecl* node) {
+    if(symbol_table[node->variable_decl->name]->attrs->type() == AST_T::StaticAttr_t) {
+        return;
+    }
+    if(node->variable_decl->init) {
+        represent_variable_declaration_instructions(node->variable_decl.get());
+    }
+}
 
-/** TODO
+/**
 cdef void represent_declaration_fun_decl_instructions(CFunDecl node):
     pass
 */
+static void represent_declaration_fun_decl_instructions(CFunDecl* /*node*/) {
+    ;
+}
 
 /** TODO
 cdef void represent_declaration_instructions(CDeclaration node):
