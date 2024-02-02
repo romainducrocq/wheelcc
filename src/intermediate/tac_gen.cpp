@@ -574,6 +574,7 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
 static void represent_block(CBlock* node);
 
 static void represent_statement_instructions(CStatement* node);
+static void represent_variable_declaration_instructions(CVariableDeclaration* node);
 
 /**
 cdef void represent_statement_null_instructions(CNull node):
@@ -677,7 +678,7 @@ static void represent_statement_while_instructions(CWhile* node) {
     push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
 }
 
-/** TODO
+/**
 cdef void represent_statement_do_while_instructions(CDoWhile node):
     cdef TIdentifier target_do_while_start = represent_label_identifier("do_while_start")
     instructions.append(TacLabel(target_do_while_start))
@@ -689,17 +690,39 @@ cdef void represent_statement_do_while_instructions(CDoWhile node):
     cdef TIdentifier target_break = TIdentifier("break_" + node.target.str_t)
     instructions.append(TacLabel(target_break))
 */
+static void represent_statement_do_while_instructions(CDoWhile* node) {
+    TIdentifier target_do_while_start = represent_label_identifier("do_while_start");
+    TIdentifier target_continue = "continue_" + node->target;
+    TIdentifier target_break = "break_" + node->target;
+    push_instruction(std::make_unique<TacLabel>(target_do_while_start));
+    represent_statement_instructions(node->body.get());
+    push_instruction(std::make_unique<TacLabel>(std::move(target_continue)));
+    {
+        std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
+        push_instruction(std::make_unique<TacJumpIfNotZero>(std::move(target_do_while_start),
+                                                                      std::move(condition)));
+    }
+    push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
+}
 
-/** TODO
+/**
 cdef void represent_for_init_decl_instructions(CInitDecl node):
     represent_variable_declaration_instructions(node.init)
 */
+static void represent_for_init_decl_instructions(CInitDecl* node) {
+    represent_variable_declaration_instructions(node->init.get());
+}
 
-/** TODO
+/**
 cdef void represent_for_init_exp_instructions(CInitExp node):
     if node.init:
         _ = represent_exp_instructions(node.init)
 */
+static void represent_for_init_exp_instructions(CInitExp* node) {
+    if(node->init) {
+        represent_exp_instructions(node->init.get());
+    }
+}
 
 /** TODO
 cdef void represent_statement_for_init_instructions(CForInit node):
@@ -801,6 +824,9 @@ cdef void represent_variable_declaration_instructions(CVariableDeclaration node)
     cdef TacValue dst = represent_value(CVar(node.name))
     instructions.append(TacCopy(src, dst))
 */
+static void represent_variable_declaration_instructions(CVariableDeclaration* node) {
+    ; // TODO for forward declare only
+}
 
 /** TODO
 cdef void represent_declaration_var_decl_instructions(CVarDecl node):
