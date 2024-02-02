@@ -786,30 +786,47 @@ static void represent_statement_for_instructions(CFor* node) {
     push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
 }
 
-/** TODO
+/**
 cdef void represent_statement_break_instructions(CBreak node):
     cdef TIdentifier target_break = TIdentifier("break_" + node.target.str_t)
     instructions.append(TacJump(target_break))
 */
+static void represent_statement_break_instructions(CBreak* node) {
+    TIdentifier target_break = "break_" + node->target;
+    push_instruction(std::make_unique<TacJump>(std::move(target_break)));
+}
 
-/** TODO
+/**
 cdef void represent_statement_continue_instructions(CContinue node):
     cdef TIdentifier target_continue = TIdentifier("continue_" + node.target.str_t)
     instructions.append(TacJump(target_continue))
 */
+static void represent_statement_continue_instructions(CContinue* node) {
+    TIdentifier target_continue = "continue_" + node->target;
+    push_instruction(std::make_unique<TacJump>(std::move(target_continue)));
+}
 
-/** TODO
+/**
 cdef void represent_statement_goto_instructions(CGoto node):
     cdef TIdentifier target_label = node.target
     instructions.append(TacJump(target_label))
 */
+static void represent_statement_goto_instructions(CGoto* node) {
+    TIdentifier target_label = node->target;
+    push_instruction(std::make_unique<TacJump>(std::move(target_label)));
+}
 
-/** TODO
+/**
 cdef void represent_statement_label_instructions(CLabel node):
     cdef TIdentifier target_label = node.target
     instructions.append(TacLabel(target_label))
     represent_statement_instructions(node.jump_to)
 */
+static void represent_statement_label_instructions(CLabel* node) {
+    TIdentifier target_label = node->target;
+    push_instruction(std::make_unique<TacLabel>(std::move(target_label)));
+    represent_statement_instructions(node->jump_to.get());
+}
 
 /** TODO
 cdef void represent_statement_instructions(CStatement node):
