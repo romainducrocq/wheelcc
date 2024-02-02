@@ -522,10 +522,14 @@ cdef list[CExp] parse_argument_list():
 // <exp> { "," <exp> }
 static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
     std::vector<std::unique_ptr<CExp>> args;
-    args.push_back(parse_exp(0));
+    {
+        std::unique_ptr<CExp> arg = parse_exp(0);
+        args.push_back(std::move(arg));
+    }
     while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
         pop_next();
-        args.push_back(parse_exp(0));
+        std::unique_ptr<CExp> arg = parse_exp(0);
+        args.push_back(std::move(arg));
     }
     return args;
 }
@@ -1280,7 +1284,8 @@ cdef CB parse_b_block():
 static std::unique_ptr<CB> parse_b_block() {
     std::vector<std::unique_ptr<CBlockItem>> block_items;
     while(peek_next().token_kind != TOKEN_KIND::brace_close) {
-        block_items.push_back(parse_block_item());
+        std::unique_ptr<CBlockItem> block_item = parse_block_item();
+        block_items.push_back(std::move(block_item));
     }
     return std::make_unique<CB>(std::move(block_items));
 }
@@ -1546,14 +1551,18 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::sha
         case TOKEN_KIND::key_double:
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed: {
-            param_types.push_back(parse_type_specifier());
-            TIdentifier identifier_1; parse_identifier(identifier_1);
-            params.push_back(std::move(identifier_1));
+            {
+                std::shared_ptr<Type> param_type = parse_type_specifier();
+                param_types.push_back(std::move(param_type));
+                TIdentifier identifier; parse_identifier(identifier);
+                params.push_back(std::move(identifier));
+            }
             while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
                 pop_next();
-                param_types.push_back(parse_type_specifier());
-                TIdentifier identifier_2; parse_identifier(identifier_2);
-                params.push_back(std::move(identifier_2));
+                std::shared_ptr<Type> param_type = parse_type_specifier();
+                param_types.push_back(std::move(param_type));
+                TIdentifier identifier; parse_identifier(identifier);
+                params.push_back(std::move(identifier));
             }
             break;
         }
@@ -1663,7 +1672,8 @@ cdef CProgram parse_program():
 static std::unique_ptr<CProgram> parse_program() {
     std::vector<std::unique_ptr<CDeclaration>> declarations;
     while(pop_index < p_tokens->size()) {
-        declarations.push_back(parse_declaration());
+        std::unique_ptr<CDeclaration> declaration = parse_declaration();
+        declarations.push_back(std::move(declaration));
     }
     return std::make_unique<CProgram>(std::move(declarations));
 }
