@@ -412,43 +412,27 @@ static std::shared_ptr<TacValue> represent_exp_binary_and_instructions(CBinary* 
     TIdentifier target_false = represent_label_identifier("and_false");
     TIdentifier target_true = represent_label_identifier("and_true");
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
-
-    std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
     {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJumpIfZero>(target_false,
-                                                                                      std::move(condition_left));
-        p_instructions->push_back(std::move(instruction));
+        std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
+        push_instruction(std::make_unique<TacJumpIfZero>(target_false,std::move(condition_left)));
     }
-    std::shared_ptr<TacValue> condition_right = represent_exp_instructions(node->exp_right.get());
     {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJumpIfZero>(target_false,
-                                                                                      std::move(condition_right));
-        p_instructions->push_back(std::move(instruction));
+        std::shared_ptr<TacValue> condition_right = represent_exp_instructions(node->exp_right.get());
+        push_instruction(std::make_unique<TacJumpIfZero>(target_false,std::move(condition_right)));
     }
     {
         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
         std::shared_ptr<TacValue> src_true = std::make_shared<TacConstant>(std::move(constant));
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src_true), dst);
-        p_instructions->push_back(std::move(instruction));
+        push_instruction(std::make_unique<TacCopy>(std::move(src_true), dst));
     }
-    {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJump>(target_true);
-        p_instructions->push_back(std::move(instruction));
-    }
-    {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacLabel>(std::move(target_false));
-        p_instructions->push_back(std::move(instruction));
-    }
+    push_instruction(std::make_unique<TacJump>(target_true));
+    push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
     {
         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
         std::shared_ptr<TacValue> src_false = std::make_shared<TacConstant>(std::move(constant));
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src_false), dst);
-        p_instructions->push_back(std::move(instruction));
+        push_instruction(std::make_unique<TacCopy>(std::move(src_false), dst));
     }
-    {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacLabel>(std::move(target_true));
-        p_instructions->push_back(std::move(instruction));
-    }
+    push_instruction(std::make_unique<TacLabel>(std::move(target_true)));
     return dst;
 }
 
