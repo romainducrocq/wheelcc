@@ -1,6 +1,1 @@
-change unique_ptr to shared_ptr when a resource is shared between multiple objects
-    - maybe for types
-    - maybe for constants
-    - maybe for static inits in symbol table
-
-CConst, StaticInit to shared_ptr
+rename tac_gen -> tac_repr
