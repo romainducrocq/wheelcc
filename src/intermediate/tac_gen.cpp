@@ -1078,22 +1078,32 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     return std::make_unique<TacFunction>(std::move(name), is_global, std::move(params), std::move(body));
 }
 
-/** TODO
+/**
 cdef list[TacTopLevel] function_top_levels = []
 */
+static std::vector<std::unique_ptr<TacTopLevel>>* p_function_top_levels;
 
-/** TODO
+/**
 cdef void represent_fun_decl_top_level(CFunDecl node):
     if node.function_decl.body:
         function_top_levels.append(represent_function_top_level(node.function_decl))
 */
+static void represent_fun_decl_top_level(CFunDecl* node) {
+    if(node->function_decl->body) {
+        std::unique_ptr<TacTopLevel> function_top_level = represent_function_top_level(node->function_decl.get());
+        p_function_top_levels->push_back(std::move(function_top_level));
+    }
+}
 
-/** TODO
+/**
 cdef void represent_var_decl_top_level(CVarDecl node):
     pass
 */
+static void represent_var_decl_top_level(CVarDecl* /*node*/) {
+    ;
+}
 
-/** TODO
+/**
 cdef void represent_declaration_top_level(CDeclaration node):
     # top_level = Function(identifier, bool global, identifier* params, instruction* body)
     if isinstance(node, CFunDecl):
@@ -1105,6 +1115,20 @@ cdef void represent_declaration_top_level(CDeclaration node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+// top_level = Function(identifier, bool global, identifier* params, instruction* body)
+static void represent_declaration_top_level(CDeclaration* node) {
+    switch(node->type()) {
+        case AST_T::CFunDecl_t:
+            represent_fun_decl_top_level(static_cast<CFunDecl*>(node));
+            break;
+        case AST_T::CVarDecl_t:
+            represent_var_decl_top_level(static_cast<CVarDecl*>(node));
+            break;
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef list[TacTopLevel] static_variable_top_levels = []
