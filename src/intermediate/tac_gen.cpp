@@ -113,6 +113,7 @@ cdef TacUnaryOp represent_unary_op(CUnaryOp node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+// unary_operator = Complement | Negate | Not
 static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
     switch(node->type()) {
         case AST_T::CComplement_t:
@@ -537,7 +538,6 @@ cdef TacValue represent_exp_instructions(CExp node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
-// cdef TacValue represent_exp_instructions(CExp node):
 static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     switch(node->type()) {
         case AST_T::CFunctionCall_t:
