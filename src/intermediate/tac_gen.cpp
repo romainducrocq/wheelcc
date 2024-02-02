@@ -131,9 +131,9 @@ cdef TacVariable represent_variable_value(CVar node):
     name = copy_identifier(node.name)
     return TacVariable(name)
 */
-static std::unique_ptr<TacVariable> represent_variable_value(CVar* node) {
+static std::shared_ptr<TacVariable> represent_variable_value(CVar* node) {
     TIdentifier name = node->name;
-    return std::make_unique<TacVariable>(std::move(name));
+    return std::make_shared<TacVariable>(std::move(name));
 }
 
 /**
@@ -141,9 +141,9 @@ cdef TacConstant represent_constant_value(CConstant node):
     cdef CConst constant = node.constant
     return TacConstant(constant)
 */
-static std::unique_ptr<TacConstant> represent_constant_value(CConstant* node) {
+static std::shared_ptr<TacConstant> represent_constant_value(CConstant* node) {
     std::shared_ptr<CConst> constant = node->constant;
-    return std::make_unique<TacConstant>(std::move(constant));
+    return std::make_shared<TacConstant>(std::move(constant));
 }
 
 /**
@@ -154,21 +154,21 @@ cdef TacVariable represent_inner_exp_value(CExp node):
     symbol_table[inner_name.str_t] = Symbol(inner_type, inner_attrs)
     return TacVariable(inner_name)
 */
-static std::unique_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
+static std::shared_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
     TIdentifier inner_name = represent_variable_identifier(node);
     std::shared_ptr<Type> inner_type = node->exp_type;
     std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type),
                                                               std::move(inner_attrs));
     symbol_table[inner_name] = std::move(symbol);
-    return std::make_unique<TacVariable>(std::move(inner_name));
+    return std::make_shared<TacVariable>(std::move(inner_name));
 }
 
 /**
 cdef TacValue represent_inner_value(CExp node):
     return represent_inner_exp_value(node)
 */
-static std::unique_ptr<TacValue> represent_inner_value(CExp* node) {
+static std::shared_ptr<TacValue> represent_inner_value(CExp* node) {
     return represent_inner_exp_value(node);
 }
 
@@ -185,7 +185,7 @@ cdef TacValue represent_value(CExp node):
             "An error occurred in three address code representation, not all nodes were visited")
 */
 // val = Constant(int) | Var(identifier)
-static std::unique_ptr<TacValue> represent_value(CExp* node) {
+static std::shared_ptr<TacValue> represent_value(CExp* node) {
     switch(node->type()) {
         case AST_T::CVar_t:
             return represent_variable_value(static_cast<CVar*>(node));
@@ -206,7 +206,7 @@ static std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
 cdef TacConstant represent_exp_constant_instructions(CConstant node):
     return represent_value(node)
 */
-static std::unique_ptr<TacValue> represent_exp_constant_instructions(CConstant* node) {
+static std::shared_ptr<TacValue> represent_exp_constant_instructions(CConstant* node) {
     return represent_value(node);
 }
 
@@ -214,7 +214,7 @@ static std::unique_ptr<TacValue> represent_exp_constant_instructions(CConstant* 
 cdef TacVariable represent_exp_var_instructions(CVar node):
     return represent_value(node)
 */
-static std::unique_ptr<TacValue> represent_exp_var_instructions(CVar* node) {
+static std::shared_ptr<TacValue> represent_exp_var_instructions(CVar* node) {
     return represent_value(node);
 }
 
@@ -229,8 +229,15 @@ cdef TacValue represent_exp_fun_call_instructions(CFunctionCall node):
     instructions.append(TacFunCall(name, args, dst))
     return dst
 */
-//static std::unique_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCall* node) {
-//    TIdentifier name =
+//static std::shared_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCall* node) {
+////    cdef TIdentifier name = copy_identifier(node.name)
+////    cdef Py_ssize_t i
+////    cdef list[TacValue] args = []
+////    for i in range(len(node.args)):
+////        args.append(represent_exp_instructions(node.args[i]))
+////    cdef TacValue dst = represent_inner_value(node)
+////    instructions.append(TacFunCall(name, args, dst))
+////    return dst
 //}
 
 /** TODO

@@ -55,53 +55,53 @@ TacConstant::TacConstant(std::shared_ptr<CConst> constant)
 TacVariable::TacVariable(TIdentifier name)
     : name(std::move(name)) {}
 
-TacReturn::TacReturn(std::unique_ptr<TacValue> val)
+TacReturn::TacReturn(std::shared_ptr<TacValue> val)
     : val(std::move(val)) {}
 
-TacSignExtend::TacSignExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacSignExtend::TacSignExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacTruncate::TacTruncate(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacTruncate::TacTruncate(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacZeroExtend::TacZeroExtend(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacZeroExtend::TacZeroExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacDoubleToInt::TacDoubleToInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacDoubleToInt::TacDoubleToInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacDoubleToUInt::TacDoubleToUInt(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacDoubleToUInt::TacDoubleToUInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacIntToDouble::TacIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacIntToDouble::TacIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacUIntToDouble::TacUIntToDouble(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacUIntToDouble::TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
-TacFunCall::TacFunCall(TIdentifier name, std::vector<std::unique_ptr<TacValue>> args,
-                       std::unique_ptr<TacValue> dst)
+TacFunCall::TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args,
+                       std::shared_ptr<TacValue> dst)
     : name(std::move(name)), args(std::move(args)), dst(std::move(dst)) {}
 
-TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::unique_ptr<TacValue> src,
-                   std::unique_ptr<TacValue> dst)
+TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::shared_ptr<TacValue> src,
+                   std::shared_ptr<TacValue> dst)
     : unary_op(std::move(unary_op)), src(std::move(src)), dst(std::move(dst)) {}
 
-TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::unique_ptr<TacValue> src1,
-                     std::unique_ptr<TacValue> src2, std::unique_ptr<TacValue> dst)
+TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1,
+                     std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst)
     : binary_op(std::move(binary_op)), src1(std::move(src1)), src2(std::move(src2)),
       dst(std::move(dst)) {}
 
-TacCopy::TacCopy(std::unique_ptr<TacValue> src, std::unique_ptr<TacValue> dst)
+TacCopy::TacCopy(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
 TacJump::TacJump(TIdentifier target)
     : target(std::move(target)) {}
 
-TacJumpIfZero::TacJumpIfZero(TIdentifier target, std::unique_ptr<TacValue> condition)
+TacJumpIfZero::TacJumpIfZero(TIdentifier target, std::shared_ptr<TacValue> condition)
     : target(std::move(target)), condition(std::move(condition)) {}
 
-TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::unique_ptr<TacValue> condition)
+TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue> condition)
     : target(std::move(target)), condition(std::move(condition)) {}
 
 TacLabel::TacLabel(TIdentifier name)
