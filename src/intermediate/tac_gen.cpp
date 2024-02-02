@@ -359,50 +359,37 @@ cdef TacValue represent_exp_conditional_instructions(CConditional node):
     return dst
 */
 static std::shared_ptr<TacValue> represent_exp_conditional_instructions(CConditional* node) {
-    //    cdef TIdentifier target_else = represent_label_identifier("ternary_else")
     TIdentifier target_else = represent_label_identifier("ternary_else");
-    //    cdef TacValue condition = represent_exp_instructions(node.condition)
     std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
-    //    instructions.append(TacJumpIfZero(condition, target_else))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJumpIfZero>(target_else,
                                                                                       std::move(condition));
         p_instructions->push_back(std::move(instruction));
     }
-    //    cdef TacValue src_middle = represent_exp_instructions(node.exp_middle)
     std::shared_ptr<TacValue> src_middle = represent_exp_instructions(node->exp_middle.get());
-    //    cdef TacValue dst = represent_inner_value(node)
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
-    //    instructions.append(TacCopy(src_middle, dst))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src_middle), dst);
         p_instructions->push_back(std::move(instruction));
     }
-    //    cdef TIdentifier target_false = represent_label_identifier("ternary_false")
     TIdentifier target_false = represent_label_identifier("ternary_false");
-    //    instructions.append(TacJump(target_false))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJump>(target_false);
         p_instructions->push_back(std::move(instruction));
     }
-    //    instructions.append(TacLabel(target_else))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacLabel>(std::move(target_else));
         p_instructions->push_back(std::move(instruction));
     }
-    //    cdef TacValue src_right = represent_exp_instructions(node.exp_right)
     std::shared_ptr<TacValue> src_right = represent_exp_instructions(node->exp_right.get());
-    //    instructions.append(TacCopy(src_right, dst))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src_right), dst);
         p_instructions->push_back(std::move(instruction));
     }
-    //    instructions.append(TacLabel(target_false))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacLabel>(std::move(target_false));
         p_instructions->push_back(std::move(instruction));
     }
-    //    return dst
     return dst;
 }
 
