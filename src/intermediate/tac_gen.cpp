@@ -436,7 +436,7 @@ static std::shared_ptr<TacValue> represent_exp_binary_and_instructions(CBinary* 
     return dst;
 }
 
-/** TODO
+/**
 cdef TacValue represent_exp_binary_or_instructions(CBinary node):
     cdef TIdentifier target_true = represent_label_identifier("or_true")
     cdef TacValue condition_left = represent_exp_instructions(node.exp_left)
@@ -454,6 +454,54 @@ cdef TacValue represent_exp_binary_or_instructions(CBinary node):
     instructions.append(TacLabel(target_false))
     return dst
 */
+static std::shared_ptr<TacValue> represent_exp_binary_or_instructions(CBinary* node) {
+//    cdef TIdentifier target_true = represent_label_identifier("or_true")
+    TIdentifier target_true = represent_label_identifier("or_true");
+    {
+        //    cdef TacValue condition_left = represent_exp_instructions(node.exp_left)
+        std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
+        //    instructions.append(TacJumpIfNotZero(condition_left, target_true))
+        push_instruction(std::make_unique<TacJumpIfNotZero>(target_true,std::move(condition_left)));
+    }
+    {
+        //    cdef TacValue condition_right = represent_exp_instructions(node.exp_right)
+        std::shared_ptr<TacValue> condition_right = represent_exp_instructions(node->exp_right.get());
+        //    instructions.append(TacJumpIfNotZero(condition_right, target_true))
+        push_instruction(std::make_unique<TacJumpIfNotZero>(target_true, std::move(condition_right)));
+    }
+//    cdef TIdentifier target_false = represent_label_identifier("or_false")
+    TIdentifier target_false = represent_label_identifier("or_false");
+//    cdef TacValue dst = represent_inner_value(node)
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    {
+        //    cdef TacValue src_false = TacConstant(CConstInt(TInt(0)))
+        std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
+        std::shared_ptr<TacValue> src_false = std::make_shared<TacConstant>(std::move(constant));
+        //    instructions.append(TacCopy(src_false, dst))
+        push_instruction(std::make_unique<TacCopy>(std::move(src_false), dst));
+    }
+//    instructions.append(TacJump(target_false))
+    {
+        push_instruction(std::make_unique<TacJump>(target_false));
+    }
+//    instructions.append(TacLabel(target_true))
+    {
+        push_instruction(std::make_unique<TacLabel>(std::move(target_true)));
+    }
+    {
+        //    cdef TacValue src_true = TacConstant(CConstInt(TInt(1)))
+        std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
+        std::shared_ptr<TacValue> src_true = std::make_shared<TacConstant>(std::move(constant));
+        //    instructions.append(TacCopy(src_true, dst))
+        push_instruction(std::make_unique<TacCopy>(std::move(src_true), dst));
+    }
+//    instructions.append(TacLabel(target_false))
+    {
+        push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
+    }
+//    return dst
+    return dst;
+}
 
 /** TODO
 cdef TacValue represent_exp_binary_instructions(CBinary node):
