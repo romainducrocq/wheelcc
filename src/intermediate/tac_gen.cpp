@@ -393,7 +393,7 @@ static std::shared_ptr<TacValue> represent_exp_conditional_instructions(CConditi
     return dst;
 }
 
-/** TODO
+/**
 cdef TacValue represent_exp_unary_instructions(CUnary node):
     cdef TacValue src = represent_exp_instructions(node.exp)
     cdef TacValue dst = represent_inner_value(node)
@@ -401,6 +401,14 @@ cdef TacValue represent_exp_unary_instructions(CUnary node):
     instructions.append(TacUnary(unary_op, src, dst))
     return dst
 */
+static std::shared_ptr<TacValue> represent_exp_unary_instructions(CUnary* node) {
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::unique_ptr<TacUnaryOp> unary_op = represent_unary_op(node->unary_op.get());
+    std::unique_ptr<TacInstruction> instruction = std::make_unique<TacUnary>(std::move(unary_op), std::move(src), dst);
+    p_instructions->push_back(std::move(instruction));
+    return dst;
+}
 
 /** TODO
 cdef TacValue represent_exp_binary_and_instructions(CBinary node):
