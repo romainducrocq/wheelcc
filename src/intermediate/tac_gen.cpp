@@ -724,7 +724,7 @@ static void represent_for_init_exp_instructions(CInitExp* node) {
     }
 }
 
-/** TODO
+/**
 cdef void represent_statement_for_init_instructions(CForInit node):
     if isinstance(node, CInitDecl):
         represent_for_init_decl_instructions(node)
@@ -735,6 +735,19 @@ cdef void represent_statement_for_init_instructions(CForInit node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+static void represent_statement_for_init_instructions(CForInit* node) {
+    switch(node->type()) {
+        case AST_T::CInitDecl_t:
+            represent_for_init_decl_instructions(static_cast<CInitDecl*>(node));
+            break;
+        case AST_T::CInitExp_t:
+            represent_for_init_exp_instructions(static_cast<CInitExp*>(node));
+            break;
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef void represent_statement_for_instructions(CFor node):
