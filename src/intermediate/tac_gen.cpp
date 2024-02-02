@@ -327,23 +327,20 @@ static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
     return dst;
 }
 
-/** TODO
+/**
 cdef TacValue represent_exp_assignment_instructions(CAssignment node):
     cdef TacValue src = represent_exp_instructions(node.exp_right)
     cdef TacValue dst = represent_exp_instructions(node.exp_left)
     instructions.append(TacCopy(src, dst))
     return dst
 */
-
-/** TODO
-cdef TacValue represent_exp_assignment_compound_instructions(CAssignmentCompound node):
-    cdef TacValue src1 = represent_exp_instructions(node.exp_left)
-    cdef TacValue src2 = represent_exp_instructions(node.exp_right)
-    cdef TacValue dst = represent_inner_value(node)
-    cdef TacBinaryOp binary_op = represent_binary_op(node.binary_op)
-    instructions.append(TacBinary(binary_op, src1, src2, dst))
-    return dst
-*/
+static std::shared_ptr<TacValue> represent_exp_assignment_instructions(CAssignment* node) {
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
+    std::shared_ptr<TacValue> dst = represent_exp_instructions(node->exp_left.get());
+    std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src), dst);
+    p_instructions->push_back(std::move(instruction));
+    return dst;
+}
 
 /** TODO
 cdef TacValue represent_exp_conditional_instructions(CConditional node):
