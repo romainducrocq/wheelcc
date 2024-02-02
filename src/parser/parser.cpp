@@ -537,7 +537,7 @@ cdef CVar parse_var_factor():
 */
 static std::unique_ptr<CVar> parse_var_factor() {
     TIdentifier name; parse_identifier(name);
-    return std::make_unique<CVar>(name);
+    return std::make_unique<CVar>(std::move(name));
 }
 
 /**
@@ -618,7 +618,7 @@ static std::unique_ptr<CExp> parse_function_call_factor() {
         args = parse_argument_list();
     }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    return std::make_unique<CFunctionCall>(name, std::move(args));
+    return std::make_unique<CFunctionCall>(std::move(name), std::move(args));
 }
 
 /**
@@ -723,7 +723,7 @@ static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr
     TIdentifier name_2 = static_cast<CVar*>(exp_left.get())->name;
     std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-    std::unique_ptr<CExp> exp_left_2 = std::make_unique<CVar>(name_2);
+    std::unique_ptr<CExp> exp_left_2 = std::make_unique<CVar>(std::move(name_2));
     std::unique_ptr<CExp> exp_right_2 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left),
                                                                   std::move(exp_right));
     return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2));
@@ -936,7 +936,7 @@ static std::unique_ptr<CGoto> parse_goto_statement() {
     pop_next();
     TIdentifier target; parse_identifier(target);
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CGoto>(target);
+    return std::make_unique<CGoto>(std::move(target));
 }
 
 /**
@@ -952,7 +952,7 @@ static std::unique_ptr<CLabel> parse_label_statement() {
     expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
-    return std::make_unique<CLabel>(target, std::move(jump_to));
+    return std::make_unique<CLabel>(std::move(target), std::move(jump_to));
 }
 
 /**

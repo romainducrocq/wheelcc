@@ -133,7 +133,7 @@ cdef TacVariable represent_variable_value(CVar node):
 */
 static std::unique_ptr<TacVariable> represent_variable_value(CVar* node) {
     TIdentifier name = node->name;
-    return std::make_unique<TacVariable>(name);
+    return std::make_unique<TacVariable>(std::move(name));
 }
 
 /**
@@ -161,7 +161,7 @@ static std::unique_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type),
                                                               std::move(inner_attrs));
     symbol_table[inner_name] = std::move(symbol);
-    return std::make_unique<TacVariable>(inner_name);
+    return std::make_unique<TacVariable>(std::move(inner_name));
 }
 
 /**
@@ -229,6 +229,9 @@ cdef TacValue represent_exp_fun_call_instructions(CFunctionCall node):
     instructions.append(TacFunCall(name, args, dst))
     return dst
 */
+//static std::unique_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCall* node) {
+//    TIdentifier name =
+//}
 
 /** TODO
 cdef TacValue represent_exp_cast_instructions(CCast node):
