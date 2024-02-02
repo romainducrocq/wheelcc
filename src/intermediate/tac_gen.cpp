@@ -1039,7 +1039,7 @@ static void represent_block(CBlock* node) {
     }
 }
 
-/** TODO
+/**
 cdef TacFunction represent_function_top_level(CFunctionDeclaration node):
     global instructions
 
@@ -1055,6 +1055,37 @@ cdef TacFunction represent_function_top_level(CFunctionDeclaration node):
     instructions.append(TacReturn(TacConstant(CConstInt(TInt(0)))))
     return TacFunction(name, is_global, params, body)
 */
+static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclaration* node) {
+    //    global instructions
+    //
+    //    cdef TIdentifier name = copy_identifier(node.name)
+    TIdentifier name = node->name;
+    //    cdef bint is_global = symbol_table[node.name.str_t].attrs.is_global
+    bool is_global = static_cast<FunAttr*>(symbol_table[node->name]->attrs.get())->is_global;
+    //    cdef Py_ssize_t param
+    //    cdef list[TIdentifier] params = []
+    std::vector<TIdentifier> params;
+    //    for param in range(len(node.params)):
+    //        params.append(copy_identifier(node.params[param]))
+    for(size_t param = 0; param < node->params.size(); param++) {
+        TIdentifier identifier = node->params[param];
+        params.push_back(std::move(identifier));
+    }
+    //    cdef list[TacInstruction] body = []
+    std::vector<std::unique_ptr<TacInstruction>> body;
+    //    instructions = body
+    p_instructions = &body;
+    //    represent_block(node.body)
+    represent_block(node->body.get());
+    //    instructions.append(TacReturn(TacConstant(CConstInt(TInt(0)))))
+    {
+        std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
+        std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
+        push_instruction(std::make_unique<TacReturn>(std::move(val)));
+    }
+    //    return TacFunction(name, is_global, params, body)
+    return std::make_unique<TacFunction>(std::move(name), is_global, std::move(params), std::move(body));
+}
 
 /** TODO
 cdef list[TacTopLevel] function_top_levels = []
