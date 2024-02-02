@@ -1,7 +1,7 @@
 #include "parser/parser.hpp"
-
 #include "util/error.hpp"
 #include "util/ctypes.hpp"
+#include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
 #include "parser/lexer.hpp"

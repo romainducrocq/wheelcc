@@ -1,8 +1,17 @@
 #include "intermediate/tac_gen.hpp"
+#include "util/error.hpp"
+#include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
+#include "ast/c_ast.hpp"
+#include "ast/tac_ast.hpp"
+
+#include <string>
+#include <memory>
+#include <vector>
 
 // https://stackoverflow.com/questions/201718/concatenating-two-stdvectors
 
-/** TODO
+/**
 cdef TacBinaryOp represent_binary_op(CBinaryOp node):
     # binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor
     #                 | BitShiftLeft | BitShiftRight | Equal | NotEqual | LessThan | LessOrEqual
@@ -44,8 +53,50 @@ cdef TacBinaryOp represent_binary_op(CBinaryOp node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+// binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor
+//                 | BitShiftLeft | BitShiftRight | Equal | NotEqual | LessThan | LessOrEqual
+//                 | GreaterThan | GreaterOrEqual
+static std::unique_ptr<TacBinaryOp> represent_binary_op(CBinaryOp* node) {
+    switch(node->type()) {
+        case AST_T::CAdd_t:
+            return std::make_unique<TacAdd>();
+        case AST_T::CSubtract_t:
+            return std::make_unique<TacSubtract>();
+        case AST_T::CMultiply_t:
+            return std::make_unique<TacMultiply>();
+        case AST_T::CDivide_t:
+            return std::make_unique<TacDivide>();
+        case AST_T::CRemainder_t:
+            return std::make_unique<TacRemainder>();
+        case AST_T::CBitAnd_t:
+            return std::make_unique<TacBitAnd>();
+        case AST_T::CBitOr_t:
+            return std::make_unique<TacBitOr>();
+        case AST_T::CBitXor_t:
+            return std::make_unique<TacBitXor>();
+        case AST_T::CBitShiftLeft_t:
+            return std::make_unique<TacBitShiftLeft>();
+        case AST_T::CBitShiftRight_t:
+            return std::make_unique<TacBitShiftRight>();
+        case AST_T::CEqual_t:
+            return std::make_unique<TacEqual>();
+        case AST_T::CNotEqual_t:
+            return std::make_unique<TacNotEqual>();
+        case AST_T::CLessThan_t:
+            return std::make_unique<TacLessThan>();
+        case AST_T::CLessOrEqual_t:
+            return std::make_unique<TacLessOrEqual>();
+        case AST_T::CGreaterThan_t:
+            return std::make_unique<TacGreaterThan>();
+        case AST_T::CGreaterOrEqual_t:
+            return std::make_unique<TacGreaterOrEqual>();
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
-/** TODO
+/**
 cdef TacUnaryOp represent_unary_op(CUnaryOp node):
     # unary_operator = Complement | Negate | Not
     if isinstance(node, CComplement):
@@ -59,6 +110,19 @@ cdef TacUnaryOp represent_unary_op(CUnaryOp node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
+    switch(node->type()) {
+        case AST_T::CComplement_t:
+            return std::make_unique<TacComplement>();
+        case AST_T::CNegate_t:
+            return std::make_unique<TacNegate>();
+        case AST_T::CNot_t:
+            return std::make_unique<TacNot>();
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef TacVariable represent_variable_value(CVar node):
