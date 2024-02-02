@@ -1133,7 +1133,7 @@ static void represent_declaration_top_level(CDeclaration* node) {
 /**
 cdef list[TacTopLevel] static_variable_top_levels = []
 */
-static std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
+static std::vector<std::unique_ptr<TacTopLevel>>* p_static_variable_top_levels;
 
 /**
 cdef StaticInit represent_tentative_static_init(Type static_init_type):
@@ -1170,7 +1170,7 @@ static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_
     }
 }
 
-/** TODO
+/**
 cdef void represent_static_variable_top_level(StaticAttr node, Type static_init_type, str symbol):
     if isinstance(node.init, NoInitializer):
         return
@@ -1189,13 +1189,45 @@ cdef void represent_static_variable_top_level(StaticAttr node, Type static_init_
 
     static_variable_top_levels.append(TacStaticVariable(name, is_global, static_init_type, initial_value))
 */
+static void represent_static_variable_top_level(StaticAttr* node, const std::shared_ptr<Type>& static_init_type,
+                                                const TIdentifier& symbol) {
+    if(node->init->type() == AST_T::NoInitializer_t) {
+        return;
+    }
 
-/** TODO
+    TIdentifier name = symbol;
+    bool is_global = node->is_global;
+    std::shared_ptr<StaticInit> initial_value;
+    switch(node->init->type()) {
+        case AST_T::Initial_t:
+            initial_value = static_cast<Initial*>(node->init.get())->static_init;
+            break;
+        case AST_T::Tentative_t:
+            initial_value = represent_tentative_static_init(static_init_type.get());
+            break;
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "top level variable has invalid initializer");
+    }
+
+    std::unique_ptr<TacTopLevel> static_variable_top_level = std::make_unique<TacStaticVariable>(std::move(name),
+                                                             is_global, static_init_type, std::move(initial_value));
+    p_static_variable_top_levels->push_back(std::move(static_variable_top_level));
+}
+
+/**
 cdef void represent_symbol_top_level(Symbol node, str symbol):
     # top_level = StaticVariable(identifier, bool global, int init)
     if isinstance(node.attrs, StaticAttr):
         represent_static_variable_top_level(node.attrs, node.type_t, symbol)
 */
+// top_level = StaticVariable(identifier, bool global, int init)
+static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) {
+    if(node->attrs->type() == AST_T::StaticAttr_t) {
+        represent_static_variable_top_level(static_cast<StaticAttr*>(node->attrs.get()),
+                                            node->type_t, symbol);
+    }
+}
 
 /** TODO
 cdef TacProgram represent_program(CProgram node):
