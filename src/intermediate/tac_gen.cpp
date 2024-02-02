@@ -979,7 +979,7 @@ static void represent_declaration_instructions(CDeclaration* node) {
     }
 }
 
-/** TODO
+/**
 cdef void represent_list_instructions(list[CBlockItem] list_node):
     # instruction = Return(val) | FunCall(identifier fun_name, val* args, val dst)
     #             | Unary(unary_operator, val src, val dst) | Binary(binary_operator, val src1, val src2, val dst)
@@ -997,6 +997,10 @@ cdef void represent_list_instructions(list[CBlockItem] list_node):
             raise RuntimeError(
                 "An error occurred in three address code representation, not all nodes were visited")
 */
+// instruction = Return(val) | FunCall(identifier fun_name, val* args, val dst)
+//             | Unary(unary_operator, val src, val dst) | Binary(binary_operator, val src1, val src2, val dst)
+//             | Copy(val src, val dst) | Jump(identifier target) | JumpIfZero(val condition, identifier target)
+//             | JumpIfNotZero(val condition, identifier target) | Label(identifier name)
 static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for(size_t block_item = 0; block_item < list_node.size(); block_item++) {
         switch(list_node[block_item]->type()) {
@@ -1013,7 +1017,7 @@ static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>
     }
 }
 
-/** TODO
+/**
 cdef void represent_block(CBlock node):
     # block = Block(block_item* block_items)
     if isinstance(node, CB):
@@ -1023,8 +1027,16 @@ cdef void represent_block(CBlock node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+// block = Block(block_item* block_items)
 static void represent_block(CBlock* node) {
-    ; // TODO for forward declare only
+    switch(node->type()) {
+        case AST_T::CB_t:
+            represent_list_instructions(static_cast<CB*>(node)->block_items);
+            break;
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
 }
 
 /** TODO
