@@ -997,6 +997,21 @@ cdef void represent_list_instructions(list[CBlockItem] list_node):
             raise RuntimeError(
                 "An error occurred in three address code representation, not all nodes were visited")
 */
+static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
+    for(size_t block_item = 0; block_item < list_node.size(); block_item++) {
+        switch(list_node[block_item]->type()) {
+            case AST_T::CS_t:
+                represent_statement_instructions(static_cast<CS*>(list_node[block_item].get())->statement.get());
+                break;
+            case AST_T::CD_t:
+                represent_declaration_instructions(static_cast<CD*>(list_node[block_item].get())->declaration.get());
+                break;
+            default:
+                raise_internal_error("An error occurred in three address code representation, "
+                                     "not all nodes were visited");
+        }
+    }
+}
 
 /** TODO
 cdef void represent_block(CBlock node):
