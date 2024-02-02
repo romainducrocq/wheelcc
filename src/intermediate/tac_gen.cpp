@@ -500,7 +500,7 @@ static std::shared_ptr<TacValue> represent_exp_binary_instructions(CBinary* node
     return dst;
 }
 
-/** TODO
+/**
 cdef TacValue represent_exp_instructions(CExp node):
     if isinstance(node, CFunctionCall):
         return represent_exp_fun_call_instructions(node)
@@ -539,7 +539,36 @@ cdef TacValue represent_exp_instructions(CExp node):
 */
 // cdef TacValue represent_exp_instructions(CExp node):
 static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
-    return std::make_shared<TacValue>(); // TODO for forward declare only
+    switch(node->type()) {
+        case AST_T::CFunctionCall_t:
+            return represent_exp_fun_call_instructions(static_cast<CFunctionCall*>(node));
+        case AST_T::CVar_t:
+            return represent_exp_var_instructions(static_cast<CVar*>(node));
+        case AST_T::CConstant_t:
+            return represent_exp_constant_instructions(static_cast<CConstant*>(node));
+        case AST_T::CCast_t:
+            return represent_exp_cast_instructions(static_cast<CCast*>(node));
+        case AST_T::CAssignment_t:
+            return represent_exp_assignment_instructions(static_cast<CAssignment*>(node));
+        case AST_T::CConditional_t:
+            return represent_exp_conditional_instructions(static_cast<CConditional*>(node));
+        case AST_T::CUnary_t:
+            return represent_exp_unary_instructions(static_cast<CUnary*>(node));
+        case AST_T::CBinary_t: {
+            CBinary* p_node = static_cast<CBinary*>(node);
+            switch(p_node->binary_op->type()) {
+                case AST_T::CAnd_t:
+                    return represent_exp_binary_and_instructions(p_node);
+                case AST_T::COr_t:
+                    return represent_exp_binary_or_instructions(p_node);
+                default:
+                    return represent_exp_binary_instructions(p_node);
+            }
+        }
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
 }
 
 /** TODO
