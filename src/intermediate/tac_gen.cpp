@@ -204,6 +204,10 @@ cdef list[TacInstruction] instructions = []
 */
 static std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
 
+static void push_instruction(std::unique_ptr<TacInstruction>&& instruction) {
+    p_instructions->push_back(std::move(instruction));
+}
+
 static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node);
 
 /**
@@ -241,8 +245,7 @@ static std::shared_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCa
         args.push_back(std::move(arg));
     }
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
-    std::unique_ptr<TacInstruction> instruction = std::make_unique<TacFunCall>(std::move(name), std::move(args), dst);
-    p_instructions->push_back(std::move(instruction));
+    push_instruction(std::make_unique<TacFunCall>(std::move(name), std::move(args), dst));
     return dst;
 }
 
@@ -285,23 +288,19 @@ static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
     if(node->exp->exp_type->type() == AST_T::Double_t) {
         if(is_type_signed(node->target_type.get())) {
-            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacDoubleToInt>(std::move(src), dst);
-            p_instructions->push_back(std::move(instruction));
+            push_instruction(std::make_unique<TacDoubleToInt>(std::move(src), dst));
         }
         else {
-            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacDoubleToUInt>(std::move(src), dst);
-            p_instructions->push_back(std::move(instruction));
+            push_instruction(std::make_unique<TacDoubleToUInt>(std::move(src), dst));
         }
         return dst;
     }
     else if(node->target_type->type() == AST_T::Double_t) {
         if(is_type_signed(node->exp->exp_type.get())) {
-            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacIntToDouble>(std::move(src), dst);
-            p_instructions->push_back(std::move(instruction));
+            push_instruction(std::make_unique<TacIntToDouble>(std::move(src), dst));
         }
         else {
-            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacUIntToDouble>(std::move(src), dst);
-            p_instructions->push_back(std::move(instruction));
+            push_instruction(std::make_unique<TacUIntToDouble>(std::move(src), dst));
         }
         return dst;
     }
@@ -309,20 +308,16 @@ static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
     int32_t target_type_size = get_type_size(node->target_type.get());
     int32_t inner_type_size = get_type_size(node->exp->exp_type.get());
     if(target_type_size == inner_type_size) {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src), dst);
-        p_instructions->push_back(std::move(instruction));
+        push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
     }
     else if(target_type_size < inner_type_size) {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacTruncate>(std::move(src), dst);
-        p_instructions->push_back(std::move(instruction));
+        push_instruction(std::make_unique<TacTruncate>(std::move(src), dst));
     }
     else if(is_type_signed(node->exp->exp_type.get())) {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacSignExtend>(std::move(src), dst);
-        p_instructions->push_back(std::move(instruction));
+        push_instruction(std::make_unique<TacSignExtend>(std::move(src), dst));
     }
     else {
-        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacZeroExtend>(std::move(src), dst);
-        p_instructions->push_back(std::move(instruction));
+        push_instruction(std::make_unique<TacZeroExtend>(std::move(src), dst));
     }
     return dst;
 }
@@ -429,60 +424,46 @@ cdef TacValue represent_exp_binary_and_instructions(CBinary node):
     return dst
 */
 static std::shared_ptr<TacValue> represent_exp_binary_and_instructions(CBinary* node) {
-    //    cdef TIdentifier target_false = represent_label_identifier("and_false")
     TIdentifier target_false = represent_label_identifier("and_false");
-    //    cdef TacValue condition_left = represent_exp_instructions(node.exp_left)
+    TIdentifier target_true = represent_label_identifier("and_true");
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+
     std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
-    //    instructions.append(TacJumpIfZero(condition_left, target_false))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJumpIfZero>(target_false,
                                                                                       std::move(condition_left));
         p_instructions->push_back(std::move(instruction));
     }
-    //    cdef TacValue condition_right = represent_exp_instructions(node.exp_right)
     std::shared_ptr<TacValue> condition_right = represent_exp_instructions(node->exp_right.get());
-    //    instructions.append(TacJumpIfZero(condition_right, target_false))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJumpIfZero>(target_false,
                                                                                       std::move(condition_right));
         p_instructions->push_back(std::move(instruction));
     }
-    //    cdef TIdentifier target_true = represent_label_identifier("and_true")
-    TIdentifier target_true = represent_label_identifier("and_true");
-    //    cdef TacValue dst = represent_inner_value(node)
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
-    //    instructions.append(TacCopy(src_true, dst))
     {
-        //    cdef TacValue src_true = TacConstant(CConstInt(TInt(1)))
         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
         std::shared_ptr<TacValue> src_true = std::make_shared<TacConstant>(std::move(constant));
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src_true), dst);
         p_instructions->push_back(std::move(instruction));
     }
-    //    instructions.append(TacJump(target_true))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacJump>(target_true);
         p_instructions->push_back(std::move(instruction));
     }
-    //    instructions.append(TacLabel(target_false))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacLabel>(std::move(target_false));
         p_instructions->push_back(std::move(instruction));
     }
-    //    instructions.append(TacCopy(src_false, dst))
     {
-        //    cdef TacValue src_false = TacConstant(CConstInt(TInt(0)))
         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
         std::shared_ptr<TacValue> src_false = std::make_shared<TacConstant>(std::move(constant));
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src_false), dst);
         p_instructions->push_back(std::move(instruction));
     }
-    //    instructions.append(TacLabel(target_true))
     {
         std::unique_ptr<TacInstruction> instruction = std::make_unique<TacLabel>(std::move(target_true));
         p_instructions->push_back(std::move(instruction));
     }
-    //    return dst
     return dst;
 }
 
