@@ -1,5 +1,6 @@
 #include "intermediate/tac_gen.hpp"
 #include "util/error.hpp"
+#include "util/names.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
@@ -124,20 +125,28 @@ static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
     }
 }
 
-/** TODO
+/**
 cdef TacVariable represent_variable_value(CVar node):
     cdef TIdentifier name
     name = copy_identifier(node.name)
     return TacVariable(name)
 */
+static std::unique_ptr<TacVariable> represent_variable_value(CVar* node) {
+    TIdentifier name = node->name;
+    return std::make_unique<TacVariable>(name);
+}
 
-/** TODO
+/**
 cdef TacConstant represent_constant_value(CConstant node):
     cdef CConst constant = node.constant
     return TacConstant(constant)
 */
+static std::unique_ptr<TacConstant> represent_constant_value(CConstant* node) {
+    std::shared_ptr<CConst> constant = node->constant;
+    return std::make_unique<TacConstant>(std::move(constant));
+}
 
-/** TODO
+/**
 cdef TacVariable represent_inner_exp_value(CExp node):
     cdef TIdentifier inner_name = represent_variable_identifier(node)
     cdef Type inner_type = node.exp_type
@@ -145,13 +154,25 @@ cdef TacVariable represent_inner_exp_value(CExp node):
     symbol_table[inner_name.str_t] = Symbol(inner_type, inner_attrs)
     return TacVariable(inner_name)
 */
+static std::unique_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
+    TIdentifier inner_name = represent_variable_identifier(node);
+    std::shared_ptr<Type> inner_type = node->exp_type;
+    std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
+    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type),
+                                                              std::move(inner_attrs));
+    symbol_table[inner_name] = std::move(symbol);
+    return std::make_unique<TacVariable>(inner_name);
+}
 
-/** TODO
+/**
 cdef TacValue represent_inner_value(CExp node):
     return represent_inner_exp_value(node)
 */
+static std::unique_ptr<TacValue> represent_inner_value(CExp* node) {
+    return represent_inner_exp_value(node);
+}
 
-/** TODO
+/**
 cdef TacValue represent_value(CExp node):
     # val = Constant(int) | Var(identifier)
     if isinstance(node, CVar):
@@ -163,6 +184,18 @@ cdef TacValue represent_value(CExp node):
         raise RuntimeError(
             "An error occurred in three address code representation, not all nodes were visited")
 */
+// val = Constant(int) | Var(identifier)
+static std::unique_ptr<TacValue> represent_value(CExp* node) {
+    switch(node->type()) {
+        case AST_T::CVar_t:
+            return represent_variable_value(static_cast<CVar*>(node));
+        case AST_T::CConstant_t:
+            return represent_constant_value(static_cast<CConstant*>(node));
+        default:
+            raise_internal_error("An error occurred in three address code representation, "
+                                 "not all nodes were visited");
+    }
+}
 
 /** TODO
 cdef list[TacInstruction] instructions = []
