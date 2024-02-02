@@ -5,7 +5,9 @@
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
+#include "semantic/type_check.hpp"
 
+#include <inttypes.h>
 #include <string>
 #include <memory>
 #include <vector>
@@ -274,6 +276,81 @@ cdef TacValue represent_exp_cast_instructions(CCast node):
         instructions.append(TacZeroExtend(src, dst))
     return dst
 */
+static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
+//    cdef TacValue src = represent_exp_instructions(node.exp)
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
+//    if is_same_type(node.target_type, node.exp.exp_type):
+//        return src
+    if(is_same_type(node->target_type.get(), node->exp->exp_type.get())) {
+        return src;
+    }
+//    cdef TacValue dst = represent_inner_value(node)
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+//    if isinstance(node.exp.exp_type, Double):
+    if(node->exp->exp_type->type() == AST_T::Double_t) {
+    //        if is_type_signed(node.target_type):
+    //            instructions.append(TacDoubleToInt(src, dst))
+        if(is_type_signed(node->target_type.get())) {
+            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacDoubleToInt>(std::move(src), dst);
+            p_instructions->push_back(std::move(instruction));
+        }
+    //        else:
+    //            instructions.append(TacDoubleToUInt(src, dst))
+        else {
+            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacDoubleToUInt>(std::move(src), dst);
+            p_instructions->push_back(std::move(instruction));
+        }
+    //        return dst
+        return dst;
+    }
+//    elif isinstance(node.target_type, Double):
+    else if(node->target_type->type() == AST_T::Double_t) {
+    //        if is_type_signed(node.exp.exp_type):
+    //            instructions.append(TacIntToDouble(src, dst))
+        if(is_type_signed(node->exp->exp_type.get())) {
+            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacIntToDouble>(std::move(src), dst);
+            p_instructions->push_back(std::move(instruction));
+        }
+    //        else:
+    //            instructions.append(TacUIntToDouble(src, dst))
+        else {
+            std::unique_ptr<TacInstruction> instruction = std::make_unique<TacUIntToDouble>(std::move(src), dst);
+            p_instructions->push_back(std::move(instruction));
+        }
+    //        return dst
+        return dst;
+    }
+//    cdef int32 target_type_size = get_type_size(node.target_type)
+    int32_t target_type_size = get_type_size(node->target_type.get());
+//    cdef int32 inner_type_size = get_type_size(node.exp.exp_type)
+    int32_t inner_type_size = get_type_size(node->exp->exp_type.get());
+//    if target_type_size == inner_type_size:
+//        instructions.append(TacCopy(src, dst))
+    if(target_type_size == inner_type_size) {
+        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacCopy>(std::move(src), dst);
+        p_instructions->push_back(std::move(instruction));
+    }
+//    elif target_type_size < inner_type_size:
+//        instructions.append(TacTruncate(src, dst))
+    else if(target_type_size < inner_type_size) {
+        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacTruncate>(std::move(src), dst);
+        p_instructions->push_back(std::move(instruction));
+    }
+//    elif is_type_signed(node.exp.exp_type):
+//        instructions.append(TacSignExtend(src, dst))
+    else if(is_type_signed(node->exp->exp_type.get())) {
+        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacSignExtend>(std::move(src), dst);
+        p_instructions->push_back(std::move(instruction));
+    }
+//    else:
+//        instructions.append(TacZeroExtend(src, dst))
+    else {
+        std::unique_ptr<TacInstruction> instruction = std::make_unique<TacZeroExtend>(std::move(src), dst);
+        p_instructions->push_back(std::move(instruction));
+    }
+//    return dst
+    return dst;
+}
 
 /** TODO
 cdef TacValue represent_exp_assignment_instructions(CAssignment node):
