@@ -1189,7 +1189,7 @@ cdef void represent_static_variable_top_level(StaticAttr node, Type static_init_
 
     static_variable_top_levels.append(TacStaticVariable(name, is_global, static_init_type, initial_value))
 */
-static void represent_static_variable_top_level(StaticAttr* node, const std::shared_ptr<Type>& static_init_type,
+static void represent_static_variable_top_level(StaticAttr* node, const std::shared_ptr<Type>& type_t,
                                                 const TIdentifier& symbol) {
     if(node->init->type() == AST_T::NoInitializer_t) {
         return;
@@ -1197,6 +1197,7 @@ static void represent_static_variable_top_level(StaticAttr* node, const std::sha
 
     TIdentifier name = symbol;
     bool is_global = node->is_global;
+    std::shared_ptr<Type> static_init_type = type_t;
     std::shared_ptr<StaticInit> initial_value;
     switch(node->init->type()) {
         case AST_T::Initial_t:
@@ -1210,8 +1211,8 @@ static void represent_static_variable_top_level(StaticAttr* node, const std::sha
                                  "top level variable has invalid initializer");
     }
 
-    std::unique_ptr<TacTopLevel> static_variable_top_level = std::make_unique<TacStaticVariable>(std::move(name),
-                                                             is_global, static_init_type, std::move(initial_value));
+    std::unique_ptr<TacTopLevel> static_variable_top_level = std::make_unique<TacStaticVariable>(
+            std::move(name), is_global, std::move(static_init_type), std::move(initial_value));
     p_static_variable_top_levels->push_back(std::move(static_variable_top_level));
 }
 
@@ -1229,7 +1230,7 @@ static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) 
     }
 }
 
-/** TODO
+/**
 cdef TacProgram represent_program(CProgram node):
     # program = Program(top_level*)
     global function_top_levels
@@ -1248,6 +1249,24 @@ cdef TacProgram represent_program(CProgram node):
 
     return TacProgram(top_levels)
 */
+// program = Program(top_level*)
+static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
+    std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
+    p_function_top_levels = &function_top_levels;
+    for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
+        represent_declaration_top_level(node->declarations[declaration].get());
+    }
+    p_function_top_levels = nullptr;
+
+    std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
+    p_static_variable_top_levels = &static_variable_top_levels;
+    for(const auto& symbol: symbol_table) {
+        represent_symbol_top_level(symbol.second.get(), symbol.first);
+    }
+    p_static_variable_top_levels = nullptr;
+
+    return std::make_unique<TacProgram>(std::move(function_top_levels), std::move(static_variable_top_levels));
+}
 
 /** TODO
 cdef TacProgram three_address_code_representation(CProgram c_ast):
