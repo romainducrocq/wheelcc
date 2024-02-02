@@ -653,7 +653,7 @@ static void represent_statement_if_else_instructions(CIf* node) {
     push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
 }
 
-/** TODO
+/**
 cdef void represent_statement_while_instructions(CWhile node):
     cdef TIdentifier target_continue = TIdentifier("continue_" + node.target.str_t)
     instructions.append(TacLabel(target_continue))
@@ -665,21 +665,15 @@ cdef void represent_statement_while_instructions(CWhile node):
     instructions.append(TacLabel(target_break))
 */
 static void represent_statement_while_instructions(CWhile* node) {
-    //    cdef TIdentifier target_continue = TIdentifier("continue_" + node.target.str_t)
     TIdentifier target_continue = "continue_" + node->target;
-    //    instructions.append(TacLabel(target_continue))
-    push_instruction(std::make_unique<TacLabel>(target_continue));
-    //    cdef TacValue condition = represent_exp_instructions(node.condition)
-    std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
-    //    cdef TIdentifier target_break = TIdentifier("break_" + node.target.str_t)
     TIdentifier target_break = "break_" + node->target;
-    //    instructions.append(TacJumpIfZero(condition, target_break))
-    push_instruction(std::make_unique<TacJumpIfZero>(target_break, std::move(condition)));
-    //    represent_statement_instructions(node.body)
+    push_instruction(std::make_unique<TacLabel>(target_continue));
+    {
+        std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
+        push_instruction(std::make_unique<TacJumpIfZero>(target_break, std::move(condition)));
+    }
     represent_statement_instructions(node->body.get());
-    //    instructions.append(TacJump(target_continue))
     push_instruction(std::make_unique<TacJump>(std::move(target_continue)));
-    //    instructions.append(TacLabel(target_break))
     push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
 }
 
