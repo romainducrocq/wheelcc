@@ -433,21 +433,35 @@ struct AsmBitShiftRight : AsmBinaryOp {
 cdef class AsmUnaryOp(AST):
     pass
 */
+struct AsmUnaryOp : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmNot(AsmUnaryOp):
     pass
 */
+struct AsmNot : AsmUnaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmNeg(AsmUnaryOp):
     pass
 */
+struct AsmNeg : AsmUnaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmShr(AsmUnaryOp):
     pass
 */
+struct AsmShr : AsmUnaryOp {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmInstruction(AST):
