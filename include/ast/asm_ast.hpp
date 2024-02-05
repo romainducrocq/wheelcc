@@ -4,112 +4,180 @@
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 
+#include <memory>
+#include <vector>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmReg(AST):
     pass
 */
+struct AsmReg : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmAx(AsmReg):
     pass
 */
+struct AsmAx : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmCx(AsmReg):
     pass
 */
+struct AsmCx : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmDx(AsmReg):
     pass
 */
+struct AsmDx : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmDi(AsmReg):
     pass
 */
+struct AsmDi : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmSi(AsmReg):
     pass
 */
+struct AsmSi : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmR8(AsmReg):
     pass
 */
+struct AsmR8 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmR9(AsmReg):
     pass
 */
+struct AsmR9 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmR10(AsmReg):
     pass
 */
+struct AsmR10 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmR11(AsmReg):
     pass
 */
+struct AsmR11 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmSp(AsmReg):
     pass
 */
+struct AsmSp : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM0(AsmReg):
     pass
 */
+struct AsmXMM0 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM1(AsmReg):
     pass
 */
+struct AsmXMM1 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM2(AsmReg):
     pass
 */
+struct AsmXMM2 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM3(AsmReg):
     pass
 */
+struct AsmXMM3 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM4(AsmReg):
     pass
 */
+struct AsmXMM4 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM5(AsmReg):
     pass
 */
+struct AsmXMM5 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM6(AsmReg):
     pass
 */
+struct AsmXMM6 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM7(AsmReg):
     pass
 */
+struct AsmXMM7 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM14(AsmReg):
     pass
 */
+struct AsmXMM14 : AsmReg {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmXMM15(AsmReg):
     pass
 */
+struct AsmXMM15 : AsmReg {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmCondCode(AST):
