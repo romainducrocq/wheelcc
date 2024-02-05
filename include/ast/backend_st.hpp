@@ -38,11 +38,11 @@ struct BackendSymbol : Ast {
 struct BackendObj: BackendSymbol {
     AST_T type() override;
     BackendObj() = default;
-    BackendObj(bool is_static, bool is_constant, std::unique_ptr<AssemblyType> assembly_type);
+    BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type);
 
     bool is_static;
     bool is_constant;
-    std::unique_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AssemblyType> assembly_type;
 };
 
 struct BackendFun: BackendSymbol {

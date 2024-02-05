@@ -12,7 +12,7 @@ AST_T BackendSymbol::type() { return AST_T::BackendSymbol_t; }
 AST_T BackendObj::type() { return AST_T::BackendObj_t; }
 AST_T BackendFun::type() { return AST_T::BackendFun_t; }
 
-BackendObj::BackendObj(bool is_static, bool is_constant, std::unique_ptr<AssemblyType> assembly_type)
+BackendObj::BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type)
     : is_static(is_static), is_constant(is_constant), assembly_type(std::move(assembly_type)) {}
 
 BackendFun::BackendFun(bool is_defined)

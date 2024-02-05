@@ -2,7 +2,7 @@
 #define _AST_ASM_AST_HPP
 
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
+#include "ast/backend_st.hpp"
 
 #include <memory>
 #include <vector>
@@ -467,6 +467,9 @@ struct AsmShr : AsmUnaryOp {
 cdef class AsmInstruction(AST):
     pass
 */
+struct AsmInstruction : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmMov(AsmInstruction):
@@ -474,18 +477,44 @@ cdef class AsmMov(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmMov : AsmInstruction {
+    AST_T type() override;
+    AsmMov() = default;
+    AsmMov(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+           std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmMovSx(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmMovSx : AsmInstruction {
+    AST_T type() override;
+    AsmMovSx() = default;
+    AsmMovSx(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmMovZeroExtend(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmMovZeroExtend : AsmInstruction {
+    AST_T type() override;
+    AsmMovZeroExtend() = default;
+    AsmMovZeroExtend(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmCvttsd2si(AsmInstruction):
@@ -493,6 +522,16 @@ cdef class AsmCvttsd2si(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmCvttsd2si : AsmInstruction {
+    AST_T type() override;
+    AsmCvttsd2si() = default;
+    AsmCvttsd2si(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+                 std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmCvtsi2sd(AsmInstruction):
@@ -500,6 +539,16 @@ cdef class AsmCvtsi2sd(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmCvtsi2sd : AsmInstruction {
+    AST_T type() override;
+    AsmCvtsi2sd() = default;
+    AsmCvtsi2sd(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+                std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmUnary(AsmInstruction):
@@ -507,6 +556,16 @@ cdef class AsmUnary(AsmInstruction):
     cdef public AssemblyType assembly_type
     cdef public AsmOperand dst
 */
+struct AsmUnary : AsmInstruction {
+    AST_T type() override;
+    AsmUnary() = default;
+    AsmUnary(std::unique_ptr<AsmUnaryOp> unary_op, std::shared_ptr<AssemblyType> assembly_type,
+             std::shared_ptr<AsmOperand> dst);
+
+    std::unique_ptr<AsmUnaryOp> unary_op;
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmBinary(AsmInstruction):
@@ -515,6 +574,17 @@ cdef class AsmBinary(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmBinary : AsmInstruction {
+    AST_T type() override;
+    AsmBinary() = default;
+    AsmBinary(std::unique_ptr<AsmBinaryOp> binary_op, std::shared_ptr<AssemblyType> assembly_type,
+              std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+
+    std::unique_ptr<AsmBinaryOp> binary_op;
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmCmp(AsmInstruction):
@@ -522,65 +592,150 @@ cdef class AsmCmp(AsmInstruction):
     cdef public AsmOperand src
     cdef public AsmOperand dst
 */
+struct AsmCmp : AsmInstruction {
+    AST_T type() override;
+    AsmCmp() = default;
+    AsmCmp(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+           std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmIdiv(AsmInstruction):
     cdef public AssemblyType assembly_type
     cdef public AsmOperand src
 */
+struct AsmIdiv : AsmInstruction {
+    AST_T type() override;
+    AsmIdiv() = default;
+    AsmIdiv(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+};
 
 /** TODO
 cdef class AsmDiv(AsmInstruction):
     cdef public AssemblyType assembly_type
     cdef public AsmOperand src
 */
+struct AsmDiv : AsmInstruction {
+    AST_T type() override;
+    AsmDiv() = default;
+    AsmDiv(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+    std::shared_ptr<AsmOperand> src;
+};
 
 /** TODO
 cdef class AsmCdq(AsmInstruction):
     cdef public AssemblyType assembly_type
 */
+struct AsmCdq : AsmInstruction {
+    AST_T type() override;
+    AsmCdq() = default;
+    AsmCdq(std::shared_ptr<AssemblyType> assembly_type);
+
+    std::shared_ptr<AssemblyType> assembly_type;
+};
 
 /** TODO
 cdef class AsmJmp(AsmInstruction):
     cdef public TIdentifier target
 */
+struct AsmJmp : AsmInstruction {
+    AST_T type() override;
+    AsmJmp() = default;
+    AsmJmp(TIdentifier target);
+
+    TIdentifier target;
+};
 
 /** TODO
 cdef class AsmJmpCC(AsmInstruction):
     cdef public AsmCondCode cond_code
     cdef public TIdentifier target
 */
+struct AsmJmpCC : AsmInstruction {
+    AST_T type() override;
+    AsmJmpCC() = default;
+    AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode> cond_code);
+
+    TIdentifier target;
+    std::unique_ptr<AsmCondCode> cond_code;
+};
 
 /** TODO
 cdef class AsmSetCC(AsmInstruction):
     cdef public AsmCondCode cond_code
     cdef public AsmOperand dst
 */
+struct AsmSetCC : AsmInstruction {
+    AST_T type() override;
+    AsmSetCC() = default;
+    AsmSetCC(std::unique_ptr<AsmCondCode> cond_code, std::shared_ptr<AsmOperand> dst);
+
+    std::unique_ptr<AsmCondCode> cond_code;
+    std::shared_ptr<AsmOperand> dst;
+};
 
 /** TODO
 cdef class AsmLabel(AsmInstruction):
     cdef public TIdentifier name
 */
+struct AsmLabel : AsmInstruction {
+    AST_T type() override;
+    AsmLabel() = default;
+    AsmLabel(TIdentifier name);
+
+    TIdentifier name;
+};
 
 /** TODO
 cdef class AsmPush(AsmInstruction):
     cdef public AsmOperand src
 */
+struct AsmPush : AsmInstruction {
+    AST_T type() override;
+    AsmPush() = default;
+    AsmPush(std::shared_ptr<AsmOperand> src);
+
+    std::shared_ptr<AsmOperand> src;
+};
 
 /** TODO
 cdef class AsmCall(AsmInstruction):
     cdef public TIdentifier name
 */
+struct AsmCall : AsmInstruction {
+    AST_T type() override;
+    AsmCall() = default;
+    AsmCall(TIdentifier name);
+
+    TIdentifier name;
+};
 
 /** TODO
 cdef class AsmRet(AsmInstruction):
     pass
 */
+struct AsmRet : AsmInstruction {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmTopLevel(AST):
     pass
 */
+struct AsmTopLevel : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmFunction(AsmTopLevel):
@@ -588,6 +743,15 @@ cdef class AsmFunction(AsmTopLevel):
     cdef public bint is_global
     cdef public list[AsmInstruction] instructions
 */
+struct AsmFunction : AsmTopLevel {
+    AST_T type() override;
+    AsmFunction() = default;
+    AsmFunction(TIdentifier name, bool is_global, std::vector<std::unique_ptr<AsmInstruction>> instructions);
+
+    TIdentifier name;
+    bool is_global;
+    std::vector<std::unique_ptr<AsmInstruction>> instructions;
+};
 
 /** TODO
 cdef class AsmStaticVariable(AsmTopLevel):
@@ -596,6 +760,16 @@ cdef class AsmStaticVariable(AsmTopLevel):
     cdef public TInt alignment
     cdef public StaticInit initial_value
 */
+struct AsmStaticVariable : AsmTopLevel {
+    AST_T type() override;
+    AsmStaticVariable() = default;
+    AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global, std::shared_ptr<StaticInit> initial_value);
+
+    TIdentifier name;
+    TInt alignment;
+    bool is_global;
+    std::shared_ptr<StaticInit> initial_value;
+};
 
 /** TODO
 cdef class AsmStaticConstant(AsmTopLevel):
@@ -603,10 +777,33 @@ cdef class AsmStaticConstant(AsmTopLevel):
     cdef public TInt alignment
     cdef public StaticInit initial_value
 */
+struct AsmStaticConstant : AsmTopLevel {
+    AST_T type() override;
+    AsmStaticConstant() = default;
+    AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> initial_value);
+
+    TIdentifier name;
+    TInt alignment;
+    std::shared_ptr<StaticInit> initial_value;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmProgram(AST):
     cdef public list[AsmTopLevel] top_levels
+*/
+struct AsmProgram : Ast {
+    AST_T type() override;
+    AsmProgram() = default;
+    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
+
+    std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
+};
+
+/*
+struct Dummy : Ast {
+};
 */
 
 #endif
