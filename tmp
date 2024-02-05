@@ -1,0 +1,7 @@
+AST_T AssemblyType::type() { return AST_T::AssemblyType; }
+AST_T LongWord::type() { return AST_T::LongWord; }
+AST_T QuadWord::type() { return AST_T::QuadWord; }
+AST_T BackendDouble::type() { return AST_T::BackendDouble; }
+AST_T BackendSymbol::type() { return AST_T::BackendSymbol; }
+AST_T BackendObj::type() { return AST_T::BackendObj; }
+AST_T BackendFun::type() { return AST_T::BackendFun; }

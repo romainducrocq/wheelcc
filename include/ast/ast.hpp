@@ -29,6 +29,15 @@ enum AST_T {
     LocalAttr_t,
     Symbol_t,
 
+    // Backend st
+    AssemblyType_t,
+    LongWord_t,
+    QuadWord_t,
+    BackendDouble_t,
+    BackendSymbol_t,
+    BackendObj_t,
+    BackendFun_t,
+
     // C ast
     CConst_t,
     CConstInt_t,
