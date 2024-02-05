@@ -10,286 +10,182 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmReg(AST):
-    pass
-*/
+// reg = AX
+//     | CX
+//     | DX
+//     | DI
+//     | SI
+//     | R8
+//     | R9
+//     | R10
+//     | R11
+//     | SP
+//     | XMM0
+//     | XMM1
+//     | XMM2
+//     | XMM3
+//     | XMM4
+//     | XMM5
+//     | XMM6
+//     | XMM7
+//     | XMM14
+//     | XMM15
 struct AsmReg : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmAx(AsmReg):
-    pass
-*/
 struct AsmAx : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmCx(AsmReg):
-    pass
-*/
 struct AsmCx : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmDx(AsmReg):
-    pass
-*/
 struct AsmDx : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmDi(AsmReg):
-    pass
-*/
 struct AsmDi : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmSi(AsmReg):
-    pass
-*/
 struct AsmSi : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmR8(AsmReg):
-    pass
-*/
 struct AsmR8 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmR9(AsmReg):
-    pass
-*/
 struct AsmR9 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmR10(AsmReg):
-    pass
-*/
 struct AsmR10 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmR11(AsmReg):
-    pass
-*/
 struct AsmR11 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmSp(AsmReg):
-    pass
-*/
 struct AsmSp : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM0(AsmReg):
-    pass
-*/
 struct AsmXMM0 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM1(AsmReg):
-    pass
-*/
 struct AsmXMM1 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM2(AsmReg):
-    pass
-*/
 struct AsmXMM2 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM3(AsmReg):
-    pass
-*/
 struct AsmXMM3 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM4(AsmReg):
-    pass
-*/
 struct AsmXMM4 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM5(AsmReg):
-    pass
-*/
 struct AsmXMM5 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM6(AsmReg):
-    pass
-*/
 struct AsmXMM6 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM7(AsmReg):
-    pass
-*/
 struct AsmXMM7 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM14(AsmReg):
-    pass
-*/
 struct AsmXMM14 : AsmReg {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmXMM15(AsmReg):
-    pass
-*/
 struct AsmXMM15 : AsmReg {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmCondCode(AST):
-    pass
-*/
+// cond_code = E
+//           | NE
+//           | G
+//           | GE
+//           | L
+//           | LE
+//           | A
+//           | AE
+//           | B
+//           | BE
+//           | P
 struct AsmCondCode : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmE(AsmCondCode):
-    pass
-*/
 struct AsmE : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmNE(AsmCondCode):
-    pass
-*/
 struct AsmNE : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmG(AsmCondCode):
-    pass
-*/
 struct AsmG : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmGE(AsmCondCode):
-    pass
-*/
 struct AsmGE : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmL(AsmCondCode):
-    pass
-*/
 struct AsmL : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmLE(AsmCondCode):
-    pass
-*/
 struct AsmLE : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmA(AsmCondCode):
-    pass
-*/
 struct AsmA : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmAE(AsmCondCode):
-    pass
-*/
 struct AsmAE : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmB(AsmCondCode):
-    pass
-*/
 struct AsmB : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmBE(AsmCondCode):
-    pass
-*/
 struct AsmBE : AsmCondCode {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmP(AsmCondCode):
-    pass
-*/
 struct AsmP : AsmCondCode {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmOperand(AST):
-    pass
-*/
+// operand = Imm(int)
+//         | Reg(reg)
+//         | Pseudo(identifier)
+//         | Stack(int)
+//         | AsmData(identifier)
 struct AsmOperand : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmImm(AsmOperand):
-    cdef public TIdentifier value
-*/
 struct AsmImm : AsmOperand {
     AST_T type() override;
     AsmImm() = default;
@@ -298,10 +194,6 @@ struct AsmImm : AsmOperand {
     TIdentifier value;
 };
 
-/** TODO
-cdef class AsmRegister(AsmOperand):
-    cdef public AsmReg reg
-*/
 struct AsmRegister : AsmOperand {
     AST_T type() override;
     AsmRegister() = default;
@@ -310,10 +202,6 @@ struct AsmRegister : AsmOperand {
     std::unique_ptr<AsmReg> reg;
 };
 
-/** TODO
-cdef class AsmPseudo(AsmOperand):
-    cdef public TIdentifier name
-*/
 struct AsmPseudo : AsmOperand {
     AST_T type() override;
     AsmPseudo() = default;
@@ -322,10 +210,6 @@ struct AsmPseudo : AsmOperand {
     TIdentifier name;
 };
 
-/** TODO
-cdef class AsmStack(AsmOperand):
-    cdef public TInt value
-*/
 struct AsmStack : AsmOperand {
     AST_T type() override;
     AsmStack() = default;
@@ -334,10 +218,6 @@ struct AsmStack : AsmOperand {
     TInt value;
 };
 
-/** TODO
-cdef class AsmData(AsmOperand):
-    cdef public TIdentifier name
-*/
 struct AsmData : AsmOperand {
     AST_T type() override;
     AsmData() = default;
@@ -348,136 +228,102 @@ struct AsmData : AsmOperand {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmBinaryOp(AST):
-    pass
-*/
+// binary_operator = Add
+//                 | Sub
+//                 | Mult
+//                 | DivDouble
+//                 | BitAnd
+//                 | BitOr
+//                 | BitXor
+//                 | BitShiftLeft
+//                 | BitShiftRight
 struct AsmBinaryOp : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmAdd(AsmBinaryOp):
-    pass
-*/
 struct AsmAdd : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmSub(AsmBinaryOp):
-    pass
-*/
 struct AsmSub : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmMult(AsmBinaryOp):
-    pass
-*/
 struct AsmMult : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmDivDouble(AsmBinaryOp):
-    pass
-*/
 struct AsmDivDouble : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmBitAnd(AsmBinaryOp):
-    pass
-*/
 struct AsmBitAnd : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmBitOr(AsmBinaryOp):
-    pass
-*/
 struct AsmBitOr : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmBitXor(AsmBinaryOp):
-    pass
-*/
 struct AsmBitXor : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmBitShiftLeft(AsmBinaryOp):
-    pass
-*/
 struct AsmBitShiftLeft : AsmBinaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmBitShiftRight(AsmBinaryOp):
-    pass
-*/
 struct AsmBitShiftRight : AsmBinaryOp {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmUnaryOp(AST):
-    pass
-*/
+// unary_operator = Not
+//                | Neg
+//                | Shr
 struct AsmUnaryOp : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmNot(AsmUnaryOp):
-    pass
-*/
 struct AsmNot : AsmUnaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmNeg(AsmUnaryOp):
-    pass
-*/
 struct AsmNeg : AsmUnaryOp {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmShr(AsmUnaryOp):
-    pass
-*/
 struct AsmShr : AsmUnaryOp {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmInstruction(AST):
-    pass
-*/
+// instruction = Mov(assembly_type, operand src, operand dst)
+//             | MovSx(operand src, operand dst)
+//             | MovZeroExtend(operand src, operand dst)
+//             | Cvttsd2si(assembly_type, operand, operand)
+//             | Cvtsi2sd(assembly_type, operand, operand)
+//             | Unary(unary_operator, assembly_type, operand)
+//             | Binary(binary_operator, assembly_type, operand, operand)
+//             | Cmp(assembly_type, operand, operand)
+//             | Idiv(assembly_type, operand)
+//             | Div(assembly_type, operand)
+//             | Cdq(assembly_type)
+//             | Jmp(identifier)
+//             | JmpCC(cond_code, identifier)
+//             | SetCC(cond_code, operand)
+//             | Label(identifier)
+//             | AllocateStack(int)
+//             | DeallocateStack(int)
+//             | Push(operand)
+//             | Call(identifier)
+//             | Ret
 struct AsmInstruction : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmMov(AsmInstruction):
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmMov : AsmInstruction {
     AST_T type() override;
     AsmMov() = default;
@@ -489,11 +335,6 @@ struct AsmMov : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmMovSx(AsmInstruction):
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmMovSx : AsmInstruction {
     AST_T type() override;
     AsmMovSx() = default;
@@ -503,11 +344,6 @@ struct AsmMovSx : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmMovZeroExtend(AsmInstruction):
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmMovZeroExtend : AsmInstruction {
     AST_T type() override;
     AsmMovZeroExtend() = default;
@@ -517,12 +353,6 @@ struct AsmMovZeroExtend : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmCvttsd2si(AsmInstruction):
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmCvttsd2si : AsmInstruction {
     AST_T type() override;
     AsmCvttsd2si() = default;
@@ -534,12 +364,6 @@ struct AsmCvttsd2si : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmCvtsi2sd(AsmInstruction):
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmCvtsi2sd : AsmInstruction {
     AST_T type() override;
     AsmCvtsi2sd() = default;
@@ -551,12 +375,6 @@ struct AsmCvtsi2sd : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmUnary(AsmInstruction):
-    cdef public AsmUnaryOp unary_op
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand dst
-*/
 struct AsmUnary : AsmInstruction {
     AST_T type() override;
     AsmUnary() = default;
@@ -568,13 +386,6 @@ struct AsmUnary : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmBinary(AsmInstruction):
-    cdef public AsmBinaryOp binary_op
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmBinary : AsmInstruction {
     AST_T type() override;
     AsmBinary() = default;
@@ -587,12 +398,6 @@ struct AsmBinary : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmCmp(AsmInstruction):
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-    cdef public AsmOperand dst
-*/
 struct AsmCmp : AsmInstruction {
     AST_T type() override;
     AsmCmp() = default;
@@ -604,11 +409,6 @@ struct AsmCmp : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmIdiv(AsmInstruction):
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-*/
 struct AsmIdiv : AsmInstruction {
     AST_T type() override;
     AsmIdiv() = default;
@@ -618,11 +418,6 @@ struct AsmIdiv : AsmInstruction {
     std::shared_ptr<AsmOperand> src;
 };
 
-/** TODO
-cdef class AsmDiv(AsmInstruction):
-    cdef public AssemblyType assembly_type
-    cdef public AsmOperand src
-*/
 struct AsmDiv : AsmInstruction {
     AST_T type() override;
     AsmDiv() = default;
@@ -632,10 +427,6 @@ struct AsmDiv : AsmInstruction {
     std::shared_ptr<AsmOperand> src;
 };
 
-/** TODO
-cdef class AsmCdq(AsmInstruction):
-    cdef public AssemblyType assembly_type
-*/
 struct AsmCdq : AsmInstruction {
     AST_T type() override;
     AsmCdq() = default;
@@ -644,10 +435,6 @@ struct AsmCdq : AsmInstruction {
     std::shared_ptr<AssemblyType> assembly_type;
 };
 
-/** TODO
-cdef class AsmJmp(AsmInstruction):
-    cdef public TIdentifier target
-*/
 struct AsmJmp : AsmInstruction {
     AST_T type() override;
     AsmJmp() = default;
@@ -656,11 +443,6 @@ struct AsmJmp : AsmInstruction {
     TIdentifier target;
 };
 
-/** TODO
-cdef class AsmJmpCC(AsmInstruction):
-    cdef public AsmCondCode cond_code
-    cdef public TIdentifier target
-*/
 struct AsmJmpCC : AsmInstruction {
     AST_T type() override;
     AsmJmpCC() = default;
@@ -670,11 +452,6 @@ struct AsmJmpCC : AsmInstruction {
     std::unique_ptr<AsmCondCode> cond_code;
 };
 
-/** TODO
-cdef class AsmSetCC(AsmInstruction):
-    cdef public AsmCondCode cond_code
-    cdef public AsmOperand dst
-*/
 struct AsmSetCC : AsmInstruction {
     AST_T type() override;
     AsmSetCC() = default;
@@ -684,10 +461,6 @@ struct AsmSetCC : AsmInstruction {
     std::shared_ptr<AsmOperand> dst;
 };
 
-/** TODO
-cdef class AsmLabel(AsmInstruction):
-    cdef public TIdentifier name
-*/
 struct AsmLabel : AsmInstruction {
     AST_T type() override;
     AsmLabel() = default;
@@ -696,10 +469,6 @@ struct AsmLabel : AsmInstruction {
     TIdentifier name;
 };
 
-/** TODO
-cdef class AsmPush(AsmInstruction):
-    cdef public AsmOperand src
-*/
 struct AsmPush : AsmInstruction {
     AST_T type() override;
     AsmPush() = default;
@@ -708,10 +477,6 @@ struct AsmPush : AsmInstruction {
     std::shared_ptr<AsmOperand> src;
 };
 
-/** TODO
-cdef class AsmCall(AsmInstruction):
-    cdef public TIdentifier name
-*/
 struct AsmCall : AsmInstruction {
     AST_T type() override;
     AsmCall() = default;
@@ -720,30 +485,19 @@ struct AsmCall : AsmInstruction {
     TIdentifier name;
 };
 
-/** TODO
-cdef class AsmRet(AsmInstruction):
-    pass
-*/
 struct AsmRet : AsmInstruction {
     AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmTopLevel(AST):
-    pass
-*/
+// top_level = Function(identifier name, bool global, instruction* instructions)
+//           | StaticVariable(identifier, bool global, int alignment, static_init init)
+//           | StaticConstant(identifier, int alignment, static_init init)
 struct AsmTopLevel : Ast {
     AST_T type() override;
 };
 
-/** TODO
-cdef class AsmFunction(AsmTopLevel):
-    cdef public TIdentifier name
-    cdef public bint is_global
-    cdef public list[AsmInstruction] instructions
-*/
 struct AsmFunction : AsmTopLevel {
     AST_T type() override;
     AsmFunction() = default;
@@ -754,13 +508,6 @@ struct AsmFunction : AsmTopLevel {
     std::vector<std::unique_ptr<AsmInstruction>> instructions;
 };
 
-/** TODO
-cdef class AsmStaticVariable(AsmTopLevel):
-    cdef public TIdentifier name
-    cdef public bint is_global
-    cdef public TInt alignment
-    cdef public StaticInit initial_value
-*/
 struct AsmStaticVariable : AsmTopLevel {
     AST_T type() override;
     AsmStaticVariable() = default;
@@ -772,12 +519,6 @@ struct AsmStaticVariable : AsmTopLevel {
     std::shared_ptr<StaticInit> initial_value;
 };
 
-/** TODO
-cdef class AsmStaticConstant(AsmTopLevel):
-    cdef public TIdentifier name
-    cdef public TInt alignment
-    cdef public StaticInit initial_value
-*/
 struct AsmStaticConstant : AsmTopLevel {
     AST_T type() override;
     AsmStaticConstant() = default;
@@ -790,10 +531,7 @@ struct AsmStaticConstant : AsmTopLevel {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** TODO
-cdef class AsmProgram(AST):
-    cdef public list[AsmTopLevel] top_levels
-*/
+// AST = Program(top_level*)
 struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram() = default;
