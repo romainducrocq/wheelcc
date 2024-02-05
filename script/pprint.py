@@ -62,6 +62,7 @@ if __name__ == "__main__":
 #include "ast/backend_st.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
+#include "ast/asm_ast.hpp"
 
 #include <vector>
 #include <iostream>

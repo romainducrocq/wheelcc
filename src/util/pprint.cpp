@@ -9,6 +9,7 @@
 #include "ast/backend_st.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
+#include "ast/asm_ast.hpp"
 
 #include <vector>
 #include <iostream>
@@ -837,6 +838,394 @@ static void print_ast(Ast* node, size_t t) {
             }
             field("List[" + std::to_string(p_node->function_top_levels.size()) + "]", "", t+1);
             for(const auto& item: p_node->function_top_levels) {
+                print_ast(item.get(), t+1);
+            }
+            break;
+        }
+        case AST_T::AsmReg_t: {
+            field("AsmReg", "", ++t);
+            break;
+        }
+        case AST_T::AsmAx_t: {
+            field("AsmAx", "", ++t);
+            break;
+        }
+        case AST_T::AsmCx_t: {
+            field("AsmCx", "", ++t);
+            break;
+        }
+        case AST_T::AsmDx_t: {
+            field("AsmDx", "", ++t);
+            break;
+        }
+        case AST_T::AsmDi_t: {
+            field("AsmDi", "", ++t);
+            break;
+        }
+        case AST_T::AsmSi_t: {
+            field("AsmSi", "", ++t);
+            break;
+        }
+        case AST_T::AsmR8_t: {
+            field("AsmR8", "", ++t);
+            break;
+        }
+        case AST_T::AsmR9_t: {
+            field("AsmR9", "", ++t);
+            break;
+        }
+        case AST_T::AsmR10_t: {
+            field("AsmR10", "", ++t);
+            break;
+        }
+        case AST_T::AsmR11_t: {
+            field("AsmR11", "", ++t);
+            break;
+        }
+        case AST_T::AsmSp_t: {
+            field("AsmSp", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM0_t: {
+            field("AsmXMM0", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM1_t: {
+            field("AsmXMM1", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM2_t: {
+            field("AsmXMM2", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM3_t: {
+            field("AsmXMM3", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM4_t: {
+            field("AsmXMM4", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM5_t: {
+            field("AsmXMM5", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM6_t: {
+            field("AsmXMM6", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM7_t: {
+            field("AsmXMM7", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM14_t: {
+            field("AsmXMM14", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM15_t: {
+            field("AsmXMM15", "", ++t);
+            break;
+        }
+        case AST_T::AsmCondCode_t: {
+            field("AsmCondCode", "", ++t);
+            break;
+        }
+        case AST_T::AsmE_t: {
+            field("AsmE", "", ++t);
+            break;
+        }
+        case AST_T::AsmNE_t: {
+            field("AsmNE", "", ++t);
+            break;
+        }
+        case AST_T::AsmG_t: {
+            field("AsmG", "", ++t);
+            break;
+        }
+        case AST_T::AsmGE_t: {
+            field("AsmGE", "", ++t);
+            break;
+        }
+        case AST_T::AsmL_t: {
+            field("AsmL", "", ++t);
+            break;
+        }
+        case AST_T::AsmLE_t: {
+            field("AsmLE", "", ++t);
+            break;
+        }
+        case AST_T::AsmA_t: {
+            field("AsmA", "", ++t);
+            break;
+        }
+        case AST_T::AsmAE_t: {
+            field("AsmAE", "", ++t);
+            break;
+        }
+        case AST_T::AsmB_t: {
+            field("AsmB", "", ++t);
+            break;
+        }
+        case AST_T::AsmBE_t: {
+            field("AsmBE", "", ++t);
+            break;
+        }
+        case AST_T::AsmP_t: {
+            field("AsmP", "", ++t);
+            break;
+        }
+        case AST_T::AsmOperand_t: {
+            field("AsmOperand", "", ++t);
+            break;
+        }
+        case AST_T::AsmImm_t: {
+            field("AsmImm", "", ++t);
+            AsmImm* p_node = static_cast<AsmImm*>(node);
+            field("TIdentifier", p_node->value, t+1);
+            break;
+        }
+        case AST_T::AsmRegister_t: {
+            field("AsmRegister", "", ++t);
+            AsmRegister* p_node = static_cast<AsmRegister*>(node);
+            print_ast(p_node->reg.get(), t);
+            break;
+        }
+        case AST_T::AsmPseudo_t: {
+            field("AsmPseudo", "", ++t);
+            AsmPseudo* p_node = static_cast<AsmPseudo*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::AsmStack_t: {
+            field("AsmStack", "", ++t);
+            AsmStack* p_node = static_cast<AsmStack*>(node);
+            field("TInt", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::AsmData_t: {
+            field("AsmData", "", ++t);
+            AsmData* p_node = static_cast<AsmData*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::AsmBinaryOp_t: {
+            field("AsmBinaryOp", "", ++t);
+            break;
+        }
+        case AST_T::AsmAdd_t: {
+            field("AsmAdd", "", ++t);
+            break;
+        }
+        case AST_T::AsmSub_t: {
+            field("AsmSub", "", ++t);
+            break;
+        }
+        case AST_T::AsmMult_t: {
+            field("AsmMult", "", ++t);
+            break;
+        }
+        case AST_T::AsmDivDouble_t: {
+            field("AsmDivDouble", "", ++t);
+            break;
+        }
+        case AST_T::AsmBitAnd_t: {
+            field("AsmBitAnd", "", ++t);
+            break;
+        }
+        case AST_T::AsmBitOr_t: {
+            field("AsmBitOr", "", ++t);
+            break;
+        }
+        case AST_T::AsmBitXor_t: {
+            field("AsmBitXor", "", ++t);
+            break;
+        }
+        case AST_T::AsmBitShiftLeft_t: {
+            field("AsmBitShiftLeft", "", ++t);
+            break;
+        }
+        case AST_T::AsmBitShiftRight_t: {
+            field("AsmBitShiftRight", "", ++t);
+            break;
+        }
+        case AST_T::AsmUnaryOp_t: {
+            field("AsmUnaryOp", "", ++t);
+            break;
+        }
+        case AST_T::AsmNot_t: {
+            field("AsmNot", "", ++t);
+            break;
+        }
+        case AST_T::AsmNeg_t: {
+            field("AsmNeg", "", ++t);
+            break;
+        }
+        case AST_T::AsmShr_t: {
+            field("AsmShr", "", ++t);
+            break;
+        }
+        case AST_T::AsmInstruction_t: {
+            field("AsmInstruction", "", ++t);
+            break;
+        }
+        case AST_T::AsmMov_t: {
+            field("AsmMov", "", ++t);
+            AsmMov* p_node = static_cast<AsmMov*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmMovSx_t: {
+            field("AsmMovSx", "", ++t);
+            AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmMovZeroExtend_t: {
+            field("AsmMovZeroExtend", "", ++t);
+            AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmCvttsd2si_t: {
+            field("AsmCvttsd2si", "", ++t);
+            AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmCvtsi2sd_t: {
+            field("AsmCvtsi2sd", "", ++t);
+            AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmUnary_t: {
+            field("AsmUnary", "", ++t);
+            AsmUnary* p_node = static_cast<AsmUnary*>(node);
+            print_ast(p_node->unary_op.get(), t);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmBinary_t: {
+            field("AsmBinary", "", ++t);
+            AsmBinary* p_node = static_cast<AsmBinary*>(node);
+            print_ast(p_node->binary_op.get(), t);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmCmp_t: {
+            field("AsmCmp", "", ++t);
+            AsmCmp* p_node = static_cast<AsmCmp*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmIdiv_t: {
+            field("AsmIdiv", "", ++t);
+            AsmIdiv* p_node = static_cast<AsmIdiv*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            break;
+        }
+        case AST_T::AsmDiv_t: {
+            field("AsmDiv", "", ++t);
+            AsmDiv* p_node = static_cast<AsmDiv*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            print_ast(p_node->src.get(), t);
+            break;
+        }
+        case AST_T::AsmCdq_t: {
+            field("AsmCdq", "", ++t);
+            AsmCdq* p_node = static_cast<AsmCdq*>(node);
+            print_ast(p_node->assembly_type.get(), t);
+            break;
+        }
+        case AST_T::AsmJmp_t: {
+            field("AsmJmp", "", ++t);
+            AsmJmp* p_node = static_cast<AsmJmp*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            break;
+        }
+        case AST_T::AsmJmpCC_t: {
+            field("AsmJmpCC", "", ++t);
+            AsmJmpCC* p_node = static_cast<AsmJmpCC*>(node);
+            field("TIdentifier", p_node->target, t+1);
+            print_ast(p_node->cond_code.get(), t);
+            break;
+        }
+        case AST_T::AsmSetCC_t: {
+            field("AsmSetCC", "", ++t);
+            AsmSetCC* p_node = static_cast<AsmSetCC*>(node);
+            print_ast(p_node->cond_code.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmLabel_t: {
+            field("AsmLabel", "", ++t);
+            AsmLabel* p_node = static_cast<AsmLabel*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::AsmPush_t: {
+            field("AsmPush", "", ++t);
+            AsmPush* p_node = static_cast<AsmPush*>(node);
+            print_ast(p_node->src.get(), t);
+            break;
+        }
+        case AST_T::AsmCall_t: {
+            field("AsmCall", "", ++t);
+            AsmCall* p_node = static_cast<AsmCall*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::AsmRet_t: {
+            field("AsmRet", "", ++t);
+            break;
+        }
+        case AST_T::AsmTopLevel_t: {
+            field("AsmTopLevel", "", ++t);
+            break;
+        }
+        case AST_T::AsmFunction_t: {
+            field("AsmFunction", "", ++t);
+            AsmFunction* p_node = static_cast<AsmFunction*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("Bool", std::to_string(p_node->is_global), t+1);
+            break;
+        }
+        case AST_T::AsmStaticVariable_t: {
+            field("AsmStaticVariable", "", ++t);
+            AsmStaticVariable* p_node = static_cast<AsmStaticVariable*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("TInt", std::to_string(p_node->alignment), t+1);
+            field("Bool", std::to_string(p_node->is_global), t+1);
+            print_ast(p_node->initial_value.get(), t);
+            break;
+        }
+        case AST_T::AsmStaticConstant_t: {
+            field("AsmStaticConstant", "", ++t);
+            AsmStaticConstant* p_node = static_cast<AsmStaticConstant*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("TInt", std::to_string(p_node->alignment), t+1);
+            print_ast(p_node->initial_value.get(), t);
+            break;
+        }
+        case AST_T::AsmProgram_t: {
+            field("AsmProgram", "", ++t);
+            AsmProgram* p_node = static_cast<AsmProgram*>(node);
+            field("List[" + std::to_string(p_node->top_levels.size()) + "]", "", t+1);
+            for(const auto& item: p_node->top_levels) {
                 print_ast(item.get(), t+1);
             }
             break;

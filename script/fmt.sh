@@ -56,7 +56,8 @@ cat tmp \
     | sed s/"\")\]\],/\")\]\, \[\]\],/g" \
     | sed s/"\", \[\"/\", \[\], \[\"/g" \
     | sed s/"\", \[\]\],/\", \[\], \[\]\],/g" \
-    | sed s"/TacIn\[\"ion/TacInstruction/g" > tmp2
+    | sed s"/TacIn\[\"ion/TacInstruction/g" \
+    | sed s"/AsmIn\[\"ion/AsmInstruction/g" > tmp2
 rm tmp
 
 echo ""
@@ -74,6 +75,7 @@ fmt symbol_table
 fmt backend_st
 fmt c_ast
 fmt tac_ast
+fmt asm_ast
 echo "]"
 echo ""
 }
