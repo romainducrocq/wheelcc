@@ -183,91 +183,169 @@ struct AsmXMM15 : AsmReg {
 cdef class AsmCondCode(AST):
     pass
 */
+struct AsmCondCode : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmE(AsmCondCode):
     pass
 */
+struct AsmE : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmNE(AsmCondCode):
     pass
 */
+struct AsmNE : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmG(AsmCondCode):
     pass
 */
+struct AsmG : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmGE(AsmCondCode):
     pass
 */
+struct AsmGE : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmL(AsmCondCode):
     pass
 */
+struct AsmL : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmLE(AsmCondCode):
     pass
 */
+struct AsmLE : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmA(AsmCondCode):
     pass
 */
+struct AsmA : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmAE(AsmCondCode):
     pass
 */
+struct AsmAE : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmB(AsmCondCode):
     pass
 */
+struct AsmB : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmBE(AsmCondCode):
     pass
 */
+struct AsmBE : AsmCondCode {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmP(AsmCondCode):
     pass
 */
+struct AsmP : AsmCondCode {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmOperand(AST):
     pass
 */
+struct AsmOperand : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmImm(AsmOperand):
     cdef public TIdentifier value
 */
+struct AsmImm : AsmOperand {
+    AST_T type() override;
+    AsmImm() = default;
+    AsmImm(TIdentifier value);
+
+    TIdentifier value;
+};
 
 /** TODO
 cdef class AsmRegister(AsmOperand):
     cdef public AsmReg reg
 */
+struct AsmRegister : AsmOperand {
+    AST_T type() override;
+    AsmRegister() = default;
+    AsmRegister(std::unique_ptr<AsmReg> reg);
+
+    std::unique_ptr<AsmReg> reg;
+};
 
 /** TODO
 cdef class AsmPseudo(AsmOperand):
     cdef public TIdentifier name
 */
+struct AsmPseudo : AsmOperand {
+    AST_T type() override;
+    AsmPseudo() = default;
+    AsmPseudo(TIdentifier name);
+
+    TIdentifier name;
+};
 
 /** TODO
 cdef class AsmStack(AsmOperand):
     cdef public TInt value
 */
+struct AsmStack : AsmOperand {
+    AST_T type() override;
+    AsmStack() = default;
+    AsmStack(TInt value);
+
+    TInt value;
+};
 
 /** TODO
 cdef class AsmData(AsmOperand):
     cdef public TIdentifier name
 */
+struct AsmData : AsmOperand {
+    AST_T type() override;
+    AsmData() = default;
+    AsmData(TIdentifier name);
+
+    TIdentifier name;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmBinaryOp(AST):
