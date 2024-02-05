@@ -8,7 +8,7 @@
 #include "ast/tac_ast.hpp"
 #include "parser/parser.hpp"
 #include "semantic/id_resolve.hpp"
-#include "intermediate/tac_gen.hpp"
+#include "intermediate/tac_repr.hpp"
 
 #include <string>
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef _INTERMEDIATE_TAC_GEN_HPP
-#define _INTERMEDIATE_TAC_GEN_HPP
+#ifndef _INTERMEDIATE_TAC_REPR_HPP
+#define _INTERMEDIATE_TAC_REPR_HPP
 
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
