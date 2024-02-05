@@ -82,3 +82,88 @@ AST_T AsmFunction::type() { return AST_T::AsmFunction_t; }
 AST_T AsmStaticVariable::type() { return AST_T::AsmStaticVariable_t; }
 AST_T AsmStaticConstant::type() { return AST_T::AsmStaticConstant_t; }
 AST_T AsmProgram::type() { return AST_T::AsmProgram_t; }
+
+//AsmImm::AsmImm(TIdentifier value)
+//    : {}
+//
+//AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
+//    : {}
+//
+//AsmPseudo::AsmPseudo(TIdentifier name)
+//    : {}
+//
+//AsmStack::AsmStack(TInt value)
+//    : {}
+//
+//AsmData::AsmData(TIdentifier name)
+//    : {}
+//
+//AsmMov::AsmMov(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+//               std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmMovSx::AsmMovSx(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmMovZeroExtend::AsmMovZeroExtend(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmCvttsd2si::AsmCvttsd2si(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+//                           std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmCvtsi2sd::AsmCvtsi2sd(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+//                         std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmUnary::AsmUnary(std::unique_ptr<AsmUnaryOp> unary_op, std::shared_ptr<AssemblyType> assembly_type,
+//                   std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmBinary::AsmBinary(std::unique_ptr<AsmBinaryOp> binary_op, std::shared_ptr<AssemblyType> assembly_type,
+//                     std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmCmp::AsmCmp(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
+//               std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmIdiv::AsmIdiv(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src)
+//    : {}
+//
+//AsmDiv::AsmDiv(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src)
+//    : {}
+//
+//AsmCdq::AsmCdq(std::shared_ptr<AssemblyType> assembly_type)
+//    : {}
+//
+//AsmJmp::AsmJmp(TIdentifier target)
+//    : {}
+//
+//AsmJmpCC::AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode> cond_code)
+//    : {}
+//
+//AsmSetCC::AsmSetCC(std::unique_ptr<AsmCondCode> cond_code, std::shared_ptr<AsmOperand> dst)
+//    : {}
+//
+//AsmLabel::AsmLabel(TIdentifier name)
+//    : {}
+//
+//AsmPush::AsmPush(std::shared_ptr<AsmOperand> src)
+//    : {}
+//
+//AsmCall::AsmCall(TIdentifier name)
+//    : {}
+//
+//AsmFunction::AsmFunction(TIdentifier name, bool is_global, std::vector<std::unique_ptr<AsmInstruction>> instructions)
+//    : {}
+//
+//AsmStaticVariable::AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global,
+//                                     std::shared_ptr<StaticInit> initial_value)
+//    : {}
+//
+//AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> initial_value)
+//    : {}
+//
+//AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> top_levels)
+//    : {}
