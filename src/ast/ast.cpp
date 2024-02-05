@@ -1,3 +1,3 @@
 #include "ast/ast.hpp"
 
-Ast::~Ast() {};
+Ast::~Ast() {}

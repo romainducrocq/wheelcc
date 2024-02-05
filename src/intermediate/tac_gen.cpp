@@ -1079,7 +1079,11 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
 /**
 cdef list[TacTopLevel] function_top_levels = []
 */
-static std::vector<std::unique_ptr<TacTopLevel>>* p_function_top_levels;
+static std::vector<std::unique_ptr<TacTopLevel>>* p_top_levels;
+
+static void push_top_level(std::unique_ptr<TacTopLevel>&& top_level) {
+    p_top_levels->push_back(std::move(top_level));
+}
 
 /**
 cdef void represent_fun_decl_top_level(CFunDecl node):
@@ -1088,8 +1092,8 @@ cdef void represent_fun_decl_top_level(CFunDecl node):
 */
 static void represent_fun_decl_top_level(CFunDecl* node) {
     if(node->function_decl->body) {
-        std::unique_ptr<TacTopLevel> function_top_level = represent_function_top_level(node->function_decl.get());
-        p_function_top_levels->push_back(std::move(function_top_level));
+        push_top_level(
+                represent_function_top_level(node->function_decl.get()));
     }
 }
 
@@ -1131,7 +1135,6 @@ static void represent_declaration_top_level(CDeclaration* node) {
 /**
 cdef list[TacTopLevel] static_variable_top_levels = []
 */
-static std::vector<std::unique_ptr<TacTopLevel>>* p_static_variable_top_levels;
 
 /**
 cdef StaticInit represent_tentative_static_init(Type static_init_type):
@@ -1187,19 +1190,19 @@ cdef void represent_static_variable_top_level(StaticAttr node, Type static_init_
 
     static_variable_top_levels.append(TacStaticVariable(name, is_global, static_init_type, initial_value))
 */
-static void represent_static_variable_top_level(StaticAttr* node, const std::shared_ptr<Type>& type_t,
-                                                const TIdentifier& symbol) {
-    if(node->init->type() == AST_T::NoInitializer_t) {
+static void represent_static_variable_top_level(Symbol* node, const TIdentifier& symbol) {
+    StaticAttr* static_attr = static_cast<StaticAttr*>(node->attrs.get());
+    if(static_attr->init->type() == AST_T::NoInitializer_t) {
         return;
     }
 
     TIdentifier name = symbol;
-    bool is_global = node->is_global;
-    std::shared_ptr<Type> static_init_type = type_t;
+    bool is_global = static_attr->is_global;
+    std::shared_ptr<Type> static_init_type = node->type_t;
     std::shared_ptr<StaticInit> initial_value;
-    switch(node->init->type()) {
+    switch(static_attr->init->type()) {
         case AST_T::Initial_t:
-            initial_value = static_cast<Initial*>(node->init.get())->static_init;
+            initial_value = static_cast<Initial*>(static_attr->init.get())->static_init;
             break;
         case AST_T::Tentative_t:
             initial_value = represent_tentative_static_init(static_init_type.get());
@@ -1209,9 +1212,8 @@ static void represent_static_variable_top_level(StaticAttr* node, const std::sha
                                  "top level variable has invalid initializer");
     }
 
-    std::unique_ptr<TacTopLevel> static_variable_top_level = std::make_unique<TacStaticVariable>(
-            std::move(name), is_global, std::move(static_init_type), std::move(initial_value));
-    p_static_variable_top_levels->push_back(std::move(static_variable_top_level));
+    push_top_level(std::make_unique<TacStaticVariable>(std::move(name), is_global, std::move(static_init_type),
+                                                               std::move(initial_value)));
 }
 
 /**
@@ -1223,8 +1225,7 @@ cdef void represent_symbol_top_level(Symbol node, str symbol):
 // top_level = StaticVariable(identifier, bool global, int init)
 static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) {
     if(node->attrs->type() == AST_T::StaticAttr_t) {
-        represent_static_variable_top_level(static_cast<StaticAttr*>(node->attrs.get()),
-                                            node->type_t, symbol);
+        represent_static_variable_top_level(node, symbol);
     }
 }
 
@@ -1250,18 +1251,18 @@ cdef TacProgram represent_program(CProgram node):
 // program = Program(top_level*)
 static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
-    p_function_top_levels = &function_top_levels;
+    p_top_levels = &function_top_levels;
     for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
         represent_declaration_top_level(node->declarations[declaration].get());
     }
-    p_function_top_levels = nullptr;
+    p_top_levels = nullptr;
 
     std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
-    p_static_variable_top_levels = &static_variable_top_levels;
+    p_top_levels = &static_variable_top_levels;
     for(const auto& symbol: symbol_table) {
         represent_symbol_top_level(symbol.second.get(), symbol.first);
     }
-    p_static_variable_top_levels = nullptr;
+    p_top_levels = nullptr;
 
     return std::make_unique<TacProgram>(std::move(function_top_levels), std::move(static_variable_top_levels));
 }
