@@ -2,6 +2,7 @@
 #define _AST_ASM_AST_HPP
 
 #include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
 #include "ast/backend_st.hpp"
 
 #include <memory>
