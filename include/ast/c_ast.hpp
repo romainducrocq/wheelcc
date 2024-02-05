@@ -5,6 +5,7 @@
 #include "ast/symbol_table.hpp"
 
 #include <memory>
+#include <vector>
 
 // https://mkhan45.github.io/2021/05/10/Modeling-ASTs-in-Different-Languages.html
 // https://github.com/agentcooper/cpp-ast-example/blob/main/ast_inheritance.cpp

@@ -3,6 +3,9 @@
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
 
+#include <memory>
+#include <vector>
+
 AST_T TacUnaryOp::type() { return AST_T::TacUnaryOp_t; }
 AST_T TacComplement::type() { return AST_T::TacComplement_t; }
 AST_T TacNegate::type() { return AST_T::TacNegate_t; }
