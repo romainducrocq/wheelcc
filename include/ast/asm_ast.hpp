@@ -351,51 +351,83 @@ struct AsmData : AsmOperand {
 cdef class AsmBinaryOp(AST):
     pass
 */
+struct AsmBinaryOp : Ast {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmAdd(AsmBinaryOp):
     pass
 */
+struct AsmAdd : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmSub(AsmBinaryOp):
     pass
 */
+struct AsmSub : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmMult(AsmBinaryOp):
     pass
 */
+struct AsmMult : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmDivDouble(AsmBinaryOp):
     pass
 */
+struct AsmDivDouble : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmBitAnd(AsmBinaryOp):
     pass
 */
+struct AsmBitAnd : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmBitOr(AsmBinaryOp):
     pass
 */
+struct AsmBitOr : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmBitXor(AsmBinaryOp):
     pass
 */
+struct AsmBitXor : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmBitShiftLeft(AsmBinaryOp):
     pass
 */
+struct AsmBitShiftLeft : AsmBinaryOp {
+    AST_T type() override;
+};
 
 /** TODO
 cdef class AsmBitShiftRight(AsmBinaryOp):
     pass
 */
+struct AsmBitShiftRight : AsmBinaryOp {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** TODO
 cdef class AsmUnaryOp(AST):
