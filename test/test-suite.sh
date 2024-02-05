@@ -14,7 +14,7 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 13); do
-        test --chapter ${i} --stage validate --latest-only --bitwise --compound --goto --nan
+        test --chapter ${i} --stage tacky --latest-only --bitwise --compound --goto --nan
     done
 fi
 

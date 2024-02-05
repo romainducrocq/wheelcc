@@ -116,7 +116,7 @@ TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shar
     : name(std::move(name)), is_global(is_global), static_init_type(std::move(static_init_type)),
       initial_value(std::move(initial_value)) {}
 
-TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> function_top_levels,
-                       std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels)
-    : function_top_levels(std::move(function_top_levels)),
-      static_variable_top_levels(std::move(static_variable_top_levels)) {}
+TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
+                       std::vector<std::unique_ptr<TacTopLevel>> function_top_levels)
+    : static_variable_top_levels(std::move(static_variable_top_levels)),
+      function_top_levels(std::move(function_top_levels)) {}

@@ -152,6 +152,6 @@ ast = [
     ["TacTopLevel", [], []],
     ["TacFunction", [(TIdentifier, "name"), (Bool, "is_global"), (TIdentifier, "[params")], ["[body"]],
     ["TacStaticVariable", [(TIdentifier, "name"), (Bool, "is_global")], ["static_init_type", "initial_value"]],
-    ["TacProgram", [], ["[function_top_levels", "[static_variable_top_levels"]],
+    ["TacProgram", [], ["[static_variable_top_levels", "[function_top_levels"]],
 ]
 

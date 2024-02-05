@@ -1264,7 +1264,7 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     }
     p_top_levels = nullptr;
 
-    return std::make_unique<TacProgram>(std::move(function_top_levels), std::move(static_variable_top_levels));
+    return std::make_unique<TacProgram>(std::move(static_variable_top_levels), std::move(function_top_levels));
 }
 
 /**
