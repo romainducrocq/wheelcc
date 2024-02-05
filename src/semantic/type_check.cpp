@@ -681,7 +681,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
             TInt value;
-            switch(node->type()) {
+            switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
                     value = static_cast<CConstInt*>(node->constant.get())->value;
                     break;
@@ -710,7 +710,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
         }
         case AST_T::Long_t: {
             TLong value;
-            switch(node->type()) {
+            switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
                     value = static_cast<TLong>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -739,7 +739,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
         }
         case AST_T::Double_t: {
             TDouble value;
-            switch(node->type()) {
+            switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
                     value = static_cast<TDouble>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -768,7 +768,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
         }
         case AST_T::UInt_t: {
             TUInt value;
-            switch(node->type()) {
+            switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
                     value = static_cast<TUInt>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -797,7 +797,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
         }
         case AST_T::ULong_t: {
             TULong value;
-            switch(node->type()) {
+            switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
                     value = static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
