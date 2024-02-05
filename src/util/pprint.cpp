@@ -6,6 +6,7 @@
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
+#include "ast/backend_st.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 
@@ -155,6 +156,40 @@ static void print_ast(Ast* node, size_t t) {
             Symbol* p_node = static_cast<Symbol*>(node);
             print_ast(p_node->type_t.get(), t);
             print_ast(p_node->attrs.get(), t);
+            break;
+        }
+        case AST_T::AssemblyType_t: {
+            field("AssemblyType", "", ++t);
+            break;
+        }
+        case AST_T::LongWord_t: {
+            field("LongWord", "", ++t);
+            break;
+        }
+        case AST_T::QuadWord_t: {
+            field("QuadWord", "", ++t);
+            break;
+        }
+        case AST_T::BackendDouble_t: {
+            field("BackendDouble", "", ++t);
+            break;
+        }
+        case AST_T::BackendSymbol_t: {
+            field("BackendSymbol", "", ++t);
+            break;
+        }
+        case AST_T::BackendObj_t: {
+            field("BackendObj", "", ++t);
+            BackendObj* p_node = static_cast<BackendObj*>(node);
+            field("Bool", std::to_string(p_node->is_static), t+1);
+            field("Bool", std::to_string(p_node->is_constant), t+1);
+            print_ast(p_node->assembly_type.get(), t);
+            break;
+        }
+        case AST_T::BackendFun_t: {
+            field("BackendFun", "", ++t);
+            BackendFun* p_node = static_cast<BackendFun*>(node);
+            field("Bool", std::to_string(p_node->is_defined), t+1);
             break;
         }
         case AST_T::CConst_t: {

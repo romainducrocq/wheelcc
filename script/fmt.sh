@@ -71,6 +71,7 @@ rm tmp2
 function pfmt () {
 echo "ast = ["
 fmt symbol_table
+fmt backend_st
 fmt c_ast
 fmt tac_ast
 echo "]"

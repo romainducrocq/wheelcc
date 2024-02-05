@@ -59,6 +59,7 @@ if __name__ == "__main__":
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
+#include "ast/backend_st.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 

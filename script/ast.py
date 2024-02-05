@@ -37,6 +37,15 @@ ast = [
     ["LocalAttr", [], []],
     ["Symbol", [], ["type_t", "attrs"]],
 
+    # /include/ast/backend_st.hpp
+    ["AssemblyType", [], []],
+    ["LongWord", [], []],
+    ["QuadWord", [], []],
+    ["BackendDouble", [], []],
+    ["BackendSymbol", [], []],
+    ["BackendObj", [(Bool, "is_static"), (Bool, "is_constant")], ["assembly_type"]],
+    ["BackendFun", [(Bool, "is_defined")], []],
+
     # /include/ast/c_ast.hpp
     ["CConst", [], []],
     ["CConstInt", [(TInt, "value")], []],
