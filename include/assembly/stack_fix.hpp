@@ -1,0 +1,6 @@
+#ifndef _ASSEMBLY_STACK_FIX_HPP
+#define _ASSEMBLY_STACK_FIX_HPP
+
+
+
+#endif
