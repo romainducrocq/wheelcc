@@ -42,6 +42,7 @@ const std::string em(const std::string& message) {
                              std::to_string(line_number) + ": \033[1m" + line + "\033[0m");
 }
 
-[[ noreturn ]] void raise_internal_error(const std::string& message) {
-    raise_runtime_error(message);
+[[ noreturn ]] void raise_internal_error(const char* func, const char* file, int line) {
+    throw std::runtime_error("\n\033[1m" + std::string(file) + ":" + std::to_string(line) +
+                             ":\033[0m\n\033[0;31minternal error:\033[0m " + std::string(func));
 }

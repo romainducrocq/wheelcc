@@ -256,7 +256,7 @@ void checktype_constant_expression(CConstant* node) {
             node->exp_type = std::make_shared<ULong>();
             break;
         default:
-            break;
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -703,7 +703,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                     break;
                 }
                 default:
-                    break;
+                    RAISE_INTERNAL_ERROR;
             }
             static_init = std::make_shared<IntInit>(std::move(value));
             break;
@@ -732,7 +732,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                     break;
                 }
                 default:
-                    break;
+                    RAISE_INTERNAL_ERROR;
             }
             static_init = std::make_shared<LongInit>(std::move(value));
             break;
@@ -761,7 +761,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                     break;
                 }
                 default:
-                    break;
+                    RAISE_INTERNAL_ERROR;
             }
             static_init = std::make_shared<DoubleInit>(std::move(value));
             break;
@@ -790,7 +790,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                     break;
                 }
                 default:
-                    break;
+                    RAISE_INTERNAL_ERROR;
             }
             static_init = std::make_shared<UIntInit>(std::move(value));
             break;
@@ -819,13 +819,13 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                     break;
                 }
                 default:
-                    break;
+                    RAISE_INTERNAL_ERROR;
             }
             static_init = std::make_shared<ULongInit>(std::move(value));
             break;
         }
         default:
-            break;
+            RAISE_INTERNAL_ERROR;
     }
     return std::make_unique<Initial>(std::move(static_init));
 }
@@ -867,7 +867,7 @@ static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type
             break;
         }
         default:
-            break;
+            RAISE_INTERNAL_ERROR;
     }
     return std::make_unique<Initial>(std::move(static_init));
 }

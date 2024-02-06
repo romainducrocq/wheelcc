@@ -302,7 +302,7 @@ static void resolve_expression(CExp* node) {
             break;
         }
         default:
-            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -353,7 +353,7 @@ static void resolve_for_init(CForInit* node) {
             break;
         }
         default:
-            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -611,7 +611,7 @@ static void resolve_statement(CStatement* node) {
             resolve_goto_statement(static_cast<CGoto*>(node));
             break;
         default:
-            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -641,7 +641,7 @@ static void resolve_block_items(std::vector<std::unique_ptr<CBlockItem>>& list_n
                 resolve_declaration(static_cast<CD*>(list_node[block_item].get())->declaration.get());
                 break;
             default:
-                raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+                RAISE_INTERNAL_ERROR;
         }
     }
 }
@@ -661,7 +661,7 @@ static void resolve_block(CBlock* node) {
             resolve_block_items(static_cast<CB*>(node)->block_items);
             break;
         default:
-            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -908,7 +908,7 @@ static void resolve_declaration(CDeclaration* node) {
             resolve_var_decl_declaration(static_cast<CVarDecl*>(node));
             break;
         default:
-            raise_internal_error("An error occurred in variable resolution, not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 

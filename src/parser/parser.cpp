@@ -1703,11 +1703,11 @@ std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
     p_tokens = &tokens;
     std::unique_ptr<CProgram> c_ast = parse_program();
     if(pop_index != tokens.size()) {
-        raise_internal_error("An error occurred in parser, not all Tokens were consumed");
+        RAISE_INTERNAL_ERROR;
     }
     tokens.clear();
     if(!c_ast) {
-        raise_internal_error("An error occurred in parser, Ast was not parsed");
+        RAISE_INTERNAL_ERROR;
     }
     return c_ast;
 }

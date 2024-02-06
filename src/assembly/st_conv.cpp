@@ -37,8 +37,7 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
         case AST_T::ULong_t:
             return std::make_shared<QuadWord>();
         default:
-            raise_internal_error("An error occurred in backend symbol table conversion, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -92,8 +91,7 @@ static void convert_static_constant_top_levels() {
                 convert_double_static_constant();
                 break;
             default:
-                raise_internal_error("An error occurred in backend symbol table conversion, "
-                                     "not all nodes were visited");
+                RAISE_INTERNAL_ERROR;
         }
     }
     p_symbol = nullptr;

@@ -92,8 +92,7 @@ static std::unique_ptr<TacBinaryOp> represent_binary_op(CBinaryOp* node) {
         case AST_T::CGreaterOrEqual_t:
             return std::make_unique<TacGreaterOrEqual>();
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -121,8 +120,7 @@ static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
         case AST_T::CNot_t:
             return std::make_unique<TacNot>();
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -193,8 +191,7 @@ static std::shared_ptr<TacValue> represent_value(CExp* node) {
         case AST_T::CConstant_t:
             return represent_constant_value(static_cast<CConstant*>(node));
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -564,8 +561,7 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
             }
         }
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -742,8 +738,7 @@ static void represent_statement_for_init_instructions(CForInit* node) {
             represent_for_init_exp_instructions(static_cast<CInitExp*>(node));
             break;
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -906,8 +901,7 @@ static void represent_statement_instructions(CStatement* node) {
             represent_statement_label_instructions(static_cast<CLabel*>(node));
             break;
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -972,8 +966,7 @@ static void represent_declaration_instructions(CDeclaration* node) {
             represent_declaration_var_decl_instructions(static_cast<CVarDecl*>(node));
             break;
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1009,8 +1002,7 @@ static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>
                 represent_declaration_instructions(static_cast<CD*>(list_node[block_item].get())->declaration.get());
                 break;
             default:
-                raise_internal_error("An error occurred in three address code representation, "
-                                     "not all nodes were visited");
+                RAISE_INTERNAL_ERROR;
         }
     }
 }
@@ -1032,8 +1024,7 @@ static void represent_block(CBlock* node) {
             represent_list_instructions(static_cast<CB*>(node)->block_items);
             break;
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1127,8 +1118,7 @@ static void represent_declaration_top_level(CDeclaration* node) {
             represent_var_decl_top_level(static_cast<CVarDecl*>(node));
             break;
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1166,8 +1156,7 @@ static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_
         case AST_T::ULong_t:
             return std::make_shared<ULongInit>(0ul);
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "not all nodes were visited");
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1208,8 +1197,7 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
             initial_value = represent_tentative_static_init(static_init_type.get());
             break;
         default:
-            raise_internal_error("An error occurred in three address code representation, "
-                                 "top level variable has invalid initializer");
+            RAISE_INTERNAL_ERROR;
     }
 
     push_top_level(std::make_unique<TacStaticVariable>(std::move(name), is_global, std::move(static_init_type),
@@ -1282,7 +1270,7 @@ std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CP
     std::unique_ptr<TacProgram> tac_ast = represent_program(c_ast.get());
     c_ast.reset();
     if(!tac_ast) {
-        raise_internal_error("An error occurred in three address code representation, Asm was not generated");
+        RAISE_INTERNAL_ERROR;
     }
     return tac_ast;
 }
