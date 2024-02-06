@@ -1064,7 +1064,7 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     }
     p_instructions = nullptr;
 
-    return std::make_unique<TacFunction>(std::move(name), is_global, std::move(params), std::move(body));
+    return std::make_unique<TacFunction>(std::move(name), std::move(is_global), std::move(params), std::move(body));
 }
 
 /**
@@ -1200,8 +1200,8 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
             RAISE_INTERNAL_ERROR;
     }
 
-    push_top_level(std::make_unique<TacStaticVariable>(std::move(name), is_global, std::move(static_init_type),
-                                                               std::move(initial_value)));
+    push_top_level(std::make_unique<TacStaticVariable>(std::move(name), std::move(is_global),
+                                                               std::move(static_init_type), std::move(initial_value)));
 }
 
 /**

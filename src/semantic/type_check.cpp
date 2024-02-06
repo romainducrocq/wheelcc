@@ -532,7 +532,7 @@ void checktype_function_declaration(CFunctionDeclaration* node) {
     }
 
     std::shared_ptr<Type> fun_type = node->fun_type;
-    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(is_defined, is_global);
+    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined), std::move(is_global));
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
     symbol_table[node->name] = std::move(symbol);
 
@@ -965,7 +965,7 @@ void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     }
 
     std::shared_ptr<Type> global_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(is_global,
+    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(std::move(is_global),
                                                                                     std::move(initial_value));
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(global_var_type),
                                                               std::move(global_var_attrs));

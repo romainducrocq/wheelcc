@@ -234,7 +234,7 @@ cdef CConstInt parse_int_constant():
 // <int> ::= ? A constant token ?
 static std::shared_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
-    return std::make_shared<CConstInt>(value);
+    return std::make_shared<CConstInt>(std::move(value));
 }
 
 /**
@@ -245,7 +245,7 @@ cdef CConstLong parse_long_constant():
 // <long> ::= ? A constant token ?
 static std::shared_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
     TLong value = intmax_to_int64(intmax);
-    return std::make_shared<CConstLong>(value);
+    return std::make_shared<CConstLong>(std::move(value));
 }
 
 /**
@@ -256,7 +256,7 @@ cdef CConstDouble parse_double_constant():
 // <double> ::= ? A constant token ?
 static std::shared_ptr<CConstDouble> parse_double_constant() {
     TDouble value = string_to_double(next_token->token, next_token->line);
-    return std::make_shared<CConstDouble>(value);
+    return std::make_shared<CConstDouble>(std::move(value));
 }
 
 /**
@@ -267,7 +267,7 @@ cdef CConstUInt parse_uint_constant():
 // <uint> ::= ? A constant token ?
 static std::shared_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
     TUInt value = uintmax_to_uint32(uintmax);
-    return std::make_shared<CConstUInt>(value);
+    return std::make_shared<CConstUInt>(std::move(value));
 }
 
 /**
@@ -278,7 +278,7 @@ cdef CConstULong parse_ulong_constant():
 // <ulong> ::= ? A constant token ?
 static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
     TULong value = uintmax_to_uint64(uintmax);
-    return std::make_shared<CConstULong>(value);
+    return std::make_shared<CConstULong>(std::move(value));
 }
 
 /**
@@ -318,9 +318,9 @@ static std::shared_ptr<CConst> parse_constant() {
                                     next_token->line);
     }
     if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
-        return parse_int_constant(value);
+        return parse_int_constant(std::move(value));
     }
-    return parse_long_constant(value);
+    return parse_long_constant(std::move(value));
 }
 
 /**
@@ -357,9 +357,9 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
                                     next_token->line);
     }
     if(next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
-        return parse_uint_constant(value);
+        return parse_uint_constant(std::move(value));
     }
-    return parse_ulong_constant(value);
+    return parse_ulong_constant(std::move(value));
 }
 
 /**
