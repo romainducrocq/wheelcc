@@ -3,6 +3,7 @@
 #include "ast/ast.hpp"
 #include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
+#include "assembly/registers.hpp"
 
 #include <inttypes.h>
 #include <memory>
@@ -22,7 +23,7 @@ const int32_t OFFSET_64_BITS = -8;
 /**
 cdef int32 counter = -1
 */
-static TInt counter = -1;
+static TInt counter = 0;
 
 /**
 cdef dict[str, int32] pseudo_map = {}
@@ -356,7 +357,7 @@ static void replace_pseudo_registers(AsmInstruction* node) {
     }
 }
 
-/** TODO
+/**
 cdef AsmBinary allocate_stack_bytes(int32 byte):
     cdef AsmBinaryOp binary_op = AsmSub()
     cdef AssemblyType assembly_type = QuadWord()
@@ -364,8 +365,16 @@ cdef AsmBinary allocate_stack_bytes(int32 byte):
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Sp'))
     return AsmBinary(binary_op, assembly_type, src, dst)
 */
+std::unique_ptr<AsmBinary> allocate_stack_bytes(TInt byte) {
+    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    TIdentifier value = std::to_string(byte);
+    std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(std::move(value));
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
+    return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
+}
 
-/** TODO
+/**
 cdef AsmBinary deallocate_stack_bytes(int32 byte):
     cdef AsmBinaryOp binary_op = AsmAdd()
     cdef AssemblyType assembly_type = QuadWord()
@@ -373,17 +382,30 @@ cdef AsmBinary deallocate_stack_bytes(int32 byte):
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Sp'))
     return AsmBinary(binary_op, assembly_type, src, dst)
 */
+std::unique_ptr<AsmBinary> deallocate_stack_bytes(TInt byte) {
+    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    TIdentifier value = std::to_string(byte);
+    std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(std::move(value));
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
+    return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
+}
 
-/** TODO
+/**
 cdef list[AsmInstruction] fun_instructions = []
 */
+static std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
 
-/** TODO
+static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
+    p_instructions->push_back(std::move(instruction));
+}
+
+/**
 cdef void insert_fun_instruction(Py_ssize_t k, AsmInstruction node):
     fun_instructions[k:k] = [node]
 */
 
-/** TODO
+/**
 cdef void prepend_alloc_stack():
     cdef int32 byte = -1 * counter
 
@@ -395,6 +417,14 @@ cdef void prepend_alloc_stack():
     cdef item_instr = allocate_stack_bytes(byte)
     insert_fun_instruction(0, item_instr)
 */
+static void prepend_alloc_stack() {
+    TInt byte = -1 * counter;
+    if(byte % 8 != 0) {
+        RAISE_INTERNAL_ERROR;
+    }
+
+    push_instruction(allocate_stack_bytes(byte));
+}
 
 /** TODO
 cdef void correct_any_from_addr_to_addr_instruction(Py_ssize_t i, Py_ssize_t k):
