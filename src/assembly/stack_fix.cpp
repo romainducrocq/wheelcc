@@ -45,7 +45,7 @@ cdef AsmStack replace_pseudo_register_stack(AsmPseudo node):
     cdef TInt value = TInt(pseudo_map[node.name.str_t])
     return AsmStack(value)
 */
-std::shared_ptr<AsmStack> replace_pseudo_register_stack(AsmPseudo* node) {
+static std::shared_ptr<AsmStack> replace_pseudo_register_stack(AsmPseudo* node) {
     TInt value = pseudo_map[node->name];
     return std::make_shared<AsmStack>(std::move(value));
 }
@@ -396,16 +396,12 @@ cdef list[AsmInstruction] fun_instructions = []
 */
 static std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
 
-static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
-    p_instructions->push_back(std::move(instruction));
-}
-
-/**
+/** TODO
 cdef void insert_fun_instruction(Py_ssize_t k, AsmInstruction node):
     fun_instructions[k:k] = [node]
 */
 
-/**
+/** TODO
 cdef void prepend_alloc_stack():
     cdef int32 byte = -1 * counter
 
@@ -417,14 +413,6 @@ cdef void prepend_alloc_stack():
     cdef item_instr = allocate_stack_bytes(byte)
     insert_fun_instruction(0, item_instr)
 */
-static void prepend_alloc_stack() {
-    TInt byte = -1 * counter;
-    if(byte % 8 != 0) {
-        RAISE_INTERNAL_ERROR;
-    }
-
-    push_instruction(allocate_stack_bytes(byte));
-}
 
 /** TODO
 cdef void correct_any_from_addr_to_addr_instruction(Py_ssize_t i, Py_ssize_t k):
