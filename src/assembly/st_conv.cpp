@@ -65,7 +65,8 @@ static void convert_double_static_constant() {
     bool is_static = true;
     bool is_constant = true;
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
-    add_backend_symbol(std::make_unique<BackendObj>(is_static, is_constant, std::move(assembly_type)));
+    add_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), std::move(is_constant),
+                                                          std::move(assembly_type)));
 }
 
 /**
@@ -104,7 +105,7 @@ cdef void convert_fun_type(FunAttr node):
 */
 static void convert_fun_type(FunAttr* node) {
     bool is_defined = node->is_defined;
-    add_backend_symbol(std::make_unique<BackendFun>(is_defined));
+    add_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
 }
 
 /**
@@ -118,7 +119,8 @@ static void convert_obj_type(IdentifierAttr* node) {
     std::shared_ptr<AssemblyType> assembly_type =  convert_backend_assembly_type(*p_symbol);
     bool is_static = node->type() == AST_T::StaticAttr_t;
     bool is_constant = false;
-    add_backend_symbol(std::make_unique<BackendObj>(is_static, is_constant, std::move(assembly_type)));
+    add_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), std::move(is_constant),
+                                                          std::move(assembly_type)));
 }
 
 /**
