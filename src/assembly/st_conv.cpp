@@ -2,6 +2,7 @@
 #include "util/error.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
+#include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
 
 #include <memory>
