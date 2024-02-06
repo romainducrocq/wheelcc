@@ -198,7 +198,7 @@ ast = [
     ["AsmBE", [], []],
     ["AsmP", [], []],
     ["AsmOperand", [], []],
-    ["AsmImm", [(TIdentifier, "value")], []],
+    ["AsmImm", [(Bool, "is_long"), (TIdentifier, "value")], []],
     ["AsmRegister", [], ["reg"]],
     ["AsmPseudo", [(TIdentifier, "name")], []],
     ["AsmStack", [(TInt, "value")], []],

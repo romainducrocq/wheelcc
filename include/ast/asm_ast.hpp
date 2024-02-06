@@ -177,7 +177,7 @@ struct AsmP : AsmCondCode {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// operand = Imm(int)
+// operand = Imm(int, is_long)
 //         | Reg(reg)
 //         | Pseudo(identifier)
 //         | Stack(int)
@@ -189,8 +189,9 @@ struct AsmOperand : Ast {
 struct AsmImm : AsmOperand {
     AST_T type() override;
     AsmImm() = default;
-    AsmImm(TIdentifier value);
+    AsmImm(bool is_long, TIdentifier value);
 
+    bool is_long;
     TIdentifier value;
 };
 

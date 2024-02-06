@@ -981,6 +981,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmImm_t: {
             field("AsmImm", "", ++t);
             AsmImm* p_node = static_cast<AsmImm*>(node);
+            field("Bool", std::to_string(p_node->is_long), t+1);
             field("TIdentifier", p_node->value, t+1);
             break;
         }

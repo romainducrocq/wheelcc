@@ -361,15 +361,19 @@ static void replace_pseudo_registers(AsmInstruction* node) {
 cdef AsmBinary allocate_stack_bytes(int32 byte):
     cdef AsmBinaryOp binary_op = AsmSub()
     cdef AssemblyType assembly_type = QuadWord()
-    cdef AsmOperand src = AsmImm(TIdentifier(str(byte)))
+    cdef AsmOperand src = AsmImm(TIdentifier(str(byte)), False)
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Sp'))
     return AsmBinary(binary_op, assembly_type, src, dst)
 */
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TInt byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
-    TIdentifier value = std::to_string(byte);
-    std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(std::move(value));
+    std::shared_ptr<AsmOperand> src;
+    {
+        bool is_long = false;
+        TIdentifier value = std::to_string(byte);
+        src = std::make_shared<AsmImm>(std::move(is_long), std::move(value));
+    }
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
@@ -378,15 +382,19 @@ std::unique_ptr<AsmBinary> allocate_stack_bytes(TInt byte) {
 cdef AsmBinary deallocate_stack_bytes(int32 byte):
     cdef AsmBinaryOp binary_op = AsmAdd()
     cdef AssemblyType assembly_type = QuadWord()
-    cdef AsmOperand src = AsmImm(TIdentifier(str(byte)))
+    cdef AsmOperand src = AsmImm(TIdentifier(str(byte)), False)
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Sp'))
     return AsmBinary(binary_op, assembly_type, src, dst)
 */
 std::unique_ptr<AsmBinary> deallocate_stack_bytes(TInt byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
-    TIdentifier value = std::to_string(byte);
-    std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(std::move(value));
+    std::shared_ptr<AsmOperand> src;
+    {
+        bool is_long = false;
+        TIdentifier value = std::to_string(byte);
+        src = std::make_shared<AsmImm>(std::move(is_long), std::move(value));
+    }
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }

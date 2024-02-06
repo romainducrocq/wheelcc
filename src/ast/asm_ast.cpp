@@ -84,8 +84,8 @@ AST_T AsmStaticVariable::type() { return AST_T::AsmStaticVariable_t; }
 AST_T AsmStaticConstant::type() { return AST_T::AsmStaticConstant_t; }
 AST_T AsmProgram::type() { return AST_T::AsmProgram_t; }
 
-AsmImm::AsmImm(TIdentifier value)
-    : value(std::move(value)) {}
+AsmImm::AsmImm(bool is_long, TIdentifier value)
+    : is_long(is_long), value(std::move(value)) {}
 
 AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
     : reg(std::move(reg)) {}
