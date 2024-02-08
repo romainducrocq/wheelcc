@@ -397,18 +397,12 @@ std::unique_ptr<AsmBinary> deallocate_stack_bytes(TInt byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-/**
-cdef list[AsmInstruction] fun_instructions = []
-*/
-static std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
-
 /** TODO
-cdef void insert_fun_instruction(Py_ssize_t k, AsmInstruction node):
-    fun_instructions[k:k] = [node]
+cdef list[AsmInstruction] fix_instructions = []
 */
 
 /** TODO
-cdef void prepend_alloc_stack():
+cdef void fix_allocate_stack_bytes():
     cdef int32 byte = -1 * counter
 
     if byte % 8 != 0:
@@ -416,363 +410,491 @@ cdef void prepend_alloc_stack():
         raise RuntimeError(
             f"An error occurred in function stack allocation, stack alignment {byte} is not a multiple of 8")
 
-    cdef item_instr = allocate_stack_bytes(byte)
-    insert_fun_instruction(0, item_instr)
+    fix_instructions[0].src.value.str_t = str(byte)
 */
 
 /** TODO
-cdef void correct_any_from_addr_to_addr_instruction(Py_ssize_t i, Py_ssize_t k):
-    # mov | cmp | add | sub | and | or | xor (addr, addr)
-    # $ mov addr1, addr2 ->
-    #     $ mov addr1, reg
-    #     $ mov reg  , addr2
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('R10'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void swap_fix_instructions_back():
+    fix_instructions[-1], fix_instructions[-2] = fix_instructions[-2], fix_instructions[-1]
 */
 
 /** TODO
-cdef void correct_double_mov_from_addr_to_addr_instructions(Py_ssize_t i, Py_ssize_t k):
-    # mov<q> (_, addr)
-    # $ mov<q> addr1, addr2 ->
-    #     $ mov    addr1, reg
-    #     $ mov<q> reg  , addr2
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('Xmm14'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_double_mov_from_addr_to_addr_instruction(AsmMov node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm14'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef void correct_mov_sx_from_imm_to_any_instructions(Py_ssize_t i, Py_ssize_t k):
-    # movsx (imm, _)
-    # $ movsx imm, _ ->
-    #     $ mov   imm, reg
-    #     $ movsx reg, _
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('R10'))
-    cdef AsmInstruction item_instr = AsmMov(LongWord(), src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_mov_from_quad_word_imm_to_any_instruction(AsmMov node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = QuadWord()
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef void correct_mov_sx_zero_extend_from_any_to_addr_instructions(Py_ssize_t i, Py_ssize_t k):
-    # movsx | mov0x (_, addr)
-    # $ movsx _, addr ->
-    #     $ movsx _  , reg
-    #     $ mov   reg, addr
-    cdef AsmOperand src_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('R11'))
-    cdef AsmInstruction item_instr = AsmMov(QuadWord(), fun_instructions[i].dst, src_dst)
-    insert_fun_instruction(k, item_instr)
+cdef void fix_mov_from_addr_to_addr_instruction(AsmMov node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef void correct_mov_zero_extend_from_any_to_any_instructions(Py_ssize_t i):
-    cdef AsmInstruction item_instr = AsmMov(LongWord(), fun_instructions[i].src, fun_instructions[i].dst)
-    fun_instructions[i] = item_instr
+cdef void fix_mov_instruction(AsmMov node):
+    if isinstance(node.assembly_type, BackendDouble):
+        if isinstance(node.src, (AsmStack, AsmData)) and \
+           isinstance(node.dst, (AsmStack, AsmData)):
+            fix_double_mov_from_addr_to_addr_instruction(node)
+
+    else:
+        if isinstance(node.src, AsmImm) and \
+           node.src.is_quad:
+            fix_mov_from_quad_word_imm_to_any_instruction(node)
+
+        if isinstance(node.src, (AsmStack, AsmData)) and \
+           isinstance(node.dst, (AsmStack, AsmData)):
+            fix_mov_from_addr_to_addr_instruction(node)
 */
 
 /** TODO
-cdef void correct_cvttsd2si_from_any_to_addr_instructions(Py_ssize_t i, Py_ssize_t k):
-    # cvttsd2si (_, addr)
-    # $ cvttsd2si _, addr ->
-    #     $ cvttsd2si _  , reg
-    #     $ mov       reg, addr
-    cdef AsmOperand src_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('R11'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, fun_instructions[i].dst, src_dst)
-    insert_fun_instruction(k, item_instr)
+cdef void fix_mov_sx_from_imm_to_any_instruction(AsmMovSx node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = LongWord()
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef void correct_cvtsi2sd_from_imm_to_any_instructions(Py_ssize_t i, Py_ssize_t k):
-    # cvtsi2sd (imm, _)
-    # $ cvtsi2sd imm, _ ->
-    #     $ mov      imm, reg
-    #     $ cvtsi2sd reg, _
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('R10'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_mov_sx_from_any_to_addr_instruction(AsmMovSx node):
+    cdef AsmOperand src = generate_register(REGISTER_KIND.get('R11'))
+    cdef AsmOperand dst = node.dst
+    cdef AssemblyType assembly_type = QuadWord()
+    node.dst = src
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
 */
 
 /** TODO
-cdef void correct_cvtsi2sd_from_any_to_addr_instructions(Py_ssize_t i, Py_ssize_t k):
-    # cvtsi2sd | add<q> | sub<q> | mul<q> | div<q> | xor<q> (_, addr)
-    # $ cvtsi2sd _, addr ->
-    #     $ cvtsi2sd _  , reg
-    #     $ mov      reg, addr
-    cdef AsmOperand src_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('Xmm15'))
-    cdef AsmInstruction item_instr = AsmMov(BackendDouble(), fun_instructions[i].dst, src_dst)
-    insert_fun_instruction(k, item_instr)
+cdef void fix_mov_sx_instruction(AsmMovSx node):
+    if isinstance(node.src, AsmImm):
+        fix_mov_sx_from_imm_to_any_instruction(node)
+        node = fix_instructions[-1]
+
+    if isinstance(node.dst, (AsmStack, AsmData)):
+        fix_mov_sx_from_any_to_addr_instruction(node)
 */
 
 /** TODO
-cdef void correct_cmp_from_any_to_imm_instructions(Py_ssize_t i, Py_ssize_t k):
-    # cmp (_, imm)
-    # $ cmp reg1, imm ->
-    #     $ mov imm , reg2
-    #     $ cmp reg1, reg2
-    cdef AsmOperand src_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('R11'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, src_dst, fun_instructions[i].dst)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_mov_zero_extend_from_any_to_any_instruction(AsmMovZeroExtend node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = node.dst
+    cdef AssemblyType assembly_type = LongWord()
+    fix_instructions[-1] = AsmMov(assembly_type, src, dst)
 */
 
 /** TODO
-cdef correct_double_cmp_from_any_to_addr_instructions(Py_ssize_t i, Py_ssize_t k):
-    # cmp<d> (_, addr)
-    # $ cmp<d> _, addr ->
-    #     $ mov    addr, reg
-    #     $ cmp<d> _   , reg
-    cdef AsmOperand dst_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('Xmm15'))
-    cdef AsmInstruction item_instr = AsmMov(BackendDouble(), dst_dst, fun_instructions[i].dst)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov node):
+    cdef AsmOperand src = generate_register(REGISTER_KIND.get('R11'))
+    cdef AsmOperand dst = node.dst
+    cdef AssemblyType assembly_type = QuadWord()
+    node.dst = src
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
 */
 
 /** TODO
-cdef void correct_shl_shr_from_addr_to_addr(Py_ssize_t i, Py_ssize_t k):
-    # shl | shr (addr, addr)
-    # $ shl addr1, addr2 ->
-    #     $ mov addr1, reg
-    #     $ shl reg, addr2
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('Cx'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_mov_zero_extend_instruction(AsmMovZeroExtend node):
+    fix_mov_zero_extend_from_any_to_any_instruction(node)
+    cdef AsmMov node_2 = fix_instructions[-1]
+
+    if isinstance(node_2.dst, (AsmStack, AsmData)):
+        fix_mov_zero_extend_from_any_to_addr_instruction(node_2)
 */
 
 /** TODO
-cdef void correct_mul_from_any_to_addr(Py_ssize_t i, Py_ssize_t k):
-    # imul (_, addr)
-    # $ imul imm, addr ->
-    #     $ mov  addr, reg
-    #     $ imul imm , reg
-    #     $ mov  reg , addr
-    cdef AsmOperand src_src = fun_instructions[i].dst
-    cdef AsmOperand dst_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('R11'))
-    cdef AsmInstruction item_instr1 = AsmMov(fun_instructions[i].assembly_type, src_src, fun_instructions[i].dst)
-    cdef AsmInstruction item_instr2 = AsmMov(fun_instructions[i].assembly_type, fun_instructions[i].dst, dst_dst)
-    insert_fun_instruction(k - 1, item_instr1)
-    insert_fun_instruction(k + 1, item_instr2)
+cdef void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si node):
+    cdef AsmOperand src = generate_register(REGISTER_KIND.get('R11'))
+    cdef AsmOperand dst = node.dst
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.dst = src
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
 */
 
 /** TODO
-cdef void correct_binary_from_any_to_addr_instructions(Py_ssize_t i, Py_ssize_t k):
-    # add<q> | sub<q> | mul<q> | div<q> | xor<q> (_, addr)
-    # $ add<q> _, addr ->
-    #     $ add<q> _  , reg
-    #     $ mov    reg, addr
-    cdef AsmOperand src_dst = fun_instructions[i].dst
-    fun_instructions[i].dst = generate_register(REGISTER_KIND.get('Xmm15'))
-    cdef AsmInstruction item_instr1 = AsmMov(BackendDouble(), src_dst, fun_instructions[i].dst)
-    cdef AsmInstruction item_instr2 = AsmMov(BackendDouble(), fun_instructions[i].dst, src_dst)
-    insert_fun_instruction(k - 1, item_instr1)
-    insert_fun_instruction(k + 1, item_instr2)
+cdef void fix_cvttsd2si_instruction(AsmCvttsd2si node):
+    if isinstance(node.dst, (AsmStack, AsmData)):
+        fix_cvttsd2si_from_any_to_addr_instruction(node)
 */
 
 /** TODO
-cdef void correct_div_from_imm(Py_ssize_t i, Py_ssize_t k):
-    # idiv | div (imm)
-    # $ idiv imm ->
-    #     $ mov  imm, reg
-    #     $ idiv reg
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('R10'))
-    cdef AsmInstruction item_instr = AsmMov(fun_instructions[i].assembly_type, src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_cvtsi2sd_from_imm_to_any_instruction(AsmCvtsi2sd node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef void correct_any_from_quad_word_imm_to_any(Py_ssize_t i, Py_ssize_t k):
-    # mov | cmp | push | add | sub | mul (q imm, _)
-    # $ mov imm<q>, _ ->
-    #     $ mov imm<q>, reg
-    #     $ mov reg   , _
-    cdef AsmOperand src_src = fun_instructions[i].src
-    fun_instructions[i].src = generate_register(REGISTER_KIND.get('R10'))
-    cdef AsmInstruction item_instr = AsmMov(QuadWord(), src_src, fun_instructions[i].src)
-    insert_fun_instruction(k - 1, item_instr)
+cdef void fix_cvtsi2sd_from_any_to_addr_instruction(AsmCvtsi2sd node):
+    cdef AsmOperand src = generate_register(REGISTER_KIND.get('Xmm15'))
+    cdef AsmOperand dst = node.dst
+    cdef AssemblyType assembly_type = BackendDouble()
+    node.dst = src
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
 */
 
 /** TODO
-cdef bint is_from_long_imm_instruction(Py_ssize_t i):
-    return isinstance(fun_instructions[i].src, AsmImm) and \
-            int(fun_instructions[i].src.value.str_t) > 2147483647
+cdef void fix_cvtsi2sd_instruction(AsmCvtsi2sd node):
+    if isinstance(node.src, AsmImm):
+        fix_cvtsi2sd_from_imm_to_any_instruction(node)
+        node = fix_instructions[-1]
+
+    if isinstance(node.dst, (AsmStack, AsmData)):
+        fix_cvtsi2sd_from_any_to_addr_instruction(node)
 */
 
 /** TODO
-cdef bint is_from_imm_instruction(Py_ssize_t i):
-    return isinstance(fun_instructions[i].src, AsmImm)
+cdef fix_double_cmp_from_any_to_addr_instruction(AsmCmp node):
+    cdef AsmOperand src = node.dst
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm15'))
+    cdef AssemblyType assembly_type = BackendDouble()
+    node.dst = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef bint is_to_imm_instruction(Py_ssize_t i):
-    return isinstance(fun_instructions[i].dst, AsmImm)
+cdef void fix_cmp_from_quad_word_imm_to_any_instruction(AsmCmp node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = QuadWord()
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef bint is_from_addr_instruction(Py_ssize_t i):
-    return isinstance(fun_instructions[i].src, (AsmStack, AsmData))
+cdef void fix_cmp_from_addr_to_addr_instruction(AsmCmp node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef bint is_to_addr_instruction(Py_ssize_t i):
-    return isinstance(fun_instructions[i].dst, (AsmStack, AsmData))
+cdef void fix_cmp_from_any_to_imm_instruction(AsmCmp node):
+    cdef AsmOperand src = node.dst
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R11'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.dst = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
 */
 
 /** TODO
-cdef bint is_from_addr_to_addr_instruction(Py_ssize_t i):
-    return is_from_addr_instruction(i) and \
-           is_to_addr_instruction(i)
+cdef void fix_cmp_instruction(AsmCmp node):
+    if isinstance(node.assembly_type, BackendDouble):
+        if isinstance(node.dst, (AsmStack, AsmData)):
+            fix_double_cmp_from_any_to_addr_instruction(node)
+
+    else:
+        if isinstance(node.src, AsmImm) and \
+           node.src.is_quad:
+            fix_cmp_from_quad_word_imm_to_any_instruction(node)
+            node = fix_instructions[-1]
+
+        if isinstance(node.src, (AsmStack, AsmData)) and \
+           isinstance(node.dst, (AsmStack, AsmData)):
+            fix_cmp_from_addr_to_addr_instruction(node)
+
+        elif isinstance(node.dst, AsmImm):
+            fix_cmp_from_any_to_imm_instruction(node)
 */
 
 /** TODO
-cdef void correct_function_top_level(AsmFunction node):
-    global fun_instructions
-    fun_instructions = node.instructions
+cdef void fix_push_from_quad_word_imm_to_any_instruction(AsmPush node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = QuadWord()
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+*/
 
-    cdef Py_ssize_t i, k
+/** TODO
+cdef void fix_push_instruction(AsmPush node):
+    if isinstance(node.src, AsmImm) and \
+       node.src.is_quad:
+        fix_push_from_quad_word_imm_to_any_instruction(node)
+*/
+
+/** TODO
+cdef void fix_double_binary_from_any_to_addr_instruction(AsmBinary node):
+    cdef AsmOperand src = node.dst
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm15'))
+    cdef AssemblyType assembly_type = BackendDouble()
+    node.dst = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+    fix_instructions.append(AsmMov(assembly_type, dst, src))
+*/
+
+/** TODO
+cdef void fix_binary_from_quad_word_imm_to_any_instruction(AsmBinary node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = QuadWord()
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+*/
+
+/** TODO
+cdef void fix_binary_any_from_addr_to_addr_instruction(AsmBinary node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+*/
+
+/** TODO
+cdef void fix_binary_shx_from_addr_to_addr_instruction(AsmBinary node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Cx'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+*/
+
+/** TODO
+cdef void fix_binary_imul_from_any_to_addr_instruction(AsmBinary node):
+    cdef AsmOperand src = node.dst
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R11'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.dst = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+    fix_instructions.append(AsmMov(assembly_type, dst, src))
+*/
+
+/** TODO
+cdef void fix_binary_instruction(AsmBinary node):
+    if isinstance(node.assembly_type, BackendDouble):
+        if isinstance(node.dst, (AsmStack, AsmData)):
+            fix_double_binary_from_any_to_addr_instruction(node)
+
+    else:
+        if isinstance(node.binary_op,
+                      (AsmAdd, AsmSub, AsmBitAnd, AsmBitOr, AsmBitXor)):
+            if isinstance(node.src, AsmImm) and \
+               node.src.is_quad:
+                fix_binary_from_quad_word_imm_to_any_instruction(node)
+                node = fix_instructions[-1]
+
+            if isinstance(node.src, (AsmStack, AsmData)) and \
+               isinstance(node.dst, (AsmStack, AsmData)):
+                fix_binary_any_from_addr_to_addr_instruction(node)
+
+        elif isinstance(node.binary_op,
+                        (AsmBitShiftLeft, AsmBitShiftRight)):
+            if isinstance(node.src, AsmImm) and \
+               node.src.is_quad:
+                fix_binary_from_quad_word_imm_to_any_instruction(node)
+                node = fix_instructions[-1]
+
+            if isinstance(node.src, (AsmStack, AsmData)) and \
+               isinstance(node.dst, (AsmStack, AsmData)):
+                fix_binary_shx_from_addr_to_addr_instruction(node)
+
+        elif isinstance(node.binary_op, AsmMult):
+            if isinstance(node.src, AsmImm) and \
+               node.src.is_quad:
+                fix_binary_from_quad_word_imm_to_any_instruction(node)
+                node = fix_instructions[-1]
+
+            if isinstance(node.dst, (AsmStack, AsmData)):
+                fix_binary_imul_from_any_to_addr_instruction(node)
+*/
+
+/** TODO
+cdef void fix_idiv_from_imm_instruction(AsmIdiv node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+*/
+
+/** TODO
+cdef void fix_idiv_instruction(AsmIdiv node):
+    if isinstance(node.src, AsmImm):
+        fix_idiv_from_imm_instruction(node)
+*/
+
+/** TODO
+cdef void fix_div_from_imm_instruction(AsmDiv node):
+    cdef AsmOperand src = node.src
+    cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
+    cdef AssemblyType assembly_type = node.assembly_type
+    node.src = dst
+    # only for cython
+    fix_instructions[-1] = node
+    #
+    fix_instructions.append(AsmMov(assembly_type, src, dst))
+    swap_fix_instructions_back()
+*/
+
+/** TODO
+cdef void fix_div_instruction(AsmDiv node):
+    if isinstance(node.src, AsmImm):
+        fix_div_from_imm_instruction(node)
+*/
+
+/** TODO
+cdef void fix_instruction():
+    if isinstance(fix_instructions[-1], AsmMov):
+        fix_mov_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmMovSx):
+        fix_mov_sx_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmMovZeroExtend):
+        fix_mov_zero_extend_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmCvttsd2si):
+        fix_cvttsd2si_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmCvtsi2sd):
+        fix_cvtsi2sd_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmCmp):
+        fix_cmp_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmPush):
+        fix_push_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmBinary):
+        fix_binary_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmIdiv):
+        fix_idiv_instruction(fix_instructions[-1])
+
+    elif isinstance(fix_instructions[-1], AsmDiv):
+        fix_div_instruction(fix_instructions[-1])
+*/
+
+/** TODO
+cdef void fix_function_top_level(AsmFunction node):
+    global counter
+    global fix_instructions
+
+    counter = 0
+    pseudo_map.clear()
+    fix_instructions = [allocate_stack_bytes(0)]
+
     cdef Py_ssize_t instruction
-    cdef Py_ssize_t count_insert = 0
-    cdef Py_ssize_t l = len(fun_instructions)
-    for instruction in range(l):
-        k = l - instruction
-        i = - (instruction + 1 + count_insert)
+    for instruction in range(len(node.instructions)):
+        replace_pseudo_registers(node.instructions[instruction])
 
-        replace_pseudo_registers(fun_instructions[i])
+        fix_instructions.append(node.instructions[instruction])
+        node.instructions[instruction] = None
 
-        if isinstance(fun_instructions[i], AsmMov):
-            if isinstance(fun_instructions[i].assembly_type, BackendDouble):
-                if is_from_addr_to_addr_instruction(i):
-                    correct_double_mov_from_addr_to_addr_instructions(i, k)
-                    count_insert += 1
-            else:
-                if is_from_long_imm_instruction(i):
-                    correct_any_from_quad_word_imm_to_any(i, k)
-                    count_insert += 1
+        fix_instruction()
 
-                if is_from_addr_to_addr_instruction(i):
-                    correct_any_from_addr_to_addr_instruction(i, k)
-                    count_insert += 1
+    fix_allocate_stack_bytes()
 
-        elif isinstance(fun_instructions[i], AsmMovSx):
-            if is_from_imm_instruction(i):
-                correct_mov_sx_from_imm_to_any_instructions(i, k)
-                k += 1
-                count_insert += 1
-
-            if is_to_addr_instruction(i):
-                correct_mov_sx_zero_extend_from_any_to_addr_instructions(i, k)
-                count_insert += 1
-
-        elif isinstance(fun_instructions[i], AsmMovZeroExtend):
-            correct_mov_zero_extend_from_any_to_any_instructions(i)
-
-            if is_to_addr_instruction(i):
-                correct_mov_sx_zero_extend_from_any_to_addr_instructions(i, k)
-                count_insert += 1
-
-        elif isinstance(fun_instructions[i], AsmCvttsd2si):
-            if is_to_addr_instruction(i):
-                correct_cvttsd2si_from_any_to_addr_instructions(i, k)
-                count_insert += 1
-
-        elif isinstance(fun_instructions[i], AsmCvtsi2sd):
-            if is_from_imm_instruction(i):
-                correct_cvtsi2sd_from_imm_to_any_instructions(i, k)
-                k += 1
-                count_insert += 1
-
-            if is_to_addr_instruction(i):
-                correct_cvtsi2sd_from_any_to_addr_instructions(i, k)
-                count_insert += 1
-
-        elif isinstance(fun_instructions[i], AsmCmp):
-            if isinstance(fun_instructions[i].assembly_type, BackendDouble):
-                if is_to_addr_instruction(i):
-                    correct_double_cmp_from_any_to_addr_instructions(i, k)
-                    count_insert += 1
-            else:
-                if is_from_long_imm_instruction(i):
-                    correct_any_from_quad_word_imm_to_any(i, k)
-                    count_insert += 1
-
-                if is_from_addr_to_addr_instruction(i):
-                    correct_any_from_addr_to_addr_instruction(i, k)
-                    count_insert += 1
-
-                elif is_to_imm_instruction(i):
-                    correct_cmp_from_any_to_imm_instructions(i, k)
-                    count_insert += 1
-
-        elif isinstance(fun_instructions[i], AsmPush):
-            if is_from_long_imm_instruction(i):
-                correct_any_from_quad_word_imm_to_any(i, k)
-                count_insert += 1
-
-        elif isinstance(fun_instructions[i], AsmBinary):
-            if isinstance(fun_instructions[i].assembly_type, BackendDouble):
-                if is_to_addr_instruction(i):
-                    correct_binary_from_any_to_addr_instructions(i, k)
-                    count_insert += 2
-            else:
-                if isinstance(fun_instructions[i].binary_op,
-                              (AsmAdd, AsmSub, AsmBitAnd, AsmBitOr, AsmBitXor)):
-                    if is_from_long_imm_instruction(i):
-                        correct_any_from_quad_word_imm_to_any(i, k)
-                        count_insert += 1
-
-                    if is_from_addr_to_addr_instruction(i):
-                        correct_any_from_addr_to_addr_instruction(i, k)
-                        count_insert += 1
-
-                elif isinstance(fun_instructions[i].binary_op,
-                                (AsmBitShiftLeft, AsmBitShiftRight)):
-                    if is_from_long_imm_instruction(i):
-                        correct_any_from_quad_word_imm_to_any(i, k)
-                        count_insert += 1
-
-                    if is_from_addr_to_addr_instruction(i):
-                        correct_shl_shr_from_addr_to_addr(i, k)
-                        count_insert += 1
-
-                elif isinstance(fun_instructions[i].binary_op, AsmMult):
-                    if is_from_long_imm_instruction(i):
-                        correct_any_from_quad_word_imm_to_any(i, k)
-                        k += 1
-                        count_insert += 1
-
-                    if is_to_addr_instruction(i):
-                        correct_mul_from_any_to_addr(i, k)
-                        count_insert += 2
-
-        elif isinstance(fun_instructions[i], (AsmIdiv, AsmDiv)):
-            if is_from_imm_instruction(i):
-                correct_div_from_imm(i, k)
-                count_insert += 1
-
-    prepend_alloc_stack()
+    node.instructions.clear()
+    node.instructions = fix_instructions
 */
 
 /** TODO
-cdef void correct_variable_stack_top_level(AsmStaticVariable node):
+cdef void fix_static_variable_top_level(AsmStaticVariable node):
     pass
 */
 
 /** TODO
-cdef void correct_top_level(AsmTopLevel node):
+cdef void fix_top_level(AsmTopLevel node):
     if isinstance(node, AsmFunction):
-        correct_function_top_level(node)
+        fix_function_top_level(node)
     elif isinstance(node, AsmStaticVariable):
-        correct_variable_stack_top_level(node)
-    elif isinstance(node, AsmStaticConstant):
-        pass
+        fix_static_variable_top_level(node)
     else:
 
         raise RuntimeError(
@@ -780,22 +902,14 @@ cdef void correct_top_level(AsmTopLevel node):
 */
 
 /** TODO
-cdef void init_correct_instructions():
-    global counter
-    counter = 0
-    pseudo_map.clear()
-*/
-
-/** TODO
-cdef void correct_instructions(AsmProgram node):
+cdef void fix_program(AsmProgram node):
     cdef Py_ssize_t top_level
     for top_level in range(len(node.top_levels)):
-        init_correct_instructions()
-        correct_top_level(node.top_levels[top_level])
+        fix_top_level(node.top_levels[top_level])
 */
 
 /** TODO
-cdef void correct_stack(AsmProgram asm_ast):
+cdef void fix_stack(AsmProgram asm_ast):
 
-    correct_instructions(asm_ast)
+    fix_program(asm_ast)
 */
