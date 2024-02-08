@@ -1221,7 +1221,7 @@ static void fix_instruction(AsmInstruction* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_function_top_level(AsmFunction node):
     global counter
     global fix_instructions
@@ -1244,6 +1244,24 @@ cdef void fix_function_top_level(AsmFunction node):
     node.instructions.clear()
     node.instructions = fix_instructions
 */
+static void fix_function_top_level(AsmFunction* node) {
+    std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
+
+    node->instructions.clear();
+    p_fix_instructions = &node->instructions;
+    push_fix_instruction(allocate_stack_bytes(0));
+
+    counter = 0;
+    pseudo_map.clear();
+    for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
+        push_fix_instruction(std::move(instructions[instruction]));
+
+        replace_pseudo_registers(p_fix_instructions->back().get());
+        fix_instruction(p_fix_instructions->back().get());
+    }
+    fix_allocate_stack_bytes();
+    p_fix_instructions = nullptr;
+}
 
 /** TODO
 cdef void fix_static_variable_top_level(AsmStaticVariable node):
