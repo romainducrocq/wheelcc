@@ -6,12 +6,6 @@
 #include "ast/asm_ast.hpp"
 
 #include <memory>
-#include <vector>
-
-/**
-cdef static_constant_top_levels = []
-*/
-std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
 
 /**
 cdef AssemblyType convert_backend_assembly_type(str name_str):
@@ -70,32 +64,45 @@ static void convert_double_static_constant() {
 }
 
 /**
-cdef void convert_static_constant_top_levels():
+cdef void convert_static_constant_top_level(AsmStaticConstant node):
     global symbol
 
-    cdef int static_constant
-    for static_constant in range(len(static_constant_top_levels)):
-        symbol = static_constant_top_levels[static_constant].name.str_t
-        if isinstance(static_constant_top_levels[static_constant].initial_value, DoubleInit):
-            convert_double_static_constant()
-        else:
+    symbol = node.name.str_t
+    if isinstance(node.initial_value, DoubleInit):
+        convert_double_static_constant()
+    else:
 
-            raise RuntimeError(
-                "An error occurred in backend symbol table conversion, not all nodes were visited")
+        raise RuntimeError(
+            "An error occurred in backend symbol table conversion, not all nodes were visited")
 */
-static void convert_static_constant_top_levels() {
-    for(size_t static_constant = 0; static_constant < static_constant_top_levels.size(); static_constant++) {
-        AsmStaticConstant* p_node = static_cast<AsmStaticConstant*>(static_constant_top_levels[static_constant].get());
-        p_symbol = &p_node->name;
-        switch(p_node->initial_value->type()) {
-            case AST_T::DoubleInit_t:
-                convert_double_static_constant();
-                break;
-            default:
-                RAISE_INTERNAL_ERROR;
-        }
+static void convert_static_constant_top_level(AsmStaticConstant* node) {
+    p_symbol = &node->name;
+    switch(node->initial_value->type()) {
+        case AST_T::DoubleInit_t:
+            convert_double_static_constant();
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
     }
-    p_symbol = nullptr;
+}
+
+/**
+cdef void convert_top_level(AsmTopLevel node):
+    if isinstance(node, AsmStaticConstant):
+        convert_static_constant_top_level(node)
+    else:
+
+        raise RuntimeError(
+            "An error occurred in stack management, not all nodes were visited")
+*/
+static void convert_top_level(AsmTopLevel* node) {
+    switch(node->type()) {
+        case AST_T::AsmStaticConstant_t:
+            convert_static_constant_top_level(static_cast<AsmStaticConstant*>(node));
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
 }
 
 /**
@@ -124,10 +131,12 @@ static void convert_obj_type(IdentifierAttr* node) {
 }
 
 /**
-cdef void convert_symbol_table():
+cdef void convert_backend_symbol_table(AsmProgram node):
     global symbol
 
-    convert_static_constant_top_levels()
+    cdef Py_ssize_t top_level
+    for top_level in range(len(node.static_constant_top_levels)):
+        convert_top_level(node.static_constant_top_levels[top_level])
 
     for symbol in symbol_table:
         if isinstance(symbol_table[symbol].type_t, FunType):
@@ -135,8 +144,11 @@ cdef void convert_symbol_table():
         else:
             convert_obj_type(symbol_table[symbol].attrs)
 */
-void convert_symbol_table() {
-    convert_static_constant_top_levels();
+static void convert_backend_symbol_table(AsmProgram* node) {
+    for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
+        convert_top_level(node->static_constant_top_levels[top_level].get());
+    }
+
     for(const auto& symbol: symbol_table) {
         p_symbol = &symbol.first;
         if(symbol.second->type() == AST_T::FunType_t) {
@@ -147,4 +159,12 @@ void convert_symbol_table() {
         }
     }
     p_symbol = nullptr;
+}
+
+/**
+cdef void convert_symbol_table(AsmProgram asm_ast):
+    convert_backend_symbol_table(asm_ast)
+*/
+void convert_symbol_table(AsmProgram* node) {
+    convert_backend_symbol_table(node);
 }

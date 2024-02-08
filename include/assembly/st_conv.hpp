@@ -6,11 +6,8 @@
 #include "ast/asm_ast.hpp"
 
 #include <memory>
-#include <vector>
-
-extern std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
 
 std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name);
-void convert_symbol_table();
+void convert_symbol_table(AsmProgram* node);
 
 #endif
