@@ -438,7 +438,15 @@ static void fix_allocate_stack_bytes() {
     imm->value = std::to_string(byte);
 }
 
-/** TODO
+static bool is_imm_t(AST_T t) {
+    return t == AST_T::AsmImm_t;
+}
+
+static bool is_addr_t(AST_T t) {
+    return t == AST_T::AsmStack_t || t == AST_T::AsmData_t;
+}
+
+/**
 cdef void fix_double_mov_from_addr_to_addr_instruction(AsmMov node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm14'))
@@ -450,8 +458,16 @@ cdef void fix_double_mov_from_addr_to_addr_instruction(AsmMov node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_double_mov_from_addr_to_addr_instruction(AsmMov* node) {
+    std::shared_ptr<AsmOperand> src = node->src;
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm14);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_mov_from_quad_word_imm_to_any_instruction(AsmMov node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -463,8 +479,16 @@ cdef void fix_mov_from_quad_word_imm_to_any_instruction(AsmMov node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_mov_from_quad_word_imm_to_any_instruction(AsmMov* node) {
+    std::shared_ptr<AsmOperand> src = node->src;
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_mov_from_addr_to_addr_instruction(AsmMov node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -476,8 +500,16 @@ cdef void fix_mov_from_addr_to_addr_instruction(AsmMov node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_mov_from_addr_to_addr_instruction(AsmMov* node) {
+    std::shared_ptr<AsmOperand> src = node->src;
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_mov_instruction(AsmMov node):
     if isinstance(node.assembly_type, BackendDouble):
         if isinstance(node.src, (AsmStack, AsmData)) and \
@@ -493,6 +525,24 @@ cdef void fix_mov_instruction(AsmMov node):
            isinstance(node.dst, (AsmStack, AsmData)):
             fix_mov_from_addr_to_addr_instruction(node)
 */
+static void fix_mov_instruction(AsmMov* node) {
+    if(node->assembly_type->type() == AST_T::BackendDouble_t) {
+        if(is_addr_t(node->src->type()) &&
+           is_addr_t(node->dst->type())) {
+            fix_double_mov_from_addr_to_addr_instruction(node);
+        }
+    }
+    else {
+        if(is_imm_t(node->src->type()) &&
+           static_cast<AsmImm*>(node->src.get())->is_quad) {
+            fix_mov_from_quad_word_imm_to_any_instruction(node);
+        }
+        if(is_addr_t(node->src->type()) &&
+           is_addr_t(node->dst->type())) {
+            fix_mov_from_addr_to_addr_instruction(node);
+        }
+    }
+}
 
 /** TODO
 cdef void fix_mov_sx_from_imm_to_any_instruction(AsmMovSx node):
@@ -523,7 +573,6 @@ cdef void fix_mov_sx_from_any_to_addr_instruction(AsmMovSx node):
 cdef void fix_mov_sx_instruction(AsmMovSx node):
     if isinstance(node.src, AsmImm):
         fix_mov_sx_from_imm_to_any_instruction(node)
-        node = fix_instructions[-1]
 
     if isinstance(node.dst, (AsmStack, AsmData)):
         fix_mov_sx_from_any_to_addr_instruction(node)
@@ -605,7 +654,6 @@ cdef void fix_cvtsi2sd_from_any_to_addr_instruction(AsmCvtsi2sd node):
 cdef void fix_cvtsi2sd_instruction(AsmCvtsi2sd node):
     if isinstance(node.src, AsmImm):
         fix_cvtsi2sd_from_imm_to_any_instruction(node)
-        node = fix_instructions[-1]
 
     if isinstance(node.dst, (AsmStack, AsmData)):
         fix_cvtsi2sd_from_any_to_addr_instruction(node)
@@ -673,7 +721,6 @@ cdef void fix_cmp_instruction(AsmCmp node):
         if isinstance(node.src, AsmImm) and \
            node.src.is_quad:
             fix_cmp_from_quad_word_imm_to_any_instruction(node)
-            node = fix_instructions[-1]
 
         if isinstance(node.src, (AsmStack, AsmData)) and \
            isinstance(node.dst, (AsmStack, AsmData)):
@@ -782,7 +829,6 @@ cdef void fix_binary_instruction(AsmBinary node):
             if isinstance(node.src, AsmImm) and \
                node.src.is_quad:
                 fix_binary_from_quad_word_imm_to_any_instruction(node)
-                node = fix_instructions[-1]
 
             if isinstance(node.src, (AsmStack, AsmData)) and \
                isinstance(node.dst, (AsmStack, AsmData)):
@@ -793,7 +839,6 @@ cdef void fix_binary_instruction(AsmBinary node):
             if isinstance(node.src, AsmImm) and \
                node.src.is_quad:
                 fix_binary_from_quad_word_imm_to_any_instruction(node)
-                node = fix_instructions[-1]
 
             if isinstance(node.src, (AsmStack, AsmData)) and \
                isinstance(node.dst, (AsmStack, AsmData)):
@@ -803,7 +848,6 @@ cdef void fix_binary_instruction(AsmBinary node):
             if isinstance(node.src, AsmImm) and \
                node.src.is_quad:
                 fix_binary_from_quad_word_imm_to_any_instruction(node)
-                node = fix_instructions[-1]
 
             if isinstance(node.dst, (AsmStack, AsmData)):
                 fix_binary_imul_from_any_to_addr_instruction(node)
