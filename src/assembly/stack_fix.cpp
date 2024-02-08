@@ -411,8 +411,7 @@ cdef void swap_fix_instructions_back():
     fix_instructions[-1], fix_instructions[-2] = fix_instructions[-2], fix_instructions[-1]
 */
 static void swap_fix_instruction_back() {
-    std::swap((*p_fix_instructions)[p_fix_instructions->size()-1],
-              (*p_fix_instructions)[p_fix_instructions->size()-2]);
+    std::swap((*p_fix_instructions)[p_fix_instructions->size()-2], p_fix_instructions->back());
 }
 
 /**
@@ -601,15 +600,21 @@ static void fix_mov_sx_instruction(AsmMovSx* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_mov_zero_extend_from_any_to_any_instruction(AsmMovZeroExtend node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = node.dst
     cdef AssemblyType assembly_type = LongWord()
     fix_instructions[-1] = AsmMov(assembly_type, src, dst)
 */
+static void fix_mov_zero_extend_from_any_to_any_instruction(AsmMovZeroExtend* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = std::move(node->dst);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<LongWord>();
+    p_fix_instructions->back() = std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst));
+}
 
-/** TODO
+/**
 cdef void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov node):
     cdef AsmOperand src = generate_register(REGISTER_KIND.get('R11'))
     cdef AsmOperand dst = node.dst
@@ -620,8 +625,15 @@ cdef void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov node):
     #
     fix_instructions.append(AsmMov(assembly_type, src, dst))
 */
+static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov* node) {
+    std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
+    std::shared_ptr<AsmOperand> dst = std::move(node->dst);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    node->dst = src;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+}
 
-/** TODO
+/**
 cdef void fix_mov_zero_extend_instruction(AsmMovZeroExtend node):
     fix_mov_zero_extend_from_any_to_any_instruction(node)
     cdef AsmMov node_2 = fix_instructions[-1]
@@ -629,6 +641,13 @@ cdef void fix_mov_zero_extend_instruction(AsmMovZeroExtend node):
     if isinstance(node_2.dst, (AsmStack, AsmData)):
         fix_mov_zero_extend_from_any_to_addr_instruction(node_2)
 */
+static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
+    fix_mov_zero_extend_from_any_to_any_instruction(node);
+    AsmMov* node_2 = static_cast<AsmMov*>(p_fix_instructions->back().get());
+    if(is_addr_t(node_2->dst->type())) {
+        fix_mov_zero_extend_from_any_to_addr_instruction(node_2);
+    }
+}
 
 /** TODO
 cdef void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si node):
