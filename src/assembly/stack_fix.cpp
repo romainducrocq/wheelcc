@@ -736,7 +736,7 @@ static void fix_cvtsi2sd_instruction(AsmCvtsi2sd* node) {
     }
 }
 
-/** TODO
+/**
 cdef fix_double_cmp_from_any_to_addr_instruction(AsmCmp node):
     cdef AsmOperand src = node.dst
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm15'))
@@ -748,8 +748,16 @@ cdef fix_double_cmp_from_any_to_addr_instruction(AsmCmp node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_double_cmp_from_any_to_addr_instruction(AsmCmp* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->dst);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm15);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
+    node->dst = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_cmp_from_quad_word_imm_to_any_instruction(AsmCmp node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -761,8 +769,16 @@ cdef void fix_cmp_from_quad_word_imm_to_any_instruction(AsmCmp node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_cmp_from_quad_word_imm_to_any_instruction(AsmCmp* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = std::shared_ptr<QuadWord>();
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_cmp_from_addr_to_addr_instruction(AsmCmp node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -774,8 +790,16 @@ cdef void fix_cmp_from_addr_to_addr_instruction(AsmCmp node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_cmp_from_addr_to_addr_instruction(AsmCmp* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_cmp_from_any_to_imm_instruction(AsmCmp node):
     cdef AsmOperand src = node.dst
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R11'))
@@ -787,8 +811,16 @@ cdef void fix_cmp_from_any_to_imm_instruction(AsmCmp node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_cmp_from_any_to_imm_instruction(AsmCmp* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->dst);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R11);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->dst = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_cmp_instruction(AsmCmp node):
     if isinstance(node.assembly_type, BackendDouble):
         if isinstance(node.dst, (AsmStack, AsmData)):
@@ -806,6 +838,26 @@ cdef void fix_cmp_instruction(AsmCmp node):
         elif isinstance(node.dst, AsmImm):
             fix_cmp_from_any_to_imm_instruction(node)
 */
+static void fix_cmp_instruction(AsmCmp* node) {
+    if(node->assembly_type->type() == AST_T::BackendDouble_t) {
+        if(is_addr_t(node->dst->type())) {
+            fix_double_cmp_from_any_to_addr_instruction(node);
+        }
+    }
+    else {
+        if(is_imm_t(node->src->type()) &&
+           static_cast<AsmImm*>(node->src.get())->is_quad) {
+            fix_cmp_from_quad_word_imm_to_any_instruction(node);
+        }
+        if(is_addr_t(node->src->type()) &&
+           is_addr_t(node->dst->type())) {
+            fix_cmp_from_addr_to_addr_instruction(node);
+        }
+        else if(is_imm_t(node->dst->type())) {
+            fix_cmp_from_any_to_imm_instruction(node);
+        }
+    }
+}
 
 /** TODO
 cdef void fix_push_from_quad_word_imm_to_any_instruction(AsmPush node):
