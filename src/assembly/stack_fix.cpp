@@ -1088,7 +1088,7 @@ static void fix_binary_instruction(AsmBinary* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_idiv_from_imm_instruction(AsmIdiv node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -1100,12 +1100,25 @@ cdef void fix_idiv_from_imm_instruction(AsmIdiv node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_idiv_from_imm_instruction(AsmIdiv* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_idiv_instruction(AsmIdiv node):
     if isinstance(node.src, AsmImm):
         fix_idiv_from_imm_instruction(node)
 */
+static void fix_idiv_instruction(AsmIdiv* node) {
+    if(is_imm_t(node->src->type())) {
+        fix_idiv_from_imm_instruction(node);
+    }
+}
 
 /** TODO
 cdef void fix_div_from_imm_instruction(AsmDiv node):
