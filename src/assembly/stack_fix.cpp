@@ -893,7 +893,7 @@ static void fix_push_instruction(AsmPush* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_double_binary_from_any_to_addr_instruction(AsmBinary node):
     cdef AsmOperand src = node.dst
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm15'))
@@ -906,8 +906,17 @@ cdef void fix_double_binary_from_any_to_addr_instruction(AsmBinary node):
     swap_fix_instructions_back()
     fix_instructions.append(AsmMov(assembly_type, dst, src))
 */
+static void fix_double_binary_from_any_to_addr_instruction(AsmBinary* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->dst);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm15);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
+    node->dst = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(assembly_type, src, dst));
+    swap_fix_instruction_back();
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
+}
 
-/** TODO
+/**
 cdef void fix_binary_from_quad_word_imm_to_any_instruction(AsmBinary node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -919,8 +928,16 @@ cdef void fix_binary_from_quad_word_imm_to_any_instruction(AsmBinary node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_binary_from_quad_word_imm_to_any_instruction(AsmBinary* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_binary_any_from_addr_to_addr_instruction(AsmBinary node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -932,8 +949,16 @@ cdef void fix_binary_any_from_addr_to_addr_instruction(AsmBinary node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_binary_any_from_addr_to_addr_instruction(AsmBinary* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_binary_shx_from_addr_to_addr_instruction(AsmBinary node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Cx'))
@@ -945,8 +970,16 @@ cdef void fix_binary_shx_from_addr_to_addr_instruction(AsmBinary node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_binary_shx_from_addr_to_addr_instruction(AsmBinary* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Cx);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_binary_imul_from_any_to_addr_instruction(AsmBinary node):
     cdef AsmOperand src = node.dst
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R11'))
@@ -959,8 +992,17 @@ cdef void fix_binary_imul_from_any_to_addr_instruction(AsmBinary node):
     swap_fix_instructions_back()
     fix_instructions.append(AsmMov(assembly_type, dst, src))
 */
+static void fix_binary_imul_from_any_to_addr_instruction(AsmBinary* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->dst);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R11);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->dst = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(assembly_type, src, dst));
+    swap_fix_instruction_back();
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
+}
 
-/** TODO
+/**
 cdef void fix_binary_instruction(AsmBinary node):
     if isinstance(node.assembly_type, BackendDouble):
         if isinstance(node.dst, (AsmStack, AsmData)):
@@ -995,6 +1037,56 @@ cdef void fix_binary_instruction(AsmBinary node):
             if isinstance(node.dst, (AsmStack, AsmData)):
                 fix_binary_imul_from_any_to_addr_instruction(node)
 */
+static void fix_binary_instruction(AsmBinary* node) {
+    if(node->assembly_type->type() == AST_T::BackendDouble_t) {
+        if(is_addr_t(node->dst->type())) {
+            fix_double_binary_from_any_to_addr_instruction(node);
+        }
+    }
+    else {
+        switch(node->binary_op->type()) {
+            case AST_T::AsmAdd_t:
+            case AST_T::AsmSub_t:
+            case AST_T::AsmBitAnd_t:
+            case AST_T::AsmBitOr_t:
+            case AST_T::AsmBitXor_t: {
+                if(is_imm_t(node->src->type()) &&
+                   static_cast<AsmImm*>(node->src.get())->is_quad) {
+                    fix_binary_from_quad_word_imm_to_any_instruction(node);
+                }
+                if(is_addr_t(node->src->type()) &&
+                   is_addr_t(node->dst->type())) {
+                    fix_binary_any_from_addr_to_addr_instruction(node);
+                }
+                break;
+            }
+            case AST_T::AsmBitShiftLeft_t:
+            case AST_T::AsmBitShiftRight_t: {
+                if(is_imm_t(node->src->type()) &&
+                   static_cast<AsmImm*>(node->src.get())->is_quad) {
+                    fix_binary_from_quad_word_imm_to_any_instruction(node);
+                }
+                if(is_addr_t(node->src->type()) &&
+                   is_addr_t(node->dst->type())) {
+                    fix_binary_shx_from_addr_to_addr_instruction(node);
+                }
+                break;
+            }
+            case AST_T::AsmMult_t: {
+                if(is_imm_t(node->src->type()) &&
+                   static_cast<AsmImm*>(node->src.get())->is_quad) {
+                    fix_binary_from_quad_word_imm_to_any_instruction(node);
+                }
+                if(is_addr_t(node->dst->type())) {
+                    fix_binary_imul_from_any_to_addr_instruction(node);
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
 
 /** TODO
 cdef void fix_idiv_from_imm_instruction(AsmIdiv node):
