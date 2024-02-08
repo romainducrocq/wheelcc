@@ -1120,7 +1120,7 @@ static void fix_idiv_instruction(AsmIdiv* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_div_from_imm_instruction(AsmDiv node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -1263,12 +1263,15 @@ static void fix_function_top_level(AsmFunction* node) {
     p_fix_instructions = nullptr;
 }
 
-/** TODO
+/**
 cdef void fix_static_variable_top_level(AsmStaticVariable node):
     pass
 */
+static void fix_static_variable_top_level(AsmStaticVariable* /*node*/) {
+    ;
+}
 
-/** TODO
+/**
 cdef void fix_top_level(AsmTopLevel node):
     if isinstance(node, AsmFunction):
         fix_function_top_level(node)
@@ -1279,16 +1282,36 @@ cdef void fix_top_level(AsmTopLevel node):
         raise RuntimeError(
             "An error occurred in stack management, not all nodes were visited")
 */
+static void fix_top_level(AsmTopLevel* node) {
+    switch(node->type()) {
+        case AST_T::AsmFunction_t:
+            fix_function_top_level(static_cast<AsmFunction*>(node));
+            break;
+        case AST_T::AsmStaticVariable_t:
+            fix_static_variable_top_level(static_cast<AsmStaticVariable*>(node));
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef void fix_program(AsmProgram node):
     cdef Py_ssize_t top_level
     for top_level in range(len(node.top_levels)):
         fix_top_level(node.top_levels[top_level])
 */
+static void fix_program(AsmProgram* node) {
+    for(size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
+        fix_top_level(node->top_levels[top_level].get());
+    }
+}
 
-/** TODO
+/**
 cdef void fix_stack(AsmProgram asm_ast):
 
     fix_program(asm_ast)
 */
+void fix_stack(AsmProgram* node) {
+    fix_program(node);
+}
