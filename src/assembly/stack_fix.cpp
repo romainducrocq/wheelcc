@@ -649,7 +649,7 @@ static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si node):
     cdef AsmOperand src = generate_register(REGISTER_KIND.get('R11'))
     cdef AsmOperand dst = node.dst
@@ -660,12 +660,24 @@ cdef void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si node):
     #
     fix_instructions.append(AsmMov(assembly_type, src, dst))
 */
+static void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si* node) {
+    std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
+    std::shared_ptr<AsmOperand> dst = std::move(node->dst);
+    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
+    node->dst = src;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+}
 
-/** TODO
+/**
 cdef void fix_cvttsd2si_instruction(AsmCvttsd2si node):
     if isinstance(node.dst, (AsmStack, AsmData)):
         fix_cvttsd2si_from_any_to_addr_instruction(node)
 */
+static void fix_cvttsd2si_instruction(AsmCvttsd2si* node) {
+    if(is_addr_t(node->dst->type())) {
+        fix_cvttsd2si_from_any_to_addr_instruction(node);
+    }
+}
 
 /** TODO
 cdef void fix_cvtsi2sd_from_imm_to_any_instruction(AsmCvtsi2sd node):
