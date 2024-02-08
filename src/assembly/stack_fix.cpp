@@ -772,7 +772,7 @@ cdef void fix_cmp_from_quad_word_imm_to_any_instruction(AsmCmp node):
 static void fix_cmp_from_quad_word_imm_to_any_instruction(AsmCmp* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
-    std::shared_ptr<AssemblyType> assembly_type = std::shared_ptr<QuadWord>();
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->src = dst;
     push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
     swap_fix_instruction_back();

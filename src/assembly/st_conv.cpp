@@ -144,7 +144,7 @@ cdef void convert_backend_symbol_table(AsmProgram node):
         else:
             convert_obj_type(symbol_table[symbol].attrs)
 */
-static void convert_backend_symbol_table(AsmProgram* node) {
+static void convert_program(AsmProgram* node) {
     for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
         convert_top_level(node->static_constant_top_levels[top_level].get());
     }
@@ -166,5 +166,5 @@ cdef void convert_symbol_table(AsmProgram asm_ast):
     convert_backend_symbol_table(asm_ast)
 */
 void convert_symbol_table(AsmProgram* node) {
-    convert_backend_symbol_table(node);
+    convert_program(node);
 }
