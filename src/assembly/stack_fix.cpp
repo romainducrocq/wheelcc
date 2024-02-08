@@ -397,11 +397,25 @@ std::unique_ptr<AsmBinary> deallocate_stack_bytes(TInt byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-/** TODO
+/**
 cdef list[AsmInstruction] fix_instructions = []
 */
+static std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
 
-/** TODO
+static void push_fix_instruction(std::unique_ptr<AsmInstruction>&& fix_instruction) {
+    p_fix_instructions->push_back(std::move(fix_instruction));
+}
+
+/**
+cdef void swap_fix_instructions_back():
+    fix_instructions[-1], fix_instructions[-2] = fix_instructions[-2], fix_instructions[-1]
+*/
+static void swap_fix_instruction_back() {
+    std::swap((*p_fix_instructions)[p_fix_instructions->size()-1],
+              (*p_fix_instructions)[p_fix_instructions->size()-2]);
+}
+
+/**
 cdef void fix_allocate_stack_bytes():
     cdef int32 byte = -1 * counter
 
@@ -412,11 +426,17 @@ cdef void fix_allocate_stack_bytes():
 
     fix_instructions[0].src.value.str_t = str(byte)
 */
+// Note: byte is in int32_t (max 0.2gb)
+// TODO: make byte to uint32_t
+static void fix_allocate_stack_bytes() {
+    TInt byte = -1 * counter;
+    if(byte % 8 != 0) {
+        RAISE_INTERNAL_ERROR;
+    }
 
-/** TODO
-cdef void swap_fix_instructions_back():
-    fix_instructions[-1], fix_instructions[-2] = fix_instructions[-2], fix_instructions[-1]
-*/
+    AsmImm* imm = static_cast<AsmImm*>(static_cast<AsmBinary*>((*p_fix_instructions)[0].get())->src.get());
+    imm->value = std::to_string(byte);
+}
 
 /** TODO
 cdef void fix_double_mov_from_addr_to_addr_instruction(AsmMov node):
