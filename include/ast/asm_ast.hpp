@@ -189,9 +189,9 @@ struct AsmOperand : Ast {
 struct AsmImm : AsmOperand {
     AST_T type() override;
     AsmImm() = default;
-    AsmImm(bool is_long, TIdentifier value);
+    AsmImm(bool is_quad, TIdentifier value);
 
-    bool is_long;
+    bool is_quad;
     TIdentifier value;
 };
 
@@ -536,8 +536,10 @@ struct AsmStaticConstant : AsmTopLevel {
 struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram() = default;
-    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
+    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
+               std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
 
+    std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
 };
 

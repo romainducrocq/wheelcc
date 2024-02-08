@@ -198,7 +198,7 @@ ast = [
     ["AsmBE", [], []],
     ["AsmP", [], []],
     ["AsmOperand", [], []],
-    ["AsmImm", [(Bool, "is_long"), (TIdentifier, "value")], []],
+    ["AsmImm", [(Bool, "is_quad"), (TIdentifier, "value")], []],
     ["AsmRegister", [], ["reg"]],
     ["AsmPseudo", [(TIdentifier, "name")], []],
     ["AsmStack", [(TInt, "value")], []],
@@ -240,6 +240,6 @@ ast = [
     ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_global")], []],
     ["AsmStaticVariable", [(TIdentifier, "name"), (TInt, "alignment"), (Bool, "is_global")], ["initial_value"]],
     ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["initial_value"]],
-    ["AsmProgram", [], ["[top_levels"]],
+    ["AsmProgram", [], ["[static_constant_top_levels", "[top_levels"]],
 ]
 

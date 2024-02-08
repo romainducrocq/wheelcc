@@ -981,7 +981,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmImm_t: {
             field("AsmImm", "", ++t);
             AsmImm* p_node = static_cast<AsmImm*>(node);
-            field("Bool", std::to_string(p_node->is_long), t+1);
+            field("Bool", std::to_string(p_node->is_quad), t+1);
             field("TIdentifier", p_node->value, t+1);
             break;
         }
@@ -1225,6 +1225,10 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmProgram_t: {
             field("AsmProgram", "", ++t);
             AsmProgram* p_node = static_cast<AsmProgram*>(node);
+            field("List[" + std::to_string(p_node->static_constant_top_levels.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_constant_top_levels) {
+                print_ast(item.get(), t+1);
+            }
             field("List[" + std::to_string(p_node->top_levels.size()) + "]", "", t+1);
             for(const auto& item: p_node->top_levels) {
                 print_ast(item.get(), t+1);

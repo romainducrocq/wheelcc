@@ -84,8 +84,8 @@ AST_T AsmStaticVariable::type() { return AST_T::AsmStaticVariable_t; }
 AST_T AsmStaticConstant::type() { return AST_T::AsmStaticConstant_t; }
 AST_T AsmProgram::type() { return AST_T::AsmProgram_t; }
 
-AsmImm::AsmImm(bool is_long, TIdentifier value)
-    : is_long(is_long), value(std::move(value)) {}
+AsmImm::AsmImm(bool is_quad, TIdentifier value)
+    : is_quad(is_quad), value(std::move(value)) {}
 
 AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
     : reg(std::move(reg)) {}
@@ -167,5 +167,6 @@ AsmStaticVariable::AsmStaticVariable(TIdentifier name, TInt alignment, bool is_g
 AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> initial_value)
     : name(std::move(name)), alignment(alignment), initial_value(std::move(initial_value)) {}
 
-AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> top_levels)
-    : top_levels(std::move(top_levels)) {}
+AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
+                       std::vector<std::unique_ptr<AsmTopLevel>> top_levels)
+    : static_constant_top_levels(std::move(static_constant_top_levels)), top_levels(std::move(top_levels)) {}
