@@ -1152,7 +1152,7 @@ static void fix_div_instruction(AsmDiv* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_instruction():
     if isinstance(fix_instructions[-1], AsmMov):
         fix_mov_instruction(fix_instructions[-1])
@@ -1184,6 +1184,42 @@ cdef void fix_instruction():
     elif isinstance(fix_instructions[-1], AsmDiv):
         fix_div_instruction(fix_instructions[-1])
 */
+static void fix_instruction(AsmInstruction* node) {
+    switch(node->type()) {
+        case AST_T::AsmMov_t:
+            fix_mov_instruction(static_cast<AsmMov*>(node));
+            break;
+        case AST_T::AsmMovSx_t:
+            fix_mov_sx_instruction(static_cast<AsmMovSx*>(node));
+            break;
+        case AST_T::AsmMovZeroExtend_t:
+            fix_mov_zero_extend_instruction(static_cast<AsmMovZeroExtend*>(node));
+            break;
+        case AST_T::AsmCvttsd2si_t:
+            fix_cvttsd2si_instruction(static_cast<AsmCvttsd2si*>(node));
+            break;
+        case AST_T::AsmCvtsi2sd_t:
+            fix_cvtsi2sd_instruction(static_cast<AsmCvtsi2sd*>(node));
+            break;
+        case AST_T::AsmCmp_t:
+            fix_cmp_instruction(static_cast<AsmCmp*>(node));
+            break;
+        case AST_T::AsmPush_t:
+            fix_push_instruction(static_cast<AsmPush*>(node));
+            break;
+        case AST_T::AsmBinary_t:
+            fix_binary_instruction(static_cast<AsmBinary*>(node));
+            break;
+        case AST_T::AsmIdiv_t:
+            fix_idiv_instruction(static_cast<AsmIdiv*>(node));
+            break;
+        case AST_T::AsmDiv_t:
+            fix_div_instruction(static_cast<AsmDiv*>(node));
+            break;
+        default:
+            break;
+    }
+}
 
 /** TODO
 cdef void fix_function_top_level(AsmFunction node):
