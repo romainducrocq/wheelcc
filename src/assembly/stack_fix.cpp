@@ -859,7 +859,7 @@ static void fix_cmp_instruction(AsmCmp* node) {
     }
 }
 
-/** TODO
+/**
 cdef void fix_push_from_quad_word_imm_to_any_instruction(AsmPush node):
     cdef AsmOperand src = node.src
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('R10'))
@@ -871,13 +871,27 @@ cdef void fix_push_from_quad_word_imm_to_any_instruction(AsmPush node):
     fix_instructions.append(AsmMov(assembly_type, src, dst))
     swap_fix_instructions_back()
 */
+static void fix_push_from_quad_word_imm_to_any_instruction(AsmPush* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    node->src = dst;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instruction_back();
+}
 
-/** TODO
+/**
 cdef void fix_push_instruction(AsmPush node):
     if isinstance(node.src, AsmImm) and \
        node.src.is_quad:
         fix_push_from_quad_word_imm_to_any_instruction(node)
 */
+static void fix_push_instruction(AsmPush* node) {
+    if(is_imm_t(node->src->type()) &&
+       static_cast<AsmImm*>(node->src.get())->is_quad) {
+        fix_push_from_quad_word_imm_to_any_instruction(node);
+    }
+}
 
 /** TODO
 cdef void fix_double_binary_from_any_to_addr_instruction(AsmBinary node):
