@@ -194,7 +194,7 @@ static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
     }
 }
 
-/** TODO
+/**
 cdef AsmCondCode generate_signed_condition_code(TacBinaryOp node):
     # signed_cond_code = E | NE | G | GE | L | LE
     if isinstance(node, TacEqual):
@@ -214,8 +214,27 @@ cdef AsmCondCode generate_signed_condition_code(TacBinaryOp node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+// signed_cond_code = E | NE | G | GE | L | LE
+static std::unique_ptr<AsmCondCode> generate_signed_condition_code(TacBinaryOp* node) {
+    switch(node->type()) {
+        case AST_T::TacEqual_t:
+            return std::make_unique<AsmE>();
+        case AST_T::TacNotEqual_t:
+            return std::make_unique<AsmNE>();
+        case AST_T::TacLessThan_t:
+            return std::make_unique<AsmL>();
+        case AST_T::TacLessOrEqual_t:
+            return std::make_unique<AsmLE>();
+        case AST_T::TacGreaterThan_t:
+            return std::make_unique<AsmG>();
+        case AST_T::TacGreaterOrEqual_t:
+            return std::make_unique<AsmGE>();
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef AsmCondCode generate_unsigned_condition_code(TacBinaryOp node):
     # unsigned_cond_code = E | NE | A | AE | B | BE
     if isinstance(node, TacEqual):
@@ -235,8 +254,27 @@ cdef AsmCondCode generate_unsigned_condition_code(TacBinaryOp node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+// unsigned_cond_code = E | NE | A | AE | B | BE
+static std::unique_ptr<AsmCondCode> generate_unsigned_condition_code(TacBinaryOp* node) {
+    switch(node->type()) {
+        case AST_T::TacEqual_t:
+            return std::make_unique<AsmE>();
+        case AST_T::TacNotEqual_t:
+            return std::make_unique<AsmNE>();
+        case AST_T::TacLessThan_t:
+            return std::make_unique<AsmB>();
+        case AST_T::TacLessOrEqual_t:
+            return std::make_unique<AsmBE>();
+        case AST_T::TacGreaterThan_t:
+            return std::make_unique<AsmA>();
+        case AST_T::TacGreaterOrEqual_t:
+            return std::make_unique<AsmAE>();
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef AsmBinaryOp generate_binary_op(TacBinaryOp node):
     # binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight
     if isinstance(node, TacAdd):
@@ -262,8 +300,33 @@ cdef AsmBinaryOp generate_binary_op(TacBinaryOp node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+// binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight
+static std::unique_ptr<AsmBinaryOp> generate_binary_op(TacBinaryOp* node) {
+    switch(node->type()) {
+        case AST_T::TacAdd_t:
+            return std::make_unique<AsmAdd>();
+        case AST_T::TacSubtract_t:
+            return std::make_unique<AsmSub>();
+        case AST_T::TacMultiply_t:
+            return std::make_unique<AsmMult>();
+        case AST_T::TacDivide_t:
+            return std::make_unique<AsmDivDouble>();
+        case AST_T::TacBitAnd_t:
+            return std::make_unique<AsmBitAnd>();
+        case AST_T::TacBitOr_t:
+            return std::make_unique<AsmBitOr>();
+        case AST_T::TacBitXor_t:
+            return std::make_unique<AsmBitXor>();
+        case AST_T::TacBitShiftLeft_t:
+            return std::make_unique<AsmBitShiftLeft>();
+        case AST_T::TacBitShiftRight_t:
+            return std::make_unique<AsmBitShiftRight>();
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef AsmUnaryOp generate_unary_op(TacUnaryOp node):
     # unary_operator = Not | Neg | Shr
     if isinstance(node, TacComplement):
@@ -275,6 +338,17 @@ cdef AsmUnaryOp generate_unary_op(TacUnaryOp node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+// unary_operator = Not | Neg | Shr
+static std::unique_ptr<AsmUnaryOp> generate_unary_op(TacUnaryOp* node) {
+    switch(node->type()) {
+        case AST_T::TacComplement_t:
+            return std::make_unique<AsmNot>();
+        case AST_T::TacNegate_t:
+            return std::make_unique<AsmNeg>();
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef bint is_constant_value_signed(TacConstant node):
