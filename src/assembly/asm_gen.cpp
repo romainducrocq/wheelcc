@@ -8,6 +8,7 @@
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
 #include "semantic/type_check.hpp"
+#include "assembly/st_conv.hpp"
 
 #include <string>
 #include <memory>
@@ -467,7 +468,7 @@ static bool is_value_double(TacValue* node) {
     }
 }
 
-/** TODO
+/**
 cdef AssemblyType generate_constant_assembly_type(TacConstant node):
     if isinstance(node.constant, (CConstInt, CConstUInt)):
         return LongWord()
@@ -480,13 +481,30 @@ cdef AssemblyType generate_constant_assembly_type(TacConstant node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static std::shared_ptr<AssemblyType> generate_constant_assembly_type(TacConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+        case AST_T::CConstUInt_t:
+            return std::make_shared<LongWord>();
+        case AST_T::CConstDouble_t:
+            return std::make_shared<BackendDouble>();
+        case AST_T::CConstLong_t:
+        case AST_T::CConstULong_t:
+            return std::make_shared<QuadWord>();
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef AssemblyType generate_variable_assembly_type(TacVariable node):
     return convert_backend_assembly_type(node.name.str_t)
 */
+static std::shared_ptr<AssemblyType> generate_variable_assembly_type(TacVariable* node) {
+    return convert_backend_assembly_type(node->name);
+}
 
-/** TODO
+/**
 cdef AssemblyType generate_assembly_type(TacValue node):
     if isinstance(node, TacConstant):
         return generate_constant_assembly_type(node)
@@ -497,6 +515,16 @@ cdef AssemblyType generate_assembly_type(TacValue node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static std::shared_ptr<AssemblyType> generate_assembly_type(TacValue* node) {
+    switch(node->type()) {
+        case AST_T::TacConstant_t:
+            return generate_constant_assembly_type(static_cast<TacConstant*>(node));
+        case AST_T::TacVariable_t:
+            return generate_variable_assembly_type(static_cast<TacVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef list[AsmInstruction] instructions = []
