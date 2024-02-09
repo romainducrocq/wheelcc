@@ -118,12 +118,15 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(double v
     return std::make_shared<AsmData>(std::move(static_constant_label));
 }
 
-/** TODO
+/**
 cdef AsmData generate_double_constant_operand(CConstDouble node):
     return generate_double_static_constant_operand(node.value.double_t, 8)
 */
+static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* node) {
+    return generate_double_static_constant_operand(node->value, 8);
+}
 
-/** TODO
+/**
 cdef AsmOperand generate_constant_operand(TacConstant node):
     if isinstance(node.constant, CConstInt):
         return generate_int_imm_operand(node.constant)
@@ -140,14 +143,34 @@ cdef AsmOperand generate_constant_operand(TacConstant node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static std::shared_ptr<AsmOperand> generate_constant_operand(TacConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+            return generate_int_imm_operand(static_cast<CConstInt*>(node->constant.get()));
+        case AST_T::CConstLong_t:
+            return generate_long_imm_operand(static_cast<CConstLong*>(node->constant.get()));
+        case AST_T::CConstDouble_t:
+            return generate_double_constant_operand(static_cast<CConstDouble*>(node->constant.get()));
+        case AST_T::CConstUInt_t:
+            return generate_uint_imm_operand(static_cast<CConstUInt*>(node->constant.get()));
+        case AST_T::CConstULong_t:
+            return generate_ulong_imm_operand(static_cast<CConstULong*>(node->constant.get()));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef AsmPseudo generate_pseudo_operand(TacVariable node):
     cdef TIdentifier name = copy_identifier(node.name)
     return AsmPseudo(name)
 */
+static std::shared_ptr<AsmPseudo> generate_pseudo_operand(TacVariable* node) {
+    TIdentifier name = node->name;
+    return std::make_shared<AsmPseudo>(std::move(name));
+}
 
-/** TODO
+/**
 cdef AsmOperand generate_operand(TacValue node):
     # operand = Imm(int) | Reg(reg) | Pseudo(identifier) | Stack(int) | Data(identifier)
     if isinstance(node, TacConstant):
@@ -159,6 +182,17 @@ cdef AsmOperand generate_operand(TacValue node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+// operand = Imm(int) | Reg(reg) | Pseudo(identifier) | Stack(int) | Data(identifier)
+static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
+    switch(node->type()) {
+        case AST_T::TacConstant_t:
+            return generate_constant_operand(static_cast<TacConstant*>(node));
+        case AST_T::TacVariable_t:
+            return generate_pseudo_operand(static_cast<TacVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef AsmCondCode generate_signed_condition_code(TacBinaryOp node):
@@ -340,6 +374,10 @@ cdef AssemblyType generate_assembly_type(TacValue node):
 */
 
 /** TODO
+cdef list[AsmInstruction] instructions = []
+*/
+
+/** TODO
 cdef void generate_allocate_stack_instructions(int32 byte):
     instructions.append(allocate_stack_bytes(byte))
 */
@@ -356,10 +394,6 @@ cdef void generate_zero_out_xmm_reg_instructions():
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm0'))
     cdef AssemblyType assembly_type_src = BackendDouble()
     instructions.append(AsmBinary(binary_op, assembly_type_src, src, dst))
-*/
-
-/** TODO
-cdef list[AsmInstruction] instructions = []
 */
 
 /** TODO
