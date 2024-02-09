@@ -389,7 +389,6 @@ static bool is_value_signed(TacValue* node) {
     }
 }
 
-// TODO Note: rename to is_---_long_word
 /**
 cdef bint is_constant_value_32_bits(TacConstant node):
     return isinstance(node.constant, (CConstInt, CConstUInt))
@@ -430,17 +429,23 @@ static bool is_value_32_bits(TacValue* node) {
     }
 }
 
-/** TODO
+/**
 cdef bint is_constant_value_double(TacConstant node):
     return isinstance(node.constant, CConstDouble)
 */
+static bool is_constant_value_double(TacConstant* node) {
+    return node->constant->type() == AST_T::CConstDouble_t;
+}
 
-/** TODO
+/**
 cdef bint is_variable_value_double(TacVariable node):
     return isinstance(symbol_table[node.name.str_t].type_t, Double)
 */
+static bool is_variable_value_double(TacVariable* node) {
+    return symbol_table[node->name]->type_t->type() == AST_T::Double_t;
+}
 
-/** TODO
+/**
 cdef bint is_value_double(TacValue node):
     if isinstance(node, TacConstant):
         return is_constant_value_double(node)
@@ -451,6 +456,16 @@ cdef bint is_value_double(TacValue node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static bool is_value_double(TacValue* node) {
+    switch(node->type()) {
+        case AST_T::TacConstant_t:
+            return is_constant_value_double(static_cast<TacConstant*>(node));
+        case AST_T::TacVariable_t:
+            return is_variable_value_double(static_cast<TacVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef AssemblyType generate_constant_assembly_type(TacConstant node):
