@@ -1,10 +1,23 @@
 #include "assembly/asm_gen.hpp"
+#include "util/error.hpp"
+#include "ast/ast.hpp"
+#include "ast/symbol_table.hpp"
+#include "ast/backend_st.hpp"
+#include "ast/c_ast.hpp"
+#include "ast/tac_ast.hpp"
+#include "ast/asm_ast.hpp"
 
-/** TODO
+#include <string>
+#include <memory>
+#include <vector>
+#include <unordered_map>
+
+/**
 cdef dict[str, str] static_const_label_map = {}
 */
+static std::unordered_map<TIdentifier, TIdentifier> static_const_label_map;
 
-/** TODO
+/**
 cdef TInt generate_alignment(Type node):
     if isinstance(node, (Int, UInt)):
         return TInt(4)
@@ -15,34 +28,66 @@ cdef TInt generate_alignment(Type node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static TInt generate_alignment(Type* node) {
+    switch(node->type()) {
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return 4;
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::ULong_t:
+            return 8;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef AsmImm generate_int_imm_operand(CConstInt node):
     cdef bint is_quad = False
     cdef TIdentifier value = TIdentifier(str(node.value.int_t))
     return AsmImm(value, is_quad)
 */
+static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
+    TIdentifier value = std::to_string(node->value);
+    return std::make_shared<AsmImm>(false, std::move(value));
+}
 
-/** TODO
+/**
 cdef AsmImm generate_long_imm_operand(CConstLong node):
     cdef bint is_quad = node.value.long_t > (<int64>2147483647)
     cdef TIdentifier value = TIdentifier(str(node.value.long_t))
     return AsmImm(value, is_quad)
 */
+static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
+    bool is_quad = node->value > 2147483647;
+    TIdentifier value = std::to_string(node->value);
+    return std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
+}
 
-/** TODO
+/**
 cdef AsmImm generate_uint_imm_operand(CConstUInt node):
     cdef bint is_quad = int(node.value.uint_t) > (<uint32>2147483647)
     cdef TIdentifier value = TIdentifier(str(node.value.uint_t))
     return AsmImm(value, is_quad)
 */
+static std::shared_ptr<AsmImm> generate_uint_imm_operand(CConstUInt* node) {
+    bool is_quad = node->value > 2147483647;
+    TIdentifier value = std::to_string(node->value);
+    return std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
+}
 
-/** TODO
+/**
 cdef AsmImm generate_ulong_imm_operand(CConstULong node):
     cdef bint is_quad = int(node.value.ulong_t) > (<uint64>2147483647)
     cdef TIdentifier value = TIdentifier(str(node.value.ulong_t))
     return AsmImm(value, is_quad)
 */
+static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
+    bool is_quad = node->value > 2147483647;
+    TIdentifier value = std::to_string(node->value);
+    return std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
+}
 
 /** TODO
 cdef AsmData generate_double_static_constant_operand(double value, int32 byte):
