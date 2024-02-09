@@ -7,6 +7,7 @@
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
+#include "semantic/type_check.hpp"
 
 #include <string>
 #include <memory>
@@ -350,17 +351,23 @@ static std::unique_ptr<AsmUnaryOp> generate_unary_op(TacUnaryOp* node) {
     }
 }
 
-/** TODO
+/**
 cdef bint is_constant_value_signed(TacConstant node):
     return is_const_signed(node.constant)
 */
+static bool is_constant_value_signed(TacConstant* node) {
+    return is_const_signed(node->constant.get());
+}
 
-/** TODO
+/**
 cdef bint is_variable_value_signed(TacVariable node):
     return is_type_signed(symbol_table[node.name.str_t].type_t)
 */
+static bool is_variable_value_signed(TacVariable* node) {
+    return is_type_signed(symbol_table[node->name]->type_t.get());
+}
 
-/** TODO
+/**
 cdef bint is_value_signed(TacValue node):
     if isinstance(node, TacConstant):
         return is_constant_value_signed(node)
@@ -371,6 +378,16 @@ cdef bint is_value_signed(TacValue node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static bool is_value_signed(TacValue* node) {
+    switch(node->type()) {
+        case AST_T::TacConstant_t:
+            return is_constant_value_signed(static_cast<TacConstant*>(node));
+        case AST_T::TacVariable_t:
+            return is_variable_value_signed(static_cast<TacVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef bint is_constant_value_32_bits(TacConstant node):
