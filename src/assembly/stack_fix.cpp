@@ -442,7 +442,8 @@ static bool is_imm_t(AST_T t) {
 }
 
 static bool is_addr_t(AST_T t) {
-    return t == AST_T::AsmStack_t || t == AST_T::AsmData_t;
+    return t == AST_T::AsmStack_t ||
+           t == AST_T::AsmData_t;
 }
 
 /**
