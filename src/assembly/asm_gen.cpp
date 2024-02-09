@@ -1,5 +1,6 @@
 #include "assembly/asm_gen.hpp"
 #include "util/error.hpp"
+#include "util/names.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/backend_st.hpp"
@@ -89,7 +90,9 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     return std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
 }
 
-/** TODO
+static void append_double_static_constant_top_level(TIdentifier name, double value, TInt byte);
+
+/**
 cdef AsmData generate_double_static_constant_operand(double value, int32 byte):
     cdef str str_value = str(value)
     cdef TIdentifier static_constant_label
@@ -101,6 +104,19 @@ cdef AsmData generate_double_static_constant_operand(double value, int32 byte):
         append_double_static_constant_top_level(copy_identifier(static_constant_label), value, byte)
     return AsmData(static_constant_label)
 */
+static std::shared_ptr<AsmData> generate_double_static_constant_operand(double value, TInt byte) {
+    TIdentifier static_constant_label;
+    TIdentifier str_value = std::to_string(value);
+    if(static_const_label_map.find(str_value) != static_const_label_map.end()) {
+        static_constant_label = static_const_label_map[str_value];
+    }
+    else {
+        static_constant_label = represent_label_identifier("double");
+        static_const_label_map[str_value] = static_constant_label;
+        append_double_static_constant_top_level(static_constant_label, value, byte);
+    }
+    return std::make_shared<AsmData>(std::move(static_constant_label));
+}
 
 /** TODO
 cdef AsmData generate_double_constant_operand(CConstDouble node):
@@ -1029,6 +1045,9 @@ cdef void append_double_static_constant_top_level(TIdentifier name, double value
     cdef StaticInit initial_value = DoubleInit(TDouble(value))
     p_static_constant_top_levels.append(AsmStaticConstant(name, alignment, initial_value))
 */
+static void append_double_static_constant_top_level(TIdentifier /*name*/, double /*value*/, TInt /*byte*/) {
+    ; // TODO for forward decl only
+}
 
 /** TODO
 cdef AsmTopLevel generate_top_level(TacTopLevel node):
