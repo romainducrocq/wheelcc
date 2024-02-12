@@ -151,7 +151,7 @@ static void convert_program(AsmProgram* node) {
 
     for(const auto& symbol: symbol_table) {
         p_symbol = &symbol.first;
-        if(symbol.second->type() == AST_T::FunType_t) {
+        if(symbol.second->type_t->type() == AST_T::FunType_t) {
             convert_fun_type(static_cast<FunAttr*>(symbol.second->attrs.get()));
         }
         else {
