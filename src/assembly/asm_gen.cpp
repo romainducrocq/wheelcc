@@ -1605,7 +1605,7 @@ static void generate_binary_operator_arithmetic_instructions(TacBinary* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_binary_operator_arithmetic_signed_divide_instructions(TacBinary node):
     cdef AsmOperand src1 = generate_operand(node.src1)
     cdef AsmOperand src2 = generate_operand(node.src2)
@@ -1618,8 +1618,27 @@ cdef void generate_binary_operator_arithmetic_signed_divide_instructions(TacBina
     instructions.append(AsmIdiv(assembly_type_src1, src2))
     instructions.append(AsmMov(assembly_type_src1, dst_src, dst))
 */
+static void generate_binary_operator_arithmetic_signed_divide_instructions(TacBinary* node) {
+    std::shared_ptr<AsmOperand> src1_dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_src1 = generate_assembly_type(node->src1.get());
+    {
+        std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1),
+                                                            src1_dst));
+    }
+    push_instruction(std::make_unique<AsmCdq>(assembly_type_src1));
+    {
+        std::shared_ptr<AsmOperand> src2 = generate_operand(node->src2.get());
+        push_instruction(std::make_unique<AsmIdiv>(assembly_type_src1, std::move(src2)));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src1),
+                                                            std::move(src1_dst), std::move(dst)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_binary_operator_arithmetic_unsigned_divide_instructions(TacBinary node):
     cdef AsmOperand src1 = generate_operand(node.src1)
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
@@ -1634,8 +1653,32 @@ cdef void generate_binary_operator_arithmetic_unsigned_divide_instructions(TacBi
     instructions.append(AsmDiv(assembly_type_src1, src2))
     instructions.append(AsmMov(assembly_type_src1, dst_src, dst))
 */
+static void generate_binary_operator_arithmetic_unsigned_divide_instructions(TacBinary* node) {
+    std::shared_ptr<AsmOperand> src1_dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_src1 = generate_assembly_type(node->src1.get());
+    {
+        std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1),
+                                                            src1_dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+        std::shared_ptr<AsmOperand> imm_zero_dst = generate_register(REGISTER_KIND::Dx);
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(imm_zero),
+                                                            std::move(imm_zero_dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src2 = generate_operand(node->src2.get());
+        push_instruction(std::make_unique<AsmDiv>(assembly_type_src1, std::move(src2)));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src1),
+                                                            std::move(src1_dst), std::move(dst)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_binary_operator_arithmetic_divide_instructions(TacBinary node):
     if is_value_double(node.src1):
         generate_binary_operator_arithmetic_instructions(node)
@@ -1644,6 +1687,17 @@ cdef void generate_binary_operator_arithmetic_divide_instructions(TacBinary node
     else:
         generate_binary_operator_arithmetic_unsigned_divide_instructions(node)
 */
+static void generate_binary_operator_arithmetic_divide_instructions(TacBinary* node) {
+    if(is_value_double(node->src1.get())) {
+        generate_binary_operator_arithmetic_instructions(node);
+    }
+    else if(is_value_signed(node->src1.get())) {
+        generate_binary_operator_arithmetic_signed_divide_instructions(node);
+    }
+    else {
+        generate_binary_operator_arithmetic_unsigned_divide_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_binary_operator_arithmetic_signed_remainder_instructions(TacBinary node):
