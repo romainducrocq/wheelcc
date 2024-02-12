@@ -1080,13 +1080,21 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
     }
 }
 
-/** TODO
+/**
 cdef void generate_unsigned_to_double_instructions(TacUIntToDouble node):
     if is_value_32_bits(node.src):
         generate_uint_unsigned_to_double_instructions(node)
     else:
         generate_ulong_unsigned_to_double_instructions(node)
 */
+static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
+    if(is_value_32_bits(node->src.get())) {
+        generate_uint_unsigned_to_double_instructions(node);
+    }
+    else {
+        generate_ulong_unsigned_to_double_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_label_instructions(TacLabel node):
