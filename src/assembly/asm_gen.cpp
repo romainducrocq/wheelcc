@@ -2067,7 +2067,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
     return std::make_unique<AsmFunction>(std::move(name), std::move(is_global), std::move(body));
 }
 
-/** TODO
+/**
 cdef AsmStaticVariable generate_static_variable_top_level(TacStaticVariable node):
     cdef TIdentifier name = copy_identifier(node.name)
     cdef bint is_global = node.is_global
@@ -2075,6 +2075,14 @@ cdef AsmStaticVariable generate_static_variable_top_level(TacStaticVariable node
     cdef StaticInit initial_value = node.initial_value
     return AsmStaticVariable(name, is_global, alignment, initial_value)
 */
+static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(TacStaticVariable* node) {
+    TIdentifier name = node->name;
+    bool is_global = node->is_global;
+    TInt alignment = generate_alignment(node->static_init_type.get());
+    std::shared_ptr<StaticInit> initial_value = node->initial_value;
+    return std::make_unique<AsmStaticVariable>(std::move(name), std::move(alignment), std::move(is_global),
+                                               std::move(initial_value));
+}
 
 /** TODO
 cdef list[AsmTopLevel] p_static_constant_top_levels = []*/
