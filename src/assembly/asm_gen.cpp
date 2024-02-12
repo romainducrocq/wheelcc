@@ -1930,7 +1930,7 @@ static void generate_instructions(TacInstruction* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_list_instructions(list[TacInstruction] list_node):
     # instruction = Mov(assembly_type, operand src, operand dst) | MovSx(operand src, operand dst)
     #             | MovZeroExtend(operand src, operand dst) | Cvttsd2si(assembly_type, operand, operand)
@@ -1943,8 +1943,20 @@ cdef void generate_list_instructions(list[TacInstruction] list_node):
     for instruction in range(len(list_node)):
         generate_instructions(list_node[instruction])
 */
+// instruction = Mov(assembly_type, operand src, operand dst) | MovSx(operand src, operand dst)
+//             | MovZeroExtend(operand src, operand dst) | Cvttsd2si(assembly_type, operand, operand)
+//             | Cvtsi2sd(assembly_type, operand, operand) | Unary(unary_operator, assembly_type, operand)
+//             | Binary(binary_operator, assembly_type, operand, operand) | Cmp(assembly_type, operand, operand)
+//             | Idiv(assembly_type, operand) | Div(assembly_type, operand) | Cdq(assembly_type)
+//             | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code, operand) | Label(identifier)
+//             | AllocateStack(int) | DeallocateStack(int) | Push(operand) | Call(identifier) | Ret
+static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
+    for (size_t instruction = 0; instruction < list_node.size(); instruction++) {
+        generate_instructions(list_node[instruction].get());
+    }
+}
 
-/** TODO
+/**
 cdef void generate_reg_param_function_instructions(TIdentifier node, str arg_register):
     cdef AsmOperand src = generate_register(REGISTER_KIND.get(arg_register))
     cdef TIdentifier name = copy_identifier(node)
@@ -1952,8 +1964,19 @@ cdef void generate_reg_param_function_instructions(TIdentifier node, str arg_reg
     cdef AssemblyType assembly_type_param = convert_backend_assembly_type(node.str_t)
     instructions.append(AsmMov(assembly_type_param, src, dst))
 */
+static void generate_reg_param_function_instructions(const TIdentifier& param, REGISTER_KIND arg_register) {
+    std::shared_ptr<AsmOperand> src = generate_register(arg_register);
+    std::shared_ptr<AsmOperand> dst;
+    {
+        TIdentifier name = param;
+        dst = std::make_shared<AsmPseudo>(std::move(name));
+    }
+    std::shared_ptr<AssemblyType> assembly_type_param = convert_backend_assembly_type(param);
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_param), std::move(src),
+                                                        std::move(dst)));
+}
 
-/** TODO
+/**
 cdef void generate_stack_param_function_instructions(TIdentifier node, int32 byte):
     cdef AsmOperand src = AsmStack(TInt((byte + 2) * 8))
     cdef TIdentifier name = copy_identifier(node)
@@ -1961,6 +1984,17 @@ cdef void generate_stack_param_function_instructions(TIdentifier node, int32 byt
     cdef AssemblyType assembly_type_param = convert_backend_assembly_type(node.str_t)
     instructions.append(AsmMov(assembly_type_param, src, dst))
 */
+static void generate_stack_param_function_instructions(const TIdentifier& param, TInt byte) {
+    std::shared_ptr<AsmOperand> src = std::make_shared<AsmStack>((byte + 2) * 8);
+    std::shared_ptr<AsmOperand> dst;
+    {
+        TIdentifier name = param;
+        dst = std::make_shared<AsmPseudo>(std::move(name));
+    }
+    std::shared_ptr<AssemblyType> assembly_type_param = convert_backend_assembly_type(param);
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_param), std::move(src),
+                                                        std::move(dst)));
+}
 
 /** TODO
 cdef AsmFunction generate_function_top_level(TacFunction node):
