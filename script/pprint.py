@@ -115,8 +115,17 @@ void pretty_print_symbol_table() {
     std::cout << "\nDict(" + std::to_string(symbol_table.size()) + "):";
     for(const auto& symbol: symbol_table) {
         field("[" + symbol.first + "]", "", 2);
-        print_ast(symbol.second->type_t.get(), 2);
-        print_ast(symbol.second->attrs.get(), 2);
+        print_ast(symbol.second.get(), 2);
+    }
+    std::cout << std::endl;
+}
+
+void pretty_print_backend_symbol_table() {
+    header_string("Backend Symbol Table");
+    std::cout << "\nDict(" + std::to_string(backend_symbol_table.size()) + "):";
+    for(const auto& symbol: backend_symbol_table) {
+        field("[" + symbol.first + "]", "", 2);
+        print_ast(symbol.second.get(), 2);
     }
     std::cout << std::endl;
 }
