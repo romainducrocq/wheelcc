@@ -1157,7 +1157,7 @@ static void generate_copy_instructions(TacCopy* node) {
                                                         std::move(dst)));
 }
 
-/** TODO
+/**
 cdef void generate_jump_if_zero_integer_instructions(TacJumpIfZero node):
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
     cdef AsmCondCode cond_code_e = AsmE()
@@ -1167,6 +1167,20 @@ cdef void generate_jump_if_zero_integer_instructions(TacJumpIfZero node):
     instructions.append(AsmCmp(assembly_type_cond, imm_zero, condition))
     instructions.append(AsmJmpCC(cond_code_e, target))
 */
+static void generate_jump_if_zero_integer_instructions(TacJumpIfZero* node) {
+    {
+        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+        std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
+        std::shared_ptr<AssemblyType> assembly_type_cond = generate_assembly_type(node->condition.get());
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_cond),
+                                                            std::move(imm_zero), std::move(condition)));
+    }
+    {
+        TIdentifier target = node->target;
+        std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+        push_instruction(std::make_unique<AsmJmpCC>(std::move(target), std::move(cond_code_e)));
+    }
+}
 
 /** TODO
 cdef void generate_jump_if_zero_double_instructions(TacJumpIfZero node):
