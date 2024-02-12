@@ -775,7 +775,7 @@ static void generate_imm_truncate_instructions(AsmImm* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_truncate_instructions(TacTruncate node):
     cdef AsmOperand src = generate_operand(node.src)
     cdef AsmOperand dst = generate_operand(node.dst)
@@ -784,6 +784,16 @@ cdef void generate_truncate_instructions(TacTruncate node):
         generate_imm_truncate_instructions(src)
     instructions.append(AsmMov(assembly_type_src, src, dst))
 */
+static void generate_truncate_instructions(TacTruncate* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
+    if(src->type() == AST_T::AsmImm_t) {
+        generate_imm_truncate_instructions(static_cast<AsmImm*>(src.get()));
+    }
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                        std::move(dst)));
+}
 
 /** TODO
 cdef void generate_double_to_signed_instructions(TacDoubleToInt node):
