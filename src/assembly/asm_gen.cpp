@@ -1142,13 +1142,20 @@ static void generate_return_instructions(TacReturn* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_copy_instructions(TacCopy node):
     cdef AsmOperand src = generate_operand(node.src)
     cdef AsmOperand dst = generate_operand(node.dst)
     cdef AssemblyType assembly_type_src = generate_assembly_type(node.src)
     instructions.append(AsmMov(assembly_type_src, src, dst))
 */
+static void generate_copy_instructions(TacCopy* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                        std::move(dst)));
+}
 
 /** TODO
 cdef void generate_jump_if_zero_integer_instructions(TacJumpIfZero node):
