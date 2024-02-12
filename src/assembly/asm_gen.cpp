@@ -1,5 +1,6 @@
 #include "assembly/asm_gen.hpp"
 #include "util/error.hpp"
+#include "util/ctypes.hpp"
 #include "util/names.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
@@ -744,15 +745,12 @@ cdef void generate_sign_extend_instructions(TacSignExtend node):
     instructions.append(AsmMovSx(src, dst))
 */
 static void generate_sign_extend_instructions(TacSignExtend* node) {
-    //    cdef AsmOperand src = generate_operand(node.src)
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
-    //    cdef AsmOperand dst = generate_operand(node.dst)
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-    //    instructions.append(AsmMovSx(src, dst))
     push_instruction(std::make_unique<AsmMovSx>(std::move(src), std::move(dst)));
 }
 
-/** TODO
+/**
 cdef void generate_zero_extend_instructions(TacZeroExtend node):
     cdef AsmOperand src = generate_operand(node.src)
     cdef AsmOperand dst = generate_operand(node.dst)
@@ -764,11 +762,18 @@ static void generate_zero_extend_instructions(TacZeroExtend* node) {
     push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(src), std::move(dst)));
 }
 
-/** TODO
+/**
 cdef void generate_imm_truncate_instructions(AsmImm node):
     if node.is_quad:
         node.value.str_t = str(<uint64>(str_to_uint64(node.value.str_t) - (<uint64>4294967296)))
 */
+static void generate_imm_truncate_instructions(AsmImm* node) {
+    if(node->is_quad) {
+        TIdentifier value = std::to_string(uintmax_to_uint64(
+                                   string_to_uintmax(std::move(node->value), 0)) - 4294967296);
+        node->value = std::move(value);
+    }
+}
 
 /** TODO
 cdef void generate_truncate_instructions(TacTruncate node):
