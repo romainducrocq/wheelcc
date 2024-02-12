@@ -1293,7 +1293,7 @@ static void generate_jump_if_not_zero_instructions(TacJumpIfNotZero* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_unary_operator_conditional_integer_instructions(TacUnary node):
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
     cdef AsmCondCode cond_code_e = AsmE()
@@ -1305,8 +1305,27 @@ cdef void generate_unary_operator_conditional_integer_instructions(TacUnary node
     instructions.append(AsmMov(assembly_type_dst, imm_zero, cmp_dst))
     instructions.append(AsmSetCC(cond_code_e, cmp_dst))
 */
+static void generate_unary_operator_conditional_integer_instructions(TacUnary* node) {
+    std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+    std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src), imm_zero,
+                                                            std::move(src)));
+    }
+    {
+        std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                            std::move(imm_zero), cmp_dst));
+    }
+    {
+        std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+        push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_unary_operator_conditional_double_instructions(TacUnary node):
     cdef AsmOperand reg_zero = generate_register(REGISTER_KIND.get('Xmm0'))
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
@@ -1320,14 +1339,43 @@ cdef void generate_unary_operator_conditional_double_instructions(TacUnary node)
     instructions.append(AsmMov(assembly_type_dst, imm_zero, cmp_dst))
     instructions.append(AsmSetCC(cond_code_e, cmp_dst))
 */
+static void generate_unary_operator_conditional_double_instructions(TacUnary* node) {
+    std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
+    generate_zero_out_xmm_reg_instructions();
+    {
+        std::shared_ptr<AsmOperand> reg_zero = generate_register(REGISTER_KIND::Xmm0);
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<BackendDouble>();
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src),
+                                                            std::move(reg_zero), std::move(src)));
+    }
+    {
+        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                            std::move(imm_zero), cmp_dst));
+    }
+    {
+        std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+        push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_unary_operator_conditional_instructions(TacUnary node):
     if is_value_double(node.src):
         generate_unary_operator_conditional_double_instructions(node)
     else:
         generate_unary_operator_conditional_integer_instructions(node)
 */
+static void generate_unary_operator_conditional_instructions(TacUnary* node) {
+    if(is_value_double(node->src.get())) {
+        generate_unary_operator_conditional_double_instructions(node);
+    }
+    else {
+        generate_unary_operator_conditional_integer_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_unary_operator_arithmetic_integer_instructions(TacUnary node):
