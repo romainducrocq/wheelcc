@@ -2136,7 +2136,7 @@ static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
     }
 }
 
-/** TODO
+/**
 cdef AsmProgram generate_program(TacProgram node):
     # program = Program(function_definition)
     global p_static_constant_top_levels
@@ -2154,6 +2154,26 @@ cdef AsmProgram generate_program(TacProgram node):
 
     return AsmProgram(static_constant_top_levels, top_levels)
 */
+// program = Program(function_definition)
+static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
+    std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
+    p_static_constant_top_levels = &static_constant_top_levels;
+
+    std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
+    for(size_t top_level = 0; top_level < node->static_variable_top_levels.size(); top_level++) {
+        std::unique_ptr<AsmTopLevel> static_variable_top_level =
+                generate_top_level(node->static_variable_top_levels[top_level].get());
+        top_levels.push_back(std::move(static_variable_top_level));
+    }
+    for(size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {
+        std::unique_ptr<AsmTopLevel> function_top_level =
+                generate_top_level(node->function_top_levels[top_level].get());
+        top_levels.push_back(std::move(function_top_level));
+    }
+    p_static_constant_top_levels = nullptr;
+
+    return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
+}
 
 /** TODO
 cdef AsmProgram assembly_generation(TacProgram tac_ast):
