@@ -8,7 +8,9 @@
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
 #include "semantic/type_check.hpp"
+#include "assembly/registers.hpp"
 #include "assembly/st_conv.hpp"
+#include "assembly/stack_fix.hpp"
 
 #include <string>
 #include <memory>
@@ -526,21 +528,34 @@ static std::shared_ptr<AssemblyType> generate_assembly_type(TacValue* node) {
     }
 }
 
-/** TODO
+/**
 cdef list[AsmInstruction] instructions = []
 */
+static std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
 
-/** TODO
+static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
+    p_instructions->push_back(std::move(instruction));
+}
+
+/**
 cdef void generate_allocate_stack_instructions(int32 byte):
     instructions.append(allocate_stack_bytes(byte))
 */
+static void generate_allocate_stack_instructions(TInt byte) {
+    push_instruction(
+            allocate_stack_bytes(byte));
+}
 
-/** TODO
+/**
 cdef void generate_deallocate_stack_instructions(int32 byte):
     instructions.append(deallocate_stack_bytes(byte))
 */
+static void generate_deallocate_stack_instructions(TInt byte) {
+    push_instruction(
+            deallocate_stack_bytes(byte));
+}
 
-/** TODO
+/**
 cdef void generate_zero_out_xmm_reg_instructions():
     cdef AsmBinaryOp binary_op = AsmBitXor()
     cdef AsmOperand src = generate_register(REGISTER_KIND.get('Xmm0'))
@@ -548,6 +563,14 @@ cdef void generate_zero_out_xmm_reg_instructions():
     cdef AssemblyType assembly_type_src = BackendDouble()
     instructions.append(AsmBinary(binary_op, assembly_type_src, src, dst))
 */
+static void generate_zero_out_xmm_reg_instructions() {
+    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
+    std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::Xmm0);
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
+    push_instruction(std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type),
+                                                           std::move(src), std::move(dst)));
+}
 
 /** TODO
 cdef list[str] arg_registers = ["Di", "Si", "Dx", "Cx", "R8", "R9"]
