@@ -568,10 +568,9 @@ cdef void generate_zero_out_xmm_reg_instructions():
 static void generate_zero_out_xmm_reg_instructions() {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::Xmm0);
-    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
     std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<BackendDouble>();
     push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),std::move(assembly_type_src),
-                                                           std::move(src), std::move(dst)));
+                                                           src, src));
 }
 
 /**
@@ -1699,7 +1698,7 @@ static void generate_binary_operator_arithmetic_divide_instructions(TacBinary* n
     }
 }
 
-/** TODO
+/**
 cdef void generate_binary_operator_arithmetic_signed_remainder_instructions(TacBinary node):
     cdef AsmOperand src1 = generate_operand(node.src1)
     cdef AsmOperand src2 = generate_operand(node.src2)
@@ -1712,6 +1711,26 @@ cdef void generate_binary_operator_arithmetic_signed_remainder_instructions(TacB
     instructions.append(AsmIdiv(assembly_type_src1, src2))
     instructions.append(AsmMov(assembly_type_src1, dst_src, dst))
 */
+static void generate_binary_operator_arithmetic_signed_remainder_instructions(TacBinary* node) {
+    std::shared_ptr<AssemblyType> assembly_type_src1 = generate_assembly_type(node->src1.get());
+    {
+        std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
+        std::shared_ptr<AsmOperand> src1_dst = generate_register(REGISTER_KIND::Ax);
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1),
+                                                            std::move(src1_dst)));
+    }
+    push_instruction(std::make_unique<AsmCdq>(assembly_type_src1));
+    {
+        std::shared_ptr<AsmOperand> src2 = generate_operand(node->src2.get());
+        push_instruction(std::make_unique<AsmIdiv>(assembly_type_src1, std::move(src2)));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        std::shared_ptr<AsmOperand> dst_src = generate_register(REGISTER_KIND::Dx);
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src1),
+                                                            std::move(dst_src), std::move(dst)));
+    }
+}
 
 /** TODO
 cdef void generate_binary_operator_arithmetic_unsigned_remainder_instructions(TacBinary node):
