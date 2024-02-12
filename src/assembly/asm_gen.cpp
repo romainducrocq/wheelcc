@@ -1996,7 +1996,7 @@ static void generate_stack_param_function_instructions(const TIdentifier& param,
                                                         std::move(dst)));
 }
 
-/** TODO
+/**
 cdef AsmFunction generate_function_top_level(TacFunction node):
     global instructions
 
@@ -2028,65 +2028,42 @@ cdef AsmFunction generate_function_top_level(TacFunction node):
     return AsmFunction(name, is_global, body)
 */
 static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* node) {
-//    cdef TIdentifier name = copy_identifier(node.name)
     TIdentifier name = node->name;
-//    cdef bint is_global = node.is_global
     bool is_global = node->is_global;
-//
-//    cdef list[TacInstruction] body = []
+
     std::vector<std::unique_ptr<AsmInstruction>> body;
-//    instructions = body
     p_instructions = &body;
-//    cdef Py_ssize_t param
-//    cdef Py_ssize_t param_reg = 0
+
     size_t param_reg = 0;
-//    cdef Py_ssize_t param_sse_reg = 0
     size_t param_sse_reg = 0;
-//    cdef int32 param_stack = 0
     TInt param_stack = 0;
-//    for param in range(len(node.params)):
     for(size_t param = 0; param < node->params.size(); param++) {
-    //        if isinstance(symbol_table[node.params[param].str_t].type_t, Double):
         if(symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
-        //            if param_sse_reg < 8:
             if(param_sse_reg < 8) {
-                //                generate_reg_param_function_instructions(node.params[param], arg_sse_registers[param_sse_reg])
                 generate_reg_param_function_instructions(node->params[param],
                                                          ARG_SSE_REGISTERS[param_sse_reg]);
-                //                param_sse_reg += 1
                 param_sse_reg += 1;
             }
-        //            else:
             else {
-                //                generate_stack_param_function_instructions(node.params[param], param_stack)
                 generate_stack_param_function_instructions(node->params[param], param_stack);
-                //                param_stack += 1
                 param_stack += 1;
             }
         }
-    //        else:
         else {
-        //            if param_reg < 6:
             if(param_reg < 6) {
-                //                generate_reg_param_function_instructions(node.params[param], arg_registers[param_reg])
                 generate_reg_param_function_instructions(node->params[param], ARG_REGISTERS[param_reg]);
-                //                param_reg += 1
                 param_reg += 1;
             }
-        //            else:
             else {
-                //                generate_stack_param_function_instructions(node.params[param], param_stack)
                 generate_stack_param_function_instructions(node->params[param], param_stack);
-                //                param_stack += 1
                 param_stack += 1;
             }
         }
     }
-//    generate_list_instructions(node.body)
+
     generate_list_instructions(node->body);
     p_instructions = nullptr;
 
-//    return AsmFunction(name, is_global, body)
     return std::make_unique<AsmFunction>(std::move(name), std::move(is_global), std::move(body));
 }
 
