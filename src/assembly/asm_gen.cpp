@@ -586,15 +586,21 @@ static std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS = { REGISTER_KIND::Xmm0, R
                                                           REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5,
                                                           REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7 };
 
-/** TODO
+/**
 cdef void generate_reg_arg_fun_call_instructions(TacValue node, str arg_register):
     cdef AsmOperand src = generate_operand(node)
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get(arg_register))
     cdef AssemblyType assembly_type = generate_assembly_type(node)
     instructions.append(AsmMov(assembly_type, src, dst))
 */
+static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node);
+    std::shared_ptr<AsmOperand> dst = generate_register(arg_register);
+    std::shared_ptr<AssemblyType> assembly_type = generate_assembly_type(node);
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+}
 
-/** TODO
+/**
 cdef void generate_stack_arg_fun_call_instructions(TacValue node):
     cdef AsmOperand src = generate_operand(node)
     cdef AssemblyType assembly_type = generate_assembly_type(node)
@@ -606,6 +612,22 @@ cdef void generate_stack_arg_fun_call_instructions(TacValue node):
     instructions.append(AsmMov(assembly_type, src, dst))
     instructions.append(AsmPush(dst))
 */
+static void generate_stack_arg_fun_call_instructions(TacValue* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node);
+    std::shared_ptr<AssemblyType> assembly_type = generate_assembly_type(node);
+
+    if(src->type() == AST_T::AsmRegister_t ||
+       src->type() == AST_T::AsmImm_t ||
+       assembly_type->type() == AST_T::QuadWord_t ||
+       assembly_type->type() == AST_T::BackendDouble_t) {
+        push_instruction(std::make_unique<AsmPush>(std::move(src)));
+        return;
+    }
+
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), dst));
+    push_instruction(std::make_unique<AsmPush>(std::move(dst)));
+}
 
 /** TODO
 cdef void generate_fun_call_instructions(TacFunCall node):
