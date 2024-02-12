@@ -1474,7 +1474,7 @@ static void generate_unary_instructions(TacUnary* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_binary_operator_conditional_integer_instructions(TacBinary node):
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
     cdef AsmCondCode cond_code
@@ -1491,8 +1491,34 @@ cdef void generate_binary_operator_conditional_integer_instructions(TacBinary no
     instructions.append(AsmMov(assembly_type_dst, imm_zero, cmp_dst))
     instructions.append(AsmSetCC(cond_code, cmp_dst))
 */
+static void generate_binary_operator_conditional_integer_instructions(TacBinary* node) {
+    std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
+    {
+        std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
+        std::shared_ptr<AsmOperand> src2 = generate_operand(node->src2.get());
+        std::shared_ptr<AssemblyType> assembly_type_src1 = generate_assembly_type(node->src1.get());
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src1),
+                                                            std::move(src2), std::move(src1)));
+    }
+    {
+        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+        std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                            std::move(imm_zero), cmp_dst));
+    }
+    {
+        std::unique_ptr<AsmCondCode> cond_code;
+        if(is_value_signed(node->src1.get())) {
+            cond_code = generate_signed_condition_code(node->binary_op.get());
+        }
+        else {
+            cond_code = generate_unsigned_condition_code(node->binary_op.get());
+        }
+        push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_binary_operator_conditional_double_instructions(TacBinary node):
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
     cdef AsmCondCode cond_code = generate_unsigned_condition_code(node.binary_op)
@@ -1509,14 +1535,48 @@ cdef void generate_binary_operator_conditional_double_instructions(TacBinary nod
     instructions.append(AsmSetCC(cond_code, cmp_dst))
     instructions.append(AsmLabel(target_nan))
 */
+static void generate_binary_operator_conditional_double_instructions(TacBinary* node) {
+    TIdentifier target_nan = represent_label_identifier("comisd_nan");
+    std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
+    {
+        std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
+        std::shared_ptr<AsmOperand> src2 = generate_operand(node->src2.get());
+        std::shared_ptr<AssemblyType> assembly_type_src1 = generate_assembly_type(node->src1.get());
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src1),
+                                                            std::move(src2), std::move(src1)));
+    }
+    {
+        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                            std::move(imm_zero), cmp_dst));
+    }
+    {
+        std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
+        push_instruction(std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
+    }
+    {
+        std::unique_ptr<AsmCondCode> cond_code = generate_unsigned_condition_code(node->binary_op.get());
+        push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
+    }
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
+}
 
-/** TODO
+/**
 cdef void generate_binary_operator_conditional_instructions(TacBinary node):
     if is_value_double(node.src1):
         generate_binary_operator_conditional_double_instructions(node)
     else:
         generate_binary_operator_conditional_integer_instructions(node)
 */
+static void generate_binary_operator_conditional_instructions(TacBinary* node) {
+    if(is_value_double(node->src1.get())) {
+        generate_binary_operator_conditional_double_instructions(node);
+    }
+    else {
+        generate_binary_operator_conditional_integer_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_binary_operator_arithmetic_instructions(TacBinary node):
