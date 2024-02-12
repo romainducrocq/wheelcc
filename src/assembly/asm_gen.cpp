@@ -1836,7 +1836,7 @@ static void generate_binary_instructions(TacBinary* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_instructions(TacInstruction node):
     if isinstance(node, TacFunCall):
         generate_fun_call_instructions(node)
@@ -1875,6 +1875,60 @@ cdef void generate_instructions(TacInstruction node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static void generate_instructions(TacInstruction* node) {
+    switch(node->type()) {
+        case AST_T::TacFunCall_t:
+            generate_fun_call_instructions(static_cast<TacFunCall*>(node));
+            break;
+        case AST_T::TacSignExtend_t:
+            generate_sign_extend_instructions(static_cast<TacSignExtend*>(node));
+            break;
+        case AST_T::TacZeroExtend_t:
+            generate_zero_extend_instructions(static_cast<TacZeroExtend*>(node));
+            break;
+        case AST_T::TacTruncate_t:
+            generate_truncate_instructions(static_cast<TacTruncate*>(node));
+            break;
+        case AST_T::TacDoubleToInt_t:
+            generate_double_to_signed_instructions(static_cast<TacDoubleToInt*>(node));
+            break;
+        case AST_T::TacDoubleToUInt_t:
+            generate_double_to_unsigned_instructions(static_cast<TacDoubleToUInt*>(node));
+            break;
+        case AST_T::TacIntToDouble_t:
+            generate_signed_to_double_instructions(static_cast<TacIntToDouble*>(node));
+            break;
+        case AST_T::TacUIntToDouble_t:
+            generate_unsigned_to_double_instructions(static_cast<TacUIntToDouble*>(node));
+            break;
+        case AST_T::TacLabel_t:
+            generate_label_instructions(static_cast<TacLabel*>(node));
+            break;
+        case AST_T::TacJump_t:
+            generate_jump_instructions(static_cast<TacJump*>(node));
+            break;
+        case AST_T::TacReturn_t:
+            generate_return_instructions(static_cast<TacReturn*>(node));
+            break;
+        case AST_T::TacCopy_t:
+            generate_copy_instructions(static_cast<TacCopy*>(node));
+            break;
+        case AST_T::TacJumpIfZero_t:
+            generate_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node));
+            break;
+        case AST_T::TacJumpIfNotZero_t:
+            generate_jump_if_not_zero_instructions(static_cast<TacJumpIfNotZero*>(node));
+            break;
+        case AST_T::TacUnary_t:
+            generate_unary_instructions(static_cast<TacUnary*>(node));
+            break;
+        case AST_T::TacBinary_t:
+            generate_binary_instructions(static_cast<TacBinary*>(node));
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void generate_list_instructions(list[TacInstruction] list_node):
