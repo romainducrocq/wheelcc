@@ -1078,13 +1078,17 @@ static void generate_label_instructions(TacLabel* node) {
     push_instruction(std::make_unique<AsmLabel>(std::move(name)));
 }
 
-/** TODO
+/**
 cdef void generate_jump_instructions(TacJump node):
     cdef TIdentifier target = copy_identifier(node.target)
     instructions.append(AsmJmp(target))
 */
+static void generate_jump_instructions(TacJump* node) {
+    TIdentifier target = node->target;
+    push_instruction(std::make_unique<AsmJmp>(std::move(target)));
+}
 
-/** TODO
+/**
 cdef void generate_return_integer_instructions(TacReturn node):
     cdef AsmOperand src = generate_operand(node.val)
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Ax'))
@@ -1092,8 +1096,18 @@ cdef void generate_return_integer_instructions(TacReturn node):
     instructions.append(AsmMov(assembly_type_val, src, dst))
     instructions.append(AsmRet())
 */
+static void generate_return_integer_instructions(TacReturn* node) {
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+        std::shared_ptr<AssemblyType> assembly_type_val = generate_assembly_type(node->val.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src),
+                                                            std::move(dst)));
+    }
+    push_instruction(std::make_unique<AsmRet>());
+}
 
-/** TODO
+/**
 cdef void generate_return_double_instructions(TacReturn node):
     cdef AsmOperand src = generate_operand(node.val)
     cdef AsmOperand dst = generate_register(REGISTER_KIND.get('Xmm0'))
@@ -1101,14 +1115,32 @@ cdef void generate_return_double_instructions(TacReturn node):
     instructions.append(AsmMov(assembly_type_val, src, dst))
     instructions.append(AsmRet())
 */
+static void generate_return_double_instructions(TacReturn* node) {
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
+        std::shared_ptr<AssemblyType> assembly_type_val = std::make_shared<BackendDouble>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src),
+                                                            std::move(dst)));
+    }
+    push_instruction(std::make_unique<AsmRet>());
+}
 
-/** TODO
+/**
 cdef void generate_return_instructions(TacReturn node):
     if is_value_double(node.val):
         generate_return_double_instructions(node)
     else:
         generate_return_integer_instructions(node)
 */
+static void generate_return_instructions(TacReturn* node) {
+    if(is_value_double(node->val.get())) {
+        generate_return_double_instructions(node);
+    }
+    else {
+        generate_return_integer_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_copy_instructions(TacCopy node):
