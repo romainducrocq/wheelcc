@@ -718,8 +718,10 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
     }
 
-    TIdentifier name = node->name;
-    push_instruction(std::make_unique<AsmCall>(std::move(name)));
+    {
+        TIdentifier name = node->name;
+        push_instruction(std::make_unique<AsmCall>(std::move(name)));
+    }
 
     if(stack_padding > 0) {
         generate_deallocate_stack_instructions(stack_padding);
@@ -795,15 +797,22 @@ static void generate_truncate_instructions(TacTruncate* node) {
                                                         std::move(dst)));
 }
 
-/** TODO
+/**
 cdef void generate_double_to_signed_instructions(TacDoubleToInt node):
     cdef AsmOperand src = generate_operand(node.src)
     cdef AsmOperand dst = generate_operand(node.dst)
     cdef AssemblyType assembly_type_src = generate_assembly_type(node.dst)
     instructions.append(AsmCvttsd2si(assembly_type_src, src, dst))
 */
+static void generate_double_to_signed_instructions(TacDoubleToInt* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->dst.get());
+    push_instruction(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src), std::move(src),
+                                                              std::move(dst)));
+}
 
-/** TODO
+/**
 cdef void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt node):
     cdef AsmOperand src = generate_operand(node.src)
     cdef AsmOperand dst = generate_operand(node.dst)
@@ -814,6 +823,21 @@ cdef void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt node):
     instructions.append(AsmCvttsd2si(assembly_type_src, src, src_dst))
     instructions.append(AsmMov(assembly_type_dst, dst_src, dst))
 */
+static void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt* node) {
+    std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Ax);
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+        push_instruction(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src),
+                                                                  std::move(src),src_dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                            std::move(src_dst), std::move(dst)));
+    }
+}
 
 /** TODO
 cdef void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt node):
