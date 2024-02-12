@@ -6,9 +6,11 @@
 #include "ast/ast.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
+#include "ast/asm_ast.hpp"
 #include "parser/parser.hpp"
 #include "semantic/id_resolve.hpp"
 #include "intermediate/tac_repr.hpp"
+#include "assembly/asm_gen.hpp"
 
 #include <string>
 #include <vector>
@@ -42,6 +44,12 @@ static void debug_ast(Ast* node, const std::string& name) {
 static void debug_symbol_table() {
     if(VERBOSE) {
         pretty_print_symbol_table();
+    }
+}
+
+static void debug_backend_symbol_table() {
+    if(VERBOSE) {
+        pretty_print_backend_symbol_table();
     }
 }
 
@@ -155,6 +163,18 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     if(opt_code == 252) {
         debug_ast(tac_ast.get(), "TAC AST");
         debug_symbol_table();
+        return;
+    }
+#endif
+
+    verbose("-- Assembly generation ... ", false);
+    std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 251) {
+        debug_ast(asm_ast.get(), "ASM AST");
+        debug_symbol_table();
+        debug_backend_symbol_table();
         return;
     }
 #endif
