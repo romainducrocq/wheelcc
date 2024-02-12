@@ -1182,7 +1182,7 @@ static void generate_jump_if_zero_integer_instructions(TacJumpIfZero* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_jump_if_zero_double_instructions(TacJumpIfZero node):
     cdef AsmOperand reg_zero = generate_register(REGISTER_KIND.get('Xmm0'))
     cdef AsmCondCode cond_code_e = AsmE()
@@ -1193,14 +1193,37 @@ cdef void generate_jump_if_zero_double_instructions(TacJumpIfZero node):
     instructions.append(AsmCmp(assembly_type_cond, condition, reg_zero))
     instructions.append(AsmJmpCC(cond_code_e, target))
 */
+static void generate_jump_if_zero_double_instructions(TacJumpIfZero* node) {
+    generate_zero_out_xmm_reg_instructions();
+    {
+        std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
+        std::shared_ptr<AsmOperand> reg_zero = generate_register(REGISTER_KIND::Xmm0);
+        std::shared_ptr<AssemblyType> assembly_type_cond = std::make_shared<BackendDouble>();
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_cond),
+                                                            std::move(condition), std::move(reg_zero)));
+    }
+    {
+        TIdentifier target = node->target;
+        std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+        push_instruction(std::make_unique<AsmJmpCC>(std::move(target), std::move(cond_code_e)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_jump_if_zero_instructions(TacJumpIfZero node):
     if is_value_double(node.condition):
         generate_jump_if_zero_double_instructions(node)
     else:
         generate_jump_if_zero_integer_instructions(node)
 */
+static void generate_jump_if_zero_instructions(TacJumpIfZero* node) {
+    if(is_value_double(node->condition.get())) {
+        generate_jump_if_zero_double_instructions(node);
+    }
+    else {
+        generate_jump_if_zero_integer_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero node):
