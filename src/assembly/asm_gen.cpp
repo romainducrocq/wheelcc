@@ -1225,7 +1225,7 @@ static void generate_jump_if_zero_instructions(TacJumpIfZero* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero node):
     cdef AsmOperand imm_zero = AsmImm(TIdentifier("0"), False)
     cdef AsmCondCode cond_code_ne = AsmNE()
@@ -1235,8 +1235,22 @@ cdef void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero node):
     instructions.append(AsmCmp(assembly_type_cond, imm_zero, condition))
     instructions.append(AsmJmpCC(cond_code_ne, target))
 */
+static void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero* node) {
+    {
+        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
+        std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
+        std::shared_ptr<AssemblyType> assembly_type_cond = generate_assembly_type(node->condition.get());
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_cond),
+                                                            std::move(imm_zero), std::move(condition)));
+    }
+    {
+        TIdentifier target = node->target;
+        std::unique_ptr<AsmCondCode> cond_code_ne = std::make_unique<AsmNE>();
+        push_instruction(std::make_unique<AsmJmpCC>(std::move(target), std::move(cond_code_ne)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero node):
     cdef AsmOperand reg_zero = generate_register(REGISTER_KIND.get('Xmm0'))
     cdef AsmCondCode cond_code_ne = AsmNE()
@@ -1247,14 +1261,37 @@ cdef void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero node):
     instructions.append(AsmCmp(assembly_type_cond, condition, reg_zero))
     instructions.append(AsmJmpCC(cond_code_ne, target))
 */
+static void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero* node) {
+    generate_zero_out_xmm_reg_instructions();
+    {
+        std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
+        std::shared_ptr<AsmOperand> reg_zero = generate_register(REGISTER_KIND::Xmm0);
+        std::shared_ptr<AssemblyType> assembly_type_cond = std::shared_ptr<BackendDouble>();
+        push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_cond),
+                                                            std::move(condition), std::move(reg_zero)));
+    }
+    {
+        TIdentifier target = node->target;
+        std::unique_ptr<AsmCondCode> cond_code_ne = std::make_unique<AsmNE>();
+        push_instruction(std::make_unique<AsmJmpCC>(std::move(target), std::move(cond_code_ne)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_jump_if_not_zero_instructions(TacJumpIfNotZero node):
     if is_value_double(node.condition):
         generate_jump_if_not_zero_double_instructions(node)
     else:
         generate_jump_if_not_zero_integer_instructions(node)
 */
+static void generate_jump_if_not_zero_instructions(TacJumpIfNotZero* node) {
+    if(is_value_double(node->condition.get())) {
+        generate_jump_if_not_zero_double_instructions(node);
+    }
+    else {
+        generate_jump_if_not_zero_integer_instructions(node);
+    }
+}
 
 /** TODO
 cdef void generate_unary_operator_conditional_integer_instructions(TacUnary node):
