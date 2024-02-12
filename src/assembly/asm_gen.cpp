@@ -737,12 +737,20 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                                                         std::move(dst)));
 }
 
-/** TODO
+/**
 cdef void generate_sign_extend_instructions(TacSignExtend node):
     cdef AsmOperand src = generate_operand(node.src)
     cdef AsmOperand dst = generate_operand(node.dst)
     instructions.append(AsmMovSx(src, dst))
 */
+static void generate_sign_extend_instructions(TacSignExtend* node) {
+    //    cdef AsmOperand src = generate_operand(node.src)
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    //    cdef AsmOperand dst = generate_operand(node.dst)
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    //    instructions.append(AsmMovSx(src, dst))
+    push_instruction(std::make_unique<AsmMovSx>(std::move(src), std::move(dst)));
+}
 
 /** TODO
 cdef void generate_zero_extend_instructions(TacZeroExtend node):
@@ -750,6 +758,11 @@ cdef void generate_zero_extend_instructions(TacZeroExtend node):
     cdef AsmOperand dst = generate_operand(node.dst)
     instructions.append(AsmMovZeroExtend(src, dst))
 */
+static void generate_zero_extend_instructions(TacZeroExtend* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(src), std::move(dst)));
+}
 
 /** TODO
 cdef void generate_imm_truncate_instructions(AsmImm node):
