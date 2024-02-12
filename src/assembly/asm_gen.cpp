@@ -568,8 +568,8 @@ static void generate_zero_out_xmm_reg_instructions() {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::Xmm0);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
-    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
-    push_instruction(std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type),
+    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<BackendDouble>();
+    push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),std::move(assembly_type_src),
                                                            std::move(src), std::move(dst)));
 }
 
@@ -677,6 +677,105 @@ cdef void generate_fun_call_instructions(TacFunCall node):
     cdef AssemblyType assembly_type_dst = generate_assembly_type(node.dst)
     instructions.append(AsmMov(assembly_type_dst, src, dst))
 */
+static void generate_fun_call_instructions(TacFunCall* node) {
+//    cdef int32 stack_padding = 0
+    TInt stack_padding = 0;
+//    if len(node.args) % 2 == 1:
+    if(node->args.size() % 2 == 1) {
+        //        stack_padding = 8
+        stack_padding = 8;
+        //        generate_allocate_stack_instructions(stack_padding)
+        generate_allocate_stack_instructions(stack_padding);
+    }
+//
+//    cdef Py_ssize_t i
+//    cdef list[Py_ssize_t] i_regs = []
+    std::vector<size_t> i_regs;
+//    cdef list[Py_ssize_t] i_sse_regs = []
+    std::vector<size_t> i_sse_regs;
+//    cdef list[Py_ssize_t] i_stacks = []
+    std::vector<size_t> i_stacks;
+//    for i in range(len(node.args)):
+    for(size_t i = 0; i < node->args.size(); i++) {
+        //        if is_value_double(node.args[i]):
+        if(is_value_double(node->args[i].get())) {
+            //            if len(i_sse_regs) < 8:
+            if(i_sse_regs.size() < 8) {
+                //                i_sse_regs.append(i)
+                i_sse_regs.push_back(i);
+            }
+            //            else:
+            else {
+                //                i_stacks.append(i)
+                i_stacks.push_back(i);
+            }
+        }
+        //        else:
+        else {
+            //            if len(i_regs) < 6:
+            if(i_regs.size() < 6) {
+                //                i_regs.append(i)
+                i_regs.push_back(i);
+            }
+            //            else:
+            else {
+                //                i_stacks.append(i)
+                i_stacks.push_back(i);
+            }
+        }
+    }
+//
+//    for i in range(len(i_regs)):
+    for(size_t i = 0; i < i_regs.size(); i++) {
+    //        generate_reg_arg_fun_call_instructions(node.args[i_regs[i]], arg_registers[i])
+        generate_reg_arg_fun_call_instructions(node->args[i_regs[i]].get(), ARG_REGISTERS[i]);
+    }
+//
+//    for i in range(len(i_sse_regs)):
+    for(size_t i = 0; i < i_sse_regs.size(); i++) {
+    //        generate_reg_arg_fun_call_instructions(node.args[i_sse_regs[i]], arg_sse_registers[i])
+        generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(), ARG_SSE_REGISTERS[i]);
+    }
+//
+//    for i in range(len(i_stacks)):
+    for(size_t i = i_stacks.size(); i-- > 0;) {
+        //        stack_padding += 8
+        stack_padding += 8;
+        //        generate_stack_arg_fun_call_instructions(node.args[i_stacks[- (i + 1)]])
+        generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
+    }
+//
+//    cdef TIdentifier name = copy_identifier(node.name)
+    TIdentifier name = node->name;
+//    instructions.append(AsmCall(name))
+    push_instruction(std::make_unique<AsmCall>(std::move(name)));
+//
+//    if stack_padding:
+    if(stack_padding > 0) {
+        //        generate_deallocate_stack_instructions(stack_padding)
+        generate_deallocate_stack_instructions(stack_padding);
+    }
+//
+//    cdef AsmOperand src
+    std::shared_ptr<AsmOperand> src;
+//    if is_value_double(node.dst):
+    if(is_value_double(node->dst.get())) {
+    //        src = generate_register(REGISTER_KIND.get('Xmm0'))
+        src = generate_register(REGISTER_KIND::Xmm0);
+    }
+//    else:
+    else {
+    //        src = generate_register(REGISTER_KIND.get('Ax'))
+        src = generate_register(REGISTER_KIND::Ax);
+    }
+//    cdef AsmOperand dst = generate_operand(node.dst)
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+//    cdef AssemblyType assembly_type_dst = generate_assembly_type(node.dst)
+    std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+//    instructions.append(AsmMov(assembly_type_dst, src, dst))
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                        std::move(dst)));
+}
 
 /** TODO
 cdef void generate_sign_extend_instructions(TacSignExtend node):
