@@ -1429,15 +1429,23 @@ static void generate_unary_operator_arithmetic_double_negate_instructions(TacUna
     }
 }
 
-/** TODO
+/**
 cdef void generate_unary_operator_arithmetic_negate_instructions(TacUnary node):
     if is_value_double(node.src):
         generate_unary_operator_arithmetic_double_negate_instructions(node)
     else:
         generate_unary_operator_arithmetic_integer_instructions(node)
 */
+static void generate_unary_operator_arithmetic_negate_instructions(TacUnary* node) {
+    if(is_value_double(node->src.get())) {
+        generate_unary_operator_arithmetic_double_negate_instructions(node);
+    }
+    else {
+        generate_unary_operator_arithmetic_integer_instructions(node);
+    }
+}
 
-/** TODO
+/**
 cdef void generate_unary_instructions(TacUnary node):
     if isinstance(node.unary_op, TacNot):
         generate_unary_operator_conditional_instructions(node)
@@ -1450,6 +1458,21 @@ cdef void generate_unary_instructions(TacUnary node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static void generate_unary_instructions(TacUnary* node) {
+    switch(node->unary_op->type()) {
+        case AST_T::TacNot_t:
+            generate_unary_operator_conditional_instructions(node);
+            break;
+        case AST_T::TacComplement_t:
+            generate_unary_operator_arithmetic_integer_instructions(node);
+            break;
+        case AST_T::TacNegate_t:
+            generate_unary_operator_arithmetic_negate_instructions(node);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void generate_binary_operator_conditional_integer_instructions(TacBinary node):
