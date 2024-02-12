@@ -877,37 +877,25 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
     std::shared_ptr<AsmOperand> src_out_of_range_si = generate_register(REGISTER_KIND::Dx);
     std::shared_ptr<AssemblyType> assembly_type_sd = std::make_shared<BackendDouble>();
     std::shared_ptr<AssemblyType> assembly_type_si = std::make_shared<QuadWord>();
-    {
-        push_instruction(std::make_unique<AsmCmp>(assembly_type_sd, upper_bound_sd, src));
-    }
+    push_instruction(std::make_unique<AsmCmp>(assembly_type_sd, upper_bound_sd, src));
     {
         std::unique_ptr<AsmCondCode> cond_code_ae = std::make_unique<AsmAE>();
         push_instruction(std::make_unique<AsmJmpCC>(target_out_of_range,
                                                               std::move(cond_code_ae)));
     }
-    {
-        push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si, src, dst));
-    }
-    {
-        push_instruction(std::make_unique<AsmJmp>(target_after));
-    }
-    {
-        push_instruction(std::make_unique<AsmLabel>(std::move(target_out_of_range)));
-    }
-    {
-        push_instruction(std::make_unique<AsmMov>(assembly_type_sd, std::move(src),
-                                                            dst_out_of_range_sd));
-    }
+    push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si, src, dst));
+    push_instruction(std::make_unique<AsmJmp>(target_after));
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_out_of_range)));
+    push_instruction(std::make_unique<AsmMov>(assembly_type_sd, std::move(src),
+                                                        dst_out_of_range_sd));
     {
         std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_sd_sub = std::make_unique<AsmSub>();
         push_instruction(std::make_unique<AsmBinary>(std::move(binary_op_out_of_range_sd_sub),
                                                                std::move(assembly_type_sd),
                                                                std::move(upper_bound_sd), dst_out_of_range_sd));
     }
-    {
-        push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si,
-                                                                  std::move(dst_out_of_range_sd), dst));
-    }
+    push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si,
+                                                              std::move(dst_out_of_range_sd), dst));
     {
         std::shared_ptr<AsmOperand> upper_bound_si = std::make_shared<AsmImm>(true, "9223372036854775808");
         push_instruction(std::make_unique<AsmMov>(assembly_type_si, std::move(upper_bound_si),
@@ -919,9 +907,7 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
                                                                std::move(assembly_type_si),
                                                                std::move(src_out_of_range_si), std::move(dst)));
     }
-    {
-        push_instruction(std::make_unique<AsmLabel>(std::move(target_after)));
-    }
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_after)));
 }
 
 /**
@@ -1028,23 +1014,13 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
         push_instruction(std::make_unique<AsmJmpCC>(target_out_of_range,
                                                               std::move(cond_code_l)));
     }
-    {
-        push_instruction(std::make_unique<AsmCvtsi2sd>(assembly_type_si, src, dst));
-    }
-    {
-        push_instruction(std::make_unique<AsmJmp>(target_after));
-    }
-    {
-        push_instruction(std::make_unique<AsmLabel>(std::move(target_out_of_range)));
-    }
-    {
-        push_instruction(std::make_unique<AsmMov>(assembly_type_si, std::move(src),
-                                                            dst_out_of_range_si));
-    }
-    {
-        push_instruction(std::make_unique<AsmMov>(assembly_type_si, dst_out_of_range_si,
-                                                            dst_out_of_range_si_shr));
-    }
+    push_instruction(std::make_unique<AsmCvtsi2sd>(assembly_type_si, src, dst));
+    push_instruction(std::make_unique<AsmJmp>(target_after));
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_out_of_range)));
+    push_instruction(std::make_unique<AsmMov>(assembly_type_si, std::move(src),
+                                                        dst_out_of_range_si));
+    push_instruction(std::make_unique<AsmMov>(assembly_type_si, dst_out_of_range_si,
+                                                        dst_out_of_range_si_shr));
     {
         std::unique_ptr<AsmUnaryOp> unary_op_out_of_range_si_shr = std::make_unique<AsmShr>();
         push_instruction(std::make_unique<AsmUnary>(std::move(unary_op_out_of_range_si_shr),
@@ -1065,19 +1041,15 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
                                                                std::move(dst_out_of_range_si),
                                                                dst_out_of_range_si_shr));
     }
-    {
-        push_instruction(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_si),
-                                                                 std::move(dst_out_of_range_si_shr), dst));
-    }
+    push_instruction(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_si),
+                                                             std::move(dst_out_of_range_si_shr), dst));
     {
         std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_sq_add = std::make_unique<AsmAdd>();
         std::shared_ptr<AssemblyType> assembly_type_sq = std::make_shared<BackendDouble>();
         push_instruction(std::make_unique<AsmBinary>(std::move(binary_op_out_of_range_sq_add),
                                                                std::move(assembly_type_sq), dst, dst));
     }
-    {
-        push_instruction(std::make_unique<AsmLabel>(std::move(target_after)));
-    }
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_after)));
 }
 
 /**
@@ -1096,11 +1068,15 @@ static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_label_instructions(TacLabel node):
     cdef TIdentifier name = copy_identifier(node.name)
     instructions.append(AsmLabel(name))
 */
+static void generate_label_instructions(TacLabel* node) {
+    TIdentifier name = node->name;
+    push_instruction(std::make_unique<AsmLabel>(std::move(name)));
+}
 
 /** TODO
 cdef void generate_jump_instructions(TacJump node):
