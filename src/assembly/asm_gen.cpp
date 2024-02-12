@@ -1377,7 +1377,7 @@ static void generate_unary_operator_conditional_instructions(TacUnary* node) {
     }
 }
 
-/** TODO
+/**
 cdef void generate_unary_operator_arithmetic_integer_instructions(TacUnary node):
     cdef AsmUnaryOp unary_op = generate_unary_op(node.unary_op)
     cdef AsmOperand src = generate_operand(node.src)
@@ -1386,8 +1386,23 @@ cdef void generate_unary_operator_arithmetic_integer_instructions(TacUnary node)
     instructions.append(AsmMov(assembly_type_src, src, src_dst))
     instructions.append(AsmUnary(unary_op, assembly_type_src, src_dst))
 */
+static void generate_unary_operator_arithmetic_integer_instructions(TacUnary* node) {
+    std::shared_ptr<AsmOperand> src_dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src),
+                                                            src_dst));
+    }
+    {
+        std::unique_ptr<AsmUnaryOp> unary_op = generate_unary_op(node->unary_op.get());
+        push_instruction(std::make_unique<AsmUnary>(std::move(unary_op),
+                                                             std::move(assembly_type_src),
+                                                             std::move(src_dst)));
+    }
+}
 
-/** TODO
+/**
 cdef void generate_unary_operator_arithmetic_double_negate_instructions(TacUnary node):
     cdef AsmBinaryOp binary_op = AsmBitXor()
     cdef AsmOperand src1 = generate_operand(node.src)
@@ -1397,6 +1412,22 @@ cdef void generate_unary_operator_arithmetic_double_negate_instructions(TacUnary
     instructions.append(AsmMov(assembly_type_src1, src1, src1_dst))
     instructions.append(AsmBinary(binary_op, assembly_type_src1, src2, src1_dst))
 */
+static void generate_unary_operator_arithmetic_double_negate_instructions(TacUnary* node) {
+    std::shared_ptr<AsmOperand> src1_dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type_src1 = std::make_shared<BackendDouble>();
+    {
+        std::shared_ptr<AsmOperand> src1 = generate_operand(node->src.get());
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1),
+                                                            src1_dst));
+    }
+    {
+        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
+        std::shared_ptr<AsmOperand> src2 = generate_double_static_constant_operand(-0.0, 16);
+        push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
+                                                               std::move(assembly_type_src1),
+                                                               std::move(src2), std::move(src1_dst)));
+    }
+}
 
 /** TODO
 cdef void generate_unary_operator_arithmetic_negate_instructions(TacUnary node):
