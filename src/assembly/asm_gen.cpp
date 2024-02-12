@@ -96,7 +96,7 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     return std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
 }
 
-static void append_double_static_constant_top_level(TIdentifier name, double value, TInt byte);
+static void append_double_static_constant_top_level(const TIdentifier& identifier, TDouble value, TInt byte);
 
 /**
 cdef AsmData generate_double_static_constant_operand(double value, int32 byte):
@@ -110,7 +110,7 @@ cdef AsmData generate_double_static_constant_operand(double value, int32 byte):
         append_double_static_constant_top_level(copy_identifier(static_constant_label), value, byte)
     return AsmData(static_constant_label)
 */
-static std::shared_ptr<AsmData> generate_double_static_constant_operand(double value, TInt byte) {
+static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TInt byte) {
     TIdentifier static_constant_label;
     TIdentifier str_value = std::to_string(value);
     if(static_const_label_map.find(str_value) != static_const_label_map.end()) {
@@ -2084,20 +2084,31 @@ static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(Tac
                                                std::move(initial_value));
 }
 
-/** TODO
+/**
 cdef list[AsmTopLevel] p_static_constant_top_levels = []*/
 
-/** TODO
+static std::vector<std::unique_ptr<AsmTopLevel>>* p_static_constant_top_levels;
+
+static void push_static_constant_top_levels(std::unique_ptr<AsmTopLevel>&& static_constant_top_levels) {
+    p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
+}
+
+/**
 cdef void append_double_static_constant_top_level(TIdentifier name, double value, int32 byte):
     cdef TInt alignment = TInt(byte)
     cdef StaticInit initial_value = DoubleInit(TDouble(value))
     p_static_constant_top_levels.append(AsmStaticConstant(name, alignment, initial_value))
 */
-static void append_double_static_constant_top_level(TIdentifier /*name*/, double /*value*/, TInt /*byte*/) {
-    ; // TODO for forward decl only
+static void append_double_static_constant_top_level(const TIdentifier& identifier, TDouble value, TInt byte) {
+    TIdentifier name = identifier;
+    TInt alignment = byte;
+    std::shared_ptr<StaticInit> initial_value = std::make_shared<DoubleInit>(value);
+    push_static_constant_top_levels(std::make_unique<AsmStaticConstant>(std::move(name),
+                                                                                            std::move(alignment),
+                                                                                            std::move(initial_value)));
 }
 
-/** TODO
+/**
 cdef AsmTopLevel generate_top_level(TacTopLevel node):
     # top_level = Function(identifier name, bool global, instruction* instructions)
     #           | StaticVariable(identifier, bool global, int alignment, static_init initial_value)
@@ -2111,6 +2122,19 @@ cdef AsmTopLevel generate_top_level(TacTopLevel node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+// top_level = Function(identifier name, bool global, instruction* instructions)
+//           | StaticVariable(identifier, bool global, int alignment, static_init initial_value)
+//           | AsmStaticConstant(identifier, int alignment, static_init initial_value)
+static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
+    switch(node->type()) {
+        case AST_T::TacFunction_t:
+            return generate_function_top_level(static_cast<TacFunction*>(node));
+        case AST_T::TacStaticVariable_t:
+            return generate_static_variable_top_level(static_cast<TacStaticVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef AsmProgram generate_program(TacProgram node):
