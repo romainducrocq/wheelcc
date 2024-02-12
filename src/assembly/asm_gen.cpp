@@ -14,6 +14,7 @@
 
 #include <string>
 #include <memory>
+#include <array>
 #include <vector>
 #include <unordered_map>
 
@@ -572,13 +573,18 @@ static void generate_zero_out_xmm_reg_instructions() {
                                                            std::move(src), std::move(dst)));
 }
 
-/** TODO
+/**
 cdef list[str] arg_registers = ["Di", "Si", "Dx", "Cx", "R8", "R9"]
 */
+static std::array<REGISTER_KIND, 6> ARG_REGISTERS = { REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx,
+                                                      REGISTER_KIND::Cx, REGISTER_KIND::R8, REGISTER_KIND::R9 };
 
-/** TODO
+/**
 cdef list[str] arg_sse_registers = ["Xmm0", "Xmm1", "Xmm2", "Xmm3", "Xmm4", "Xmm5", "Xmm6", "Xmm7"]
 */
+static std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS = { REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2,
+                                                          REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5,
+                                                          REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7 };
 
 /** TODO
 cdef void generate_reg_arg_fun_call_instructions(TacValue node, str arg_register):
