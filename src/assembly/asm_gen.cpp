@@ -1788,7 +1788,7 @@ static void generate_binary_operator_arithmetic_remainder_instructions(TacBinary
     }
 }
 
-/** TODO
+/**
 cdef void generate_binary_instructions(TacBinary node):
     if isinstance(node.binary_op, (TacEqual, TacNotEqual, TacLessThan, TacLessOrEqual, TacGreaterThan,
                                    TacGreaterOrEqual)):
@@ -1805,6 +1805,36 @@ cdef void generate_binary_instructions(TacBinary node):
         raise RuntimeError(
             "An error occurred in assembly generation, not all nodes were visited")
 */
+static void generate_binary_instructions(TacBinary* node) {
+    switch(node->binary_op->type()) {
+        case AST_T::TacEqual_t:
+        case AST_T::TacNotEqual_t:
+        case AST_T::TacLessThan_t:
+        case AST_T::TacLessOrEqual_t:
+        case AST_T::TacGreaterThan_t:
+        case AST_T::TacGreaterOrEqual_t:
+            generate_binary_operator_conditional_instructions(node);
+            break;
+        case AST_T::TacAdd_t:
+        case AST_T::TacSubtract_t:
+        case AST_T::TacMultiply_t:
+        case AST_T::TacBitAnd_t:
+        case AST_T::TacBitOr_t:
+        case AST_T::TacBitXor_t:
+        case AST_T::TacBitShiftLeft_t:
+        case AST_T::TacBitShiftRight_t:
+            generate_binary_operator_arithmetic_instructions(node);
+            break;
+        case AST_T::TacDivide_t:
+            generate_binary_operator_arithmetic_divide_instructions(node);
+            break;
+        case AST_T::TacRemainder_t:
+            generate_binary_operator_arithmetic_remainder_instructions(node);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void generate_instructions(TacInstruction node):
