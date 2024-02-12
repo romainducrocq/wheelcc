@@ -2175,7 +2175,7 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
 }
 
-/** TODO
+/**
 cdef AsmProgram assembly_generation(TacProgram tac_ast):
 
     cdef AsmProgram asm_ast = generate_program(tac_ast)
@@ -2190,3 +2190,13 @@ cdef AsmProgram assembly_generation(TacProgram tac_ast):
 
     return asm_ast
 */
+std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_ast) {
+    std::unique_ptr<AsmProgram> asm_ast = generate_program(tac_ast.get());
+    tac_ast.reset();
+    if(!asm_ast) {
+        RAISE_INTERNAL_ERROR;
+    }
+    convert_symbol_table(asm_ast.get());
+    fix_stack(asm_ast.get());
+    return asm_ast;
+}
