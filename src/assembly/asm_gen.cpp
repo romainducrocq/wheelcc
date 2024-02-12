@@ -839,7 +839,7 @@ static void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt* node)
     }
 }
 
-/** TODO
+/**
 cdef void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt node):
     cdef AsmOperand upper_bound_sd = generate_double_static_constant_operand(9223372036854775808.0, 8)
     cdef AsmOperand src = generate_operand(node.src)
@@ -867,83 +867,59 @@ cdef void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt node):
     instructions.append(AsmLabel(target_after))
 */
 static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node) {
-    //    cdef TIdentifier target_out_of_range = represent_label_identifier("sd2si_out_of_range")
     TIdentifier target_out_of_range = represent_label_identifier("sd2si_out_of_range");
-    //    cdef TIdentifier target_after = represent_label_identifier("sd2si_after")
     TIdentifier target_after = represent_label_identifier("sd2si_after");
-//    cdef AsmOperand upper_bound_sd = generate_double_static_constant_operand(9223372036854775808.0, 8)
     std::shared_ptr<AsmOperand> upper_bound_sd = generate_double_static_constant_operand(9223372036854775808.0,
                                                                                          8);
-//    cdef AsmOperand src = generate_operand(node.src)
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
-    //    cdef AsmOperand dst = generate_operand(node.dst)
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-    //    cdef AsmOperand dst_out_of_range_sd = generate_register(REGISTER_KIND.get('Xmm1'))
     std::shared_ptr<AsmOperand> dst_out_of_range_sd = generate_register(REGISTER_KIND::Xmm1);
-//    cdef AsmOperand src_out_of_range_si = generate_register(REGISTER_KIND.get('Dx'))
     std::shared_ptr<AsmOperand> src_out_of_range_si = generate_register(REGISTER_KIND::Dx);
-//    cdef AssemblyType assembly_type_sd = BackendDouble()
     std::shared_ptr<AssemblyType> assembly_type_sd = std::make_shared<BackendDouble>();
-//    cdef AssemblyType assembly_type_si = QuadWord()
     std::shared_ptr<AssemblyType> assembly_type_si = std::make_shared<QuadWord>();
     {
-    //    instructions.append(AsmCmp(assembly_type_sd, upper_bound_sd, src))
         push_instruction(std::make_unique<AsmCmp>(assembly_type_sd, upper_bound_sd, src));
     }
     {
-        //    cdef AsmCondCode cond_code_ae = AsmAE()
         std::unique_ptr<AsmCondCode> cond_code_ae = std::make_unique<AsmAE>();
-    //    instructions.append(AsmJmpCC(cond_code_ae, target_out_of_range))
         push_instruction(std::make_unique<AsmJmpCC>(target_out_of_range,
                                                               std::move(cond_code_ae)));
     }
     {
-    //    instructions.append(AsmCvttsd2si(assembly_type_si, src, dst))
         push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si, src, dst));
     }
     {
-    //    instructions.append(AsmJmp(target_after))
         push_instruction(std::make_unique<AsmJmp>(target_after));
     }
     {
-    //    instructions.append(AsmLabel(target_out_of_range))
         push_instruction(std::make_unique<AsmLabel>(std::move(target_out_of_range)));
     }
     {
-    //    instructions.append(AsmMov(assembly_type_sd, src, dst_out_of_range_sd))
         push_instruction(std::make_unique<AsmMov>(assembly_type_sd, std::move(src),
                                                             dst_out_of_range_sd));
     }
     {
-        //    cdef AsmBinaryOp binary_op_out_of_range_sd_sub = AsmSub()
         std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_sd_sub = std::make_unique<AsmSub>();
-    //    instructions.append(AsmBinary(binary_op_out_of_range_sd_sub, assembly_type_sd, upper_bound_sd, dst_out_of_range_sd))
         push_instruction(std::make_unique<AsmBinary>(std::move(binary_op_out_of_range_sd_sub),
                                                                std::move(assembly_type_sd),
                                                                std::move(upper_bound_sd), dst_out_of_range_sd));
     }
     {
-    //    instructions.append(AsmCvttsd2si(assembly_type_si, dst_out_of_range_sd, dst))
         push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si,
                                                                   std::move(dst_out_of_range_sd), dst));
     }
     {
-        //    cdef AsmOperand upper_bound_si = AsmImm(TIdentifier("9223372036854775808"), True)
         std::shared_ptr<AsmOperand> upper_bound_si = std::make_shared<AsmImm>(true, "9223372036854775808");
-    //    instructions.append(AsmMov(assembly_type_si, upper_bound_si, src_out_of_range_si))
         push_instruction(std::make_unique<AsmMov>(assembly_type_si, std::move(upper_bound_si),
                                                             src_out_of_range_si));
     }
     {
-        //    cdef AsmBinaryOp binary_op_out_of_range_si_add = AsmAdd()
         std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_si_add = std::make_unique<AsmAdd>();
-    //    instructions.append(AsmBinary(binary_op_out_of_range_si_add, assembly_type_si, src_out_of_range_si, dst))
         push_instruction(std::make_unique<AsmBinary>(std::move(binary_op_out_of_range_si_add),
                                                                std::move(assembly_type_si),
                                                                std::move(src_out_of_range_si), std::move(dst)));
     }
     {
-    //    instructions.append(AsmLabel(target_after))
         push_instruction(std::make_unique<AsmLabel>(std::move(target_after)));
     }
 }
