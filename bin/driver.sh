@@ -149,6 +149,9 @@ function compile () {
     verbose "Compile    -> ${FILE}.i"
     ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}
     if [ ${?} -ne 0 ]; then clean; exit 1; fi
+    if [ ${OPT_CODE} -eq 250 ]; then
+        cat ${FILE}.s
+    fi
 }
 
 function link () {
