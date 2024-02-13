@@ -571,7 +571,7 @@ static std::string emit_operand(AsmOperand* node, TInt byte) {
     }
 }
 
-/** TODO
+/**
 cdef str emit_binary_op(AsmBinaryOp node):
     # Add           -> $ add
     # Sub           -> $ sub
@@ -606,8 +606,42 @@ cdef str emit_binary_op(AsmBinaryOp node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// Add           -> $ add
+// Sub           -> $ sub
+// Mult<i>       -> $ imul
+// Mult<d>       -> $ mul
+// DivDouble     -> $ div
+// BitAnd        -> $ and
+// BitOr         -> $ or
+// BitXor        -> $ xor
+// BitShiftLeft  -> $ shl
+// BitShiftRight -> $ shr
+static std::string emit_binary_op(AsmBinaryOp* node) {
+    switch(node->type()) {
+        case AST_T::AsmAdd_t:
+            return "add";
+        case AST_T::AsmSub_t:
+            return "sub";
+        case AST_T::AsmMult_t:
+            return "mul";
+        case AST_T::AsmDivDouble_t:
+            return "div";
+        case AST_T::AsmBitAnd_t:
+            return "and";
+        case AST_T::AsmBitOr_t:
+            return "or";
+        case AST_T::AsmBitXor_t:
+            return "xor";
+        case AST_T::AsmBitShiftLeft_t:
+            return "shl";
+        case AST_T::AsmBitShiftRight_t:
+            return "shr";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef str emit_unary_op(AsmUnaryOp node):
     # Neg -> $ neg
     # Not -> $ not
@@ -623,6 +657,21 @@ cdef str emit_unary_op(AsmUnaryOp node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// Neg -> $ neg
+// Not -> $ not
+// Shr -> $ shr
+static std::string emit_unary_op(AsmUnaryOp* node) {
+    switch(node->type()) {
+        case AST_T::AsmNeg_t:
+            return "neg";
+        case AST_T::AsmNot_t:
+            return "not";
+        case AST_T::AsmShr_t:
+            return "shr";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void emit(str line, int32 indent):
