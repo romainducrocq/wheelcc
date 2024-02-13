@@ -432,9 +432,9 @@ static void fix_allocate_stack_bytes() {
     if(byte % 8 != 0) {
         RAISE_INTERNAL_ERROR;
     }
-
-    AsmImm* imm = static_cast<AsmImm*>(static_cast<AsmBinary*>((*p_fix_instructions)[0].get())->src.get());
-    imm->value = std::to_string(byte);
+    if(byte > 0) {
+        (*p_fix_instructions)[0] = allocate_stack_bytes(byte);
+    }
 }
 
 static bool is_imm_t(AST_T t) {
@@ -1250,7 +1250,7 @@ static void fix_function_top_level(AsmFunction* node) {
 
     node->instructions.clear();
     p_fix_instructions = &node->instructions;
-    push_fix_instruction(allocate_stack_bytes(0));
+    p_fix_instructions->emplace_back();
 
     counter = 0;
     pseudo_map.clear();
