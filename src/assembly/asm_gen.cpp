@@ -1265,7 +1265,7 @@ static void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero* node
     {
         std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
         std::shared_ptr<AsmOperand> reg_zero = generate_register(REGISTER_KIND::Xmm0);
-        std::shared_ptr<AssemblyType> assembly_type_cond = std::shared_ptr<BackendDouble>();
+        std::shared_ptr<AssemblyType> assembly_type_cond = std::make_shared<BackendDouble>();
         push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_cond),
                                                             std::move(condition), std::move(reg_zero)));
     }
