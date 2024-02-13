@@ -1343,7 +1343,7 @@ static void emit_static_variable_top_level(AsmStaticVariable* node) {
     }
 }
 
-/** TODO
+/**
 cdef void emit_double_static_constant_top_level(AsmStaticConstant node):
     # StaticConstant(name, align, init) -> $     .section .rodata
     #                                      $     <alignment-directive>
@@ -1356,8 +1356,20 @@ cdef void emit_double_static_constant_top_level(AsmStaticConstant node):
     emit(f".L{name}:", 0)
     emit(f".quad {static_init}", 1)
 */
+// StaticConstant(name, align, init) -> $     .section .rodata
+//                                      $     <alignment-directive>
+//                                      $ .L<name>:
+//                                      $     .quad <d>
+static void emit_double_static_constant_top_level(AsmStaticConstant* node) {
+    std::string name = emit_identifier(node->name);
+    std::string static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->value);
+    emit(".section .rodata", 1);
+    emit_alignment_directive_top_level(node->alignment);
+    emit(".L" + name + ":", 0);
+    emit(".quad " + static_init, 1);
+}
 
-/** TODO
+/**
 cdef void emit_static_constant_top_level(AsmStaticConstant node):
     # StaticConstant(name, align, init)<d> -> $ <double-static-constant-directives>
     if isinstance(node.initial_value, DoubleInit):
@@ -1367,8 +1379,17 @@ cdef void emit_static_constant_top_level(AsmStaticConstant node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// StaticConstant(name, align, init)<d> -> $ <double-static-constant-directives>
+static void emit_static_constant_top_level(AsmStaticConstant* node) {
+    switch(node->initial_value->type()) {
+        case AST_T::DoubleInit_t:
+            emit_double_static_constant_top_level(node);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef void emit_top_level(AsmTopLevel node):
     # Function(name, global, instructions)      -> $ <function-top-level-directives>
     # StaticVariable(name, global, align, init) -> $ <static-variable-top-level-directives>
@@ -1384,6 +1405,24 @@ cdef void emit_top_level(AsmTopLevel node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// Function(name, global, instructions)      -> $ <function-top-level-directives>
+// StaticVariable(name, global, align, init) -> $ <static-variable-top-level-directives>
+// StaticConstant(name, align, init)         -> $ <static-constant-top-level-directives>
+static void emit_top_level(AsmTopLevel* node) {
+    switch(node->type()) {
+        case AST_T::AsmFunction_t:
+            emit_function_top_level(static_cast<AsmFunction*>(node));
+            break;
+        case AST_T::AsmStaticVariable_t:
+            emit_static_variable_top_level(static_cast<AsmStaticVariable*>(node));
+            break;
+        case AST_T::AsmStaticConstant_t:
+            emit_static_constant_top_level(static_cast<AsmStaticConstant*>(node));
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void emit_program(AsmProgram node):
