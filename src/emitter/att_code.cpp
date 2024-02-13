@@ -865,7 +865,7 @@ static void emit_unary_instructions(AsmUnary* node) {
     emit(unary_op + t + " " + dst, 1);
 }
 
-/** TODO
+/**
 cdef void emit_binary_instructions(AsmBinary node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t
@@ -882,6 +882,25 @@ cdef void emit_binary_instructions(AsmBinary node):
     cdef str dst = emit_operand(node.dst, byte)
     emit(f"{binary_op}{t} {src}, {dst}", 1)
 */
+static void emit_binary_instructions(AsmBinary* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t;
+    if(node->binary_op->type() == AST_T::AsmBitXor_t &&
+       node->assembly_type->type() == AST_T::BackendDouble_t) {
+        t = "pd";
+    }
+    else {
+        t = emit_type_instruction_suffix(node->assembly_type.get());
+    }
+    std::string binary_op = emit_binary_op(node->binary_op.get());
+    if(node->binary_op->type() == AST_T::AsmMult_t &&
+       node->assembly_type->type() != AST_T::BackendDouble_t) {
+        binary_op = "i" + binary_op;
+    }
+    std::string src = emit_operand(node->src.get(), byte);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    emit(binary_op + t + " " + src + ", " + dst, 1);
+}
 
 /** TODO
 cdef void emit_idiv_instructions(AsmIdiv node):
