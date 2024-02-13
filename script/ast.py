@@ -237,7 +237,7 @@ ast = [
     ["AsmCall", [(TIdentifier, "name")], []],
     ["AsmRet", [], []],
     ["AsmTopLevel", [], []],
-    ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_global")], []],
+    ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_global")], ["[instructions"]],
     ["AsmStaticVariable", [(TIdentifier, "name"), (TInt, "alignment"), (Bool, "is_global")], ["initial_value"]],
     ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["initial_value"]],
     ["AsmProgram", [], ["[static_constant_top_levels", "[top_levels"]],

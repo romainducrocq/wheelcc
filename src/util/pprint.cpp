@@ -1203,6 +1203,10 @@ static void print_ast(Ast* node, size_t t) {
             AsmFunction* p_node = static_cast<AsmFunction*>(node);
             field("TIdentifier", p_node->name, t+1);
             field("Bool", std::to_string(p_node->is_global), t+1);
+            field("List[" + std::to_string(p_node->instructions.size()) + "]", "", t+1);
+            for(const auto& item: p_node->instructions) {
+                print_ast(item.get(), t+1);
+            }
             break;
         }
         case AST_T::AsmStaticVariable_t: {

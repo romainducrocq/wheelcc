@@ -5,6 +5,7 @@ cat ../include/ast/${1}.hpp \
     | grep --invert-match ")" \
     | grep --invert-match "(" \
     | grep -e "struct" -e ";" \
+    | sed -e "s/nstruction/nstr_uction/g" - \
     | sed -e "s/\s*std::vector<TIdentifier>\s*/TIdentifier [/g" - \
     | sed -e "s/\s*std::vector<.*>\s*/\"[/g" - \
     | sed -e "s/\s*std::unique_ptr<.*>\s*/\"/g" - \
@@ -56,8 +57,7 @@ cat tmp \
     | sed s/"\")\]\],/\")\]\, \[\]\],/g" \
     | sed s/"\", \[\"/\", \[\], \[\"/g" \
     | sed s/"\", \[\]\],/\", \[\], \[\]\],/g" \
-    | sed s"/TacIn\[\"ion/TacInstruction/g" \
-    | sed s"/AsmIn\[\"ion/AsmInstruction/g" > tmp2
+    | sed s"/nstr_uction/nstruction/g" > tmp2
 rm tmp
 
 echo ""
