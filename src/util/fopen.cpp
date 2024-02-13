@@ -74,7 +74,7 @@ static void write_chunk(const std::string& chunk_fp, size_t chunk_l) {
     fwrite(chunk_fp.c_str(), sizeof(char), chunk_l, file_out);
 }
 
-/** TODO
+/**
 cdef void write_file(str stream, Py_ssize_t chunk_size = 4096):
     global stream_buf
 
@@ -85,13 +85,12 @@ cdef void write_file(str stream, Py_ssize_t chunk_size = 4096):
 
         stream_buf = stream_buf[chunk_size:]
 */
-static void write_file(std::string&& stream, size_t /*chunk_size*/) {
-    // stream_buf += stream
+static void write_file(std::string&& stream, size_t chunk_size) {
     stream_buf += stream;
-    //    while len(stream_buf) >= chunk_size:
-    //        write_chunk(stream_buf[:chunk_size].encode("UTF-8"),
-    //                    chunk_size)
-    //        stream_buf = stream_buf[chunk_size:]
+    while(stream_buf.size() >= chunk_size) {
+        write_chunk(stream_buf.substr(0, chunk_size), chunk_size);
+        stream_buf = stream_buf.substr(chunk_size, stream_buf.size() - chunk_size);
+    }
 }
 
 /**

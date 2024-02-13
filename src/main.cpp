@@ -62,7 +62,7 @@ static void debug_asm_code() {
 
 #endif
 
-/** TODO
+/**
 cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
 
     verbose("-- Lexing ... ", end="")
