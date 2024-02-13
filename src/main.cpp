@@ -115,7 +115,11 @@ cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
 */
 
 static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
-    if(opt_code > 0) {
+    if(opt_code > 0
+#ifdef __NDEBUG__
+       && opt_code < 200
+#endif
+    ) {
         VERBOSE = true;
     }
 
