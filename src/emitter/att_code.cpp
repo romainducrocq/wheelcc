@@ -1,6 +1,8 @@
 #include "emitter/att_code.hpp"
+#include "util/error.hpp"
 #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
+#include "ast/asm_ast.hpp"
 
 #include <inttypes.h>
 #include <string>
@@ -65,7 +67,7 @@ static std::string emit_ulong(TULong value) {
     return std::to_string(value);
 }
 
-/** TODO
+/**
 cdef str emit_register_rsp_sse(AsmReg node):
     # Reg(SP)    -> $ %rsp
     # Reg(XMM0)  -> $ %xmm0
@@ -105,8 +107,47 @@ cdef str emit_register_rsp_sse(AsmReg node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// Reg(SP)    -> $ %rsp
+// Reg(XMM0)  -> $ %xmm0
+// Reg(XMM1)  -> $ %xmm1
+// Reg(XMM2)  -> $ %xmm2
+// Reg(XMM3)  -> $ %xmm3
+// Reg(XMM4)  -> $ %xmm4
+// Reg(XMM5)  -> $ %xmm5
+// Reg(XMM6)  -> $ %xmm6
+// Reg(XMM7)  -> $ %xmm7
+// Reg(XMM14) -> $ %xmm14
+// Reg(XMM15) -> $ %xmm15
+static std::string emit_register_rsp_sse(AsmReg* node) {
+    switch(node->type()) {
+        case AST_T::AsmSp_t:
+            return "rsp";
+        case AST_T::AsmXMM0_t:
+            return "xmm0";
+        case AST_T::AsmXMM1_t:
+            return "xmm1";
+        case AST_T::AsmXMM2_t:
+            return "xmm2";
+        case AST_T::AsmXMM3_t:
+            return "xmm3";
+        case AST_T::AsmXMM4_t:
+            return "xmm4";
+        case AST_T::AsmXMM5_t:
+            return "xmm5";
+        case AST_T::AsmXMM6_t:
+            return "xmm6";
+        case AST_T::AsmXMM7_t:
+            return "xmm7";
+        case AST_T::AsmXMM14_t:
+            return "xmm14";
+        case AST_T::AsmXMM15_t:
+            return "xmm15";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef str emit_register_1byte(AsmReg node):
     # Reg(AX)  -> $ %al
     # Reg(DX)  -> $ %dl
@@ -138,8 +179,41 @@ cdef str emit_register_1byte(AsmReg node):
     else:
         return emit_register_rsp_sse(node)
 */
+// Reg(AX)  -> $ %al
+// Reg(DX)  -> $ %dl
+// Reg(CX)  -> $ %cl
+// Reg(DI)  -> $ %dil
+// Reg(SI)  -> $ %sil
+// Reg(R8)  -> $ %r8b
+// Reg(R9)  -> $ %r9b
+// Reg(R10) -> $ %r10b
+// Reg(R11) -> $ %r11b
+static std::string emit_register_1byte(AsmReg* node) {
+    switch(node->type()) {
+        case AST_T::AsmAx_t:
+            return "al";
+        case AST_T::AsmDx_t:
+            return "dl";
+        case AST_T::AsmCx_t:
+            return "cl";
+        case AST_T::AsmDi_t:
+            return "dil";
+        case AST_T::AsmSi_t:
+            return "sil";
+        case AST_T::AsmR8_t:
+            return "r8b";
+        case AST_T::AsmR9_t:
+            return "r9b";
+        case AST_T::AsmR10_t:
+            return "r10b";
+        case AST_T::AsmR11_t:
+            return "r11b";
+        default:
+            return emit_register_rsp_sse(node);
+    }
+}
 
-/** TODO
+/**
 cdef str emit_register_4byte(AsmReg node):
     # Reg(AX)  -> $ %eax
     # Reg(DX)  -> $ %edx
@@ -171,8 +245,41 @@ cdef str emit_register_4byte(AsmReg node):
     else:
         return emit_register_rsp_sse(node)
 */
+// Reg(AX)  -> $ %eax
+// Reg(DX)  -> $ %edx
+// Reg(CX)  -> $ %ecx
+// Reg(DI)  -> $ %edi
+// Reg(SI)  -> $ %esi
+// Reg(R8)  -> $ %r8d
+// Reg(R9)  -> $ %r9d
+// Reg(R10) -> $ %r10d
+// Reg(R11) -> $ %r11d
+static std::string emit_register_4byte(AsmReg* node) {
+    switch(node->type()) {
+        case AST_T::AsmAx_t:
+            return "eax";
+        case AST_T::AsmDx_t:
+            return "edx";
+        case AST_T::AsmCx_t:
+            return "ecx";
+        case AST_T::AsmDi_t:
+            return "edi";
+        case AST_T::AsmSi_t:
+            return "esi";
+        case AST_T::AsmR8_t:
+            return "r8d";
+        case AST_T::AsmR9_t:
+            return "r9d";
+        case AST_T::AsmR10_t:
+            return "r10d";
+        case AST_T::AsmR11_t:
+            return "r11d";
+        default:
+            return emit_register_rsp_sse(node);
+    }
+}
 
-/** TODO
+/**
 cdef str emit_register_8byte(AsmReg node):
     # Reg(AX)    -> $ %rax
     # Reg(DX)    -> $ %rdx
@@ -204,6 +311,39 @@ cdef str emit_register_8byte(AsmReg node):
     else:
         return emit_register_rsp_sse(node)
 */
+// Reg(AX)    -> $ %rax
+// Reg(DX)    -> $ %rdx
+// Reg(CX)    -> $ %rcx
+// Reg(DI)    -> $ %rdi
+// Reg(SI)    -> $ %rsi
+// Reg(R8)    -> $ %r8
+// Reg(R9)    -> $ %r9
+// Reg(R10)   -> $ %r10
+// Reg(R11)   -> $ %r11
+static std::string emit_register_8byte(AsmReg* node) {
+    switch(node->type()) {
+        case AST_T::AsmAx_t:
+            return "rax";
+        case AST_T::AsmDx_t:
+            return "rdx";
+        case AST_T::AsmCx_t:
+            return "rcx";
+        case AST_T::AsmDi_t:
+            return "rdi";
+        case AST_T::AsmSi_t:
+            return "rsi";
+        case AST_T::AsmR8_t:
+            return "r8";
+        case AST_T::AsmR9_t:
+            return "r9";
+        case AST_T::AsmR10_t:
+            return "r10";
+        case AST_T::AsmR11_t:
+            return "r11";
+        default:
+            return emit_register_rsp_sse(node);
+    }
+}
 
 /** TODO
 cdef str emit_condition_code(AsmCondCode node):
