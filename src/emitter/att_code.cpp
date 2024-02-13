@@ -689,14 +689,19 @@ static void emit(std::string&& line, size_t t) {
     // write_line(line);
 }
 
-/** TODO
+/**
 cdef void emit_ret_instructions(AsmRet node):
     emit("movq %rbp, %rsp", 1)
     emit("popq %rbp", 1)
     emit("ret", 1)
 */
+static void emit_ret_instructions(AsmRet* /*node*/) {
+    emit("movq %rbp, %rsp", 1);
+    emit("popq %rbp", 1);
+    emit("ret", 1);
+}
 
-/** TODO
+/**
 cdef void emit_mov_instructions(AsmMov node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
@@ -704,15 +709,27 @@ cdef void emit_mov_instructions(AsmMov node):
     cdef str dst = emit_operand(node.dst, byte)
     emit(f"mov{t} {src}, {dst}", 1)
 */
+static void emit_mov_instructions(AsmMov* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    emit("mov" + t + " " + src + ", " + dst, 1);
+}
 
-/** TODO
+/**
 cdef void emit_mov_sx_instructions(AsmMovSx node):
     cdef str src = emit_operand(node.src, 4)
     cdef str dst = emit_operand(node.dst, 8)
     emit(f"movslq {src}, {dst}", 1)
 */
+static void emit_mov_sx_instructions(AsmMovSx* node) {
+    std::string src = emit_operand(node->src.get(), 4);
+    std::string dst = emit_operand(node->dst.get(), 8);
+    emit("movslq " + src + ", " + dst, 1);
+}
 
-/** TODO
+/**
 cdef void emit_cvttsd2si_instructions(AsmCvttsd2si node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
@@ -720,8 +737,15 @@ cdef void emit_cvttsd2si_instructions(AsmCvttsd2si node):
     cdef str dst = emit_operand(node.dst, byte)
     emit(f"cvttsd2si{t} {src}, {dst}", 1)
 */
+static void emit_cvttsd2si_instructions(AsmCvttsd2si* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    emit("cvttsd2si" + t + " " + src + ", " + dst, 1);
+}
 
-/** TODO
+/**
 cdef void emit_cvtsi2sd_instructions(AsmCvtsi2sd node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
@@ -729,26 +753,45 @@ cdef void emit_cvtsi2sd_instructions(AsmCvtsi2sd node):
     cdef str dst = emit_operand(node.dst, byte)
     emit(f"cvtsi2sd{t} {src}, {dst}", 1)
 */
+static void emit_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    emit("cvtsi2sd" + t + " " + src + ", " + dst, 1);
+}
 
-/** TODO
+/**
 cdef void emit_push_instructions(AsmPush node):
     cdef str src = emit_operand(node.src, 8)
     emit(f"pushq {src}", 1)
 */
+static void emit_push_instructions(AsmPush* node) {
+    std::string src = emit_operand(node->src.get(), 8);
+    emit("pushq " + src, 1);
+}
 
-/** TODO
+/**
 cdef void emit_call_instructions(AsmCall node):
     cdef str label = emit_identifier(node.name)
     emit(f"call {label}@PLT", 1)
 */
+static void emit_call_instructions(AsmCall* node) {
+    std::string label = emit_identifier(node->name);
+    emit("call " + label + "@PLT", 1);
+}
 
-/** TODO
+/**
 cdef void emit_label_instructions(AsmLabel node):
     cdef str label = emit_identifier(node.name)
     emit(f".L{label}:", 0)
 */
+static void emit_label_instructions(AsmLabel* node) {
+    std::string label = emit_identifier(node->name);
+    emit(".L" + label + ":", 0);
+}
 
-/** TODO
+/**
 cdef void emit_cmp_instructions(AsmCmp node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
@@ -757,7 +800,20 @@ cdef void emit_cmp_instructions(AsmCmp node):
     if isinstance(node.assembly_type, BackendDouble):
         emit(f"comi{t} {src}, {dst}", 1)
     else:
-        emit(f"cmp{t} {src}, {dst}", 1)*/
+        emit(f"cmp{t} {src}, {dst}", 1)
+*/
+static void emit_cmp_instructions(AsmCmp* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    if(node->assembly_type->type() == AST_T::BackendDouble_t) {
+        emit("comi" + t + " " + src + ", " + dst, 1);
+    }
+    else {
+        emit("cmp" + t + " " + src + ", " + dst, 1);
+    }
+}
 
 /** TODO
 cdef void emit_jmp_instructions(AsmJmp node):
