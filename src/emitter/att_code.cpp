@@ -2,6 +2,7 @@
 #include "util/error.hpp"
 #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
+#include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
 
 #include <inttypes.h>
@@ -525,6 +526,82 @@ cdef str emit_operand(AsmOperand node, int32 byte):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// Imm(int)         -> $ $<int>
+// Register(reg)    -> $ %reg
+// Stack(int)       -> $ <int>(%rbp)
+// Data(identifier) -> $ <identifier>(%rip)
+static std::string emit_operand(AsmOperand* node, TInt byte) {
+    //    cdef str operand
+    std::string operand;
+    //
+    switch(node->type()) {
+        //    if isinstance(node, AsmImm):
+        case AST_T::AsmImm_t: {
+            //        operand = emit_identifier(node.value)
+            operand = emit_identifier(static_cast<AsmImm*>(node)->value);
+            //        return f"${operand}"
+            return "$" + operand;
+        }
+        //    elif isinstance(node, AsmRegister):
+        case AST_T::AsmRegister_t: {
+            switch(byte) {
+                //        if byte == 1:
+                //            operand = emit_register_1byte(node.reg)
+                case 1:
+                    operand = emit_register_1byte(static_cast<AsmRegister*>(node)->reg.get());
+                    break;
+                //        elif byte == 4:
+                //            operand = emit_register_4byte(node.reg)
+                case 4:
+                    operand = emit_register_4byte(static_cast<AsmRegister*>(node)->reg.get());
+                    break;
+                //        elif byte == 8:
+                //            operand = emit_register_8byte(node.reg)
+                case 8:
+                    operand = emit_register_8byte(static_cast<AsmRegister*>(node)->reg.get());
+                    break;
+                //        else:
+                //
+                //            raise RuntimeError(
+                //                "An error occurred in code emission, unmanaged register byte size")
+                //
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+            //        return f"%{operand}"
+            return "%" + operand;
+        }
+        //    elif isinstance(node, AsmStack):
+        case AST_T::AsmStack_t: {
+            //        operand = emit_int(node.value)
+            operand = emit_int(static_cast<AsmStack*>(node)->value);
+            //        return F"{operand}(%rbp)"
+            return operand + "(%rbp)";
+        }
+        //    elif isinstance(node, AsmData):
+        case AST_T::AsmData_t: {
+            //        operand = emit_identifier(node.name)
+            operand = emit_identifier(static_cast<AsmData*>(node)->name);
+            //        if operand in backend_symbol_table and \
+            //           isinstance(backend_symbol_table[operand], BackendObj) and \
+            //           backend_symbol_table[operand].is_constant:
+            if(backend_symbol_table.find(operand) != backend_symbol_table.end() &&
+               backend_symbol_table[operand]->type() == AST_T::BackendObj_t &&
+               static_cast<BackendObj*>(backend_symbol_table[operand].get())->is_constant) {
+                // operand = f".L{operand}"
+                operand = ".L" + operand;
+            }
+            //        return f"{operand}(%rip)"
+            return operand + "(%rip)";
+        }
+        //    else:
+        //
+        //        raise RuntimeError(
+        //            "An error occurred in code emission, not all nodes were visited")
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef str emit_binary_op(AsmBinaryOp node):
