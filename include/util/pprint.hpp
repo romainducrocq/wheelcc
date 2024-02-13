@@ -12,6 +12,7 @@ void pretty_print_tokens(const std::vector<Token>& tokens);
 void pretty_print_ast(Ast* node, const std::string& name);
 void pretty_print_symbol_table();
 void pretty_print_backend_symbol_table();
+void pretty_print_asm_code();
 
 #endif
 

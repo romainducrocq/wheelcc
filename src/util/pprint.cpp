@@ -1270,5 +1270,10 @@ void pretty_print_backend_symbol_table() {
     std::cout << std::endl;
 }
 
+void pretty_print_asm_code() {
+    header_string("ASM Code");
+    std::cout << std::endl;
+}
+
 #endif
 

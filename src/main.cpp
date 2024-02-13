@@ -54,9 +54,9 @@ static void debug_backend_symbol_table() {
     }
 }
 
-static void debug_asm_code(std::string&& /*filename*/) { // TODO
+static void debug_asm_code() {
     if(VERBOSE) {
-        ; // pretty_print_asm_code();
+        pretty_print_asm_code();
     }
 }
 
@@ -178,7 +178,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 250) {
-        debug_asm_code(filename + ".s");
+        debug_asm_code();
         return;
     }
 #endif
