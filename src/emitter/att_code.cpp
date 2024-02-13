@@ -902,23 +902,35 @@ static void emit_binary_instructions(AsmBinary* node) {
     emit(binary_op + t + " " + src + ", " + dst, 1);
 }
 
-/** TODO
+/**
 cdef void emit_idiv_instructions(AsmIdiv node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
     cdef str src = emit_operand(node.src, byte)
     emit(f"idiv{t} {src}", 1)
 */
+static void emit_idiv_instructions(AsmIdiv* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    emit("idiv" + t + " " + src, 1);
+}
 
-/** TODO
+/**
 cdef void emit_div_instructions(AsmDiv node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
     cdef str src = emit_operand(node.src, byte)
     emit(f"div{t} {src}", 1)
 */
+static void emit_div_instructions(AsmDiv* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    emit("div" + t + " " + src, 1);
+}
 
-/** TODO
+/**
 cdef void emit_cdq_instructions(AsmCdq node):
     if isinstance(node.assembly_type, LongWord):
         emit("cdq", 1)
@@ -929,8 +941,20 @@ cdef void emit_cdq_instructions(AsmCdq node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+static void emit_cdq_instructions(AsmCdq* node) {
+    switch(node->assembly_type->type()) {
+        case AST_T::LongWord_t:
+            emit("cdq", 1);
+            break;
+        case AST_T::QuadWord_t:
+            emit("cqo", 1);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef void emit_instructions(AsmInstruction node):
     # Ret                                  -> $ movq %rbp, %rsp
     #                                         $ popq %rbp
@@ -992,6 +1016,84 @@ cdef void emit_instructions(AsmInstruction node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// Ret                                  -> $ movq %rbp, %rsp
+//                                         $ popq %rbp
+//                                         $ ret
+// Mov(t, src, dst)                     -> $ mov<t> <src>, <dst>
+// MovSx(src, dst)                      -> $ movslq <src>, <dst>
+// Cvttsd2si(t, src, dst)               -> $ cvttsd2si<t> <src>, <dst>
+// Cvtsi2sd(t, src, dst)                -> $ cvtsi2sd<t> <src>, <dst>
+// Push(operand)                        -> $ pushq <operand>
+// Call(label)                          -> $ call <label>@PLT
+// Label(label)                         -> $ .L<label>:
+// Cmp(t, operand, operand)<i>          -> $ cmp<t> <operand>, <operand>
+// Cmp(t, operand, operand)<d>          -> $ comi<t> <operand>, <operand>
+// Jmp(label)                           -> $ jmp .L<label>
+// JmpCC(cond_code, label)              -> $ j<cond_code> .L<label>
+// SetCC(cond_code, operand)            -> $ set<cond_code> <operand>
+// Unary(unary_operator, t, operand)    -> $ <unary_operator><t> <operand>
+// Binary(binary_operator, t, src, dst) -> $ <binary_operator><t> <src>, <dst>
+// Idiv(t, operand)                     -> $ idiv<t> <operand>
+// Div(t, operand)                      -> $ div<t> <operand>
+// Cdq<l>                               -> $ cdq
+// Cdq<q>                               -> $ cqo
+static void emit_instructions(AsmInstruction* node) {
+    switch(node->type()) {
+        case AST_T::AsmRet_t:
+            emit_ret_instructions(static_cast<AsmRet*>(node));
+            break;
+        case AST_T::AsmMov_t:
+            emit_mov_instructions(static_cast<AsmMov*>(node));
+            break;
+        case AST_T::AsmMovSx_t:
+            emit_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            break;
+        case AST_T::AsmCvttsd2si_t:
+            emit_cvttsd2si_instructions(static_cast<AsmCvttsd2si*>(node));
+            break;
+        case AST_T::AsmCvtsi2sd_t:
+            emit_cvtsi2sd_instructions(static_cast<AsmCvtsi2sd*>(node));
+            break;
+        case AST_T::AsmPush_t:
+            emit_push_instructions(static_cast<AsmPush*>(node));
+            break;
+        case AST_T::AsmCall_t:
+            emit_call_instructions(static_cast<AsmCall*>(node));
+            break;
+        case AST_T::AsmLabel_t:
+            emit_label_instructions(static_cast<AsmLabel*>(node));
+            break;
+        case AST_T::AsmCmp_t:
+            emit_cmp_instructions(static_cast<AsmCmp*>(node));
+            break;
+        case AST_T::AsmJmp_t:
+            emit_jmp_instructions(static_cast<AsmJmp*>(node));
+            break;
+        case AST_T::AsmJmpCC_t:
+            emit_jmp_cc_instructions(static_cast<AsmJmpCC*>(node));
+            break;
+        case AST_T::AsmSetCC_t:
+            emit_set_cc_instructions(static_cast<AsmSetCC*>(node));
+            break;
+        case AST_T::AsmUnary_t:
+            emit_unary_instructions(static_cast<AsmUnary*>(node));
+            break;
+        case AST_T::AsmBinary_t:
+            emit_binary_instructions(static_cast<AsmBinary*>(node));
+            break;
+        case AST_T::AsmIdiv_t:
+            emit_idiv_instructions(static_cast<AsmIdiv*>(node));
+            break;
+        case AST_T::AsmDiv_t:
+            emit_div_instructions(static_cast<AsmDiv*>(node));
+            break;
+        case AST_T::AsmCdq_t:
+            emit_cdq_instructions(static_cast<AsmCdq*>(node));
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void emit_list_instructions(list[AsmInstruction] list_node):
