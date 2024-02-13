@@ -70,12 +70,14 @@ Usage: ccc2 [Help] [Debug] [Link] [Lib] FILE
     --help       print help and exit
 
 [Debug]:
-    --lex        print lexing and exit
-    --parse      print parsing and exit
-    --validate   print semantic analysis and exit
-    --tacky      print tac representation and exit
-    --codegen    print assembly generation and exit
-    --codeemit   print code emission and exit
+    -v           enable verbose mode
+    (Debug only):
+    --lex        print  lexing    stage and exit
+    --parse      print  parsing   stage and exit
+    --validate   print  semantic  stage and exit
+    --tacky      print  interm    stage and exit
+    --codegen    print  assembly  stage and exit
+    --codeemit   print  emission  stage and exit
 
 [Link]:
     -c           compile, but do not link
