@@ -1133,7 +1133,7 @@ static void emit_global_directive_top_level(const std::string& name, bool is_glo
     }
 }
 
-/** TODO
+/**
 cdef void emit_function_top_level(AsmFunction node):
     # Function(name, global, instructions) -> $     <global-directive>
     #                                         $     .text
@@ -1149,8 +1149,23 @@ cdef void emit_function_top_level(AsmFunction node):
     emit("movq %rsp, %rbp", 1)
     emit_list_instructions(node.instructions)
 */
+// Function(name, global, instructions) -> $     <global-directive>
+//                                         $     .text
+//                                         $ <name>:
+//                                         $     pushq %rbp
+//                                         $     movq %rsp, %rbp
+//                                         $     <instructions>
+static void emit_function_top_level(AsmFunction* node) {
+    std::string name = emit_identifier(node->name);
+    emit_global_directive_top_level(name, node->is_global);
+    emit(".text", 1);
+    emit(name + ":", 0);
+    emit("pushq %rbp", 1);
+    emit("movq %rsp, %rbp", 1);
+    emit_list_instructions(node->instructions);
+}
 
-/** TODO
+/**
 cdef void emit_data_static_variable_top_level(AsmStaticVariable node, str static_init):
     # StaticVariable(name, global, init) initialized to non-zero value -> $     <global-directive>
     #                                                                     $     .data
@@ -1166,8 +1181,23 @@ cdef void emit_data_static_variable_top_level(AsmStaticVariable node, str static
     emit(f"{name}:", 0)
     emit(static_init, 1)
 */
+// StaticVariable(name, global, init) initialized to non-zero value -> $     <global-directive>
+//                                                                     $     .data
+//                                                                     $     <alignment-directive>
+//                                                                     $ <name>:
+//                                                       if init<i>(i) $     .long <i>
+//                                                     elif init<i>(i) $     .quad <i>
+//                                                     elif init<d>(d) $     .quad <d>
+static void emit_data_static_variable_top_level(AsmStaticVariable* node, std::string&& static_init) {
+    std::string name = emit_identifier(node->name);
+    emit_global_directive_top_level(name, node->is_global);
+    emit(".data", 1);
+    emit_alignment_directive_top_level(node->alignment);
+    emit(name + ":", 0);
+    emit(std::move(static_init), 1);
+}
 
-/** TODO
+/**
 cdef void emit_bss_static_variable_top_level(AsmStaticVariable node, str static_init):
     # StaticVariable(name, global, init) initialized to zero -> $     <global-directive>
     #                                                           $     .bss
@@ -1182,6 +1212,20 @@ cdef void emit_bss_static_variable_top_level(AsmStaticVariable node, str static_
     emit(f"{name}:", 0)
     emit(static_init, 1)
 */
+// StaticVariable(name, global, init) initialized to zero -> $     <global-directive>
+//                                                           $     .bss
+//                                                           $     <alignment-directive>
+//                                                           $ <name>:
+//                                            if int-init(0) $     .zero 4
+//                                         elif long-init(0) $     .zero 8
+static void emit_bss_static_variable_top_level(AsmStaticVariable* node, std::string&& static_init) {
+    std::string name = emit_identifier(node->name);
+    emit_global_directive_top_level(name, node->is_global);
+    emit(".bss", 1);
+    emit_alignment_directive_top_level(node->alignment);
+    emit(name + ":", 0);
+    emit(std::move(static_init), 1);
+}
 
 /** TODO
 cdef void emit_static_variable_top_level(AsmStaticVariable node):
