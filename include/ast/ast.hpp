@@ -76,7 +76,6 @@ enum AST_T {
     CBinary_t,
     CAssignment_t,
     CConditional_t,
-    CAssignmentCompound_t,
     CFunctionCall_t,
     CStatement_t,
     CReturn_t,

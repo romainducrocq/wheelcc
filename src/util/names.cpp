@@ -107,9 +107,6 @@ TIdentifier represent_variable_identifier(CExp* node) {
         case AST_T::CAssignment_t:
             name = "assignment";
             break;
-        case AST_T::CAssignmentCompound_t:
-            name = "compound";
-            break;
         case AST_T::CUnary_t:
             name = "unary";
             break;

@@ -1702,6 +1702,7 @@ cdef CProgram parsing(list[Token] lex_tokens):
 std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
     p_tokens = &tokens;
     std::unique_ptr<CProgram> c_ast = parse_program();
+    p_tokens = nullptr;
     if(pop_index != tokens.size()) {
         RAISE_INTERNAL_ERROR;
     }
