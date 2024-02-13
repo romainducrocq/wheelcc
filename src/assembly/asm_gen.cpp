@@ -1951,7 +1951,7 @@ cdef void generate_list_instructions(list[TacInstruction] list_node):
 //             | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code, operand) | Label(identifier)
 //             | AllocateStack(int) | DeallocateStack(int) | Push(operand) | Call(identifier) | Ret
 static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
-    for (size_t instruction = 0; instruction < list_node.size(); instruction++) {
+    for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
         generate_instructions(list_node[instruction].get());
     }
 }

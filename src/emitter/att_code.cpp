@@ -5,8 +5,9 @@
 #include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
 
-#include <inttypes.h>
 #include <string>
+#include <memory>
+#include <vector>
 
 /**
 cdef str emit_identifier(TIdentifier node):
@@ -1095,26 +1096,42 @@ static void emit_instructions(AsmInstruction* node) {
     }
 }
 
-/** TODO
+/**
 cdef void emit_list_instructions(list[AsmInstruction] list_node):
     cdef Py_ssize_t instruction
     for instruction in range(len(list_node)):
         emit_instructions(list_node[instruction])
 */
+static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
+    for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
+        emit_instructions(list_node[instruction].get());
+    }
+}
 
-/** TODO
+/**
 cdef void emit_alignment_directive_top_level(TInt alignment):
     # $ .align <alignment>
     cdef str align = emit_int(alignment)
     emit(f".align {align}", 1)
 */
+// $ .align <alignment>
+static void emit_alignment_directive_top_level(TInt alignment) {
+    std::string align = emit_int(alignment);
+    emit(".align " + align, 1);
+}
 
-/** TODO
+/**
 cdef void emit_global_directive_top_level(bint is_global, str name):
     # if is_global: -> $ .globl <identifier>
     if is_global:
         emit(f".globl {name}", 1)
 */
+// if is_global: -> $ .globl <identifier>
+static void emit_global_directive_top_level(const std::string& name, bool is_global) {
+    if(is_global) {
+        emit(".globl " + name, 1);
+    }
+}
 
 /** TODO
 cdef void emit_function_top_level(AsmFunction node):
