@@ -345,7 +345,7 @@ static std::string emit_register_8byte(AsmReg* node) {
     }
 }
 
-/** TODO
+/**
 cdef str emit_condition_code(AsmCondCode node):
     # E  -> $ e
     # NE -> $ ne
@@ -385,8 +385,47 @@ cdef str emit_condition_code(AsmCondCode node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// E  -> $ e
+// NE -> $ ne
+// L  -> $ l
+// LE -> $ le
+// G  -> $ g
+// GE -> $ ge
+// B  -> $ b
+// BE -> $ be
+// A  -> $ a
+// AE -> $ ae
+// P  -> $ p
+static std::string emit_condition_code(AsmCondCode* node) {
+    switch(node->type()) {
+        case AST_T::AsmE_t:
+            return "e";
+        case AST_T::AsmNE_t:
+            return "ne";
+        case AST_T::AsmL_t:
+            return "l";
+        case AST_T::AsmLE_t:
+            return "le";
+        case AST_T::AsmG_t:
+            return "g";
+        case AST_T::AsmGE_t:
+            return "ge";
+        case AST_T::AsmB_t:
+            return "b";
+        case AST_T::AsmBE_t:
+            return "be";
+        case AST_T::AsmA_t:
+            return "a";
+        case AST_T::AsmAE_t:
+            return "ae";
+        case AST_T::AsmP_t:
+            return "p";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef int32 emit_type_alignment_bytes(AssemblyType node):
     # LongWord -> $ 4
     # QuadWord -> $ 8
@@ -400,8 +439,22 @@ cdef int32 emit_type_alignment_bytes(AssemblyType node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// LongWord -> $ 4
+// QuadWord -> $ 8
+// Double   -> $ 8
+static TInt emit_type_alignment_bytes(AssemblyType* node) {
+    switch(node->type()) {
+        case AST_T::LongWord_t:
+            return 4;
+        case AST_T::QuadWord_t:
+        case AST_T::BackendDouble_t:
+            return 8;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-/** TODO
+/**
 cdef str emit_type_instruction_suffix(AssemblyType node):
     # LongWord -> $ l
     # QuadWord -> $ q
@@ -417,6 +470,21 @@ cdef str emit_type_instruction_suffix(AssemblyType node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// LongWord -> $ l
+// QuadWord -> $ q
+// Double   -> $ sd
+static std::string emit_type_instruction_suffix(AssemblyType* node) {
+    switch(node->type()) {
+        case AST_T::LongWord_t:
+            return "l";
+        case AST_T::QuadWord_t:
+            return "q";
+        case AST_T::BackendDouble_t:
+            return "sd";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef str emit_operand(AsmOperand node, int32 byte):
