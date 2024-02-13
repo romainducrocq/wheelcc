@@ -1,40 +1,69 @@
 #include "emitter/att_code.hpp"
+#include "util/ctypes.hpp"
+#include "ast/ast.hpp"
 
-/** TODO
+#include <inttypes.h>
+#include <string>
+
+/**
 cdef str emit_identifier(TIdentifier node):
     # identifier -> $ identifier
     return node.str_t
 */
+// identifier -> $ identifier
+static const std::string& emit_identifier(const TIdentifier& identifier) {
+    return identifier;
+}
 
-/** TODO
+/**
 cdef str emit_int(TInt node):
     # int -> $ int
     return str(node.int_t)
 */
+// int -> $ int
+static std::string emit_int(TInt value) {
+    return std::to_string(value);
+}
 
-/** TODO
+/**
 cdef str emit_long(TLong node):
     # long -> $ long
     return str(node.long_t)
 */
+// long -> $ long
+static std::string emit_long(TLong value) {
+    return std::to_string(value);
+}
 
-/** TODO
-cdef str emit_uint(TUInt node):
-    # uint -> $ uint
-    return str(node.uint_t)
-*/
-
-/** TODO
-cdef str emit_ulong(TULong node):
-    # ulong -> $ ulong
-    return str(node.ulong_t)
-*/
-
-/** TODO
+/**
 cdef str emit_double(TDouble node):
     # double -> $ double
     return str(double_to_binary(node.double_t))
 */
+// double -> $ double
+static std::string emit_double(TDouble value) {
+    return std::to_string(double_to_binary(value));
+}
+
+/**
+cdef str emit_uint(TUInt node):
+    # uint -> $ uint
+    return str(node.uint_t)
+*/
+// uint -> $ uint
+static std::string emit_uint(TUInt value) {
+    return std::to_string(value);
+}
+
+/**
+cdef str emit_ulong(TULong node):
+    # ulong -> $ ulong
+    return str(node.ulong_t)
+*/
+// ulong -> $ ulong
+static std::string emit_ulong(TULong value) {
+    return std::to_string(value);
+}
 
 /** TODO
 cdef str emit_register_rsp_sse(AsmReg node):

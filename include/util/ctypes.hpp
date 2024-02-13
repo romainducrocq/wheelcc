@@ -2,6 +2,7 @@
 #define _UTIL_CTYPES_HPP
 
 #include <inttypes.h>
+#include <string>
 
 intmax_t string_to_intmax(const std::string& s_int, size_t line);
 uintmax_t string_to_uintmax(const std::string& s_uint, size_t line);
