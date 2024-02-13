@@ -132,7 +132,7 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
     file_close_read();
 }
 
-std::vector<Token> lexing(const std::string& filename) {
+std::vector<Token> lexing(std::string&& filename) {
     std::vector<Token> tokens;
     tokenize(filename, tokens);
     return tokens;

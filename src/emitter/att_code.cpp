@@ -1459,7 +1459,7 @@ cdef void code_emission(AsmProgram asm_ast, str filename):
     file_close_write()
 */
 // TODO
-void code_emission(const std::string& /*filename*/, std::unique_ptr<AsmProgram> asm_ast) {
+void code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& /*filename*/) {
     // file_open_write(filename);
     emit_program(asm_ast.get());
     asm_ast.reset();

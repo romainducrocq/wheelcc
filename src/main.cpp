@@ -11,6 +11,7 @@
 #include "semantic/id_resolve.hpp"
 #include "intermediate/tac_repr.hpp"
 #include "assembly/asm_gen.hpp"
+#include "emitter/att_code.hpp"
 
 #include <string>
 #include <vector>
@@ -53,20 +54,13 @@ static void debug_backend_symbol_table() {
     }
 }
 
+static void debug_asm_code(std::string&& /*filename*/) { // TODO
+    if(VERBOSE) {
+        ; // pretty_print_asm_code();
+    }
+}
+
 #endif
-
-/** TODO
-cdef void debug_backend_symbol_table(): #
-    if VERBOSE: #
-        pretty_print_backend_symbol_table() #
-*/
-
-/** TODO
-cdef void debug_asm_code(list[str] asm_code): #
-    verbose("OK") #
-    if VERBOSE: #
-        pretty_print_asm_code(asm_code) #
-*/
 
 /** TODO
 cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
@@ -175,6 +169,16 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
         debug_ast(asm_ast.get(), "ASM AST");
         debug_symbol_table();
         debug_backend_symbol_table();
+        return;
+    }
+#endif
+
+    verbose("-- Code emission ... ", false);
+    code_emission(std::move(asm_ast), filename + ".s");
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 250) {
+        debug_asm_code(filename + ".s");
         return;
     }
 #endif

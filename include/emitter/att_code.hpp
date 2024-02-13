@@ -6,6 +6,6 @@
 #include <string>
 #include <memory>
 
-void code_emission(const std::string& /*filename*/, std::unique_ptr<AsmProgram> asm_ast);
+void code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename);
 
 #endif
