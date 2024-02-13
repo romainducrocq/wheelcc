@@ -1126,7 +1126,7 @@ cdef void emit_global_directive_top_level(bint is_global, str name):
     if is_global:
         emit(f".globl {name}", 1)
 */
-// if is_global: -> $ .globl <identifier>
+// -> if is_global $ .globl <identifier>
 static void emit_global_directive_top_level(const std::string& name, bool is_global) {
     if(is_global) {
         emit(".globl " + name, 1);
@@ -1274,6 +1274,115 @@ cdef void emit_static_variable_top_level(AsmStaticVariable node):
         raise RuntimeError(
             "An error occurred in code emission, not all nodes were visited")
 */
+// StaticVariable(name, global, align, init)<i> initialized to non-zero value -> $ <data-static-variable-directives>
+// StaticVariable(name, global, align, init)<d>                               -> $ <data-static-variable-directives>
+// StaticVariable(name, global, align, init)<i> initialized to zero           -> $ <bss-static-variable-directives>
+static void emit_static_variable_top_level(AsmStaticVariable* node) {
+//    cdef str static_init
+    std::string static_init;
+    switch(node->initial_value->type()) {
+        //    if isinstance(node.initial_value, IntInit):
+        case AST_T::IntInit_t: {
+            IntInit* initial_value = static_cast<IntInit*>(node->initial_value.get());
+            //        if node.initial_value.value.int_t:
+            if(initial_value->value != 0) {
+                //            static_init = emit_int(node.initial_value.value)
+                static_init = emit_int(initial_value->value);
+                //            static_init = f".long {static_init}"
+                static_init = ".long " + static_init;
+                //            emit_data_static_variable_top_level(node, static_init)
+                emit_data_static_variable_top_level(node, std::move(static_init));
+            }
+            //        else:
+            else {
+                //            static_init = ".zero 4"
+                static_init = ".zero 4";
+                //            emit_bss_static_variable_top_level(node, static_init)
+                emit_bss_static_variable_top_level(node, std::move(static_init));
+            }
+            break;
+        }
+        //    elif isinstance(node.initial_value, LongInit):
+        case AST_T::LongInit_t: {
+            LongInit* initial_value = static_cast<LongInit*>(node->initial_value.get());
+            //        if node.initial_value.value.long_t:
+            if(initial_value->value != 0) {
+                //            static_init = emit_long(node.initial_value.value)
+                static_init = emit_long(initial_value->value);
+                //            static_init = f".quad {static_init}"
+                static_init = ".quad " + static_init;
+                //            emit_data_static_variable_top_level(node, static_init)
+                emit_data_static_variable_top_level(node, std::move(static_init));
+            }
+            //        else:
+            else {
+                //            static_init = ".zero 8"
+                static_init = ".zero 8";
+                //            emit_bss_static_variable_top_level(node, static_init)
+                emit_bss_static_variable_top_level(node, std::move(static_init));
+            }
+            break;
+        }
+        //    elif isinstance(node.initial_value, DoubleInit):
+        case AST_T::DoubleInit_t: {
+            //        static_init = emit_double(node.initial_value.value)
+            static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->value);
+            //        static_init = f".quad {static_init}"
+            static_init = ".quad " + static_init;
+            //        emit_data_static_variable_top_level(node, static_init)
+            emit_data_static_variable_top_level(node, std::move(static_init));
+            break;
+        }
+        //    elif isinstance(node.initial_value, UIntInit):
+        case AST_T::UIntInit_t: {
+            UIntInit* initial_value = static_cast<UIntInit*>(node->initial_value.get());
+            //        if node.initial_value.value.uint_t:
+            if(initial_value->value != 0) {
+                //            static_init = emit_uint(node.initial_value.value)
+                static_init = emit_uint(initial_value->value);
+                //            static_init = f".long {static_init}"
+                static_init = ".long " + static_init;
+                //            emit_data_static_variable_top_level(node, static_init)
+                emit_data_static_variable_top_level(node, std::move(static_init));
+            }
+            //        else:
+            else {
+                //            static_init = ".zero 4"
+                static_init = ".zero 4";
+                //            emit_bss_static_variable_top_level(node, static_init)
+                emit_bss_static_variable_top_level(node, std::move(static_init));
+            }
+            break;
+        }
+        //    elif isinstance(node.initial_value, ULongInit):
+        case AST_T::ULongInit_t: {
+            ULongInit* initial_value = static_cast<ULongInit*>(node->initial_value.get());
+            //        if node.initial_value.value.ulong_t:
+            if(initial_value->value != 0) {
+                //            static_init = emit_ulong(node.initial_value.value)
+                static_init = emit_ulong(initial_value->value);
+                //            static_init = f".quad {static_init}"
+                static_init = ".quad " + static_init;
+                //            emit_data_static_variable_top_level(node, static_init)
+                emit_data_static_variable_top_level(node, std::move(static_init));
+            }
+            //        else:
+            else {
+                //            static_init = ".zero 8"
+                static_init = ".zero 8";
+                //            emit_bss_static_variable_top_level(node, static_init)
+                emit_bss_static_variable_top_level(node, std::move(static_init));
+            }
+            break;
+        }
+        //    else:
+        //
+        //        raise RuntimeError(
+        //            "An error occurred in code emission, not all nodes were visited")
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 /** TODO
 cdef void emit_double_static_constant_top_level(AsmStaticConstant node):
