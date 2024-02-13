@@ -815,27 +815,41 @@ static void emit_cmp_instructions(AsmCmp* node) {
     }
 }
 
-/** TODO
+/**
 cdef void emit_jmp_instructions(AsmJmp node):
     cdef str label = emit_identifier(node.target)
     emit(f"jmp .L{label}", 1)
 */
+static void emit_jmp_instructions(AsmJmp* node) {
+    std::string label = emit_identifier(node->target);
+    emit("jmp .L" + label, 1);
+}
 
-/** TODO
+/**
 cdef void emit_jmp_cc_instructions(AsmJmpCC node):
     cdef str cond_code = emit_condition_code(node.cond_code)
     cdef str label = emit_identifier(node.target)
     emit(f"j{cond_code} .L{label}", 1)
 */
+static void emit_jmp_cc_instructions(AsmJmpCC* node) {
+    std::string cond_code = emit_condition_code(node->cond_code.get());
+    std::string label = emit_identifier(node->target);
+    emit("j" + cond_code + " .L" + label, 1);
+}
 
-/** TODO
+/**
 cdef void emit_set_cc_instructions(AsmSetCC node):
     cdef str cond_code = emit_condition_code(node.cond_code)
     cdef str dst = emit_operand(node.dst, 1)
     emit(f"set{cond_code} {dst}", 1)
 */
+static void emit_set_cc_instructions(AsmSetCC* node) {
+    std::string cond_code = emit_condition_code(node->cond_code.get());
+    std::string dst = emit_operand(node->dst.get(), 1);
+    emit("set" + cond_code + " " + dst, 1);
+}
 
-/** TODO
+/**
 cdef void emit_unary_instructions(AsmUnary node):
     cdef int32 byte = emit_type_alignment_bytes(node.assembly_type)
     cdef str t = emit_type_instruction_suffix(node.assembly_type)
@@ -843,6 +857,13 @@ cdef void emit_unary_instructions(AsmUnary node):
     cdef str dst = emit_operand(node.dst, byte)
     emit(f"{unary_op}{t} {dst}", 1)
 */
+static void emit_unary_instructions(AsmUnary* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string unary_op = emit_unary_op(node->unary_op.get());
+    std::string dst = emit_operand(node->dst.get(), byte);
+    emit(unary_op + t + " " + dst, 1);
+}
 
 /** TODO
 cdef void emit_binary_instructions(AsmBinary node):
