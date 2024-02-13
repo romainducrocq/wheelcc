@@ -1105,7 +1105,9 @@ cdef void emit_list_instructions(list[AsmInstruction] list_node):
 */
 static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
     for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
-        emit_instructions(list_node[instruction].get());
+        if(list_node[instruction]) {
+            emit_instructions(list_node[instruction].get());
+        }
     }
 }
 
