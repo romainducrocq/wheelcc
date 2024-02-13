@@ -673,12 +673,21 @@ static std::string emit_unary_op(AsmUnaryOp* node) {
     }
 }
 
-/** TODO
+/**
 cdef void emit(str line, int32 indent):
     line = " " * 4 * indent + line
 
     write_line(line)
 */
+#include <iostream> // TODO
+static void emit(std::string&& line, size_t t) {
+    for(size_t i = 0; i < t; i++) {
+        line = "    " + line;
+    }
+
+    std::cout << line << std::endl;
+    // write_line(line);
+}
 
 /** TODO
 cdef void emit_ret_instructions(AsmRet node):
