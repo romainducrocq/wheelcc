@@ -680,7 +680,8 @@ cdef void emit(str line, int32 indent):
 
     write_line(line)
 */
-#include <iostream> // TODO
+// TODO
+#include <iostream>
 static void emit(std::string&& line, size_t t) {
     for(size_t i = 0; i < t; i++) {
         line = "    " + line;
@@ -1384,6 +1385,7 @@ static void emit_static_constant_top_level(AsmStaticConstant* node) {
     switch(node->initial_value->type()) {
         case AST_T::DoubleInit_t:
             emit_double_static_constant_top_level(node);
+            break;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -1447,7 +1449,7 @@ static void emit_program(AsmProgram* node) {
     emit(".section .note.GNU-stack,\"\",@progbits", 1);
 }
 
-/** TODO
+/**
 cdef void code_emission(AsmProgram asm_ast, str filename):
 
     file_open_write(filename)
@@ -1456,3 +1458,10 @@ cdef void code_emission(AsmProgram asm_ast, str filename):
 
     file_close_write()
 */
+// TODO
+void code_emission(const std::string& /*filename*/, std::unique_ptr<AsmProgram> asm_ast) {
+    // file_open_write(filename);
+    emit_program(asm_ast.get());
+    asm_ast.reset();
+    // file_close_write();
+}
