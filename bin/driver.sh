@@ -40,7 +40,7 @@ function usage () {
 
 function clean () {
     if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
-    # if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi # TODO
+    if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
 }
 
 function shift_arg () {
