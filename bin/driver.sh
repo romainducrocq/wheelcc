@@ -164,13 +164,13 @@ function parse_args () {
 }
 
 function preprocess () {
-    verbose "Preprocess <- ${FILE}.c"
+    verbose "Preprocess -> ${FILE}.i"
     gcc -E -P ${FILE}.c -o ${FILE}.i
     if [ ${?} -ne 0 ]; then clean; exit 1; fi
 }
 
 function compile () {
-    verbose "Compile    <- ${FILE}.i"
+    verbose "Compile    -> ${FILE}.s"
     ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}
     if [ ${?} -ne 0 ]; then clean; exit 1; fi
     if [ ${OPT_CODE} -eq 250 ]; then
@@ -180,17 +180,16 @@ function compile () {
 
 function link () {
     if [ ${OPT_CODE} -lt 200 ]; then
-        verbose "Link       <- ${FILE}.s"
         if [ ${LINK_CODE} -eq 0 ]; then
             gcc ${FILE}.s${LINK_LIBS} -o ${FILE}
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
-            verbose "Executable -> ${FILE}"
+            verbose "Link       -> ${FILE}"
         elif [ ${LINK_CODE} -eq 1 ]; then
-            verbose "Assembly   -> ${FILE}.s"
+            ;
         elif [ ${LINK_CODE} -eq 2 ]; then
             gcc -c ${FILE}.s${LINK_LIBS} -o ${FILE}.o
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
-            verbose "Object     -> ${FILE}.o"
+            verbose "Assemble   -> ${FILE}.o"
         else
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
         fi
