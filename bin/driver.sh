@@ -185,7 +185,7 @@ function link () {
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
             verbose "Link       -> ${FILE}"
         elif [ ${LINK_CODE} -eq 1 ]; then
-            ;
+            :
         elif [ ${LINK_CODE} -eq 2 ]; then
             gcc -c ${FILE}.s${LINK_LIBS} -o ${FILE}.o
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
