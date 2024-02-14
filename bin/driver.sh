@@ -7,7 +7,7 @@ ARGC=${#}
 ARGV=(${@})
 
 function verbose () {
-    if [ ${OPT_CODE} -eq 1 ]; then
+    if [ ${VERB_CODE} -eq 1 ]; then
         echo "${1}"
     fi
 }
@@ -61,6 +61,16 @@ function help_arg () {
     if [ "${ARG}" = "--help" ]; then
         usage
     fi
+    return 0;
+}
+
+function verb_arg () {
+    if [ "${ARG}" = "-v" ]; then
+        VERB_CODE=1
+    else
+        return 1
+    fi
+    return 0
 }
 
 function opt_arg () {
@@ -78,6 +88,9 @@ function opt_arg () {
         OPT_CODE=251
     elif [ "${ARG}" = "--codeemit" ]; then
         OPT_CODE=250
+    elif [ ${VERB_CODE} -eq 1 ]; then
+        OPT_CODE=1
+        return 1;
     else
         return 1
     fi
@@ -116,6 +129,12 @@ function parse_args () {
     help_arg
 
     if [ ${?} -ne 0 ]; then exit 1; fi
+    verb_arg
+
+    if [ ${?} -eq 0 ]; then
+        shift_arg
+        if [ ${?} -ne 0 ]; then exit 1; fi
+    fi
     opt_arg
 
     if [ ${?} -eq 0 ]; then
@@ -145,13 +164,13 @@ function parse_args () {
 }
 
 function preprocess () {
-    verbose "Preprocess -> ${FILE}.c"
+    verbose "Preprocess <- ${FILE}.c"
     gcc -E -P ${FILE}.c -o ${FILE}.i
     if [ ${?} -ne 0 ]; then clean; exit 1; fi
 }
 
 function compile () {
-    verbose "Compile    -> ${FILE}.i"
+    verbose "Compile    <- ${FILE}.i"
     ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}
     if [ ${?} -ne 0 ]; then clean; exit 1; fi
     if [ ${OPT_CODE} -eq 250 ]; then
@@ -161,7 +180,7 @@ function compile () {
 
 function link () {
     if [ ${OPT_CODE} -lt 200 ]; then
-        verbose "Link       -> ${FILE}.s"
+        verbose "Link       <- ${FILE}.s"
         if [ ${LINK_CODE} -eq 0 ]; then
             gcc ${FILE}.s${LINK_LIBS} -o ${FILE}
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
@@ -178,7 +197,7 @@ function link () {
     fi
 }
 
-
+VERB_CODE=0
 OPT_CODE=0
 LINK_CODE=0
 FILE=""
