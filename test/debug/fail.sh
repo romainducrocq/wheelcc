@@ -19,7 +19,7 @@ function duration () {
 }
 SECONDS=0
 
-N=100
+N=250
 for i in $(seq 1 ${N})
 do
     DATE="$(date +%Y%m%d_%H%M%S)"
