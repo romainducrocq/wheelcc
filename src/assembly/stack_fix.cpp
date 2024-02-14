@@ -425,8 +425,6 @@ cdef void fix_allocate_stack_bytes():
 
     fix_instructions[0].src.value.str_t = str(byte)
 */
-// Note: byte is in int32_t (max 0.2gb)
-// TODO: make byte to uint32_t
 static void fix_allocate_stack_bytes() {
     TInt byte = -1 * counter;
     if(byte % 8 != 0) {

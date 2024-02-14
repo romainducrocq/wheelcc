@@ -1,7 +1,3 @@
 driver.sh + main.cpp:
 - refactor args into dbg_args, opt_args, verbose, etc...
 - add -asm to keep assembly file
-
-- bug in double values very close to 0 (limits)
-- see if stack byte alignment needs to be uint instead of int
-- see if stack byte allocation is not done in reverse order
