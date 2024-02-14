@@ -8,6 +8,7 @@
 
 intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
+    buffer.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
@@ -22,6 +23,7 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
 
 uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     std::vector<char> buffer(s_uint.begin(), s_uint.end());
+    buffer.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
     uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
@@ -52,6 +54,7 @@ uint64_t uintmax_to_uint64(uintmax_t uintmax) {
 
 double string_to_double(const std::string& s_double, size_t line) {
     std::vector<char> buffer(s_double.begin(), s_double.end());
+    buffer.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
     double float64 = strtod(&buffer[0], &end_ptr);
