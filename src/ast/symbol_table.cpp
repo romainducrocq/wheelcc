@@ -1,4 +1,5 @@
 #include "ast/symbol_table.hpp"
+#include "util/ctypes.hpp"
 #include "ast/ast.hpp"
 
 #include <memory>
@@ -37,7 +38,7 @@ LongInit::LongInit(TLong value)
     : value(value) {}
 
 DoubleInit::DoubleInit(TDouble value)
-    : value(value) {}
+    : value(value), binary(double_to_binary(value)) {}
 
 UIntInit::UIntInit(TUInt value)
     : value(value) {}

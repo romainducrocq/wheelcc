@@ -1,7 +1,6 @@
 #include "emitter/att_code.hpp"
 #include "util/error.hpp"
 #include "util/fopen.hpp"
-#include "util/ctypes.hpp"
 #include "ast/ast.hpp"
 #include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
@@ -46,8 +45,8 @@ cdef str emit_double(TDouble node):
     return str(double_to_binary(node.double_t))
 */
 // double -> $ double
-static std::string emit_double(TDouble value) {
-    return std::to_string(double_to_binary(value));
+static std::string emit_double(TULong binary) {
+    return std::to_string(binary);
 }
 
 /**
@@ -1308,7 +1307,7 @@ static void emit_static_variable_top_level(AsmStaticVariable* node) {
             break;
         }
         case AST_T::DoubleInit_t: {
-            static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->value);
+            static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->binary);
             static_init = ".quad " + static_init;
             emit_data_static_variable_top_level(node, std::move(static_init));
             break;
@@ -1363,7 +1362,7 @@ cdef void emit_double_static_constant_top_level(AsmStaticConstant node):
 //                                      $     .quad <d>
 static void emit_double_static_constant_top_level(AsmStaticConstant* node) {
     std::string name = emit_identifier(node->name);
-    std::string static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->value);
+    std::string static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->binary);
     emit(".section .rodata", 1);
     emit_alignment_directive_top_level(node->alignment);
     emit(".L" + name + ":", 0);

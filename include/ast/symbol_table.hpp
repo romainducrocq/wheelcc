@@ -81,6 +81,7 @@ struct DoubleInit : StaticInit {
     DoubleInit(TDouble value);
 
     TDouble value;
+    TULong binary;
 };
 
 struct UIntInit : StaticInit {
