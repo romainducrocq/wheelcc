@@ -24,7 +24,7 @@ ast = [
     ["StaticInit", [], []],
     ["IntInit", [(TInt, "value")], []],
     ["LongInit", [(TLong, "value")], []],
-    ["DoubleInit", [(TDouble, "value")], []],
+    ["DoubleInit", [(TDouble, "value"), (TULong, "binary")], []],
     ["UIntInit", [(TUInt, "value")], []],
     ["ULongInit", [(TULong, "value")], []],
     ["InitialValue", [], []],

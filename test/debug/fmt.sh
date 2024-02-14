@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function fmt () {
-cat ../include/ast/${1}.hpp \
+cat ../../include/ast/${1}.hpp \
     | grep --invert-match ")" \
     | grep --invert-match "(" \
     | grep -e "struct" -e ";" \

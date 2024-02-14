@@ -98,6 +98,7 @@ static void print_ast(Ast* node, size_t t) {
             field("DoubleInit", "", ++t);
             DoubleInit* p_node = static_cast<DoubleInit*>(node);
             field("TDouble", std::to_string(p_node->value), t+1);
+            field("TULong", std::to_string(p_node->binary), t+1);
             break;
         }
         case AST_T::UIntInit_t: {

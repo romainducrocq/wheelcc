@@ -39,6 +39,8 @@ LongInit::LongInit(TLong value)
 
 DoubleInit::DoubleInit(TDouble value)
     : value(value), binary(double_to_binary(value)) {}
+DoubleInit::DoubleInit(TDouble value, TULong binary)
+    : value(value), binary(binary) {}
 
 UIntInit::UIntInit(TUInt value)
     : value(value) {}

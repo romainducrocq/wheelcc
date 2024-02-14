@@ -79,6 +79,7 @@ struct DoubleInit : StaticInit {
     AST_T type() override;
     DoubleInit() = default;
     DoubleInit(TDouble value);
+    DoubleInit(TDouble value, TULong binary);
 
     TDouble value;
     TULong binary;
