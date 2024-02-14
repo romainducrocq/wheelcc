@@ -80,7 +80,8 @@ Usage: ccc2 [Help] [Debug] [Link] [Lib] FILE
     --codeemit   print  emission  stage and exit
 
 [Link]:
-    -c           compile, but do not link
+    -S           compile, but do not assemble and link
+    -c           compile and assemble, but do not link
 
 [Lib]:
     -l<libname>  links with a library file

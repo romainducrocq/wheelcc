@@ -7,7 +7,7 @@ ARGC=${#}
 ARGV=(${@})
 
 function verbose () {
-    if [ ${OPT_CODE} -gt 0 ]; then
+    if [ ${OPT_CODE} -eq 1 ]; then
         echo "${1}"
     fi
 }
@@ -29,7 +29,8 @@ function usage () {
     echo "    --codeemit   print  emission  stage and exit"
     echo ""
     echo "[Link]:"
-    echo "    -c           compile, but do not link"
+    echo "    -S           compile, but do not assemble and link"
+    echo "    -c           compile and assemble, but do not link"
     echo ""
     echo "[Lib]:"
     echo "    -l<libname>  links with a library file"
@@ -40,7 +41,9 @@ function usage () {
 
 function clean () {
     if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
-    if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
+    if [ ${LINK_CODE} -ne 1 ]; then
+        if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
+    fi
 }
 
 function shift_arg () {
@@ -82,8 +85,10 @@ function opt_arg () {
 }
 
 function link_arg () {
-    if [ "${ARG}" = "-c" ]; then
+    if [ "${ARG}" = "-S" ]; then
         LINK_CODE=1
+    elif [ "${ARG}" = "-c" ]; then
+        LINK_CODE=2
     else
         return 1
     fi
@@ -162,6 +167,8 @@ function link () {
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
             verbose "Executable -> ${FILE}"
         elif [ ${LINK_CODE} -eq 1 ]; then
+            verbose "Assembly   -> ${FILE}.s"
+        elif [ ${LINK_CODE} -eq 2 ]; then
             gcc -c ${FILE}.s${LINK_LIBS} -o ${FILE}.o
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
             verbose "Object     -> ${FILE}.o"
