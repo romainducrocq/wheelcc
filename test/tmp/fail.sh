@@ -4,7 +4,7 @@ cd ../
 
 DATE="$(date +%Y%m%d_%H%M%S)"
 TESTS_DIR="tests"
-TMP_DIR="debug/tmp"
+TMP_DIR="tmp/tmp"
 TMP_FILE="${TMP_DIR}/tmp"
 FAIL_DIR="${TMP_DIR}/fail"
 FAIL_FILE="${FAIL_DIR}/_0_results_${DATE}.txt"

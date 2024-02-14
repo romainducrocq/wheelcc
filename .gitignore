@@ -19,4 +19,4 @@ perf.data
 /bin/ccc2
 /bin/package_name.txt
 /test/tests/
-/test/debug/tmp/
+/test/tmp/tmp/

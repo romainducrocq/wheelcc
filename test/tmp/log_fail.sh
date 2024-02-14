@@ -15,7 +15,7 @@ do
     if [ ${RET} -ne ${RES} ]
     then
         echo ${RET}
-        DIR="/home/romain/proj/writing-a-c-compiler/LANG-CCC2/test/debug/tmp/$(basename "${FILE}")/$(date +%Y%m%d_%H%M%S)"
+        DIR="/home/romain/proj/writing-a-c-compiler/LANG-CCC2/test/tmp/tmp/$(basename "${FILE}")/$(date +%Y%m%d_%H%M%S)"
         mkdir -p ${DIR}
         cp ${FILE}.log ${FILE}.s ${FILE} ${DIR}
         break
