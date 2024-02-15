@@ -158,31 +158,31 @@ static void parse_identifier(TIdentifier& identifier) {
     identifier = std::move(next_token->token);
 }
 
-// <int> ::= ? A constant token ?
+// <int> ::= ? An int constant token ?
 static std::shared_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
     return std::make_shared<CConstInt>(std::move(value));
 }
 
-// <long> ::= ? A constant token ?
+// <long> ::= ? An int or long constant token ?
 static std::shared_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
     TLong value = intmax_to_int64(intmax);
     return std::make_shared<CConstLong>(std::move(value));
 }
 
-// <double> ::= ? A constant token ?
+// <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_double_constant() {
     TDouble value = string_to_double(next_token->token, next_token->line);
     return std::make_shared<CConstDouble>(std::move(value));
 }
 
-// <uint> ::= ? A constant token ?
+// <unsigned int> ::= ? An unsigned int constant token ?
 static std::shared_ptr<CConstUInt> parse_uint_constant(uintmax_t uintmax) {
     TUInt value = uintmax_to_uint32(uintmax);
     return std::make_shared<CConstUInt>(std::move(value));
 }
 
-// <ulong> ::= ? A constant token ?
+// <unsigned long> ::= ? An unsigned int or unsigned long constant token ?
 static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
     TULong value = uintmax_to_uint64(uintmax);
     return std::make_shared<CConstULong>(std::move(value));
@@ -207,7 +207,7 @@ static std::shared_ptr<CConst> parse_constant() {
     return parse_long_constant(std::move(value));
 }
 
-// <const> ::= <uint> | <ulong>
+// <const> ::= <unsigned int> | <unsigned long>
 static std::shared_ptr<CConst> parse_unsigned_constant() {
     if(pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
         next_token->token.pop_back();
@@ -302,7 +302,7 @@ static std::shared_ptr<Type> parse_type_specifier();
 static std::unique_ptr<CExp> parse_factor();
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence);
 
-// <exp> { "," <exp> }
+// <argument-list> ::= <exp> { "," <exp> }
 static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
     std::vector<std::unique_ptr<CExp>> args;
     {
@@ -603,9 +603,10 @@ static std::unique_ptr<CExpression> parse_expression_statement() {
     return std::make_unique<CExpression>(std::move(exp));
 }
 
-// <statement> ::= "return" <exp> ";" | <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | ";"
-//               | <block> | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
-//               | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | "break" ";" | "continue" ";"
+// <statement> ::= ";" | "return" <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
+//               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
+//               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
+//               | "break" ";" | "continue" ";" | <exp> ";"
 static std::unique_ptr<CStatement> parse_statement() {
     switch(peek_token->token_kind) {
         case TOKEN_KIND::semicolon:
@@ -657,7 +658,7 @@ static std::unique_ptr<CInitExp> parse_exp_for_init() {
     return std::make_unique<CInitExp>(std::move(init));
 }
 
-// <for-init> ::= <variable-declaration> | [<exp>] ";"
+// <for-init> ::= <variable-declaration> | [ <exp> ] ";"
 static std::unique_ptr<CForInit> parse_for_init() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::key_int:
@@ -710,7 +711,7 @@ static std::unique_ptr<CB> parse_b_block() {
     return std::make_unique<CB>(std::move(block_items));
 }
 
-// <block> ::= "{" { <block-item> } "}
+// <block> ::= "{" { <block-item> } "}"
 static std::unique_ptr<CBlock> parse_block() {
     expect_next_is(pop_next(), TOKEN_KIND::brace_open);
     std::unique_ptr<CBlock> block = parse_b_block();
@@ -818,7 +819,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
                                 line);
 }
 
-// <storage_class> ::= "static" | "extern"
+// <specifier> ::= <type-specifier> | "static" | "extern"
 static std::unique_ptr<CStorageClass> parse_storage_class() {
     switch(pop_next().token_kind) {
         case TOKEN_KIND::key_static:
@@ -832,8 +833,8 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
     }
 }
 
-// <function-declaration> ::= [ <storage-class> ] <identifier> "(" <param-list> ")" ( <block> | ";")
 // <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
+// <function-declaration> ::= { <specifier> }+ <identifier> "(" <param-list> ")" ( <block> | ";")
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::shared_ptr<Type> ret_type) {
     std::unique_ptr<CStorageClass> storage_class;
     if(peek_next().token_kind != TOKEN_KIND::identifier) {
@@ -882,7 +883,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::sha
                                                   std::move(fun_type), std::move(storage_class));
 }
 
-// <variable-declaration> ::= [ <storage-class> ] <identifier> [ "=" <exp> ] ";"
+// <variable-declaration> ::= { <specifier> }+ <identifier> [ "=" <exp> ] ";"
 static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::shared_ptr<Type> var_type) {
     std::unique_ptr<CStorageClass> storage_class;
     if(peek_next().token_kind != TOKEN_KIND::identifier) {
@@ -909,7 +910,7 @@ static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::shared_ptr<Type
     return std::make_unique<CVarDecl>(std::move(variable_decl));
 }
 
-// <declaration> ::= { <specifier> }+ (<variable-declaration> | <function-declaration>)
+// <declaration> ::= <variable-declaration> | <function-declaration>
 static std::unique_ptr<CDeclaration> parse_declaration() {
     std::shared_ptr<Type> type_specifier = parse_type_specifier();
     size_t i = peek_next().token_kind == TOKEN_KIND::identifier ? 1 : 2;
