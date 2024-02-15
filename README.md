@@ -1,12 +1,12 @@
-# [Lang] Coarse C Compiler 
+# [Lang] Coarse C Compiler
+> **WORK IN PROGRESS**
+
+Yet another C Compiler for Computers. It's a bit rough on the edges tho.
 
 ****
-
-- Writing a C Compiler - Build a Real Programming Language from Scratch, Nora Sandler: https://nostarch.com/writing-c-compiler  
-    - Test suite: https://github.com/nlsandler/writing-a-c-compiler-tests.git  
-    - OCaml reference implementation: https://github.com/nlsandler/nqcc2  
-- Migrated from Cython implementation after `[13] floating-point numbers`: https://github.com/romainducrocq/LANG-CCC/
-
+_Resources_:
+- Writing a C Compiler - Build a Real Programming Language from Scratch, Nora Sandler
+- Migrated from Cython implementation after "_Development_ `Floating-point numbers`"
 ****
 
 ## Development
