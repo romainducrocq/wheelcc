@@ -220,8 +220,8 @@ function check_test () {
     let TOTAL+=1
 
     LIBS=""
-    if [[ "${FILE}" == *"_math" ]]; then
-        LIBS=" -lm"
+    if [[ "${FILE}" == *"__+l"* ]]; then
+        LIBS=" -"$(echo "${FILE}" | cut -d "+" -f2- | tr "+" "-" | tr "_" " ")
     fi
 
     if [ -f "${FILE}_client.c" ]; then
