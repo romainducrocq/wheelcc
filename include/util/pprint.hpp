@@ -2,7 +2,6 @@
 #define _UTIL_PPRINT_HPP
 
 #ifndef __NDEBUG__
-
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 
@@ -15,5 +14,4 @@ void pretty_print_backend_symbol_table();
 void pretty_print_asm_code();
 
 #endif
-
 #endif

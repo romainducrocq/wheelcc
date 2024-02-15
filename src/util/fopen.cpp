@@ -24,22 +24,6 @@ void file_open_read(const std::string& filename) {
     set_filename(filename);
 }
 
-/**
-cdef void file_open_write(str filename):
-    global c_file_out
-    global stream_buf
-    c_file_out = NULL
-    stream_buf = ""
-
-    cdef bytes b_filename = filename.encode("UTF-8")
-    cdef char *c_filename = b_filename
-
-    c_file_out = fopen(c_filename, "wb")
-    if c_file_out == NULL:
-
-        raise RuntimeError(
-            f"File {filename} does not exist")
-*/
 void file_open_write(const std::string& filename) {
     file_out = nullptr;
 
@@ -64,27 +48,10 @@ bool read_line(std::string& line) {
     return true;
 }
 
-/**
-cdef void write_chunk(bytes chunk_fp, size_t chunk_l):
-
-    cdef char *c_chunk_fp = chunk_fp
-    fwrite(c_chunk_fp, sizeof(char), chunk_l, c_file_out)
-*/
 static void write_chunk(const std::string& chunk_fp, size_t chunk_l) {
     fwrite(chunk_fp.c_str(), sizeof(char), chunk_l, file_out);
 }
 
-/**
-cdef void write_file(str stream, Py_ssize_t chunk_size = 4096):
-    global stream_buf
-
-    stream_buf += stream
-    while len(stream_buf) >= chunk_size:
-        write_chunk(stream_buf[:chunk_size].encode("UTF-8"),
-                    chunk_size)
-
-        stream_buf = stream_buf[chunk_size:]
-*/
 static void write_file(std::string&& stream, size_t chunk_size) {
     stream_buf += stream;
     while(stream_buf.size() >= chunk_size) {
@@ -93,10 +60,6 @@ static void write_file(std::string&& stream, size_t chunk_size) {
     }
 }
 
-/**
-cdef void write_line(str line):
-    write_file(line + "\n")
-*/
 void write_line(std::string&& line) {
     write_file(line + "\n", 4096);
 }
@@ -105,12 +68,6 @@ void file_close_read() {
     fclose(file_in);
 }
 
-/**
-cdef void file_close_write():
-
-    write_chunk(stream_buf.encode("UTF-8"), len(stream_buf))
-    fclose(c_file_out)
-*/
 void file_close_write() {
     write_chunk(stream_buf, stream_buf.size());
     fclose(file_out);

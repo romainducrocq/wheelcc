@@ -29,7 +29,6 @@ static void verbose(const std::string& out, bool end) {
 }
 
 #ifndef __NDEBUG__
-
 static void debug_tokens(const std::vector<Token>& tokens) {
     if(VERBOSE) {
         pretty_print_tokens(tokens);
@@ -59,60 +58,7 @@ static void debug_asm_code() {
         pretty_print_asm_code();
     }
 }
-
 #endif
-
-/**
-cdef void do_compile(str filename, int32 opt_code, int32 opt_s_code):
-
-    verbose("-- Lexing ... ", end="")
-    cdef list[Token] tokens = lexing(filename)
-    verbose("OK")
-    if opt_code == 255:
-        debug_tokens(tokens) #
-        return
-
-    verbose("-- Parsing ... ", end="")
-    cdef CProgram c_ast = parsing(tokens)
-    verbose("OK")
-    if opt_code == 254:
-        debug_ast(c_ast) #
-        return
-
-    verbose("-- Semantic analysis ... ", end="")
-    analyze_semantic(c_ast)
-    verbose("OK")
-    if opt_code == 253:
-        debug_ast(c_ast) #
-        debug_symbol_table() #
-        return
-
-    verbose("-- TAC representation ... ", end="")
-    cdef TacProgram tac_ast = three_address_code_representation(c_ast)
-    verbose("OK")
-    if opt_code == 252:
-        debug_ast(tac_ast) #
-        debug_symbol_table() #
-        return
-
-    verbose("-- Assembly generation ... ", end="")
-    cdef AsmProgram asm_ast = assembly_generation(tac_ast)
-    verbose("OK")
-    if opt_code == 251:
-        debug_ast(asm_ast) #
-        debug_symbol_table() #
-        debug_backend_symbol_table() #
-        return
-
-    verbose("-- Code emission ... ", end="")
-    if opt_code == 250: #
-        debug_asm_code(code_emission_print(asm_ast)) #
-        return #
-
-    filename = f"{filename.rsplit('.', 1)[0]}.s"
-    code_emission(asm_ast, filename)
-    verbose("OK")
-*/
 
 static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
     if(opt_code > 0
