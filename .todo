@@ -1,0 +1,32 @@
+# TODO
+
+## ROADMAP
+
+### I/
+- [x] 1. Language features
+- 2. Types
+- 3. Optimization
+### II/
+- 4. Add backend for x86_64 intel
+    - emitter/code_intel.cpp
+        - https://imada.sdu.dk/u/kslarsen/dm546/Material/IntelnATT.htm
+    - fasm
+        https://flatassembler.net/
+### III/
+- 5. Add frontend for my-lang
+    - parser/lexer.cpp
+    - parser/parser.cpp
+    - test/tests/
+- 6. Add syscalls
+    - impl syscalls in asm
+    - link asm syscalls
+        - writing C software without the standard library: 
+            https://gist.github.com/tcoppex/443d1dd45f873d96260195d6431b0989
+            - ex asm syscall
+            - ex strlen, puts
+### IV/
+- 7. Implement preprocessor
+    - see cython prebuild
+- 8. Implement standard library
+
+## NOTES
