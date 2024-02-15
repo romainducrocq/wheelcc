@@ -70,7 +70,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lexing(filename + ".i");
+    std::vector<Token> tokens = lexing(filename + ".c");
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 255) {

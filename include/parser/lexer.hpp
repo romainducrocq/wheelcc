@@ -24,8 +24,12 @@ enum TOKEN_KIND {
     assignment_remainder,
     assignment_bitand,
     assignment_bitor,
-
     assignment_bitxor,
+
+    comment_singleline,
+    comment_multilinestart,
+    comment_multilineend,
+
     parenthesis_open,
     parenthesis_close,
     brace_open,
@@ -47,6 +51,8 @@ enum TOKEN_KIND {
     ternary_if,
     ternary_else,
     separator_comma,
+
+    preprocessor_directive,
 
     key_int,
     key_long,

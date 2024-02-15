@@ -31,6 +31,10 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(\|=)",
     R"(\^=)",
 
+    R"(//)",
+    R"(/\*)",
+    R"(\*/)",
+
     R"(\()",
     R"(\))",
     R"({)",
@@ -52,6 +56,8 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(\?)",
     R"(:)",
     R"(,)",
+
+    R"(#[acdefgilmnoprsuw]+\b)",
 
     R"(int\b)",
     R"(long\b)",
@@ -96,6 +102,7 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
 
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
+    bool is_comment = false;
     while(read_line(line)) {
 
         boost::sregex_iterator it_end;
@@ -110,7 +117,21 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
                 }
             }
 
-            if(last_group == TOKEN_KIND::error) {
+            if(is_comment) {
+                if(last_group == TOKEN_KIND::comment_multilineend) {
+                    is_comment = false;
+                }
+                continue;
+            }
+            else if(last_group == TOKEN_KIND::comment_multilinestart) {
+                is_comment = true;
+                continue;
+            }
+            else if(last_group == TOKEN_KIND::comment_singleline ||
+                    last_group == TOKEN_KIND::preprocessor_directive) {
+                break;
+            }
+            else if(last_group == TOKEN_KIND::error) {
                 raise_runtime_error_at_line("Found invalid token " + em(match.get_last_closed_paren()),
                                             get_line_number());
             }

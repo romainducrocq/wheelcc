@@ -40,7 +40,7 @@ function usage () {
 }
 
 function clean () {
-    if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
+    # if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
     if [ ${LINK_CODE} -ne 1 ]; then
         if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
     fi
@@ -163,11 +163,11 @@ function parse_args () {
     fi
 }
 
-function preprocess () {
-    verbose "Preprocess -> ${FILE}.i"
-    gcc -E -P ${FILE}.c -o ${FILE}.i
-    if [ ${?} -ne 0 ]; then clean; exit 1; fi
-}
+#function preprocess () {
+#    verbose "Preprocess -> ${FILE}.i"
+#    gcc -E -P ${FILE}.c -o ${FILE}.i
+#    if [ ${?} -ne 0 ]; then clean; exit 1; fi
+#}
 
 function compile () {
     verbose "Compile    -> ${FILE}.s"
@@ -203,7 +203,7 @@ FILE=""
 LINK_LIBS=""
 parse_args
 
-preprocess
+# preprocess
 compile
 link
 

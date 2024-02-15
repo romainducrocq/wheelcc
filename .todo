@@ -30,3 +30,8 @@
 - 8. Implement standard library
 
 ## NOTES
+
+- driver:
+  - add support to preprocess with gcc
+  - add support for multiple files
+  - add support for -o output name
