@@ -13,12 +13,12 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Link] [Lib] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES"
     echo ""
     echo "[Help]:"
     echo "    --help       print help and exit"
     echo ""
-    echo "[Debug]:"
+    echo "[Dbg]:"
     echo "    -v           enable verbose mode"
     echo "    (Debug only):"
     echo "    --lex        print  lexing    stage and exit"
@@ -28,12 +28,18 @@ function usage () {
     echo "    --codegen    print  assembly  stage and exit"
     echo "    --codeemit   print  emission  stage and exit"
     echo ""
+    echo "[Pre]:"
+    echo "    -E           preprocess with gcc before compile"
+    echo ""
     echo "[Link]:"
     echo "    -S           compile, but do not assemble and link"
     echo "    -c           compile and assemble, but do not link"
     echo ""
     echo "[Lib]:"
     echo "    -l<libname>  links with a library file"
+    echo ""
+    echo "[Out]:"
+    echo "    -o <file>    write the output into <file>"
     echo ""
     echo "FILES:           list of .c files to compile"
     exit 0
@@ -110,11 +116,37 @@ function opt_arg () {
     return 0
 }
 
+function pre_arg () {
+    if [ "${ARG}" = "-E" ]; then
+        PRE_CODE=1
+    else
+        return 1
+    fi
+    return 0
+}
+
 function link_arg () {
     if [ "${ARG}" = "-S" ]; then
         LINK_CODE=1
     elif [ "${ARG}" = "-c" ]; then
         LINK_CODE=2
+    else
+        return 1
+    fi
+    return 0
+}
+
+function lib_arg () {
+    if [[ "${ARG}" == "-l"* ]]; then
+      LINK_LIBS="${LINK_LIBS} ${ARG}"
+      return 0
+    fi
+    return 1
+}
+
+function name_arg () {
+    if [ "${ARG}" = "-o" ]; then
+        : # TODO
     else
         return 1
     fi
@@ -141,14 +173,6 @@ function file_arg () {
     return 1
 }
 
-function lib_arg () {
-    if [[ "${ARG}" == "-l"* ]]; then
-      LINK_LIBS="${LINK_LIBS} ${ARG}"
-      return 0
-    fi
-    return 1
-}
-
 function parse_args () {
     i=0
 
@@ -169,6 +193,12 @@ function parse_args () {
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
+    pre_arg
+
+    if [ ${?} -eq 0 ]; then
+        shift_arg
+        if [ ${?} -ne 0 ]; then exit 1; fi
+    fi
     link_arg
 
     if [ ${?} -eq 0 ]; then
@@ -181,9 +211,15 @@ function parse_args () {
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
-    file_arg
-    if [ ${?} -ne 0 ]; then exit 1; fi
+    name_arg
 
+    if [ ${?} -eq 0 ]; then
+        shift_arg
+        if [ ${?} -ne 0 ]; then exit 1; fi
+    fi
+    file_arg
+
+    if [ ${?} -ne 0 ]; then exit 1; fi
     while :; do
         shift_arg
         if [ ${?} -ne 0 ]; then return 0; fi
@@ -194,12 +230,14 @@ function parse_args () {
 }
 
 function preprocess () {
-    for FILE in ${FILES}; do
-        verbose "Preprocess -> ${FILE}.i"
-        gcc -E -P ${FILE}.c -o ${FILE}.i
-        if [ ${?} -ne 0 ]; then return 1; fi
-    done
-    EXT_IN="i"
+    if [ ${PRE_CODE} -eq 1 ]; then
+        for FILE in ${FILES}; do
+            verbose "Preprocess -> ${FILE}.i"
+            gcc -E -P ${FILE}.c -o ${FILE}.i
+            if [ ${?} -ne 0 ]; then return 1; fi
+        done
+        EXT_IN="i"
+    fi
     return 0;
 }
 
@@ -245,6 +283,7 @@ EXIT_CODE=1
 
 VERB_CODE=0
 OPT_CODE=0
+PRE_CODE=0
 LINK_CODE=0
 FILE_2=0
 
@@ -258,7 +297,7 @@ NAME_OUT=""
 parse_args
 if [ ${?} -ne 0 ]; then clean; fi
 
-# preprocess
+preprocess
 if [ ${?} -ne 0 ]; then clean; fi
 
 compile

@@ -277,7 +277,7 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
         case TOKEN_KIND::binop_greaterthanorequal:
             return std::make_unique<CGreaterOrEqual>();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("binary_op") +
+            raise_runtime_error_at_line("Expected token type " + em("binary operator") +
                                         " but found token " + em(next_token->token), next_token->line);
     }
 }
@@ -292,7 +292,7 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
         case TOKEN_KIND::unop_not:
             return std::make_unique<CNot>();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("unary_op") +
+            raise_runtime_error_at_line("Expected token type " + em("unary operator") +
                                         " but found token " + em(next_token->token), next_token->line);
     }
 }
@@ -484,7 +484,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
                 break;
             default:
-                raise_runtime_error_at_line("Expected token type " + em("exp") +
+                raise_runtime_error_at_line("Expected token type " + em("expression") +
                                             " but found token " + em(peek_token->token),
                                             peek_token->line);
         }
