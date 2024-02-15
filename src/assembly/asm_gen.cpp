@@ -113,7 +113,7 @@ static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
     }
 }
 
-// signed cond_code = E | NE | L | LE | G | GE
+// (signed) cond_code = E | NE | L | LE | G | GE
 static std::unique_ptr<AsmCondCode> generate_signed_condition_code(TacBinaryOp* node) {
     switch(node->type()) {
         case AST_T::TacEqual_t:
@@ -133,7 +133,7 @@ static std::unique_ptr<AsmCondCode> generate_signed_condition_code(TacBinaryOp* 
     }
 }
 
-// unsigned cond_code = E | NE | B | BE | A | AE
+// (unsigned) cond_code = E | NE | B | BE | A | AE
 static std::unique_ptr<AsmCondCode> generate_unsigned_condition_code(TacBinaryOp* node) {
     switch(node->type()) {
         case AST_T::TacEqual_t:
