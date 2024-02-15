@@ -13,7 +13,7 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Link] [Lib] FILE"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Link] [Lib] FILES"
     echo ""
     echo "[Help]:"
     echo "    --help       print help and exit"
@@ -35,16 +35,28 @@ function usage () {
     echo "[Lib]:"
     echo "    -l<libname>  links with a library file"
     echo ""
-    echo "FILE:            .c file to compile"
+    echo "FILES:           list of .c files to compile"
     exit 0
 }
 
 function clean () {
-    if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
-    if [ ${LINK_CODE} -ne 1 ]; then
-        if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
-        if [ -f ${FILE}.asm ]; then rm ${FILE}.asm; fi
+    if [ ${EXIT_CODE} -eq 1 ]; then
+        LINK_CODE=255
     fi
+    for FILE in ${FILES}; do
+        if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
+        if [ ${LINK_CODE} -ne 0 ]; then
+            if [ -f ${FILE} ]; then rm ${FILE}; fi
+        fi
+        if [ ${LINK_CODE} -ne 1 ]; then
+            if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
+            if [ -f ${FILE}.asm ]; then rm ${FILE}.asm; fi
+        fi
+        if [ ${LINK_CODE} -ne 2 ]; then
+            if [ -f ${FILE}.o ]; then rm ${FILE}.o; fi
+        fi
+    done
+    exit ${EXIT_CODE}
 }
 
 function shift_arg () {
@@ -110,8 +122,23 @@ function link_arg () {
 }
 
 function file_arg () {
-    FILE=$(readlink -f ${ARG})
-    FILE=${FILE%.*}
+    if [[ "${ARG}" == *".${EXT_IN}" ]]; then
+      FILE="$(readlink -f ${ARG})"
+      if [ ${?} -ne 0 ]; then return 1; fi
+      FILE="${FILE%.*}"
+      if [ -z ${FILES} ]; then
+          if [ -z ${NAME_OUT} ]; then
+              NAME_OUT=${FILE}
+          fi
+      else
+          FILES="${FILES} "
+          FILE_2=1
+      fi
+      FILES="${FILES}${FILE%.*}"
+      FILE=""
+      return 0
+    fi
+    return 1
 }
 
 function lib_arg () {
@@ -155,62 +182,90 @@ function parse_args () {
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
     file_arg
+    if [ ${?} -ne 0 ]; then exit 1; fi
 
-    if [ ${?} -eq 0 ]; then
+    while :; do
         shift_arg
-        if [ ${?} -eq 0 ]; then exit 1; fi
-    else
-        exit 1
-    fi
+        if [ ${?} -ne 0 ]; then return 0; fi
+        file_arg
+        if [ ${?} -ne 0 ]; then exit 1; fi
+    done
+    return 1;
 }
 
 function preprocess () {
-    verbose "Preprocess -> ${FILE}.i"
-    gcc -E -P ${FILE}.c -o ${FILE}.i
-    if [ ${?} -ne 0 ]; then clean; exit 1; fi
-    IN_EXT="i"
+    for FILE in ${FILES}; do
+        verbose "Preprocess -> ${FILE}.i"
+        gcc -E -P ${FILE}.c -o ${FILE}.i
+        if [ ${?} -ne 0 ]; then return 1; fi
+    done
+    EXT_IN="i"
+    return 0;
 }
 
 function compile () {
-    verbose "Compile    -> ${FILE}.${OUT_EXT}"
-    ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${IN_EXT}
-    if [ ${?} -ne 0 ]; then clean; exit 1; fi
-    if [ ${OPT_CODE} -eq 250 ]; then
-        cat ${FILE}.${OUT_EXT}
-    fi
+    for FILE in ${FILES}; do
+        verbose "Compile    -> ${FILE}.${EXT_OUT}"
+        ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN}
+        if [ ${?} -ne 0 ]; then return 1; fi
+        if [ ${OPT_CODE} -eq 250 ]; then
+            cat ${FILE}.${EXT_OUT}
+        fi
+    done
+    return 0;
 }
 
 function link () {
     if [ ${OPT_CODE} -lt 200 ]; then
         if [ ${LINK_CODE} -eq 0 ]; then
-            gcc ${FILE}.${OUT_EXT}${LINK_LIBS} -o ${FILE}
-            if [ ${?} -ne 0 ]; then clean; exit 1; fi
-            verbose "Link       -> ${FILE}"
+            if [ ${FILE_2} -eq 1 ]; then
+                FILES="$(echo "${FILES}" |\
+                    sed "s/ /.${EXT_OUT} /g")"
+            fi
+            FILES="${FILES}.${EXT_OUT}"
+            gcc ${FILES}${LINK_LIBS} -o ${NAME_OUT}
+            if [ ${?} -ne 0 ]; then return 1; fi
+            verbose "Link       -> ${NAME_OUT}"
         elif [ ${LINK_CODE} -eq 1 ]; then
             :
         elif [ ${LINK_CODE} -eq 2 ]; then
-            gcc -c ${FILE}.${OUT_EXT}${LINK_LIBS} -o ${FILE}.o
-            if [ ${?} -ne 0 ]; then clean; exit 1; fi
-            verbose "Assemble   -> ${FILE}.o"
+            for FILE in ${FILES}; do
+                gcc -c ${FILE}.${EXT_OUT}${LINK_LIBS} -o ${FILE}.o
+                if [ ${?} -ne 0 ]; then return 1; fi
+                verbose "Assemble   -> ${FILE}.o"
+            done
         else
-            if [ ${?} -ne 0 ]; then clean; exit 1; fi
+            return 1
         fi
     fi
+    return 0;
 }
 
-IN_EXT="c"
-OUT_EXT="s"
+EXIT_CODE=1
 
 VERB_CODE=0
 OPT_CODE=0
 LINK_CODE=0
-FILE=""
+FILE_2=0
+
+EXT_IN="c"
+EXT_OUT="s"
+
 LINK_LIBS=""
+FILES=""
+NAME_OUT=""
+
 parse_args
+if [ ${?} -ne 0 ]; then clean; fi
 
 # preprocess
-compile
-link
+if [ ${?} -ne 0 ]; then clean; fi
 
+compile
+if [ ${?} -ne 0 ]; then clean; fi
+
+link
+if [ ${?} -ne 0 ]; then clean; fi
+
+EXIT_CODE=0
 clean
-exit 0

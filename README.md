@@ -64,7 +64,7 @@ ccc2 path/to/file.c
 
 ### Help
 ```
-Usage: ccc2 [Help] [Debug] [Link] [Lib] FILE
+Usage: ccc2 [Help] [Debug] [Link] [Lib] FILES
 
 [Help]:
     --help       print help and exit
@@ -86,7 +86,7 @@ Usage: ccc2 [Help] [Debug] [Link] [Lib] FILE
 [Lib]:
     -l<libname>  links with a library file
 
-FILE:            .c file to compile
+FILES:           list of .c files to compile
 ```
 
 ****
