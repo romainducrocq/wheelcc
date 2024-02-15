@@ -52,9 +52,7 @@ def print_ast_case(node):
 
 if __name__ == "__main__":
     print(R"""#include "util/pprint.hpp"
-
 #ifndef __NDEBUG__
-
 #include "util/error.hpp"
 #include "parser/lexer.hpp"
 #include "ast/ast.hpp"
@@ -134,6 +132,4 @@ void pretty_print_asm_code() {
     header_string("ASM Code");
     std::cout << std::endl;
 }
-
-#endif
-""")    
+#endif""")
