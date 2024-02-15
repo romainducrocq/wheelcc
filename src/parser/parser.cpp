@@ -116,11 +116,16 @@ static const Token& pop_next_i(size_t i) {
                                     p_tokens->back().line);
     }
 
-    Token swap_token_i = std::move((*p_tokens)[pop_index + i]);
-    for(size_t j = pop_index + i; j-- > pop_index;) {
-        (*p_tokens)[j+1] = std::move((*p_tokens)[j]);
+    if(i == 1) {
+        std::swap((*p_tokens)[pop_index], (*p_tokens)[pop_index+1]);
     }
-    (*p_tokens)[pop_index] = std::move(swap_token_i);
+    else {
+        Token swap_token_i = std::move((*p_tokens)[pop_index+i]);
+        for(size_t j = pop_index + i; j-- > pop_index;) {
+            (*p_tokens)[j+1] = std::move((*p_tokens)[j]);
+        }
+        (*p_tokens)[pop_index] = std::move(swap_token_i);
+    }
     pop_next();
     return (*p_tokens)[pop_index-1];
 }
