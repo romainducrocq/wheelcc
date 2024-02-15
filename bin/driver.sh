@@ -29,14 +29,14 @@ function usage () {
     echo "    --codeemit   print  emission  stage and exit"
     echo ""
     echo "[Pre]:"
-    echo "    -E           preprocess with gcc before compile"
+    echo "    -E           preprocess with gcc, then compile"
     echo ""
     echo "[Link]:"
     echo "    -S           compile, but do not assemble and link"
     echo "    -c           compile and assemble, but do not link"
     echo ""
     echo "[Lib]:"
-    echo "    -l<libname>  links with a library file"
+    echo "    -l<libname>  link with a list of library files"
     echo ""
     echo "[Out]:"
     echo "    -o <file>    write the output into <file>"
@@ -182,47 +182,51 @@ function parse_args () {
 
     shift_arg
     if [ ${?} -ne 0 ]; then exit 1; fi
+
     help_arg
-
     if [ ${?} -ne 0 ]; then exit 1; fi
+
     verb_arg
-
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
+
     opt_arg
-
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
+
     pre_arg
-
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
+
     link_arg
-
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
-    lib_arg
 
-    if [ ${?} -eq 0 ]; then
-        shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
-    fi
+    while :; do
+        lib_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then exit 1; fi
+        else
+            break
+        fi
+    done
+
     name_arg
-
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     fi
-    file_arg
 
+    file_arg
     if [ ${?} -ne 0 ]; then exit 1; fi
     while :; do
         shift_arg

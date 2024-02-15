@@ -80,14 +80,14 @@ Usage: ccc2 [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
     --codeemit   print  emission  stage and exit
 
 [Pre]:
-    -E           preprocess with gcc before compile
+    -E           preprocess with gcc, then compile
 
 [Link]:
     -S           compile, but do not assemble and link
     -c           compile and assemble, but do not link
 
 [Lib]:
-    -l<libname>  links with a library file
+    -l<libname>  link with a list of library files
 
 [Out]:
     -o <file>    write the output into <file>

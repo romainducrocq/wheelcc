@@ -5,23 +5,23 @@ cat ../../include/ast/${1}.hpp \
     | grep --invert-match ")" \
     | grep --invert-match "(" \
     | grep -e "struct" -e ";" \
-    | sed -e "s/nstruction/nstr_uction/g" - \
-    | sed -e "s/\s*std::vector<TIdentifier>\s*/TIdentifier [/g" - \
-    | sed -e "s/\s*std::vector<.*>\s*/\"[/g" - \
-    | sed -e "s/\s*std::unique_ptr<.*>\s*/\"/g" - \
-    | sed -e "s/\s*std::shared_ptr<.*>\s*/\"/g" - \
-    | sed -e "s/\s*TIdentifier\s*/(TIdentifier, \"/g" - \
-    | sed -e "s/\s*TInt\s*/(TInt, \"/g" - \
-    | sed -e "s/\s*TLong\s*/(TLong, \"/g" - \
-    | sed -e "s/\s*TDouble\s*/(TDouble, \"/g" - \
-    | sed -e "s/\s*TUInt\s*/(TUInt, \"/g" - \
-    | sed -e "s/\s*TULong\s*/(TULong, \"/g" - \
-    | sed -e "s/\s*bool\s*/(Bool, \"/g" - \
+    | sed "s/nstruction/nstr_uction/g" \
+    | sed "s/\s*std::vector<TIdentifier>\s*/TIdentifier [/g" \
+    | sed "s/\s*std::vector<.*>\s*/\"[/g" \
+    | sed "s/\s*std::unique_ptr<.*>\s*/\"/g" \
+    | sed "s/\s*std::shared_ptr<.*>\s*/\"/g" \
+    | sed "s/\s*TIdentifier\s*/(TIdentifier, \"/g" \
+    | sed "s/\s*TInt\s*/(TInt, \"/g" \
+    | sed "s/\s*TLong\s*/(TLong, \"/g" \
+    | sed "s/\s*TDouble\s*/(TDouble, \"/g" \
+    | sed "s/\s*TUInt\s*/(TUInt, \"/g" \
+    | sed "s/\s*TULong\s*/(TULong, \"/g" \
+    | sed "s/\s*bool\s*/(Bool, \"/g" \
     | grep --invert-match "};" \
     | grep --invert-match -P "^(?=.*struct)(?=.*;)" \
     | tr ";" "\"" \
-    | sed -e "s/struct\s*/[\"/g" - \
-    | sed -e "s/\s*:.*{\s*/\", [/g" - > tmp
+    | sed "s/struct\s*/[\"/g" \
+    | sed "s/\s*:.*{\s*/\", [/g" > tmp
 
 echo -n "" > tmp2
 while read l ;
@@ -49,15 +49,15 @@ do
 done < tmp2
 
 cat tmp \
-    | sed -e "s/\[  /\[/g" - \
-    | sed -e "s/\[ \]/\[\]/g" - \
-    | sed -e "s/,\]/\]/g" - \
-    | sed -e "s/), \"/)\], \[\"/g" - \
-    | sed -e "s/\", (/\"\], \[(/g" - \
-    | sed -e "s/\")\]\],/\")\]\, \[\]\],/g" - \
-    | sed -e "s/\", \[\"/\", \[\], \[\"/g" - \
-    | sed -e "s/\", \[\]\],/\", \[\], \[\]\],/g" - \
-    | sed -e "s/nstr_uction/nstruction/g" - > tmp2
+    | sed "s/\[  /\[/g" \
+    | sed "s/\[ \]/\[\]/g" \
+    | sed "s/,\]/\]/g" \
+    | sed "s/), \"/)\], \[\"/g" \
+    | sed "s/\", (/\"\], \[(/g" \
+    | sed "s/\")\]\],/\")\]\, \[\]\],/g" \
+    | sed "s/\", \[\"/\", \[\], \[\"/g" \
+    | sed "s/\", \[\]\],/\", \[\], \[\]\],/g" \
+    | sed "s/nstr_uction/nstruction/g" > tmp2
 rm tmp
 
 echo ""
