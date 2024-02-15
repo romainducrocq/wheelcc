@@ -40,9 +40,10 @@ function usage () {
 }
 
 function clean () {
-    # if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
+    if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
     if [ ${LINK_CODE} -ne 1 ]; then
         if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
+        if [ -f ${FILE}.asm ]; then rm ${FILE}.asm; fi
     fi
 }
 
@@ -163,31 +164,32 @@ function parse_args () {
     fi
 }
 
-#function preprocess () {
-#    verbose "Preprocess -> ${FILE}.i"
-#    gcc -E -P ${FILE}.c -o ${FILE}.i
-#    if [ ${?} -ne 0 ]; then clean; exit 1; fi
-#}
+function preprocess () {
+    verbose "Preprocess -> ${FILE}.i"
+    gcc -E -P ${FILE}.c -o ${FILE}.i
+    if [ ${?} -ne 0 ]; then clean; exit 1; fi
+    IN_EXT="i"
+}
 
 function compile () {
-    verbose "Compile    -> ${FILE}.s"
-    ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}
+    verbose "Compile    -> ${FILE}.${OUT_EXT}"
+    ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${IN_EXT}
     if [ ${?} -ne 0 ]; then clean; exit 1; fi
     if [ ${OPT_CODE} -eq 250 ]; then
-        cat ${FILE}.s
+        cat ${FILE}.${OUT_EXT}
     fi
 }
 
 function link () {
     if [ ${OPT_CODE} -lt 200 ]; then
         if [ ${LINK_CODE} -eq 0 ]; then
-            gcc ${FILE}.s${LINK_LIBS} -o ${FILE}
+            gcc ${FILE}.${OUT_EXT}${LINK_LIBS} -o ${FILE}
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
             verbose "Link       -> ${FILE}"
         elif [ ${LINK_CODE} -eq 1 ]; then
             :
         elif [ ${LINK_CODE} -eq 2 ]; then
-            gcc -c ${FILE}.s${LINK_LIBS} -o ${FILE}.o
+            gcc -c ${FILE}.${OUT_EXT}${LINK_LIBS} -o ${FILE}.o
             if [ ${?} -ne 0 ]; then clean; exit 1; fi
             verbose "Assemble   -> ${FILE}.o"
         else
@@ -195,6 +197,9 @@ function link () {
         fi
     fi
 }
+
+IN_EXT="c"
+OUT_EXT="s"
 
 VERB_CODE=0
 OPT_CODE=0

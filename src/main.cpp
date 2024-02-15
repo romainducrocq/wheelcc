@@ -60,7 +60,7 @@ static void debug_asm_code() {
 }
 #endif
 
-static void do_compile(const std::string& filename, int opt_code, int /*opt_s_code*/) {
+static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) {
     if(opt_code > 0
 #ifdef __NDEBUG__
        && opt_code < 200
@@ -70,7 +70,7 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lexing(filename + ".c");
+    std::vector<Token> tokens = lexing(filename);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 255) {
@@ -124,7 +124,8 @@ static void do_compile(const std::string& filename, int opt_code, int /*opt_s_co
 #endif
 
     verbose("-- Code emission ... ", false);
-    code_emission(std::move(asm_ast), filename + ".s");
+    filename = filename.substr(0, filename.size()-2) + ".s";
+    code_emission(std::move(asm_ast), std::move(filename));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 250) {

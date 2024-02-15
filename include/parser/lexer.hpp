@@ -89,6 +89,6 @@ struct Token {
     size_t line;
 };
 
-std::vector<Token> lexing(std::string&& filename);
+std::vector<Token> lexing(const std::string& filename);
 
 #endif
