@@ -94,20 +94,16 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
     regexp_string.pop_back();
     const boost::regex token_pattern(regexp_string);
 
-    boost::smatch match;
-    boost::sregex_iterator it_begin;
-    boost::sregex_iterator it_end;
-
-    size_t last_group;
-
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
     while(read_line(line)) {
 
-        for(it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
+        boost::sregex_iterator it_end;
+        for(boost::sregex_iterator it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
             it_begin != it_end; it_begin++) {
 
-            match = *it_begin;
+            size_t last_group;
+            boost::smatch match = *it_begin;
             for(last_group = NUM_TOKEN; last_group-- > 0 ;) {
                 if(match[groups[last_group]].matched) {
                     break;
@@ -118,8 +114,7 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
                 raise_runtime_error_at_line("Found invalid token " + em(match.get_last_closed_paren()),
                                             get_line_number());
             }
-
-            if(last_group == TOKEN_KIND::skip) {
+            else if(last_group == TOKEN_KIND::skip) {
                 continue;
             }
 
