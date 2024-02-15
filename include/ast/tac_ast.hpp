@@ -142,21 +142,21 @@ struct TacVariable : TacValue {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // instruction = Return(val)
-//             | SignExtend(val src, val dst)
-//             | Truncate(val src, val dst)
-//             | ZeroExtend(val src, val dst)
-//             | TacDoubleToInt(val src, val dst)
-//             | TacDoubleToUInt(val src, val dst)
-//             | TacIntToDouble(val src, val dst)
-//             | TacUIntToDouble(val src, val dst)
-//             | FunCall(identifier fun_name, val* args, val dst)
-//             | Unary(unary_operator, val src, val dst)
-//             | Binary(binary_operator, val src1, val src2, val dst)
-//             | Copy(val src, val dst)
-//             | Jump(identifier target)
-//             | JumpIfZero(val condition, identifier target)
-//             | JumpIfNotZero(val condition, identifier target)
-//             | Label(identifier name)
+//             | SignExtend(val, val)
+//             | Truncate(val, val)
+//             | ZeroExtend(val, val)
+//             | TacDoubleToInt(val, val)
+//             | TacDoubleToUInt(val, val)
+//             | TacIntToDouble(val, val)
+//             | TacUIntToDouble(val, val)
+//             | FunCall(identifier, val*, val)
+//             | Unary(unary_operator, val, val)
+//             | Binary(binary_operator, val, val, val)
+//             | Copy(val, val)
+//             | Jump(identifier)
+//             | JumpIfZero(val, identifier)
+//             | JumpIfNotZero(val, identifier)
+//             | Label(identifier)
 struct TacInstruction : Ast {
     AST_T type() override;
 };
@@ -311,8 +311,8 @@ struct TacLabel : TacInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// top_level = Function(identifier, bool global, identifier* params, instruction* body)
-//           | StaticVariable(identifier, bool global, type t, static_init init)
+// top_level = Function(identifier, bool, identifier*, instruction*)
+//           | StaticVariable(identifier, bool, type, static_init)
 struct TacTopLevel : Ast {
     AST_T type() override;
 };
@@ -343,7 +343,7 @@ struct TacStaticVariable : TacTopLevel {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// AST = Program(top_level*)
+// AST = Program(top_level*, top_level*)
 struct TacProgram : Ast {
     AST_T type() override;
     TacProgram() = default;

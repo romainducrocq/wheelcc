@@ -29,8 +29,8 @@ struct BackendDouble : AssemblyType {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// symbol = Obj(type assembly_type, bool is_static, bool is_constant)
-//        | Fun(bool defined)
+// symbol = Obj(assembly_type, bool, bool)
+//        | Fun(bool)
 struct BackendSymbol : Ast {
     AST_T type() override;
 };

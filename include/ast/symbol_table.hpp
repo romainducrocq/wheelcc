@@ -52,7 +52,7 @@ struct FunType : Type {
 
 // static_init = IntInit(int)
 //             | LongInit(int)
-//             | DoubleInit(double)
+//             | DoubleInit(double, int)
 //             | UIntInit(int)
 //             | ULongInit(int)
 struct StaticInit : Ast {
@@ -128,8 +128,8 @@ struct NoInitializer : InitialValue {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// identifier_attrs = FunAttr(bool defined, bool global)
-//                  | StaticAttr(initial_value init, bool global)
+// identifier_attrs = FunAttr(bool, bool)
+//                  | StaticAttr(initial_value, bool)
 //                  | LocalAttr
 struct IdentifierAttr : Ast {
     AST_T type() override;
@@ -159,7 +159,7 @@ struct LocalAttr : IdentifierAttr {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// symbol = Symbol(type type_t, identifier_attrs attrs)
+// symbol = Symbol(type, identifier_attrs)
 struct Symbol : Ast {
     AST_T type() override;
     Symbol() = default;

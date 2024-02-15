@@ -177,7 +177,7 @@ struct AsmP : AsmCondCode {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// operand = Imm(int, is_long)
+// operand = Imm(int, bool)
 //         | Reg(reg)
 //         | Pseudo(identifier)
 //         | Stack(int)
@@ -301,9 +301,9 @@ struct AsmShr : AsmUnaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// instruction = Mov(assembly_type, operand src, operand dst)
-//             | MovSx(operand src, operand dst)
-//             | MovZeroExtend(operand src, operand dst)
+// instruction = Mov(assembly_type, operand, operand)
+//             | MovSx(operand, operand)
+//             | MovZeroExtend(operand, operand)
 //             | Cvttsd2si(assembly_type, operand, operand)
 //             | Cvtsi2sd(assembly_type, operand, operand)
 //             | Unary(unary_operator, assembly_type, operand)
@@ -492,9 +492,9 @@ struct AsmRet : AsmInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// top_level = Function(identifier name, bool global, instruction* instructions)
-//           | StaticVariable(identifier, bool global, int alignment, static_init init)
-//           | StaticConstant(identifier, int alignment, static_init init)
+// top_level = Function(identifier, bool, instruction*)
+//           | StaticVariable(identifier, bool, int, static_init)
+//           | StaticConstant(identifier, int, static_init)
 struct AsmTopLevel : Ast {
     AST_T type() override;
 };
@@ -532,7 +532,7 @@ struct AsmStaticConstant : AsmTopLevel {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// AST = Program(top_level*)
+// AST = Program(top_level*, top_level*)
 struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram() = default;
