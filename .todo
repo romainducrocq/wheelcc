@@ -32,5 +32,4 @@
 ## NOTES
 
 - driver:
-  - add support for -o output name
   - add support for multiple libs

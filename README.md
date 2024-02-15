@@ -64,12 +64,12 @@ ccc2 path/to/file.c
 
 ### Help
 ```
-Usage: ccc2 [Help] [Debug] [Link] [Lib] FILES
+Usage: ccc2 [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
 
 [Help]:
     --help       print help and exit
 
-[Debug]:
+[Dbg]:
     -v           enable verbose mode
     (Debug only):
     --lex        print  lexing    stage and exit
@@ -79,12 +79,18 @@ Usage: ccc2 [Help] [Debug] [Link] [Lib] FILES
     --codegen    print  assembly  stage and exit
     --codeemit   print  emission  stage and exit
 
+[Pre]:
+    -E           preprocess with gcc before compile
+
 [Link]:
     -S           compile, but do not assemble and link
     -c           compile and assemble, but do not link
 
 [Lib]:
     -l<libname>  links with a library file
+
+[Out]:
+    -o <file>    write the output into <file>
 
 FILES:           list of .c files to compile
 ```

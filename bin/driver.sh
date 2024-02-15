@@ -146,7 +146,11 @@ function lib_arg () {
 
 function name_arg () {
     if [ "${ARG}" = "-o" ]; then
-        : # TODO
+        shift_arg
+        if [ ${?} -ne 0 ]; then exit 1; fi
+        touch ${ARG} > /dev/null 2>&1
+        if [ ${?} -ne 0 ]; then exit 1; fi
+        NAME_OUT=${ARG}
     else
         return 1
     fi
