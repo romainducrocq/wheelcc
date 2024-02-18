@@ -123,20 +123,28 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
                 }
                 continue;
             }
-            else if(last_group == TOKEN_KIND::comment_multilinestart) {
-                is_comment = true;
-                continue;
-            }
-            else if(last_group == TOKEN_KIND::comment_singleline ||
-                    last_group == TOKEN_KIND::preprocessor_directive) {
-                break;
-            }
-            else if(last_group == TOKEN_KIND::error) {
-                raise_runtime_error_at_line("Found invalid token " + em(match.get_last_closed_paren()),
-                                            get_line_number());
-            }
-            else if(last_group == TOKEN_KIND::skip) {
-                continue;
+            else {
+                switch(last_group) {
+                    case TOKEN_KIND::error:
+                    case TOKEN_KIND::comment_multilineend:
+                        raise_runtime_error_at_line("Found invalid token " +
+                                                    em(match.get_last_closed_paren()),
+                                                    get_line_number());
+                    case TOKEN_KIND::skip:
+                        goto Lcontinue;
+                    case TOKEN_KIND::comment_multilinestart: {
+                        is_comment = true;
+                        goto Lcontinue;
+                    }
+                    case TOKEN_KIND::comment_singleline:
+                    case TOKEN_KIND::preprocessor_directive:
+                        goto Lbreak;
+                    default:
+                        goto Lpass;
+                }
+                Lbreak: break;
+                Lcontinue: continue;
+                Lpass: ;
             }
 
             Token token = { match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group),

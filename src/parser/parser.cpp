@@ -728,7 +728,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
         switch(peek_next_i(specifier).token_kind) {
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
-                goto end;
+                goto Lbreak;
             case TOKEN_KIND::key_int:
             case TOKEN_KIND::key_long:
             case TOKEN_KIND::key_double:
@@ -746,7 +746,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
                                             peek_next_i(specifier).line);
         }
     }
-    end:
+    Lbreak:
     switch(type_token_kinds.size()) {
         case 1: {
             switch(type_token_kinds[0]) {

@@ -55,11 +55,11 @@ static void resolve_function_call_expression(CFunctionCall* node) {
     for(size_t i = current_scope_depth(); i-- > 0;) {
         if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
             node->name = scoped_identifier_maps[i][node->name];
-            goto end;
+            goto Lelse;
         }
     }
     raise_runtime_error("Function " + em(node->name) + " was not declared in this scope");
-    end:
+    Lelse:
 
     for(size_t i = 0; i < node->args.size(); i++) {
         resolve_expression(node->args[i].get());
