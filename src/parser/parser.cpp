@@ -282,7 +282,7 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
     }
 }
 
-// <unop> ::= "-" | "~" | "!"
+// <unop> ::= "-" | "~" | "!" | "*" | "&"
 static std::unique_ptr<CUnaryOp> parse_unary_op() {
     switch(pop_next().token_kind) {
         case TOKEN_KIND::unop_complement:
@@ -362,6 +362,22 @@ static std::unique_ptr<CExp> parse_function_call_factor() {
     return std::make_unique<CFunctionCall>(std::move(name), std::move(args));
 }
 
+static std::unique_ptr<CExp> parse_pointer_factor() {
+    switch(pop_next().token_kind) {
+        case TOKEN_KIND::binop_multiplication: {
+            std::unique_ptr<CExp> exp = parse_factor();
+            return std::make_unique<CDereference>(std::move(exp));
+        }
+        case TOKEN_KIND::assignment_bitand: {
+            std::unique_ptr<CExp> exp = parse_factor();
+            return std::make_unique<CAddrOf>(std::move(exp));
+        }
+        default:
+            raise_runtime_error_at_line("Expected token type " + em("pointer operator") +
+                                        " but found token " + em(next_token->token), next_token->line);
+    }
+}
+
 // <factor> ::= <const> | <identifier> | "(" { <type-specifier> }+ ")" <factor> | <unop> <factor> | "(" <exp> ")"
 //            | <identifier> "(" [ <argument-list> ] ")"
 static std::unique_ptr<CExp> parse_factor() {
@@ -379,10 +395,13 @@ static std::unique_ptr<CExp> parse_factor() {
         case TOKEN_KIND::unsigned_constant:
         case TOKEN_KIND::unsigned_long_constant:
             return parse_unsigned_constant_factor();
-        case::TOKEN_KIND::unop_complement:
-        case::TOKEN_KIND::unop_negation:
-        case::TOKEN_KIND::unop_not:
+        case TOKEN_KIND::unop_complement:
+        case TOKEN_KIND::unop_negation:
+        case TOKEN_KIND::unop_not:
             return parse_unary_factor();
+        case TOKEN_KIND::binop_multiplication:
+        case TOKEN_KIND::assignment_bitand:
+            return parse_pointer_factor();
         default:
             break;
     }
