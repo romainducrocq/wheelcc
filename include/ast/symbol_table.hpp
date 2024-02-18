@@ -15,6 +15,7 @@
 //      | UInt
 //      | ULong
 //      | FunType(type*, type)
+//      | Pointer(type)
 struct Type : Ast {
     AST_T type() override;
 };
@@ -46,6 +47,14 @@ struct FunType : Type {
 
     std::vector<std::shared_ptr<Type>> param_types;
     std::shared_ptr<Type> ret_type;
+};
+
+struct Pointer : Type {
+    AST_T type() override;
+    Pointer() = default;
+    Pointer(std::shared_ptr<Type> ref_type);
+
+    std::shared_ptr<Type> ref_type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

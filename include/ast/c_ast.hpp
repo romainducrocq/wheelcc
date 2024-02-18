@@ -189,6 +189,8 @@ struct CGreaterOrEqual : CBinaryOp {
 //     | AssignmentCompound(binary_operator, exp, exp, type)
 //     | Conditional(exp, exp, exp, type)
 //     | FunctionCall(identifier, exp*, type)
+//     | Dereference(exp, type)
+//     | AddrOf(exp, type)
 struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
@@ -289,6 +291,28 @@ struct CFunctionCall : CExp {
 
     TIdentifier name;
     std::vector<std::unique_ptr<CExp>> args;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CDereference : CExp {
+    AST_T type() override;
+    CDereference() = default;
+    CDereference(std::unique_ptr<CExp> exp);
+
+    std::unique_ptr<CExp> exp;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CAddrOf : CExp {
+    AST_T type() override;
+    CAddrOf() = default;
+    CAddrOf(std::unique_ptr<CExp> exp);
+
+    std::unique_ptr<CExp> exp;
     /*
     std::shared_ptr<Type> exp_type;
     */

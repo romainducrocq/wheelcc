@@ -43,6 +43,8 @@ AST_T CBinary::type() { return AST_T::CBinary_t; }
 AST_T CAssignment::type() { return AST_T::CAssignment_t; }
 AST_T CConditional::type() { return AST_T::CConditional_t; }
 AST_T CFunctionCall::type() { return AST_T::CFunctionCall_t; }
+AST_T CDereference::type() { return AST_T::CDereference_t; }
+AST_T CAddrOf::type() { return AST_T::CAddrOf_t; }
 AST_T CStatement::type() { return AST_T::CStatement_t; }
 AST_T CReturn::type() { return AST_T::CReturn_t; }
 AST_T CExpression::type() { return AST_T::CExpression_t; }
@@ -116,6 +118,12 @@ CConditional::CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp
 
 CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args)
     : name(std::move(name)), args(std::move(args)) {}
+
+CDereference::CDereference(std::unique_ptr<CExp> exp)
+        : exp(std::move(exp)) {}
+
+CAddrOf::CAddrOf(std::unique_ptr<CExp> exp)
+        : exp(std::move(exp)) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
