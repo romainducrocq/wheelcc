@@ -158,23 +158,24 @@ function name_arg () {
 }
 
 function file_arg () {
-    if [[ "${ARG}" == *".${EXT_IN}" ]]; then
-      FILE="$(readlink -f ${ARG})"
-      if [ ${?} -ne 0 ]; then return 1; fi
-      FILE="${FILE%.*}"
-      if [ -z ${FILES} ]; then
-          if [ -z ${NAME_OUT} ]; then
-              NAME_OUT=${FILE}
-          fi
-      else
-          FILES="${FILES} "
-          FILE_2=1
-      fi
-      FILES="${FILES}${FILE%.*}"
-      FILE=""
-      return 0
+    FILES="$(readlink -f ${ARG})"
+    if [ ${?} -ne 0 ]; then exit 1; fi
+    FILES="${FILES%.*}"
+    if [ -z ${NAME_OUT} ]; then
+        NAME_OUT=${FILES}
     fi
-    return 1
+    return 0
+}
+
+function file_2_arg () {
+   if [[ "${ARG}" == *".${EXT_IN}" ]]; then
+       FILE="$(readlink -f ${ARG})"
+       if [ ${?} -ne 0 ]; then exit 1; fi
+       FILES="${FILES} ${FILE%.*}"
+       FILE_2=1
+       return 0
+   fi
+   return 1
 }
 
 function parse_args () {
@@ -230,11 +231,11 @@ function parse_args () {
     if [ ${?} -ne 0 ]; then exit 1; fi
     while :; do
         shift_arg
-        if [ ${?} -ne 0 ]; then return 0; fi
-        file_arg
+        if [ ${?} -ne 0 ]; then break; fi
+        file_2_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     done
-    return 1;
+    return 0;
 }
 
 function preprocess () {
@@ -303,7 +304,6 @@ FILES=""
 NAME_OUT=""
 
 parse_args
-if [ ${?} -ne 0 ]; then clean; fi
 
 preprocess
 if [ ${?} -ne 0 ]; then clean; fi
