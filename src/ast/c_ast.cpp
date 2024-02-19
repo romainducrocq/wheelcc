@@ -34,6 +34,12 @@ AST_T CLessThan::type() { return AST_T::CLessThan_t; }
 AST_T CLessOrEqual::type() { return AST_T::CLessOrEqual_t; }
 AST_T CGreaterThan::type() { return AST_T::CGreaterThan_t; }
 AST_T CGreaterOrEqual::type() { return AST_T::CGreaterOrEqual_t; }
+AST_T CParamInfo::type() { return AST_T::CParamInfo_t; }
+AST_T CParam::type() { return AST_T::CParam_t; }
+AST_T CDeclarator::type() { return AST_T::CDeclarator_t; }
+AST_T CIdent::type() { return AST_T::CIdent_t; }
+AST_T CPointerDeclarator::type() { return AST_T::CPointerDeclarator_t; }
+AST_T CFunDeclarator::type() { return AST_T::CFunDeclarator_t; }
 AST_T CExp::type() { return AST_T::CExp_t; }
 AST_T CConstant::type() { return AST_T::CConstant_t; }
 AST_T CVar::type() { return AST_T::CVar_t; }
@@ -90,6 +96,19 @@ CConstUInt::CConstUInt(TUInt value)
 
 CConstULong::CConstULong(TULong value)
     : value(value) {}
+
+CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type)
+    : declarator(std::move(declarator)), param_type(std::move(param_type)) {}
+
+CIdent::CIdent(TIdentifier identifier)
+    : identifier(std::move(identifier)) {}
+
+CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
+    : declarator(std::move(declarator)) {}
+
+CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_info,
+                               std::unique_ptr<CDeclarator> declarator)
+    : param_info(std::move(param_info)), declarator(std::move(declarator)) {}
 
 CConstant::CConstant(std::shared_ptr<CConst> constant)
     : constant(std::move(constant)) {}

@@ -180,6 +180,57 @@ struct CGreaterOrEqual : CBinaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// param_info = Param(type, declarator)
+struct CParamInfo : Ast {
+    AST_T type() override;
+};
+
+struct CDeclarator;
+struct CParam : CParamInfo {
+    AST_T type() override;
+    CParam() = default;
+    CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type);
+
+    std::unique_ptr<CDeclarator> declarator;
+    std::shared_ptr<Type> param_type;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// declarator = Ident(identifier)
+//            | PointerDeclarator(declarator)
+//            | FunDeclarator(param_info* params, declarator)
+struct CDeclarator : Ast {
+    AST_T type() override;
+};
+
+struct CIdent : CDeclarator {
+    AST_T type() override;
+    CIdent() = default;
+    CIdent(TIdentifier identifier);
+
+    TIdentifier identifier;
+};
+
+struct CPointerDeclarator : CDeclarator {
+    AST_T type() override;
+    CPointerDeclarator() = default;
+    CPointerDeclarator(std::unique_ptr<CDeclarator> declarator);
+
+    std::unique_ptr<CDeclarator> declarator;
+};
+
+struct CFunDeclarator : CDeclarator {
+    AST_T type() override;
+    CFunDeclarator() = default;
+    CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_info, std::unique_ptr<CDeclarator> declarator);
+
+    std::vector<std::unique_ptr<CParamInfo>> param_info;
+    std::unique_ptr<CDeclarator> declarator;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // exp = Constant(const, type)
 //     | Var(identifier, type)
 //     | Cast(type, exp, type)

@@ -297,6 +297,21 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
+static std::unique_ptr<CExp> parse_abstract_declarator();
+
+// <direct-abstract-declarator> ::= "(" <abstract-declarator> ")"
+static std::unique_ptr<CExp> parse_direct_abstract_declarator() {
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<CExp> abstract_declarator = parse_abstract_declarator();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return abstract_declarator;
+}
+
+// <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
+static std::unique_ptr<CExp> parse_abstract_declarator() {
+    return nullptr; // TODO
+}
+
 static std::shared_ptr<Type> parse_type_specifier();
 
 static std::unique_ptr<CExp> parse_factor();
