@@ -76,6 +76,12 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->ret_type.get(), t);
             break;
         }
+        case AST_T::Pointer_t: {
+            field("Pointer", "", ++t);
+            Pointer* p_node = static_cast<Pointer*>(node);
+            print_ast(p_node->ref_type.get(), t);
+            break;
+        }
         case AST_T::StaticInit_t: {
             field("StaticInit", "", ++t);
             break;
@@ -318,6 +324,53 @@ static void print_ast(Ast* node, size_t t) {
             field("CGreaterOrEqual", "", ++t);
             break;
         }
+        case AST_T::CAbstractDeclarator_t: {
+            field("CAbstractDeclarator", "", ++t);
+            break;
+        }
+        case AST_T::CAbstractPointer_t: {
+            field("CAbstractPointer", "", ++t);
+            CAbstractPointer* p_node = static_cast<CAbstractPointer*>(node);
+            print_ast(p_node->abstract_declarator.get(), t);
+            break;
+        }
+        case AST_T::CAbstractBase_t: {
+            field("CAbstractBase", "", ++t);
+            break;
+        }
+        case AST_T::CParam_t: {
+            field("CParam", "", ++t);
+            CParam* p_node = static_cast<CParam*>(node);
+            print_ast(p_node->declarator.get(), t);
+            print_ast(p_node->param_type.get(), t);
+            break;
+        }
+        case AST_T::CDeclarator_t: {
+            field("CDeclarator", "", ++t);
+            break;
+        }
+        case AST_T::CIdent_t: {
+            field("CIdent", "", ++t);
+            CIdent* p_node = static_cast<CIdent*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
+        case AST_T::CPointerDeclarator_t: {
+            field("CPointerDeclarator", "", ++t);
+            CPointerDeclarator* p_node = static_cast<CPointerDeclarator*>(node);
+            print_ast(p_node->declarator.get(), t);
+            break;
+        }
+        case AST_T::CFunDeclarator_t: {
+            field("CFunDeclarator", "", ++t);
+            CFunDeclarator* p_node = static_cast<CFunDeclarator*>(node);
+            field("List[" + std::to_string(p_node->param_list.size()) + "]", "", t+1);
+            for(const auto& item: p_node->param_list) {
+                print_ast(item.get(), t+1);
+            }
+            print_ast(p_node->declarator.get(), t);
+            break;
+        }
         case AST_T::CExp_t: {
             field("CExp", "", ++t);
             CExp* p_node = static_cast<CExp*>(node);
@@ -388,6 +441,20 @@ static void print_ast(Ast* node, size_t t) {
             for(const auto& item: p_node->args) {
                 print_ast(item.get(), t+1);
             }
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CDereference_t: {
+            field("CDereference", "", ++t);
+            CDereference* p_node = static_cast<CDereference*>(node);
+            print_ast(p_node->exp.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CAddrOf_t: {
+            field("CAddrOf", "", ++t);
+            CAddrOf* p_node = static_cast<CAddrOf*>(node);
+            print_ast(p_node->exp.get(), t);
             print_ast(p_node->exp_type.get(), t);
             break;
         }
