@@ -106,15 +106,15 @@ CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract
 CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type)
     : declarator(std::move(declarator)), param_type(std::move(param_type)) {}
 
-CIdent::CIdent(TIdentifier identifier)
-    : identifier(std::move(identifier)) {}
+CIdent::CIdent(TIdentifier name)
+    : name(std::move(name)) {}
 
 CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
     : declarator(std::move(declarator)) {}
 
-CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_info,
+CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_infos,
                                std::unique_ptr<CDeclarator> declarator)
-    : param_info(std::move(param_info)), declarator(std::move(declarator)) {}
+    : param_infos(std::move(param_infos)), declarator(std::move(declarator)) {}
 
 CConstant::CConstant(std::shared_ptr<CConst> constant)
     : constant(std::move(constant)) {}

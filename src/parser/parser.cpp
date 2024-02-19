@@ -867,6 +867,77 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
     }
 }
 
+struct Declarator {
+    TIdentifier name;
+    std::shared_ptr<Type> derived_type;
+    std::vector<TIdentifier> param_names;
+};
+
+static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator);
+
+static void parse_process_ident_declarator(CIdent* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
+    declarator.name = node->name;
+    declarator.derived_type = std::move(base_type);
+}
+
+static void parse_process_pointer_declarator(CPointerDeclarator* node, std::shared_ptr<Type> base_type,
+                                             Declarator& declarator) {
+    std::shared_ptr<Type> derived_type = std::make_shared<Pointer>(std::move(base_type));
+    parse_process_declarator(node->declarator.get(), std::move(derived_type), declarator);
+}
+
+static void parse_process_param_fun_declarator(CParam* node, Declarator& declarator) {
+    parse_process_declarator(node->declarator.get(), node->param_type, declarator);
+}
+
+static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<Type> base_type,
+                                         Declarator& declarator) {
+    if(node->declarator->type() != AST_T::CIdent_t) {
+        raise_runtime_error("Additional type derivations are not applicable to function types");
+    }
+
+    std::vector<TIdentifier> param_names;
+    std::vector<std::shared_ptr<Type>> param_types;
+    for(size_t param_info = 0; param_info < node->param_infos.size(); param_info++) {
+        Declarator param_declarator;
+        switch(node->param_infos[param_info]->type()) {
+            case AST_T::CParam_t:
+                parse_process_param_fun_declarator(static_cast<CParam*>(node->param_infos[param_info].get()),
+                                                   param_declarator);
+                break;
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
+        if(param_declarator.derived_type->type() == AST_T::FunType_t) {
+            raise_runtime_error("Function pointer parameters are not applicable in type derivations");
+        }
+        param_names.push_back(std::move(param_declarator.name));
+        param_types.push_back(std::move(param_declarator.derived_type));
+    }
+    TIdentifier name = static_cast<CIdent*>(node->declarator.get())->name;
+    std::shared_ptr<Type> derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
+    declarator.name = std::move(name);
+    declarator.derived_type = std::move(derived_type);
+    declarator.param_names = std::move(param_names);
+}
+
+static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
+    switch(node->type()) {
+        case AST_T::CIdent_t:
+            parse_process_ident_declarator(static_cast<CIdent*>(node), std::move(base_type), declarator);
+            break;
+        case AST_T::CPointerDeclarator_t:
+            parse_process_pointer_declarator(static_cast<CPointerDeclarator*>(node), std::move(base_type),
+                                             declarator);
+            break;
+        case AST_T::CFunDeclarator_t:
+            parse_process_fun_declarator(static_cast<CFunDeclarator*>(node), std::move(base_type), declarator);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 // <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
 // <function-declaration> ::= { <specifier> }+ <identifier> "(" <param-list> ")" ( <block> | ";")
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::shared_ptr<Type> ret_type) {

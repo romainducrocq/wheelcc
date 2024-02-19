@@ -227,9 +227,9 @@ struct CDeclarator : Ast {
 struct CIdent : CDeclarator {
     AST_T type() override;
     CIdent() = default;
-    CIdent(TIdentifier identifier);
+    CIdent(TIdentifier name);
 
-    TIdentifier identifier;
+    TIdentifier name;
 };
 
 struct CPointerDeclarator : CDeclarator {
@@ -243,9 +243,9 @@ struct CPointerDeclarator : CDeclarator {
 struct CFunDeclarator : CDeclarator {
     AST_T type() override;
     CFunDeclarator() = default;
-    CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_info, std::unique_ptr<CDeclarator> declarator);
+    CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_infos, std::unique_ptr<CDeclarator> declarator);
 
-    std::vector<std::unique_ptr<CParamInfo>> param_info;
+    std::vector<std::unique_ptr<CParamInfo>> param_infos;
     std::unique_ptr<CDeclarator> declarator;
 };
 
