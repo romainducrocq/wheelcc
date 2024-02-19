@@ -900,7 +900,7 @@ static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<T
     for(size_t param = 0; param < node->param_list.size(); param++) {
         Declarator param_declarator;
         parse_process_declarator(node->param_list[param]->declarator.get(),
-                                 node->param_list[param]->param_type,declarator);
+                                 node->param_list[param]->param_type, param_declarator);
         if(param_declarator.derived_type->type() == AST_T::FunType_t) {
             raise_runtime_error("Function pointer parameters are not applicable in type derivations");
         }
@@ -1012,11 +1012,12 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
 // <direct-declarator> ::= <simple-declarator> [ <param-list> ]
 static std::unique_ptr<CDeclarator> parse_direct_declarator() {
     std::unique_ptr<CDeclarator> declarator = parse_simple_declarator();
-    std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
-    if(param_list.empty()) {
+    if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
+        std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
+        return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
+    } else {
         return declarator;
     }
-    return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
 }
 
 static std::unique_ptr<CDeclarator> parse_pointer_declarator() {
