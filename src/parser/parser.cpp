@@ -452,7 +452,7 @@ static std::unique_ptr<CExp> parse_pointer_factor() {
             std::unique_ptr<CExp> exp = parse_factor();
             return std::make_unique<CDereference>(std::move(exp));
         }
-        case TOKEN_KIND::assignment_bitand: {
+        case TOKEN_KIND::binop_bitand: {
             std::unique_ptr<CExp> exp = parse_factor();
             return std::make_unique<CAddrOf>(std::move(exp));
         }
@@ -484,7 +484,7 @@ static std::unique_ptr<CExp> parse_factor() {
         case TOKEN_KIND::unop_not:
             return parse_unary_factor();
         case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::assignment_bitand:
+        case TOKEN_KIND::binop_bitand:
             return parse_pointer_factor();
         default:
             break;
@@ -849,6 +849,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
                 break;
             case TOKEN_KIND::key_static:
             case TOKEN_KIND::key_extern:
+            case TOKEN_KIND::binop_multiplication:
                 specifier += 1;
                 break;
             default:
@@ -1158,8 +1159,12 @@ static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::unique_ptr<CSto
 static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& declarator) {
     std::shared_ptr<Type> type_specifier = parse_type_specifier();
     std::unique_ptr<CStorageClass> storage_class;
-    if(peek_next().token_kind != TOKEN_KIND::identifier) {
-        storage_class = parse_storage_class();
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::identifier:
+        case TOKEN_KIND::binop_multiplication:
+            break;
+        default:
+            storage_class = parse_storage_class();
     }
     parse_process_declarator(parse_declarator().get(), std::move(type_specifier), declarator);
     return storage_class;
