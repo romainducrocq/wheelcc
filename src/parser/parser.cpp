@@ -402,9 +402,8 @@ static std::unique_ptr<CCast> parse_cast_factor() {
     std::shared_ptr<Type> target_type = parse_type_specifier();
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::parenthesis_open: {
+        case TOKEN_KIND::parenthesis_open:
             parse_abstract_declarator_cast_factor(target_type);
-        }
         default:
             break;
     }
@@ -512,6 +511,9 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    while(exp_left->type() == AST_T::CDereference_t) {
+        exp_left = std::move(static_cast<CDereference*>(exp_left.get())->exp);
+    }
     if(exp_left->type() != AST_T::CVar_t) {
         raise_runtime_error_at_line("Left expression is an invalid lvalue", next_token->line);
     }
@@ -955,7 +957,7 @@ static std::unique_ptr<CDeclarator> parse_declarator();
 static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator);
 
 static void parse_process_ident_declarator(CIdent* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
-    declarator.name = node->name;
+    declarator.name = std::move(node->name);
     declarator.derived_type = std::move(base_type);
 }
 
