@@ -938,6 +938,48 @@ static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> ba
     }
 }
 
+
+// <param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")" // TODO
+// <param> ::= { <type-specifier> }+ <declarator> // TODO
+
+static std::unique_ptr<CDeclarator> parse_declarator();
+
+static std::unique_ptr<CIdent> parse_ident_simple_declarator() {
+    TIdentifier name; parse_identifier(name);
+    return std::make_unique<CIdent>(std::move(name));
+}
+
+static std::unique_ptr<CDeclarator> parse_declarator_simple_declarator() {
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<CDeclarator> declarator = parse_declarator();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return declarator;
+}
+
+// <simple-declarator> ::= <identifier> | "(" <declarator> ")"
+static std::unique_ptr<CDeclarator> parse_simple_declarator() {
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::identifier:
+            return parse_ident_simple_declarator();
+        case TOKEN_KIND::parenthesis_open:
+            return parse_declarator_simple_declarator();
+        default:
+            raise_runtime_error_at_line("Expected token type " + em("simple declarator") +
+                                        " but found token " + em(peek_token->token),
+                                        peek_token->line);
+    }
+}
+
+// <direct-declarator> ::= <simple-declarator> [ <param-list> ]
+static std::unique_ptr<CDeclarator> parse_direct_declarator() {
+    return nullptr; // TODO
+}
+
+// <declarator> ::= "*" <declarator> | <direct-declarator>
+static std::unique_ptr<CDeclarator> parse_declarator() {
+    return nullptr; // TODO
+}
+
 // <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
 // <function-declaration> ::= { <specifier> }+ <identifier> "(" <param-list> ")" ( <block> | ";")
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::shared_ptr<Type> ret_type) {
