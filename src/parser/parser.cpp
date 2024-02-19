@@ -192,7 +192,8 @@ static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
 static std::shared_ptr<CConst> parse_constant() {
     if(pop_next().token_kind == TOKEN_KIND::float_constant) {
         return parse_double_constant();
-    } else if (next_token->token_kind == TOKEN_KIND::long_constant) {
+    }
+    else if (next_token->token_kind == TOKEN_KIND::long_constant) {
         next_token->token.pop_back();
     }
 
@@ -297,19 +298,30 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
-static std::unique_ptr<CExp> parse_abstract_declarator();
+// TODO
+static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator();
 
 // <direct-abstract-declarator> ::= "(" <abstract-declarator> ")"
-static std::unique_ptr<CExp> parse_direct_abstract_declarator() {
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
-    std::unique_ptr<CExp> abstract_declarator = parse_abstract_declarator();
+static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_declarator() {
+    pop_next();
+    std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_declarator();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     return abstract_declarator;
 }
 
+static std::unique_ptr<CAbstractDeclarator> parse_pointer_abstract_declarator() {
+//    pop_next();
+//    return parse_abstract_declarator();
+}
+
 // <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
-static std::unique_ptr<CExp> parse_abstract_declarator() {
-    return nullptr; // TODO
+static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::binop_multiplication:
+            return parse_pointer_abstract_declarator();
+        default:
+            return parse_direct_abstract_declarator();
+    }
 }
 
 static std::shared_ptr<Type> parse_type_specifier();
@@ -809,20 +821,24 @@ static std::shared_ptr<Type> parse_type_specifier() {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_int) != type_token_kinds.end()) {
                     return std::make_unique<UInt>();
-                } else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
+                }
+                else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                     TOKEN_KIND::key_long) != type_token_kinds.end()) {
                     return std::make_unique<ULong>();
                 }
-            }else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
+            }
+            else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                  TOKEN_KIND::key_signed) != type_token_kinds.end()) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_int) != type_token_kinds.end()) {
                     return std::make_unique<Int>();
-                } else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
+                }
+                else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                     TOKEN_KIND::key_long) != type_token_kinds.end()) {
                     return std::make_unique<Long>();
                 }
-            }else if((std::find(type_token_kinds.begin(), type_token_kinds.end(),
+            }
+            else if((std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                 TOKEN_KIND::key_int) != type_token_kinds.end()) &&
                     (std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                TOKEN_KIND::key_long) != type_token_kinds.end())) {
@@ -838,7 +854,8 @@ static std::shared_ptr<Type> parse_type_specifier() {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_unsigned) != type_token_kinds.end()) {
                     return std::make_unique<ULong>();
-                }else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
+                }
+                else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                    TOKEN_KIND::key_signed) != type_token_kinds.end()) {
                     return std::make_unique<Long>();
                 }
@@ -1015,22 +1032,23 @@ static std::unique_ptr<CDeclarator> parse_direct_declarator() {
     if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
         std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
         return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
-    } else {
+    }
+    else {
         return declarator;
     }
 }
 
 static std::unique_ptr<CDeclarator> parse_pointer_declarator() {
     pop_next();
-    return parse_declarator();
+    std::unique_ptr<CDeclarator> declarator = parse_declarator();
+    return std::make_unique<CPointerDeclarator>(std::move(declarator));
 }
 
 // <declarator> ::= "*" <declarator> | <direct-declarator>
 static std::unique_ptr<CDeclarator> parse_declarator() {
     switch(peek_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication: {
+        case TOKEN_KIND::binop_multiplication:
             return parse_pointer_declarator();
-        }
         default:
             return parse_direct_declarator();
     }
@@ -1042,7 +1060,8 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
     std::unique_ptr<CBlock> body;
     if(peek_next().token_kind == TOKEN_KIND::semicolon) {
         pop_next();
-    }else{
+    }
+    else {
         body = parse_block();
     }
     return std::make_unique<CFunctionDeclaration>(std::move(declarator.name), std::move(declarator.params),
@@ -1093,7 +1112,8 @@ static std::unique_ptr<CDeclaration> parse_declaration() {
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
     if(declarator.derived_type->type() == AST_T::FunType_t) {
         return parse_fun_decl_declaration(std::move(storage_class), std::move(declarator));
-    }else{
+    }
+    else {
         return parse_var_decl_declaration(std::move(storage_class), std::move(declarator));
     }
 }
