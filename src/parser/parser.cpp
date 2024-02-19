@@ -850,6 +850,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_static:
             case TOKEN_KIND::key_extern:
             case TOKEN_KIND::binop_multiplication:
+            case TOKEN_KIND::parenthesis_open:
                 specifier += 1;
                 break;
             default:
@@ -1037,8 +1038,7 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
 // <param> ::= { <type-specifier> }+ <declarator>
 static std::unique_ptr<CParam> parse_param() {
     std::shared_ptr<Type> param_type = parse_type_specifier();
-    TIdentifier name; parse_identifier(name);
-    std::unique_ptr<CDeclarator> declarator = std::make_unique<CIdent>(std::move(name));
+    std::unique_ptr<CDeclarator> declarator = parse_declarator();
     return std::make_unique<CParam>(std::move(declarator), std::move(param_type));
 }
 
@@ -1162,6 +1162,7 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
     switch(peek_next().token_kind) {
         case TOKEN_KIND::identifier:
         case TOKEN_KIND::binop_multiplication:
+        case TOKEN_KIND::parenthesis_open:
             break;
         default:
             storage_class = parse_storage_class();
