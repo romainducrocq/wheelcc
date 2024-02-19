@@ -966,7 +966,8 @@ static void parse_process_pointer_declarator(CPointerDeclarator* node, std::shar
 static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<Type> base_type,
                                          Declarator& declarator) {
     if(node->declarator->type() != AST_T::CIdent_t) {
-        raise_runtime_error("Additional type derivations are not applicable to function types");
+        raise_runtime_error_at_line("Additional type derivations can not be applied to function types",
+                                    next_token->line);
     }
 
     std::vector<TIdentifier> params;
@@ -976,7 +977,8 @@ static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<T
         parse_process_declarator(node->param_list[param]->declarator.get(),
                                  node->param_list[param]->param_type, param_declarator);
         if(param_declarator.derived_type->type() == AST_T::FunType_t) {
-            raise_runtime_error("Function pointer parameters are not applicable in type derivations");
+            raise_runtime_error_at_line("Function pointer parameters can not be applied in type derivations",
+                                        next_token->line);
         }
         params.push_back(std::move(param_declarator.name));
         param_types.push_back(std::move(param_declarator.derived_type));
