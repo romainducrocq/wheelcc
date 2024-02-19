@@ -180,6 +180,26 @@ struct CGreaterOrEqual : CBinaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// abstract_declarator = AbstractPointer(abstract_declarator)
+//                     | AbstractBase
+struct CAbstractDeclarator : Ast {
+    AST_T type() override;
+};
+
+struct CAbstractPointer : CAbstractDeclarator {
+    AST_T type() override;
+    CAbstractPointer() = default;
+    CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator);
+
+    std::unique_ptr<CAbstractDeclarator> abstract_declarator;
+};
+
+struct CAbstractBase : CAbstractDeclarator {
+    AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // param_info = Param(type, declarator)
 struct CParamInfo : Ast {
     AST_T type() override;
