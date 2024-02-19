@@ -938,10 +938,6 @@ static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> ba
     }
 }
 
-
-// <param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")" // TODO
-// <param> ::= { <type-specifier> }+ <declarator> // TODO
-
 static std::unique_ptr<CDeclarator> parse_declarator();
 
 static std::unique_ptr<CIdent> parse_ident_simple_declarator() {
@@ -950,7 +946,7 @@ static std::unique_ptr<CIdent> parse_ident_simple_declarator() {
 }
 
 static std::unique_ptr<CDeclarator> parse_declarator_simple_declarator() {
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    pop_next();
     std::unique_ptr<CDeclarator> declarator = parse_declarator();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     return declarator;
@@ -970,17 +966,86 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
     }
 }
 
+struct ParamList {
+    std::vector<TIdentifier> params;
+    std::vector<std::shared_ptr<Type>> param_types;
+};
+
+static std::unique_ptr<ParamList> parse_empty_param_list() {
+    pop_next();
+    return std::make_unique<ParamList>();
+}
+
+static std::unique_ptr<ParamList> parse_non_empty_param_list() {
+    std::unique_ptr<ParamList> param_list = std::make_unique<ParamList>();
+    {
+        std::shared_ptr<Type> param_type = parse_type_specifier();
+        param_list->param_types.push_back(std::move(param_type));
+        TIdentifier identifier; parse_identifier(identifier);
+        param_list->params.push_back(std::move(identifier));
+    }
+    while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
+        pop_next();
+        std::shared_ptr<Type> param_type = parse_type_specifier();
+        param_list->param_types.push_back(std::move(param_type));
+        TIdentifier identifier; parse_identifier(identifier);
+        param_list->params.push_back(std::move(identifier));
+    }
+    return param_list;
+}
+
+// <param> ::= { <type-specifier> }+ <declarator> // TODO
+
+// <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
+// <param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")" // TODO
+static std::unique_ptr<ParamList> parse_param_list() {
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    std::unique_ptr<ParamList> param_list;
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::key_void: {
+            param_list = parse_empty_param_list();
+            break;
+        }
+        case TOKEN_KIND::key_int:
+        case TOKEN_KIND::key_long:
+        case TOKEN_KIND::key_double:
+        case TOKEN_KIND::key_unsigned:
+        case TOKEN_KIND::key_signed: {
+            param_list = parse_non_empty_param_list();
+            break;
+        }
+        default:
+            raise_runtime_error_at_line("Expected token type " + em("param list") +
+                                        " but found token " + em(peek_token->token),
+                                        peek_token->line);
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return param_list;
+}
+
 // <direct-declarator> ::= <simple-declarator> [ <param-list> ]
 static std::unique_ptr<CDeclarator> parse_direct_declarator() {
+    std::unique_ptr<CDeclarator> declarator = parse_simple_declarator();
+
     return nullptr; // TODO
+}
+
+static std::unique_ptr<CDeclarator> parse_pointer_declarator() {
+    pop_next();
+    return parse_declarator();
 }
 
 // <declarator> ::= "*" <declarator> | <direct-declarator>
 static std::unique_ptr<CDeclarator> parse_declarator() {
-    return nullptr; // TODO
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::binop_multiplication: {
+            return parse_pointer_declarator();
+        }
+        default:
+            return parse_direct_declarator();
+    }
 }
 
-// <param-list> ::= "void" | { <type-specifier> }+ <identifier> { "," { <type-specifier> }+ <identifier> }
 // <function-declaration> ::= { <specifier> }+ <identifier> "(" <param-list> ")" ( <block> | ";")
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::shared_ptr<Type> ret_type) {
     std::unique_ptr<CStorageClass> storage_class;
@@ -988,45 +1053,15 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::sha
         storage_class = parse_storage_class();
     }
     TIdentifier name; parse_identifier(name);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
-    std::vector<std::shared_ptr<Type>> param_types;
-    std::vector<TIdentifier> params;
-    switch(peek_next().token_kind) {
-        case TOKEN_KIND::key_void:
-            pop_next();
-            break;
-        case TOKEN_KIND::key_int:
-        case TOKEN_KIND::key_long:
-        case TOKEN_KIND::key_double:
-        case TOKEN_KIND::key_unsigned:
-        case TOKEN_KIND::key_signed: {
-            {
-                std::shared_ptr<Type> param_type = parse_type_specifier();
-                param_types.push_back(std::move(param_type));
-                TIdentifier identifier; parse_identifier(identifier);
-                params.push_back(std::move(identifier));
-            }
-            while(peek_next().token_kind == TOKEN_KIND::separator_comma) {
-                pop_next();
-                std::shared_ptr<Type> param_type = parse_type_specifier();
-                param_types.push_back(std::move(param_type));
-                TIdentifier identifier; parse_identifier(identifier);
-                params.push_back(std::move(identifier));
-            }
-            break;
-        }
-        default:
-            break;
-    }
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    std::unique_ptr<ParamList> param_list = parse_param_list();
     std::unique_ptr<CBlock> body;
     if(peek_next().token_kind == TOKEN_KIND::semicolon) {
         pop_next();
     }else{
         body = parse_block();
     }
-    std::shared_ptr<Type> fun_type = std::make_shared<FunType>(std::move(param_types), std::move(ret_type));
-    return std::make_unique<CFunctionDeclaration>(std::move(name), std::move(params), std::move(body),
+    std::shared_ptr<Type> fun_type = std::make_shared<FunType>(std::move(param_list->param_types), std::move(ret_type));
+    return std::make_unique<CFunctionDeclaration>(std::move(name), std::move(param_list->params), std::move(body),
                                                   std::move(fun_type), std::move(storage_class));
 }
 
