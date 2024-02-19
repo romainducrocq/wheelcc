@@ -7,6 +7,10 @@
 #include <memory>
 #include <vector>
 
+struct AbstractDeclarator {
+    std::shared_ptr<Type> derived_type;
+};
+
 struct Declarator {
     TIdentifier name;
     std::shared_ptr<Type> derived_type;

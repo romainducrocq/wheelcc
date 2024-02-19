@@ -299,6 +299,37 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
 }
 
 // TODO
+static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::shared_ptr<Type> base_type,
+                                              AbstractDeclarator& abstract_declarator);
+
+static void parse_process_pointer_abstract_declarator(CAbstractPointer* node, std::shared_ptr<Type> base_type,
+                                                      AbstractDeclarator& abstract_declarator) {
+    std::shared_ptr<Type> derived_type = std::make_shared<Pointer>(std::move(base_type));
+    parse_process_abstract_declarator(node->abstract_declarator.get(), std::move(derived_type),
+                                      abstract_declarator);
+}
+
+static void parse_process_base_abstract_declarator(CAbstractBase* /*node*/, std::shared_ptr<Type> base_type,
+                                                   AbstractDeclarator& abstract_declarator) {
+    abstract_declarator.derived_type = std::move(base_type);
+}
+
+static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::shared_ptr<Type> base_type,
+                                              AbstractDeclarator& abstract_declarator) {
+    switch(node->type()) {
+        case AST_T::CAbstractPointer_t:
+            parse_process_pointer_abstract_declarator(static_cast<CAbstractPointer*>(node), std::move(base_type),
+                                                      abstract_declarator);
+            break;
+        case AST_T::CAbstractBase_t:
+            parse_process_base_abstract_declarator(static_cast<CAbstractBase*>(node), std::move(base_type),
+                                                   abstract_declarator);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator();
 
 // <direct-abstract-declarator> ::= "(" <abstract-declarator> ")"
@@ -310,8 +341,15 @@ static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_declarator() {
 }
 
 static std::unique_ptr<CAbstractDeclarator> parse_pointer_abstract_declarator() {
-//    pop_next();
-//    return parse_abstract_declarator();
+    pop_next();
+    std::unique_ptr<CAbstractDeclarator> abstract_declarator;
+    if(peek_next().token_kind == TOKEN_KIND::parenthesis_close) {
+        abstract_declarator = std::make_unique<CAbstractBase>();
+    }
+    else {
+        abstract_declarator = parse_abstract_declarator();
+    }
+    return std::make_unique<CAbstractPointer>(std::move(abstract_declarator));
 }
 
 // <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
@@ -319,8 +357,12 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
             return parse_pointer_abstract_declarator();
-        default:
+        case TOKEN_KIND::parenthesis_open:
             return parse_direct_abstract_declarator();
+        default:
+            raise_runtime_error_at_line("Expected token type " + em("abstract declarator") +
+                                        " but found token " + em(peek_token->token),
+                                        peek_token->line);
     }
 }
 
@@ -400,7 +442,7 @@ static std::unique_ptr<CExp> parse_pointer_factor() {
             return std::make_unique<CAddrOf>(std::move(exp));
         }
         default:
-            raise_runtime_error_at_line("Expected token type " + em("pointer operator") +
+            raise_runtime_error_at_line("Expected token type " + em("unary operator") +
                                         " but found token " + em(next_token->token), next_token->line);
     }
 }
@@ -902,10 +944,6 @@ static void parse_process_pointer_declarator(CPointerDeclarator* node, std::shar
     parse_process_declarator(node->declarator.get(), std::move(derived_type), declarator);
 }
 
-static void parse_process_param_fun_declarator(CParam* node, Declarator& declarator) {
-    parse_process_declarator(node->declarator.get(), node->param_type, declarator);
-}
-
 static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<Type> base_type,
                                          Declarator& declarator) {
     if(node->declarator->type() != AST_T::CIdent_t) {
@@ -968,7 +1006,7 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
         case TOKEN_KIND::parenthesis_open:
             return parse_declarator_simple_declarator();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("simple declarator") +
+            raise_runtime_error_at_line("Expected token type " + em("declarator") +
                                         " but found token " + em(peek_token->token),
                                         peek_token->line);
     }
@@ -1018,7 +1056,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
             break;
         }
         default:
-            raise_runtime_error_at_line("Expected token type " + em("param list") +
+            raise_runtime_error_at_line("Expected token type " + em("type specifier") +
                                         " but found token " + em(peek_token->token),
                                         peek_token->line);
     }
