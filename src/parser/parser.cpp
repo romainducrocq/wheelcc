@@ -298,7 +298,6 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
     }
 }
 
-// TODO
 static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::shared_ptr<Type> base_type,
                                               AbstractDeclarator& abstract_declarator);
 
@@ -391,8 +390,24 @@ static std::unique_ptr<CVar> parse_var_factor() {
     return std::make_unique<CVar>(std::move(name));
 }
 
+static void parse_abstract_declarator_cast_factor(std::shared_ptr<Type>& target_type) {
+    AbstractDeclarator abstract_declarator;
+    parse_process_abstract_declarator(parse_abstract_declarator().get(), std::move(target_type),
+                                      abstract_declarator);
+    target_type = std::move(abstract_declarator.derived_type);
+}
+
+// "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <factor>
 static std::unique_ptr<CCast> parse_cast_factor() {
     std::shared_ptr<Type> target_type = parse_type_specifier();
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::binop_multiplication:
+        case TOKEN_KIND::parenthesis_open: {
+            parse_abstract_declarator_cast_factor(target_type);
+        }
+        default:
+            break;
+    }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     std::unique_ptr<CExp> exp = parse_factor();
     return std::make_unique<CCast>(std::move(exp), std::move(target_type));
@@ -447,8 +462,8 @@ static std::unique_ptr<CExp> parse_pointer_factor() {
     }
 }
 
-// <factor> ::= <const> | <identifier> | "(" { <type-specifier> }+ ")" <factor> | <unop> <factor> | "(" <exp> ")"
-//            | <identifier> "(" [ <argument-list> ] ")"
+// <factor> ::= <const> | <identifier> | "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <factor>
+//            | <unop> <factor> | "(" <exp> ")" | <identifier> "(" [ <argument-list> ] ")"
 static std::unique_ptr<CExp> parse_factor() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::identifier: {
@@ -736,6 +751,10 @@ static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::uni
 static std::unique_ptr<CInitDecl> parse_decl_for_init() {
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
+    if(declarator.derived_type->type() == AST_T::FunType_t) {
+        raise_runtime_error_at_line("Declaration in for loop initialization must be a variable type",
+                                    next_token->line);
+    }
     std::unique_ptr<CVariableDeclaration> init = parse_variable_declaration(std::move(storage_class),
                                                                             std::move(declarator));
     return std::make_unique<CInitDecl>(std::move(init));
