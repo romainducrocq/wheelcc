@@ -37,7 +37,6 @@ AST_T CGreaterOrEqual::type() { return AST_T::CGreaterOrEqual_t; }
 AST_T CAbstractDeclarator::type() { return AST_T::CAbstractDeclarator_t; }
 AST_T CAbstractPointer::type() { return AST_T::CAbstractPointer_t; }
 AST_T CAbstractBase::type() { return AST_T::CAbstractBase_t; }
-AST_T CParamInfo::type() { return AST_T::CParamInfo_t; }
 AST_T CParam::type() { return AST_T::CParam_t; }
 AST_T CDeclarator::type() { return AST_T::CDeclarator_t; }
 AST_T CIdent::type() { return AST_T::CIdent_t; }
@@ -112,9 +111,9 @@ CIdent::CIdent(TIdentifier name)
 CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
     : declarator(std::move(declarator)) {}
 
-CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_infos,
+CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,
                                std::unique_ptr<CDeclarator> declarator)
-    : param_infos(std::move(param_infos)), declarator(std::move(declarator)) {}
+    : param_list(std::move(param_list)), declarator(std::move(declarator)) {}
 
 CConstant::CConstant(std::shared_ptr<CConst> constant)
     : constant(std::move(constant)) {}

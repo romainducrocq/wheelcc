@@ -72,7 +72,6 @@ enum AST_T {
     CAbstractDeclarator_t,
     CAbstractPointer_t,
     CAbstractBase_t,
-    CParamInfo_t,
     CParam_t,
     CDeclarator_t,
     CIdent_t,

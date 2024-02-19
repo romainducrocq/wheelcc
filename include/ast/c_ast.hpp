@@ -201,12 +201,8 @@ struct CAbstractBase : CAbstractDeclarator {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // param_info = Param(type, declarator)
-struct CParamInfo : Ast {
-    AST_T type() override;
-};
-
 struct CDeclarator;
-struct CParam : CParamInfo {
+struct CParam : Ast {
     AST_T type() override;
     CParam() = default;
     CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type);
@@ -243,9 +239,9 @@ struct CPointerDeclarator : CDeclarator {
 struct CFunDeclarator : CDeclarator {
     AST_T type() override;
     CFunDeclarator() = default;
-    CFunDeclarator(std::vector<std::unique_ptr<CParamInfo>> param_infos, std::unique_ptr<CDeclarator> declarator);
+    CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> declarator);
 
-    std::vector<std::unique_ptr<CParamInfo>> param_infos;
+    std::vector<std::unique_ptr<CParam>> param_list;
     std::unique_ptr<CDeclarator> declarator;
 };
 
