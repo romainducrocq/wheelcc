@@ -237,25 +237,31 @@ void checktype_assignment_expression(CAssignment* node) {
 
 void checktype_unary_expression(CUnary* node) {
     switch(node->unary_op->type()) {
-        case AST_T::CNot_t:
+        case AST_T::CNot_t: {
             node->exp_type = std::make_shared<Int>();
             break;
-        case AST_T::CComplement_t:
-            if(node->exp->exp_type->type() == AST_T::Double_t ||
-               node->exp->exp_type->type() == AST_T::Pointer_t) {
-                raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
-                                    " can not be used on " + em("floating-point number") + " or " +
-                                    em("pointer type"));
+        }
+        case AST_T::CComplement_t: {
+            switch(node->exp->exp_type->type()) {
+                case AST_T::Double_t:
+                case AST_T::Pointer_t:
+                    raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                                        " can not be used on " + em("floating-point number") + " or " +
+                                        em("pointer type"));
+                default:
+                    break;
             }
             node->exp_type = node->exp->exp_type;
             break;
-        case AST_T::CNegate_t:
+        }
+        case AST_T::CNegate_t: {
             if(node->exp->exp_type->type() == AST_T::Pointer_t) {
                 raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
                                     " can not be used on " + em("pointer type"));
             }
             node->exp_type = node->exp->exp_type;
             break;
+        }
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -291,11 +297,14 @@ void checktype_binary_expression(CBinary* node) {
                 node->exp_right = std::move(exp);
             }
             node->exp_type = node->exp_left->exp_type;
-            if(node->exp_type->type() == AST_T::Double_t ||
-               node->exp_type->type() == AST_T::Pointer_t) {
-                raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                                    " can not be used on " + em("floating-point number") + " or " +
-                                    em("pointer type"));
+            switch(node->exp_type->type()) {
+                case AST_T::Double_t:
+                case AST_T::Pointer_t:
+                    raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                                        " can not be used on " + em("floating-point number") + " or " +
+                                        em("pointer type"));
+                default:
+                    break;
             }
             return;
         }
