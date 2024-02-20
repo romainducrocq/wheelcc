@@ -841,6 +841,27 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->dst.get(), t);
             break;
         }
+        case AST_T::TacGetAddress_t: {
+            field("TacGetAddress", "", ++t);
+            TacGetAddress* p_node = static_cast<TacGetAddress*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacLoad_t: {
+            field("TacLoad", "", ++t);
+            TacLoad* p_node = static_cast<TacLoad*>(node);
+            print_ast(p_node->src_ptr.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacStore_t: {
+            field("TacStore", "", ++t);
+            TacStore* p_node = static_cast<TacStore*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst_ptr.get(), t);
+            break;
+        }
         case AST_T::TacJump_t: {
             field("TacJump", "", ++t);
             TacJump* p_node = static_cast<TacJump*>(node);

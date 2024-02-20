@@ -43,6 +43,9 @@ AST_T TacFunCall::type() { return AST_T::TacFunCall_t; }
 AST_T TacUnary::type() { return AST_T::TacUnary_t; }
 AST_T TacBinary::type() { return AST_T::TacBinary_t; }
 AST_T TacCopy::type() { return AST_T::TacCopy_t; }
+AST_T TacGetAddress::type() { return AST_T::TacGetAddress_t; }
+AST_T TacLoad::type() { return AST_T::TacLoad_t; }
+AST_T TacStore::type() { return AST_T::TacStore_t; }
 AST_T TacJump::type() { return AST_T::TacJump_t; }
 AST_T TacJumpIfZero::type() { return AST_T::TacJumpIfZero_t; }
 AST_T TacJumpIfNotZero::type() { return AST_T::TacJumpIfNotZero_t; }
@@ -97,6 +100,15 @@ TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<Tac
 
 TacCopy::TacCopy(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
+
+TacGetAddress::TacGetAddress(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+TacLoad::TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> dst)
+    : src_ptr(std::move(src_ptr)), dst(std::move(dst)) {}
+
+TacStore::TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr)
+    : src(std::move(src)), dst_ptr(std::move(dst_ptr)) {}
 
 TacJump::TacJump(TIdentifier target)
     : target(std::move(target)) {}

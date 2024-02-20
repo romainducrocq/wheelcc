@@ -153,6 +153,9 @@ struct TacVariable : TacValue {
 //             | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val)
 //             | Copy(val, val)
+//             | GetAddress(val, val)
+//             | Load(val, val)
+//             | Store(val, val)
 //             | Jump(identifier)
 //             | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier)
@@ -273,6 +276,33 @@ struct TacCopy : TacInstruction {
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
+};
+
+struct TacGetAddress : TacInstruction {
+    AST_T type() override;
+    TacGetAddress() = default;
+    TacGetAddress(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+
+    std::shared_ptr<TacValue> src;
+    std::shared_ptr<TacValue> dst;
+};
+
+struct TacLoad : TacInstruction {
+    AST_T type() override;
+    TacLoad() = default;
+    TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> dst);
+
+    std::shared_ptr<TacValue> src_ptr;
+    std::shared_ptr<TacValue> dst;
+};
+
+struct TacStore : TacInstruction {
+    AST_T type() override;
+    TacStore() = default;
+    TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr);
+
+    std::shared_ptr<TacValue> src;
+    std::shared_ptr<TacValue> dst_ptr;
 };
 
 struct TacJump : TacInstruction {
