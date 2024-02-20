@@ -562,7 +562,8 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
             static_init = std::make_shared<UIntInit>(std::move(value));
             break;
         }
-        case AST_T::ULong_t: {
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t: {
             TULong value;
             switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
@@ -587,6 +588,10 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 }
                 default:
                     RAISE_INTERNAL_ERROR;
+            }
+            if(static_init_type->type() == AST_T::Pointer_t &&
+               value != 0ul) {
+                raise_runtime_error("Statically initialized pointer type can only be initialized to null");
             }
             static_init = std::make_shared<ULongInit>(std::move(value));
             break;
@@ -616,7 +621,8 @@ static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type
             static_init = std::make_shared<UIntInit>(0u);
             break;
         }
-        case AST_T::ULong_t: {
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t: {
             static_init = std::make_shared<ULongInit>(0ul);
             break;
         }
