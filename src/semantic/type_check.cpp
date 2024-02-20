@@ -54,7 +54,7 @@ bool is_const_signed(CConst* node) {
 }
 
 static bool is_exp_lvalue(CExp* node) {
-    switch(node->exp_type->type()) {
+    switch(node->type()) {
         case AST_T::CVar_t:
         case AST_T::CDereference_t:
             return true;
@@ -190,6 +190,9 @@ void checktype_constant_expression(CConstant* node) {
 }
 
 void checktype_assignment_expression(CAssignment* node) {
+    if(!is_exp_lvalue(node->exp_left.get())) {
+        raise_runtime_error("Left expression is an invalid lvalue");
+    }
     if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
         node->exp_right = std::move(exp);
