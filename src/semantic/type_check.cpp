@@ -179,7 +179,7 @@ void checktype_function_call_expression(CFunctionCall* node) {
     }
     for(size_t i = 0; i < node->args.size(); i ++) {
         if(!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->args[i]), fun_type->param_types[i]);
+            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->args[i]), fun_type->param_types[i]);
             node->args[i] = std::move(exp);
         }
     }
@@ -352,7 +352,7 @@ void checktype_addrof_expression(CAddrOf* node) {
 void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
     if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), fun_type->ret_type);
+        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
         node->exp = std::move(exp);
     }
 }
@@ -714,7 +714,7 @@ void checktype_init_block_scope_variable_declaration(CVariableDeclaration* node)
     if(node->init &&
        !node->storage_class &&
        !is_same_type(node->var_type.get(), node->init->exp_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->init), node->var_type);
+        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->init), node->var_type);
         node->init = std::move(exp);
     }
 }
