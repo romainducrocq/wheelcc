@@ -14,6 +14,11 @@ static std::unordered_set<TIdentifier> defined_set;
 static TIdentifier function_declaration_name;
 
 bool is_same_type(Type* type_1, Type* type_2) {
+    while(type_1->type() == AST_T::Pointer_t &&
+          type_2->type() == AST_T::Pointer_t) {
+        type_1 = static_cast<Pointer*>(type_1)->ref_type.get();
+        type_2 = static_cast<Pointer*>(type_2)->ref_type.get();
+    }
     return type_1->type() == type_2->type();
 }
 
@@ -160,7 +165,7 @@ static std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::s
 
 static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
     if(is_type_arithmetic(node->exp_type.get()) &&
-            is_type_arithmetic(exp_type.get())) {
+       is_type_arithmetic(exp_type.get())) {
         return cast_expression(std::move(node), exp_type);
     }
     else if(node->type() == AST_T::CConstant_t &&
