@@ -85,6 +85,9 @@ static void resolve_constant_expression(CConstant* /*node*/) {
 }
 
 static void resolve_assignment_expression(CAssignment* node) {
+    if(node->exp_left->type() != AST_T::CVar_t) {
+        raise_runtime_error("TODO remove");
+    }
     resolve_expression(node->exp_left.get());
     resolve_expression(node->exp_right.get());
 }

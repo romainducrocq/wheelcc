@@ -92,27 +92,27 @@ static bool is_const_null_pointer(CConstant* node) {
     }
 }
 
-static std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type_1, std::shared_ptr<Type>& type_2) {
-    if(is_same_type(type_1.get(), type_2.get())) {
-        return type_1;
+static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
+    if(is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
+        return node_1->exp_type;
     }
-    else if(type_1->type() == AST_T::Double_t ||
-            type_2->type() == AST_T::Double_t) {
+    else if(node_1->exp_type->type() == AST_T::Double_t ||
+            node_2->exp_type->type() == AST_T::Double_t) {
         return std::make_shared<Double>();
     }
-    int32_t type1_size = get_type_size(type_1.get());
-    int32_t type2_size = get_type_size(type_2.get());
+    int32_t type1_size = get_type_size(node_1->exp_type.get());
+    int32_t type2_size = get_type_size(node_2->exp_type.get());
     if(type1_size == type2_size) {
-        if(is_type_signed(type_1.get())) {
-            return type_2;
+        if(is_type_signed(node_1->exp_type.get())) {
+            return node_2->exp_type;
         } else {
-            return type_1;
+            return node_1->exp_type;
         }
     }
     if(type1_size > type2_size) {
-        return type_1;
+        return node_1->exp_type;
     } else {
-        return type_2;
+        return node_2->exp_type;
     }
 }
 
@@ -236,7 +236,7 @@ void checktype_binary_expression(CBinary* node) {
         default:
             break;
     }
-    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left->exp_type, node->exp_right->exp_type);
+    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
         node->exp_left = std::move(exp);
@@ -269,7 +269,7 @@ void checktype_binary_expression(CBinary* node) {
 }
 
 void checktype_conditional_expression(CConditional* node) {
-    std::shared_ptr<Type> common_type = get_joint_type(node->exp_middle->exp_type, node->exp_right->exp_type);
+    std::shared_ptr<Type> common_type = get_joint_type(node->exp_middle.get(), node->exp_right.get());
     if(!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_middle), common_type);
         node->exp_middle = std::move(exp);
