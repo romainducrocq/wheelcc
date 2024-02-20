@@ -510,17 +510,44 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
     return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right));
 }
 
+// TODO keep ?
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
-    while(exp_left->type() == AST_T::CDereference_t) {
-        exp_left = std::move(static_cast<CDereference*>(exp_left.get())->exp);
+    std::unique_ptr<CExp> exp_left_2;
+    switch(exp_left->type()) {
+        case AST_T::CVar_t: {
+            TIdentifier name = static_cast<CVar*>(exp_left.get())->name;
+            exp_left_2 = std::make_unique<CVar>(std::move(name));
+            goto Lbreak;
+        }
+        case AST_T::CDereference_t: {
+            exp_left_2 = std::make_unique<CVar>();
+            TIdentifier* name = &static_cast<CVar*>(exp_left_2.get())->name;
+            CExp* exp_ref = static_cast<CDereference*>(exp_left.get())->exp.get();
+            exp_left_2 = std::make_unique<CDereference>(std::move(exp_left_2));
+            while(true) {
+                switch(exp_ref->type()) {
+                    case AST_T::CVar_t: {
+                        *name = static_cast<CVar*>(exp_ref)->name;
+                        goto Lbreak;
+                    }
+                    case AST_T::CDereference_t: {
+                        exp_ref = static_cast<CDereference*>(exp_ref)->exp.get();
+                        exp_left_2 = std::make_unique<CDereference>(std::move(exp_left_2));
+                        break;
+                    }
+                    default:
+                        goto Lerror;
+                }
+            }
+        }
+        default:
+            goto Lerror;
     }
-    if(exp_left->type() != AST_T::CVar_t) {
-        raise_runtime_error_at_line("Left expression is an invalid lvalue", next_token->line);
-    }
-    TIdentifier name_2 = static_cast<CVar*>(exp_left.get())->name;
+    Lerror: raise_runtime_error_at_line("Left expression is an invalid lvalue",next_token->line);
+    Lbreak: ;
+
     std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-    std::unique_ptr<CExp> exp_left_2 = std::make_unique<CVar>(std::move(name_2));
     std::unique_ptr<CExp> exp_right_2 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left),
                                                                   std::move(exp_right));
     return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2));
