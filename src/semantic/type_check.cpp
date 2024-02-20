@@ -43,36 +43,14 @@ bool is_type_signed(Type* type_1) {
     }
 }
 
-bool is_const_signed(CConst* node) {
-    switch(node->type()) {
-        case AST_T::CConstInt_t:
-        case AST_T::CConstLong_t:
+static bool is_type_arithmetic(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
             return true;
-        default:
-            return false;
-    }
-}
-
-static bool is_exp_lvalue(CExp* node) {
-    switch(node->type()) {
-        case AST_T::CVar_t:
-        case AST_T::CDereference_t:
-            return true;
-        default:
-            return false;
-    }
-}
-
-static bool is_const_null_pointer(CConstant* node) {
-    switch(node->constant->type()) {
-        case AST_T::CConstInt_t:
-            return static_cast<CConstInt*>(node->constant.get())->value == 0;
-        case AST_T::CConstLong_t:
-            return static_cast<CConstLong*>(node->constant.get())->value == 0l;
-        case AST_T::CConstUInt_t:
-            return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
-        case AST_T::CConstULong_t:
-            return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
         default:
             return false;
     }
@@ -89,6 +67,41 @@ int32_t get_type_size(Type* type_1) {
             return 64;
         default:
             return -1;
+    }
+}
+
+bool is_const_signed(CConst* node) {
+    switch(node->type()) {
+        case AST_T::CConstInt_t:
+        case AST_T::CConstLong_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_constant_null_pointer(CConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+            return static_cast<CConstInt*>(node->constant.get())->value == 0;
+        case AST_T::CConstLong_t:
+            return static_cast<CConstLong*>(node->constant.get())->value == 0l;
+        case AST_T::CConstUInt_t:
+            return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
+        default:
+            return false;
+    }
+}
+
+static bool is_exp_lvalue(CExp* node) {
+    switch(node->type()) {
+        case AST_T::CVar_t:
+        case AST_T::CDereference_t:
+            return true;
+        default:
+            return false;
     }
 }
 
@@ -121,11 +134,11 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
         return node_1->exp_type;
     }
     else if(node_1->type() == AST_T::CConstant_t &&
-            is_const_null_pointer(static_cast<CConstant*>(node_1))) {
+            is_constant_null_pointer(static_cast<CConstant*>(node_1))) {
         return node_2->exp_type;
     }
     else if(node_2->type() == AST_T::CConstant_t &&
-            is_const_null_pointer(static_cast<CConstant*>(node_2))) {
+            is_constant_null_pointer(static_cast<CConstant*>(node_2))) {
         return node_1->exp_type;
     }
     raise_runtime_error("Maybe-pointer expressions have incompatible types");
@@ -139,6 +152,19 @@ static std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::s
     std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type);
     checktype_cast_expression(exp.get());
     return exp;
+}
+
+static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
+    if(is_type_arithmetic(node->exp_type.get()) &&
+            is_type_arithmetic(exp_type.get())) {
+        return cast_expression(std::move(node), exp_type);
+    }
+    else if(node->type() == AST_T::CConstant_t &&
+            exp_type->type() == AST_T::Pointer_t &&
+            is_constant_null_pointer(static_cast<CConstant*>(node.get()))) {
+        return cast_expression(std::move(node), exp_type);
+    }
+    raise_runtime_error("Assignment expressions have incompatible types");
 }
 
 void checktype_function_call_expression(CFunctionCall* node) {
@@ -194,7 +220,7 @@ void checktype_assignment_expression(CAssignment* node) {
         raise_runtime_error("Left expression is an invalid lvalue");
     }
     if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
+        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
         node->exp_right = std::move(exp);
     }
     node->exp_type = node->exp_left->exp_type;
