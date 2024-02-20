@@ -6,10 +6,10 @@
 
 #include <inttypes.h>
 
-bool is_same_type(Type* type1, Type* type2);
-bool is_type_signed(Type* type1);
+bool is_same_type(Type* type_1, Type* type_2);
+bool is_type_signed(Type* type_1);
 bool is_const_signed(CConst* node);
-int32_t get_type_size(Type* type1);
+int32_t get_type_size(Type* type_1);
 void checktype_cast_expression(CCast* node);
 void checktype_function_call_expression(CFunctionCall* node);
 void checktype_var_expression(CVar* node);

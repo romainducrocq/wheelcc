@@ -13,28 +13,28 @@ static std::unordered_set<TIdentifier> defined_set;
 
 static TIdentifier function_declaration_name;
 
-bool is_same_type(Type* type1, Type* type2) {
-    return type1->type() == type2->type();
+bool is_same_type(Type* type_1, Type* type_2) {
+    return type_1->type() == type_2->type();
 }
 
-static bool is_same_fun_type(FunType* fun_type1, FunType* fun_type2) {
-    if(fun_type1->param_types.size() != fun_type2->param_types.size()) {
+static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
+    if(fun_type_1->param_types.size() != fun_type_2->param_types.size()) {
         return false;
     }
-    if(!is_same_type(fun_type1->ret_type.get(), fun_type2->ret_type.get())) {
+    if(!is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
         return false;
     }
-    for(size_t param_type = 0; param_type < fun_type1->param_types.size(); param_type++) {
-        if(!is_same_type(fun_type1->param_types[param_type].get(),
-                         fun_type2->param_types[param_type].get())) {
+    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
+        if(!is_same_type(fun_type_1->param_types[param_type].get(),
+                         fun_type_2->param_types[param_type].get())) {
             return false;
         }
     }
     return true;
 }
 
-int32_t get_type_size(Type* type1) {
-    switch(type1->type()) {
+int32_t get_type_size(Type* type_1) {
+    switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return 32;
@@ -47,8 +47,8 @@ int32_t get_type_size(Type* type1) {
     }
 }
 
-bool is_type_signed(Type* type1) {
-    switch(type1->type()) {
+bool is_type_signed(Type* type_1) {
+    switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::Long_t:
             return true;
@@ -67,8 +67,8 @@ bool is_const_signed(CConst* node) {
     }
 }
 
-static bool is_exp_lvalue(CExp* exp) {
-    switch(exp->exp_type->type()) {
+static bool is_exp_lvalue(CExp* node) {
+    switch(node->exp_type->type()) {
         case AST_T::CVar_t:
         case AST_T::CDereference_t:
             return true;
@@ -77,28 +77,58 @@ static bool is_exp_lvalue(CExp* exp) {
     }
 }
 
-static std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_ptr<Type>& type2) {
-    if(is_same_type(type1.get(), type2.get())) {
-        return type1;
+static bool is_const_null_pointer(CConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+            return static_cast<CConstInt*>(node->constant.get())->value == 0;
+        case AST_T::CConstLong_t:
+            return static_cast<CConstLong*>(node->constant.get())->value == 0l;
+        case AST_T::CConstUInt_t:
+            return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
+        default:
+            return false;
     }
-    else if(type1->type() == AST_T::Double_t ||
-            type2->type() == AST_T::Double_t) {
+}
+
+static std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type_1, std::shared_ptr<Type>& type_2) {
+    if(is_same_type(type_1.get(), type_2.get())) {
+        return type_1;
+    }
+    else if(type_1->type() == AST_T::Double_t ||
+            type_2->type() == AST_T::Double_t) {
         return std::make_shared<Double>();
     }
-    int32_t type1_size = get_type_size(type1.get());
-    int32_t type2_size = get_type_size(type2.get());
+    int32_t type1_size = get_type_size(type_1.get());
+    int32_t type2_size = get_type_size(type_2.get());
     if(type1_size == type2_size) {
-        if(is_type_signed(type1.get())) {
-            return type2;
+        if(is_type_signed(type_1.get())) {
+            return type_2;
         } else {
-            return type1;
+            return type_1;
         }
     }
     if(type1_size > type2_size) {
-        return type1;
+        return type_1;
     } else {
-        return type2;
+        return type_2;
     }
+}
+
+static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) {
+    if(is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
+        return node_1->exp_type;
+    }
+    else if(node_1->type() == AST_T::CConstant_t &&
+            is_const_null_pointer(static_cast<CConstant*>(node_1))) {
+        return node_2->exp_type;
+    }
+    else if(node_2->type() == AST_T::CConstant_t &&
+            is_const_null_pointer(static_cast<CConstant*>(node_2))) {
+        return node_1->exp_type;
+    }
+    raise_runtime_error("Maybe-pointer expressions have incompatible types");
 }
 
 void checktype_cast_expression(CCast* node) {
