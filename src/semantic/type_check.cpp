@@ -267,6 +267,19 @@ void checktype_binary_expression(CBinary* node) {
         case AST_T::COr_t:
             node->exp_type = std::make_shared<Int>();
             return;
+        case AST_T::CMultiply_t:
+        case AST_T::CDivide_t:
+        case AST_T::CRemainder_t:
+        case AST_T::CBitAnd_t:
+        case AST_T::CBitOr_t:
+        case AST_T::CBitXor_t: {
+            if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
+               node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+                raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                                    " can not be used on " + em("pointer type"));
+            }
+            break;
+        }
         case AST_T::CBitShiftLeft_t:
         case AST_T::CBitShiftRight_t: {
             // Note: https://stackoverflow.com/a/70130146
@@ -318,28 +331,22 @@ void checktype_binary_expression(CBinary* node) {
     switch(node->binary_op->type()) {
         case AST_T::CAdd_t:
         case AST_T::CSubtract_t:
-            node->exp_type = std::move(common_type);
-            return;
         case AST_T::CMultiply_t:
-        case AST_T::CDivide_t:
+        case AST_T::CDivide_t: {
             node->exp_type = std::move(common_type);
-            if(node->exp_type->type() == AST_T::Pointer_t) {
-                raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                                    " can not be used on " + em("pointer type"));
-            }
             return;
+        }
         case AST_T::CRemainder_t:
         case AST_T::CBitAnd_t:
         case AST_T::CBitOr_t:
-        case AST_T::CBitXor_t:
+        case AST_T::CBitXor_t: {
             node->exp_type = std::move(common_type);
-            if(node->exp_type->type() == AST_T::Double_t ||
-               node->exp_type->type() == AST_T::Pointer_t) {
+            if(node->exp_type->type() == AST_T::Double_t) {
                 raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                                    " can not be used on " + em("floating-point number") + " or " +
-                                    em("pointer type"));
+                                    " can not be used on " + em("floating-point number"));
             }
             return;
+        }
         default:
             node->exp_type = std::make_shared<Int>();
             return;
