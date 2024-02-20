@@ -85,9 +85,6 @@ static void resolve_constant_expression(CConstant* /*node*/) {
 }
 
 static void resolve_assignment_expression(CAssignment* node) {
-    if(node->exp_left->type() != AST_T::CVar_t) {
-        raise_runtime_error("Left expression is an invalid lvalue");
-    }
     resolve_expression(node->exp_left.get());
     resolve_expression(node->exp_right.get());
 }
@@ -105,6 +102,14 @@ static void resolve_conditional_expression(CConditional* node) {
     resolve_expression(node->condition.get());
     resolve_expression(node->exp_middle.get());
     resolve_expression(node->exp_right.get());
+}
+
+static void resolve_dereference_expression(CDereference* node) {
+    resolve_expression(node->exp.get());
+}
+
+static void resolve_addrof_expression(CAddrOf* node) {
+    resolve_expression(node->exp.get());
 }
 
 static void resolve_expression(CExp* node) {
@@ -155,6 +160,18 @@ static void resolve_expression(CExp* node) {
             CConditional* p_node = static_cast<CConditional*>(node);
             resolve_conditional_expression(p_node);
             checktype_conditional_expression(p_node);
+            break;
+        }
+        case AST_T::CDereference_t: {
+            CDereference* p_node = static_cast<CDereference*>(node);
+            resolve_dereference_expression(p_node);
+            checktype_dereference_expression(p_node);
+            break;
+        }
+        case AST_T::CAddrOf_t: {
+            CAddrOf* p_node = static_cast<CAddrOf*>(node);
+            resolve_addrof_expression(p_node);
+            checktype_addrof_expression(p_node);
             break;
         }
         default:

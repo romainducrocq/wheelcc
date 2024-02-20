@@ -18,6 +18,8 @@ void checktype_assignment_expression(CAssignment* node);
 void checktype_unary_expression(CUnary* node);
 void checktype_binary_expression(CBinary* node);
 void checktype_conditional_expression(CConditional* node);
+void checktype_dereference_expression(CDereference* node);
+void checktype_addrof_expression(CAddrOf* node);
 void checktype_return_statement(CReturn* node);
 void checktype_params(CFunctionDeclaration* node);
 void checktype_function_declaration(CFunctionDeclaration* node);

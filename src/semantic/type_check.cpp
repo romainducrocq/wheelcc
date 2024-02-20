@@ -241,6 +241,14 @@ void checktype_conditional_expression(CConditional* node) {
     node->exp_type = std::move(common_type);
 }
 
+void checktype_dereference_expression(CDereference* /*node*/) {
+    // TODO
+}
+
+void checktype_addrof_expression(CAddrOf* /*node*/) {
+    // TODO
+}
+
 void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
     if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
