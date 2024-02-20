@@ -30,5 +30,10 @@
 - 8. Implement standard library
 
 ## NOTES
+
+- in assembly, replace multiple (||) with switch
+
+When Types OK (after c18):
+- refactor type check unary, type check binary
 - add / clean error msgs in driver
 - clean error msgs in parser + semantic analysis / add line
