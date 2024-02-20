@@ -30,6 +30,9 @@ AST_T TacGreaterOrEqual::type() { return AST_T::TacGreaterOrEqual_t; }
 AST_T TacValue::type() { return AST_T::TacValue_t; }
 AST_T TacConstant::type() { return AST_T::TacConstant_t; }
 AST_T TacVariable::type() { return AST_T::TacVariable_t; }
+AST_T TacExpResult::type() { return AST_T::TacExpResult_t; }
+AST_T TacPlainOperand::type() { return AST_T::TacPlainOperand_t; }
+AST_T TacDereferencedPointer::type() { return AST_T::TacDereferencedPointer_t; }
 AST_T TacInstruction::type() { return AST_T::TacInstruction_t; }
 AST_T TacReturn::type() { return AST_T::TacReturn_t; }
 AST_T TacSignExtend::type() { return AST_T::TacSignExtend_t; }
@@ -60,6 +63,12 @@ TacConstant::TacConstant(std::shared_ptr<CConst> constant)
 
 TacVariable::TacVariable(TIdentifier name)
     : name(std::move(name)) {}
+
+TacPlainOperand::TacPlainOperand(std::shared_ptr<TacValue> val)
+    : val(std::move(val)) {}
+
+TacDereferencedPointer::TacDereferencedPointer(std::shared_ptr<TacValue> val)
+    : val(std::move(val)) {}
 
 TacReturn::TacReturn(std::shared_ptr<TacValue> val)
     : val(std::move(val)) {}

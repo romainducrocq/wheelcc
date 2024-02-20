@@ -747,6 +747,22 @@ static void print_ast(Ast* node, size_t t) {
             field("TIdentifier", p_node->name, t+1);
             break;
         }
+        case AST_T::TacExpResult_t: {
+            field("TacExpResult", "", ++t);
+            break;
+        }
+        case AST_T::TacPlainOperand_t: {
+            field("TacPlainOperand", "", ++t);
+            TacPlainOperand* p_node = static_cast<TacPlainOperand*>(node);
+            print_ast(p_node->val.get(), t);
+            break;
+        }
+        case AST_T::TacDereferencedPointer_t: {
+            field("TacDereferencedPointer", "", ++t);
+            TacDereferencedPointer* p_node = static_cast<TacDereferencedPointer*>(node);
+            print_ast(p_node->val.get(), t);
+            break;
+        }
         case AST_T::TacInstruction_t: {
             field("TacInstruction", "", ++t);
             break;

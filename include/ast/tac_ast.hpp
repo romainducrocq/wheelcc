@@ -141,6 +141,30 @@ struct TacVariable : TacValue {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// exp_result = PlainOperand(val)
+//            | DereferencedPointer(val)
+struct TacExpResult : Ast {
+    AST_T type() override;
+};
+
+struct TacPlainOperand : TacExpResult {
+    AST_T type() override;
+    TacPlainOperand() = default;
+    TacPlainOperand(std::shared_ptr<TacValue> val);
+
+    std::shared_ptr<TacValue> val;
+};
+
+struct TacDereferencedPointer : TacExpResult {
+    AST_T type() override;
+    TacDereferencedPointer() = default;
+    TacDereferencedPointer(std::shared_ptr<TacValue> val);
+
+    std::shared_ptr<TacValue> val;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // instruction = Return(val)
 //             | SignExtend(val, val)
 //             | Truncate(val, val)
