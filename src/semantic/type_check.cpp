@@ -151,13 +151,13 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
 
 void checktype_cast_expression(CCast* node) {
     node->exp_type = node->target_type;
+    if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
+       (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t)) {
+        raise_runtime_error("Types can not be converted between floating-point number and pointer type");
+    }
 }
 
 static std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
-    if((node->exp_type->type() == AST_T::Double_t && exp_type->type() == AST_T::Pointer_t) ||
-       (node->exp_type->type() == AST_T::Pointer_t && exp_type->type() == AST_T::Double_t)) {
-        raise_runtime_error("Types can not be converted between floating-point number and pointer type");
-    }
     std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type);
     checktype_cast_expression(exp.get());
     return exp;
@@ -567,8 +567,7 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
             static_init = std::make_shared<UIntInit>(std::move(value));
             break;
         }
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t: {
+        case AST_T::ULong_t: {
             TULong value;
             switch(node->constant->type()) {
                 case AST_T::CConstInt_t: {
@@ -594,9 +593,36 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            if(static_init_type->type() == AST_T::Pointer_t &&
-               value != 0ul) {
-                raise_runtime_error("Statically initialized pointer type can only be initialized to null");
+            static_init = std::make_shared<ULongInit>(std::move(value));
+            break;
+        }
+        case AST_T::Pointer_t: {
+            TULong value;
+            switch(node->constant->type()) {
+                case AST_T::CConstInt_t: {
+                    value = static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstLong_t: {
+                    value = static_cast<TULong>(static_cast<CConstLong*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstDouble_t: {
+                    raise_runtime_error("Static pointer type can only be initialized to integer constant");
+                }
+                case AST_T::CConstUInt_t: {
+                    value = static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstULong_t: {
+                    value = static_cast<CConstULong*>(node->constant.get())->value;
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+            if(value != 0ul) {
+                raise_runtime_error("Static pointer type can only be initialized to null integer constant");
             }
             static_init = std::make_shared<ULongInit>(std::move(value));
             break;
