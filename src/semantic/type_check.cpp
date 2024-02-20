@@ -67,6 +67,16 @@ bool is_const_signed(CConst* node) {
     }
 }
 
+static bool is_exp_lvalue(CExp* exp) {
+    switch(exp->exp_type->type()) {
+        case AST_T::CVar_t:
+        case AST_T::CDereference_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static std::shared_ptr<Type> get_joint_type(std::shared_ptr<Type>& type1, std::shared_ptr<Type>& type2) {
     if(is_same_type(type1.get(), type2.get())) {
         return type1;
@@ -241,12 +251,19 @@ void checktype_conditional_expression(CConditional* node) {
     node->exp_type = std::move(common_type);
 }
 
-void checktype_dereference_expression(CDereference* /*node*/) {
-    // TODO
+void checktype_dereference_expression(CDereference* node) {
+    if(node->exp->exp_type->type() != AST_T::Pointer_t) {
+        raise_runtime_error("Non-pointer type can not be de-referenced");
+    }
+    node->exp_type = static_cast<Pointer*>(node->exp->exp_type.get())->ref_type;
 }
 
-void checktype_addrof_expression(CAddrOf* /*node*/) {
-    // TODO
+void checktype_addrof_expression(CAddrOf* node) {
+    if(!is_exp_lvalue(node->exp.get())) {
+        raise_runtime_error("Non-lvalue type can not be addressed");
+    }
+    std::shared_ptr<Type> ref_type = node->exp->exp_type;
+    node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
 }
 
 void checktype_return_statement(CReturn* node) {
