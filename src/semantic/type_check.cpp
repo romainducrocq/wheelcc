@@ -347,9 +347,17 @@ void checktype_binary_expression(CBinary* node) {
             }
             return;
         }
-        default:
+        case AST_T::CEqual_t:
+        case AST_T::CNotEqual_t:
+        case AST_T::CLessThan_t:
+        case AST_T::CLessOrEqual_t:
+        case AST_T::CGreaterThan_t:
+        case AST_T::CGreaterOrEqual_t: {
             node->exp_type = std::make_shared<Int>();
             return;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
     }
 }
 

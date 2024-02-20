@@ -30,3 +30,5 @@
 - 8. Implement standard library
 
 ## NOTES
+- keep assignment compound ?
+- clean error msgs in semantic analysis
