@@ -89,6 +89,10 @@ static void resolve_assignment_expression(CAssignment* node) {
     resolve_expression(node->exp_right.get());
 }
 
+static void resolve_compound_assignment_expression(CAssignment* node) {
+    resolve_expression(node->exp_right.get());
+}
+
 static void resolve_unary_expression(CUnary* node) {
     resolve_expression(node->exp.get());
 }
@@ -140,8 +144,14 @@ static void resolve_expression(CExp* node) {
         }
         case AST_T::CAssignment_t: {
             CAssignment* p_node = static_cast<CAssignment*>(node);
-            resolve_assignment_expression(p_node);
-            checktype_assignment_expression(p_node);
+            if(p_node->exp_left) {
+                resolve_assignment_expression(p_node);
+                checktype_assignment_expression(p_node);
+            }
+            else {
+                resolve_compound_assignment_expression(p_node);
+                checktype_compound_assignment_expression(p_node);
+            }
             break;
         }
         case AST_T::CUnary_t: {

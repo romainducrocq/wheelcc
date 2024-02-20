@@ -235,6 +235,24 @@ void checktype_assignment_expression(CAssignment* node) {
     node->exp_type = node->exp_left->exp_type;
 }
 
+void checktype_compound_assignment_expression(CAssignment* node) {
+    if(node->exp_right->type() != AST_T::CBinary_t) {
+        raise_runtime_error("Right expression is an invalid compound assignment");
+    }
+    CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
+    if(exp_left->type() == AST_T::CCast_t) {
+        exp_left = static_cast<CCast*>(exp_left)->exp.get();
+    }
+    if(!is_exp_lvalue(exp_left)) {
+        raise_runtime_error("Left expression is an invalid lvalue");
+    }
+    if(!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
+        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
+        node->exp_right = std::move(exp);
+    }
+    node->exp_type = exp_left->exp_type;
+}
+
 void checktype_unary_expression(CUnary* node) {
     switch(node->unary_op->type()) {
         case AST_T::CNot_t: {

@@ -180,6 +180,21 @@ static std::shared_ptr<TacValue> represent_exp_assignment_instructions(CAssignme
     return dst;
 }
 
+static std::shared_ptr<TacValue> represent_exp_compound_assignment_instructions(CAssignment* node) {
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
+    CExp* exp_left = node->exp_right.get();
+    if(exp_left->type() == AST_T::CCast_t) {
+        exp_left = static_cast<CCast*>(exp_left)->exp.get();
+    }
+    exp_left = static_cast<CBinary*>(exp_left)->exp_left.get();
+    if(exp_left->type() == AST_T::CCast_t) {
+        exp_left = static_cast<CCast*>(exp_left)->exp.get();
+    }
+    std::shared_ptr<TacValue> dst = represent_exp_instructions(exp_left);
+    push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
+    return dst;
+}
+
 static std::shared_ptr<TacValue> represent_exp_conditional_instructions(CConditional* node) {
     TIdentifier target_else = represent_label_identifier("ternary_else");
     TIdentifier target_false = represent_label_identifier("ternary_false");
@@ -285,8 +300,14 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
             return represent_exp_constant_instructions(static_cast<CConstant*>(node));
         case AST_T::CCast_t:
             return represent_exp_cast_instructions(static_cast<CCast*>(node));
-        case AST_T::CAssignment_t:
-            return represent_exp_assignment_instructions(static_cast<CAssignment*>(node));
+        case AST_T::CAssignment_t: {
+            CAssignment* p_node = static_cast<CAssignment*>(node);
+            if(p_node->exp_left) {
+                return represent_exp_assignment_instructions(p_node);
+            } else {
+                return represent_exp_compound_assignment_instructions(p_node);
+            }
+        }
         case AST_T::CConditional_t:
             return represent_exp_conditional_instructions(static_cast<CConditional*>(node));
         case AST_T::CUnary_t:
