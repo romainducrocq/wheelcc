@@ -110,15 +110,17 @@ static void push_instruction(std::unique_ptr<TacInstruction>&& instruction) {
 
 static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node);
 
-static std::shared_ptr<TacValue> represent_exp_constant_instructions(CConstant* node) {
-    return represent_value(node);
+static std::unique_ptr<TacExpResult> represent_exp_result_constant_instructions(CConstant* node) {
+    std::shared_ptr<TacValue> val = represent_value(node);
+    return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
-static std::shared_ptr<TacValue> represent_exp_var_instructions(CVar* node) {
-    return represent_value(node);
+static std::unique_ptr<TacExpResult> represent_exp_result_var_instructions(CVar* node) {
+    std::shared_ptr<TacValue> val = represent_value(node);
+    return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
-static std::shared_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCall* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_fun_call_instructions(CFunctionCall* node) {
     TIdentifier name = node->name;
     std::vector<std::shared_ptr<TacValue>> args;
     for(size_t i = 0; i < node->args.size(); i++) {
@@ -127,13 +129,13 @@ static std::shared_ptr<TacValue> represent_exp_fun_call_instructions(CFunctionCa
     }
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
     push_instruction(std::make_unique<TacFunCall>(std::move(name), std::move(args), dst));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCast* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
     if(is_same_type(node->target_type.get(), node->exp->exp_type.get())) {
-        return src;
+        return std::make_unique<TacPlainOperand>(std::move(src));
     }
 
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
@@ -144,7 +146,7 @@ static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
         else {
             push_instruction(std::make_unique<TacDoubleToUInt>(std::move(src), dst));
         }
-        return dst;
+        return std::make_unique<TacPlainOperand>(std::move(dst));
     }
     else if(node->target_type->type() == AST_T::Double_t) {
         if(is_type_signed(node->exp->exp_type.get())) {
@@ -153,7 +155,7 @@ static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
         else {
             push_instruction(std::make_unique<TacUIntToDouble>(std::move(src), dst));
         }
-        return dst;
+        return std::make_unique<TacPlainOperand>(std::move(dst));
     }
 
     int32_t target_type_size = get_type_size(node->target_type.get());
@@ -170,17 +172,17 @@ static std::shared_ptr<TacValue> represent_exp_cast_instructions(CCast* node) {
     else {
         push_instruction(std::make_unique<TacZeroExtend>(std::move(src), dst));
     }
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_assignment_instructions(CAssignment* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
     std::shared_ptr<TacValue> dst = represent_exp_instructions(node->exp_left.get());
     push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_compound_assignment_instructions(CAssignment* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_compound_assignment_instructions(CAssignment* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
     CExp* exp_left = node->exp_right.get();
     if(exp_left->type() == AST_T::CCast_t) {
@@ -192,10 +194,10 @@ static std::shared_ptr<TacValue> represent_exp_compound_assignment_instructions(
     }
     std::shared_ptr<TacValue> dst = represent_exp_instructions(exp_left);
     push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_conditional_instructions(CConditional* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_conditional_instructions(CConditional* node) {
     TIdentifier target_else = represent_label_identifier("ternary_else");
     TIdentifier target_false = represent_label_identifier("ternary_false");
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
@@ -214,7 +216,7 @@ static std::shared_ptr<TacValue> represent_exp_conditional_instructions(CConditi
         push_instruction(std::make_unique<TacCopy>(std::move(src_right), dst));
     }
     push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUnary* node) {
@@ -222,10 +224,10 @@ static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUn
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
     std::unique_ptr<TacUnaryOp> unary_op = represent_unary_op(node->unary_op.get());
     push_instruction(std::make_unique<TacUnary>(std::move(unary_op), std::move(src), dst));
-    return std::make_unique<TacPlainOperand>(dst);
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_binary_and_instructions(CBinary* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_and_instructions(CBinary* node) {
     TIdentifier target_false = represent_label_identifier("and_false");
     TIdentifier target_true = represent_label_identifier("and_true");
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
@@ -250,10 +252,10 @@ static std::shared_ptr<TacValue> represent_exp_binary_and_instructions(CBinary* 
         push_instruction(std::make_unique<TacCopy>(std::move(src_false), dst));
     }
     push_instruction(std::make_unique<TacLabel>(std::move(target_true)));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_binary_or_instructions(CBinary* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_or_instructions(CBinary* node) {
     TIdentifier target_true = represent_label_identifier("or_true");
     TIdentifier target_false = represent_label_identifier("or_false");
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
@@ -278,60 +280,50 @@ static std::shared_ptr<TacValue> represent_exp_binary_or_instructions(CBinary* n
         push_instruction(std::make_unique<TacCopy>(std::move(src_true), dst));
     }
     push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::shared_ptr<TacValue> represent_exp_binary_instructions(CBinary* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CBinary* node) {
     std::shared_ptr<TacValue> src1 = represent_exp_instructions(node->exp_left.get());
     std::shared_ptr<TacValue> src2 = represent_exp_instructions(node->exp_right.get());
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
     std::unique_ptr<TacBinaryOp> binary_op = represent_binary_op(node->binary_op.get());
     push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src1), std::move(src2), dst));
-    return dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
     switch(node->type()) {
         case AST_T::CFunctionCall_t:
-            return nullptr; // TODO
-            // return represent_exp_fun_call_instructions(static_cast<CFunctionCall*>(node));
+            return represent_exp_result_fun_call_instructions(static_cast<CFunctionCall*>(node));
         case AST_T::CVar_t:
-            return nullptr; // TODO
-            // return represent_exp_var_instructions(static_cast<CVar*>(node));
+            return represent_exp_result_var_instructions(static_cast<CVar*>(node));
         case AST_T::CConstant_t:
-            return nullptr; // TODO
-            // return represent_exp_constant_instructions(static_cast<CConstant*>(node));
+            return represent_exp_result_constant_instructions(static_cast<CConstant*>(node));
         case AST_T::CCast_t:
-            return nullptr; // TODO
-            // return represent_exp_cast_instructions(static_cast<CCast*>(node));
+            return represent_exp_result_cast_instructions(static_cast<CCast*>(node));
         case AST_T::CAssignment_t: {
             CAssignment* p_node = static_cast<CAssignment*>(node);
             if(p_node->exp_left) {
-                return nullptr; // TODO
-                // return represent_exp_assignment_instructions(p_node);
-            } else {
-                return nullptr; // TODO
-                // return represent_exp_compound_assignment_instructions(p_node);
+                return represent_exp_result_assignment_instructions(p_node);
+            }
+            else {
+                return represent_exp_result_compound_assignment_instructions(p_node);
             }
         }
         case AST_T::CConditional_t:
-            return nullptr; // TODO
-            // return represent_exp_conditional_instructions(static_cast<CConditional*>(node));
+            return represent_exp_result_conditional_instructions(static_cast<CConditional*>(node));
         case AST_T::CUnary_t:
-            return nullptr; // TODO
-            // return represent_exp_unary_instructions(static_cast<CUnary*>(node));
+            return represent_exp_result_unary_instructions(static_cast<CUnary*>(node));
         case AST_T::CBinary_t: {
             CBinary* p_node = static_cast<CBinary*>(node);
             switch(p_node->binary_op->type()) {
                 case AST_T::CAnd_t:
-                    return nullptr; // TODO
-                    // return represent_exp_binary_and_instructions(p_node);
+                    return represent_exp_result_binary_and_instructions(p_node);
                 case AST_T::COr_t:
-                    return nullptr; // TODO
-                    // return represent_exp_binary_or_instructions(p_node);
+                    return represent_exp_result_binary_or_instructions(p_node);
                 default:
-                    return nullptr; // TODO
-                    // return represent_exp_binary_instructions(p_node);
+                    return represent_exp_result_binary_instructions(p_node);
             }
         }
         default:
