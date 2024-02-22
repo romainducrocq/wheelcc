@@ -308,7 +308,7 @@ static void parse_process_pointer_abstract_declarator(CAbstractPointer* node, st
                                       abstract_declarator);
 }
 
-static void parse_process_base_abstract_declarator(CAbstractBase* /*node*/, std::shared_ptr<Type> base_type,
+static void parse_process_base_abstract_declarator(std::shared_ptr<Type> base_type,
                                                    AbstractDeclarator& abstract_declarator) {
     abstract_declarator.derived_type = std::move(base_type);
 }
@@ -321,8 +321,7 @@ static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::sh
                                                       abstract_declarator);
             break;
         case AST_T::CAbstractBase_t:
-            parse_process_base_abstract_declarator(static_cast<CAbstractBase*>(node), std::move(base_type),
-                                                   abstract_declarator);
+            parse_process_base_abstract_declarator(std::move(base_type), abstract_declarator);
             break;
         default:
             RAISE_INTERNAL_ERROR;

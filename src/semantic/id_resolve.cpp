@@ -80,10 +80,6 @@ static void resolve_cast_expression(CCast* node) {
     resolve_expression(node->exp.get());
 }
 
-static void resolve_constant_expression(CConstant* /*node*/) {
-    ;
-}
-
 static void resolve_assignment_expression(CAssignment* node) {
     if(node->exp_left) {
         resolve_expression(node->exp_left.get());
@@ -116,12 +112,9 @@ static void resolve_addrof_expression(CAddrOf* node) {
 
 static void resolve_expression(CExp* node) {
     switch(node->type()) {
-        case AST_T::CConstant_t: {
-            CConstant* p_node = static_cast<CConstant*>(node);
-            resolve_constant_expression(p_node);
-            checktype_constant_expression(p_node);
+        case AST_T::CConstant_t:
+            checktype_constant_expression(static_cast<CConstant*>(node));
             break;
-        }
         case AST_T::CVar_t: {
             CVar* p_node = static_cast<CVar*>(node);
             resolve_var_expression(p_node);
@@ -209,10 +202,6 @@ static void resolve_for_init(CForInit* node) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-}
-
-static void resolve_null_statement(CNull* /*node*/) {
-    ;
 }
 
 static void resolve_return_statement(CReturn* node) {
@@ -303,7 +292,6 @@ static void resolve_goto_statement(CGoto* node) {
 static void resolve_statement(CStatement* node) {
     switch(node->type()) {
         case AST_T::CNull_t:
-            resolve_null_statement(static_cast<CNull*>(node));
             break;
         case AST_T::CReturn_t: {
             CReturn* p_node = static_cast<CReturn*>(node);

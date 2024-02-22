@@ -363,7 +363,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
     }
 }
 
-static std::shared_ptr<TacValue> represent_exp_plain_operand_instructions(TacPlainOperand* res, CExp* /*node*/) {
+static std::shared_ptr<TacValue> represent_exp_plain_operand_instructions(TacPlainOperand* res) {
     std::shared_ptr<TacValue> dst = std::move(res->val);
     return dst;
 }
@@ -380,7 +380,7 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node);
     switch(res->type()) {
         case AST_T::TacPlainOperand_t:
-            return represent_exp_plain_operand_instructions(static_cast<TacPlainOperand*>(res.get()), node);
+            return represent_exp_plain_operand_instructions(static_cast<TacPlainOperand*>(res.get()));
         case AST_T::TacDereferencedPointer_t:
             return represent_exp_dereferenced_pointer_instructions(static_cast<TacDereferencedPointer*>(res.get()),
                                                                    node);
@@ -393,10 +393,6 @@ static void represent_block(CBlock* node);
 
 static void represent_statement_instructions(CStatement* node);
 static void represent_variable_declaration_instructions(CVariableDeclaration* node);
-
-static void represent_statement_null_instructions(CNull* /*node*/) {
-    ;
-}
 
 static void represent_statement_return_instructions(CReturn* node) {
     std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
@@ -529,7 +525,6 @@ static void represent_statement_label_instructions(CLabel* node) {
 static void represent_statement_instructions(CStatement* node) {
     switch(node->type()) {
         case AST_T::CNull_t:
-            represent_statement_null_instructions(static_cast<CNull*>(node));
             break;
         case AST_T::CReturn_t:
             represent_statement_return_instructions(static_cast<CReturn*>(node));
@@ -596,14 +591,9 @@ static void represent_declaration_var_decl_instructions(CVarDecl* node) {
     }
 }
 
-static void represent_declaration_fun_decl_instructions(CFunDecl* /*node*/) {
-    ;
-}
-
 static void represent_declaration_instructions(CDeclaration* node) {
     switch(node->type()) {
         case AST_T::CFunDecl_t:
-            represent_declaration_fun_decl_instructions(static_cast<CFunDecl*>(node));
             break;
         case AST_T::CVarDecl_t:
             represent_declaration_var_decl_instructions(static_cast<CVarDecl*>(node));
@@ -678,10 +668,6 @@ static void represent_fun_decl_top_level(CFunDecl* node) {
     }
 }
 
-static void represent_var_decl_top_level(CVarDecl* /*node*/) {
-    ;
-}
-
 // (function) top_level = Function(identifier, bool, identifier*, instruction*)
 static void represent_declaration_top_level(CDeclaration* node) {
     switch(node->type()) {
@@ -689,7 +675,6 @@ static void represent_declaration_top_level(CDeclaration* node) {
             represent_fun_decl_top_level(static_cast<CFunDecl*>(node));
             break;
         case AST_T::CVarDecl_t:
-            represent_var_decl_top_level(static_cast<CVarDecl*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;

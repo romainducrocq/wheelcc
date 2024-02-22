@@ -356,7 +356,7 @@ static void emit(std::string&& line, size_t t) {
     write_line(std::move(line));
 }
 
-static void emit_ret_instructions(AsmRet* /*node*/) {
+static void emit_ret_instructions() {
     emit("movq %rbp, %rsp", 1);
     emit("popq %rbp", 1);
     emit("ret", 1);
@@ -516,7 +516,7 @@ static void emit_cdq_instructions(AsmCdq* node) {
 static void emit_instructions(AsmInstruction* node) {
     switch(node->type()) {
         case AST_T::AsmRet_t:
-            emit_ret_instructions(static_cast<AsmRet*>(node));
+            emit_ret_instructions();
             break;
         case AST_T::AsmMov_t:
             emit_mov_instructions(static_cast<AsmMov*>(node));

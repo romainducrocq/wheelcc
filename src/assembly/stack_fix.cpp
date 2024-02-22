@@ -647,17 +647,12 @@ static void fix_function_top_level(AsmFunction* node) {
     p_fix_instructions = nullptr;
 }
 
-static void fix_static_variable_top_level(AsmStaticVariable* /*node*/) {
-    ;
-}
-
 static void fix_top_level(AsmTopLevel* node) {
     switch(node->type()) {
         case AST_T::AsmFunction_t:
             fix_function_top_level(static_cast<AsmFunction*>(node));
             break;
         case AST_T::AsmStaticVariable_t:
-            fix_static_variable_top_level(static_cast<AsmStaticVariable*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;
