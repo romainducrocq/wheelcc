@@ -211,7 +211,6 @@ enum AST_T {
     AsmImm_t,
     AsmRegister_t,
     AsmPseudo_t,
-    AsmStack_t,
     AsmMemory_t,
     AsmData_t,
     AsmBinaryOp_t,

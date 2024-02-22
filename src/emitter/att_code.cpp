@@ -40,6 +40,7 @@ static std::string emit_ulong(TULong value) {
 }
 
 // Reg(SP)    -> $ %rsp
+// Reg(BP)    -> $ %rbp
 // Reg(XMM0)  -> $ %xmm0
 // Reg(XMM1)  -> $ %xmm1
 // Reg(XMM2)  -> $ %xmm2
@@ -54,6 +55,8 @@ static std::string emit_register_rsp_sse(AsmReg* node) {
     switch(node->type()) {
         case AST_T::AsmSp_t:
             return "rsp";
+        case AST_T::AsmBp_t:
+            return "rbp";
         case AST_T::AsmXMM0_t:
             return "xmm0";
         case AST_T::AsmXMM1_t:
@@ -254,7 +257,7 @@ static std::string emit_type_instruction_suffix(AssemblyType* node) {
 
 // Imm(int)         -> $ $<int>
 // Register(reg)    -> $ %reg
-// Stack(int)       -> $ <int>(%rbp)
+// Memory(int, reg) -> $ <int>(<reg>)
 // Data(identifier) -> $ <identifier>(%rip)
 static std::string emit_operand(AsmOperand* node, TInt byte) {
     std::string operand;
@@ -279,9 +282,11 @@ static std::string emit_operand(AsmOperand* node, TInt byte) {
             }
             return "%" + operand;
         }
-        case AST_T::AsmStack_t: {
-            operand = emit_int(static_cast<AsmStack*>(node)->value);
-            return operand + "(%rbp)";
+        case AST_T::AsmMemory_t: {
+            AsmMemory* p_node = static_cast<AsmMemory*>(node);
+            std::string value = emit_int(p_node->value);
+            operand = emit_register_8byte(p_node->reg.get());
+            return value + "(%" + operand + ")";
         }
         case AST_T::AsmData_t: {
             operand = emit_identifier(static_cast<AsmData*>(node)->name);
@@ -374,6 +379,12 @@ static void emit_mov_sx_instructions(AsmMovSx* node) {
     std::string src = emit_operand(node->src.get(), 4);
     std::string dst = emit_operand(node->dst.get(), 8);
     emit("movslq " + src + ", " + dst, 1);
+}
+
+static void emit_lea_instructions(AsmLea* node) {
+    std::string src = emit_operand(node->src.get(), 8);
+    std::string dst = emit_operand(node->dst.get(), 8);
+    emit("leaq " + src + ", " + dst, 1);
 }
 
 static void emit_cvttsd2si_instructions(AsmCvttsd2si* node) {
@@ -497,6 +508,7 @@ static void emit_cdq_instructions(AsmCdq* node) {
 //                                         $ ret
 // Mov(t, src, dst)                     -> $ mov<t> <src>, <dst>
 // MovSx(src, dst)                      -> $ movslq <src>, <dst>
+// Lea(src, dst)                        -> $ leaq <src>, <dst>
 // Cvttsd2si(t, src, dst)               -> $ cvttsd2si<t> <src>, <dst>
 // Cvtsi2sd(t, src, dst)                -> $ cvtsi2sd<t> <src>, <dst>
 // Push(operand)                        -> $ pushq <operand>
@@ -523,6 +535,9 @@ static void emit_instructions(AsmInstruction* node) {
             break;
         case AST_T::AsmMovSx_t:
             emit_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            break;
+        case AST_T::AsmLea_t:
+            emit_lea_instructions(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
             emit_cvttsd2si_instructions(static_cast<AsmCvttsd2si*>(node));

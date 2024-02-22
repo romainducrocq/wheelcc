@@ -1104,12 +1104,6 @@ static void print_ast(Ast* node, size_t t) {
             field("TIdentifier", p_node->name, t+1);
             break;
         }
-        case AST_T::AsmStack_t: {
-            field("AsmStack", "", ++t);
-            AsmStack* p_node = static_cast<AsmStack*>(node);
-            field("TInt", std::to_string(p_node->value), t+1);
-            break;
-        }
         case AST_T::AsmMemory_t: {
             field("AsmMemory", "", ++t);
             AsmMemory* p_node = static_cast<AsmMemory*>(node);

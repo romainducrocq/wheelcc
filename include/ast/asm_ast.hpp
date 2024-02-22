@@ -216,14 +216,6 @@ struct AsmPseudo : AsmOperand {
     TIdentifier name;
 };
 
-struct AsmStack : AsmOperand {
-    AST_T type() override;
-    AsmStack() = default;
-    AsmStack(TInt value);
-
-    TInt value;
-};
-
 struct AsmMemory : AsmOperand {
     AST_T type() override;
     AsmMemory() = default;

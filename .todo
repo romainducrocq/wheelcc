@@ -31,7 +31,6 @@
 
 ## NOTES
 
-- rm AsmStack
 - add ast comments in parser
 - put switch cases in cohesive order
 - git clone --depth=1 ...

@@ -219,7 +219,6 @@ ast = [
     ["AsmImm", [(Bool, "is_quad"), (TIdentifier, "value")], []],
     ["AsmRegister", [], ["reg"]],
     ["AsmPseudo", [(TIdentifier, "name")], []],
-    ["AsmStack", [(TInt, "value")], []],
     ["AsmMemory", [(TInt, "value")], ["reg"]],
     ["AsmData", [(TIdentifier, "name")], []],
     ["AsmBinaryOp", [], []],

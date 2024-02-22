@@ -44,7 +44,6 @@ AST_T AsmOperand::type() { return AST_T::AsmOperand_t; }
 AST_T AsmImm::type() { return AST_T::AsmImm_t; }
 AST_T AsmRegister::type() { return AST_T::AsmRegister_t; }
 AST_T AsmPseudo::type() { return AST_T::AsmPseudo_t; }
-AST_T AsmStack::type() { return AST_T::AsmStack_t; }
 AST_T AsmMemory::type() { return AST_T::AsmMemory_t; }
 AST_T AsmData::type() { return AST_T::AsmData_t; }
 AST_T AsmBinaryOp::type() { return AST_T::AsmBinaryOp_t; }
@@ -95,9 +94,6 @@ AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
 
 AsmPseudo::AsmPseudo(TIdentifier name)
     : name(std::move(name)) {}
-
-AsmStack::AsmStack(TInt value)
-    : value(value) {}
 
 AsmMemory::AsmMemory(TInt value, std::unique_ptr<AsmReg> reg)
     : value(value), reg(std::move(reg)) {}
