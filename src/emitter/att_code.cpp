@@ -1,6 +1,8 @@
 #include "emitter/att_code.hpp"
 #include "util/error.hpp"
 #include "util/fopen.hpp"
+// TODO
+// #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
 #include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
@@ -255,6 +257,9 @@ static std::string emit_type_instruction_suffix(AssemblyType* node) {
     }
 }
 
+// TODO
+// static TInt stack_alloc;
+
 // Imm(int)         -> $ $<int>
 // Register(reg)    -> $ %reg
 // Memory(int, reg) -> $ <int>(<reg>)
@@ -284,7 +289,17 @@ static std::string emit_operand(AsmOperand* node, TInt byte) {
         }
         case AST_T::AsmMemory_t: {
             AsmMemory* p_node = static_cast<AsmMemory*>(node);
-            std::string value = emit_int(p_node->value);
+            std::string value = "";
+            if(p_node->value != 0) {
+                byte = p_node->value;
+                // TODO
+                //
+                //   byte += stack_alloc - 8;
+                //   if(byte % 8 != 0) {
+                //       byte -= 4;
+                //   }
+                value = emit_int(byte);
+            }
             operand = emit_register_8byte(p_node->reg.get());
             return value + "(%" + operand + ")";
         }
@@ -587,10 +602,17 @@ static void emit_instructions(AsmInstruction* node) {
 }
 
 static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
-    for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
-        if(list_node[instruction]) {
-            emit_instructions(list_node[instruction].get());
-        }
+// TODO
+    //    if(list_node[0]) {
+    //        stack_alloc = intmax_to_int32(
+    //                string_to_intmax(
+    //                        static_cast<AsmImm*>(static_cast<AsmBinary*>(list_node[0].get())->src.get())->value, 0));
+    //    }
+    //    else {
+    //        stack_alloc = 0;
+    //    }
+    for(size_t instruction = list_node[0] ? 0 : 1; instruction < list_node.size(); instruction++) {
+        emit_instructions(list_node[instruction].get());
     }
 }
 
