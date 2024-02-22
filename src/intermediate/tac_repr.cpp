@@ -426,7 +426,7 @@ static void represent_statement_compound_instructions(CCompound* node) {
 }
 
 static void represent_statement_expression_instructions(CExpression* node) {
-    represent_exp_instructions(node->exp.get());
+    represent_exp_result_instructions(node->exp.get());
 }
 
 static void represent_statement_if_instructions(CIf* node) {
@@ -487,7 +487,7 @@ static void represent_for_init_decl_instructions(CInitDecl* node) {
 
 static void represent_for_init_exp_instructions(CInitExp* node) {
     if(node->init) {
-        represent_exp_instructions(node->init.get());
+        represent_exp_result_instructions(node->init.get());
     }
 }
 
@@ -517,7 +517,7 @@ static void represent_statement_for_instructions(CFor* node) {
     represent_statement_instructions(node->body.get());
     push_instruction(std::make_unique<TacLabel>(std::move(target_continue)));
     if(node->post) {
-        represent_exp_instructions(node->post.get());
+        represent_exp_result_instructions(node->post.get());
     }
     push_instruction(std::make_unique<TacJump>(std::move(target_for_start)));
     push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
