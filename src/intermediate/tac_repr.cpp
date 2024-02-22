@@ -707,6 +707,7 @@ static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_
         case AST_T::UInt_t:
             return std::make_shared<UIntInit>(0u);
         case AST_T::ULong_t:
+        case AST_T::Pointer_t:
             return std::make_shared<ULongInit>(0ul);
         default:
             RAISE_INTERNAL_ERROR;
