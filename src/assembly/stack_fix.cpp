@@ -244,13 +244,18 @@ static void fix_allocate_stack_bytes() {
     }
 }
 
-static bool is_imm_t(AST_T t) {
-    return t == AST_T::AsmImm_t;
+static bool is_type_imm(AsmOperand* node) {
+    return node->type() == AST_T::AsmImm_t;
 }
 
-static bool is_addr_t(AST_T t) {
-    return t == AST_T::AsmStack_t ||
-           t == AST_T::AsmData_t;
+static bool is_type_addr(AsmOperand* node) {
+    switch(node->type()) {
+        case AST_T::AsmStack_t:
+        case AST_T::AsmData_t:
+            return true;
+        default:
+            return false;
+    }
 }
 
 static void fix_double_mov_from_addr_to_addr_instruction(AsmMov* node) {
@@ -282,18 +287,18 @@ static void fix_mov_from_addr_to_addr_instruction(AsmMov* node) {
 
 static void fix_mov_instruction(AsmMov* node) {
     if(node->assembly_type->type() == AST_T::BackendDouble_t) {
-        if(is_addr_t(node->src->type()) &&
-           is_addr_t(node->dst->type())) {
+        if(is_type_addr(node->src.get()) &&
+           is_type_addr(node->dst.get())) {
             fix_double_mov_from_addr_to_addr_instruction(node);
         }
     }
     else {
-        if(is_imm_t(node->src->type()) &&
+        if(is_type_imm(node->src.get()) &&
            static_cast<AsmImm*>(node->src.get())->is_quad) {
             fix_mov_from_quad_word_imm_to_any_instruction(node);
         }
-        if(is_addr_t(node->src->type()) &&
-           is_addr_t(node->dst->type())) {
+        if(is_type_addr(node->src.get()) &&
+           is_type_addr(node->dst.get())) {
             fix_mov_from_addr_to_addr_instruction(node);
         }
     }
@@ -317,10 +322,10 @@ static void fix_mov_sx_from_any_to_addr_instruction(AsmMovSx* node) {
 }
 
 static void fix_mov_sx_instruction(AsmMovSx* node) {
-    if(is_imm_t(node->src->type())) {
+    if(is_type_imm(node->src.get())) {
         fix_mov_sx_from_imm_to_any_instruction(node);
     }
-    if(is_addr_t(node->dst->type())) {
+    if(is_type_addr(node->dst.get())) {
         fix_mov_sx_from_any_to_addr_instruction(node);
     }
 }
@@ -343,7 +348,7 @@ static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov* node) {
 static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
     fix_mov_zero_extend_from_any_to_any_instruction(node);
     AsmMov* node_2 = static_cast<AsmMov*>(p_fix_instructions->back().get());
-    if(is_addr_t(node_2->dst->type())) {
+    if(is_type_addr(node_2->dst.get())) {
         fix_mov_zero_extend_from_any_to_addr_instruction(node_2);
     }
 }
@@ -357,7 +362,7 @@ static void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si* node) {
 }
 
 static void fix_cvttsd2si_instruction(AsmCvttsd2si* node) {
-    if(is_addr_t(node->dst->type())) {
+    if(is_type_addr(node->dst.get())) {
         fix_cvttsd2si_from_any_to_addr_instruction(node);
     }
 }
@@ -380,10 +385,10 @@ static void fix_cvtsi2sd_from_any_to_addr_instruction(AsmCvtsi2sd* node) {
 }
 
 static void fix_cvtsi2sd_instruction(AsmCvtsi2sd* node) {
-    if(is_imm_t(node->src->type())) {
+    if(is_type_imm(node->src.get())) {
         fix_cvtsi2sd_from_imm_to_any_instruction(node);
     }
-    if(is_addr_t(node->dst->type())) {
+    if(is_type_addr(node->dst.get())) {
         fix_cvtsi2sd_from_any_to_addr_instruction(node);
     }
 }
@@ -426,20 +431,20 @@ static void fix_cmp_from_any_to_imm_instruction(AsmCmp* node) {
 
 static void fix_cmp_instruction(AsmCmp* node) {
     if(node->assembly_type->type() == AST_T::BackendDouble_t) {
-        if(is_addr_t(node->dst->type())) {
+        if(is_type_addr(node->dst.get())) {
             fix_double_cmp_from_any_to_addr_instruction(node);
         }
     }
     else {
-        if(is_imm_t(node->src->type()) &&
+        if(is_type_imm(node->src.get()) &&
            static_cast<AsmImm*>(node->src.get())->is_quad) {
             fix_cmp_from_quad_word_imm_to_any_instruction(node);
         }
-        if(is_addr_t(node->src->type()) &&
-           is_addr_t(node->dst->type())) {
+        if(is_type_addr(node->src.get()) &&
+           is_type_addr(node->dst.get())) {
             fix_cmp_from_addr_to_addr_instruction(node);
         }
-        else if(is_imm_t(node->dst->type())) {
+        else if(is_type_imm(node->dst.get())) {
             fix_cmp_from_any_to_imm_instruction(node);
         }
     }
@@ -455,7 +460,7 @@ static void fix_push_from_quad_word_imm_to_any_instruction(AsmPush* node) {
 }
 
 static void fix_push_instruction(AsmPush* node) {
-    if(is_imm_t(node->src->type()) &&
+    if(is_type_imm(node->src.get()) &&
        static_cast<AsmImm*>(node->src.get())->is_quad) {
         fix_push_from_quad_word_imm_to_any_instruction(node);
     }
@@ -512,7 +517,7 @@ static void fix_binary_imul_from_any_to_addr_instruction(AsmBinary* node) {
 
 static void fix_binary_instruction(AsmBinary* node) {
     if(node->assembly_type->type() == AST_T::BackendDouble_t) {
-        if(is_addr_t(node->dst->type())) {
+        if(is_type_addr(node->dst.get())) {
             fix_double_binary_from_any_to_addr_instruction(node);
         }
     }
@@ -523,34 +528,34 @@ static void fix_binary_instruction(AsmBinary* node) {
             case AST_T::AsmBitAnd_t:
             case AST_T::AsmBitOr_t:
             case AST_T::AsmBitXor_t: {
-                if(is_imm_t(node->src->type()) &&
+                if(is_type_imm(node->src.get()) &&
                    static_cast<AsmImm*>(node->src.get())->is_quad) {
                     fix_binary_from_quad_word_imm_to_any_instruction(node);
                 }
-                if(is_addr_t(node->src->type()) &&
-                   is_addr_t(node->dst->type())) {
+                if(is_type_addr(node->src.get()) &&
+                   is_type_addr(node->dst.get())) {
                     fix_binary_any_from_addr_to_addr_instruction(node);
                 }
                 break;
             }
             case AST_T::AsmBitShiftLeft_t:
             case AST_T::AsmBitShiftRight_t: {
-                if(is_imm_t(node->src->type()) &&
+                if(is_type_imm(node->src.get()) &&
                    static_cast<AsmImm*>(node->src.get())->is_quad) {
                     fix_binary_from_quad_word_imm_to_any_instruction(node);
                 }
-                if(is_addr_t(node->src->type()) &&
-                   is_addr_t(node->dst->type())) {
+                if(is_type_addr(node->src.get()) &&
+                   is_type_addr(node->dst.get())) {
                     fix_binary_shx_from_addr_to_addr_instruction(node);
                 }
                 break;
             }
             case AST_T::AsmMult_t: {
-                if(is_imm_t(node->src->type()) &&
+                if(is_type_imm(node->src.get()) &&
                    static_cast<AsmImm*>(node->src.get())->is_quad) {
                     fix_binary_from_quad_word_imm_to_any_instruction(node);
                 }
-                if(is_addr_t(node->dst->type())) {
+                if(is_type_addr(node->dst.get())) {
                     fix_binary_imul_from_any_to_addr_instruction(node);
                 }
                 break;
@@ -571,7 +576,7 @@ static void fix_idiv_from_imm_instruction(AsmIdiv* node) {
 }
 
 static void fix_idiv_instruction(AsmIdiv* node) {
-    if(is_imm_t(node->src->type())) {
+    if(is_type_imm(node->src.get())) {
         fix_idiv_from_imm_instruction(node);
     }
 }
@@ -586,7 +591,7 @@ static void fix_div_from_imm_instruction(AsmDiv* node) {
 }
 
 static void fix_div_instruction(AsmDiv* node) {
-    if(is_imm_t(node->src->type())) {
+    if(is_type_imm(node->src.get())) {
         fix_div_from_imm_instruction(node);
     }
 }

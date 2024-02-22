@@ -77,16 +77,6 @@ int32_t get_type_size(Type* type_1) {
     }
 }
 
-bool is_const_signed(CConst* node) {
-    switch(node->type()) {
-        case AST_T::CConstInt_t:
-        case AST_T::CConstLong_t:
-            return true;
-        default:
-            return false;
-    }
-}
-
 static bool is_constant_null_pointer(CConstant* node) {
     switch(node->constant->type()) {
         case AST_T::CConstInt_t:

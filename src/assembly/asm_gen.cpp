@@ -192,7 +192,13 @@ static std::unique_ptr<AsmUnaryOp> generate_unary_op(TacUnaryOp* node) {
 }
 
 static bool is_constant_value_signed(TacConstant* node) {
-    return is_const_signed(node->constant.get());
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+        case AST_T::CConstLong_t:
+            return true;
+        default:
+            return false;
+    }
 }
 
 static bool is_variable_value_signed(TacVariable* node) {
@@ -211,13 +217,23 @@ static bool is_value_signed(TacValue* node) {
 }
 
 static bool is_constant_value_32_bits(TacConstant* node) {
-    return node->constant->type() == AST_T::CConstInt_t ||
-           node->constant->type() == AST_T::CConstUInt_t;
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+        case AST_T::CConstUInt_t:
+            return true;
+        default:
+            return false;
+    }
 }
 
 static bool is_variable_value_32_bits(TacVariable* node) {
-    return symbol_table[node->name]->type_t->type() == AST_T::Int_t ||
-           symbol_table[node->name]->type_t->type() == AST_T::UInt_t;
+    switch(symbol_table[node->name]->type_t->type()) {
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return true;
+        default:
+            return false;
+    }
 }
 
 static bool is_value_32_bits(TacValue* node) {

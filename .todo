@@ -31,14 +31,9 @@
 
 ## NOTES
 
-(
-- fix static init
-- optimize when dst is not needed
-- refactor swith res type ?
-)
-
-
-- in assembly, replace multiple (||) with switch
+- rm AsmStack
+- add ast comments in parser
+- put switch cases in cohesive order
 - git clone --depth=1 ...
 
 When Types OK (after c18):
