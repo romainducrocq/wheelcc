@@ -31,6 +31,13 @@
 
 ## NOTES
 
+(
+- fix static init
+- optimize when dst is not needed
+- refactor swith res type ?
+)
+
+
 - in assembly, replace multiple (||) with switch
 - git clone --depth=1 ...
 
