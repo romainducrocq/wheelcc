@@ -18,9 +18,9 @@ static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     return std::make_shared<AsmData>(std::move(name));
 }
 
-static std::shared_ptr<AsmStack> replace_pseudo_register_stack(AsmPseudo* node) {
+static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
     TInt value = pseudo_map[node->name];
-    return std::make_shared<AsmStack>(std::move(value));
+    return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
@@ -61,7 +61,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         }
     }
 
-    return replace_pseudo_register_stack(node);
+    return replace_pseudo_register_memory(node);
 }
 
 static void replace_mov_pseudo_registers(AsmMov* node) {
@@ -250,7 +250,7 @@ static bool is_type_imm(AsmOperand* node) {
 
 static bool is_type_addr(AsmOperand* node) {
     switch(node->type()) {
-        case AST_T::AsmStack_t:
+        case AST_T::AsmMemory_t:
         case AST_T::AsmData_t:
             return true;
         default:

@@ -1201,7 +1201,7 @@ static void generate_reg_param_function_instructions(const TIdentifier& param, R
 }
 
 static void generate_stack_param_function_instructions(const TIdentifier& param, TInt byte) {
-    std::shared_ptr<AsmOperand> src = std::make_shared<AsmStack>((byte + 2) * 8);
+    std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, (byte + 2) * 8);
     std::shared_ptr<AsmOperand> dst;
     {
         TIdentifier name = param;
