@@ -365,6 +365,20 @@ static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
     }
 }
 
+static void fix_lea_from_any_to_addr_instruction(AsmLea* node) {
+    std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
+    std::shared_ptr<AsmOperand> dst = std::move(node->dst);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    node->dst = src;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+}
+
+static void fix_lea_instruction(AsmLea* node) {
+    if(is_type_addr(node->dst.get())) {
+        fix_lea_from_any_to_addr_instruction(node);
+    }
+}
+
 static void fix_cvttsd2si_from_any_to_addr_instruction(AsmCvttsd2si* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
@@ -462,6 +476,12 @@ static void fix_cmp_instruction(AsmCmp* node) {
     }
 }
 
+// TODO (p3, ch20)
+// static void fix_double_push_from_xmm_reg_to_any_instruction(AsmPush* node) {
+//     // subq $8, %rsp
+//     // movsd %xmm0, (%rsp)
+// }
+
 static void fix_push_from_quad_word_imm_to_any_instruction(AsmPush* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
@@ -472,6 +492,10 @@ static void fix_push_from_quad_word_imm_to_any_instruction(AsmPush* node) {
 }
 
 static void fix_push_instruction(AsmPush* node) {
+    // TODO (p3, ch20)
+    // // pushq %xmm0
+    // if src is register and src->reg is
+    // fix_double_push_from_xmm_reg_to_any_instruction(node);
     if(is_type_imm(node->src.get()) &&
        static_cast<AsmImm*>(node->src.get())->is_quad) {
         fix_push_from_quad_word_imm_to_any_instruction(node);
@@ -618,6 +642,9 @@ static void fix_instruction(AsmInstruction* node) {
             break;
         case AST_T::AsmMovZeroExtend_t:
             fix_mov_zero_extend_instruction(static_cast<AsmMovZeroExtend*>(node));
+            break;
+        case AST_T::AsmLea_t:
+            fix_lea_instruction(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
             fix_cvttsd2si_instruction(static_cast<AsmCvttsd2si*>(node));
