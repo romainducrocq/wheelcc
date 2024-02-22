@@ -16,6 +16,7 @@ enum REGISTER_KIND {
     R10,
     R11,
     Sp,
+    Bp,
     Xmm0,
     Xmm1,
     Xmm2,

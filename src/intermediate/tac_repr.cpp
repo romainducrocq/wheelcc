@@ -398,6 +398,7 @@ static std::shared_ptr<TacValue> represent_exp_dereferenced_pointer_instructions
     return dst;
 }
 
+// exp_result = PlainOperand(val) | DereferencedPointer(val)
 static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node);
     switch(res->type()) {
@@ -628,8 +629,9 @@ static void represent_declaration_instructions(CDeclaration* node) {
 // instruction = Return(val) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val) | Unary(unary_operator, val, val)
-//             | Binary(binary_operator, val, val, val) | Copy(val, val) | Jump(identifier)
-//             | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier) | Label(identifier)
+//             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
+//             | Store(val, val) | Jump(identifier) | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier)
+//             | Label(identifier)
 static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for(size_t block_item = 0; block_item < list_node.size(); block_item++) {
         switch(list_node[block_item]->type()) {

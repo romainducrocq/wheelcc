@@ -50,6 +50,10 @@ std::shared_ptr<AsmRegister> generate_register(REGISTER_KIND register_kind) {
             reg = std::make_unique<AsmSp>();
             break;
         }
+        case REGISTER_KIND::Bp: {
+            reg = std::make_unique<AsmBp>();
+            break;
+        }
         case REGISTER_KIND::Xmm0: {
             reg = std::make_unique<AsmXMM0>();
             break;

@@ -101,7 +101,7 @@ static std::shared_ptr<AsmPseudo> generate_pseudo_operand(TacVariable* node) {
     return std::make_shared<AsmPseudo>(std::move(name));
 }
 
-// operand = Imm(int, bool) | Reg(reg) | Pseudo(identifier) | Stack(int) | AsmData(identifier)
+// operand = Imm(int, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier)
 static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
     switch(node->type()) {
         case AST_T::TacConstant_t:
@@ -1110,11 +1110,12 @@ static void generate_instructions(TacInstruction* node) {
 }
 
 // instruction = Mov(assembly_type, operand, operand) | MovSx(operand, operand) | MovZeroExtend(operand, operand)
-//             | Cvttsd2si(assembly_type, operand, operand) | Cvtsi2sd(assembly_type, operand, operand)
-//             | Unary(unary_operator, assembly_type, operand) | Binary(binary_operator, assembly_type, operand, operand)
-//             | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type, operand)
-//             | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code, operand)
-//             | Label(identifier) | AllocateStack(int) | DeallocateStack(int) | Push(operand) | Call(identifier) | Ret
+//             | Lea(operand, operand) | Cvttsd2si(assembly_type, operand, operand)
+//             | Cvtsi2sd(assembly_type, operand, operand) | Unary(unary_operator, assembly_type, operand)
+//             | Binary(binary_operator, assembly_type, operand, operand) | Cmp(assembly_type, operand, operand)
+//             | Idiv(assembly_type, operand) | Div(assembly_type, operand) | Cdq(assembly_type) | Jmp(identifier)
+//             | JmpCC(cond_code, identifier) | SetCC(cond_code, operand) | Label(identifier) | AllocateStack(int)
+//             | DeallocateStack(int) | Push(operand) | Call(identifier) | Ret
 static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
         generate_instructions(list_node[instruction].get());

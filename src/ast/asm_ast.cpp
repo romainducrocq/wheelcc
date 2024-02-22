@@ -17,6 +17,7 @@ AST_T AsmR9::type() { return AST_T::AsmR9_t; }
 AST_T AsmR10::type() { return AST_T::AsmR10_t; }
 AST_T AsmR11::type() { return AST_T::AsmR11_t; }
 AST_T AsmSp::type() { return AST_T::AsmSp_t; }
+AST_T AsmBp::type() { return AST_T::AsmBp_t; }
 AST_T AsmXMM0::type() { return AST_T::AsmXMM0_t; }
 AST_T AsmXMM1::type() { return AST_T::AsmXMM1_t; }
 AST_T AsmXMM2::type() { return AST_T::AsmXMM2_t; }
@@ -44,6 +45,7 @@ AST_T AsmImm::type() { return AST_T::AsmImm_t; }
 AST_T AsmRegister::type() { return AST_T::AsmRegister_t; }
 AST_T AsmPseudo::type() { return AST_T::AsmPseudo_t; }
 AST_T AsmStack::type() { return AST_T::AsmStack_t; }
+AST_T AsmMemory::type() { return AST_T::AsmMemory_t; }
 AST_T AsmData::type() { return AST_T::AsmData_t; }
 AST_T AsmBinaryOp::type() { return AST_T::AsmBinaryOp_t; }
 AST_T AsmAdd::type() { return AST_T::AsmAdd_t; }
@@ -63,6 +65,7 @@ AST_T AsmInstruction::type() { return AST_T::AsmInstruction_t; }
 AST_T AsmMov::type() { return AST_T::AsmMov_t; }
 AST_T AsmMovSx::type() { return AST_T::AsmMovSx_t; }
 AST_T AsmMovZeroExtend::type() { return AST_T::AsmMovZeroExtend_t; }
+AST_T AsmLea::type() { return AST_T::AsmLea_t; }
 AST_T AsmCvttsd2si::type() { return AST_T::AsmCvttsd2si_t; }
 AST_T AsmCvtsi2sd::type() { return AST_T::AsmCvtsi2sd_t; }
 AST_T AsmUnary::type() { return AST_T::AsmUnary_t; }
@@ -96,6 +99,9 @@ AsmPseudo::AsmPseudo(TIdentifier name)
 AsmStack::AsmStack(TInt value)
     : value(value) {}
 
+AsmMemory::AsmMemory(TInt value, std::unique_ptr<AsmReg> reg)
+    : value(value), reg(std::move(reg)) {}
+
 AsmData::AsmData(TIdentifier name)
     : name(std::move(name)) {}
 
@@ -107,6 +113,9 @@ AsmMovSx::AsmMovSx(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> 
     : src(std::move(src)), dst(std::move(dst)) {}
 
 AsmMovZeroExtend::AsmMovZeroExtend(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+    : src(std::move(src)), dst(std::move(dst)) {}
+
+AsmLea::AsmLea(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
 
 AsmCvttsd2si::AsmCvttsd2si(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,

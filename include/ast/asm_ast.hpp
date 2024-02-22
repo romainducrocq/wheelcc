@@ -20,6 +20,7 @@
 //     | R10
 //     | R11
 //     | SP
+//     | BP
 //     | XMM0
 //     | XMM1
 //     | XMM2
@@ -71,6 +72,10 @@ struct AsmR11 : AsmReg {
 };
 
 struct AsmSp : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmBp : AsmReg {
     AST_T type() override;
 };
 
@@ -180,8 +185,8 @@ struct AsmP : AsmCondCode {
 // operand = Imm(int, bool)
 //         | Reg(reg)
 //         | Pseudo(identifier)
-//         | Stack(int)
-//         | AsmData(identifier)
+//         | Memory(int, reg)
+//         | Data(identifier)
 struct AsmOperand : Ast {
     AST_T type() override;
 };
@@ -217,6 +222,15 @@ struct AsmStack : AsmOperand {
     AsmStack(TInt value);
 
     TInt value;
+};
+
+struct AsmMemory : AsmOperand {
+    AST_T type() override;
+    AsmMemory() = default;
+    AsmMemory(TInt value, std::unique_ptr<AsmReg> reg);
+
+    TInt value;
+    std::unique_ptr<AsmReg> reg;
 };
 
 struct AsmData : AsmOperand {
@@ -304,6 +318,7 @@ struct AsmShr : AsmUnaryOp {
 // instruction = Mov(assembly_type, operand, operand)
 //             | MovSx(operand, operand)
 //             | MovZeroExtend(operand, operand)
+//             | Lea(operand, operand)
 //             | Cvttsd2si(assembly_type, operand, operand)
 //             | Cvtsi2sd(assembly_type, operand, operand)
 //             | Unary(unary_operator, assembly_type, operand)
@@ -349,6 +364,15 @@ struct AsmMovZeroExtend : AsmInstruction {
     AST_T type() override;
     AsmMovZeroExtend() = default;
     AsmMovZeroExtend(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+
+    std::shared_ptr<AsmOperand> src;
+    std::shared_ptr<AsmOperand> dst;
+};
+
+struct AsmLea : AsmInstruction {
+    AST_T type() override;
+    AsmLea() = default;
+    AsmLea(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AsmOperand> src;
     std::shared_ptr<AsmOperand> dst;
