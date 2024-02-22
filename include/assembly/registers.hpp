@@ -30,5 +30,6 @@ enum REGISTER_KIND {
 };
 
 std::shared_ptr<AsmRegister> generate_register(REGISTER_KIND register_kind);
+std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TInt value);
 
 #endif

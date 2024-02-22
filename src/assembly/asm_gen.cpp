@@ -29,6 +29,7 @@ static TInt generate_alignment(Type* node) {
         case AST_T::Long_t:
         case AST_T::Double_t:
         case AST_T::ULong_t:
+        case AST_T::Pointer_t:
             return 8;
         default:
             RAISE_INTERNAL_ERROR;
@@ -656,6 +657,46 @@ static void generate_copy_instructions(TacCopy* node) {
                                                         std::move(dst)));
 }
 
+static void generate_get_address_instructions(TacGetAddress* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
+}
+
+static void generate_load_instructions(TacLoad* node) {
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src_ptr.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, 0);
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                            std::move(dst)));
+    }
+}
+
+static void generate_store_instructions(TacStore* node) {
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->dst_ptr.get());
+        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0);
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0);
+        std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->src.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                            std::move(dst)));
+    }
+}
+
 static void generate_jump_if_zero_integer_instructions(TacJumpIfZero* node) {
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(false, "0");
@@ -1107,6 +1148,15 @@ static void generate_instructions(TacInstruction* node) {
             break;
         case AST_T::TacCopy_t:
             generate_copy_instructions(static_cast<TacCopy*>(node));
+            break;
+        case AST_T::TacGetAddress_t:
+            generate_get_address_instructions(static_cast<TacGetAddress*>(node));
+            break;
+        case AST_T::TacLoad_t:
+            generate_load_instructions(static_cast<TacLoad*>(node));
+            break;
+        case AST_T::TacStore_t:
+            generate_store_instructions(static_cast<TacStore*>(node));
             break;
         case AST_T::TacJumpIfZero_t:
             generate_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node));

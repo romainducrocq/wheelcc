@@ -16,6 +16,7 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
             return std::make_shared<BackendDouble>();
         case AST_T::Long_t:
         case AST_T::ULong_t:
+        case AST_T::Pointer_t:
             return std::make_shared<QuadWord>();
         default:
             RAISE_INTERNAL_ERROR;
