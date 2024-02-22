@@ -126,19 +126,29 @@ static std::unique_ptr<TacExpResult> represent_exp_result_dereference_instructio
     return std::make_unique<TacDereferencedPointer>(std::move(val));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_plain_operand_addrof_instructions(TacPlainOperand* res,
+                                                                                            CAddrOf* node) {
+    std::shared_ptr<TacValue> src = std::move(res->val);
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_dereference_pointer_addrof_instructions(
+                                                                                          TacDereferencedPointer* res) {
+    std::shared_ptr<TacValue> val = std::move(res->val);
+    return std::make_unique<TacPlainOperand>(std::move(val));
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_addrof_instructions(CAddrOf* node) {
     std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node->exp.get());
     switch(res->type()) {
-        case AST_T::TacPlainOperand_t: {
-            std::shared_ptr<TacValue> src = std::move(static_cast<TacPlainOperand*>(res.get())->val);
-            std::shared_ptr<TacValue> dst = represent_inner_value(node);
-            push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
-            return std::make_unique<TacPlainOperand>(std::move(dst));
-        }
-        case AST_T::TacDereferencedPointer_t: {
-            std::shared_ptr<TacValue> val = std::move(static_cast<TacDereferencedPointer*>(res.get())->val);
-            return std::make_unique<TacPlainOperand>(std::move(val));
-        }
+        case AST_T::TacPlainOperand_t:
+            return represent_exp_result_plain_operand_addrof_instructions(static_cast<TacPlainOperand*>(res.get()),
+                                                                          node);
+        case AST_T::TacDereferencedPointer_t:
+            return represent_exp_result_dereference_pointer_addrof_instructions(
+                                                                   static_cast<TacDereferencedPointer*>(res.get()));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -199,6 +209,22 @@ static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCas
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_plain_operand_assignment_instructions(
+                                                                                      std::unique_ptr<TacExpResult> res,
+                                                                                      std::shared_ptr<TacValue> src) {
+    std::shared_ptr<TacValue> dst = static_cast<TacPlainOperand*>(res.get())->val;
+    push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
+    return res;
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_dereference_pointer_assignment_instructions(
+                                                                                        TacDereferencedPointer* res,
+                                                                                        std::shared_ptr<TacValue> src) {
+    std::shared_ptr<TacValue> dst = std::move(res->val);
+    push_instruction(std::make_unique<TacStore>(std::move(src), dst));
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
     std::unique_ptr<TacExpResult> res;
@@ -217,16 +243,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         res = represent_exp_result_instructions(exp_left);
     }
     switch(res->type()) {
-        case AST_T::TacPlainOperand_t: {
-            std::shared_ptr<TacValue> dst = static_cast<TacPlainOperand*>(res.get())->val;
-            push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
-            return res;
-        }
-        case AST_T::TacDereferencedPointer_t: {
-            std::shared_ptr<TacValue> dst = std::move(static_cast<TacDereferencedPointer*>(res.get())->val);
-            push_instruction(std::make_unique<TacStore>(std::move(src), dst));
-            return std::make_unique<TacPlainOperand>(std::move(dst));
-        }
+        case AST_T::TacPlainOperand_t:
+            return represent_exp_result_plain_operand_assignment_instructions(std::move(res), std::move(src));
+        case AST_T::TacDereferencedPointer_t:
+            return represent_exp_result_dereference_pointer_assignment_instructions(
+                                                                    static_cast<TacDereferencedPointer*>(res.get()),
+                                                                    std::move(src));
         default:
             RAISE_INTERNAL_ERROR;
     }
