@@ -329,13 +329,15 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
 }
 
 static std::shared_ptr<TacValue> represent_exp_plain_operand_instructions(TacPlainOperand* exp, CExp* /*node*/) {
-    return exp->val;
+    std::shared_ptr<TacValue> dst = std::move(exp->val);
+    return dst;
 }
 
 static std::shared_ptr<TacValue> represent_exp_dereferenced_pointer_instructions(TacDereferencedPointer* exp,
                                                                                  CExp* node) {
+    std::shared_ptr<TacValue> src = std::move(exp->val);
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
-    push_instruction(std::make_unique<TacLoad>(std::move(exp->val), dst));
+    push_instruction(std::make_unique<TacLoad>(std::move(src), dst));
     return dst;
 }
 
