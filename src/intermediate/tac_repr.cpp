@@ -126,6 +126,24 @@ static std::unique_ptr<TacExpResult> represent_exp_result_dereference_instructio
     return std::make_unique<TacDereferencedPointer>(std::move(val));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_addrof_instructions(CAddrOf* node) {
+    std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node->exp.get());
+    switch(res->type()) {
+        case AST_T::TacPlainOperand_t: {
+            std::shared_ptr<TacValue> src = std::move(static_cast<TacPlainOperand*>(res.get())->val);
+            std::shared_ptr<TacValue> dst = represent_inner_value(node);
+            push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
+            return std::make_unique<TacPlainOperand>(std::move(dst));
+        }
+        case AST_T::TacDereferencedPointer_t: {
+            std::shared_ptr<TacValue> val = std::move(static_cast<TacDereferencedPointer*>(res.get())->val);
+            return std::make_unique<TacPlainOperand>(std::move(val));
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_fun_call_instructions(CFunctionCall* node) {
     TIdentifier name = node->name;
     std::vector<std::shared_ptr<TacValue>> args;
@@ -314,6 +332,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
             return represent_exp_result_var_instructions(static_cast<CVar*>(node));
         case AST_T::CDereference_t:
             return represent_exp_result_dereference_instructions(static_cast<CDereference*>(node));
+        case AST_T::CAddrOf_t:
+            return represent_exp_result_addrof_instructions(static_cast<CAddrOf*>(node));
         case AST_T::CFunctionCall_t:
             return represent_exp_result_fun_call_instructions(static_cast<CFunctionCall*>(node));
         case AST_T::CCast_t:
