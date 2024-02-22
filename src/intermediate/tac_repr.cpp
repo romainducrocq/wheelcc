@@ -120,6 +120,11 @@ static std::unique_ptr<TacExpResult> represent_exp_result_var_instructions(CVar*
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_dereference_instructions(CDereference* node) {
+    std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
+    return std::make_unique<TacDereferencedPointer>(std::move(val));
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_fun_call_instructions(CFunctionCall* node) {
     TIdentifier name = node->name;
     std::vector<std::shared_ptr<TacValue>> args;
@@ -173,11 +178,6 @@ static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCas
         push_instruction(std::make_unique<TacZeroExtend>(std::move(src), dst));
     }
     return std::make_unique<TacPlainOperand>(std::move(dst));
-}
-
-static std::unique_ptr<TacExpResult> represent_exp_result_dereference_instructions(CDereference* node) {
-    std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
-    return std::make_unique<TacDereferencedPointer>(std::move(val));
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
@@ -299,16 +299,16 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CB
 
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
     switch(node->type()) {
-        case AST_T::CFunctionCall_t:
-            return represent_exp_result_fun_call_instructions(static_cast<CFunctionCall*>(node));
-        case AST_T::CVar_t:
-            return represent_exp_result_var_instructions(static_cast<CVar*>(node));
         case AST_T::CConstant_t:
             return represent_exp_result_constant_instructions(static_cast<CConstant*>(node));
-        case AST_T::CCast_t:
-            return represent_exp_result_cast_instructions(static_cast<CCast*>(node));
+        case AST_T::CVar_t:
+            return represent_exp_result_var_instructions(static_cast<CVar*>(node));
         case AST_T::CDereference_t:
             return represent_exp_result_dereference_instructions(static_cast<CDereference*>(node));
+        case AST_T::CFunctionCall_t:
+            return represent_exp_result_fun_call_instructions(static_cast<CFunctionCall*>(node));
+        case AST_T::CCast_t:
+            return represent_exp_result_cast_instructions(static_cast<CCast*>(node));
         case AST_T::CAssignment_t: {
             CAssignment* p_node = static_cast<CAssignment*>(node);
             if(p_node->exp_left) {
