@@ -42,6 +42,7 @@ bool is_type_signed(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::Long_t:
+        case AST_T::Double_t:
             return true;
         default:
             return false;
@@ -69,6 +70,7 @@ int32_t get_type_size(Type* type_1) {
         case AST_T::Long_t:
         case AST_T::Double_t:
         case AST_T::ULong_t:
+        case AST_T::Pointer_t:
             return 64;
         default:
             return -1;
