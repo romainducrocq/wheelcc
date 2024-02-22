@@ -989,6 +989,10 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmSp", "", ++t);
             break;
         }
+        case AST_T::AsmBp_t: {
+            field("AsmBp", "", ++t);
+            break;
+        }
         case AST_T::AsmXMM0_t: {
             field("AsmXMM0", "", ++t);
             break;
@@ -1106,6 +1110,13 @@ static void print_ast(Ast* node, size_t t) {
             field("TInt", std::to_string(p_node->value), t+1);
             break;
         }
+        case AST_T::AsmMemory_t: {
+            field("AsmMemory", "", ++t);
+            AsmMemory* p_node = static_cast<AsmMemory*>(node);
+            field("TInt", std::to_string(p_node->value), t+1);
+            print_ast(p_node->reg.get(), t);
+            break;
+        }
         case AST_T::AsmData_t: {
             field("AsmData", "", ++t);
             AsmData* p_node = static_cast<AsmData*>(node);
@@ -1190,6 +1201,13 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmMovZeroExtend_t: {
             field("AsmMovZeroExtend", "", ++t);
             AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
+            print_ast(p_node->src.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::AsmLea_t: {
+            field("AsmLea", "", ++t);
+            AsmLea* p_node = static_cast<AsmLea*>(node);
             print_ast(p_node->src.get(), t);
             print_ast(p_node->dst.get(), t);
             break;
