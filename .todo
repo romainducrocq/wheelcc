@@ -32,6 +32,7 @@
 ## NOTES
 
 - in assembly, replace multiple (||) with switch
+- git clone --depth=1 ...
 
 When Types OK (after c18):
 - refactor type check unary, type check binary

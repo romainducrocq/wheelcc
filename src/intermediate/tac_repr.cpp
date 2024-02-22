@@ -290,7 +290,7 @@ static std::shared_ptr<TacValue> represent_exp_binary_instructions(CBinary* node
     return dst;
 }
 
-static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
     switch(node->type()) {
         case AST_T::CFunctionCall_t:
             return represent_exp_fun_call_instructions(static_cast<CFunctionCall*>(node));
@@ -323,6 +323,29 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
                     return represent_exp_binary_instructions(p_node);
             }
         }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static std::shared_ptr<TacValue> represent_exp_plain_operand_instructions(TacPlainOperand* exp, CExp* /*node*/) {
+    return exp->val;
+}
+
+static std::shared_ptr<TacValue> represent_exp_dereferenced_pointer_instructions(TacDereferencedPointer* exp,
+                                                                                 CExp* node) {
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    push_instruction(std::make_unique<TacLoad>(std::move(exp->val), dst));
+    return dst;
+}
+
+static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
+    std::unique_ptr<TacExpResult> exp = represent_exp_result_instructions(node);
+    switch(exp->type()) {
+        case AST_T::TacPlainOperand_t:
+            return represent_exp_plain_operand_instructions(static_cast<TacPlainOperand*>(exp), node);
+        case AST_T::TacDereferencedPointer_t:
+            return represent_exp_dereferenced_pointer_instructions(static_cast<TacDereferencedPointer*>(exp), node);
         default:
             RAISE_INTERNAL_ERROR;
     }
