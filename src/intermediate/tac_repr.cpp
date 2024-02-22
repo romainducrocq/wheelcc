@@ -218,12 +218,15 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
     }
     switch(res->type()) {
         case AST_T::TacPlainOperand_t: {
-            std::shared_ptr<TacValue> dst = std::move(static_cast<TacPlainOperand*>(res.get())->val);
+            std::shared_ptr<TacValue> dst = static_cast<TacPlainOperand*>(res.get())->val;
             push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
+            return res;
+        }
+        case AST_T::TacDereferencedPointer_t: {
+            std::shared_ptr<TacValue> dst = std::move(static_cast<TacDereferencedPointer*>(res.get())->val);
+            push_instruction(std::make_unique<TacStore>(std::move(src), dst));
             return std::make_unique<TacPlainOperand>(std::move(dst));
         }
-        case AST_T::TacDereferencedPointer_t:
-            return res;
         default:
             RAISE_INTERNAL_ERROR;
     }
