@@ -116,52 +116,16 @@ static void resolve_addrof_expression(CAddrOf* node) {
 
 static void resolve_expression(CExp* node) {
     switch(node->type()) {
-        case AST_T::CFunctionCall_t: {
-            CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
-            resolve_function_call_expression(p_node);
-            checktype_function_call_expression(p_node);
-            break;
-        }
-        case AST_T::CVar_t: {
-            CVar* p_node = static_cast<CVar*>(node);
-            resolve_var_expression(p_node);
-            checktype_var_expression(p_node);
-            break;
-        }
-        case AST_T::CCast_t: {
-            CCast* p_node = static_cast<CCast*>(node);
-            resolve_cast_expression(p_node);
-            checktype_cast_expression(p_node);
-            break;
-        }
         case AST_T::CConstant_t: {
             CConstant* p_node = static_cast<CConstant*>(node);
             resolve_constant_expression(p_node);
             checktype_constant_expression(p_node);
             break;
         }
-        case AST_T::CAssignment_t: {
-            CAssignment* p_node = static_cast<CAssignment*>(node);
-            resolve_assignment_expression(p_node);
-            checktype_assignment_expression(p_node);
-            break;
-        }
-        case AST_T::CUnary_t: {
-            CUnary* p_node = static_cast<CUnary*>(node);
-            resolve_unary_expression(p_node);
-            checktype_unary_expression(p_node);
-            break;
-        }
-        case AST_T::CBinary_t: {
-            CBinary* p_node = static_cast<CBinary*>(node);
-            resolve_binary_expression(p_node);
-            checktype_binary_expression(p_node);
-            break;
-        }
-        case AST_T::CConditional_t: {
-            CConditional* p_node = static_cast<CConditional*>(node);
-            resolve_conditional_expression(p_node);
-            checktype_conditional_expression(p_node);
+        case AST_T::CVar_t: {
+            CVar* p_node = static_cast<CVar*>(node);
+            resolve_var_expression(p_node);
+            checktype_var_expression(p_node);
             break;
         }
         case AST_T::CDereference_t: {
@@ -174,6 +138,42 @@ static void resolve_expression(CExp* node) {
             CAddrOf* p_node = static_cast<CAddrOf*>(node);
             resolve_addrof_expression(p_node);
             checktype_addrof_expression(p_node);
+            break;
+        }
+        case AST_T::CFunctionCall_t: {
+            CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
+            resolve_function_call_expression(p_node);
+            checktype_function_call_expression(p_node);
+            break;
+        }
+        case AST_T::CCast_t: {
+            CCast* p_node = static_cast<CCast*>(node);
+            resolve_cast_expression(p_node);
+            checktype_cast_expression(p_node);
+            break;
+        }
+        case AST_T::CAssignment_t: {
+            CAssignment* p_node = static_cast<CAssignment*>(node);
+            resolve_assignment_expression(p_node);
+            checktype_assignment_expression(p_node);
+            break;
+        }
+        case AST_T::CConditional_t: {
+            CConditional* p_node = static_cast<CConditional*>(node);
+            resolve_conditional_expression(p_node);
+            checktype_conditional_expression(p_node);
+            break;
+        }
+        case AST_T::CUnary_t: {
+            CUnary* p_node = static_cast<CUnary*>(node);
+            resolve_unary_expression(p_node);
+            checktype_unary_expression(p_node);
+            break;
+        }
+        case AST_T::CBinary_t: {
+            CBinary* p_node = static_cast<CBinary*>(node);
+            resolve_binary_expression(p_node);
+            checktype_binary_expression(p_node);
             break;
         }
         default:
@@ -311,11 +311,11 @@ static void resolve_statement(CStatement* node) {
             checktype_return_statement(p_node);
             break;
         }
-        case AST_T::CExpression_t:
-            resolve_expression_statement(static_cast<CExpression*>(node));
-            break;
         case AST_T::CCompound_t:
             resolve_compound_statement(static_cast<CCompound*>(node));
+            break;
+        case AST_T::CExpression_t:
+            resolve_expression_statement(static_cast<CExpression*>(node));
             break;
         case AST_T::CIf_t:
             resolve_if_statement(static_cast<CIf*>(node));
@@ -335,11 +335,11 @@ static void resolve_statement(CStatement* node) {
         case AST_T::CContinue_t:
             resolve_continue_statement(static_cast<CContinue*>(node));
             break;
-        case AST_T::CLabel_t:
-            resolve_label_statement(static_cast<CLabel*>(node));
-            break;
         case AST_T::CGoto_t:
             resolve_goto_statement(static_cast<CGoto*>(node));
+            break;
+        case AST_T::CLabel_t:
+            resolve_label_statement(static_cast<CLabel*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;
