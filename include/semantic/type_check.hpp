@@ -15,7 +15,6 @@ void checktype_function_call_expression(CFunctionCall* node);
 void checktype_var_expression(CVar* node);
 void checktype_constant_expression(CConstant* node);
 void checktype_assignment_expression(CAssignment* node);
-void checktype_compound_assignment_expression(CAssignment* node);
 void checktype_unary_expression(CUnary* node);
 void checktype_binary_expression(CBinary* node);
 void checktype_conditional_expression(CConditional* node);
