@@ -91,6 +91,15 @@ static void replace_mov_zero_extend_pseudo_registers(AsmMovZeroExtend* node) {
     }
 }
 
+static void replace_lea_pseudo_registers(AsmLea* node) {
+    if(node->src->type() == AST_T::AsmPseudo_t) {
+        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    }
+    if(node->dst->type() == AST_T::AsmPseudo_t) {
+        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    }
+}
+
 static void replace_cvttsd2si_pseudo_registers(AsmCvttsd2si* node) {
     if(node->src->type() == AST_T::AsmPseudo_t) {
         node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
@@ -167,6 +176,9 @@ static void replace_pseudo_registers(AsmInstruction* node) {
             break;
         case AST_T::AsmMovZeroExtend_t:
             replace_mov_zero_extend_pseudo_registers(static_cast<AsmMovZeroExtend*>(node));
+            break;
+        case AST_T::AsmLea_t:
+            replace_lea_pseudo_registers(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
             replace_cvttsd2si_pseudo_registers(static_cast<AsmCvttsd2si*>(node));
