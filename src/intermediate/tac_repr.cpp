@@ -217,12 +217,12 @@ static std::shared_ptr<TacValue> represent_exp_conditional_instructions(CConditi
     return dst;
 }
 
-static std::shared_ptr<TacValue> represent_exp_unary_instructions(CUnary* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUnary* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
     std::unique_ptr<TacUnaryOp> unary_op = represent_unary_op(node->unary_op.get());
     push_instruction(std::make_unique<TacUnary>(std::move(unary_op), std::move(src), dst));
-    return dst;
+    return std::make_unique<TacPlainOperand>(dst);
 }
 
 static std::shared_ptr<TacValue> represent_exp_binary_and_instructions(CBinary* node) {
@@ -293,34 +293,45 @@ static std::shared_ptr<TacValue> represent_exp_binary_instructions(CBinary* node
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
     switch(node->type()) {
         case AST_T::CFunctionCall_t:
-            return represent_exp_fun_call_instructions(static_cast<CFunctionCall*>(node));
+            return nullptr; // TODO
+            // return represent_exp_fun_call_instructions(static_cast<CFunctionCall*>(node));
         case AST_T::CVar_t:
-            return represent_exp_var_instructions(static_cast<CVar*>(node));
+            return nullptr; // TODO
+            // return represent_exp_var_instructions(static_cast<CVar*>(node));
         case AST_T::CConstant_t:
-            return represent_exp_constant_instructions(static_cast<CConstant*>(node));
+            return nullptr; // TODO
+            // return represent_exp_constant_instructions(static_cast<CConstant*>(node));
         case AST_T::CCast_t:
-            return represent_exp_cast_instructions(static_cast<CCast*>(node));
+            return nullptr; // TODO
+            // return represent_exp_cast_instructions(static_cast<CCast*>(node));
         case AST_T::CAssignment_t: {
             CAssignment* p_node = static_cast<CAssignment*>(node);
             if(p_node->exp_left) {
-                return represent_exp_assignment_instructions(p_node);
+                return nullptr; // TODO
+                // return represent_exp_assignment_instructions(p_node);
             } else {
-                return represent_exp_compound_assignment_instructions(p_node);
+                return nullptr; // TODO
+                // return represent_exp_compound_assignment_instructions(p_node);
             }
         }
         case AST_T::CConditional_t:
-            return represent_exp_conditional_instructions(static_cast<CConditional*>(node));
+            return nullptr; // TODO
+            // return represent_exp_conditional_instructions(static_cast<CConditional*>(node));
         case AST_T::CUnary_t:
-            return represent_exp_unary_instructions(static_cast<CUnary*>(node));
+            return nullptr; // TODO
+            // return represent_exp_unary_instructions(static_cast<CUnary*>(node));
         case AST_T::CBinary_t: {
             CBinary* p_node = static_cast<CBinary*>(node);
             switch(p_node->binary_op->type()) {
                 case AST_T::CAnd_t:
-                    return represent_exp_binary_and_instructions(p_node);
+                    return nullptr; // TODO
+                    // return represent_exp_binary_and_instructions(p_node);
                 case AST_T::COr_t:
-                    return represent_exp_binary_or_instructions(p_node);
+                    return nullptr; // TODO
+                    // return represent_exp_binary_or_instructions(p_node);
                 default:
-                    return represent_exp_binary_instructions(p_node);
+                    return nullptr; // TODO
+                    // return represent_exp_binary_instructions(p_node);
             }
         }
         default:
@@ -345,9 +356,10 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     std::unique_ptr<TacExpResult> exp = represent_exp_result_instructions(node);
     switch(exp->type()) {
         case AST_T::TacPlainOperand_t:
-            return represent_exp_plain_operand_instructions(static_cast<TacPlainOperand*>(exp), node);
+            return represent_exp_plain_operand_instructions(static_cast<TacPlainOperand*>(exp.get()), node);
         case AST_T::TacDereferencedPointer_t:
-            return represent_exp_dereferenced_pointer_instructions(static_cast<TacDereferencedPointer*>(exp), node);
+            return represent_exp_dereferenced_pointer_instructions(static_cast<TacDereferencedPointer*>(exp.get()),
+                                                                   node);
         default:
             RAISE_INTERNAL_ERROR;
     }
