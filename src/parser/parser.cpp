@@ -553,23 +553,8 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             break;
         }
         switch(peek_token->token_kind) {
-            case TOKEN_KIND::assignment_simple:
-                exp_left = parse_assigment_exp(std::move(exp_left), precedence);
-                break;
-            case TOKEN_KIND::assignment_plus:
-            case TOKEN_KIND::assignment_difference:
-            case TOKEN_KIND::assignment_product:
-            case TOKEN_KIND::assignment_quotient:
-            case TOKEN_KIND::assignment_remainder:
-            case TOKEN_KIND::assignment_bitand:
-            case TOKEN_KIND::assignment_bitor:
-            case TOKEN_KIND::assignment_bitxor:
-            case TOKEN_KIND::assignment_bitshiftleft:
-            case TOKEN_KIND::assignment_bitshiftright:
-                exp_left = parse_assigment_compound_exp(std::move(exp_left), precedence);
-                break;
-            case TOKEN_KIND::unop_negation:
             case TOKEN_KIND::binop_addition:
+            case TOKEN_KIND::unop_negation:
             case TOKEN_KIND::binop_multiplication:
             case TOKEN_KIND::binop_division:
             case TOKEN_KIND::binop_remainder:
@@ -587,6 +572,21 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             case TOKEN_KIND::binop_and:
             case TOKEN_KIND::binop_or:
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
+                break;
+            case TOKEN_KIND::assignment_simple:
+                exp_left = parse_assigment_exp(std::move(exp_left), precedence);
+                break;
+            case TOKEN_KIND::assignment_plus:
+            case TOKEN_KIND::assignment_difference:
+            case TOKEN_KIND::assignment_product:
+            case TOKEN_KIND::assignment_quotient:
+            case TOKEN_KIND::assignment_remainder:
+            case TOKEN_KIND::assignment_bitand:
+            case TOKEN_KIND::assignment_bitor:
+            case TOKEN_KIND::assignment_bitxor:
+            case TOKEN_KIND::assignment_bitshiftleft:
+            case TOKEN_KIND::assignment_bitshiftright:
+                exp_left = parse_assigment_compound_exp(std::move(exp_left), precedence);
                 break;
             case TOKEN_KIND::ternary_if:
                 exp_left = parse_ternary_exp(std::move(exp_left), precedence);

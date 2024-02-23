@@ -51,21 +51,6 @@ static void resolve_label() {
 
 static void resolve_expression(CExp* node);
 
-static void resolve_function_call_expression(CFunctionCall* node) {
-    for(size_t i = current_scope_depth(); i-- > 0;) {
-        if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
-            node->name = scoped_identifier_maps[i][node->name];
-            goto Lelse;
-        }
-    }
-    raise_runtime_error("Function " + em(node->name) + " was not declared in this scope");
-    Lelse:
-
-    for(size_t i = 0; i < node->args.size(); i++) {
-        resolve_expression(node->args[i].get());
-    }
-}
-
 static void resolve_var_expression(CVar* node) {
     for(size_t i = current_scope_depth(); i-- > 0;) {
         if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
@@ -80,13 +65,6 @@ static void resolve_cast_expression(CCast* node) {
     resolve_expression(node->exp.get());
 }
 
-static void resolve_assignment_expression(CAssignment* node) {
-    if(node->exp_left) {
-        resolve_expression(node->exp_left.get());
-    }
-    resolve_expression(node->exp_right.get());
-}
-
 static void resolve_unary_expression(CUnary* node) {
     resolve_expression(node->exp.get());
 }
@@ -96,10 +74,32 @@ static void resolve_binary_expression(CBinary* node) {
     resolve_expression(node->exp_right.get());
 }
 
+static void resolve_assignment_expression(CAssignment* node) {
+    if(node->exp_left) {
+        resolve_expression(node->exp_left.get());
+    }
+    resolve_expression(node->exp_right.get());
+}
+
 static void resolve_conditional_expression(CConditional* node) {
     resolve_expression(node->condition.get());
     resolve_expression(node->exp_middle.get());
     resolve_expression(node->exp_right.get());
+}
+
+static void resolve_function_call_expression(CFunctionCall* node) {
+    for(size_t i = current_scope_depth(); i-- > 0;) {
+        if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
+            node->name = scoped_identifier_maps[i][node->name];
+            goto Lelse;
+        }
+    }
+    raise_runtime_error("Function " + em(node->name) + " was not declared in this scope");
+    Lelse:
+
+    for(size_t i = 0; i < node->args.size(); i++) {
+        resolve_expression(node->args[i].get());
+    }
 }
 
 static void resolve_dereference_expression(CDereference* node) {
@@ -121,28 +121,22 @@ static void resolve_expression(CExp* node) {
             checktype_var_expression(p_node);
             break;
         }
-        case AST_T::CDereference_t: {
-            CDereference* p_node = static_cast<CDereference*>(node);
-            resolve_dereference_expression(p_node);
-            checktype_dereference_expression(p_node);
-            break;
-        }
-        case AST_T::CAddrOf_t: {
-            CAddrOf* p_node = static_cast<CAddrOf*>(node);
-            resolve_addrof_expression(p_node);
-            checktype_addrof_expression(p_node);
-            break;
-        }
-        case AST_T::CFunctionCall_t: {
-            CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
-            resolve_function_call_expression(p_node);
-            checktype_function_call_expression(p_node);
-            break;
-        }
         case AST_T::CCast_t: {
             CCast* p_node = static_cast<CCast*>(node);
             resolve_cast_expression(p_node);
             checktype_cast_expression(p_node);
+            break;
+        }
+        case AST_T::CUnary_t: {
+            CUnary* p_node = static_cast<CUnary*>(node);
+            resolve_unary_expression(p_node);
+            checktype_unary_expression(p_node);
+            break;
+        }
+        case AST_T::CBinary_t: {
+            CBinary* p_node = static_cast<CBinary*>(node);
+            resolve_binary_expression(p_node);
+            checktype_binary_expression(p_node);
             break;
         }
         case AST_T::CAssignment_t: {
@@ -157,16 +151,22 @@ static void resolve_expression(CExp* node) {
             checktype_conditional_expression(p_node);
             break;
         }
-        case AST_T::CUnary_t: {
-            CUnary* p_node = static_cast<CUnary*>(node);
-            resolve_unary_expression(p_node);
-            checktype_unary_expression(p_node);
+        case AST_T::CFunctionCall_t: {
+            CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
+            resolve_function_call_expression(p_node);
+            checktype_function_call_expression(p_node);
             break;
         }
-        case AST_T::CBinary_t: {
-            CBinary* p_node = static_cast<CBinary*>(node);
-            resolve_binary_expression(p_node);
-            checktype_binary_expression(p_node);
+        case AST_T::CDereference_t: {
+            CDereference* p_node = static_cast<CDereference*>(node);
+            resolve_dereference_expression(p_node);
+            checktype_dereference_expression(p_node);
+            break;
+        }
+        case AST_T::CAddrOf_t: {
+            CAddrOf* p_node = static_cast<CAddrOf*>(node);
+            resolve_addrof_expression(p_node);
+            checktype_addrof_expression(p_node);
             break;
         }
         default:
@@ -212,18 +212,44 @@ static void resolve_expression_statement(CExpression* node) {
     resolve_expression(node->exp.get());
 }
 
-static void resolve_compound_statement(CCompound* node) {
-    enter_scope();
-    resolve_block(node->block.get());
-    exit_scope();
-}
-
 static void resolve_if_statement(CIf* node) {
     resolve_expression(node->condition.get());
     resolve_statement(node->then.get());
     if(node->else_fi) {
         resolve_statement(node->else_fi.get());
     }
+}
+
+static void resolve_goto_statement(CGoto* node) {
+    if(goto_map.find(node->target) != goto_map.end()) {
+        node->target = goto_map[node->target];
+    }
+    else {
+        goto_map[node->target] = resolve_label_identifier(node->target);
+        node->target = goto_map[node->target];
+    }
+}
+
+static void resolve_label_statement(CLabel* node) {
+    if(label_set.find(node->target) != label_set.end()) {
+        raise_runtime_error("Label " + em(node->target) + " was already declared in this scope");
+    }
+    label_set.insert(node->target);
+
+    if(goto_map.find(node->target) != goto_map.end()) {
+        node->target = goto_map[node->target];
+    }
+    else {
+        goto_map[node->target] = resolve_label_identifier(node->target);
+        node->target = goto_map[node->target];
+    }
+    resolve_statement(node->jump_to.get());
+}
+
+static void resolve_compound_statement(CCompound* node) {
+    enter_scope();
+    resolve_block(node->block.get());
+    exit_scope();
 }
 
 static void resolve_while_statement(CWhile* node) {
@@ -263,50 +289,28 @@ static void resolve_continue_statement(CContinue* node) {
     annotate_continue_loop(node);
 }
 
-static void resolve_label_statement(CLabel* node) {
-    if(label_set.find(node->target) != label_set.end()) {
-        raise_runtime_error("Label " + em(node->target) + " was already declared in this scope");
-    }
-    label_set.insert(node->target);
-
-    if(goto_map.find(node->target) != goto_map.end()) {
-        node->target = goto_map[node->target];
-    }
-    else {
-        goto_map[node->target] = resolve_label_identifier(node->target);
-        node->target = goto_map[node->target];
-    }
-    resolve_statement(node->jump_to.get());
-}
-
-static void resolve_goto_statement(CGoto* node) {
-    if(goto_map.find(node->target) != goto_map.end()) {
-        node->target = goto_map[node->target];
-    }
-    else {
-        goto_map[node->target] = resolve_label_identifier(node->target);
-        node->target = goto_map[node->target];
-    }
-}
-
 static void resolve_statement(CStatement* node) {
     switch(node->type()) {
-        case AST_T::CNull_t:
-            break;
         case AST_T::CReturn_t: {
             CReturn* p_node = static_cast<CReturn*>(node);
             resolve_return_statement(p_node);
             checktype_return_statement(p_node);
             break;
         }
-        case AST_T::CCompound_t:
-            resolve_compound_statement(static_cast<CCompound*>(node));
-            break;
         case AST_T::CExpression_t:
             resolve_expression_statement(static_cast<CExpression*>(node));
             break;
         case AST_T::CIf_t:
             resolve_if_statement(static_cast<CIf*>(node));
+            break;
+        case AST_T::CGoto_t:
+            resolve_goto_statement(static_cast<CGoto*>(node));
+            break;
+        case AST_T::CLabel_t:
+            resolve_label_statement(static_cast<CLabel*>(node));
+            break;
+        case AST_T::CCompound_t:
+            resolve_compound_statement(static_cast<CCompound*>(node));
             break;
         case AST_T::CWhile_t:
             resolve_while_statement(static_cast<CWhile*>(node));
@@ -323,11 +327,7 @@ static void resolve_statement(CStatement* node) {
         case AST_T::CContinue_t:
             resolve_continue_statement(static_cast<CContinue*>(node));
             break;
-        case AST_T::CGoto_t:
-            resolve_goto_statement(static_cast<CGoto*>(node));
-            break;
-        case AST_T::CLabel_t:
-            resolve_label_statement(static_cast<CLabel*>(node));
+        case AST_T::CNull_t:
             break;
         default:
             RAISE_INTERNAL_ERROR;
