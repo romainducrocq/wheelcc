@@ -34,6 +34,8 @@ enum TOKEN_KIND {
     parenthesis_close,
     brace_open,
     brace_close,
+    brackets_open,
+    brackets_close,
     semicolon,
     unop_complement,
     unop_negation,

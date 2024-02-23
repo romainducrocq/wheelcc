@@ -40,6 +40,8 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::parenthesis_close, ")"},
     {TOKEN_KIND::brace_open, "{"},
     {TOKEN_KIND::brace_close, "}"},
+    {TOKEN_KIND::brackets_open, "["},
+    {TOKEN_KIND::brackets_close, "]"},
     {TOKEN_KIND::semicolon, ";"},
     {TOKEN_KIND::unop_complement, "~"},
     {TOKEN_KIND::unop_negation, "-"},

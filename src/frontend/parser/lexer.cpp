@@ -39,6 +39,8 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(\))",
     R"({)",
     R"(})",
+    R"(\[)",
+    R"(\])",
     R"(;)",
     R"(~)",
     R"(-)",
