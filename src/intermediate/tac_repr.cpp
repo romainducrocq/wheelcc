@@ -5,7 +5,6 @@
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
-#include "semantic/type_check.hpp"
 
 #include <inttypes.h>
 #include <string>
@@ -121,9 +120,35 @@ static std::unique_ptr<TacExpResult> represent_exp_result_var_instructions(CVar*
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
+static bool is_type_signed(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static int32_t get_type_size(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return 32;
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return 64;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCast* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
-    if(is_same_type(node->target_type.get(), node->exp->exp_type.get())) {
+    if(node->target_type->type() == node->exp->exp_type->type()) {
         return std::make_unique<TacPlainOperand>(std::move(src));
     }
 

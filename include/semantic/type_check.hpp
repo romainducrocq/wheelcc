@@ -6,10 +6,6 @@
 
 #include <inttypes.h>
 
-bool is_same_type(Type* type_1, Type* type_2);
-bool is_type_signed(Type* type_1);
-int32_t get_type_size(Type* type_1);
-
 void checktype_constant_expression(CConstant* node);
 void checktype_var_expression(CVar* node);
 void checktype_cast_expression(CCast* node);
