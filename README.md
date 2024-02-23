@@ -1,46 +1,53 @@
-# [Lang] Coarse C Compiler
+# [C++] Wheel C Compiler
 > **WORK IN PROGRESS**
 
-Yet another C Compiler for Computers. It's a bit rough on the edges tho.
+*__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*  
+Yet another C Compiler for Computers. It's a bit rough on the edges tho (standard-compliant with a subset of C17).  
 
 ****
 _Resources_:
 - Writing a C Compiler - Build a Real Programming Language from Scratch, Nora Sandler
-- Migrated from Cython implementation after "_Development_ `Floating-point numbers`"
+- Migrated from Cython implementation after "_Development_ `13. Floating-point numbers`"
 ****
 
 ## Development
 
 ### Language features
 
-- [x] Integer constants  
-- [x] Unary operators  
-- [x] Binary operators  
-- [x] Logical and relational operators  
-- [x] Local variables  
-- [x] Statements and conditional expressions  
-- [x] Compound statements  
-- [x] Loops  
-- [x] Functions  
-- [x] File-scope variables and storage-class specifiers  
+- [x] 1\. Integer constants  
+- [x] 2\. Unary operators  
+- [x] 3\. Binary operators  
+- [x] 4\. Logical and relational operators  
+- [x] 5\. Local variables  
+- [x] 6\. Statements and conditional expressions  
+- [x] 7\. Compound statements  
+- [x] 8\. Loops  
+- [x] 9\. Functions  
+- [x] 10\. File-scope variables and storage-class specifiers  
 
 ### Types
 
-- [x] Long integers  
-- [x] Unsigned integers  
-- [x] Floating-point numbers  
-- [ ] Pointers  
-- [ ] Arrays and pointer arithmetic  
-- [ ] Characters and strings  
-- [ ] Supporting dynamic memory allocation  
-- [ ] Structures  
+- [x] 11\. Long integers  
+- [x] 12\. Unsigned integers  
+- [x] 13\. Floating-point numbers  
+- [x] 14\. Pointers  
+- [ ] 15\. Arrays and pointer arithmetic  
+- [ ] 16\. Characters and strings  
+- [ ] 17\. Supporting dynamic memory allocation  
+- [ ] 18\. Structures  
 
 ### Optimization
 
-- [ ] Optimizing TAC programs  
-- [ ] Register allocation  
+- [ ] 19\. Optimizing TAC programs  
+- [ ] 20\. Register allocation  
 
 ## How To _
+
+### Get
+```
+git clone --depth 1 --branch master https://github.com/romainducrocq/LANG-WheelCC.git
+cd LANG-WheelCC/
+```
 
 ### Build
 ```
@@ -59,12 +66,12 @@ cd test/
 
 ### Run
 ```
-ccc2 path/to/file.c
+wheelcc path/to/file.c
 ```
 
 ### Help
 ```
-Usage: ccc2 [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
+Usage: wheelcc [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
 
 [Help]:
     --help       print help and exit

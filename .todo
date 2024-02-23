@@ -31,10 +31,6 @@
 
 ## NOTES
 
-- add ast comments in parser
-- put switch cases in cohesive order
-- git clone --depth=1 ...
-
 When Types OK (after c18):
 - refactor type check unary, type check binary
 - add / clean error msgs in driver
