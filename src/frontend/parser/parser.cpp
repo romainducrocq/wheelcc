@@ -2,8 +2,8 @@
 #include "util/error.hpp"
 #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
-#include "ast/c_ast.hpp"
+#include "ast/front_symtab.hpp"
+#include "ast/front_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/precedence.hpp"
 

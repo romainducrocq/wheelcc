@@ -1,6 +1,6 @@
-#include "ast/c_ast.hpp"
+#include "ast/front_ast.hpp"
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
+#include "ast/front_symtab.hpp"
 
 #include <memory>
 #include <vector>

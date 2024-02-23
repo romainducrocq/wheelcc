@@ -2,8 +2,8 @@
 #include "util/error.hpp"
 #include "util/fopen.hpp"
 #include "ast/ast.hpp"
-#include "ast/backend_st.hpp"
-#include "ast/asm_ast.hpp"
+#include "ast/back_symtab.hpp"
+#include "ast/back_ast.hpp"
 
 #include <string>
 #include <memory>

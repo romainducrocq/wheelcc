@@ -3,9 +3,9 @@
 #include "util/pprint.hpp"
 #endif
 #include "ast/ast.hpp"
-#include "ast/c_ast.hpp"
-#include "ast/tac_ast.hpp"
-#include "ast/asm_ast.hpp"
+#include "ast/front_ast.hpp"
+#include "ast/interm_ast.hpp"
+#include "ast/back_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
 #include "frontend/intermediate/semantic.hpp"

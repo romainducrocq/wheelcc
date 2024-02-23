@@ -1,8 +1,8 @@
-#ifndef _AST_C_AST_HPP
-#define _AST_C_AST_HPP
+#ifndef _AST_FRONT_AST_HPP
+#define _AST_FRONT_AST_HPP
 
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
+#include "ast/front_symtab.hpp"
 
 #include <memory>
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef _AST_SYMBOL_TABLE_HPP
-#define _AST_SYMBOL_TABLE_HPP
+#ifndef _AST_FRONT_SYMTAB_HPP
+#define _AST_FRONT_SYMTAB_HPP
 
 #include "ast/ast.hpp"
 

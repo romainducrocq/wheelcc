@@ -1,9 +1,9 @@
-#ifndef _AST_ASM_AST_HPP
-#define _AST_ASM_AST_HPP
+#ifndef _AST_BACK_AST_HPP
+#define _AST_BACK_AST_HPP
 
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
-#include "ast/backend_st.hpp"
+#include "ast/front_symtab.hpp"
+#include "ast/back_symtab.hpp"
 
 #include <memory>
 #include <vector>

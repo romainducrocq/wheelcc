@@ -1,9 +1,9 @@
 #include "frontend/intermediate/tac_repr.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/symbol_table.hpp"
-#include "ast/c_ast.hpp"
-#include "ast/tac_ast.hpp"
+#include "ast/front_symtab.hpp"
+#include "ast/front_ast.hpp"
+#include "ast/interm_ast.hpp"
 #include "frontend/intermediate/names.hpp"
 
 #include <inttypes.h>

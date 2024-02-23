@@ -1,7 +1,7 @@
 #include "frontend/intermediate/names.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/c_ast.hpp"
+#include "ast/front_ast.hpp"
 
 #include <inttypes.h>
 #include <string>

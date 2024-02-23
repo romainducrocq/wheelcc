@@ -1,8 +1,8 @@
 #include "backend/assembly/stack_fix.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/backend_st.hpp"
-#include "ast/asm_ast.hpp"
+#include "ast/back_symtab.hpp"
+#include "ast/back_ast.hpp"
 #include "backend/assembly/registers.hpp"
 
 #include <memory>
