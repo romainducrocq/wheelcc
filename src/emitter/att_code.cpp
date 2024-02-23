@@ -242,17 +242,21 @@ static TInt emit_type_alignment_bytes(AssemblyType* node) {
 // LongWord -> $ l
 // QuadWord -> $ q
 // Double   -> $ sd
-static std::string emit_type_instruction_suffix(AssemblyType* node) {
+static std::string emit_type_instruction_suffix(AssemblyType* node, bool c) {
     switch(node->type()) {
         case AST_T::LongWord_t:
             return "l";
         case AST_T::QuadWord_t:
             return "q";
         case AST_T::BackendDouble_t:
-            return "sd";
+            return c ? "pd" : "sd";
         default:
             RAISE_INTERNAL_ERROR;
     }
+}
+
+static std::string emit_type_instruction_suffix(AssemblyType* node) {
+    return emit_type_instruction_suffix(node, false);
 }
 
 // Imm(int)         -> $ $<int>
@@ -331,14 +335,14 @@ static std::string emit_unary_op(AsmUnaryOp* node) {
 // BitXor        -> $ xor
 // BitShiftLeft  -> $ shl
 // BitShiftRight -> $ shr
-static std::string emit_binary_op(AsmBinaryOp* node) {
+static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
     switch(node->type()) {
         case AST_T::AsmAdd_t:
             return "add";
         case AST_T::AsmSub_t:
             return "sub";
         case AST_T::AsmMult_t:
-            return "mul";
+            return c ? "mul" : "imul";
         case AST_T::AsmDivDouble_t:
             return "div";
         case AST_T::AsmBitAnd_t:
@@ -410,19 +414,11 @@ static void emit_unary_instructions(AsmUnary* node) {
 
 static void emit_binary_instructions(AsmBinary* node) {
     TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
-    std::string t;
-    if(node->binary_op->type() == AST_T::AsmBitXor_t &&
-       node->assembly_type->type() == AST_T::BackendDouble_t) {
-        t = "pd";
-    }
-    else {
-        t = emit_type_instruction_suffix(node->assembly_type.get());
-    }
-    std::string binary_op = emit_binary_op(node->binary_op.get());
-    if(node->binary_op->type() == AST_T::AsmMult_t &&
-       node->assembly_type->type() != AST_T::BackendDouble_t) {
-        binary_op = "i" + binary_op;
-    }
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get(),
+                                                 node->binary_op->type() == AST_T::AsmBitXor_t &&
+                                                    node->assembly_type->type() == AST_T::BackendDouble_t);
+    std::string binary_op = emit_binary_op(node->binary_op.get(),
+                                           node->assembly_type->type() == AST_T::BackendDouble_t);
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
     emit(binary_op + t + " " + src + ", " + dst, 2);
