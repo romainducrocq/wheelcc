@@ -683,7 +683,7 @@ static void generate_load_instructions(TacLoad* node) {
 static void generate_store_instructions(TacStore* node) {
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->dst_ptr.get());
-        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0);
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
         std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
                                                             std::move(dst)));
