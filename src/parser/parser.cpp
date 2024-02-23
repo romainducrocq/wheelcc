@@ -189,6 +189,7 @@ static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
 }
 
 // <const> ::= <int> | <long> | <double>
+// (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double)
 static std::shared_ptr<CConst> parse_constant() {
     if(pop_next().token_kind == TOKEN_KIND::float_constant) {
         return parse_double_constant();
@@ -209,6 +210,7 @@ static std::shared_ptr<CConst> parse_constant() {
 }
 
 // <const> ::= <unsigned int> | <unsigned long>
+// (unsigned) const = ConstUInt(uint) | ConstULong(ulong)
 static std::shared_ptr<CConst> parse_unsigned_constant() {
     if(pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
         next_token->token.pop_back();
@@ -227,16 +229,34 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
     return parse_ulong_constant(std::move(value));
 }
 
+// <unop> ::= "-" | "~" | "!" | "*" | "&"
+// unary_operator = Complement | Negate | Not
+static std::unique_ptr<CUnaryOp> parse_unary_op() {
+    switch(pop_next().token_kind) {
+        case TOKEN_KIND::unop_complement:
+            return std::make_unique<CComplement>();
+        case TOKEN_KIND::unop_negation:
+            return std::make_unique<CNegate>();
+        case TOKEN_KIND::unop_not:
+            return std::make_unique<CNot>();
+        default:
+            raise_runtime_error_at_line("Expected token type " + em("unary operator") +
+                                        " but found token " + em(next_token->token), next_token->line);
+    }
+}
+
 // binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!="
 //          | "<" | "<=" | ">" | ">="
+// binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
+//                 | BitShiftRight | And | Or | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan | GreaterOrEqual
 static std::unique_ptr<CBinaryOp> parse_binary_op() {
     switch(pop_next().token_kind) {
-        case TOKEN_KIND::unop_negation:
-        case TOKEN_KIND::assignment_difference:
-            return std::make_unique<CSubtract>();
         case TOKEN_KIND::binop_addition:
         case TOKEN_KIND::assignment_plus:
             return std::make_unique<CAdd>();
+        case TOKEN_KIND::unop_negation:
+        case TOKEN_KIND::assignment_difference:
+            return std::make_unique<CSubtract>();
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::assignment_product:
             return std::make_unique<CMultiply>();
@@ -279,21 +299,6 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
             return std::make_unique<CGreaterOrEqual>();
         default:
             raise_runtime_error_at_line("Expected token type " + em("binary operator") +
-                                        " but found token " + em(next_token->token), next_token->line);
-    }
-}
-
-// <unop> ::= "-" | "~" | "!" | "*" | "&"
-static std::unique_ptr<CUnaryOp> parse_unary_op() {
-    switch(pop_next().token_kind) {
-        case TOKEN_KIND::unop_complement:
-            return std::make_unique<CComplement>();
-        case TOKEN_KIND::unop_negation:
-            return std::make_unique<CNegate>();
-        case TOKEN_KIND::unop_not:
-            return std::make_unique<CNot>();
-        default:
-            raise_runtime_error_at_line("Expected token type " + em("unary operator") +
                                         " but found token " + em(next_token->token), next_token->line);
     }
 }
@@ -351,6 +356,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_pointer_abstract_declarator() 
 }
 
 // <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
+// abstract_declarator = AbstractPointer(abstract_declarator) | AbstractBase
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
@@ -520,6 +526,12 @@ static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr
     return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2));
 }
 
+static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
+    std::unique_ptr<CExp> exp_right = parse_exp(precedence + 1);
+    return std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right));
+}
+
 static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
     pop_next();
     std::unique_ptr<CExp> exp_middle = parse_exp(0);
@@ -528,13 +540,10 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
     return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right));
 }
 
-static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
-    std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
-    std::unique_ptr<CExp> exp_right = parse_exp(precedence + 1);
-    return std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right));
-}
-
 // <exp> ::= <factor> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
+// exp = Constant(const, type) | Var(identifier, type) | Cast(type, exp, type) | Unary(unary_operator, exp, type)
+//     | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type) | Conditional(exp, exp, exp, type)
+//     | FunctionCall(identifier, exp*, type) | Dereference(exp, type) | AddrOf(exp, type)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     int32_t precedence;
     std::unique_ptr<CExp> exp_left = parse_factor();
@@ -559,9 +568,6 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             case TOKEN_KIND::assignment_bitshiftright:
                 exp_left = parse_assigment_compound_exp(std::move(exp_left), precedence);
                 break;
-            case TOKEN_KIND::ternary_if:
-                exp_left = parse_ternary_exp(std::move(exp_left), precedence);
-                break;
             case TOKEN_KIND::unop_negation:
             case TOKEN_KIND::binop_addition:
             case TOKEN_KIND::binop_multiplication:
@@ -582,6 +588,9 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             case TOKEN_KIND::binop_or:
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
                 break;
+            case TOKEN_KIND::ternary_if:
+                exp_left = parse_ternary_exp(std::move(exp_left), precedence);
+                break;
             default:
                 raise_runtime_error_at_line("Expected token type " + em("expression") +
                                             " but found token " + em(peek_token->token),
@@ -595,16 +604,17 @@ static std::unique_ptr<CForInit> parse_for_init();
 static std::unique_ptr<CBlock> parse_block();
 static std::unique_ptr<CStatement> parse_statement();
 
-static std::unique_ptr<CNull> parse_null_statement() {
-    pop_next();
-    return std::make_unique<CNull>();
-}
-
 static std::unique_ptr<CReturn> parse_return_statement() {
     pop_next();
     std::unique_ptr<CExp> exp = parse_exp(0);
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CReturn>(std::move(exp));
+}
+
+static std::unique_ptr<CExpression> parse_expression_statement() {
+    std::unique_ptr<CExp> exp = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CExpression>(std::move(exp));
 }
 
 static std::unique_ptr<CIf> parse_if_statement() {
@@ -696,20 +706,21 @@ static std::unique_ptr<CContinue> parse_continue_statement() {
     return std::make_unique<CContinue>();
 }
 
-static std::unique_ptr<CExpression> parse_expression_statement() {
-    std::unique_ptr<CExp> exp = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CExpression>(std::move(exp));
+static std::unique_ptr<CNull> parse_null_statement() {
+    pop_next();
+    return std::make_unique<CNull>();
 }
 
 // <statement> ::= ";" | "return" <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
 //               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
 //               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
 //               | "break" ";" | "continue" ";" | <exp> ";"
+// statement = Return(exp) | Expression(exp) | If(exp, statement, statement?) | Goto(identifier)
+//           | Label(identifier, target) | Compound(block) | While(exp, statement, identifier)
+//           | DoWhile(statement, exp, identifier) | For(for_init, exp?, exp?, statement, identifier)
+//           | Break(identifier) | Continue(identifier) | Null
 static std::unique_ptr<CStatement> parse_statement() {
     switch(peek_token->token_kind) {
-        case TOKEN_KIND::semicolon:
-            return parse_null_statement();
         case TOKEN_KIND::key_return:
             return parse_return_statement();
         case TOKEN_KIND::key_if:
@@ -734,6 +745,8 @@ static std::unique_ptr<CStatement> parse_statement() {
             return parse_break_statement();
         case TOKEN_KIND::key_continue:
             return parse_continue_statement();
+        case TOKEN_KIND::semicolon:
+            return parse_null_statement();
         default:
             break;
     }
@@ -766,6 +779,7 @@ static std::unique_ptr<CInitExp> parse_exp_for_init() {
 }
 
 // <for-init> ::= <variable-declaration> | [ <exp> ] ";"
+// for_init = InitDecl(variable_declaration) | InitExp(exp?)
 static std::unique_ptr<CForInit> parse_for_init() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::key_int:
@@ -783,17 +797,18 @@ static std::unique_ptr<CForInit> parse_for_init() {
 
 static std::unique_ptr<CDeclaration> parse_declaration();
 
-static std::unique_ptr<CD> parse_d_block_item() {
-    std::unique_ptr<CDeclaration> declaration = parse_declaration();
-    return std::make_unique<CD>(std::move(declaration));
-}
-
 static std::unique_ptr<CS> parse_s_block_item() {
     std::unique_ptr<CStatement> statement = parse_statement();
     return std::make_unique<CS>(std::move(statement));
 }
 
+static std::unique_ptr<CD> parse_d_block_item() {
+    std::unique_ptr<CDeclaration> declaration = parse_declaration();
+    return std::make_unique<CD>(std::move(declaration));
+}
+
 // <block-item> ::= <statement> | <declaration>
+// block_item = S(statement) | D(declaration)
 static std::unique_ptr<CBlockItem> parse_block_item() {
     switch(peek_token->token_kind) {
         case TOKEN_KIND::key_int:
@@ -819,6 +834,7 @@ static std::unique_ptr<CB> parse_b_block() {
 }
 
 // <block> ::= "{" { <block-item> } "}"
+// block = B(block_item*)
 static std::unique_ptr<CBlock> parse_block() {
     expect_next_is(pop_next(), TOKEN_KIND::brace_open);
     std::unique_ptr<CBlock> block = parse_b_block();
@@ -934,6 +950,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
+// storage_class = Static | Extern
 static std::unique_ptr<CStorageClass> parse_storage_class() {
     switch(pop_next().token_kind) {
         case TOKEN_KIND::key_static:
@@ -1032,6 +1049,7 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
 }
 
 // <param> ::= { <type-specifier> }+ <declarator>
+// param_info = Param(type, declarator)
 static std::unique_ptr<CParam> parse_param() {
     std::shared_ptr<Type> param_type = parse_type_specifier();
     std::unique_ptr<CDeclarator> declarator = parse_declarator();
@@ -1101,6 +1119,7 @@ static std::unique_ptr<CDeclarator> parse_pointer_declarator() {
 }
 
 // <declarator> ::= "*" <declarator> | <direct-declarator>
+// declarator = Ident(identifier) | PointerDeclarator(declarator) | FunDeclarator(param_info* params, declarator)
 static std::unique_ptr<CDeclarator> parse_declarator() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
@@ -1111,6 +1130,8 @@ static std::unique_ptr<CDeclarator> parse_declarator() {
 }
 
 // <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
+// function_declaration = FunctionDeclaration(identifier name, identifier* params, block? body, type fun_type,
+//                                            storage_class?)
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::unique_ptr<CStorageClass> storage_class,
                                                                         Declarator&& declarator) {
     std::unique_ptr<CBlock> body;
@@ -1126,6 +1147,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
 }
 
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <exp> ] ";"
+// variable_declaration = VariableDeclaration(identifier name, exp? init, type var_type, storage_class?)
 static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<CStorageClass> storage_class,
                                                                         Declarator&& declarator) {
     std::unique_ptr<CExp> init;
@@ -1168,6 +1190,8 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
 }
 
 // <declaration> ::= <variable-declaration> | <function-declaration>
+// declaration = FunDecl(function_declaration)
+//             | VarDecl(variable_declaration)
 static std::unique_ptr<CDeclaration> parse_declaration() {
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
@@ -1180,6 +1204,7 @@ static std::unique_ptr<CDeclaration> parse_declaration() {
 }
 
 // <program> ::= { <declaration> }
+// AST = Program(declaration*)
 static std::unique_ptr<CProgram> parse_program() {
     std::vector<std::unique_ptr<CDeclaration>> declarations;
     while(pop_index < p_tokens->size()) {

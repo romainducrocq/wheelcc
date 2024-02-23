@@ -14,9 +14,9 @@
 
 // const = ConstInt(int)
 //       | ConstLong(long)
+//       | ConstDouble(double)
 //       | ConstUInt(uint)
 //       | ConstULong(ulong)
-//       | ConstDouble(double)
 struct CConst : Ast {
     AST_T type() override;
 };
@@ -253,7 +253,6 @@ struct CFunDeclarator : CDeclarator {
 //     | Unary(unary_operator, exp, type)
 //     | Binary(binary_operator, exp, exp, type)
 //     | Assignment(exp, exp, type)
-//     | AssignmentCompound(binary_operator, exp, exp, type)
 //     | Conditional(exp, exp, exp, type)
 //     | FunctionCall(identifier, exp*, type)
 //     | Dereference(exp, type)
@@ -330,6 +329,7 @@ struct CAssignment : CExp {
     CAssignment() = default;
     CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right);
 
+    // Optional
     std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
@@ -594,8 +594,8 @@ struct CExtern : CStorageClass {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// function_declaration =
-// FunctionDeclaration(identifier name, identifier* params, block? body, type fun_type, storage_class?)
+// function_declaration = FunctionDeclaration(identifier name, identifier* params, block? body, type fun_type,
+//                                            storage_class?)
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
