@@ -1180,8 +1180,8 @@ static void generate_instructions(TacInstruction* node) {
 //             | Cvtsi2sd(assembly_type, operand, operand) | Unary(unary_operator, assembly_type, operand)
 //             | Binary(binary_operator, assembly_type, operand, operand) | Cmp(assembly_type, operand, operand)
 //             | Idiv(assembly_type, operand) | Div(assembly_type, operand) | Cdq(assembly_type) | Jmp(identifier)
-//             | JmpCC(cond_code, identifier) | SetCC(cond_code, operand) | Label(identifier) | AllocateStack(int)
-//             | DeallocateStack(int) | Push(operand) | Call(identifier) | Ret
+//             | JmpCC(cond_code, identifier) | SetCC(cond_code, operand) | Label(identifier) | Push(operand)
+//             | Call(identifier) | Ret
 static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
         generate_instructions(list_node[instruction].get());

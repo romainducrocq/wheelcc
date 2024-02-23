@@ -305,6 +305,22 @@ static std::string emit_operand(AsmOperand* node, TInt byte) {
     }
 }
 
+// Neg -> $ neg
+// Not -> $ not
+// Shr -> $ shr
+static std::string emit_unary_op(AsmUnaryOp* node) {
+    switch(node->type()) {
+        case AST_T::AsmNeg_t:
+            return "neg";
+        case AST_T::AsmNot_t:
+            return "not";
+        case AST_T::AsmShr_t:
+            return "shr";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 // Add           -> $ add
 // Sub           -> $ sub
 // Mult<i>       -> $ imul
@@ -340,34 +356,12 @@ static std::string emit_binary_op(AsmBinaryOp* node) {
     }
 }
 
-// Neg -> $ neg
-// Not -> $ not
-// Shr -> $ shr
-static std::string emit_unary_op(AsmUnaryOp* node) {
-    switch(node->type()) {
-        case AST_T::AsmNeg_t:
-            return "neg";
-        case AST_T::AsmNot_t:
-            return "not";
-        case AST_T::AsmShr_t:
-            return "shr";
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
 static void emit(std::string&& line, size_t t) {
     for(size_t i = 0; i < t; i++) {
         line = "    " + line;
     }
 
     write_line(std::move(line));
-}
-
-static void emit_ret_instructions() {
-    emit("movq %rbp, %rsp", 1);
-    emit("popq %rbp", 1);
-    emit("ret", 1);
 }
 
 static void emit_mov_instructions(AsmMov* node) {
@@ -406,51 +400,6 @@ static void emit_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
     emit("cvtsi2sd" + t + " " + src + ", " + dst, 2);
 }
 
-static void emit_push_instructions(AsmPush* node) {
-    std::string src = emit_operand(node->src.get(), 8);
-    emit("pushq " + src, 2);
-}
-
-static void emit_call_instructions(AsmCall* node) {
-    std::string label = emit_identifier(node->name);
-    emit("call " + label + "@PLT", 2);
-}
-
-static void emit_label_instructions(AsmLabel* node) {
-    std::string label = emit_identifier(node->name);
-    emit(".L" + label + ":", 1);
-}
-
-static void emit_cmp_instructions(AsmCmp* node) {
-    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
-    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
-    std::string src = emit_operand(node->src.get(), byte);
-    std::string dst = emit_operand(node->dst.get(), byte);
-    if(node->assembly_type->type() == AST_T::BackendDouble_t) {
-        emit("comi" + t + " " + src + ", " + dst, 2);
-    }
-    else {
-        emit("cmp" + t + " " + src + ", " + dst, 2);
-    }
-}
-
-static void emit_jmp_instructions(AsmJmp* node) {
-    std::string label = emit_identifier(node->target);
-    emit("jmp .L" + label, 2);
-}
-
-static void emit_jmp_cc_instructions(AsmJmpCC* node) {
-    std::string cond_code = emit_condition_code(node->cond_code.get());
-    std::string label = emit_identifier(node->target);
-    emit("j" + cond_code + " .L" + label, 2);
-}
-
-static void emit_set_cc_instructions(AsmSetCC* node) {
-    std::string cond_code = emit_condition_code(node->cond_code.get());
-    std::string dst = emit_operand(node->dst.get(), 1);
-    emit("set" + cond_code + " " + dst, 2);
-}
-
 static void emit_unary_instructions(AsmUnary* node) {
     TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
@@ -477,6 +426,19 @@ static void emit_binary_instructions(AsmBinary* node) {
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
     emit(binary_op + t + " " + src + ", " + dst, 2);
+}
+
+static void emit_cmp_instructions(AsmCmp* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type.get());
+    std::string src = emit_operand(node->src.get(), byte);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    if(node->assembly_type->type() == AST_T::BackendDouble_t) {
+        emit("comi" + t + " " + src + ", " + dst, 2);
+    }
+    else {
+        emit("cmp" + t + " " + src + ", " + dst, 2);
+    }
 }
 
 static void emit_idiv_instructions(AsmIdiv* node) {
@@ -506,33 +468,68 @@ static void emit_cdq_instructions(AsmCdq* node) {
     }
 }
 
-// Ret                                  -> $ movq %rbp, %rsp
-//                                         $ popq %rbp
-//                                         $ ret
+static void emit_jmp_instructions(AsmJmp* node) {
+    std::string label = emit_identifier(node->target);
+    emit("jmp .L" + label, 2);
+}
+
+static void emit_jmp_cc_instructions(AsmJmpCC* node) {
+    std::string cond_code = emit_condition_code(node->cond_code.get());
+    std::string label = emit_identifier(node->target);
+    emit("j" + cond_code + " .L" + label, 2);
+}
+
+static void emit_set_cc_instructions(AsmSetCC* node) {
+    std::string cond_code = emit_condition_code(node->cond_code.get());
+    std::string dst = emit_operand(node->dst.get(), 1);
+    emit("set" + cond_code + " " + dst, 2);
+}
+
+static void emit_label_instructions(AsmLabel* node) {
+    std::string label = emit_identifier(node->name);
+    emit(".L" + label + ":", 1);
+}
+
+static void emit_push_instructions(AsmPush* node) {
+    std::string src = emit_operand(node->src.get(), 8);
+    emit("pushq " + src, 2);
+}
+
+static void emit_call_instructions(AsmCall* node) {
+    std::string label = emit_identifier(node->name);
+    emit("call " + label + "@PLT", 2);
+}
+
+static void emit_ret_instructions() {
+    emit("movq %rbp, %rsp", 1);
+    emit("popq %rbp", 1);
+    emit("ret", 1);
+}
+
 // Mov(t, src, dst)                     -> $ mov<t> <src>, <dst>
 // MovSx(src, dst)                      -> $ movslq <src>, <dst>
 // Lea(src, dst)                        -> $ leaq <src>, <dst>
 // Cvttsd2si(t, src, dst)               -> $ cvttsd2si<t> <src>, <dst>
 // Cvtsi2sd(t, src, dst)                -> $ cvtsi2sd<t> <src>, <dst>
-// Push(operand)                        -> $ pushq <operand>
-// Call(label)                          -> $ call <label>@PLT
-// Label(label)                         -> $ .L<label>:
-// Cmp(t, operand, operand)<i>          -> $ cmp<t> <operand>, <operand>
-// Cmp(t, operand, operand)<d>          -> $ comi<t> <operand>, <operand>
-// Jmp(label)                           -> $ jmp .L<label>
-// JmpCC(cond_code, label)              -> $ j<cond_code> .L<label>
-// SetCC(cond_code, operand)            -> $ set<cond_code> <operand>
 // Unary(unary_operator, t, operand)    -> $ <unary_operator><t> <operand>
 // Binary(binary_operator, t, src, dst) -> $ <binary_operator><t> <src>, <dst>
+// Cmp(t, operand, operand)<i>          -> $ cmp<t> <operand>, <operand>
+// Cmp(operand, operand)<d>             -> $ comisd <operand>, <operand>
 // Idiv(t, operand)                     -> $ idiv<t> <operand>
 // Div(t, operand)                      -> $ div<t> <operand>
 // Cdq<l>                               -> $ cdq
 // Cdq<q>                               -> $ cqo
+// Jmp(label)                           -> $ jmp .L<label>
+// JmpCC(cond_code, label)              -> $ j<cond_code> .L<label>
+// SetCC(cond_code, operand)            -> $ set<cond_code> <operand>
+// Label(label)                         -> $ .L<label>:
+// Push(operand)                        -> $ pushq <operand>
+// Call(label)                          -> $ call <label>@PLT
+// Ret                                  -> $ movq %rbp, %rsp
+//                                         $ popq %rbp
+//                                         $ ret
 static void emit_instructions(AsmInstruction* node) {
     switch(node->type()) {
-        case AST_T::AsmRet_t:
-            emit_ret_instructions();
-            break;
         case AST_T::AsmMov_t:
             emit_mov_instructions(static_cast<AsmMov*>(node));
             break;
@@ -548,17 +545,23 @@ static void emit_instructions(AsmInstruction* node) {
         case AST_T::AsmCvtsi2sd_t:
             emit_cvtsi2sd_instructions(static_cast<AsmCvtsi2sd*>(node));
             break;
-        case AST_T::AsmPush_t:
-            emit_push_instructions(static_cast<AsmPush*>(node));
+        case AST_T::AsmUnary_t:
+            emit_unary_instructions(static_cast<AsmUnary*>(node));
             break;
-        case AST_T::AsmCall_t:
-            emit_call_instructions(static_cast<AsmCall*>(node));
-            break;
-        case AST_T::AsmLabel_t:
-            emit_label_instructions(static_cast<AsmLabel*>(node));
+        case AST_T::AsmBinary_t:
+            emit_binary_instructions(static_cast<AsmBinary*>(node));
             break;
         case AST_T::AsmCmp_t:
             emit_cmp_instructions(static_cast<AsmCmp*>(node));
+            break;
+        case AST_T::AsmIdiv_t:
+            emit_idiv_instructions(static_cast<AsmIdiv*>(node));
+            break;
+        case AST_T::AsmDiv_t:
+            emit_div_instructions(static_cast<AsmDiv*>(node));
+            break;
+        case AST_T::AsmCdq_t:
+            emit_cdq_instructions(static_cast<AsmCdq*>(node));
             break;
         case AST_T::AsmJmp_t:
             emit_jmp_instructions(static_cast<AsmJmp*>(node));
@@ -569,20 +572,17 @@ static void emit_instructions(AsmInstruction* node) {
         case AST_T::AsmSetCC_t:
             emit_set_cc_instructions(static_cast<AsmSetCC*>(node));
             break;
-        case AST_T::AsmUnary_t:
-            emit_unary_instructions(static_cast<AsmUnary*>(node));
+        case AST_T::AsmLabel_t:
+            emit_label_instructions(static_cast<AsmLabel*>(node));
             break;
-        case AST_T::AsmBinary_t:
-            emit_binary_instructions(static_cast<AsmBinary*>(node));
+        case AST_T::AsmPush_t:
+            emit_push_instructions(static_cast<AsmPush*>(node));
             break;
-        case AST_T::AsmIdiv_t:
-            emit_idiv_instructions(static_cast<AsmIdiv*>(node));
+        case AST_T::AsmCall_t:
+            emit_call_instructions(static_cast<AsmCall*>(node));
             break;
-        case AST_T::AsmDiv_t:
-            emit_div_instructions(static_cast<AsmDiv*>(node));
-            break;
-        case AST_T::AsmCdq_t:
-            emit_cdq_instructions(static_cast<AsmCdq*>(node));
+        case AST_T::AsmRet_t:
+            emit_ret_instructions();
             break;
         default:
             RAISE_INTERNAL_ERROR;

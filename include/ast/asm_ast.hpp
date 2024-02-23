@@ -323,8 +323,6 @@ struct AsmShr : AsmUnaryOp {
 //             | JmpCC(cond_code, identifier)
 //             | SetCC(cond_code, operand)
 //             | Label(identifier)
-//             | AllocateStack(int)
-//             | DeallocateStack(int)
 //             | Push(operand)
 //             | Call(identifier)
 //             | Ret
