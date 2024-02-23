@@ -23,6 +23,7 @@ TEST_DIRS=(
 "12_unsigned_integers"
 "13_floating-point_numbers"
 "14_pointers"
+"15_arrays_and_pointer_arithmetic"
 )
 
 function file () {
