@@ -1,8 +1,6 @@
 #include "emitter/att_code.hpp"
 #include "util/error.hpp"
 #include "util/fopen.hpp"
-// TODO
-// #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
 #include "ast/backend_st.hpp"
 #include "ast/asm_ast.hpp"
@@ -257,9 +255,6 @@ static std::string emit_type_instruction_suffix(AssemblyType* node) {
     }
 }
 
-// TODO
-// static TInt stack_alloc;
-
 // Imm(int)         -> $ $<int>
 // Register(reg)    -> $ %reg
 // Memory(int, reg) -> $ <int>(<reg>)
@@ -291,14 +286,7 @@ static std::string emit_operand(AsmOperand* node, TInt byte) {
             AsmMemory* p_node = static_cast<AsmMemory*>(node);
             std::string value = "";
             if(p_node->value != 0) {
-                byte = p_node->value;
-                // TODO
-                //
-                //   byte += stack_alloc - 8;
-                //   if(byte % 8 != 0) {
-                //       byte -= 4;
-                //   }
-                value = emit_int(byte);
+                value = emit_int(p_node->value);
             }
             operand = emit_register_8byte(p_node->reg.get());
             return value + "(%" + operand + ")";
@@ -387,19 +375,19 @@ static void emit_mov_instructions(AsmMov* node) {
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
-    emit("mov" + t + " " + src + ", " + dst, 1);
+    emit("mov" + t + " " + src + ", " + dst, 2);
 }
 
 static void emit_mov_sx_instructions(AsmMovSx* node) {
     std::string src = emit_operand(node->src.get(), 4);
     std::string dst = emit_operand(node->dst.get(), 8);
-    emit("movslq " + src + ", " + dst, 1);
+    emit("movslq " + src + ", " + dst, 2);
 }
 
 static void emit_lea_instructions(AsmLea* node) {
     std::string src = emit_operand(node->src.get(), 8);
     std::string dst = emit_operand(node->dst.get(), 8);
-    emit("leaq " + src + ", " + dst, 1);
+    emit("leaq " + src + ", " + dst, 2);
 }
 
 static void emit_cvttsd2si_instructions(AsmCvttsd2si* node) {
@@ -407,7 +395,7 @@ static void emit_cvttsd2si_instructions(AsmCvttsd2si* node) {
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
-    emit("cvttsd2si" + t + " " + src + ", " + dst, 1);
+    emit("cvttsd2si" + t + " " + src + ", " + dst, 2);
 }
 
 static void emit_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
@@ -415,22 +403,22 @@ static void emit_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
-    emit("cvtsi2sd" + t + " " + src + ", " + dst, 1);
+    emit("cvtsi2sd" + t + " " + src + ", " + dst, 2);
 }
 
 static void emit_push_instructions(AsmPush* node) {
     std::string src = emit_operand(node->src.get(), 8);
-    emit("pushq " + src, 1);
+    emit("pushq " + src, 2);
 }
 
 static void emit_call_instructions(AsmCall* node) {
     std::string label = emit_identifier(node->name);
-    emit("call " + label + "@PLT", 1);
+    emit("call " + label + "@PLT", 2);
 }
 
 static void emit_label_instructions(AsmLabel* node) {
     std::string label = emit_identifier(node->name);
-    emit(".L" + label + ":", 0);
+    emit(".L" + label + ":", 1);
 }
 
 static void emit_cmp_instructions(AsmCmp* node) {
@@ -439,28 +427,28 @@ static void emit_cmp_instructions(AsmCmp* node) {
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
     if(node->assembly_type->type() == AST_T::BackendDouble_t) {
-        emit("comi" + t + " " + src + ", " + dst, 1);
+        emit("comi" + t + " " + src + ", " + dst, 2);
     }
     else {
-        emit("cmp" + t + " " + src + ", " + dst, 1);
+        emit("cmp" + t + " " + src + ", " + dst, 2);
     }
 }
 
 static void emit_jmp_instructions(AsmJmp* node) {
     std::string label = emit_identifier(node->target);
-    emit("jmp .L" + label, 1);
+    emit("jmp .L" + label, 2);
 }
 
 static void emit_jmp_cc_instructions(AsmJmpCC* node) {
     std::string cond_code = emit_condition_code(node->cond_code.get());
     std::string label = emit_identifier(node->target);
-    emit("j" + cond_code + " .L" + label, 1);
+    emit("j" + cond_code + " .L" + label, 2);
 }
 
 static void emit_set_cc_instructions(AsmSetCC* node) {
     std::string cond_code = emit_condition_code(node->cond_code.get());
     std::string dst = emit_operand(node->dst.get(), 1);
-    emit("set" + cond_code + " " + dst, 1);
+    emit("set" + cond_code + " " + dst, 2);
 }
 
 static void emit_unary_instructions(AsmUnary* node) {
@@ -468,7 +456,7 @@ static void emit_unary_instructions(AsmUnary* node) {
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
     std::string unary_op = emit_unary_op(node->unary_op.get());
     std::string dst = emit_operand(node->dst.get(), byte);
-    emit(unary_op + t + " " + dst, 1);
+    emit(unary_op + t + " " + dst, 2);
 }
 
 static void emit_binary_instructions(AsmBinary* node) {
@@ -488,30 +476,30 @@ static void emit_binary_instructions(AsmBinary* node) {
     }
     std::string src = emit_operand(node->src.get(), byte);
     std::string dst = emit_operand(node->dst.get(), byte);
-    emit(binary_op + t + " " + src + ", " + dst, 1);
+    emit(binary_op + t + " " + src + ", " + dst, 2);
 }
 
 static void emit_idiv_instructions(AsmIdiv* node) {
     TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
     std::string src = emit_operand(node->src.get(), byte);
-    emit("idiv" + t + " " + src, 1);
+    emit("idiv" + t + " " + src, 2);
 }
 
 static void emit_div_instructions(AsmDiv* node) {
     TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
     std::string t = emit_type_instruction_suffix(node->assembly_type.get());
     std::string src = emit_operand(node->src.get(), byte);
-    emit("div" + t + " " + src, 1);
+    emit("div" + t + " " + src, 2);
 }
 
 static void emit_cdq_instructions(AsmCdq* node) {
     switch(node->assembly_type->type()) {
         case AST_T::LongWord_t:
-            emit("cdq", 1);
+            emit("cdq", 2);
             break;
         case AST_T::QuadWord_t:
-            emit("cqo", 1);
+            emit("cqo", 2);
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -602,15 +590,6 @@ static void emit_instructions(AsmInstruction* node) {
 }
 
 static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
-// TODO
-    //    if(list_node[0]) {
-    //        stack_alloc = intmax_to_int32(
-    //                string_to_intmax(
-    //                        static_cast<AsmImm*>(static_cast<AsmBinary*>(list_node[0].get())->src.get())->value, 0));
-    //    }
-    //    else {
-    //        stack_alloc = 0;
-    //    }
     for(size_t instruction = list_node[0] ? 0 : 1; instruction < list_node.size(); instruction++) {
         emit_instructions(list_node[instruction].get());
     }
@@ -619,7 +598,7 @@ static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>&
 // $ .align <alignment>
 static void emit_alignment_directive_top_level(TInt alignment) {
     std::string align = emit_int(alignment);
-    emit(".align " + align, 1);
+    emit(".balign " + align, 1);
 }
 
 // -> if is_global $ .globl <identifier>
@@ -658,7 +637,7 @@ static void emit_data_static_variable_top_level(AsmStaticVariable* node, std::st
     emit(".data", 1);
     emit_alignment_directive_top_level(node->alignment);
     emit(name + ":", 0);
-    emit(std::move(static_init), 1);
+    emit(std::move(static_init), 2);
 }
 
 // StaticVariable(name, global, init) initialized to zero -> $     <global-directive>
@@ -673,7 +652,7 @@ static void emit_bss_static_variable_top_level(AsmStaticVariable* node, std::str
     emit(".bss", 1);
     emit_alignment_directive_top_level(node->alignment);
     emit(name + ":", 0);
-    emit(std::move(static_init), 1);
+    emit(std::move(static_init), 2);
 }
 
 // StaticVariable(name, global, align, init)<i> initialized to non-zero value -> $ <data-static-variable-directives>
@@ -755,7 +734,7 @@ static void emit_double_static_constant_top_level(AsmStaticConstant* node) {
     emit(".section .rodata", 1);
     emit_alignment_directive_top_level(node->alignment);
     emit(".L" + name + ":", 0);
-    emit(".quad " + static_init, 1);
+    emit(".quad " + static_init, 2);
 }
 
 // StaticConstant(name, align, init)<d> -> $ <double-static-constant-directives>
@@ -773,6 +752,7 @@ static void emit_static_constant_top_level(AsmStaticConstant* node) {
 // StaticVariable(name, global, align, init) -> $ <static-variable-top-level-directives>
 // StaticConstant(name, align, init)         -> $ <static-constant-top-level-directives>
 static void emit_top_level(AsmTopLevel* node) {
+    emit("", 0);
     switch(node->type()) {
         case AST_T::AsmFunction_t:
             emit_function_top_level(static_cast<AsmFunction*>(node));
@@ -797,7 +777,7 @@ static void emit_program(AsmProgram* node) {
     for(size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
         emit_top_level(node->top_levels[top_level].get());
     }
-    emit(".section .note.GNU-stack,\"\",@progbits", 1);
+    emit(".section .note.GNU-stack,\"\",@progbits", 2);
 }
 
 void code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
