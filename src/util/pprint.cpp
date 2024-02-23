@@ -1,13 +1,13 @@
 #include "util/pprint.hpp"
 #ifndef __NDEBUG__
 #include "util/error.hpp"
-#include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/backend_st.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
+#include "frontend/parser/lexer.hpp"
 
 #include <vector>
 #include <iostream>

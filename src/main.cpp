@@ -6,12 +6,12 @@
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
-#include "parser/lexer.hpp"
-#include "parser/parser.hpp"
-#include "intermediate/semantic.hpp"
-#include "intermediate/tac_repr.hpp"
-#include "assembly/asm_gen.hpp"
-#include "emitter/att_code.hpp"
+#include "frontend/parser/lexer.hpp"
+#include "frontend/parser/parser.hpp"
+#include "frontend/intermediate/semantic.hpp"
+#include "frontend/intermediate/tac_repr.hpp"
+#include "backend/assembly/asm_gen.hpp"
+#include "backend/emitter/att_code.hpp"
 
 #include <string>
 #include <vector>

@@ -2,7 +2,7 @@
 #define _UTIL_PPRINT_HPP
 
 #ifndef __NDEBUG__
-#include "parser/lexer.hpp"
+#include "frontend/parser/lexer.hpp"
 #include "ast/ast.hpp"
 
 #include <vector>
