@@ -2,7 +2,7 @@
 #include "util/error.hpp"
 #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
-#include "ast/front_symtab.hpp"
+#include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/precedence.hpp"

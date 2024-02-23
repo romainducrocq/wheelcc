@@ -1,7 +1,7 @@
 #include "frontend/intermediate/semantic.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/front_symtab.hpp"
+#include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
 #include "frontend/intermediate/names.hpp"
 

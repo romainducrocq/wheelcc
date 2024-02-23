@@ -2,7 +2,7 @@
 #define _AST_FRONT_AST_HPP
 
 #include "ast/ast.hpp"
-#include "ast/front_symtab.hpp"
+#include "ast/front_symt.hpp"
 
 #include <memory>
 #include <vector>

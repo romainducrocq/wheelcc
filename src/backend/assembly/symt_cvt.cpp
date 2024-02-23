@@ -1,8 +1,8 @@
-#include "backend/assembly/st_conv.hpp"
+#include "backend/assembly/symt_cvt.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/front_symtab.hpp"
-#include "ast/back_symtab.hpp"
+#include "ast/front_symt.hpp"
+#include "ast/back_symt.hpp"
 #include "ast/back_ast.hpp"
 
 #include <memory>

@@ -1,6 +1,6 @@
 #include "ast/interm_ast.hpp"
 #include "ast/ast.hpp"
-#include "ast/front_symtab.hpp"
+#include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
 
 #include <memory>

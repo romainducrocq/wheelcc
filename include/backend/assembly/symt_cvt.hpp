@@ -1,8 +1,8 @@
-#ifndef _BACKEND_ASSEMBLY_ST_CONV_HPP
-#define _BACKEND_ASSEMBLY_ST_CONV_HPP
+#ifndef _BACKEND_ASSEMBLY_SYMT_CVT_HPP
+#define _BACKEND_ASSEMBLY_SYMT_CVT_HPP
 
 #include "ast/ast.hpp"
-#include "ast/back_symtab.hpp"
+#include "ast/back_symt.hpp"
 #include "ast/back_ast.hpp"
 
 #include <memory>

@@ -2,8 +2,8 @@
 #define _AST_BACK_AST_HPP
 
 #include "ast/ast.hpp"
-#include "ast/front_symtab.hpp"
-#include "ast/back_symtab.hpp"
+#include "ast/front_symt.hpp"
+#include "ast/back_symt.hpp"
 
 #include <memory>
 #include <vector>

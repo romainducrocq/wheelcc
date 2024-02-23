@@ -1,5 +1,5 @@
-#ifndef _AST_BACK_SYMTAB_HPP
-#define _AST_BACK_SYMTAB_HPP
+#ifndef _AST_BACK_SYMT_HPP
+#define _AST_BACK_SYMT_HPP
 
 #include "ast/ast.hpp"
 

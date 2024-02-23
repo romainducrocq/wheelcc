@@ -1,4 +1,4 @@
-#include "ast/front_symtab.hpp"
+#include "ast/front_symt.hpp"
 #include "util/ctypes.hpp"
 #include "ast/ast.hpp"
 

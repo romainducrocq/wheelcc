@@ -1,4 +1,4 @@
-#include "ast/back_symtab.hpp"
+#include "ast/back_symt.hpp"
 #include "ast/ast.hpp"
 
 #include <memory>

@@ -1,7 +1,7 @@
 #include "backend/assembly/stack_fix.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
-#include "ast/back_symtab.hpp"
+#include "ast/back_symt.hpp"
 #include "ast/back_ast.hpp"
 #include "backend/assembly/registers.hpp"
 
