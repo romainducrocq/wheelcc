@@ -8,7 +8,7 @@
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
 #include "parser/parser.hpp"
-#include "semantic/id_resolve.hpp"
+#include "intermediate/semantic.hpp"
 #include "intermediate/tac_repr.hpp"
 #include "assembly/asm_gen.hpp"
 #include "emitter/att_code.hpp"
