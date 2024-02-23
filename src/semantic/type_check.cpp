@@ -73,7 +73,7 @@ int32_t get_type_size(Type* type_1) {
         case AST_T::Pointer_t:
             return 64;
         default:
-            return -1;
+            RAISE_INTERNAL_ERROR;
     }
 }
 
