@@ -141,6 +141,35 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     raise_runtime_error("Maybe-pointer expressions have incompatible types");
 }
 
+void checktype_constant_expression(CConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+            node->exp_type = std::make_shared<Int>();
+            break;
+        case AST_T::CConstLong_t:
+            node->exp_type = std::make_shared<Long>();
+            break;
+        case AST_T::CConstDouble_t:
+            node->exp_type = std::make_shared<Double>();
+            break;
+        case AST_T::CConstUInt_t:
+            node->exp_type = std::make_shared<UInt>();
+            break;
+        case AST_T::CConstULong_t:
+            node->exp_type = std::make_shared<ULong>();
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+void checktype_var_expression(CVar* node) {
+    if(symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
+        raise_runtime_error("Function " + em(node->name) + " was used as a variable");
+    }
+    node->exp_type = symbol_table[node->name]->type_t;
+}
+
 void checktype_cast_expression(CCast* node) {
     node->exp_type = node->target_type;
     if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
@@ -166,84 +195,6 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
         return cast_expression(std::move(node), exp_type);
     }
     raise_runtime_error("Assignment expressions have incompatible types");
-}
-
-void checktype_function_call_expression(CFunctionCall* node) {
-    if(symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
-        raise_runtime_error("Variable " + em(node->name) + " was used as a function");
-    }
-    FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
-    if(fun_type->param_types.size() != node->args.size()) {
-        raise_runtime_error("Function " + em(node->name) + " has " +
-                            em(std::to_string(fun_type->param_types.size())) +
-                            " arguments but was called with " + em(std::to_string(node->args.size())));
-    }
-    for(size_t i = 0; i < node->args.size(); i ++) {
-        if(!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
-            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->args[i]), fun_type->param_types[i]);
-            node->args[i] = std::move(exp);
-        }
-    }
-    node->exp_type = fun_type->ret_type;
-}
-
-void checktype_var_expression(CVar* node) {
-    if(symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
-        raise_runtime_error("Function " + em(node->name) + " was used as a variable");
-    }
-    node->exp_type = symbol_table[node->name]->type_t;
-}
-
-void checktype_constant_expression(CConstant* node) {
-    switch(node->constant->type()) {
-        case AST_T::CConstInt_t:
-            node->exp_type = std::make_shared<Int>();
-            break;
-        case AST_T::CConstLong_t:
-            node->exp_type = std::make_shared<Long>();
-            break;
-        case AST_T::CConstDouble_t:
-            node->exp_type = std::make_shared<Double>();
-            break;
-        case AST_T::CConstUInt_t:
-            node->exp_type = std::make_shared<UInt>();
-            break;
-        case AST_T::CConstULong_t:
-            node->exp_type = std::make_shared<ULong>();
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-void checktype_assignment_expression(CAssignment* node) {
-    if(node->exp_left) {
-        if(!is_exp_lvalue(node->exp_left.get())) {
-            raise_runtime_error("Left expression is an invalid lvalue");
-        }
-        if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
-            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
-            node->exp_right = std::move(exp);
-        }
-        node->exp_type = node->exp_left->exp_type;
-    }
-    else {
-        if(node->exp_right->type() != AST_T::CBinary_t) {
-            raise_runtime_error("Right expression is an invalid compound assignment");
-        }
-        CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
-        if(exp_left->type() == AST_T::CCast_t) {
-            exp_left = static_cast<CCast*>(exp_left)->exp.get();
-        }
-        if(!is_exp_lvalue(exp_left)) {
-            raise_runtime_error("Left expression is an invalid lvalue");
-        }
-        if(!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
-            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
-            node->exp_right = std::move(exp);
-        }
-        node->exp_type = exp_left->exp_type;
-    }
 }
 
 void checktype_unary_expression(CUnary* node) {
@@ -381,6 +332,36 @@ void checktype_binary_expression(CBinary* node) {
     }
 }
 
+void checktype_assignment_expression(CAssignment* node) {
+    if(node->exp_left) {
+        if(!is_exp_lvalue(node->exp_left.get())) {
+            raise_runtime_error("Left expression is an invalid lvalue");
+        }
+        if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
+            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
+            node->exp_right = std::move(exp);
+        }
+        node->exp_type = node->exp_left->exp_type;
+    }
+    else {
+        if(node->exp_right->type() != AST_T::CBinary_t) {
+            raise_runtime_error("Right expression is an invalid compound assignment");
+        }
+        CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
+        if(exp_left->type() == AST_T::CCast_t) {
+            exp_left = static_cast<CCast*>(exp_left)->exp.get();
+        }
+        if(!is_exp_lvalue(exp_left)) {
+            raise_runtime_error("Left expression is an invalid lvalue");
+        }
+        if(!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
+            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
+            node->exp_right = std::move(exp);
+        }
+        node->exp_type = exp_left->exp_type;
+    }
+}
+
 void checktype_conditional_expression(CConditional* node) {
     std::shared_ptr<Type> common_type;
     if(node->exp_middle->exp_type->type() == AST_T::Pointer_t ||
@@ -399,6 +380,25 @@ void checktype_conditional_expression(CConditional* node) {
         node->exp_right = std::move(exp);
     }
     node->exp_type = std::move(common_type);
+}
+
+void checktype_function_call_expression(CFunctionCall* node) {
+    if(symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
+        raise_runtime_error("Variable " + em(node->name) + " was used as a function");
+    }
+    FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
+    if(fun_type->param_types.size() != node->args.size()) {
+        raise_runtime_error("Function " + em(node->name) + " has " +
+                            em(std::to_string(fun_type->param_types.size())) +
+                            " arguments but was called with " + em(std::to_string(node->args.size())));
+    }
+    for(size_t i = 0; i < node->args.size(); i ++) {
+        if(!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
+            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->args[i]), fun_type->param_types[i]);
+            node->args[i] = std::move(exp);
+        }
+    }
+    node->exp_type = fun_type->ret_type;
 }
 
 void checktype_dereference_expression(CDereference* node) {
