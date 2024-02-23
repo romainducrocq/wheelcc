@@ -31,11 +31,35 @@ TIdentifier represent_variable_identifier(CExp* node) {
     TIdentifier name;
     switch(node->type()) {
         case AST_T::CConstant_t: {
-            name = "constant";
+            name = "const";
             break;
         }
         case AST_T::CVar_t: {
             name = "var";
+            break;
+        }
+        case AST_T::CCast_t: {
+            name = "cast";
+            break;
+        }
+        case AST_T::CUnary_t: {
+            name = "unop";
+            break;
+        }
+        case AST_T::CBinary_t: {
+            name = "binop";
+            break;
+        }
+        case AST_T::CAssignment_t: {
+            name = "assign";
+            break;
+        }
+        case AST_T::CConditional_t: {
+            name = "ternop";
+            break;
+        }
+        case AST_T::CFunctionCall_t: {
+            name = "call";
             break;
         }
         case AST_T::CDereference_t: {
@@ -44,30 +68,6 @@ TIdentifier represent_variable_identifier(CExp* node) {
         }
         case AST_T::CAddrOf_t: {
             name = "addr";
-            break;
-        }
-        case AST_T::CFunctionCall_t: {
-            name = "funcall";
-            break;
-        }
-        case AST_T::CCast_t: {
-            name = "cast";
-            break;
-        }
-        case AST_T::CAssignment_t: {
-            name = "assignment";
-            break;
-        }
-        case AST_T::CConditional_t: {
-            name = "ternary";
-            break;
-        }
-        case AST_T::CUnary_t: {
-            name = "unary";
-            break;
-        }
-        case AST_T::CBinary_t: {
-            name = "binary";
             break;
         }
         default:
