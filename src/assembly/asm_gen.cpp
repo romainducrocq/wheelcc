@@ -8,7 +8,6 @@
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
-#include "semantic/type_check.hpp"
 #include "assembly/registers.hpp"
 #include "assembly/st_conv.hpp"
 #include "assembly/stack_fix.hpp"
@@ -203,7 +202,14 @@ static bool is_constant_value_signed(TacConstant* node) {
 }
 
 static bool is_variable_value_signed(TacVariable* node) {
-    return is_type_signed(symbol_table[node->name]->type_t.get());
+    switch(symbol_table[node->name]->type_t->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+            return true;
+        default:
+            return false;
+    }
 }
 
 static bool is_value_signed(TacValue* node) {
