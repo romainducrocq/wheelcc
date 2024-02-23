@@ -2,11 +2,11 @@
 #ifndef __NDEBUG__
 #include "util/pprint.hpp"
 #endif
-#include "parser/lexer.hpp"
 #include "ast/ast.hpp"
 #include "ast/c_ast.hpp"
 #include "ast/tac_ast.hpp"
 #include "ast/asm_ast.hpp"
+#include "parser/lexer.hpp"
 #include "parser/parser.hpp"
 #include "intermediate/semantic.hpp"
 #include "intermediate/tac_repr.hpp"

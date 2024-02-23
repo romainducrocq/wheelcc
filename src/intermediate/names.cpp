@@ -1,4 +1,4 @@
-#include "util/names.hpp"
+#include "intermediate/names.hpp"
 #include "util/error.hpp"
 #include "ast/ast.hpp"
 #include "ast/c_ast.hpp"

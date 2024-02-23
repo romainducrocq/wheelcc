@@ -1,9 +1,9 @@
 #include "intermediate/semantic.hpp"
 #include "util/error.hpp"
-#include "util/names.hpp"
 #include "ast/ast.hpp"
 #include "ast/symbol_table.hpp"
 #include "ast/c_ast.hpp"
+#include "intermediate/names.hpp"
 
 #include <inttypes.h>
 #include <string>

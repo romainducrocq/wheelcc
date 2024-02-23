@@ -1,5 +1,5 @@
-#ifndef _UTIL_NAMES_HPP
-#define _UTIL_NAMES_HPP
+#ifndef _INTERMEDIATE_NAMES_HPP
+#define _INTERMEDIATE_NAMES_HPP
 
 #include "ast/ast.hpp"
 #include "ast/c_ast.hpp"
