@@ -1,14 +1,16 @@
 #!/bin/bash
 
+ROOT="${PWD}/.."
+
 function test () {
     echo ""
     echo "----------------------------------------------------------------------"
     echo "${@}"
-    ./test_compiler ../LANG-CCC2/bin/driver.sh ${@}
+    ./test_compiler ${ROOT}/bin/driver.sh ${@}
     if [ ${?} -ne 0 ]; then exit 1; fi
 }
 
-cd ../../writing-a-c-compiler-tests/
+cd ${ROOT}/../writing-a-c-compiler-tests/
 
 if [ ${#} -ne 0 ]; then
     test ${@}
