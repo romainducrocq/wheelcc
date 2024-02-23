@@ -1,5 +1,5 @@
-#ifndef _UTIL_FOPEN_HPP
-#define _UTIL_FOPEN_HPP
+#ifndef _UTIL_FILEIO_HPP
+#define _UTIL_FILEIO_HPP
 
 #include <string>
 

@@ -1,11 +1,11 @@
 #include "frontend/parser/parser.hpp"
 #include "util/error.hpp"
-#include "util/ctypes.hpp"
+#include "util/str2t.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
 #include "frontend/parser/lexer.hpp"
-#include "frontend/parser/precedence.hpp"
+#include "frontend/parser/preced.hpp"
 
 #include <inttypes.h>
 #include <string>

@@ -1,5 +1,5 @@
 #include "ast/front_symt.hpp"
-#include "util/ctypes.hpp"
+#include "util/str2t.hpp"
 #include "ast/ast.hpp"
 
 #include <memory>

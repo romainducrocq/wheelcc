@@ -1,5 +1,5 @@
-#ifndef _UTIL_CTYPES_HPP
-#define _UTIL_CTYPES_HPP
+#ifndef _UTIL_STR2T_HPP
+#define _UTIL_STR2T_HPP
 
 #include <inttypes.h>
 #include <string>

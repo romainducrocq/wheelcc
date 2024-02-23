@@ -1,5 +1,5 @@
-#ifndef _FRONTEND_PARSER_PRECEDENCE_HPP
-#define _FRONTEND_PARSER_PRECEDENCE_HPP
+#ifndef _FRONTEND_PARSER_PRECED_HPP
+#define _FRONTEND_PARSER_PRECED_HPP
 
 #include "frontend/parser/lexer.hpp"
 
