@@ -12,22 +12,23 @@
         - https://imada.sdu.dk/u/kslarsen/dm546/Material/IntelnATT.htm
     - fasm
         https://flatassembler.net/
-### III/
-- 5. Add frontend for my-lang
-    - parser/lexer.cpp
-    - parser/parser.cpp
-    - test/tests/
-- 6. Add syscalls
+- 5. Add syscalls + small std lib to support test cases
     - impl syscalls in asm
     - link asm syscalls
-        - writing C software without the standard library: 
+        - writing C software without the standard library:
             https://gist.github.com/tcoppex/443d1dd45f873d96260195d6431b0989
             - ex asm syscall
             - ex strlen, puts
-### IV/
+    - malloc in c:
+        - https://github.com/RAGUL1902/Dynamic-Memory-Allocation-in-C
+### III/
+- 6. Add frontend for my-lang
+    - parser/lexer.cpp
+    - parser/parser.cpp
+    - test/tests/
 - 7. Implement preprocessor
     - see cython prebuild
-- 8. Implement standard library
+- 8. Implement more standard library
 
 ## NOTES
 
