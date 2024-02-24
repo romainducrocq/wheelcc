@@ -13,7 +13,7 @@ class List: name = "List"
 
 ast = [
 
-    # /include/ast/symbol_table.hpp
+    # /include/ast/front_symt.hpp
     ["Type", [], []],
     ["Int", [], []],
     ["Long", [], []],
@@ -22,6 +22,7 @@ ast = [
     ["ULong", [], []],
     ["FunType", [], ["[param_types", "ret_type"]],
     ["Pointer", [], ["ref_type"]],
+    ["Array", [(TInt, "size")], ["elem_type"]],
     ["StaticInit", [], []],
     ["IntInit", [(TInt, "value")], []],
     ["LongInit", [(TLong, "value")], []],
@@ -38,7 +39,7 @@ ast = [
     ["LocalAttr", [], []],
     ["Symbol", [], ["type_t", "attrs"]],
 
-    # /include/ast/backend_st.hpp
+    # /include/ast/back_symt.hpp
     ["AssemblyType", [], []],
     ["LongWord", [], []],
     ["QuadWord", [], []],
@@ -47,7 +48,7 @@ ast = [
     ["BackendObj", [(Bool, "is_static"), (Bool, "is_constant")], ["assembly_type"]],
     ["BackendFun", [(Bool, "is_defined")], []],
 
-    # /include/ast/c_ast.hpp
+    # /include/ast/front_ast.hpp
     ["CConst", [], []],
     ["CConstInt", [(TInt, "value")], []],
     ["CConstLong", [(TLong, "value")], []],
@@ -79,11 +80,13 @@ ast = [
     ["CGreaterOrEqual", [], []],
     ["CAbstractDeclarator", [], []],
     ["CAbstractPointer", [], ["abstract_declarator"]],
+    ["CAbstractArray", [(TInt, "size")], ["abstract_declarator"]],
     ["CAbstractBase", [], []],
     ["CParam", [], ["declarator", "param_type"]],
     ["CDeclarator", [], []],
     ["CIdent", [(TIdentifier, "name")], []],
     ["CPointerDeclarator", [], ["declarator"]],
+    ["CArrayDeclarator", [(TInt, "size")], ["declarator"]],
     ["CFunDeclarator", [], ["[param_list", "declarator"]],
     ["CExp", [], ["exp_type"]],
     ["CConstant", [], ["constant", "exp_type"]],
@@ -96,6 +99,7 @@ ast = [
     ["CFunctionCall", [(TIdentifier, "name")], ["[args", "exp_type"]],
     ["CDereference", [], ["exp", "exp_type"]],
     ["CAddrOf", [], ["exp", "exp_type"]],
+    ["CSubscript", [], ["exp", "exp_index", "exp_type"]],
     ["CStatement", [], []],
     ["CReturn", [], ["exp"]],
     ["CExpression", [], ["exp"]],
@@ -120,6 +124,9 @@ ast = [
     ["CStorageClass", [], []],
     ["CStatic", [], []],
     ["CExtern", [], []],
+    ["CInitializer", [], ["init_type"]],
+    ["CSingleInit", [], ["exp", "init_type"]],
+    ["CompoundInit", [], ["[initializers", "init_type"]],
     ["CFunctionDeclaration", [(TIdentifier, "name"), (TIdentifier, "[params")], ["body", "fun_type", "storage_class"]],
     ["CVariableDeclaration", [(TIdentifier, "name")], ["init", "var_type", "storage_class"]],
     ["CDeclaration", [], []],
@@ -127,7 +134,7 @@ ast = [
     ["CVarDecl", [], ["variable_decl"]],
     ["CProgram", [], ["[declarations"]],
 
-    # /include/ast/tac_ast.hpp
+    # /include/ast/interm_ast.hpp
     ["TacUnaryOp", [], []],
     ["TacComplement", [], []],
     ["TacNegate", [], []],
@@ -180,7 +187,7 @@ ast = [
     ["TacStaticVariable", [(TIdentifier, "name"), (Bool, "is_global")], ["static_init_type", "initial_value"]],
     ["TacProgram", [], ["[static_variable_top_levels", "[function_top_levels"]],
 
-    # /include/ast/asm_ast.hpp
+    # /include/ast/back_ast.hpp
     ["AsmReg", [], []],
     ["AsmAx", [], []],
     ["AsmCx", [], []],

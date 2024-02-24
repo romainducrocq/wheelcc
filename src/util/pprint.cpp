@@ -82,6 +82,13 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->ref_type.get(), t);
             break;
         }
+        case AST_T::Array_t: {
+            field("Array", "", ++t);
+            Array* p_node = static_cast<Array*>(node);
+            field("TInt", std::to_string(p_node->size), t+1);
+            print_ast(p_node->elem_type.get(), t);
+            break;
+        }
         case AST_T::StaticInit_t: {
             field("StaticInit", "", ++t);
             break;
@@ -334,6 +341,13 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->abstract_declarator.get(), t);
             break;
         }
+        case AST_T::CAbstractArray_t: {
+            field("CAbstractArray", "", ++t);
+            CAbstractArray* p_node = static_cast<CAbstractArray*>(node);
+            field("TInt", std::to_string(p_node->size), t+1);
+            print_ast(p_node->abstract_declarator.get(), t);
+            break;
+        }
         case AST_T::CAbstractBase_t: {
             field("CAbstractBase", "", ++t);
             break;
@@ -358,6 +372,13 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CPointerDeclarator_t: {
             field("CPointerDeclarator", "", ++t);
             CPointerDeclarator* p_node = static_cast<CPointerDeclarator*>(node);
+            print_ast(p_node->declarator.get(), t);
+            break;
+        }
+        case AST_T::CArrayDeclarator_t: {
+            field("CArrayDeclarator", "", ++t);
+            CArrayDeclarator* p_node = static_cast<CArrayDeclarator*>(node);
+            field("TInt", std::to_string(p_node->size), t+1);
             print_ast(p_node->declarator.get(), t);
             break;
         }
@@ -455,6 +476,14 @@ static void print_ast(Ast* node, size_t t) {
             field("CAddrOf", "", ++t);
             CAddrOf* p_node = static_cast<CAddrOf*>(node);
             print_ast(p_node->exp.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CSubscript_t: {
+            field("CSubscript", "", ++t);
+            CSubscript* p_node = static_cast<CSubscript*>(node);
+            print_ast(p_node->exp.get(), t);
+            print_ast(p_node->exp_index.get(), t);
             print_ast(p_node->exp_type.get(), t);
             break;
         }
@@ -598,6 +627,29 @@ static void print_ast(Ast* node, size_t t) {
         }
         case AST_T::CExtern_t: {
             field("CExtern", "", ++t);
+            break;
+        }
+        case AST_T::CInitializer_t: {
+            field("CInitializer", "", ++t);
+            CInitializer* p_node = static_cast<CInitializer*>(node);
+            print_ast(p_node->init_type.get(), t);
+            break;
+        }
+        case AST_T::CSingleInit_t: {
+            field("CSingleInit", "", ++t);
+            CSingleInit* p_node = static_cast<CSingleInit*>(node);
+            print_ast(p_node->exp.get(), t);
+            print_ast(p_node->init_type.get(), t);
+            break;
+        }
+        case AST_T::CompoundInit_t: {
+            field("CompoundInit", "", ++t);
+            CompoundInit* p_node = static_cast<CompoundInit*>(node);
+            field("List[" + std::to_string(p_node->initializers.size()) + "]", "", t+1);
+            for(const auto& item: p_node->initializers) {
+                print_ast(item.get(), t+1);
+            }
+            print_ast(p_node->init_type.get(), t);
             break;
         }
         case AST_T::CFunctionDeclaration_t: {
