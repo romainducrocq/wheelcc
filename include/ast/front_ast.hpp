@@ -181,6 +181,7 @@ struct CGreaterOrEqual : CBinaryOp {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // abstract_declarator = AbstractPointer(abstract_declarator)
+//                     | AbstractArray(int, abstract_declarator)
 //                     | AbstractBase
 struct CAbstractDeclarator : Ast {
     AST_T type() override;
@@ -191,6 +192,15 @@ struct CAbstractPointer : CAbstractDeclarator {
     CAbstractPointer() = default;
     CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator);
 
+    std::unique_ptr<CAbstractDeclarator> abstract_declarator;
+};
+
+struct CAbstractArray : CAbstractDeclarator {
+    AST_T type() override;
+    CAbstractArray() = default;
+    CAbstractArray(TInt size, std::unique_ptr<CAbstractDeclarator> abstract_declarator);
+
+    TInt size;
     std::unique_ptr<CAbstractDeclarator> abstract_declarator;
 };
 
@@ -215,6 +225,7 @@ struct CParam : Ast {
 
 // declarator = Ident(identifier)
 //            | PointerDeclarator(declarator)
+//            | ArrayDeclarator(int, declarator)
 //            | FunDeclarator(param_info* params, declarator)
 struct CDeclarator : Ast {
     AST_T type() override;
@@ -233,6 +244,15 @@ struct CPointerDeclarator : CDeclarator {
     CPointerDeclarator() = default;
     CPointerDeclarator(std::unique_ptr<CDeclarator> declarator);
 
+    std::unique_ptr<CDeclarator> declarator;
+};
+
+struct CArrayDeclarator : CDeclarator {
+    AST_T type() override;
+    CArrayDeclarator() = default;
+    CArrayDeclarator(TInt size, std::unique_ptr<CDeclarator> declarator);
+
+    TInt size;
     std::unique_ptr<CDeclarator> declarator;
 };
 
@@ -257,6 +277,7 @@ struct CFunDeclarator : CDeclarator {
 //     | FunctionCall(identifier, exp*, type)
 //     | Dereference(exp, type)
 //     | AddrOf(exp, type)
+//     | Subscript(exp, exp)
 struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
@@ -380,6 +401,18 @@ struct CAddrOf : CExp {
     CAddrOf(std::unique_ptr<CExp> exp);
 
     std::unique_ptr<CExp> exp;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CSubscript : CExp {
+    AST_T type() override;
+    CSubscript() = default;
+    CSubscript(std::unique_ptr<CExp> exp, std::unique_ptr<CExp> exp_index);
+
+    std::unique_ptr<CExp> exp;
+    std::unique_ptr<CExp> exp_index;
     /*
     std::shared_ptr<Type> exp_type;
     */
@@ -590,6 +623,39 @@ struct CStatic : CStorageClass {
 
 struct CExtern : CStorageClass {
     AST_T type() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// initializer = SingleInit(exp)
+//             | CompoundInit(initializer*)
+struct CInitializer : Ast {
+    AST_T type() override;
+    CInitializer() = default;
+
+    std::shared_ptr<Type> init_type;
+};
+
+struct CSingleInit : CInitializer {
+    AST_T type() override;
+    CSingleInit() = default;
+    CSingleInit(std::unique_ptr<CExp> exp);
+
+    std::unique_ptr<CExp> exp;
+    /*
+    std::shared_ptr<Type> init_type;
+    */
+};
+
+struct CompoundInit : CInitializer {
+    AST_T type() override;
+    CompoundInit() = default;
+    CompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers);
+
+    std::vector<std::unique_ptr<CInitializer>> initializers;
+    /*
+    std::shared_ptr<Type> init_type;
+    */
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

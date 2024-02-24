@@ -13,6 +13,7 @@ AST_T UInt::type() { return AST_T::UInt_t; }
 AST_T ULong::type() { return AST_T::ULong_t; }
 AST_T FunType::type() { return AST_T::FunType_t; }
 AST_T Pointer::type() { return AST_T::Pointer_t; }
+AST_T Array::type() { return AST_T::Array_t; }
 AST_T StaticInit::type() { return AST_T::StaticInit_t; }
 AST_T IntInit::type() { return AST_T::IntInit_t; }
 AST_T LongInit::type() { return AST_T::LongInit_t; }
@@ -34,6 +35,9 @@ FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr
 
 Pointer::Pointer(std::shared_ptr<Type> ref_type)
     : ref_type(std::move(ref_type)) {}
+
+Array::Array(TInt size, std::shared_ptr<Type> elem_type)
+    : size(size), elem_type(std::move(elem_type)) {}
 
 IntInit::IntInit(TInt value)
     : value(value) {}

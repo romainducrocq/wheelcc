@@ -36,11 +36,13 @@ AST_T CGreaterThan::type() { return AST_T::CGreaterThan_t; }
 AST_T CGreaterOrEqual::type() { return AST_T::CGreaterOrEqual_t; }
 AST_T CAbstractDeclarator::type() { return AST_T::CAbstractDeclarator_t; }
 AST_T CAbstractPointer::type() { return AST_T::CAbstractPointer_t; }
+AST_T CAbstractArray::type() { return AST_T::CAbstractArray_t; }
 AST_T CAbstractBase::type() { return AST_T::CAbstractBase_t; }
 AST_T CParam::type() { return AST_T::CParam_t; }
 AST_T CDeclarator::type() { return AST_T::CDeclarator_t; }
 AST_T CIdent::type() { return AST_T::CIdent_t; }
 AST_T CPointerDeclarator::type() { return AST_T::CPointerDeclarator_t; }
+AST_T CArrayDeclarator::type() { return AST_T::CArrayDeclarator_t; }
 AST_T CFunDeclarator::type() { return AST_T::CFunDeclarator_t; }
 AST_T CExp::type() { return AST_T::CExp_t; }
 AST_T CConstant::type() { return AST_T::CConstant_t; }
@@ -53,6 +55,7 @@ AST_T CConditional::type() { return AST_T::CConditional_t; }
 AST_T CFunctionCall::type() { return AST_T::CFunctionCall_t; }
 AST_T CDereference::type() { return AST_T::CDereference_t; }
 AST_T CAddrOf::type() { return AST_T::CAddrOf_t; }
+AST_T CSubscript::type() { return AST_T::CSubscript_t; }
 AST_T CStatement::type() { return AST_T::CStatement_t; }
 AST_T CReturn::type() { return AST_T::CReturn_t; }
 AST_T CExpression::type() { return AST_T::CExpression_t; }
@@ -77,6 +80,9 @@ AST_T CD::type() { return AST_T::CD_t; }
 AST_T CStorageClass::type() { return AST_T::CStorageClass_t; }
 AST_T CStatic::type() { return AST_T::CStatic_t; }
 AST_T CExtern::type() { return AST_T::CExtern_t; }
+AST_T CInitializer::type() { return AST_T::CInitializer_t; }
+AST_T CSingleInit::type() { return AST_T::CSingleInit_t; }
+AST_T CompoundInit::type() { return AST_T::CompoundInit_t; }
 AST_T CFunctionDeclaration::type() { return AST_T::CFunctionDeclaration_t; }
 AST_T CVariableDeclaration::type() { return AST_T::CVariableDeclaration_t; }
 AST_T CDeclaration::type() { return AST_T::CDeclaration_t; }
@@ -102,6 +108,9 @@ CConstULong::CConstULong(TULong value)
 CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator)
     : abstract_declarator(std::move(abstract_declarator)) {}
 
+CAbstractArray::CAbstractArray(TInt size, std::unique_ptr<CAbstractDeclarator> abstract_declarator)
+    : size(size), abstract_declarator(std::move(abstract_declarator)) {}
+
 CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type)
     : declarator(std::move(declarator)), param_type(std::move(param_type)) {}
 
@@ -110,6 +119,9 @@ CIdent::CIdent(TIdentifier name)
 
 CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
     : declarator(std::move(declarator)) {}
+
+CArrayDeclarator::CArrayDeclarator(TInt size, std::unique_ptr<CDeclarator> declarator)
+    : size(size), declarator(std::move(declarator)) {}
 
 CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,
                                std::unique_ptr<CDeclarator> declarator)
@@ -144,10 +156,13 @@ CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>
     : name(std::move(name)), args(std::move(args)) {}
 
 CDereference::CDereference(std::unique_ptr<CExp> exp)
-        : exp(std::move(exp)) {}
+    : exp(std::move(exp)) {}
 
 CAddrOf::CAddrOf(std::unique_ptr<CExp> exp)
-        : exp(std::move(exp)) {}
+    : exp(std::move(exp)) {}
+
+CSubscript::CSubscript(std::unique_ptr<CExp> exp, std::unique_ptr<CExp> exp_index)
+    : exp(std::move(exp)), exp_index(std::move(exp_index)) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
@@ -192,6 +207,12 @@ CS::CS(std::unique_ptr<CStatement> statement)
 
 CD::CD(std::unique_ptr<CDeclaration> declaration)
     : declaration(std::move(declaration)) {}
+
+CSingleInit::CSingleInit(std::unique_ptr<CExp> exp)
+    : exp(std::move(exp)) {}
+
+CompoundInit::CompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers)
+    : initializers(std::move(initializers)) {}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
                                            std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
