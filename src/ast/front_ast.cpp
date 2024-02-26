@@ -5,12 +5,6 @@
 #include <memory>
 #include <vector>
 
-AST_T CConst::type() { return AST_T::CConst_t; }
-AST_T CConstInt::type() { return AST_T::CConstInt_t; }
-AST_T CConstLong::type() { return AST_T::CConstLong_t; }
-AST_T CConstDouble::type() { return AST_T::CConstDouble_t; }
-AST_T CConstUInt::type() { return AST_T::CConstUInt_t; }
-AST_T CConstULong::type() { return AST_T::CConstULong_t; }
 AST_T CUnaryOp::type() { return AST_T::CUnaryOp_t; }
 AST_T CComplement::type() { return AST_T::CComplement_t; }
 AST_T CNegate::type() { return AST_T::CNegate_t; }
@@ -90,26 +84,11 @@ AST_T CFunDecl::type() { return AST_T::CFunDecl_t; }
 AST_T CVarDecl::type() { return AST_T::CVarDecl_t; }
 AST_T CProgram::type() { return AST_T::CProgram_t; }
 
-CConstInt::CConstInt(TInt value)
-    : value(value) {}
-
-CConstLong::CConstLong(TLong value)
-    : value(value) {}
-
-CConstDouble::CConstDouble(TDouble value)
-    : value(value) {}
-
-CConstUInt::CConstUInt(TUInt value)
-    : value(value) {}
-
-CConstULong::CConstULong(TULong value)
-    : value(value) {}
-
 CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator)
     : abstract_declarator(std::move(abstract_declarator)) {}
 
-CAbstractArray::CAbstractArray(TInt size, std::unique_ptr<CAbstractDeclarator> abstract_declarator)
-    : size(size), abstract_declarator(std::move(abstract_declarator)) {}
+CAbstractArray::CAbstractArray(std::shared_ptr<CConst> size, std::unique_ptr<CAbstractDeclarator> abstract_declarator)
+    : size(std::move(size)), abstract_declarator(std::move(abstract_declarator)) {}
 
 CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type)
     : declarator(std::move(declarator)), param_type(std::move(param_type)) {}
@@ -120,8 +99,8 @@ CIdent::CIdent(TIdentifier name)
 CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
     : declarator(std::move(declarator)) {}
 
-CArrayDeclarator::CArrayDeclarator(TInt size, std::unique_ptr<CDeclarator> declarator)
-    : size(size), declarator(std::move(declarator)) {}
+CArrayDeclarator::CArrayDeclarator(std::shared_ptr<CConst> size, std::unique_ptr<CDeclarator> declarator)
+    : size(std::move(size)), declarator(std::move(declarator)) {}
 
 CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,
                                std::unique_ptr<CDeclarator> declarator)

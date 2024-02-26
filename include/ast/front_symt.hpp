@@ -61,9 +61,9 @@ struct Pointer : Type {
 struct Array : Type {
     AST_T type() override;
     Array() = default;
-    Array(TInt  size, std::shared_ptr<Type> elem_type);
+    Array(std::shared_ptr<CConst> size, std::shared_ptr<Type> elem_type);
 
-    TInt size;
+    std::shared_ptr<CConst> size;
     std::shared_ptr<Type> elem_type;
 };
 

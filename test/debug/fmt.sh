@@ -57,7 +57,8 @@ cat tmp \
     | sed "s/\")\]\],/\")\]\, \[\]\],/g" \
     | sed "s/\", \[\"/\", \[\], \[\"/g" \
     | sed "s/\", \[\]\],/\", \[\], \[\]\],/g" \
-    | sed "s/nstr_uction/nstruction/g" > tmp2
+    | sed "s/nstr_uction/nstruction/g" \
+    | grep --invert-match "Ast {  using(" > tmp2
 rm tmp
 
 echo ""
@@ -71,6 +72,7 @@ rm tmp2
 
 function pfmt () {
 echo "ast = ["
+fmt ast
 fmt front_symt
 fmt back_symt
 fmt front_ast

@@ -196,7 +196,7 @@ static std::shared_ptr<CConst> parse_constant() {
     if(pop_next().token_kind == TOKEN_KIND::float_constant) {
         return parse_double_constant();
     }
-    else if (next_token->token_kind == TOKEN_KIND::long_constant) {
+    else if(next_token->token_kind == TOKEN_KIND::long_constant) {
         next_token->token.pop_back();
     }
 
@@ -1102,15 +1102,45 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
     return param_list;
 }
 
-// <direct-declarator> ::= <simple-declarator> [ <param-list> ]
+static std::unique_ptr<CDeclarator> parse_fun_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
+    std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
+    return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
+}
+
+static std::unique_ptr<CDeclarator> parse_array_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
+    // TODO
+//    pop_next();
+//    switch(peek) {
+//
+//    }
+//    expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+//    switch(peek_next().token_kind) {
+//        case TOKEN_KIND::constant:
+//        case TOKEN_KIND::long_constant:
+//            return parse_constant_factor();
+//        case TOKEN_KIND::unsigned_constant:
+//        case TOKEN_KIND::unsigned_long_constant:
+//            return parse_unsigned_constant_factor();
+//        default:
+//            raise_runtime_error_at_line("Dimension in array declarator suffix must be a constant integer",
+//                                        peek_token->line);
+//    }
+    return nullptr;
+}
+
+// <declarator-suffix> ::= <param-list> | { "[" <const> "]" }+
+// <direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
 static std::unique_ptr<CDeclarator> parse_direct_declarator() {
     std::unique_ptr<CDeclarator> declarator = parse_simple_declarator();
-    if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
-        std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
-        return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
-    }
-    else {
-        return declarator;
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::parenthesis_open: {
+            return parse_fun_declarator_suffix(std::move(declarator));
+        }
+        case TOKEN_KIND::brackets_open: {
+            return parse_array_declarator_suffix(std::move(declarator));
+        }
+        default:
+            return declarator;
     }
 }
 

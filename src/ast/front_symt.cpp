@@ -36,8 +36,8 @@ FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr
 Pointer::Pointer(std::shared_ptr<Type> ref_type)
     : ref_type(std::move(ref_type)) {}
 
-Array::Array(TInt size, std::shared_ptr<Type> elem_type)
-    : size(size), elem_type(std::move(elem_type)) {}
+Array::Array(std::shared_ptr<CConst> size, std::shared_ptr<Type> elem_type)
+    : size(std::move(size)), elem_type(std::move(elem_type)) {}
 
 IntInit::IntInit(TInt value)
     : value(value) {}

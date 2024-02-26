@@ -42,6 +42,40 @@ static void print_ast(Ast* node, size_t t) {
         return;
     }
     switch(node->type()) {
+        case AST_T::CConst_t: {
+            field("CConst", "", ++t);
+            break;
+        }
+        case AST_T::CConstInt_t: {
+            field("CConstInt", "", ++t);
+            CConstInt* p_node = static_cast<CConstInt*>(node);
+            field("TInt", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CConstLong_t: {
+            field("CConstLong", "", ++t);
+            CConstLong* p_node = static_cast<CConstLong*>(node);
+            field("TLong", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CConstDouble_t: {
+            field("CConstDouble", "", ++t);
+            CConstDouble* p_node = static_cast<CConstDouble*>(node);
+            field("TDouble", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CConstUInt_t: {
+            field("CConstUInt", "", ++t);
+            CConstUInt* p_node = static_cast<CConstUInt*>(node);
+            field("TUInt", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CConstULong_t: {
+            field("CConstULong", "", ++t);
+            CConstULong* p_node = static_cast<CConstULong*>(node);
+            field("TULong", std::to_string(p_node->value), t+1);
+            break;
+        }
         case AST_T::Type_t: {
             field("Type", "", ++t);
             break;
@@ -85,7 +119,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::Array_t: {
             field("Array", "", ++t);
             Array* p_node = static_cast<Array*>(node);
-            field("TInt", std::to_string(p_node->size), t+1);
+            print_ast(p_node->size.get(), t);
             print_ast(p_node->elem_type.get(), t);
             break;
         }
@@ -205,40 +239,6 @@ static void print_ast(Ast* node, size_t t) {
             field("Bool", std::to_string(p_node->is_defined), t+1);
             break;
         }
-        case AST_T::CConst_t: {
-            field("CConst", "", ++t);
-            break;
-        }
-        case AST_T::CConstInt_t: {
-            field("CConstInt", "", ++t);
-            CConstInt* p_node = static_cast<CConstInt*>(node);
-            field("TInt", std::to_string(p_node->value), t+1);
-            break;
-        }
-        case AST_T::CConstLong_t: {
-            field("CConstLong", "", ++t);
-            CConstLong* p_node = static_cast<CConstLong*>(node);
-            field("TLong", std::to_string(p_node->value), t+1);
-            break;
-        }
-        case AST_T::CConstDouble_t: {
-            field("CConstDouble", "", ++t);
-            CConstDouble* p_node = static_cast<CConstDouble*>(node);
-            field("TDouble", std::to_string(p_node->value), t+1);
-            break;
-        }
-        case AST_T::CConstUInt_t: {
-            field("CConstUInt", "", ++t);
-            CConstUInt* p_node = static_cast<CConstUInt*>(node);
-            field("TUInt", std::to_string(p_node->value), t+1);
-            break;
-        }
-        case AST_T::CConstULong_t: {
-            field("CConstULong", "", ++t);
-            CConstULong* p_node = static_cast<CConstULong*>(node);
-            field("TULong", std::to_string(p_node->value), t+1);
-            break;
-        }
         case AST_T::CUnaryOp_t: {
             field("CUnaryOp", "", ++t);
             break;
@@ -344,7 +344,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CAbstractArray_t: {
             field("CAbstractArray", "", ++t);
             CAbstractArray* p_node = static_cast<CAbstractArray*>(node);
-            field("TInt", std::to_string(p_node->size), t+1);
+            print_ast(p_node->size.get(), t);
             print_ast(p_node->abstract_declarator.get(), t);
             break;
         }
@@ -378,7 +378,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CArrayDeclarator_t: {
             field("CArrayDeclarator", "", ++t);
             CArrayDeclarator* p_node = static_cast<CArrayDeclarator*>(node);
-            field("TInt", std::to_string(p_node->size), t+1);
+            print_ast(p_node->size.get(), t);
             print_ast(p_node->declarator.get(), t);
             break;
         }

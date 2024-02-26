@@ -13,6 +13,14 @@ class List: name = "List"
 
 ast = [
 
+    # /include/ast/ast.hpp
+    ["CConst", [], []],
+    ["CConstInt", [(TInt, "value")], []],
+    ["CConstLong", [(TLong, "value")], []],
+    ["CConstDouble", [(TDouble, "value")], []],
+    ["CConstUInt", [(TUInt, "value")], []],
+    ["CConstULong", [(TULong, "value")], []],
+
     # /include/ast/front_symt.hpp
     ["Type", [], []],
     ["Int", [], []],
@@ -22,7 +30,7 @@ ast = [
     ["ULong", [], []],
     ["FunType", [], ["[param_types", "ret_type"]],
     ["Pointer", [], ["ref_type"]],
-    ["Array", [(TInt, "size")], ["elem_type"]],
+    ["Array", [], ["size", "elem_type"]],
     ["StaticInit", [], []],
     ["IntInit", [(TInt, "value")], []],
     ["LongInit", [(TLong, "value")], []],
@@ -49,12 +57,6 @@ ast = [
     ["BackendFun", [(Bool, "is_defined")], []],
 
     # /include/ast/front_ast.hpp
-    ["CConst", [], []],
-    ["CConstInt", [(TInt, "value")], []],
-    ["CConstLong", [(TLong, "value")], []],
-    ["CConstDouble", [(TDouble, "value")], []],
-    ["CConstUInt", [(TUInt, "value")], []],
-    ["CConstULong", [(TULong, "value")], []],
     ["CUnaryOp", [], []],
     ["CComplement", [], []],
     ["CNegate", [], []],
@@ -80,13 +82,13 @@ ast = [
     ["CGreaterOrEqual", [], []],
     ["CAbstractDeclarator", [], []],
     ["CAbstractPointer", [], ["abstract_declarator"]],
-    ["CAbstractArray", [(TInt, "size")], ["abstract_declarator"]],
+    ["CAbstractArray", [], ["size", "abstract_declarator"]],
     ["CAbstractBase", [], []],
     ["CParam", [], ["declarator", "param_type"]],
     ["CDeclarator", [], []],
     ["CIdent", [(TIdentifier, "name")], []],
     ["CPointerDeclarator", [], ["declarator"]],
-    ["CArrayDeclarator", [(TInt, "size")], ["declarator"]],
+    ["CArrayDeclarator", [], ["size", "declarator"]],
     ["CFunDeclarator", [], ["[param_list", "declarator"]],
     ["CExp", [], ["exp_type"]],
     ["CConstant", [], ["constant", "exp_type"]],
