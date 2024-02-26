@@ -421,7 +421,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
 
 static std::shared_ptr<Type> parse_type_specifier();
 
-static std::unique_ptr<CExp> parse_factor();
+static std::unique_ptr<CExp> parse_unary_exp_factor();
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence);
 
 // <argument-list> ::= <exp> { "," <exp> }
@@ -453,6 +453,7 @@ static void parse_abstract_declarator_cast_factor(std::shared_ptr<Type>& target_
 
 // "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <factor>
 static std::unique_ptr<CCast> parse_cast_factor() {
+    pop_next();
     std::shared_ptr<Type> target_type = parse_type_specifier();
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
@@ -462,7 +463,7 @@ static std::unique_ptr<CCast> parse_cast_factor() {
             break;
     }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    std::unique_ptr<CExp> exp = parse_factor();
+    std::unique_ptr<CExp> exp = parse_unary_exp_factor();
     return std::make_unique<CCast>(std::move(exp), std::move(target_type));
 }
 
@@ -478,11 +479,12 @@ static std::unique_ptr<CConstant> parse_unsigned_constant_factor() {
 
 static std::unique_ptr<CUnary> parse_unary_factor() {
     std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
-    std::unique_ptr<CExp> exp = parse_factor();
+    std::unique_ptr<CExp> exp = parse_unary_exp_factor();
     return std::make_unique<CUnary>(std::move(unary_op), std::move(exp));
 }
 
 static std::unique_ptr<CExp> parse_inner_exp_factor() {
+    pop_next();
     std::unique_ptr<CExp> inner_exp = parse_exp(0);
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     return inner_exp;
@@ -502,11 +504,11 @@ static std::unique_ptr<CExp> parse_function_call_factor() {
 static std::unique_ptr<CExp> parse_pointer_factor() {
     switch(pop_next().token_kind) {
         case TOKEN_KIND::binop_multiplication: {
-            std::unique_ptr<CExp> exp = parse_factor();
+            std::unique_ptr<CExp> exp = parse_unary_exp_factor();
             return std::make_unique<CDereference>(std::move(exp));
         }
         case TOKEN_KIND::binop_bitand: {
-            std::unique_ptr<CExp> exp = parse_factor();
+            std::unique_ptr<CExp> exp = parse_unary_exp_factor();
             return std::make_unique<CAddrOf>(std::move(exp));
         }
         default:
@@ -515,16 +517,9 @@ static std::unique_ptr<CExp> parse_pointer_factor() {
     }
 }
 
-// <factor> ::= <const> | <identifier> | "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <factor>
-//            | <unop> <factor> | "(" <exp> ")" | <identifier> "(" [ <argument-list> ] ")"
-static std::unique_ptr<CExp> parse_factor() {
+// <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | <identifier> "(" [ <argument-list> ] ")"
+static std::unique_ptr<CExp> parse_primary_exp_factor() {
     switch(peek_next().token_kind) {
-        case TOKEN_KIND::identifier: {
-            if(peek_next_i(1).token_kind == TOKEN_KIND::parenthesis_open) {
-                return parse_function_call_factor();
-            }
-            return parse_var_factor();
-        }
         case TOKEN_KIND::constant:
         case TOKEN_KIND::long_constant:
         case TOKEN_KIND::float_constant:
@@ -532,6 +527,36 @@ static std::unique_ptr<CExp> parse_factor() {
         case TOKEN_KIND::unsigned_constant:
         case TOKEN_KIND::unsigned_long_constant:
             return parse_unsigned_constant_factor();
+        case TOKEN_KIND::identifier: {
+            if(peek_next_i(1).token_kind == TOKEN_KIND::parenthesis_open) {
+                return parse_function_call_factor();
+            }
+            return parse_var_factor();
+        }
+        case TOKEN_KIND::parenthesis_open:
+            return parse_inner_exp_factor();
+        default:
+            break;
+    }
+    raise_runtime_error_at_line("Expected token type " + em("factor") +
+                                " but found token " + em(next_token->token), next_token->line);
+}
+
+// <postfix-exp> ::= <primary-exp> { "[" <exp> "]" }
+static std::unique_ptr<CExp> parse_postfix_exp_factor() {
+    std::unique_ptr<CExp> primary_exp = parse_primary_exp_factor();
+    while(peek_next().token_kind == TOKEN_KIND::brackets_open) {
+        pop_next();
+        parse_exp(0);
+        expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+    }
+    return primary_exp;
+}
+
+// <unary-exp> ::= <unop> <unary-exp> | "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <unary-exp>
+//               | <postfix-exp>
+static std::unique_ptr<CExp> parse_unary_exp_factor() {
+    switch(peek_next().token_kind) {
         case TOKEN_KIND::unop_complement:
         case TOKEN_KIND::unop_negation:
         case TOKEN_KIND::unop_not:
@@ -539,23 +564,23 @@ static std::unique_ptr<CExp> parse_factor() {
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::binop_bitand:
             return parse_pointer_factor();
+        case TOKEN_KIND::parenthesis_open: {
+            switch(peek_next_i(1).token_kind) {
+                case TOKEN_KIND::key_int:
+                case TOKEN_KIND::key_long:
+                case TOKEN_KIND::key_double:
+                case TOKEN_KIND::key_unsigned:
+                case TOKEN_KIND::key_signed:
+                    return parse_cast_factor();
+                default:
+                    break;
+            }
+            break;
+        }
         default:
             break;
     }
-    if(pop_next().token_kind == TOKEN_KIND::parenthesis_open) {
-        switch(peek_next().token_kind) {
-            case TOKEN_KIND::key_int:
-            case TOKEN_KIND::key_long:
-            case TOKEN_KIND::key_double:
-            case TOKEN_KIND::key_unsigned:
-            case TOKEN_KIND::key_signed:
-                return parse_cast_factor();
-            default:
-                return parse_inner_exp_factor();
-        }
-    }
-    raise_runtime_error_at_line("Expected token type " + em("factor") +
-                                " but found token " + em(next_token->token), next_token->line);
+    return parse_postfix_exp_factor();
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
@@ -595,7 +620,7 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
 //     | FunctionCall(identifier, exp*, type) | Dereference(exp, type) | AddrOf(exp, type)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     int32_t precedence;
-    std::unique_ptr<CExp> exp_left = parse_factor();
+    std::unique_ptr<CExp> exp_left = parse_unary_exp_factor();
     while(true) {
         precedence = parse_token_precedence(peek_next().token_kind);
         if(precedence < min_precedence) {
