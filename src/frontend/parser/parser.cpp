@@ -231,6 +231,26 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
     return parse_ulong_constant(std::move(value));
 }
 
+static std::shared_ptr<CConst> parse_array_size_constant() {
+    expect_next_is(pop_next(), TOKEN_KIND::brackets_open);
+    std::shared_ptr<CConst> size;
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::constant:
+        case TOKEN_KIND::long_constant:
+            size = parse_constant();
+            break;
+        case TOKEN_KIND::unsigned_constant:
+        case TOKEN_KIND::unsigned_long_constant:
+            size = parse_unsigned_constant();
+            break;
+        default:
+            raise_runtime_error_at_line("Size of array declarator suffix must be a constant integer",
+                                        peek_token->line);
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+    return size;
+}
+
 // <unop> ::= "-" | "~" | "!" | "*" | "&"
 // unary_operator = Complement | Negate | Not
 static std::unique_ptr<CUnaryOp> parse_unary_op() {
@@ -315,6 +335,14 @@ static void parse_process_pointer_abstract_declarator(CAbstractPointer* node, st
                                       abstract_declarator);
 }
 
+static void parse_process_array_abstract_declarator(CAbstractArray* node, std::shared_ptr<Type> base_type,
+                                                    AbstractDeclarator& abstract_declarator) {
+    std::shared_ptr<CConst> size = node->size;
+    std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
+    parse_process_abstract_declarator(node->abstract_declarator.get(), std::move(derived_type),
+                                      abstract_declarator);
+}
+
 static void parse_process_base_abstract_declarator(std::shared_ptr<Type> base_type,
                                                    AbstractDeclarator& abstract_declarator) {
     abstract_declarator.derived_type = std::move(base_type);
@@ -327,6 +355,10 @@ static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::sh
             parse_process_pointer_abstract_declarator(static_cast<CAbstractPointer*>(node), std::move(base_type),
                                                       abstract_declarator);
             break;
+        case AST_T::CAbstractArray_t:
+            parse_process_array_abstract_declarator(static_cast<CAbstractArray*>(node), std::move(base_type),
+                                                    abstract_declarator);
+            break;
         case AST_T::CAbstractBase_t:
             parse_process_base_abstract_declarator(std::move(base_type), abstract_declarator);
             break;
@@ -337,11 +369,23 @@ static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::sh
 
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator();
 
-// <direct-abstract-declarator> ::= "(" <abstract-declarator> ")"
+static std::unique_ptr<CAbstractDeclarator> parse_array_direct_abstract_declarator() {
+    std::unique_ptr<CAbstractDeclarator> abstract_declarator = std::make_unique<CAbstractBase>();
+    do {
+        std::shared_ptr<CConst> size = parse_array_size_constant();
+        abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
+    } while(peek_next().token_kind == TOKEN_KIND::brackets_open);
+    return abstract_declarator;
+}
+
 static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_declarator() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_declarator();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    while(peek_next().token_kind == TOKEN_KIND::brackets_open) {
+        std::shared_ptr<CConst> size = parse_array_size_constant();
+        abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
+    }
     return abstract_declarator;
 }
 
@@ -357,6 +401,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_pointer_abstract_declarator() 
     return std::make_unique<CAbstractPointer>(std::move(abstract_declarator));
 }
 
+// <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } | { "[" <const> "]" }+
 // <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
 // abstract_declarator = AbstractPointer(abstract_declarator) | AbstractBase
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
@@ -365,6 +410,8 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
             return parse_pointer_abstract_declarator();
         case TOKEN_KIND::parenthesis_open:
             return parse_direct_abstract_declarator();
+        case TOKEN_KIND::brackets_open:
+            return parse_array_direct_abstract_declarator();
         default:
             raise_runtime_error_at_line("Expected token type " + em("abstract declarator") +
                                         " but found token " + em(peek_token->token),
@@ -980,6 +1027,13 @@ static void parse_process_pointer_declarator(CPointerDeclarator* node, std::shar
     parse_process_declarator(node->declarator.get(), std::move(derived_type), declarator);
 }
 
+static void parse_process_array_declarator(CArrayDeclarator* node, std::shared_ptr<Type> base_type,
+                                           Declarator& declarator) {
+    std::shared_ptr<CConst> size = node->size;
+    std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
+    parse_process_declarator(node->declarator.get(), std::move(derived_type), declarator);
+}
+
 static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<Type> base_type,
                                          Declarator& declarator) {
     if(node->declarator->type() != AST_T::CIdent_t) {
@@ -1015,6 +1069,10 @@ static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> ba
         case AST_T::CPointerDeclarator_t:
             parse_process_pointer_declarator(static_cast<CPointerDeclarator*>(node), std::move(base_type),
                                              declarator);
+            break;
+        case AST_T::CArrayDeclarator_t:
+            parse_process_array_declarator(static_cast<CArrayDeclarator*>(node), std::move(base_type),
+                                           declarator);
             break;
         case AST_T::CFunDeclarator_t:
             parse_process_fun_declarator(static_cast<CFunDeclarator*>(node), std::move(base_type), declarator);
@@ -1078,7 +1136,7 @@ static std::vector<std::unique_ptr<CParam>> parse_non_empty_param_list() {
 
 // <param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")"
 static std::vector<std::unique_ptr<CParam>> parse_param_list() {
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    pop_next();
     std::vector<std::unique_ptr<CParam>> param_list;
     switch(peek_next().token_kind) {
         case TOKEN_KIND::key_void: {
@@ -1108,24 +1166,11 @@ static std::unique_ptr<CDeclarator> parse_fun_declarator_suffix(std::unique_ptr<
 }
 
 static std::unique_ptr<CDeclarator> parse_array_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
-    // TODO
-//    pop_next();
-//    switch(peek) {
-//
-//    }
-//    expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
-//    switch(peek_next().token_kind) {
-//        case TOKEN_KIND::constant:
-//        case TOKEN_KIND::long_constant:
-//            return parse_constant_factor();
-//        case TOKEN_KIND::unsigned_constant:
-//        case TOKEN_KIND::unsigned_long_constant:
-//            return parse_unsigned_constant_factor();
-//        default:
-//            raise_runtime_error_at_line("Dimension in array declarator suffix must be a constant integer",
-//                                        peek_token->line);
-//    }
-    return nullptr;
+    do {
+        std::shared_ptr<CConst> size = parse_array_size_constant();
+        declarator = std::make_unique<CArrayDeclarator>(std::move(size), std::move(declarator));
+    } while(peek_next().token_kind == TOKEN_KIND::brackets_open);
+    return declarator;
 }
 
 // <declarator-suffix> ::= <param-list> | { "[" <const> "]" }+
@@ -1222,8 +1267,7 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
 }
 
 // <declaration> ::= <variable-declaration> | <function-declaration>
-// declaration = FunDecl(function_declaration)
-//             | VarDecl(variable_declaration)
+// declaration = FunDecl(function_declaration) | VarDecl(variable_declaration)
 static std::unique_ptr<CDeclaration> parse_declaration() {
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
