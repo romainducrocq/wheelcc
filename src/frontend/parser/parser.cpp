@@ -369,6 +369,7 @@ static void parse_process_abstract_declarator(CAbstractDeclarator* node, std::sh
 
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator();
 
+// (array) <direct-abstract-declarator> ::= { "[" <const> "]" }+
 static std::unique_ptr<CAbstractDeclarator> parse_array_direct_abstract_declarator() {
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = std::make_unique<CAbstractBase>();
     do {
@@ -378,6 +379,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_array_direct_abstract_declarat
     return abstract_declarator;
 }
 
+// (direct) <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" }
 static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_declarator() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_declarator();
@@ -401,9 +403,8 @@ static std::unique_ptr<CAbstractDeclarator> parse_pointer_abstract_declarator() 
     return std::make_unique<CAbstractPointer>(std::move(abstract_declarator));
 }
 
-// <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } | { "[" <const> "]" }+
 // <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
-// abstract_declarator = AbstractPointer(abstract_declarator) | AbstractBase
+// abstract_declarator = AbstractPointer(abstract_declarator) | AbstractArray(int, abstract_declarator) | AbstractBase
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
@@ -615,10 +616,10 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
     return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right));
 }
 
-// <exp> ::= <factor> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
+// <exp> ::= <unary-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 // exp = Constant(const, type) | Var(identifier, type) | Cast(type, exp, type) | Unary(unary_operator, exp, type)
 //     | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type) | Conditional(exp, exp, exp, type)
-//     | FunctionCall(identifier, exp*, type) | Dereference(exp, type) | AddrOf(exp, type)
+//     | FunctionCall(identifier, exp*, type) | Dereference(exp, type) | AddrOf(exp, type) | Subscript(exp, exp)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     int32_t precedence;
     std::unique_ptr<CExp> exp_left = parse_unary_exp_factor();
@@ -1073,6 +1074,7 @@ static std::unique_ptr<CCompoundInit> parse_compound_initializer() {
 }
 
 // <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [","] "}"
+// initializer = SingleInit(exp) | CompoundInit(initializer*)
 static std::unique_ptr<CInitializer> parse_initializer() {
     if(peek_next().token_kind == TOKEN_KIND::brace_open) {
         return parse_compound_initializer();
@@ -1229,11 +1231,13 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
     return param_list;
 }
 
+// (fun) <declarator-suffix> ::= <param-list>
 static std::unique_ptr<CDeclarator> parse_fun_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
     std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
     return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
 }
 
+// (array) <declarator-suffix> ::= { "[" <const> "]" }+
 static std::unique_ptr<CDeclarator> parse_array_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
     do {
         std::shared_ptr<CConst> size = parse_array_size_constant();
@@ -1242,7 +1246,6 @@ static std::unique_ptr<CDeclarator> parse_array_declarator_suffix(std::unique_pt
     return declarator;
 }
 
-// <declarator-suffix> ::= <param-list> | { "[" <const> "]" }+
 // <direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
 static std::unique_ptr<CDeclarator> parse_direct_declarator() {
     std::unique_ptr<CDeclarator> declarator = parse_simple_declarator();
@@ -1265,7 +1268,8 @@ static std::unique_ptr<CDeclarator> parse_pointer_declarator() {
 }
 
 // <declarator> ::= "*" <declarator> | <direct-declarator>
-// declarator = Ident(identifier) | PointerDeclarator(declarator) | FunDeclarator(param_info* params, declarator)
+// declarator = Ident(identifier) | PointerDeclarator(declarator) | ArrayDeclarator(int, declarator)
+//            | FunDeclarator(param_info* params, declarator)
 static std::unique_ptr<CDeclarator> parse_declarator() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
@@ -1292,8 +1296,8 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
                                                   std::move(storage_class));
 }
 
-// <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <exp> ] ";"
-// variable_declaration = VariableDeclaration(identifier name, exp? init, type var_type, storage_class?)
+// <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
+// variable_declaration = VariableDeclaration(identifier name, initializer? init, type var_type, storage_class?)
 static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<CStorageClass> storage_class,
                                                                         Declarator&& declarator) {
     std::unique_ptr<CInitializer> init;
