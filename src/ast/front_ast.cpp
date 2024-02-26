@@ -76,7 +76,7 @@ AST_T CStatic::type() { return AST_T::CStatic_t; }
 AST_T CExtern::type() { return AST_T::CExtern_t; }
 AST_T CInitializer::type() { return AST_T::CInitializer_t; }
 AST_T CSingleInit::type() { return AST_T::CSingleInit_t; }
-AST_T CompoundInit::type() { return AST_T::CompoundInit_t; }
+AST_T CCompoundInit::type() { return AST_T::CCompoundInit_t; }
 AST_T CFunctionDeclaration::type() { return AST_T::CFunctionDeclaration_t; }
 AST_T CVariableDeclaration::type() { return AST_T::CVariableDeclaration_t; }
 AST_T CDeclaration::type() { return AST_T::CDeclaration_t; }
@@ -190,7 +190,7 @@ CD::CD(std::unique_ptr<CDeclaration> declaration)
 CSingleInit::CSingleInit(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
 
-CompoundInit::CompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers)
+CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers)
     : initializers(std::move(initializers)) {}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,

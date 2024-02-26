@@ -232,7 +232,7 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
 }
 
 static std::shared_ptr<CConst> parse_array_size_constant() {
-    expect_next_is(pop_next(), TOKEN_KIND::brackets_open);
+    pop_next();
     std::shared_ptr<CConst> size;
     switch(peek_next().token_kind) {
         case TOKEN_KIND::constant:
@@ -1010,6 +1010,41 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
             raise_runtime_error_at_line("Expected token type " + em("storage class") +
                                         " but found token " + em(next_token->token),
                                         next_token->line);
+    }
+}
+
+static std::unique_ptr<CInitializer> parse_initializer();
+
+static std::unique_ptr<CSingleInit> parse_single_initializer() {
+    std::unique_ptr<CExp> exp = parse_exp(0);
+    return std::make_unique<CSingleInit>(std::move(exp));
+}
+
+static std::unique_ptr<CCompoundInit> parse_compound_initializer() {
+    pop_next();
+    std::vector<std::unique_ptr<CInitializer>> initializers;
+    while(true) {
+        if(peek_next().token_kind == TOKEN_KIND::brace_close) {
+            break;
+        }
+        std::unique_ptr<CInitializer> initializer = parse_initializer();
+        initializers.push_back(std::move(initializer));
+        if(peek_next().token_kind == TOKEN_KIND::brace_close) {
+            break;
+        }
+        expect_next_is(pop_next(), TOKEN_KIND::separator_comma);
+    }
+    pop_next();
+    return std::make_unique<CCompoundInit>(std::move(initializers));
+}
+
+// <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [","] "}"
+static std::unique_ptr<CInitializer> parse_initializer() {
+    if(peek_next().token_kind == TOKEN_KIND::brace_open) {
+        return parse_compound_initializer();
+    }
+    else {
+        return parse_single_initializer();
     }
 }
 

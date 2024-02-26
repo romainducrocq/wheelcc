@@ -118,7 +118,7 @@ enum AST_T {
     CExtern_t,
     CInitializer_t,
     CSingleInit_t,
-    CompoundInit_t,
+    CCompoundInit_t,
     CFunctionDeclaration_t,
     CVariableDeclaration_t,
     CDeclaration_t,

@@ -128,7 +128,7 @@ ast = [
     ["CExtern", [], []],
     ["CInitializer", [], ["init_type"]],
     ["CSingleInit", [], ["exp", "init_type"]],
-    ["CompoundInit", [], ["[initializers", "init_type"]],
+    ["CCompoundInit", [], ["[initializers", "init_type"]],
     ["CFunctionDeclaration", [(TIdentifier, "name"), (TIdentifier, "[params")], ["body", "fun_type", "storage_class"]],
     ["CVariableDeclaration", [(TIdentifier, "name")], ["init", "var_type", "storage_class"]],
     ["CDeclaration", [], []],

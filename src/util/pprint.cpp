@@ -642,9 +642,9 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->init_type.get(), t);
             break;
         }
-        case AST_T::CompoundInit_t: {
-            field("CompoundInit", "", ++t);
-            CompoundInit* p_node = static_cast<CompoundInit*>(node);
+        case AST_T::CCompoundInit_t: {
+            field("CCompoundInit", "", ++t);
+            CCompoundInit* p_node = static_cast<CCompoundInit*>(node);
             field("List[" + std::to_string(p_node->initializers.size()) + "]", "", t+1);
             for(const auto& item: p_node->initializers) {
                 print_ast(item.get(), t+1);
