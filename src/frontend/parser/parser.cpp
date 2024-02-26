@@ -458,6 +458,7 @@ static std::unique_ptr<CCast> parse_cast_factor() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::parenthesis_open:
+        case TOKEN_KIND::brackets_open:
             parse_abstract_declarator_cast_factor(target_type);
         default:
             break;
@@ -939,6 +940,14 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::parenthesis_open:
                 specifier += 1;
                 break;
+            case TOKEN_KIND::brackets_open: {
+                specifier += 1;
+                while(peek_next_i(specifier).token_kind != TOKEN_KIND::brackets_close) {
+                    specifier += 1;
+                }
+                specifier += 1;
+                break;
+            }
             default:
                 raise_runtime_error_at_line("Expected token type " + em("specifier") +
                                             " but found token " + peek_next_i(specifier).token,
@@ -1287,10 +1296,10 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
 // variable_declaration = VariableDeclaration(identifier name, exp? init, type var_type, storage_class?)
 static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::unique_ptr<CStorageClass> storage_class,
                                                                         Declarator&& declarator) {
-    std::unique_ptr<CExp> init;
+    std::unique_ptr<CInitializer> init;
     if(peek_next().token_kind == TOKEN_KIND::assignment_simple) {
         pop_next();
-        init = parse_exp(0);
+        init = parse_initializer();
     }
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CVariableDeclaration>(std::move(declarator.name), std::move(init),

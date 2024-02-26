@@ -626,15 +626,16 @@ struct CFunctionDeclaration : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// variable_declaration = VariableDeclaration(identifier name, exp? init, type var_type, storage_class?)
+// variable_declaration = VariableDeclaration(identifier name, initializer? init, type var_type, storage_class?)
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
-    CVariableDeclaration(TIdentifier name, std::unique_ptr<CExp> init, std::shared_ptr<Type> var_type,
+    CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer> init, std::shared_ptr<Type> var_type,
                          std::unique_ptr<CStorageClass> storage_class);
 
     TIdentifier name;
-    std::unique_ptr<CExp> init;
+    // Optional
+    std::unique_ptr<CInitializer> init;
     std::shared_ptr<Type> var_type;
     std::unique_ptr<CStorageClass> storage_class;
 };

@@ -199,7 +199,7 @@ CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdenti
     : name(std::move(name)), params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
       storage_class(std::move(storage_class)) {}
 
-CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CExp> init,
+CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer> init,
                                            std::shared_ptr<Type> var_type,
                                            std::unique_ptr<CStorageClass> storage_class)
     :  name(std::move(name)), init(std::move(init)), var_type(std::move(var_type)),
