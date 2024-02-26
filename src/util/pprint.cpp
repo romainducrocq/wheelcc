@@ -158,6 +158,12 @@ static void print_ast(Ast* node, size_t t) {
             field("TULong", std::to_string(p_node->value), t+1);
             break;
         }
+        case AST_T::ZeroInit_t: {
+            field("ZeroInit", "", ++t);
+            ZeroInit* p_node = static_cast<ZeroInit*>(node);
+            field("TInt", std::to_string(p_node->bytes), t+1);
+            break;
+        }
         case AST_T::InitialValue_t: {
             field("InitialValue", "", ++t);
             break;
@@ -169,7 +175,10 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::Initial_t: {
             field("Initial", "", ++t);
             Initial* p_node = static_cast<Initial*>(node);
-            print_ast(p_node->static_init.get(), t);
+            field("List[" + std::to_string(p_node->static_init_list.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_init_list) {
+                print_ast(item.get(), t+1);
+            }
             break;
         }
         case AST_T::NoInitializer_t: {

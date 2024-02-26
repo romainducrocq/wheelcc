@@ -74,6 +74,7 @@ struct Array : Type {
 //             | DoubleInit(double, int)
 //             | UIntInit(int)
 //             | ULongInit(int)
+//             | ZeroInit(int)
 struct StaticInit : Ast {
     AST_T type() override;
 };
@@ -120,10 +121,18 @@ struct ULongInit : StaticInit {
     TULong value;
 };
 
+struct ZeroInit : StaticInit {
+    AST_T type() override;
+    ZeroInit() = default;
+    ZeroInit(TInt bytes);
+
+    TInt bytes;
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // initial_value = Tentative
-//               | Initial(static_init)
+//               | Initial(static_init*)
 //               | NoInitializer
 struct InitialValue : Ast {
     AST_T type() override;
@@ -136,9 +145,9 @@ struct Tentative : InitialValue {
 struct Initial : InitialValue {
     AST_T type() override;
     Initial() = default;
-    Initial(std::shared_ptr<StaticInit> static_init);
+    Initial(std::vector<std::shared_ptr<StaticInit>> static_init_list);
 
-    std::shared_ptr<StaticInit> static_init;
+    std::vector<std::shared_ptr<StaticInit>> static_init_list;
 };
 
 struct NoInitializer : InitialValue {

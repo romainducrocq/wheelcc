@@ -20,6 +20,7 @@ AST_T LongInit::type() { return AST_T::LongInit_t; }
 AST_T DoubleInit::type() { return AST_T::DoubleInit_t; }
 AST_T UIntInit::type() { return AST_T::UIntInit_t; }
 AST_T ULongInit::type() { return AST_T::ULongInit_t; }
+AST_T ZeroInit::type() { return AST_T::ZeroInit_t; }
 AST_T InitialValue::type() { return AST_T::InitialValue_t; }
 AST_T Tentative::type() { return AST_T::Tentative_t; }
 AST_T Initial::type() { return AST_T::Initial_t; }
@@ -56,8 +57,11 @@ UIntInit::UIntInit(TUInt value)
 ULongInit::ULongInit(TULong value)
     : value(value) {}
 
-Initial::Initial(std::shared_ptr<StaticInit> static_init)
-    : static_init(std::move(static_init)) {}
+ZeroInit::ZeroInit(TInt bytes)
+    : bytes(bytes) {}
+
+Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_init_list)
+    : static_init_list(std::move(static_init_list)) {}
 
 FunAttr::FunAttr(bool is_defined, bool is_global)
     : is_defined(is_defined), is_global(is_global) {}
