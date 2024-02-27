@@ -573,11 +573,33 @@ static void checktype_return_statement(CReturn* node) {
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
-static void checktype_init_block_scope_variable_declaration(CSingleInit* node, std::shared_ptr<Type>& var_type) {
-    if(!is_same_type(node->exp->exp_type.get(), var_type.get())) {
-        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), var_type);
+static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* elem_type) {
+    // TODO
+    return nullptr;
+}
+
+static void checktype_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
+    if(!is_same_type(node->exp->exp_type.get(), init_type.get())) {
+        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), init_type);
         node->exp = std::move(exp);
     }
+    node->init_type = init_type;
+}
+
+static void checktype_size_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
+    if(node->initializers.size() > arr_type->size) {
+        raise_runtime_error("Array of size " + em(std::to_string(arr_type->size)) +
+                            "was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
+    }
+}
+
+static void checktype_array_compound_init_initializer(CCompoundInit* node, Array* arr_type,
+                                                      std::shared_ptr<Type>& init_type) {
+    while(node->initializers.size() < arr_type->size) {
+        std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(arr_type->elem_type.get());
+        node->initializers.push_back(std::move(zero_initializer));
+    }
+    node->init_type = init_type;
 }
 
 static std::unique_ptr<Symbol> checktype_param(FunType* fun_type, size_t param) {
@@ -1414,32 +1436,43 @@ static void resolve_block(CBlock* node) {
     }
 }
 
-static void resolve_single_init(CSingleInit* node, std::shared_ptr<Type>& var_type) {
+static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type);
+
+static void resolve_single_init_initializer(CSingleInit* node) {
     node->exp = resolve_expression(std::move(node->exp));
-    checktype_init_block_scope_variable_declaration(node, var_type);
 }
 
-static void resolve_array_compound_init(CCompoundInit* node, std::shared_ptr<Type>& var_type) {
-    // TODO
-}
+static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
+    checktype_size_array_compound_init_initializer(node, arr_type);
 
-static void resolve_compound_init(CCompoundInit* node, std::shared_ptr<Type>& var_type) {
-    switch(var_type->type()) {
-        case AST_T::Array_t:
-            resolve_array_compound_init(node, var_type);
-            break;
-        default:
-            raise_runtime_error("Compound Initializer can not be initialized with scalar type");
+    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
+        resolve_initializer(node->initializers[initializer].get(), arr_type->elem_type);
     }
 }
 
-static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& var_type) {
-    switch(node->type()) {
-        case AST_T::CSingleInit_t:
-            resolve_single_init(static_cast<CSingleInit*>(node), var_type);
+static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_ptr<Type>& init_type) {
+    switch(init_type->type()) {
+        case AST_T::Array_t: {
+            Array* arr_type = static_cast<Array*>(init_type.get());
+            resolve_array_compound_init_initializer(node, arr_type);
+            checktype_array_compound_init_initializer(node, arr_type, init_type);
             break;
+        }
+        default:
+            raise_runtime_error("Compound initializer can not be initialized with scalar type");
+    }
+}
+
+static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type) {
+    switch(node->type()) {
+        case AST_T::CSingleInit_t: {
+            CSingleInit* p_node = static_cast<CSingleInit*>(node);
+            resolve_single_init_initializer(p_node);
+            checktype_single_init_initializer(p_node, init_type);
+            break;
+        }
         case AST_T::CCompoundInit_t:
-            resolve_compound_init(static_cast<CCompoundInit*>(node), var_type);
+            resolve_compound_init_initializer(static_cast<CCompoundInit*>(node), init_type);
             break;
         default:
             RAISE_INTERNAL_ERROR;

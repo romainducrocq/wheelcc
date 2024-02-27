@@ -63,7 +63,7 @@ struct Array : Type {
     Array() = default;
     Array(TULong size, std::shared_ptr<Type> elem_type);
 
-    TLong size;
+    TULong size;
     std::shared_ptr<Type> elem_type;
 };
 

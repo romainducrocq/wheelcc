@@ -30,7 +30,7 @@ ast = [
     ["ULong", [], []],
     ["FunType", [], ["[param_types", "ret_type"]],
     ["Pointer", [], ["ref_type"]],
-    ["Array", [(TLong, "size")], ["elem_type"]],
+    ["Array", [(TULong, "size")], ["elem_type"]],
     ["StaticInit", [], []],
     ["IntInit", [(TInt, "value")], []],
     ["LongInit", [(TLong, "value")], []],

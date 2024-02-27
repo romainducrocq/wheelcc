@@ -119,7 +119,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::Array_t: {
             field("Array", "", ++t);
             Array* p_node = static_cast<Array*>(node);
-            field("TLong", std::to_string(p_node->size), t+1);
+            field("TULong", std::to_string(p_node->size), t+1);
             print_ast(p_node->elem_type.get(), t);
             break;
         }
