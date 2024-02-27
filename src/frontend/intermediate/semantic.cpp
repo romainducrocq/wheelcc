@@ -56,6 +56,18 @@ static bool is_type_signed(Type* type_1) {
     }
 }
 
+static bool is_type_integer(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static bool is_type_arithmetic(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
@@ -103,6 +115,7 @@ static bool is_exp_lvalue(CExp* node) {
     switch(node->type()) {
         case AST_T::CVar_t:
         case AST_T::CDereference_t:
+        case AST_T::CSubscript_t:
             return true;
         default:
             return false;
@@ -423,8 +436,30 @@ static void checktype_addrof_expression(CAddrOf* node) {
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
 }
 
-static void checktype_subscript_expression(CSubscript* /*node*/) {
-    // TODO
+static void checktype_subscript_expression(CSubscript* node) {
+    std::shared_ptr<Type> ref_type;
+    if(node->primary_exp->exp_type->type() == AST_T::Pointer_t &&
+       is_type_integer(node->subscript_exp->exp_type.get())) {
+        std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
+        if(!node->subscript_exp->exp_type.get(), subscript_type.get()) {
+            std::unique_ptr<CExp> exp = cast_expression(std::move(node->subscript_exp), subscript_type);
+            node->subscript_exp = std::move(exp);
+        }
+        ref_type = static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type;
+    }
+    else if(is_type_integer(node->primary_exp->exp_type.get()) &&
+            node->subscript_exp->exp_type->type() == AST_T::Pointer_t) {
+        std::shared_ptr<Type> primary_type = std::make_shared<Long>();
+        if(!node->primary_exp->exp_type.get(), primary_type.get()) {
+            std::unique_ptr<CExp> exp = cast_expression(std::move(node->primary_exp), primary_type);
+            node->primary_exp = std::move(exp);
+        }
+        ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
+    }
+    else {
+        raise_runtime_error("Subscript must consist of an integer type operand and a pointer type operand");
+    }
+    node->exp_type = std::move(ref_type);
 }
 
 static std::unique_ptr<CExp> checktype_array_typed_expression(std::unique_ptr<CExp>&& node) {
