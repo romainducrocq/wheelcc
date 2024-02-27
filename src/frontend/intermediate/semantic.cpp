@@ -423,12 +423,34 @@ static void checktype_addrof_expression(CAddrOf* node) {
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
 }
 
+static std::unique_ptr<CExp> checktype_array_typed_expression(std::unique_ptr<CExp>&& node) {
+    std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
+    std::unique_ptr<CExp> exp = std::make_unique<CAddrOf>(std::move(node));
+    exp->exp_type = std::make_shared<Pointer>(std::move(ref_type));
+    return exp;
+}
+
+static std::unique_ptr<CExp> checktype_pass_typed_expression(std::unique_ptr<CExp>&& node) {
+    std::unique_ptr<CExp> exp = std::move(node);
+    return exp;
+}
+
+static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& node) {
+    switch(node->exp_type->type()) {
+        case Array_t:
+            return checktype_array_typed_expression(std::move(node));
+        default:
+            return checktype_pass_typed_expression(std::move(node));
+    }
+}
+
 static void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
     if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
         std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
         node->exp = std::move(exp);
     }
+    node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
 static std::unique_ptr<Symbol> checktype_param(FunType* fun_type, size_t param) {
@@ -1058,13 +1080,12 @@ static std::unique_ptr<CExp> resolve_expression(std::unique_ptr<CExp>&& node) {
             CAddrOf* p_node = static_cast<CAddrOf*>(node.get());
             resolve_addrof_expression(p_node);
             checktype_addrof_expression(p_node);
-            break;
+            return checktype_pass_typed_expression(std::move(node));
         }
         default:
             RAISE_INTERNAL_ERROR;
     }
-    std::unique_ptr<CExp> exp = std::move(node);
-    return exp;
+    return checktype_typed_expression(std::move(node));
 }
 
 static void resolve_block(CBlock* node);
