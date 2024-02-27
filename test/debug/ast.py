@@ -102,7 +102,7 @@ ast = [
     ["CFunctionCall", [(TIdentifier, "name")], ["[args", "exp_type"]],
     ["CDereference", [], ["exp", "exp_type"]],
     ["CAddrOf", [], ["exp", "exp_type"]],
-    ["CSubscript", [], ["exp", "exp_index", "exp_type"]],
+    ["CSubscript", [], ["exp_1", "exp_2", "exp_type"]],
     ["CStatement", [], []],
     ["CReturn", [], ["exp"]],
     ["CExpression", [], ["exp"]],

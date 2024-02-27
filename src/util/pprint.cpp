@@ -491,8 +491,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CSubscript_t: {
             field("CSubscript", "", ++t);
             CSubscript* p_node = static_cast<CSubscript*>(node);
-            print_ast(p_node->exp.get(), t);
-            print_ast(p_node->exp_index.get(), t);
+            print_ast(p_node->exp_1.get(), t);
+            print_ast(p_node->exp_2.get(), t);
             print_ast(p_node->exp_type.get(), t);
             break;
         }

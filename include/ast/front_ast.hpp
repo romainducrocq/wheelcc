@@ -355,10 +355,10 @@ struct CAddrOf : CExp {
 struct CSubscript : CExp {
     AST_T type() override;
     CSubscript() = default;
-    CSubscript(std::unique_ptr<CExp> exp, std::unique_ptr<CExp> exp_index);
+    CSubscript(std::unique_ptr<CExp> exp_1, std::unique_ptr<CExp> exp_2);
 
-    std::unique_ptr<CExp> exp;
-    std::unique_ptr<CExp> exp_index;
+    std::unique_ptr<CExp> exp_1;
+    std::unique_ptr<CExp> exp_2;
     /*
     std::shared_ptr<Type> exp_type;
     */

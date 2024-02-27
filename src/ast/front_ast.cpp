@@ -140,8 +140,8 @@ CDereference::CDereference(std::unique_ptr<CExp> exp)
 CAddrOf::CAddrOf(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
 
-CSubscript::CSubscript(std::unique_ptr<CExp> exp, std::unique_ptr<CExp> exp_index)
-    : exp(std::move(exp)), exp_index(std::move(exp_index)) {}
+CSubscript::CSubscript(std::unique_ptr<CExp> exp_1, std::unique_ptr<CExp> exp_2)
+    : exp_1(std::move(exp_1)), exp_2(std::move(exp_2)) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}

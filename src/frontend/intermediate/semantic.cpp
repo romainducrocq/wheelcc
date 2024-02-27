@@ -423,6 +423,10 @@ static void checktype_addrof_expression(CAddrOf* node) {
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
 }
 
+static void checktype_subscript_expression(CSubscript* /*node*/) {
+    // TODO
+}
+
 static std::unique_ptr<CExp> checktype_array_typed_expression(std::unique_ptr<CExp>&& node) {
     std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
     std::unique_ptr<CExp> exp = std::make_unique<CAddrOf>(std::move(node));
@@ -1023,6 +1027,11 @@ static void resolve_addrof_expression(CAddrOf* node) {
     node->exp = resolve_expression(std::move(node->exp));
 }
 
+static void resolve_subscript_expression(CSubscript* node) {
+    node->exp_1 = resolve_expression(std::move(node->exp_1));
+    node->exp_2 = resolve_expression(std::move(node->exp_2));
+}
+
 static std::unique_ptr<CExp> resolve_expression(std::unique_ptr<CExp>&& node) {
     switch(node->type()) {
         case AST_T::CConstant_t:
@@ -1081,6 +1090,12 @@ static std::unique_ptr<CExp> resolve_expression(std::unique_ptr<CExp>&& node) {
             resolve_addrof_expression(p_node);
             checktype_addrof_expression(p_node);
             return checktype_pass_typed_expression(std::move(node));
+        }
+        case AST_T::CSubscript_t: {
+            CSubscript* p_node = static_cast<CSubscript*>(node.get());
+            resolve_subscript_expression(p_node);
+            checktype_subscript_expression(p_node);
+            break;
         }
         default:
             RAISE_INTERNAL_ERROR;
