@@ -573,17 +573,69 @@ static void checktype_return_statement(CReturn* node) {
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
-static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* elem_type) {
-    // TODO
-    return nullptr;
-}
-
 static void checktype_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if(!is_same_type(node->exp->exp_type.get(), init_type.get())) {
         std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), init_type);
         node->exp = std::move(exp);
     }
     node->init_type = init_type;
+}
+
+static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type);
+
+static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type* elem_type) {
+    std::unique_ptr<CExp> exp;
+    {
+        std::shared_ptr<CConst> constant;
+        switch(elem_type->type()) {
+            case AST_T::Int_t: {
+                constant = std::make_shared<CConstInt>(0);
+                break;
+            }
+            case AST_T::Long_t: {
+                constant = std::make_shared<CConstLong>(0l);
+                break;
+            }
+            case AST_T::Double_t: {
+                constant = std::make_shared<CConstDouble>(0.0);
+                break;
+            }
+            case AST_T::UInt_t: {
+                constant = std::make_shared<CConstUInt>(0u);
+                break;
+            }
+            case AST_T::ULong_t:
+            case AST_T::Pointer_t: {
+                constant = std::make_shared<CConstULong>(0ul);
+                break;
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
+        exp = std::make_unique<CConstant>(std::move(constant));
+    }
+    return std::make_unique<CSingleInit>(std::move(exp));
+}
+
+static std::unique_ptr<CCompoundInit> checktype_compound_init_zero_initializer(Array* arr_type) {
+    std::vector<std::unique_ptr<CInitializer>> zero_initializers;
+    for(size_t throwaway = 0; throwaway < arr_type->size; throwaway++) {
+        std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(arr_type->elem_type.get());
+        zero_initializers.push_back(std::move(initializer));
+    }
+    return std::make_unique<CCompoundInit>(std::move(zero_initializers));
+}
+
+static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type) {
+    switch(init_type->type()) {
+        case AST_T::Array_t:
+        {
+            Array* arr_type = static_cast<Array*>(init_type);
+            return checktype_compound_init_zero_initializer(arr_type);
+        }
+        default:
+            return checktype_single_init_zero_initializer(init_type);
+    }
 }
 
 static void checktype_size_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {

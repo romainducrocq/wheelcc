@@ -402,7 +402,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_declarator() {
     return abstract_declarator;
 }
 
-static std::unique_ptr<CAbstractDeclarator> parse_pointer_abstract_declarator() {
+static std::unique_ptr<CAbstractPointer> parse_pointer_abstract_declarator() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator;
     if(peek_next().token_kind == TOKEN_KIND::parenthesis_close) {
@@ -503,7 +503,7 @@ static std::unique_ptr<CExp> parse_inner_exp_factor() {
     return inner_exp;
 }
 
-static std::unique_ptr<CExp> parse_function_call_factor() {
+static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
     TIdentifier name; parse_identifier(name);
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
     std::vector<std::unique_ptr<CExp>> args;
@@ -1244,7 +1244,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
 }
 
 // (fun) <declarator-suffix> ::= <param-list>
-static std::unique_ptr<CDeclarator> parse_fun_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
+static std::unique_ptr<CFunDeclarator> parse_fun_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
     std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
     return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(declarator));
 }
@@ -1273,7 +1273,7 @@ static std::unique_ptr<CDeclarator> parse_direct_declarator() {
     }
 }
 
-static std::unique_ptr<CDeclarator> parse_pointer_declarator() {
+static std::unique_ptr<CPointerDeclarator> parse_pointer_declarator() {
     pop_next();
     std::unique_ptr<CDeclarator> declarator = parse_declarator();
     return std::make_unique<CPointerDeclarator>(std::move(declarator));
