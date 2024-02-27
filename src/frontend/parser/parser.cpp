@@ -549,8 +549,9 @@ static std::unique_ptr<CExp> parse_postfix_exp_factor() {
     std::unique_ptr<CExp> primary_exp = parse_primary_exp_factor();
     while(peek_next().token_kind == TOKEN_KIND::brackets_open) {
         pop_next();
-        parse_exp(0);
+        std::unique_ptr<CExp> subscript_exp = parse_exp(0);
         expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+        primary_exp = std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp));
     }
     return primary_exp;
 }

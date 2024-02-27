@@ -1028,8 +1028,8 @@ static void resolve_addrof_expression(CAddrOf* node) {
 }
 
 static void resolve_subscript_expression(CSubscript* node) {
-    node->exp_1 = resolve_expression(std::move(node->exp_1));
-    node->exp_2 = resolve_expression(std::move(node->exp_2));
+    node->primary_exp = resolve_expression(std::move(node->primary_exp));
+    node->subscript_exp = resolve_expression(std::move(node->subscript_exp));
 }
 
 static std::unique_ptr<CExp> resolve_expression(std::unique_ptr<CExp>&& node) {
