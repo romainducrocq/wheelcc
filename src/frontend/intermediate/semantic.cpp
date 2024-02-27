@@ -672,7 +672,9 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
         default:
             RAISE_INTERNAL_ERROR;
     }
-    return std::make_unique<Initial>(std::move(static_init));
+    // TODO
+    // return std::make_unique<Initial>(std::move(static_init));
+    return nullptr;
 }
 
 static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type) {
@@ -702,7 +704,9 @@ static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type
         default:
             RAISE_INTERNAL_ERROR;
     }
-    return std::make_unique<Initial>(std::move(static_init));
+    // TODO
+    // return std::make_unique<Initial>(std::move(static_init));
+    return nullptr;
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
@@ -712,8 +716,10 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
     if(node->init &&
        node->init->type() == AST_T::CConstant_t) {
-        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
-                                                   node->var_type.get());
+// TODO
+//        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
+//                                                   node->var_type.get());
+;
     }
     else if(!node->init) {
         if(node->storage_class && 
@@ -789,8 +795,10 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 
     if(node->init &&
        node->init->type() == AST_T::CConstant_t) {
-        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
-                                                   node->var_type.get());
+// TODO
+//        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
+//                                                   node->var_type.get());
+;
     }
     else if(!node->init) {
         initial_value = checktype_no_init_initial(node->var_type.get());
@@ -817,12 +825,13 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 }
 
 static void checktype_init_block_scope_variable_declaration(CVariableDeclaration* node) {
-    if(node->init &&
-       !node->storage_class &&
-       !is_same_type(node->var_type.get(), node->init->exp_type.get())) {
-        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->init), node->var_type);
-        node->init = std::move(exp);
-    }
+// TODO
+//    if(node->init &&
+//       !node->storage_class &&
+//       !is_same_type(node->var_type.get(), node->init->exp_type.get())) {
+//        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->init), node->var_type);
+//        node->init = std::move(exp);
+//    }
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1323,7 +1332,8 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
 
     if(node->init &&
        !node->storage_class) {
-        resolve_expression(node->init.get());
+// TODO
+//        resolve_expression(node->init.get());
     }
     checktype_init_block_scope_variable_declaration(node);
 }
