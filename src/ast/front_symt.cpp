@@ -46,8 +46,6 @@ IntInit::IntInit(TInt value)
 LongInit::LongInit(TLong value)
     : value(value) {}
 
-DoubleInit::DoubleInit(TDouble value)
-    : value(value), binary(double_to_binary(value)) {}
 DoubleInit::DoubleInit(TDouble value, TULong binary)
     : value(value), binary(binary) {}
 
@@ -60,8 +58,8 @@ ULongInit::ULongInit(TULong value)
 ZeroInit::ZeroInit(TInt bytes)
     : bytes(bytes) {}
 
-Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_init_list)
-    : static_init_list(std::move(static_init_list)) {}
+Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits)
+    : static_inits(std::move(static_inits)) {}
 
 FunAttr::FunAttr(bool is_defined, bool is_global)
     : is_defined(is_defined), is_global(is_global) {}

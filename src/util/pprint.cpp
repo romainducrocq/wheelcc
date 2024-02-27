@@ -175,8 +175,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::Initial_t: {
             field("Initial", "", ++t);
             Initial* p_node = static_cast<Initial*>(node);
-            field("List[" + std::to_string(p_node->static_init_list.size()) + "]", "", t+1);
-            for(const auto& item: p_node->static_init_list) {
+            field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_inits) {
                 print_ast(item.get(), t+1);
             }
             break;

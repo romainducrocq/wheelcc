@@ -40,7 +40,7 @@ ast = [
     ["ZeroInit", [(TInt, "bytes")], []],
     ["InitialValue", [], []],
     ["Tentative", [], []],
-    ["Initial", [], ["[static_init_list"]],
+    ["Initial", [], ["[static_inits"]],
     ["NoInitializer", [], []],
     ["IdentifierAttr", [], []],
     ["FunAttr", [(Bool, "is_defined"), (Bool, "is_global")], []],

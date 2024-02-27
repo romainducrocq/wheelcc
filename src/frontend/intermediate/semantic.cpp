@@ -1,5 +1,6 @@
 #include "frontend/intermediate/semantic.hpp"
 #include "util/error.hpp"
+#include "util/str2t.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
@@ -81,16 +82,30 @@ static bool is_type_arithmetic(Type* type_1) {
     }
 }
 
+static bool is_type_scalar(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static int32_t get_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
-            return 32;
+            return 4;
         case AST_T::Long_t:
         case AST_T::Double_t:
         case AST_T::ULong_t:
         case AST_T::Pointer_t:
-            return 64;
+            return 8;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -220,6 +235,7 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
     raise_runtime_error("Assignment expressions have incompatible types");
 }
 
+// TODO refactor
 static void checktype_unary_expression(CUnary* node) {
     switch(node->unary_op->type()) {
         case AST_T::CNot_t: {
@@ -252,6 +268,7 @@ static void checktype_unary_expression(CUnary* node) {
     }
 }
 
+// TODO refactor
 static void checktype_binary_expression(CBinary* node) {
     switch(node->binary_op->type()) {
         case AST_T::CAnd_t:
@@ -724,8 +741,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     function_declaration_name = node->name;
 }
 
-static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type* static_init_type) {
-    std::shared_ptr<StaticInit> static_init;
+static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConstant* node, Type* static_init_type) {
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
             TInt value;
@@ -753,8 +769,12 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            static_init = std::make_shared<IntInit>(std::move(value));
-            break;
+            if(value == 0) {
+                return std::make_shared<ZeroInit>(4);
+            }
+            else {
+                return std::make_shared<IntInit>(std::move(value));
+            }
         }
         case AST_T::Long_t: {
             TLong value;
@@ -782,8 +802,12 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            static_init = std::make_shared<LongInit>(std::move(value));
-            break;
+            if(value == 0l) {
+                return std::make_shared<ZeroInit>(8);
+            }
+            else {
+                return std::make_shared<LongInit>(std::move(value));
+            }
         }
         case AST_T::Double_t: {
             TDouble value;
@@ -811,8 +835,13 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            static_init = std::make_shared<DoubleInit>(std::move(value));
-            break;
+            TULong binary = double_to_binary(value);
+            if(binary == 0ul) {
+                return std::make_shared<ZeroInit>(8);
+            }
+            else {
+                return std::make_shared<DoubleInit>(std::move(value), std::move(binary));
+            }
         }
         case AST_T::UInt_t: {
             TUInt value;
@@ -840,8 +869,12 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            static_init = std::make_shared<UIntInit>(std::move(value));
-            break;
+            if(value == 0u) {
+                return std::make_shared<ZeroInit>(4);
+            }
+            else {
+                return std::make_shared<UIntInit>(std::move(value));
+            }
         }
         case AST_T::ULong_t: {
             TULong value;
@@ -869,8 +902,12 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            static_init = std::make_shared<ULongInit>(std::move(value));
-            break;
+            if(value == 0ul) {
+                return std::make_shared<ZeroInit>(8);
+            }
+            else {
+                return std::make_shared<ULongInit>(std::move(value));
+            }
         }
         case AST_T::Pointer_t: {
             TULong value;
@@ -900,47 +937,52 @@ static std::unique_ptr<Initial> checktype_constant_initial(CConstant* node, Type
             if(value != 0ul) {
                 raise_runtime_error("Static pointer type can only be initialized to null integer constant");
             }
-            static_init = std::make_shared<ULongInit>(std::move(value));
-            break;
+            return std::make_shared<ZeroInit>(8);
         }
         default:
             RAISE_INTERNAL_ERROR;
     }
-    // TODO
-    // return std::make_unique<Initial>(std::move(static_init));
-    return nullptr;
 }
 
-static std::unique_ptr<Initial> checktype_no_init_initial(Type* static_init_type) {
-    std::shared_ptr<StaticInit> static_init;
+static std::shared_ptr<ZeroInit> checktype_scalar_no_init_static_init(Type* static_init_type) {
     switch(static_init_type->type()) {
-        case AST_T::Int_t: {
-            static_init = std::make_shared<IntInit>(0);
-            break;
-        }
-        case AST_T::Long_t: {
-            static_init = std::make_shared<LongInit>(0l);
-            break;
-        }
-        case AST_T::Double_t: {
-            static_init = std::make_shared<DoubleInit>(0.0);
-            break;
-        }
-        case AST_T::UInt_t: {
-            static_init = std::make_shared<UIntInit>(0u);
-            break;
-        }
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return std::make_shared<ZeroInit>(4);
+        case AST_T::Long_t:
+        case AST_T::Double_t:
         case AST_T::ULong_t:
-        case AST_T::Pointer_t: {
-            static_init = std::make_shared<ULongInit>(0ul);
-            break;
-        }
+        case AST_T::Pointer_t:
+            return std::make_shared<ZeroInit>(8);
         default:
             RAISE_INTERNAL_ERROR;
     }
-    // TODO
-    // return std::make_unique<Initial>(std::move(static_init));
-    return nullptr;
+}
+
+// TODO refactor
+static std::unique_ptr<Initial> checktype_no_initializer_initial(Type* static_init_type) {
+    TULong size = 1;
+    do {
+        if(is_type_scalar(static_init_type)) {
+            std::vector<std::shared_ptr<StaticInit>> static_inits;
+            {
+                TInt byte = get_type_size(static_init_type) * size;
+                std::shared_ptr<StaticInit> static_init = std::make_shared<ZeroInit>(byte);
+                static_inits.push_back(std::move(static_init));
+            }
+            return std::make_unique<Initial>(std::move(static_inits));
+        }
+        switch(static_init_type->type()) {
+            case Array_t: {
+                Array* arr_type = static_cast<Array*>(static_init_type);
+                size *= arr_type->size;
+                static_init_type = arr_type->elem_type.get();
+                break;
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
+    } while(true);
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1035,7 +1077,9 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 ;
     }
     else if(!node->init) {
-        initial_value = checktype_no_init_initial(node->var_type.get());
+        // TODO
+        // initial_value = checktype_no_init_initial(node->var_type.get());
+        ;
     }
     else {
         raise_runtime_error("Block scope variable " + em(node->name) +

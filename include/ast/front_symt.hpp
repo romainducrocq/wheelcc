@@ -98,7 +98,6 @@ struct LongInit : StaticInit {
 struct DoubleInit : StaticInit {
     AST_T type() override;
     DoubleInit() = default;
-    DoubleInit(TDouble value);
     DoubleInit(TDouble value, TULong binary);
 
     TDouble value;
@@ -145,9 +144,9 @@ struct Tentative : InitialValue {
 struct Initial : InitialValue {
     AST_T type() override;
     Initial() = default;
-    Initial(std::vector<std::shared_ptr<StaticInit>> static_init_list);
+    Initial(std::vector<std::shared_ptr<StaticInit>> static_inits);
 
-    std::vector<std::shared_ptr<StaticInit>> static_init_list;
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
 };
 
 struct NoInitializer : InitialValue {
