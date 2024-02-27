@@ -194,7 +194,10 @@ static void checktype_cast_expression(CCast* node) {
     node->exp_type = node->target_type;
     if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
        (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t)) {
-        raise_runtime_error("Types can not be converted between floating-point number and pointer type");
+        raise_runtime_error("Types can not be converted from/to floating-point number and pointer type");
+    }
+    if(node->exp_type->type() == AST_T::Array_t) {
+        raise_runtime_error("Type can not be converted to array type");
     }
 }
 
@@ -457,7 +460,7 @@ static void checktype_subscript_expression(CSubscript* node) {
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
     else {
-        raise_runtime_error("Subscript must consist of an integer type operand and a pointer type operand");
+        raise_runtime_error("Subscript must consist of an integer operand and a pointer type operand");
     }
     node->exp_type = std::move(ref_type);
 }
