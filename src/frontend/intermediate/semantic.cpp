@@ -271,6 +271,22 @@ static void checktype_binary_expression(CBinary* node) {
             }
             break;
         }
+        case AST_T::CLessThan_t:
+        case AST_T::CLessOrEqual_t:
+        case AST_T::CGreaterThan_t:
+        case AST_T::CGreaterOrEqual_t: {
+            if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
+               (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) ||
+               (node->exp_left->type() == AST_T::CConstant_t &&
+                is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get()))) ||
+               (node->exp_right->type() == AST_T::CConstant_t &&
+                is_constant_null_pointer(static_cast<CConstant*>(node->exp_right.get()))))) {
+                raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                                    " can not be used with " + em("non-pointer type") + " or "
+                                    + em("constant null pointer") + " and " + em("pointer type"));
+            }
+            break;
+        }
         case AST_T::CBitShiftLeft_t:
         case AST_T::CBitShiftRight_t: {
             // Note: https://stackoverflow.com/a/70130146
@@ -298,8 +314,7 @@ static void checktype_binary_expression(CBinary* node) {
     }
     std::shared_ptr<Type> common_type;
     switch(node->binary_op->type()) {
-        case AST_T::CAdd_t:
-        case AST_T::CSubtract_t: {
+        case AST_T::CAdd_t: {
             if(is_type_arithmetic(node->exp_left->exp_type.get()) &&
                is_type_arithmetic(node->exp_right->exp_type.get())) {
                 common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -314,17 +329,50 @@ static void checktype_binary_expression(CBinary* node) {
                 node->exp_type = std::move(common_type);
                 return;
             }
-            else if(node->binary_op->type() == AST_T::CSubtract_t &&
-                    node->exp_left->exp_type->type() == AST_T::Pointer_t &&
-                    is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
+            else if(is_type_integer(node->exp_left->exp_type.get()) &&
+                    node->exp_right->exp_type->type() == AST_T::Pointer_t) {
                 common_type = std::make_shared<Long>();
+                if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
+                    std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
+                    node->exp_left = std::move(exp);
+                }
                 node->exp_type = std::move(common_type);
                 return;
             }
             else {
                 raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                                    " can not be used with " + em("floating-point number") + " and "
+                                    " can not be used with " + em("non-integer") + " and "
                                     + em("pointer type"));
+            }
+            break;
+        }
+        case AST_T::CSubtract_t: {
+            if(is_type_arithmetic(node->exp_left->exp_type.get()) &&
+               is_type_arithmetic(node->exp_right->exp_type.get())) {
+                common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
+            }
+            else if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
+                if(is_type_integer(node->exp_right->exp_type.get())) {
+                    common_type = std::make_shared<Long>();
+                    if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
+                        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
+                        node->exp_right = std::move(exp);
+                    }
+                    node->exp_type = std::move(common_type);
+                    return;
+                }
+                else if(is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) &&
+                        !(node->exp_left->type() == AST_T::CConstant_t &&
+                          is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get())))) {
+                    common_type = std::make_shared<Long>();
+                    node->exp_type = std::move(common_type);
+                    return;
+                }
+            }
+            else {
+                raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                                    " can not be used with " + em("non-integer") + " or "
+                                    + em("constant null pointer") + " and " + em("pointer type"));
             }
             break;
         }
