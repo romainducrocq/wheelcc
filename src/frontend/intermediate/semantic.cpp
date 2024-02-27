@@ -194,7 +194,7 @@ static void checktype_cast_expression(CCast* node) {
     node->exp_type = node->target_type;
     if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
        (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t)) {
-        raise_runtime_error("Types can not be converted from/to floating-point number and pointer type");
+        raise_runtime_error("Types can not be converted between floating-point number and pointer type");
     }
     if(node->exp_type->type() == AST_T::Array_t) {
         raise_runtime_error("Type can not be converted to array type");
@@ -298,6 +298,36 @@ static void checktype_binary_expression(CBinary* node) {
     }
     std::shared_ptr<Type> common_type;
     switch(node->binary_op->type()) {
+        case AST_T::CAdd_t:
+        case AST_T::CSubtract_t: {
+            if(is_type_arithmetic(node->exp_left->exp_type.get()) &&
+               is_type_arithmetic(node->exp_right->exp_type.get())) {
+                common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
+            }
+            else if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
+                    is_type_integer(node->exp_right->exp_type.get())) {
+                common_type = std::make_shared<Long>();
+                if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
+                    std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
+                    node->exp_right = std::move(exp);
+                }
+                node->exp_type = std::move(common_type);
+                return;
+            }
+            else if(node->binary_op->type() == AST_T::CSubtract_t &&
+                    node->exp_left->exp_type->type() == AST_T::Pointer_t &&
+                    is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
+                common_type = std::make_shared<Long>();
+                node->exp_type = std::move(common_type);
+                return;
+            }
+            else {
+                raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                                    " can not be used with " + em("floating-point number") + " and "
+                                    + em("pointer type"));
+            }
+            break;
+        }
         case AST_T::CEqual_t:
         case AST_T::CNotEqual_t: {
             if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
@@ -444,7 +474,7 @@ static void checktype_subscript_expression(CSubscript* node) {
     if(node->primary_exp->exp_type->type() == AST_T::Pointer_t &&
        is_type_integer(node->subscript_exp->exp_type.get())) {
         std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
-        if(!node->subscript_exp->exp_type.get(), subscript_type.get()) {
+        if(!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->subscript_exp), subscript_type);
             node->subscript_exp = std::move(exp);
         }
@@ -453,7 +483,7 @@ static void checktype_subscript_expression(CSubscript* node) {
     else if(is_type_integer(node->primary_exp->exp_type.get()) &&
             node->subscript_exp->exp_type->type() == AST_T::Pointer_t) {
         std::shared_ptr<Type> primary_type = std::make_shared<Long>();
-        if(!node->primary_exp->exp_type.get(), primary_type.get()) {
+        if(!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->primary_exp), primary_type);
             node->primary_exp = std::move(exp);
         }
