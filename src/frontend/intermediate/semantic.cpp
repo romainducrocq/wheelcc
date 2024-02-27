@@ -573,6 +573,13 @@ static void checktype_return_statement(CReturn* node) {
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
+static void checktype_init_block_scope_variable_declaration(CSingleInit* node, std::shared_ptr<Type>& var_type) {
+    if(!is_same_type(node->exp->exp_type.get(), var_type.get())) {
+        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), var_type);
+        node->exp = std::move(exp);
+    }
+}
+
 static std::unique_ptr<Symbol> checktype_param(FunType* fun_type, size_t param) {
     std::shared_ptr<Type> type_t = fun_type->param_types[param];
     std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
@@ -590,6 +597,10 @@ static void checktype_params(CFunctionDeclaration* node) {
 }
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
+    bool is_defined = defined_set.find(node->name) != defined_set.end();
+    bool is_global = !(node->storage_class && 
+                       node->storage_class->type() == AST_T::CStatic_t);
+
     FunType* fun_type_1 = static_cast<FunType*>(node->fun_type.get());
     if(fun_type_1->ret_type->type() == AST_T::Array_t) {
         raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
@@ -600,10 +611,6 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
             fun_type_1->param_types[param_type] = std::make_shared<Pointer>(std::move(ref_type));
         }
     }
-
-    bool is_defined = defined_set.find(node->name) != defined_set.end();
-    bool is_global = !(node->storage_class && 
-                       node->storage_class->type() == AST_T::CStatic_t);
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
 
@@ -975,16 +982,6 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
                                                               std::move(local_var_attrs));
     symbol_table[node->name] = std::move(symbol);
-}
-
-static void checktype_init_block_scope_variable_declaration(CVariableDeclaration* node) {
-// TODO
-//    if(node->init &&
-//       !node->storage_class &&
-//       !is_same_type(node->var_type.get(), node->init->exp_type.get())) {
-//        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->init), node->var_type);
-//        node->init = std::move(exp);
-//    }
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1417,6 +1414,38 @@ static void resolve_block(CBlock* node) {
     }
 }
 
+static void resolve_single_init(CSingleInit* node, std::shared_ptr<Type>& var_type) {
+    node->exp = resolve_expression(std::move(node->exp));
+    checktype_init_block_scope_variable_declaration(node, var_type);
+}
+
+static void resolve_array_compound_init(CCompoundInit* node, std::shared_ptr<Type>& var_type) {
+    // TODO
+}
+
+static void resolve_compound_init(CCompoundInit* node, std::shared_ptr<Type>& var_type) {
+    switch(var_type->type()) {
+        case AST_T::Array_t:
+            resolve_array_compound_init(node, var_type);
+            break;
+        default:
+            raise_runtime_error("Compound Initializer can not be initialized with scalar type");
+    }
+}
+
+static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& var_type) {
+    switch(node->type()) {
+        case AST_T::CSingleInit_t:
+            resolve_single_init(static_cast<CSingleInit*>(node), var_type);
+            break;
+        case AST_T::CCompoundInit_t:
+            resolve_compound_init(static_cast<CCompoundInit*>(node), var_type);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static void resolve_params(CFunctionDeclaration* node) {
     for(size_t param = 0; param < node->params.size(); param++) {
         if(scoped_identifier_maps.back().find(node->params[param]) != scoped_identifier_maps.back().end()) {
@@ -1497,10 +1526,8 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
 
     if(node->init &&
        !node->storage_class) {
-// TODO
-//        resolve_expression(node->init.get());
+        resolve_initializer(node->init.get(), node->var_type);
     }
-    checktype_init_block_scope_variable_declaration(node);
 }
 
 static void clear_resolve_labels() {
