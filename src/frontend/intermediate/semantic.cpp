@@ -590,31 +590,42 @@ static void checktype_params(CFunctionDeclaration* node) {
 }
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
+    FunType* fun_type_1 = static_cast<FunType*>(node->fun_type.get());
+    if(fun_type_1->ret_type->type() == AST_T::Array_t) {
+        raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
+    }
+    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
+        if(fun_type_1->param_types[param_type]->type() == AST_T::Array_t) {
+            std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type_1->param_types[param_type].get())->elem_type;
+            fun_type_1->param_types[param_type] = std::make_shared<Pointer>(std::move(ref_type));
+        }
+    }
+
     bool is_defined = defined_set.find(node->name) != defined_set.end();
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
 
-        FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
+        FunType* fun_type_2 = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
         if(!(symbol_table[node->name]->type_t->type() == AST_T::FunType_t &&
-            fun_type->param_types.size() == node->params.size() &&
-            is_same_fun_type(fun_type, static_cast<FunType*>(node->fun_type.get())))) {
+             fun_type_2->param_types.size() == node->params.size() &&
+            is_same_fun_type(fun_type_1, fun_type_2))) {
             raise_runtime_error("Function declaration " + em(node->name) +
-                                "was redeclared with conflicting type");
+                                " was redeclared with conflicting type");
         }
 
         if(is_defined &&
            node->body) {
             raise_runtime_error("Function declaration " + em(node->name) +
-                                "was already defined");
+                                " was already defined");
         }
 
         FunAttr* fun_attrs = static_cast<FunAttr*>(symbol_table[node->name]->attrs.get());
         if(!is_global &&
            fun_attrs->is_global) {
             raise_runtime_error("Static function " + em(node->name) +
-                                "was already defined non-static");
+                                " was already defined non-static");
         }
         is_global = fun_attrs->is_global;
     }
