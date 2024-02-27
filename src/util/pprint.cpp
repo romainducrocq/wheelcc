@@ -119,7 +119,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::Array_t: {
             field("Array", "", ++t);
             Array* p_node = static_cast<Array*>(node);
-            print_ast(p_node->size.get(), t);
+            field("TLong", std::to_string(p_node->size), t+1);
             print_ast(p_node->elem_type.get(), t);
             break;
         }
@@ -353,7 +353,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CAbstractArray_t: {
             field("CAbstractArray", "", ++t);
             CAbstractArray* p_node = static_cast<CAbstractArray*>(node);
-            print_ast(p_node->size.get(), t);
+            field("TULong", std::to_string(p_node->size), t+1);
             print_ast(p_node->abstract_declarator.get(), t);
             break;
         }
@@ -387,7 +387,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CArrayDeclarator_t: {
             field("CArrayDeclarator", "", ++t);
             CArrayDeclarator* p_node = static_cast<CArrayDeclarator*>(node);
-            print_ast(p_node->size.get(), t);
+            field("TULong", std::to_string(p_node->size), t+1);
             print_ast(p_node->declarator.get(), t);
             break;
         }

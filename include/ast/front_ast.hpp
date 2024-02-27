@@ -144,9 +144,9 @@ struct CAbstractPointer : CAbstractDeclarator {
 struct CAbstractArray : CAbstractDeclarator {
     AST_T type() override;
     CAbstractArray() = default;
-    CAbstractArray(std::shared_ptr<CConst> size, std::unique_ptr<CAbstractDeclarator> abstract_declarator);
+    CAbstractArray(TULong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator);
 
-    std::shared_ptr<CConst> size;
+    TULong size;
     std::unique_ptr<CAbstractDeclarator> abstract_declarator;
 };
 
@@ -196,9 +196,9 @@ struct CPointerDeclarator : CDeclarator {
 struct CArrayDeclarator : CDeclarator {
     AST_T type() override;
     CArrayDeclarator() = default;
-    CArrayDeclarator(std::shared_ptr<CConst> size, std::unique_ptr<CDeclarator> declarator);
+    CArrayDeclarator(TULong size, std::unique_ptr<CDeclarator> declarator);
 
-    std::shared_ptr<CConst> size;
+    TULong size;
     std::unique_ptr<CDeclarator> declarator;
 };
 
