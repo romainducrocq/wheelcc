@@ -8,7 +8,7 @@
 #include "ast/back_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
-//#include "frontend/intermediate/semantic.hpp"
+#include "frontend/intermediate/semantic.hpp"
 //#include "frontend/intermediate/tac_repr.hpp"
 //#include "backend/assembly/asm_gen.hpp"
 //#include "backend/emitter/att_code.hpp"
@@ -89,17 +89,17 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 #endif
 
-//    verbose("-- Semantic analysis ... ", false);
-//    analyze_semantic(c_ast.get());
-//    verbose("OK", true);
-//#ifndef __NDEBUG__
-//    if(opt_code == 253) {
-//        debug_ast(c_ast.get(), "C AST");
-//        debug_symbol_table();
-//        return;
-//    }
-//#endif
-//
+    verbose("-- Semantic analysis ... ", false);
+    analyze_semantic(c_ast.get());
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 253) {
+        debug_ast(c_ast.get(), "C AST");
+        debug_symbol_table();
+        return;
+    }
+#endif
+
 //    verbose("-- TAC representation ... ", false);
 //    std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
 //    verbose("OK", true);
