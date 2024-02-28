@@ -32,6 +32,8 @@
 
 ## NOTES
 
+- check mem leaks
+
 When Types OK (after c18):
 - refactor type check unary, type check binary
 - add / clean error msgs in driver
