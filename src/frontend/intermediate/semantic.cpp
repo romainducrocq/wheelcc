@@ -37,8 +37,8 @@ static bool is_same_type(Type* type_1, Type* type_2) {
        type_2->type() == AST_T::Pointer_t) {
         return is_same_ptr_type(static_cast<Pointer*>(type_1), static_cast<Pointer*>(type_2));
     }
-    else if (type_1->type() == AST_T::Array_t &&
-             type_2->type() == AST_T::Array_t) {
+    else if(type_1->type() == AST_T::Array_t &&
+            type_2->type() == AST_T::Array_t) {
         return is_same_arr_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
     }
     else {
@@ -225,7 +225,7 @@ static void checktype_cast_expression(CCast* node) {
     node->exp_type = node->target_type;
     if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
        (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t) ||
-        node->exp_type->type() == AST_T::Array_t) {
+       node->exp_type->type() == AST_T::Array_t) {
         raise_runtime_error("Types can not be converted between floating-point number and pointer type, "
                             "or to array type");
     }
@@ -661,10 +661,7 @@ static std::unique_ptr<CCompoundInit> checktype_compound_init_zero_initializer(A
 static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type) {
     switch(init_type->type()) {
         case AST_T::Array_t:
-        {
-            Array* arr_type = static_cast<Array*>(init_type);
-            return checktype_compound_init_zero_initializer(arr_type);
-        }
+            return checktype_compound_init_zero_initializer(static_cast<Array*>(init_type));
         default:
             return checktype_single_init_zero_initializer(init_type);
     }
@@ -1048,10 +1045,9 @@ static void checktype_array_compound_init_initializer_static_init(CCompoundInit*
 
 static void checktype_compound_init_initializer_static_init(CCompoundInit* node, Type* static_init_type) {
     switch(static_init_type->type()) {
-        case AST_T::Array_t: {
+        case AST_T::Array_t:
             checktype_array_compound_init_initializer_static_init(node, static_cast<Array*>(static_init_type));
             break;
-        }
         default:
             raise_runtime_error("Compound initializer can not be initialized with scalar type");
     }
