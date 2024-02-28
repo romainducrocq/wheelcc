@@ -669,8 +669,8 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
 
 static void checktype_size_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
     if(node->initializers.size() > arr_type->size) {
-        raise_runtime_error("Array of size " + em(std::to_string(arr_type->size)) +
-                            "was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
+        raise_runtime_error("Array of size " + em(std::to_string(node->initializers.size())) +
+                            " was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
     }
 }
 
