@@ -7,7 +7,7 @@ mkdir -p ${LOG_DIR}
 
 LOG_FILE="out_$(date +%Y%m%d_%H%M%S)"
 
-cd ../bin/
+cd ../../bin/
 valgrind --leak-check=full \
          --show-leak-kinds=all \
          --track-origins=yes \
