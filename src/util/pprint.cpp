@@ -161,7 +161,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::ZeroInit_t: {
             field("ZeroInit", "", ++t);
             ZeroInit* p_node = static_cast<ZeroInit*>(node);
-            field("TInt", std::to_string(p_node->bytes), t+1);
+            field("TULong", std::to_string(p_node->byte), t+1);
             break;
         }
         case AST_T::InitialValue_t: {

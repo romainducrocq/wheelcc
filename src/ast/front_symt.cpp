@@ -55,8 +55,8 @@ UIntInit::UIntInit(TUInt value)
 ULongInit::ULongInit(TULong value)
     : value(value) {}
 
-ZeroInit::ZeroInit(TInt bytes)
-    : bytes(bytes) {}
+ZeroInit::ZeroInit(TULong byte)
+    : byte(byte) {}
 
 Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits)
     : static_inits(std::move(static_inits)) {}

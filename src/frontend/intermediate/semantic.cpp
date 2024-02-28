@@ -996,18 +996,18 @@ static std::shared_ptr<Initial> checktype_init_initializer_initialize(CInitializ
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
-static TInt checktype_no_initializer_byte(Type* init_type, TULong size);
+static TULong checktype_no_initializer_byte(Type* init_type, TULong size);
 
 static TInt checktype_scalar_no_initializer_byte(Type* init_type) {
     return get_type_size(init_type);
 }
 
-static TInt checktype_array_compound_no_initializer_byte(Array* arr_type, TULong size) {
+static TULong checktype_array_compound_no_initializer_byte(Array* arr_type, TULong size) {
     size *= arr_type->size;
     return checktype_no_initializer_byte(arr_type->elem_type.get(), size);
 }
 
-static TInt checktype_compound_no_initializer_byte(Type* init_type, TULong size) {
+static TULong checktype_compound_no_initializer_byte(Type* init_type, TULong size) {
     switch(init_type->type()) {
         case AST_T::Array_t:
             return checktype_array_compound_no_initializer_byte(static_cast<Array*>(init_type), size);
@@ -1016,7 +1016,7 @@ static TInt checktype_compound_no_initializer_byte(Type* init_type, TULong size)
     }
 }
 
-static TInt checktype_no_initializer_byte(Type* init_type, TULong size) {
+static TULong checktype_no_initializer_byte(Type* init_type, TULong size) {
     if(is_type_scalar(init_type)) {
         return checktype_scalar_no_initializer_byte(init_type) * size;
     }
@@ -1030,7 +1030,7 @@ static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* init_type
     {
         std::shared_ptr<StaticInit> static_init;
         {
-            TInt byte = checktype_no_initializer_byte(init_type, 1);
+            TULong byte = checktype_no_initializer_byte(init_type, 1);
             static_init = std::make_shared<ZeroInit>(std::move(byte));
         }
         static_inits.push_back(std::move(static_init));

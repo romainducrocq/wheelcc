@@ -37,7 +37,7 @@ ast = [
     ["DoubleInit", [(TDouble, "value"), (TULong, "binary")], []],
     ["UIntInit", [(TUInt, "value")], []],
     ["ULongInit", [(TULong, "value")], []],
-    ["ZeroInit", [(TInt, "bytes")], []],
+    ["ZeroInit", [(TULong, "byte")], []],
     ["InitialValue", [], []],
     ["Tentative", [], []],
     ["Initial", [], ["[static_inits"]],

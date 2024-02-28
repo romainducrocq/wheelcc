@@ -123,9 +123,9 @@ struct ULongInit : StaticInit {
 struct ZeroInit : StaticInit {
     AST_T type() override;
     ZeroInit() = default;
-    ZeroInit(TInt bytes);
+    ZeroInit(TULong byte);
 
-    TInt bytes;
+    TULong byte;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
