@@ -358,7 +358,7 @@ static void checktype_binary_expression(CBinary* node) {
                     std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
                     node->exp_right = std::move(exp);
                 }
-                node->exp_type = std::move(common_type);
+                node->exp_type = node->exp_left->exp_type;
                 return;
             }
             else if(is_type_integer(node->exp_left->exp_type.get()) &&
@@ -368,7 +368,7 @@ static void checktype_binary_expression(CBinary* node) {
                     std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
                     node->exp_left = std::move(exp);
                 }
-                node->exp_type = std::move(common_type);
+                node->exp_type = node->exp_right->exp_type;
                 return;
             }
             else {
@@ -390,7 +390,7 @@ static void checktype_binary_expression(CBinary* node) {
                         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
                         node->exp_right = std::move(exp);
                     }
-                    node->exp_type = std::move(common_type);
+                    node->exp_type = node->exp_left->exp_type;
                     return;
                 }
                 else if(is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) &&

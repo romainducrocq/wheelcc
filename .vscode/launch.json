@@ -5,7 +5,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/ccc2",
+            "program": "${workspaceFolder}/bin/wheelcc",
             "args": ["255", "return_0.c"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
