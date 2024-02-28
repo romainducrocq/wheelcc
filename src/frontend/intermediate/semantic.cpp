@@ -208,11 +208,10 @@ static void checktype_var_expression(CVar* node) {
 static void checktype_cast_expression(CCast* node) {
     node->exp_type = node->target_type;
     if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
-       (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t)) {
-        raise_runtime_error("Types can not be converted between floating-point number and pointer type");
-    }
-    if(node->exp_type->type() == AST_T::Array_t) {
-        raise_runtime_error("Type can not be converted to array type");
+       (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t) ||
+        node->exp_type->type() == AST_T::Array_t) {
+        raise_runtime_error("Types can not be converted between floating-point number and pointer type, "
+                            "or to array type");
     }
 }
 
@@ -741,7 +740,67 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     function_declaration_name = node->name;
 }
 
-static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConstant* node, Type* static_init_type) {
+static std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
+
+static void push_static_init(std::shared_ptr<StaticInit>&& static_init) {
+    p_static_inits->push_back(std::move(static_init));
+}
+
+static void push_zero_init_static_init(TULong&& byte) {
+    if(!p_static_inits->empty() &&
+       p_static_inits->back()->type() == AST_T::ZeroInit_t) {
+        static_cast<ZeroInit*>(p_static_inits->back().get())->byte += byte;
+    }
+    else {
+        push_static_init(std::make_shared<ZeroInit>(std::move(byte)));
+    }
+}
+
+static TULong checktype_no_initializer_byte(Type* static_init_type, TULong size);
+
+static TInt checktype_scalar_no_initializer_byte(Type* static_init_type) {
+    return get_type_size(static_init_type);
+}
+
+static TULong checktype_array_compound_no_initializer_byte(Array* arr_type, TULong size) {
+    size *= arr_type->size;
+    return checktype_no_initializer_byte(arr_type->elem_type.get(), size);
+}
+
+static TULong checktype_compound_no_initializer_byte(Type* static_init_type, TULong size) {
+    switch(static_init_type->type()) {
+        case AST_T::Array_t:
+            return checktype_array_compound_no_initializer_byte(static_cast<Array*>(static_init_type), size);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TULong checktype_no_initializer_byte(Type* static_init_type, TULong size) {
+    if(is_type_scalar(static_init_type)) {
+        return checktype_scalar_no_initializer_byte(static_init_type) * size;
+    }
+    else {
+        return checktype_compound_no_initializer_byte(static_init_type, size);
+    }
+}
+
+static void checktype_no_initializer_static_init(Type* static_init_type, TULong size) {
+    TULong byte = checktype_no_initializer_byte(static_init_type, size);
+    push_zero_init_static_init(std::move(byte));
+}
+
+static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* static_init_type) {
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    p_static_inits = &static_inits;
+    checktype_no_initializer_static_init(static_init_type, 1ul);
+    p_static_inits = nullptr;
+    return std::make_shared<Initial>(std::move(static_inits));
+}
+
+static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
+
+static void checktype_scalar_initializer_static_init(CConstant* node, Type* static_init_type) {
     switch(static_init_type->type()) {
         case AST_T::Int_t: {
             TInt value;
@@ -770,11 +829,12 @@ static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConsta
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0) {
-                return std::make_shared<ZeroInit>(4);
+                push_zero_init_static_init(4);
             }
             else {
-                return std::make_shared<IntInit>(std::move(value));
+                push_static_init(std::make_shared<IntInit>(std::move(value)));
             }
+            break;
         }
         case AST_T::Long_t: {
             TLong value;
@@ -803,11 +863,12 @@ static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConsta
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0l) {
-                return std::make_shared<ZeroInit>(8);
+                push_zero_init_static_init(8);
             }
             else {
-                return std::make_shared<LongInit>(std::move(value));
+                push_static_init(std::make_shared<LongInit>(std::move(value)));
             }
+            break;
         }
         case AST_T::Double_t: {
             TDouble value;
@@ -837,11 +898,12 @@ static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConsta
             }
             TULong binary = double_to_binary(value);
             if(binary == 0ul) {
-                return std::make_shared<ZeroInit>(8);
+                push_zero_init_static_init(8);
             }
             else {
-                return std::make_shared<DoubleInit>(std::move(value), std::move(binary));
+                push_static_init(std::make_shared<DoubleInit>(std::move(value), std::move(binary)));
             }
+            break;
         }
         case AST_T::UInt_t: {
             TUInt value;
@@ -870,11 +932,12 @@ static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConsta
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0u) {
-                return std::make_shared<ZeroInit>(4);
+                push_zero_init_static_init(4);
             }
             else {
-                return std::make_shared<UIntInit>(std::move(value));
+                push_static_init(std::make_shared<UIntInit>(std::move(value)));
             }
+            break;
         }
         case AST_T::ULong_t: {
             TULong value;
@@ -903,11 +966,12 @@ static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConsta
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0ul) {
-                return std::make_shared<ZeroInit>(8);
+                push_zero_init_static_init(8);
             }
             else {
-                return std::make_shared<ULongInit>(std::move(value));
+                push_static_init(std::make_shared<ULongInit>(std::move(value)));
             }
+            break;
         }
         case AST_T::Pointer_t: {
             TULong value;
@@ -937,104 +1001,66 @@ static std::shared_ptr<StaticInit> checktype_scalar_constant_static_init(CConsta
             if(value != 0ul) {
                 raise_runtime_error("Static pointer type can only be initialized to null integer constant");
             }
-            return std::make_shared<ZeroInit>(8);
+            push_zero_init_static_init(8);
+            break;
         }
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-// TODO rm
-//static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type);
-//
-//static void resolve_single_init_initializer(CSingleInit* node) {
-//    node->exp = resolve_expression(std::move(node->exp));
-//}
-//
-//static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
-//    checktype_size_array_compound_init_initializer(node, arr_type);
-//
-//    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-//        resolve_initializer(node->initializers[initializer].get(), arr_type->elem_type);
-//    }
-//}
-//
-//static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_ptr<Type>& init_type) {
-//    switch(init_type->type()) {
-//        case AST_T::Array_t: {
-//            Array* arr_type = static_cast<Array*>(init_type.get());
-//            resolve_array_compound_init_initializer(node, arr_type);
-//            checktype_array_compound_init_initializer(node, arr_type, init_type);
-//            break;
-//        }
-//        default:
-//            raise_runtime_error("Compound initializer can not be initialized with scalar type");
-//    }
-//}
-//
-//static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type) {
-//    switch(node->type()) {
-//        case AST_T::CSingleInit_t: {
-//            CSingleInit* p_node = static_cast<CSingleInit*>(node);
-//            resolve_single_init_initializer(p_node);
-//            checktype_single_init_initializer(p_node, init_type);
-//            break;
-//        }
-//        case AST_T::CCompoundInit_t:
-//            resolve_compound_init_initializer(static_cast<CCompoundInit*>(node), init_type);
-//            break;
-//        default:
-//            RAISE_INTERNAL_ERROR;
-//    }
-//}
-
-// TODO
-static std::shared_ptr<Initial> checktype_init_initializer_initialize(CInitializer* node,
-                                                                      std::shared_ptr<Type>& init_type) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
-
-    return std::make_shared<Initial>(std::move(static_inits));
-}
-
-static TULong checktype_no_initializer_byte(Type* init_type, TULong size);
-
-static TInt checktype_scalar_no_initializer_byte(Type* init_type) {
-    return get_type_size(init_type);
-}
-
-static TULong checktype_array_compound_no_initializer_byte(Array* arr_type, TULong size) {
-    size *= arr_type->size;
-    return checktype_no_initializer_byte(arr_type->elem_type.get(), size);
-}
-
-static TULong checktype_compound_no_initializer_byte(Type* init_type, TULong size) {
-    switch(init_type->type()) {
-        case AST_T::Array_t:
-            return checktype_array_compound_no_initializer_byte(static_cast<Array*>(init_type), size);
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TULong checktype_no_initializer_byte(Type* init_type, TULong size) {
-    if(is_type_scalar(init_type)) {
-        return checktype_scalar_no_initializer_byte(init_type) * size;
+static void checktype_single_init_initializer_static_init(CSingleInit* node, Type* static_init_type) {
+    if(node->exp->type() == AST_T::CConstant_t) {
+        checktype_scalar_initializer_static_init(static_cast<CConstant*>(node->exp.get()), static_init_type);
     }
     else {
-        return checktype_compound_no_initializer_byte(init_type, size);
+        raise_runtime_error("Variable with static linkage was initialized to a non-constant");
     }
 }
 
-static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* init_type) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
-    {
-        std::shared_ptr<StaticInit> static_init;
-        {
-            TULong byte = checktype_no_initializer_byte(init_type, 1);
-            static_init = std::make_shared<ZeroInit>(std::move(byte));
-        }
-        static_inits.push_back(std::move(static_init));
+static void checktype_array_compound_init_initializer_static_init(CCompoundInit* node, Array* arr_type) {
+    checktype_size_array_compound_init_initializer(node, arr_type);
+
+    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
+        checktype_initializer_static_init(node->initializers[initializer].get(),
+                                          arr_type->elem_type.get());
     }
+    if(arr_type->size > node->initializers.size()) {
+        checktype_no_initializer_static_init(arr_type->elem_type.get(),
+                                             arr_type->size - node->initializers.size());
+    }
+}
+
+static void checktype_compound_init_initializer_static_init(CCompoundInit* node, Type* static_init_type) {
+    switch(static_init_type->type()) {
+        case AST_T::Array_t: {
+            checktype_array_compound_init_initializer_static_init(node, static_cast<Array*>(static_init_type));
+            break;
+        }
+        default:
+            raise_runtime_error("Compound initializer can not be initialized with scalar type");
+    }
+}
+
+static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type) {
+    switch(node->type()) {
+        case AST_T::CSingleInit_t:
+            checktype_single_init_initializer_static_init(static_cast<CSingleInit*>(node), static_init_type);
+            break;
+        case AST_T::CCompoundInit_t:
+            checktype_compound_init_initializer_static_init(static_cast<CCompoundInit*>(node),
+                                                            static_init_type);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node, Type* static_init_type) {
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    p_static_inits = &static_inits;
+    checktype_initializer_static_init(node, static_init_type);
+    p_static_inits = nullptr;
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
@@ -1043,24 +1069,16 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
-    if(node->init &&
-       node->init->type() == AST_T::CConstant_t) {
-// TODO
-//        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
-//                                                   node->var_type.get());
-;
+    if(node->init) {
+        initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
-    else if(!node->init) {
+    else {
         if(node->storage_class && 
            node->storage_class->type() == AST_T::CExtern_t) {
             initial_value = std::make_shared<NoInitializer>();
         } else {
             initial_value = std::make_shared<Tentative>();
         }
-    }
-    else {
-        raise_runtime_error("File scope variable " + em(node->name) +
-                            " was initialized to a non-constant");
     }
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
@@ -1122,19 +1140,11 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     std::shared_ptr<InitialValue> initial_value;
 
-    if(!node->init) {
-        initial_value = checktype_no_initializer_initial(node->var_type.get());
-    }
-    else if(node->init &&
-       node->init->type() == AST_T::CConstant_t) {
-// TODO
-//        initial_value = checktype_constant_initial(static_cast<CConstant*>(node->init.get()),
-//                                                   node->var_type.get());
-;
+    if(node->init) {
+        initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
     else {
-        raise_runtime_error("Block scope variable " + em(node->name) +
-                            " with static linkage was initialized to a non-constant");
+        initial_value = checktype_no_initializer_initial(node->var_type.get());
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
