@@ -34,6 +34,8 @@ void file_open_write(const std::string& filename) {
     stream_buf = "";
 }
 
+// https://stackoverflow.com/questions/64390291/c-getline-memory-leak-different-behaviours
+
 bool read_line(std::string& line) {
     size_t l = 0;
     char* buffer = nullptr;
