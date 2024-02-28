@@ -19,7 +19,7 @@
 
 static std::unordered_set<TIdentifier> defined_set;
 
-static TIdentifier function_declaration_name;
+static TIdentifier function_definition_name;
 
 static bool is_same_type(Type* type_1, Type* type_2);
 
@@ -597,7 +597,7 @@ static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& 
 }
 
 static void checktype_return_statement(CReturn* node) {
-    FunType* fun_type = static_cast<FunType*>(symbol_table[function_declaration_name]->type_t.get());
+    FunType* fun_type = static_cast<FunType*>(symbol_table[function_definition_name]->type_t.get());
     if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
         std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
         node->exp = std::move(exp);
@@ -746,14 +746,13 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     if(node->body) {
         defined_set.insert(node->name);
         is_defined = true;
+        function_definition_name = node->name;
     }
 
     std::shared_ptr<Type> fun_type = node->fun_type;
     std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined), std::move(is_global));
     std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
     symbol_table[node->name] = std::move(symbol);
-
-    function_declaration_name = node->name;
 }
 
 static std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
