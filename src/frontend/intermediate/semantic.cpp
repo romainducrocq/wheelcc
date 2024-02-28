@@ -21,13 +21,29 @@ static std::unordered_set<TIdentifier> defined_set;
 
 static TIdentifier function_declaration_name;
 
+static bool is_same_type(Type* type_1, Type* type_2);
+
+static bool is_same_ptr_type(Pointer* ptr_type_1, Pointer* ptr_type_2) {
+    return is_same_type(ptr_type_1->ref_type.get(), ptr_type_2->ref_type.get());
+}
+
+static bool is_same_arr_type(Array* arr_type_1, Array* arr_type_2) {
+    return arr_type_1->size == arr_type_2->size &&
+           is_same_type(arr_type_1->elem_type.get(), arr_type_2->elem_type.get());
+}
+
 static bool is_same_type(Type* type_1, Type* type_2) {
-    while(type_1->type() == AST_T::Pointer_t &&
-          type_2->type() == AST_T::Pointer_t) {
-        type_1 = static_cast<Pointer*>(type_1)->ref_type.get();
-        type_2 = static_cast<Pointer*>(type_2)->ref_type.get();
+    if(type_1->type() == AST_T::Pointer_t &&
+       type_2->type() == AST_T::Pointer_t) {
+        return is_same_ptr_type(static_cast<Pointer*>(type_1), static_cast<Pointer*>(type_2));
     }
-    return type_1->type() == type_2->type();
+    else if (type_1->type() == AST_T::Array_t &&
+             type_2->type() == AST_T::Array_t) {
+        return is_same_arr_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
+    }
+    else {
+        return type_1->type() == type_2->type();
+    }
 }
 
 static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
