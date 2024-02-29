@@ -769,6 +769,7 @@ static void push_zero_init_static_init(TULong&& byte) {
 }
 
 static TULong checktype_no_initializer_byte(Type* static_init_type, TULong size);
+static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
 
 static TInt checktype_scalar_no_initializer_byte(Type* static_init_type) {
     return get_type_size(static_init_type);
@@ -809,8 +810,6 @@ static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* static_in
     p_static_inits = nullptr;
     return std::make_shared<Initial>(std::move(static_inits));
 }
-
-static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
 
 static void checktype_scalar_initializer_static_init(CConstant* node, Type* static_init_type) {
     switch(static_init_type->type()) {

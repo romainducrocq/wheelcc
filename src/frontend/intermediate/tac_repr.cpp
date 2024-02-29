@@ -135,12 +135,12 @@ static int32_t get_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
-            return 32;
+            return 4;
         case AST_T::Long_t:
         case AST_T::Double_t:
         case AST_T::ULong_t:
         case AST_T::Pointer_t:
-            return 64;
+            return 8;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -623,15 +623,79 @@ static void represent_statement_instructions(CStatement* node) {
     }
 }
 
-static void represent_variable_declaration_instructions(CVariableDeclaration* node) {
-    std::shared_ptr<TacValue> src = represent_exp_instructions(node->init.get());
+static void represent_compound_init_instructions(CInitializer* node, Type* init_type, const TIdentifier& symbol,
+                                                 TULong& size);
+
+static void represent_single_init_instructions(CSingleInit* node, const TIdentifier& symbol) {
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
     std::shared_ptr<TacValue> dst;
     {
-        TIdentifier name = node->name;
+        TIdentifier name = symbol;
         std::unique_ptr<CExp> exp = std::make_unique<CVar>(std::move(name));
         dst = represent_value(exp.get());
     }
     push_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+}
+
+static void represent_scalar_compound_init_instructions(CSingleInit* node, Type* init_type, const TIdentifier& symbol,
+                                                        TULong& size) {
+    TULong offset = size;
+    TIdentifier dst_name = symbol;
+    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
+    push_instruction(std::make_unique<TacCopyToOffset>(std::move(offset), std::move(dst_name), std::move(src)));
+    size += get_type_size(init_type);
+}
+
+static void represent_array_compound_init_instructions(CCompoundInit* node, Array* arr_type, const TIdentifier& symbol,
+                                                       TULong& size) {
+    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
+        represent_compound_init_instructions(node->initializers[initializer].get(),
+                                             arr_type->elem_type.get(), symbol, size);
+    }
+}
+
+static void represent_compound_compound_init_instructions(CCompoundInit* node, Type* init_type,
+                                                          const TIdentifier& symbol, TULong& size) {
+    switch(init_type->type()) {
+        case AST_T::Array_t:
+            represent_array_compound_init_instructions(node,static_cast<Array*>(init_type), symbol, size);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void represent_compound_init_instructions(CInitializer* node, Type* init_type, const TIdentifier& symbol,
+                                                 TULong& size) {
+    switch(node->type()) {
+        case AST_T::CSingleInit_t:
+            represent_scalar_compound_init_instructions(static_cast<CSingleInit*>(node), init_type, symbol,
+                                                        size);
+            break;
+        case AST_T::CCompoundInit_t:
+            represent_compound_compound_init_instructions(static_cast<CCompoundInit*>(node), init_type, symbol,
+                                                          size);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void represent_variable_declaration_instructions(CVariableDeclaration* node) {
+    switch(node->init->type()) {
+        case AST_T::CSingleInit_t:
+            represent_single_init_instructions(static_cast<CSingleInit*>(node->init.get()), node->name);
+            break;
+        case AST_T::CCompoundInit_t: {
+            TULong size = 0ul;
+            represent_compound_compound_init_instructions(static_cast<CCompoundInit*>(node->init.get()),
+                                                          symbol_table[node->name]->type_t.get(),
+                                                          node->name, size);
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
 }
 
 static void represent_declaration_var_decl_instructions(CVarDecl* node) {
@@ -659,8 +723,8 @@ static void represent_declaration_instructions(CDeclaration* node) {
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val) | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
-//             | Store(val, val) | Jump(identifier) | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier)
-//             | Label(identifier)
+//             | Store(val, val) | AddPtr(val, val, int, val) | CopyToOffset(val, identifier, int) | Jump(identifier)
+//             | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier) | Label(identifier)
 static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for(size_t block_item = 0; block_item < list_node.size(); block_item++) {
         switch(list_node[block_item]->type()) {
@@ -741,7 +805,7 @@ static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_
         case AST_T::Long_t:
             return std::make_shared<LongInit>(0l);
         case AST_T::Double_t:
-            return std::make_shared<DoubleInit>(0.0);
+            return std::make_shared<DoubleInit>(0.0, 0ul);
         case AST_T::UInt_t:
             return std::make_shared<UIntInit>(0u);
         case AST_T::ULong_t:
@@ -761,23 +825,25 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
     TIdentifier name = symbol;
     bool is_global = static_attr->is_global;
     std::shared_ptr<Type> static_init_type = node->type_t;
-    std::shared_ptr<StaticInit> initial_value;
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
     switch(static_attr->init->type()) {
         case AST_T::Initial_t:
-            initial_value = static_cast<Initial*>(static_attr->init.get())->static_init;
+            // TODO
+//            initial_value = static_cast<Initial*>(static_attr->init.get())->static_init;
             break;
         case AST_T::Tentative_t:
-            initial_value = represent_tentative_static_init(static_init_type.get());
+            // TODO
+//            initial_value = represent_tentative_static_init(static_init_type.get());
             break;
         default:
             RAISE_INTERNAL_ERROR;
     }
 
     push_top_level(std::make_unique<TacStaticVariable>(std::move(name), std::move(is_global),
-                                                               std::move(static_init_type), std::move(initial_value)));
+                                                               std::move(static_init_type), std::move(static_inits)));
 }
 
-// (static variable) top_level = StaticVariable(identifier, bool global, int init)
+// (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
 static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) {
     if(node->attrs->type() == AST_T::StaticAttr_t) {
         represent_static_variable_top_level(node, symbol);
