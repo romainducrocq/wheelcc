@@ -6,7 +6,6 @@
 #include "ast/interm_ast.hpp"
 #include "frontend/intermediate/names.hpp"
 
-#include <inttypes.h>
 #include <string>
 #include <memory>
 #include <vector>
@@ -145,7 +144,7 @@ static bool is_type_scalar(Type* type_1) {
     }
 }
 
-static int32_t get_type_size(Type* type_1) {
+static TInt get_scalar_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
@@ -158,6 +157,10 @@ static int32_t get_type_size(Type* type_1) {
         default:
             RAISE_INTERNAL_ERROR;
     }
+}
+
+static TULong get_type_scale(Pointer* type_1) {
+    return 0ul; // TODO
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCast* node) {
@@ -186,8 +189,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCas
         return std::make_unique<TacPlainOperand>(std::move(dst));
     }
 
-    int32_t target_type_size = get_type_size(node->target_type.get());
-    int32_t inner_type_size = get_type_size(node->exp->exp_type.get());
+    TInt target_type_size = get_scalar_type_size(node->target_type.get());
+    TInt inner_type_size = get_scalar_type_size(node->exp->exp_type.get());
     if(target_type_size == inner_type_size) {
         push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
     }
@@ -218,12 +221,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_from_to_pointer_binary
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
-        scale = get_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+        scale = get_scalar_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
         src_ptr = represent_exp_instructions(node->exp_left.get());
         index = represent_exp_instructions(node->exp_right.get());
     }
     else {
-        scale = get_type_size(static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get());
+        scale = get_scalar_type_size(static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get());
         src_ptr = represent_exp_instructions(node->exp_right.get());
         index = represent_exp_instructions(node->exp_left.get());
     }
@@ -243,7 +246,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_add_instruction
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_to_pointer_binary_subtract_instructions(CBinary* node) {
-    TInt scale = get_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+    TInt scale = get_scalar_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
     std::shared_ptr<TacValue> src_ptr = represent_exp_instructions(node->exp_left.get());
     std::shared_ptr<TacValue> index;
     {
@@ -271,7 +274,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_pointer_binary_subtrac
     }
     std::shared_ptr<TacValue> src_2;
     {
-        TInt value = get_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+        TInt value = get_scalar_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(std::move(value));
         src_2 = std::make_shared<TacConstant>(std::move(constant));
     }
@@ -482,12 +485,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_subscript_instructions
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
     if(node->primary_exp->exp_type->type() == AST_T::Pointer_t) {
-        scale = get_type_size(static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get());
+        scale = get_scalar_type_size(static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get());
         src_ptr = represent_exp_instructions(node->primary_exp.get());
         index = represent_exp_instructions(node->subscript_exp.get());
     }
     else {
-        scale = get_type_size(static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get());
+        scale = get_scalar_type_size(static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get());
         src_ptr = represent_exp_instructions(node->subscript_exp.get());
         index = represent_exp_instructions(node->primary_exp.get());
     }
@@ -767,7 +770,7 @@ static void represent_scalar_compound_init_instructions(CSingleInit* node, Type*
     TIdentifier dst_name = symbol;
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
     push_instruction(std::make_unique<TacCopyToOffset>(std::move(offset), std::move(dst_name), std::move(src)));
-    size += get_type_size(init_type);
+    size += get_scalar_type_size(init_type);
 }
 
 static void represent_array_compound_init_instructions(CCompoundInit* node, Array* arr_type, const TIdentifier& symbol,
@@ -941,7 +944,7 @@ static void push_zero_init_static_init(TULong&& byte) {
 static TULong represent_tentative_byte(Type* static_init_type, TULong size);
 
 static TInt represent_scalar_tentative_byte(Type* static_init_type) {
-    return get_type_size(static_init_type);
+    return get_scalar_type_size(static_init_type);
 }
 
 static TULong represent_array_compound_tentative_byte(Array* arr_type, TULong size) {

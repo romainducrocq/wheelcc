@@ -70,6 +70,10 @@ TIdentifier represent_variable_identifier(CExp* node) {
             name = "addr";
             break;
         }
+        case AST_T::CSubscript_t: {
+            name = "subscr";
+            break;
+        }
         default:
             RAISE_INTERNAL_ERROR;
     }

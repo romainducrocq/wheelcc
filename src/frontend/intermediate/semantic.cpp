@@ -6,7 +6,6 @@
 #include "ast/front_ast.hpp"
 #include "frontend/intermediate/names.hpp"
 
-#include <inttypes.h>
 #include <string>
 #include <memory>
 #include <vector>
@@ -112,7 +111,7 @@ static bool is_type_scalar(Type* type_1) {
     }
 }
 
-static int32_t get_type_size(Type* type_1) {
+static TInt get_scalar_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
@@ -161,8 +160,8 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
             node_2->exp_type->type() == AST_T::Double_t) {
         return std::make_shared<Double>();
     }
-    int32_t type1_size = get_type_size(node_1->exp_type.get());
-    int32_t type2_size = get_type_size(node_2->exp_type.get());
+    TInt type1_size = get_scalar_type_size(node_1->exp_type.get());
+    TInt type2_size = get_scalar_type_size(node_2->exp_type.get());
     if(type1_size == type2_size) {
         if(is_type_signed(node_1->exp_type.get())) {
             return node_2->exp_type;
@@ -772,7 +771,7 @@ static TULong checktype_no_initializer_byte(Type* static_init_type, TULong size)
 static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
 
 static TInt checktype_scalar_no_initializer_byte(Type* static_init_type) {
-    return get_type_size(static_init_type);
+    return get_scalar_type_size(static_init_type);
 }
 
 static TULong checktype_array_compound_no_initializer_byte(Array* arr_type, TULong size) {
