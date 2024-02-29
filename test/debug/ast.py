@@ -181,7 +181,7 @@ ast = [
     ["TacGetAddress", [], ["src", "dst"]],
     ["TacLoad", [], ["src_ptr", "dst"]],
     ["TacStore", [], ["src", "dst_ptr"]],
-    ["TacAddPtr", [(TInt, "scale")], ["src_ptr", "index", "dst"]],
+    ["TacAddPtr", [(TULong, "scale")], ["src_ptr", "index", "dst"]],
     ["TacCopyToOffset", [(TULong, "offset"), (TIdentifier, "dst_name")], ["src"]],
     ["TacJump", [(TIdentifier, "target")], []],
     ["TacJumpIfZero", [(TIdentifier, "target")], ["condition"]],

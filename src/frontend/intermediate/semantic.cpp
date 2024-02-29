@@ -126,6 +126,30 @@ static TInt get_scalar_type_size(Type* type_1) {
     }
 }
 
+static TULong get_type_scale(Type* type_1);
+
+static TULong get_array_compound_type_scale(Array* arr_type_1) {
+    return get_type_scale(arr_type_1->elem_type.get()) * arr_type_1->size;
+}
+
+static TULong get_compound_type_scale(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Array_t:
+            return get_array_compound_type_scale(static_cast<Array*>(type_1));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TULong get_type_scale(Type* type_1) {
+    if(is_type_scalar(type_1)) {
+        return get_scalar_type_size(type_1);
+    }
+    else {
+        return get_compound_type_scale(type_1);
+    }
+}
+
 static bool is_constant_null_pointer(CConstant* node) {
     switch(node->constant->type()) {
         case AST_T::CConstInt_t:
@@ -767,38 +791,10 @@ static void push_zero_init_static_init(TULong&& byte) {
     }
 }
 
-static TULong checktype_no_initializer_byte(Type* static_init_type, TULong size);
 static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
 
-static TInt checktype_scalar_no_initializer_byte(Type* static_init_type) {
-    return get_scalar_type_size(static_init_type);
-}
-
-static TULong checktype_array_compound_no_initializer_byte(Array* arr_type, TULong size) {
-    size *= arr_type->size;
-    return checktype_no_initializer_byte(arr_type->elem_type.get(), size);
-}
-
-static TULong checktype_compound_no_initializer_byte(Type* static_init_type, TULong size) {
-    switch(static_init_type->type()) {
-        case AST_T::Array_t:
-            return checktype_array_compound_no_initializer_byte(static_cast<Array*>(static_init_type), size);
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TULong checktype_no_initializer_byte(Type* static_init_type, TULong size) {
-    if(is_type_scalar(static_init_type)) {
-        return checktype_scalar_no_initializer_byte(static_init_type) * size;
-    }
-    else {
-        return checktype_compound_no_initializer_byte(static_init_type, size);
-    }
-}
-
 static void checktype_no_initializer_static_init(Type* static_init_type, TULong size) {
-    TULong byte = checktype_no_initializer_byte(static_init_type, size);
+    TULong byte = get_type_scale(static_init_type) * size;
     push_zero_init_static_init(std::move(byte));
 }
 

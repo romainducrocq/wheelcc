@@ -942,7 +942,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::TacAddPtr_t: {
             field("TacAddPtr", "", ++t);
             TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
-            field("TInt", std::to_string(p_node->scale), t+1);
+            field("TULong", std::to_string(p_node->scale), t+1);
             print_ast(p_node->src_ptr.get(), t);
             print_ast(p_node->index.get(), t);
             print_ast(p_node->dst.get(), t);

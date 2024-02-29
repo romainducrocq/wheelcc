@@ -336,10 +336,10 @@ struct TacStore : TacInstruction {
 struct TacAddPtr : TacInstruction {
     AST_T type() override;
     TacAddPtr() = default;
-    TacAddPtr(TInt scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
+    TacAddPtr(TULong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
               std::shared_ptr<TacValue> dst);
 
-    TInt scale;
+    TULong scale;
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
     std::shared_ptr<TacValue> dst;
