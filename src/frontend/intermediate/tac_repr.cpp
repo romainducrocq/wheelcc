@@ -816,6 +816,28 @@ static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_
     }
 }
 
+static std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
+
+static void push_static_init(std::shared_ptr<StaticInit>&& static_init) {
+    p_static_inits->push_back(std::move(static_init));
+}
+
+static void push_zero_init_static_init(TULong&& byte) {
+    if(!p_static_inits->empty() &&
+       p_static_inits->back()->type() == AST_T::ZeroInit_t) {
+        static_cast<ZeroInit*>(p_static_inits->back().get())->byte += byte;
+    }
+    else {
+        push_static_init(std::make_shared<ZeroInit>(std::move(byte)));
+    }
+}
+
+static void represent_initial_static_variable_top_level(Initial* node) {
+    for(std::shared_ptr<StaticInit> static_init: node->static_inits) {
+        push_static_init(std::move(static_init));
+    }
+}
+
 static void represent_static_variable_top_level(Symbol* node, const TIdentifier& symbol) {
     StaticAttr* static_attr = static_cast<StaticAttr*>(node->attrs.get());
     if(static_attr->init->type() == AST_T::NoInitializer_t) {
@@ -826,10 +848,10 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
     bool is_global = static_attr->is_global;
     std::shared_ptr<Type> static_init_type = node->type_t;
     std::vector<std::shared_ptr<StaticInit>> static_inits;
+    p_static_inits = &static_inits;
     switch(static_attr->init->type()) {
         case AST_T::Initial_t:
-            // TODO
-//            initial_value = static_cast<Initial*>(static_attr->init.get())->static_init;
+            represent_initial_static_variable_top_level(static_cast<Initial*>(static_attr->init.get()));
             break;
         case AST_T::Tentative_t:
             // TODO
@@ -838,6 +860,7 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
         default:
             RAISE_INTERNAL_ERROR;
     }
+    p_static_inits = nullptr;
 
     push_top_level(std::make_unique<TacStaticVariable>(std::move(name), std::move(is_global),
                                                                std::move(static_init_type), std::move(static_inits)));
