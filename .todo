@@ -32,8 +32,7 @@
 
 ## NOTES
 
-- check mem leaks
-https://stackoverflow.com/questions/64390291/c-getline-memory-leak-different-behaviours
+- assembly -> set stack bytes to ULong because array type size is ULong
 
 When Types OK (after c18):
 - refactor type check unary, type check binary
