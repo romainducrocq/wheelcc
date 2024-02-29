@@ -171,6 +171,8 @@ enum AST_T {
     TacGetAddress_t,
     TacLoad_t,
     TacStore_t,
+    TacAddPtr_t,
+    TacCopyToOffset_t,
     TacJump_t,
     TacJumpIfZero_t,
     TacJumpIfNotZero_t,

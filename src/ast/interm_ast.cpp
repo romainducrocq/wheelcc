@@ -48,6 +48,8 @@ AST_T TacCopy::type() { return AST_T::TacCopy_t; }
 AST_T TacGetAddress::type() { return AST_T::TacGetAddress_t; }
 AST_T TacLoad::type() { return AST_T::TacLoad_t; }
 AST_T TacStore::type() { return AST_T::TacStore_t; }
+AST_T TacAddPtr::type() { return AST_T::TacAddPtr_t; }
+AST_T TacCopyToOffset::type() { return AST_T::TacCopyToOffset_t; }
 AST_T TacJump::type() { return AST_T::TacJump_t; }
 AST_T TacJumpIfZero::type() { return AST_T::TacJumpIfZero_t; }
 AST_T TacJumpIfNotZero::type() { return AST_T::TacJumpIfNotZero_t; }
@@ -118,6 +120,13 @@ TacLoad::TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> ds
 TacStore::TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr)
     : src(std::move(src)), dst_ptr(std::move(dst_ptr)) {}
 
+TacAddPtr::TacAddPtr(TInt scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
+                     std::shared_ptr<TacValue> dst)
+    : scale(scale), src_ptr(std::move(src_ptr)), index(std::move(index)), dst(std::move(dst)) {}
+
+TacCopyToOffset::TacCopyToOffset(TULong offset, TIdentifier dst_name, std::shared_ptr<TacValue> src)
+    : offset(offset), dst_name(std::move(dst_name)), src(std::move(src)) {}
+
 TacJump::TacJump(TIdentifier target)
     : target(std::move(target)) {}
 
@@ -135,9 +144,9 @@ TacFunction::TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifi
     : name(std::move(name)), is_global(is_global), params(std::move(params)), body(std::move(body)) {}
 
 TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
-                                     std::shared_ptr<StaticInit> initial_value)
+                                     std::vector<std::shared_ptr<StaticInit>> static_inits)
     : name(std::move(name)), is_global(is_global), static_init_type(std::move(static_init_type)),
-      initial_value(std::move(initial_value)) {}
+      static_inits(std::move(static_inits)) {}
 
 TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
                        std::vector<std::unique_ptr<TacTopLevel>> function_top_levels)

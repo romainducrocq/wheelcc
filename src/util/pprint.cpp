@@ -939,6 +939,23 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->dst_ptr.get(), t);
             break;
         }
+        case AST_T::TacAddPtr_t: {
+            field("TacAddPtr", "", ++t);
+            TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
+            field("TInt", std::to_string(p_node->scale), t+1);
+            print_ast(p_node->src_ptr.get(), t);
+            print_ast(p_node->index.get(), t);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
+        case AST_T::TacCopyToOffset_t: {
+            field("TacCopyToOffset", "", ++t);
+            TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
+            field("TULong", std::to_string(p_node->offset), t+1);
+            field("TIdentifier", p_node->dst_name, t+1);
+            print_ast(p_node->src.get(), t);
+            break;
+        }
         case AST_T::TacJump_t: {
             field("TacJump", "", ++t);
             TacJump* p_node = static_cast<TacJump*>(node);
@@ -990,7 +1007,10 @@ static void print_ast(Ast* node, size_t t) {
             field("TIdentifier", p_node->name, t+1);
             field("Bool", std::to_string(p_node->is_global), t+1);
             print_ast(p_node->static_init_type.get(), t);
-            print_ast(p_node->initial_value.get(), t);
+            field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_inits) {
+                print_ast(item.get(), t+1);
+            }
             break;
         }
         case AST_T::TacProgram_t: {

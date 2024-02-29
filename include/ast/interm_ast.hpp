@@ -182,6 +182,8 @@ struct TacDereferencedPointer : TacExpResult {
 //             | GetAddress(val, val)
 //             | Load(val, val)
 //             | Store(val, val)
+//             | AddPtr(val, val, int, val)
+//             | CopyToOffset(val, identifier, int)
 //             | Jump(identifier)
 //             | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier)
@@ -331,6 +333,28 @@ struct TacStore : TacInstruction {
     std::shared_ptr<TacValue> dst_ptr;
 };
 
+struct TacAddPtr : TacInstruction {
+    AST_T type() override;
+    TacAddPtr() = default;
+    TacAddPtr(TInt scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
+              std::shared_ptr<TacValue> dst);
+
+    TInt scale;
+    std::shared_ptr<TacValue> src_ptr;
+    std::shared_ptr<TacValue> index;
+    std::shared_ptr<TacValue> dst;
+};
+
+struct TacCopyToOffset : TacInstruction {
+    AST_T type() override;
+    TacCopyToOffset() = default;
+    TacCopyToOffset(TULong offset, TIdentifier dst_name, std::shared_ptr<TacValue> src);
+
+    TULong offset;
+    TIdentifier dst_name;
+    std::shared_ptr<TacValue> src;
+};
+
 struct TacJump : TacInstruction {
     AST_T type() override;
     TacJump() = default;
@@ -368,7 +392,7 @@ struct TacLabel : TacInstruction {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // top_level = Function(identifier, bool, identifier*, instruction*)
-//           | StaticVariable(identifier, bool, type, static_init)
+//           | StaticVariable(identifier, bool, type, static_init*)
 struct TacTopLevel : Ast {
     AST_T type() override;
 };
@@ -389,12 +413,12 @@ struct TacStaticVariable : TacTopLevel {
     AST_T type() override;
     TacStaticVariable() = default;
     TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
-                      std::shared_ptr<StaticInit> initial_value);
+                      std::vector<std::shared_ptr<StaticInit>> static_inits);
 
     TIdentifier name;
     bool is_global;
     std::shared_ptr<Type> static_init_type;
-    std::shared_ptr<StaticInit> initial_value;
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

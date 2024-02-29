@@ -181,13 +181,15 @@ ast = [
     ["TacGetAddress", [], ["src", "dst"]],
     ["TacLoad", [], ["src_ptr", "dst"]],
     ["TacStore", [], ["src", "dst_ptr"]],
+    ["TacAddPtr", [(TInt, "scale")], ["src_ptr", "index", "dst"]],
+    ["TacCopyToOffset", [(TULong, "offset"), (TIdentifier, "dst_name")], ["src"]],
     ["TacJump", [(TIdentifier, "target")], []],
     ["TacJumpIfZero", [(TIdentifier, "target")], ["condition"]],
     ["TacJumpIfNotZero", [(TIdentifier, "target")], ["condition"]],
     ["TacLabel", [(TIdentifier, "name")], []],
     ["TacTopLevel", [], []],
     ["TacFunction", [(TIdentifier, "name"), (Bool, "is_global"), (TIdentifier, "[params")], ["[body"]],
-    ["TacStaticVariable", [(TIdentifier, "name"), (Bool, "is_global")], ["static_init_type", "initial_value"]],
+    ["TacStaticVariable", [(TIdentifier, "name"), (Bool, "is_global")], ["static_init_type", "[static_inits"]],
     ["TacProgram", [], ["[static_variable_top_levels", "[function_top_levels"]],
 
     # /include/ast/back_ast.hpp
