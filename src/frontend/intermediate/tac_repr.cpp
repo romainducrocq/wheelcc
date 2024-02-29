@@ -211,6 +211,91 @@ static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUn
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CBinary* node);
+
+static std::unique_ptr<TacExpResult> represent_exp_result_from_to_pointer_binary_add_instructions(CBinary* node) {
+    TInt scale;
+    std::shared_ptr<TacValue> src_ptr;
+    std::shared_ptr<TacValue> index;
+    if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
+        scale = get_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+        src_ptr = represent_exp_instructions(node->exp_left.get());
+        index = represent_exp_instructions(node->exp_right.get());
+    }
+    else {
+        scale = get_type_size(static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get());
+        src_ptr = represent_exp_instructions(node->exp_right.get());
+        index = represent_exp_instructions(node->exp_left.get());
+    }
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    push_instruction(std::make_unique<TacAddPtr>(std::move(scale), std::move(src_ptr), std::move(index), dst));
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_add_instructions(CBinary* node) {
+    if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
+       node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+        return represent_exp_result_from_to_pointer_binary_add_instructions(node);
+    }
+    else {
+        return represent_exp_result_binary_instructions(node);
+    }
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_to_pointer_binary_subtract_instructions(CBinary* node) {
+    TInt scale = get_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+    std::shared_ptr<TacValue> src_ptr = represent_exp_instructions(node->exp_left.get());
+    std::shared_ptr<TacValue> index;
+    {
+        index = represent_exp_instructions(node->exp_right.get());
+        std::shared_ptr<TacValue> dst = represent_inner_value(node);
+        std::unique_ptr<TacUnaryOp> unary_op = std::make_unique<TacNegate>();
+        push_instruction(std::make_unique<TacUnary>(std::move(unary_op), std::move(index), dst));
+        index = std::move(dst);
+    }
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    push_instruction(std::make_unique<TacAddPtr>(std::move(scale), std::move(src_ptr), std::move(index), dst));
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_pointer_binary_subtract_instructions(CBinary* node) {
+    std::shared_ptr<TacValue> src_1;
+    {
+        src_1 = represent_exp_instructions(node->exp_left.get());
+        std::shared_ptr<TacValue> src_2 = represent_exp_instructions(node->exp_right.get());
+        std::shared_ptr<TacValue> dst = represent_inner_value(node);
+        std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacSubtract>();
+        push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src_1),
+                                                              std::move(src_2), dst));
+        src_1 = std::move(dst);
+    }
+    std::shared_ptr<TacValue> src_2;
+    {
+        TInt value = get_type_size(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+        std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(std::move(value));
+        src_2 = std::make_shared<TacConstant>(std::move(constant));
+    }
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacDivide>();
+    push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src_1),
+                                                          std::move(src_2), dst));
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_subtract_instructions(CBinary* node) {
+    if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
+        if(node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+            return represent_exp_result_pointer_binary_subtract_instructions(node);
+        }
+        else {
+            return represent_exp_result_to_pointer_binary_subtract_instructions(node);
+        }
+    }
+    else {
+        return represent_exp_result_binary_instructions(node);
+    }
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_binary_and_instructions(CBinary* node) {
     TIdentifier target_false = represent_label_identifier("and_false");
     TIdentifier target_true = represent_label_identifier("and_true");
@@ -392,6 +477,25 @@ static std::unique_ptr<TacExpResult> represent_exp_result_addrof_instructions(CA
     }
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_subscript_instructions(CSubscript* node) {
+    TInt scale;
+    std::shared_ptr<TacValue> src_ptr;
+    std::shared_ptr<TacValue> index;
+    if(node->primary_exp->exp_type->type() == AST_T::Pointer_t) {
+        scale = get_type_size(static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get());
+        src_ptr = represent_exp_instructions(node->primary_exp.get());
+        index = represent_exp_instructions(node->subscript_exp.get());
+    }
+    else {
+        scale = get_type_size(static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get());
+        src_ptr = represent_exp_instructions(node->subscript_exp.get());
+        index = represent_exp_instructions(node->primary_exp.get());
+    }
+    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    push_instruction(std::make_unique<TacAddPtr>(std::move(scale), std::move(src_ptr), std::move(index), dst));
+    return std::make_unique<TacDereferencedPointer>(std::move(dst));
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
     switch(node->type()) {
         case AST_T::CConstant_t:
@@ -405,6 +509,10 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
         case AST_T::CBinary_t: {
             CBinary* p_node = static_cast<CBinary*>(node);
             switch(p_node->binary_op->type()) {
+                case AST_T::CAdd_t:
+                    return represent_exp_result_binary_add_instructions(p_node);
+                case AST_T::CSubtract_t:
+                    return represent_exp_result_binary_subtract_instructions(p_node);
                 case AST_T::CAnd_t:
                     return represent_exp_result_binary_and_instructions(p_node);
                 case AST_T::COr_t:
@@ -423,6 +531,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
             return represent_exp_result_dereference_instructions(static_cast<CDereference*>(node));
         case AST_T::CAddrOf_t:
             return represent_exp_result_addrof_instructions(static_cast<CAddrOf*>(node));
+        case AST_T::CSubscript_t:
+            return represent_exp_result_subscript_instructions(static_cast<CSubscript*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
