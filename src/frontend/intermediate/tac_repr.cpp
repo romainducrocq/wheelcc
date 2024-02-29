@@ -131,6 +131,20 @@ static bool is_type_signed(Type* type_1) {
     }
 }
 
+static bool is_type_scalar(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static int32_t get_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
@@ -798,24 +812,6 @@ static void represent_declaration_top_level(CDeclaration* node) {
     }
 }
 
-static std::shared_ptr<StaticInit> represent_tentative_static_init(Type* static_init_type) {
-    switch(static_init_type->type()) {
-        case AST_T::Int_t:
-            return std::make_shared<IntInit>(0);
-        case AST_T::Long_t:
-            return std::make_shared<LongInit>(0l);
-        case AST_T::Double_t:
-            return std::make_shared<DoubleInit>(0.0, 0ul);
-        case AST_T::UInt_t:
-            return std::make_shared<UIntInit>(0u);
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return std::make_shared<ULongInit>(0ul);
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
 static std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
 
 static void push_static_init(std::shared_ptr<StaticInit>&& static_init) {
@@ -830,6 +826,40 @@ static void push_zero_init_static_init(TULong&& byte) {
     else {
         push_static_init(std::make_shared<ZeroInit>(std::move(byte)));
     }
+}
+
+static TULong represent_tentative_byte(Type* static_init_type, TULong size);
+
+static TInt represent_scalar_tentative_byte(Type* static_init_type) {
+    return get_type_size(static_init_type);
+}
+
+static TULong represent_array_compound_tentative_byte(Array* arr_type, TULong size) {
+    size *= arr_type->size;
+    return represent_tentative_byte(arr_type->elem_type.get(), size);
+}
+
+static TULong represent_compound_tentative_byte(Type* static_init_type, TULong size) {
+    switch(static_init_type->type()) {
+        case AST_T::Array_t:
+            return represent_array_compound_tentative_byte(static_cast<Array*>(static_init_type), size);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TULong represent_tentative_byte(Type* static_init_type, TULong size) {
+    if(is_type_scalar(static_init_type)) {
+        return represent_scalar_tentative_byte(static_init_type) * size;
+    }
+    else {
+        return represent_compound_tentative_byte(static_init_type, size);
+    }
+}
+
+static void represent_tentative_static_variable_top_level(Type* static_init_type, TULong size) {
+    TULong byte = represent_tentative_byte(static_init_type, size);
+    push_zero_init_static_init(std::move(byte));
 }
 
 static void represent_initial_static_variable_top_level(Initial* node) {
@@ -850,12 +880,11 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     p_static_inits = &static_inits;
     switch(static_attr->init->type()) {
+        case AST_T::Tentative_t:
+            represent_tentative_static_variable_top_level(static_init_type.get(), 1ul);
+            break;
         case AST_T::Initial_t:
             represent_initial_static_variable_top_level(static_cast<Initial*>(static_attr->init.get()));
-            break;
-        case AST_T::Tentative_t:
-            // TODO
-//            initial_value = represent_tentative_static_init(static_init_type.get());
             break;
         default:
             RAISE_INTERNAL_ERROR;
