@@ -376,7 +376,8 @@ static void checktype_binary_expression(CBinary* node) {
             }
             else if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
                     is_type_integer(node->exp_right->exp_type.get())) {
-                common_type = std::make_shared<Long>();
+                // TODO see if Long
+                common_type = std::make_shared<ULong>();
                 if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
                     std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
                     node->exp_right = std::move(exp);
@@ -386,7 +387,8 @@ static void checktype_binary_expression(CBinary* node) {
             }
             else if(is_type_integer(node->exp_left->exp_type.get()) &&
                     node->exp_right->exp_type->type() == AST_T::Pointer_t) {
-                common_type = std::make_shared<Long>();
+                // TODO see if Long
+                common_type = std::make_shared<ULong>();
                 if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
                     std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
                     node->exp_left = std::move(exp);
@@ -408,7 +410,8 @@ static void checktype_binary_expression(CBinary* node) {
             }
             else if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
                 if(is_type_integer(node->exp_right->exp_type.get())) {
-                    common_type = std::make_shared<Long>();
+                    // TODO see if Long
+                    common_type = std::make_shared<ULong>();
                     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
                         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
                         node->exp_right = std::move(exp);
@@ -419,7 +422,8 @@ static void checktype_binary_expression(CBinary* node) {
                 else if(is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) &&
                         !(node->exp_left->type() == AST_T::CConstant_t &&
                           is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get())))) {
-                    common_type = std::make_shared<Long>();
+                    // TODO see if Long
+                    common_type = std::make_shared<ULong>();
                     node->exp_type = std::move(common_type);
                     return;
                 }
@@ -576,7 +580,8 @@ static void checktype_subscript_expression(CSubscript* node) {
     std::shared_ptr<Type> ref_type;
     if(node->primary_exp->exp_type->type() == AST_T::Pointer_t &&
        is_type_integer(node->subscript_exp->exp_type.get())) {
-        std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
+        // TODO see if Long
+        std::shared_ptr<Type> subscript_type = std::make_shared<ULong>();
         if(!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->subscript_exp), subscript_type);
             node->subscript_exp = std::move(exp);
@@ -585,7 +590,8 @@ static void checktype_subscript_expression(CSubscript* node) {
     }
     else if(is_type_integer(node->primary_exp->exp_type.get()) &&
             node->subscript_exp->exp_type->type() == AST_T::Pointer_t) {
-        std::shared_ptr<Type> primary_type = std::make_shared<Long>();
+        // TODO see if Long
+        std::shared_ptr<Type> primary_type = std::make_shared<ULong>();
         if(!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->primary_exp), primary_type);
             node->primary_exp = std::move(exp);
