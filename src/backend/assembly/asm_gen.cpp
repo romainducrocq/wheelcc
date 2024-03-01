@@ -100,13 +100,32 @@ static std::shared_ptr<AsmPseudo> generate_pseudo_operand(TacVariable* node) {
     return std::make_shared<AsmPseudo>(std::move(name));
 }
 
+static std::shared_ptr<AsmPseudoMem> generate_pseudo_mem_operand(TacVariable* node) {
+    TIdentifier name = node->name;
+    return std::make_shared<AsmPseudoMem>(std::move(name), 0ul);
+}
+
+static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) {
+    switch(symbol_table[node->name]->type_t.get()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return generate_pseudo_operand(node);
+        default:
+            return generate_pseudo_mem_operand(node);
+    }
+}
+
 // operand = Imm(int, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier)
 static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
     switch(node->type()) {
         case AST_T::TacConstant_t:
             return generate_constant_operand(static_cast<TacConstant*>(node));
         case AST_T::TacVariable_t:
-            return generate_pseudo_operand(static_cast<TacVariable*>(node));
+            return generate_variable_operand(static_cast<TacVariable*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }

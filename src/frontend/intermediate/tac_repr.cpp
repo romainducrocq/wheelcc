@@ -130,20 +130,6 @@ static bool is_type_signed(Type* type_1) {
     }
 }
 
-static bool is_type_scalar(Type* type_1) {
-    switch(type_1->type()) {
-        case AST_T::Int_t:
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::UInt_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return true;
-        default:
-            return false;
-    }
-}
-
 static TInt get_scalar_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
@@ -175,11 +161,16 @@ static TULong get_aggregate_type_scale(Type* type_1) {
 }
 
 static TULong get_type_scale(Type* type_1) {
-    if(is_type_scalar(type_1)) {
-        return get_scalar_type_size(type_1);
-    }
-    else {
-        return get_aggregate_type_scale(type_1);
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return get_scalar_type_size(type_1);
+        default:
+            return get_aggregate_type_scale(type_1);
     }
 }
 
