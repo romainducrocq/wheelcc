@@ -56,7 +56,8 @@ static void align_offset_pseudo_register(AssemblyType* assembly_type) {
             counter += 4ul;
             break;
         case AST_T::ByteArray_t:
-            counter += static_cast<ByteArray*>(assembly_type)->alignment;
+            // TODO
+            counter += counter % static_cast<ByteArray*>(assembly_type)->alignment;
             break;
         default:
             break;
