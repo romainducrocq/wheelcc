@@ -18,8 +18,18 @@ static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     return std::make_shared<AsmData>(std::move(name));
 }
 
+static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* node) {
+    TIdentifier name = node->name;
+    return std::make_shared<AsmData>(std::move(name));
+}
+
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
     TULong value = pseudo_map[node->name];
+    return generate_memory(REGISTER_KIND::Bp, std::move(value));
+}
+
+static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMem* node) {
+    TULong value = pseudo_map[node->name] - node->offset;
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
@@ -32,6 +42,9 @@ static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
         case AST_T::BackendDouble_t:
             counter += 8ul;
             break;
+        case AST_T::ByteArray_t:
+            counter += static_cast<ByteArray*>(assembly_type)->size;
+            break;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -41,6 +54,11 @@ static void align_offset_pseudo_register(AssemblyType* assembly_type) {
     switch(assembly_type->type()) {
         case AST_T::LongWord_t:
             counter += 4ul;
+            break;
+        case AST_T::Array_t:
+            if(static_cast<ByteArray*>(assembly_type)->alignment == 4ul) {
+                counter += 4ul;
+            }
             break;
         default:
             break;
@@ -64,105 +82,269 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
     return replace_pseudo_register_memory(node);
 }
 
-static void replace_mov_pseudo_registers(AsmMov* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudoMem* node) {
+    if(pseudo_map.find(node->name) == pseudo_map.end()) {
+
+        BackendObj* backend_obj = static_cast<BackendObj*>(backend_symbol_table[node->name].get());
+        if(backend_obj->is_static) {
+            return replace_pseudo_mem_register_data(node);
+        }
+        else {
+            allocate_offset_pseudo_register(backend_obj->assembly_type.get());
+            pseudo_map[node->name] = counter;
+            align_offset_pseudo_register(backend_obj->assembly_type.get());
+        }
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+
+    return replace_pseudo_mem_register_memory(node);
+}
+
+static void replace_mov_pseudo_registers(AsmMov* node) {
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
+    }
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_mov_sx_pseudo_registers(AsmMovSx* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_mov_zero_extend_pseudo_registers(AsmMovZeroExtend* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_lea_pseudo_registers(AsmLea* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_cvttsd2si_pseudo_registers(AsmCvttsd2si* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_cvtsi2sd_pseudo_registers(AsmCvtsi2sd* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_unary_pseudo_registers(AsmUnary* node) {
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_binary_pseudo_registers(AsmBinary* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_cmp_pseudo_registers(AsmCmp* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_idiv_pseudo_registers(AsmIdiv* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_div_pseudo_registers(AsmDiv* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_set_cc_pseudo_registers(AsmSetCC* node) {
-    if(node->dst->type() == AST_T::AsmPseudo_t) {
-        node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+    switch(node->dst->type()) {
+        case AST_T::AsmPseudo_t:
+            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        default:
+            break;
     }
 }
 
 static void replace_push_pseudo_registers(AsmPush* node) {
-    if(node->src->type() == AST_T::AsmPseudo_t) {
-        node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+    switch(node->src->type()) {
+        case AST_T::AsmPseudo_t:
+            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        case AST_T::AsmPseudoMem_t:
+            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        default:
+            break;
     }
 }
 
@@ -263,6 +445,7 @@ static bool is_type_addr(AsmOperand* node) {
     switch(node->type()) {
         case AST_T::AsmMemory_t:
         case AST_T::AsmData_t:
+        case AST_T::AsmIndexed_t:
             return true;
         default:
             return false;
