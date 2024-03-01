@@ -958,8 +958,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::TacCopyToOffset_t: {
             field("TacCopyToOffset", "", ++t);
             TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
-            field("TULong", std::to_string(p_node->offset), t+1);
             field("TIdentifier", p_node->dst_name, t+1);
+            field("TULong", std::to_string(p_node->offset), t+1);
             print_ast(p_node->src.get(), t);
             break;
         }

@@ -777,10 +777,10 @@ static void represent_single_init_instructions(CSingleInit* node, const TIdentif
 
 static void represent_scalar_compound_init_instructions(CSingleInit* node, Type* init_type, const TIdentifier& symbol,
                                                         TULong& size) {
-    TULong offset = size;
     TIdentifier dst_name = symbol;
+    TULong offset = size;
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
-    push_instruction(std::make_unique<TacCopyToOffset>(std::move(offset), std::move(dst_name), std::move(src)));
+    push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), std::move(src)));
     size += get_scalar_type_size(init_type);
 }
 
@@ -861,7 +861,7 @@ static void represent_declaration_instructions(CDeclaration* node) {
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val) | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
-//             | Store(val, val) | AddPtr(val, val, int, val) | CopyToOffset(val, identifier, int) | Jump(identifier)
+//             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val) | Jump(identifier)
 //             | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier) | Label(identifier)
 static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for(size_t block_item = 0; block_item < list_node.size(); block_item++) {

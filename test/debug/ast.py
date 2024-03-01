@@ -183,7 +183,7 @@ ast = [
     ["TacLoad", [], ["src_ptr", "dst"]],
     ["TacStore", [], ["src", "dst_ptr"]],
     ["TacAddPtr", [(TULong, "scale")], ["src_ptr", "index", "dst"]],
-    ["TacCopyToOffset", [(TULong, "offset"), (TIdentifier, "dst_name")], ["src"]],
+    ["TacCopyToOffset", [(TIdentifier, "dst_name"), (TULong, "offset")], ["src"]],
     ["TacJump", [(TIdentifier, "target")], []],
     ["TacJumpIfZero", [(TIdentifier, "target")], ["condition"]],
     ["TacJumpIfNotZero", [(TIdentifier, "target")], ["condition"]],

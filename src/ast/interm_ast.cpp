@@ -124,8 +124,8 @@ TacAddPtr::TacAddPtr(TULong scale, std::shared_ptr<TacValue> src_ptr, std::share
                      std::shared_ptr<TacValue> dst)
     : scale(scale), src_ptr(std::move(src_ptr)), index(std::move(index)), dst(std::move(dst)) {}
 
-TacCopyToOffset::TacCopyToOffset(TULong offset, TIdentifier dst_name, std::shared_ptr<TacValue> src)
-    : offset(offset), dst_name(std::move(dst_name)), src(std::move(src)) {}
+TacCopyToOffset::TacCopyToOffset(TIdentifier dst_name, TULong offset, std::shared_ptr<TacValue> src)
+    : dst_name(std::move(dst_name)), offset(offset), src(std::move(src)) {}
 
 TacJump::TacJump(TIdentifier target)
     : target(std::move(target)) {}

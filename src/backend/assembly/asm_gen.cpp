@@ -1304,7 +1304,7 @@ static void append_double_static_constant_top_level(const TIdentifier& identifie
                                                                                             std::move(static_init)));
 }
 
-// top_level = Function(identifier, bool, instruction*) | StaticVariable(identifier, bool, int, static_init)
+// top_level = Function(identifier, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
     switch(node->type()) {
