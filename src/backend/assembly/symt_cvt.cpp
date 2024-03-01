@@ -7,6 +7,53 @@
 
 #include <memory>
 
+TInt generate_type_alignment(Type* type_1);
+
+static TInt generate_array_type_alignment(Array* arr_type_1, TULong& size) {
+    size = arr_type_1->size;
+    while(arr_type_1->elem_type->type() == AST_T::Array_t) {
+        arr_type_1 = static_cast<Array*>(arr_type_1->elem_type.get());
+        size *= arr_type_1->size;
+    }
+    TInt alignment;
+    {
+        alignment = generate_type_alignment(arr_type_1->elem_type.get());
+        size *= alignment;
+        if(size >= 16ul) {
+            alignment = 16;
+        }
+    }
+    return alignment;
+}
+
+static TInt generate_array_type_alignment(Array* arr_type_1) {
+    TULong size;
+    return generate_array_type_alignment(arr_type_1, size);
+}
+
+TInt generate_type_alignment(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return 4;
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return 8;
+        case AST_T::Array_t:
+            return generate_array_type_alignment(static_cast<Array*>(type_1));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static std::shared_ptr<ByteArray> convert_array_backend_assembly_type(Array* arr_type) {
+    TULong size;
+    TInt alignment = generate_array_type_alignment(arr_type, size);
+    return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
+}
+
 std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
     switch(symbol_table[name]->type_t->type()) {
         case AST_T::Int_t:
@@ -18,6 +65,8 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
         case AST_T::ULong_t:
         case AST_T::Pointer_t:
             return std::make_shared<QuadWord>();
+        case AST_T::Array_t:
+            return convert_array_backend_assembly_type(static_cast<Array*>(symbol_table[name]->type_t.get()));
         default:
             RAISE_INTERNAL_ERROR;
     }

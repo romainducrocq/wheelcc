@@ -232,7 +232,7 @@ ast = [
     ["AsmImm", [(Bool, "is_quad"), (TIdentifier, "value")], []],
     ["AsmRegister", [], ["reg"]],
     ["AsmPseudo", [(TIdentifier, "name")], []],
-    ["AsmMemory", [(TInt, "value")], ["reg"]],
+    ["AsmMemory", [(TULong, "value")], ["reg"]],
     ["AsmData", [(TIdentifier, "name")], []],
     ["AsmPseudoMem", [(TIdentifier, "name"), (TULong, "offset")], []],
     ["AsmIndexed", [(TULong, "scale")], ["reg_base", "reg_index"]],

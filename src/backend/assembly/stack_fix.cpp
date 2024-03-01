@@ -9,9 +9,9 @@
 #include <vector>
 #include <unordered_map>
 
-static TInt counter = 0;
+static TULong counter = 0ul;
 
-static std::unordered_map<TIdentifier, TInt> pseudo_map;
+static std::unordered_map<TIdentifier, TULong> pseudo_map;
 
 static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     TIdentifier name = node->name;
@@ -19,18 +19,18 @@ static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
-    TInt value = pseudo_map[node->name];
+    TULong value = pseudo_map[node->name];
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
     switch(assembly_type->type()) {
         case AST_T::LongWord_t:
-            counter -= 4;
+            counter += 4ul;
             break;
         case AST_T::QuadWord_t:
         case AST_T::BackendDouble_t:
-            counter -= 8;
+            counter += 8ul;
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -40,7 +40,7 @@ static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
 static void align_offset_pseudo_register(AssemblyType* assembly_type) {
     switch(assembly_type->type()) {
         case AST_T::LongWord_t:
-            counter -= 4;
+            counter += 4ul;
             break;
         default:
             break;
@@ -212,7 +212,7 @@ static void replace_pseudo_registers(AsmInstruction* node) {
     }
 }
 
-std::unique_ptr<AsmBinary> allocate_stack_bytes(TInt byte) {
+std::unique_ptr<AsmBinary> allocate_stack_bytes(TULong byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
@@ -224,7 +224,7 @@ std::unique_ptr<AsmBinary> allocate_stack_bytes(TInt byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-std::unique_ptr<AsmBinary> deallocate_stack_bytes(TInt byte) {
+std::unique_ptr<AsmBinary> deallocate_stack_bytes(TULong byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
@@ -247,12 +247,11 @@ static void swap_fix_instruction_back() {
 }
 
 static void fix_allocate_stack_bytes() {
-    TInt byte = -1 * counter;
-    if(byte % 8 != 0) {
+    if(counter % 8ul != 0ul) {
         RAISE_INTERNAL_ERROR;
     }
-    if(byte > 0) {
-        (*p_fix_instructions)[0] = allocate_stack_bytes(byte);
+    if(counter > 0ul) {
+        (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
     }
 }
 
@@ -679,7 +678,7 @@ static void fix_function_top_level(AsmFunction* node) {
     p_fix_instructions = &node->instructions;
     p_fix_instructions->emplace_back();
 
-    counter = 0;
+    counter = 0ul;
     pseudo_map.clear();
     for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
         push_fix_instruction(std::move(instructions[instruction]));

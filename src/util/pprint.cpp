@@ -1195,7 +1195,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmMemory_t: {
             field("AsmMemory", "", ++t);
             AsmMemory* p_node = static_cast<AsmMemory*>(node);
-            field("TInt", std::to_string(p_node->value), t+1);
+            field("TULong", std::to_string(p_node->value), t+1);
             print_ast(p_node->reg.get(), t);
             break;
         }

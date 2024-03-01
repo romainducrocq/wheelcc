@@ -97,7 +97,7 @@ AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
 AsmPseudo::AsmPseudo(TIdentifier name)
     : name(std::move(name)) {}
 
-AsmMemory::AsmMemory(TInt value, std::unique_ptr<AsmReg> reg)
+AsmMemory::AsmMemory(TULong value, std::unique_ptr<AsmReg> reg)
     : value(value), reg(std::move(reg)) {}
 
 AsmData::AsmData(TIdentifier name)

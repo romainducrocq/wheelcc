@@ -19,21 +19,6 @@
 
 static std::unordered_map<TIdentifier, TIdentifier> static_const_label_map;
 
-static TInt generate_alignment(Type* node) {
-    switch(node->type()) {
-        case AST_T::Int_t:
-        case AST_T::UInt_t:
-            return 4;
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return 8;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
 static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(false, std::move(value));
@@ -555,11 +540,11 @@ static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
     }
 }
 
-static void generate_allocate_stack_instructions(TInt byte) {
+static void generate_allocate_stack_instructions(TULong byte) {
     push_instruction(allocate_stack_bytes(byte));
 }
 
-static void generate_deallocate_stack_instructions(TInt byte) {
+static void generate_deallocate_stack_instructions(TULong byte) {
     push_instruction(deallocate_stack_bytes(byte));
 }
 
@@ -595,9 +580,9 @@ static void generate_stack_arg_fun_call_instructions(TacValue* node) {
 }
 
 static void generate_fun_call_instructions(TacFunCall* node) {
-    TInt stack_padding = 0;
+    TULong stack_padding = 0ul;
     if(node->args.size() % 2 == 1) {
-        stack_padding = 8;
+        stack_padding = 8ul;
         generate_allocate_stack_instructions(stack_padding);
     }
 
@@ -630,7 +615,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(), ARG_SSE_REGISTERS[i]);
     }
     for(size_t i = i_stacks.size(); i-- > 0;) {
-        stack_padding += 8;
+        stack_padding += 8ul;
         generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
     }
 
@@ -639,7 +624,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         push_instruction(std::make_unique<AsmCall>(std::move(name)));
     }
 
-    if(stack_padding > 0) {
+    if(stack_padding > 0ul) {
         generate_deallocate_stack_instructions(stack_padding);
     }
 
@@ -1412,7 +1397,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
 static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(TacStaticVariable* node) {
     TIdentifier name = node->name;
     bool is_global = node->is_global;
-    TInt alignment = generate_alignment(node->static_init_type.get());
+    TInt alignment = generate_type_alignment(node->static_init_type.get());
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     for(std::shared_ptr<StaticInit> static_init: node->static_inits) {
         static_inits.push_back(std::move(static_init));
