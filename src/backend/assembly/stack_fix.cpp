@@ -398,8 +398,9 @@ std::unique_ptr<AsmBinary> allocate_stack_bytes(TULong byte) {
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
+        bool is_quad = byte > 2147483647ul;
         TIdentifier value = std::to_string(byte);
-        src = std::make_shared<AsmImm>(false, std::move(value));
+        src = std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
     }
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
@@ -410,8 +411,9 @@ std::unique_ptr<AsmBinary> deallocate_stack_bytes(TULong byte) {
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
+        bool is_quad = byte > 2147483647ul;
         TIdentifier value = std::to_string(byte);
-        src = std::make_shared<AsmImm>(false, std::move(value));
+        src = std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
     }
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));

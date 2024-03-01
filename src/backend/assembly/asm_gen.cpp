@@ -1102,8 +1102,9 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
         push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
     }
     {
+        bool is_quad = node->scale > 2147483647ul;
         TIdentifier value = std::to_string(node->scale);
-        std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(true, std::move(value));
+        std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
         std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmMult>();
         push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
                                                               std::move(assembly_type_src), std::move(src),
