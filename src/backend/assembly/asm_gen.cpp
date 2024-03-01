@@ -106,7 +106,7 @@ static std::shared_ptr<AsmPseudoMem> generate_pseudo_mem_operand(TacVariable* no
 }
 
 static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) {
-    switch(symbol_table[node->name]->type_t.get()) {
+    switch(symbol_table[node->name]->type_t->type()) {
         case AST_T::Int_t:
         case AST_T::Long_t:
         case AST_T::Double_t:
@@ -1280,9 +1280,12 @@ static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(Tac
     TIdentifier name = node->name;
     bool is_global = node->is_global;
     TInt alignment = generate_alignment(node->static_init_type.get());
-    std::shared_ptr<StaticInit> initial_value = node->initial_value;
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    for(std::shared_ptr<StaticInit> static_init: node->static_inits) {
+        static_inits.push_back(std::move(static_init));
+    }
     return std::make_unique<AsmStaticVariable>(std::move(name), std::move(alignment), std::move(is_global),
-                                               std::move(initial_value));
+                                               std::move(static_inits));
 }
 
 static std::vector<std::unique_ptr<AsmTopLevel>>* p_static_constant_top_levels;
@@ -1295,10 +1298,10 @@ static void append_double_static_constant_top_level(const TIdentifier& identifie
                                                     TInt byte) {
     TIdentifier name = identifier;
     TInt alignment = byte;
-    std::shared_ptr<StaticInit> initial_value = std::make_shared<DoubleInit>(value, binary);
+    std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(value, binary);
     push_static_constant_top_levels(std::make_unique<AsmStaticConstant>(std::move(name),
                                                                                             std::move(alignment),
-                                                                                            std::move(initial_value)));
+                                                                                            std::move(static_init)));
 }
 
 // top_level = Function(identifier, bool, instruction*) | StaticVariable(identifier, bool, int, static_init)
@@ -1341,7 +1344,7 @@ std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_
     if(!asm_ast) {
         RAISE_INTERNAL_ERROR;
     }
-    convert_symbol_table(asm_ast.get());
-    fix_stack(asm_ast.get());
+//    convert_symbol_table(asm_ast.get());
+//    fix_stack(asm_ast.get());
     return asm_ast;
 }

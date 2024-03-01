@@ -36,7 +36,7 @@ static void convert_double_static_constant() {
 
 static void convert_static_constant_top_level(AsmStaticConstant* node) {
     p_symbol = &node->name;
-    switch(node->initial_value->type()) {
+    switch(node->static_init->type()) {
         case AST_T::DoubleInit_t:
             convert_double_static_constant();
             break;
