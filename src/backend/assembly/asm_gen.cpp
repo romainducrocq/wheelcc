@@ -1462,7 +1462,7 @@ std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_
     if(!asm_ast) {
         RAISE_INTERNAL_ERROR;
     }
-//    convert_symbol_table(asm_ast.get());
-//    fix_stack(asm_ast.get());
+    convert_symbol_table(asm_ast.get());
+    fix_stack(asm_ast.get());
     return asm_ast;
 }

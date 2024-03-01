@@ -10,7 +10,7 @@
 #include "frontend/parser/parser.hpp"
 #include "frontend/intermediate/semantic.hpp"
 #include "frontend/intermediate/tac_repr.hpp"
-//#include "backend/assembly/asm_gen.hpp"
+#include "backend/assembly/asm_gen.hpp"
 //#include "backend/emitter/att_code.hpp"
 
 #include <string>
@@ -111,18 +111,18 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 #endif
 
-//    verbose("-- Assembly generation ... ", false);
-//    std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
-//    verbose("OK", true);
-//#ifndef __NDEBUG__
-//    if(opt_code == 251) {
-//        debug_ast(asm_ast.get(), "ASM AST");
-//        debug_symbol_table();
-//        debug_backend_symbol_table();
-//        return;
-//    }
-//#endif
-//
+    verbose("-- Assembly generation ... ", false);
+    std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 251) {
+        debug_ast(asm_ast.get(), "ASM AST");
+        debug_symbol_table();
+        debug_backend_symbol_table();
+        return;
+    }
+#endif
+
 //    verbose("-- Code emission ... ", false);
 //    filename = filename.substr(0, filename.size()-2) + ".s";
 //    code_emission(std::move(asm_ast), std::move(filename));
