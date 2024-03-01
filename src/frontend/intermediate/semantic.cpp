@@ -128,14 +128,14 @@ static TInt get_scalar_type_size(Type* type_1) {
 
 static TULong get_type_scale(Type* type_1);
 
-static TULong get_array_compound_type_scale(Array* arr_type_1) {
+static TULong get_array_aggregate_type_scale(Array* arr_type_1) {
     return get_type_scale(arr_type_1->elem_type.get()) * arr_type_1->size;
 }
 
-static TULong get_compound_type_scale(Type* type_1) {
+static TULong get_aggregate_type_scale(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Array_t:
-            return get_array_compound_type_scale(static_cast<Array*>(type_1));
+            return get_array_aggregate_type_scale(static_cast<Array*>(type_1));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -146,7 +146,7 @@ static TULong get_type_scale(Type* type_1) {
         return get_scalar_type_size(type_1);
     }
     else {
-        return get_compound_type_scale(type_1);
+        return get_aggregate_type_scale(type_1);
     }
 }
 

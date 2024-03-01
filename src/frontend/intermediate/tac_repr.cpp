@@ -161,14 +161,14 @@ static TInt get_scalar_type_size(Type* type_1) {
 
 static TULong get_type_scale(Type* type_1);
 
-static TULong get_array_compound_type_scale(Array* arr_type_1) {
+static TULong get_array_aggregate_type_scale(Array* arr_type_1) {
     return get_type_scale(arr_type_1->elem_type.get()) * arr_type_1->size;
 }
 
-static TULong get_compound_type_scale(Type* type_1) {
+static TULong get_aggregate_type_scale(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Array_t:
-            return get_array_compound_type_scale(static_cast<Array*>(type_1));
+            return get_array_aggregate_type_scale(static_cast<Array*>(type_1));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -179,7 +179,7 @@ static TULong get_type_scale(Type* type_1) {
         return get_scalar_type_size(type_1);
     }
     else {
-        return get_compound_type_scale(type_1);
+        return get_aggregate_type_scale(type_1);
     }
 }
 
@@ -801,8 +801,8 @@ static void represent_array_compound_init_instructions(CCompoundInit* node, Arra
     }
 }
 
-static void represent_compound_compound_init_instructions(CCompoundInit* node, Type* init_type,
-                                                          const TIdentifier& symbol, TULong& size) {
+static void represent_aggregate_compound_init_instructions(CCompoundInit* node, Type* init_type,
+                                                           const TIdentifier& symbol, TULong& size) {
     switch(init_type->type()) {
         case AST_T::Array_t:
             represent_array_compound_init_instructions(node,static_cast<Array*>(init_type), symbol, size);
@@ -820,8 +820,8 @@ static void represent_compound_init_instructions(CInitializer* node, Type* init_
                                                         size);
             break;
         case AST_T::CCompoundInit_t:
-            represent_compound_compound_init_instructions(static_cast<CCompoundInit*>(node), init_type, symbol,
-                                                          size);
+            represent_aggregate_compound_init_instructions(static_cast<CCompoundInit*>(node), init_type, symbol,
+                                                           size);
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -835,9 +835,9 @@ static void represent_variable_declaration_instructions(CVariableDeclaration* no
             break;
         case AST_T::CCompoundInit_t: {
             TULong size = 0ul;
-            represent_compound_compound_init_instructions(static_cast<CCompoundInit*>(node->init.get()),
-                                                          symbol_table[node->name]->type_t.get(),
-                                                          node->name, size);
+            represent_aggregate_compound_init_instructions(static_cast<CCompoundInit*>(node->init.get()),
+                                                           symbol_table[node->name]->type_t.get(),
+                                                           node->name, size);
             break;
         }
         default:
