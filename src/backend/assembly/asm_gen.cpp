@@ -120,6 +120,7 @@ static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) 
 }
 
 // operand = Imm(int, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier)
+//         | PseudoMem(identifier, int) | Indexed(int, reg, reg)
 static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
     switch(node->type()) {
         case AST_T::TacConstant_t:
@@ -1045,6 +1046,132 @@ static void generate_store_instructions(TacStore* node) {
     }
 }
 
+static void generate_constant_index_add_ptr_instructions(TacAddPtr* node) {
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src_ptr.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
+    {
+        TULong index;
+        {
+            CConst* constant = static_cast<TacConstant*>(node->index.get())->constant.get();
+            switch(constant->type()) {
+                case AST_T::CConstInt_t:
+                    index = static_cast<TULong>(static_cast<CConstInt*>(constant)->value);
+                    break;
+                case AST_T::CConstLong_t:
+                    index = static_cast<TULong>(static_cast<CConstLong*>(constant)->value);
+                    break;
+                case AST_T::CConstUInt_t:
+                    index = static_cast<TULong>(static_cast<CConstUInt*>(constant)->value);
+                    break;
+                case AST_T::CConstULong_t:
+                    index = static_cast<CConstULong*>(constant)->value;
+                    break;
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+        }
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, index * node->scale);
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
+    }
+}
+
+static void generate_scalar_scale_variable_index_add_ptr_instructions(TacAddPtr* node) {
+    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src_ptr.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src),
+                                                            std::move(dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->index.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Dx);
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src = generate_indexed(REGISTER_KIND::Ax,
+                                                           REGISTER_KIND::Dx, node->scale);
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
+    }
+}
+
+static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddPtr* node) {
+    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+    std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Dx);
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src_ptr.get());
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src),
+                                                  std::move(dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->index.get());
+        push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
+    }
+    {
+        TIdentifier value = std::to_string(node->scale);
+        std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(true, std::move(value));
+        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmMult>();
+        push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
+                                                              std::move(assembly_type_src), std::move(src),
+                                                              std::move(src_dst)));
+    }
+    {
+        std::shared_ptr<AsmOperand> src = generate_indexed(REGISTER_KIND::Ax,
+                                                           REGISTER_KIND::Dx, 1ul);
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
+    }
+}
+
+static void generate_variable_index_add_ptr_instructions(TacAddPtr* node) {
+    switch(node->scale) {
+        case 1:
+        case 2:
+        case 4:
+        case 8:
+            generate_scalar_scale_variable_index_add_ptr_instructions(node);
+            break;
+        default:
+            generate_aggregate_scale_variable_index_add_ptr_instructions(node);
+            break;
+    }
+}
+
+static void generate_add_ptr_instructions(TacAddPtr* node) {
+    switch(node->index->type()) {
+        case AST_T::TacConstant_t:
+            generate_constant_index_add_ptr_instructions(node);
+            break;
+        case AST_T::TacVariable_t:
+            generate_variable_index_add_ptr_instructions(node);
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void generate_copy_to_offset_instructions(TacCopyToOffset* node) {
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst;
+    {
+        TIdentifier name = node->dst_name;
+        TULong offset = node->offset;
+        dst = std::make_shared<AsmPseudoMem>(std::move(name), std::move(offset));
+    }
+    std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                        std::move(dst)));
+}
+
 static void generate_jump_instructions(TacJump* node) {
     TIdentifier target = node->target;
     push_instruction(std::make_unique<AsmJmp>(std::move(target)));
@@ -1181,6 +1308,12 @@ static void generate_instructions(TacInstruction* node) {
             break;
         case AST_T::TacStore_t:
             generate_store_instructions(static_cast<TacStore*>(node));
+            break;
+        case AST_T::TacAddPtr_t:
+            generate_add_ptr_instructions(static_cast<TacAddPtr*>(node));
+            break;
+        case AST_T::TacCopyToOffset_t:
+            generate_copy_to_offset_instructions(static_cast<TacCopyToOffset*>(node));
             break;
         case AST_T::TacJump_t:
             generate_jump_instructions(static_cast<TacJump*>(node));

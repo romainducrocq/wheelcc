@@ -188,7 +188,7 @@ struct AsmP : AsmCondCode {
 //         | Memory(int, reg)
 //         | Data(identifier)
 //         | PseudoMem(identifier, int)
-//         | Indexed(reg, reg, int)
+//         | Indexed(int, reg, reg)
 struct AsmOperand : Ast {
     AST_T type() override;
 };

@@ -65,3 +65,10 @@ std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TInt val
     std::unique_ptr<AsmReg> reg = generate_reg(register_kind);
     return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
 }
+
+std::shared_ptr<AsmIndexed> generate_indexed(REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index,
+                                             TULong scale) {
+    std::unique_ptr<AsmReg> reg_base = generate_reg(register_kind_base);
+    std::unique_ptr<AsmReg> reg_index = generate_reg(register_kind_index);
+    return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
+}
