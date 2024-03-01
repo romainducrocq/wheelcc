@@ -225,7 +225,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUn
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CBinary* node);
+static std::unique_ptr<TacExpResult> represent_exp_result_any_binary_instructions(CBinary* node);
 
 static std::unique_ptr<TacExpResult> represent_exp_result_from_to_pointer_binary_add_instructions(CBinary* node) {
     TULong scale;
@@ -252,7 +252,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_add_instruction
         return represent_exp_result_from_to_pointer_binary_add_instructions(node);
     }
     else {
-        return represent_exp_result_binary_instructions(node);
+        return represent_exp_result_any_binary_instructions(node);
     }
 }
 
@@ -306,7 +306,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_subtract_instru
         }
     }
     else {
-        return represent_exp_result_binary_instructions(node);
+        return represent_exp_result_any_binary_instructions(node);
     }
 }
 
@@ -370,13 +370,28 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_or_instructions
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CBinary* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_any_binary_instructions(CBinary* node) {
     std::shared_ptr<TacValue> src1 = represent_exp_instructions(node->exp_left.get());
     std::shared_ptr<TacValue> src2 = represent_exp_instructions(node->exp_right.get());
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
     std::unique_ptr<TacBinaryOp> binary_op = represent_binary_op(node->binary_op.get());
     push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src1), std::move(src2), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CBinary* node) {
+    switch(node->binary_op->type()) {
+        case AST_T::CAdd_t:
+            return represent_exp_result_binary_add_instructions(node);
+        case AST_T::CSubtract_t:
+            return represent_exp_result_binary_subtract_instructions(node);
+        case AST_T::CAnd_t:
+            return represent_exp_result_binary_and_instructions(node);
+        case AST_T::COr_t:
+            return represent_exp_result_binary_or_instructions(node);
+        default:
+            return represent_exp_result_any_binary_instructions(node);
+    }
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_plain_operand_assignment_instructions(
@@ -520,21 +535,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
             return represent_exp_result_cast_instructions(static_cast<CCast*>(node));
         case AST_T::CUnary_t:
             return represent_exp_result_unary_instructions(static_cast<CUnary*>(node));
-        case AST_T::CBinary_t: {
-            CBinary* p_node = static_cast<CBinary*>(node);
-            switch(p_node->binary_op->type()) {
-                case AST_T::CAdd_t:
-                    return represent_exp_result_binary_add_instructions(p_node);
-                case AST_T::CSubtract_t:
-                    return represent_exp_result_binary_subtract_instructions(p_node);
-                case AST_T::CAnd_t:
-                    return represent_exp_result_binary_and_instructions(p_node);
-                case AST_T::COr_t:
-                    return represent_exp_result_binary_or_instructions(p_node);
-                default:
-                    return represent_exp_result_binary_instructions(p_node);
-            }
-        }
+        case AST_T::CBinary_t:
+            return represent_exp_result_binary_instructions(static_cast<CBinary*>(node));
         case AST_T::CAssignment_t:
             return represent_exp_result_assignment_instructions(static_cast<CAssignment*>(node));
         case AST_T::CConditional_t:
@@ -593,7 +595,7 @@ static void represent_statement_expression_instructions(CExpression* node) {
     represent_exp_result_instructions(node->exp.get());
 }
 
-static void represent_statement_if_instructions(CIf* node) {
+static void represent_statement_if_only_instructions(CIf* node) {
     TIdentifier target_false = represent_label_identifier("if_false");
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
@@ -615,6 +617,15 @@ static void represent_statement_if_else_instructions(CIf* node) {
     push_instruction(std::make_unique<TacLabel>(std::move(target_else)));
     represent_statement_instructions(node->else_fi.get());
     push_instruction(std::make_unique<TacLabel>(std::move(target_false)));
+}
+
+static void represent_statement_if_instructions(CIf* node) {
+    if(node->else_fi) {
+        represent_statement_if_else_instructions(node);
+    }
+    else {
+        represent_statement_if_only_instructions(node);
+    }
 }
 
 static void represent_statement_goto_instructions(CGoto* node) {
@@ -720,16 +731,9 @@ static void represent_statement_instructions(CStatement* node) {
         case AST_T::CExpression_t:
             represent_statement_expression_instructions(static_cast<CExpression*>(node));
             break;
-        case AST_T::CIf_t: {
-            CIf* p_node = static_cast<CIf*>(node);
-            if(p_node->else_fi) {
-                represent_statement_if_else_instructions(p_node);
-            }
-            else {
-                represent_statement_if_instructions(p_node);
-            }
+        case AST_T::CIf_t:
+            represent_statement_if_instructions(static_cast<CIf*>(node));
             break;
-        }
         case AST_T::CGoto_t:
             represent_statement_goto_instructions(static_cast<CGoto*>(node));
             break;
