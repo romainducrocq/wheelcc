@@ -53,6 +53,7 @@ ast = [
     ["LongWord", [], []],
     ["QuadWord", [], []],
     ["BackendDouble", [], []],
+    ["ByteArray", [(TULong, "size"), (TInt, "alignment")], []],
     ["BackendSymbol", [], []],
     ["BackendObj", [(Bool, "is_static"), (Bool, "is_constant")], ["assembly_type"]],
     ["BackendFun", [(Bool, "is_defined")], []],
@@ -233,6 +234,8 @@ ast = [
     ["AsmPseudo", [(TIdentifier, "name")], []],
     ["AsmMemory", [(TInt, "value")], ["reg"]],
     ["AsmData", [(TIdentifier, "name")], []],
+    ["AsmPseudoMem", [(TIdentifier, "name"), (TULong, "offset")], []],
+    ["AsmIndexed", [(TULong, "scale")], ["reg_base", "reg_index"]],
     ["AsmBinaryOp", [], []],
     ["AsmAdd", [], []],
     ["AsmSub", [], []],
@@ -269,8 +272,8 @@ ast = [
     ["AsmRet", [], []],
     ["AsmTopLevel", [], []],
     ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_global")], ["[instructions"]],
-    ["AsmStaticVariable", [(TIdentifier, "name"), (TInt, "alignment"), (Bool, "is_global")], ["initial_value"]],
-    ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["initial_value"]],
+    ["AsmStaticVariable", [(TIdentifier, "name"), (TInt, "alignment"), (Bool, "is_global")], ["[static_inits"]],
+    ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["static_init"]],
     ["AsmProgram", [], ["[static_constant_top_levels", "[top_levels"]],
 ]
 

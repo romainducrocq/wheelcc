@@ -187,6 +187,8 @@ struct AsmP : AsmCondCode {
 //         | Pseudo(identifier)
 //         | Memory(int, reg)
 //         | Data(identifier)
+//         | PseudoMem(identifier, int)
+//         | Indexed(reg, reg, int)
 struct AsmOperand : Ast {
     AST_T type() override;
 };
@@ -231,6 +233,25 @@ struct AsmData : AsmOperand {
     AsmData(TIdentifier name);
 
     TIdentifier name;
+};
+
+struct AsmPseudoMem : AsmOperand {
+    AST_T type() override;
+    AsmPseudoMem() = default;
+    AsmPseudoMem(TIdentifier name, TULong offset);
+
+    TIdentifier name;
+    TULong offset;
+};
+
+struct AsmIndexed : AsmOperand {
+    AST_T type() override;
+    AsmIndexed() = default;
+    AsmIndexed(TULong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index);
+
+    TULong scale;
+    std::unique_ptr<AsmReg> reg_base;
+    std::unique_ptr<AsmReg> reg_index;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -507,7 +528,7 @@ struct AsmRet : AsmInstruction {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // top_level = Function(identifier, bool, instruction*)
-//           | StaticVariable(identifier, bool, int, static_init)
+//           | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 struct AsmTopLevel : Ast {
     AST_T type() override;
@@ -526,22 +547,23 @@ struct AsmFunction : AsmTopLevel {
 struct AsmStaticVariable : AsmTopLevel {
     AST_T type() override;
     AsmStaticVariable() = default;
-    AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global, std::shared_ptr<StaticInit> initial_value);
+    AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global,
+                      std::vector<std::shared_ptr<StaticInit>> static_inits);
 
     TIdentifier name;
     TInt alignment;
     bool is_global;
-    std::shared_ptr<StaticInit> initial_value;
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
 };
 
 struct AsmStaticConstant : AsmTopLevel {
     AST_T type() override;
     AsmStaticConstant() = default;
-    AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> initial_value);
+    AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> static_init);
 
     TIdentifier name;
     TInt alignment;
-    std::shared_ptr<StaticInit> initial_value;
+    std::shared_ptr<StaticInit> static_init;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

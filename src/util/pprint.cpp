@@ -230,6 +230,13 @@ static void print_ast(Ast* node, size_t t) {
             field("BackendDouble", "", ++t);
             break;
         }
+        case AST_T::ByteArray_t: {
+            field("ByteArray", "", ++t);
+            ByteArray* p_node = static_cast<ByteArray*>(node);
+            field("TULong", std::to_string(p_node->size), t+1);
+            field("TInt", std::to_string(p_node->alignment), t+1);
+            break;
+        }
         case AST_T::BackendSymbol_t: {
             field("BackendSymbol", "", ++t);
             break;
@@ -1198,6 +1205,21 @@ static void print_ast(Ast* node, size_t t) {
             field("TIdentifier", p_node->name, t+1);
             break;
         }
+        case AST_T::AsmPseudoMem_t: {
+            field("AsmPseudoMem", "", ++t);
+            AsmPseudoMem* p_node = static_cast<AsmPseudoMem*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            field("TULong", std::to_string(p_node->offset), t+1);
+            break;
+        }
+        case AST_T::AsmIndexed_t: {
+            field("AsmIndexed", "", ++t);
+            AsmIndexed* p_node = static_cast<AsmIndexed*>(node);
+            field("TULong", std::to_string(p_node->scale), t+1);
+            print_ast(p_node->reg_base.get(), t);
+            print_ast(p_node->reg_index.get(), t);
+            break;
+        }
         case AST_T::AsmBinaryOp_t: {
             field("AsmBinaryOp", "", ++t);
             break;
@@ -1411,7 +1433,10 @@ static void print_ast(Ast* node, size_t t) {
             field("TIdentifier", p_node->name, t+1);
             field("TInt", std::to_string(p_node->alignment), t+1);
             field("Bool", std::to_string(p_node->is_global), t+1);
-            print_ast(p_node->initial_value.get(), t);
+            field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_inits) {
+                print_ast(item.get(), t+1);
+            }
             break;
         }
         case AST_T::AsmStaticConstant_t: {
@@ -1419,7 +1444,7 @@ static void print_ast(Ast* node, size_t t) {
             AsmStaticConstant* p_node = static_cast<AsmStaticConstant*>(node);
             field("TIdentifier", p_node->name, t+1);
             field("TInt", std::to_string(p_node->alignment), t+1);
-            print_ast(p_node->initial_value.get(), t);
+            print_ast(p_node->static_init.get(), t);
             break;
         }
         case AST_T::AsmProgram_t: {

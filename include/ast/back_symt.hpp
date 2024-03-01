@@ -11,6 +11,7 @@
 // assembly_type = LongWord
 //               | QuadWord
 //               | BackendDouble
+//               | ByteArray(int, int)
 struct AssemblyType : Ast {
     AST_T type() override;
 };
@@ -25,6 +26,15 @@ struct QuadWord : AssemblyType {
 
 struct BackendDouble : AssemblyType {
     AST_T type() override;
+};
+
+struct ByteArray : AssemblyType {
+    AST_T type() override;
+    ByteArray() = default;
+    ByteArray(TULong size, TInt alignment);
+
+    TULong size;
+    TInt alignment;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

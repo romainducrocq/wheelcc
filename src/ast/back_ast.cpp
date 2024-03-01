@@ -46,6 +46,8 @@ AST_T AsmRegister::type() { return AST_T::AsmRegister_t; }
 AST_T AsmPseudo::type() { return AST_T::AsmPseudo_t; }
 AST_T AsmMemory::type() { return AST_T::AsmMemory_t; }
 AST_T AsmData::type() { return AST_T::AsmData_t; }
+AST_T AsmPseudoMem::type() { return AST_T::AsmPseudoMem_t; }
+AST_T AsmIndexed::type() { return AST_T::AsmIndexed_t; }
 AST_T AsmBinaryOp::type() { return AST_T::AsmBinaryOp_t; }
 AST_T AsmAdd::type() { return AST_T::AsmAdd_t; }
 AST_T AsmSub::type() { return AST_T::AsmSub_t; }
@@ -100,6 +102,12 @@ AsmMemory::AsmMemory(TInt value, std::unique_ptr<AsmReg> reg)
 
 AsmData::AsmData(TIdentifier name)
     : name(std::move(name)) {}
+
+AsmPseudoMem::AsmPseudoMem(TIdentifier name, TULong offset)
+    : name(std::move(name)), offset(offset) {}
+
+AsmIndexed::AsmIndexed(TULong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index)
+    : scale(scale), reg_base(std::move(reg_base)), reg_index(std::move(reg_index)) {}
 
 AsmMov::AsmMov(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
                std::shared_ptr<AsmOperand> dst)
@@ -166,11 +174,11 @@ AsmFunction::AsmFunction(TIdentifier name, bool is_global, std::vector<std::uniq
     : name(std::move(name)), is_global(is_global), instructions(std::move(instructions)) {}
 
 AsmStaticVariable::AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global,
-                                     std::shared_ptr<StaticInit> initial_value)
-    : name(std::move(name)), alignment(alignment), is_global(is_global), initial_value(std::move(initial_value)) {}
+                                     std::vector<std::shared_ptr<StaticInit>> static_inits)
+    : name(std::move(name)), alignment(alignment), is_global(is_global), static_inits(std::move(static_inits)) {}
 
-AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> initial_value)
-    : name(std::move(name)), alignment(alignment), initial_value(std::move(initial_value)) {}
+AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> static_init)
+    : name(std::move(name)), alignment(alignment), static_init(std::move(static_init)) {}
 
 AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
                        std::vector<std::unique_ptr<AsmTopLevel>> top_levels)
