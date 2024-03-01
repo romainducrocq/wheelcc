@@ -55,10 +55,8 @@ static void align_offset_pseudo_register(AssemblyType* assembly_type) {
         case AST_T::LongWord_t:
             counter += 4ul;
             break;
-        case AST_T::Array_t:
-            if(static_cast<ByteArray*>(assembly_type)->alignment == 4ul) {
-                counter += 4ul;
-            }
+        case AST_T::ByteArray_t:
+            counter += static_cast<ByteArray*>(assembly_type)->alignment;
             break;
         default:
             break;
