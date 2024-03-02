@@ -33,34 +33,30 @@ static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMe
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
-static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
-    switch(assembly_type->type()) {
-        case AST_T::LongWord_t:
-            counter += 4ul;
-            break;
-        case AST_T::QuadWord_t:
-        case AST_T::BackendDouble_t:
-            counter += 8ul;
-            break;
-        case AST_T::ByteArray_t:
-            counter += static_cast<ByteArray*>(assembly_type)->size;
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
+static void align_offset_pseudo_register(TULong size, TInt alignment) {
+    counter += size;
+    TULong offset = counter % alignment;
+    if(offset != 0ul) {
+        counter += alignment - offset;
     }
 }
 
-static void align_offset_pseudo_register(AssemblyType* assembly_type) {
+static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
     switch(assembly_type->type()) {
         case AST_T::LongWord_t:
-            counter += 4ul;
+            align_offset_pseudo_register(4ul, 4);
             break;
-        case AST_T::ByteArray_t:
-            // TODO
-            counter += counter % static_cast<ByteArray*>(assembly_type)->alignment;
+        case AST_T::QuadWord_t:
+        case AST_T::BackendDouble_t:
+            align_offset_pseudo_register(8ul, 8);
             break;
+        case AST_T::ByteArray_t: {
+            ByteArray* byte_arr_assembly_type = static_cast<ByteArray*>(assembly_type);
+            align_offset_pseudo_register(byte_arr_assembly_type->size, byte_arr_assembly_type->alignment);
+            break;
+        }
         default:
-            break;
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -74,7 +70,6 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
-            align_offset_pseudo_register(backend_obj->assembly_type.get());
         }
     }
 
@@ -91,7 +86,6 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
-            align_offset_pseudo_register(backend_obj->assembly_type.get());
         }
     }
 
@@ -431,9 +425,6 @@ static void swap_fix_instruction_back() {
 
 static void fix_allocate_stack_bytes() {
     TULong byte = counter;
-    if(byte % 8ul != 0ul) {
-        RAISE_INTERNAL_ERROR;
-    }
     if(byte > 0ul) {
         (*p_fix_instructions)[0] = allocate_stack_bytes(std::move(byte));
     }
