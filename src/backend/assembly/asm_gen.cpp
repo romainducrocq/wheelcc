@@ -1421,8 +1421,8 @@ static void append_double_static_constant_top_level(const TIdentifier& identifie
     TInt alignment = byte;
     std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(value, binary);
     push_static_constant_top_levels(std::make_unique<AsmStaticConstant>(std::move(name),
-                                                                                            std::move(alignment),
-                                                                                            std::move(static_init)));
+                                                                                             std::move(alignment),
+                                                                                             std::move(static_init)));
 }
 
 // top_level = Function(identifier, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)

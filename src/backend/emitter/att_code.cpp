@@ -647,110 +647,74 @@ static void emit_function_top_level(AsmFunction* node) {
     emit_list_instructions(node->instructions);
 }
 
-//// StaticVariable(name, global, init) initialized to non-zero value -> $     <global-directive>
-////                                                                     $     .data
-////                                                                     $     <alignment-directive>
-////                                                                     $ <name>:
-////                                                       if init<i>(i) $     .long <i>
-////                                                     elif init<i>(i) $     .quad <i>
-////                                                     elif init<d>(d) $     .quad <d>
-//static void emit_data_static_variable_top_level(AsmStaticVariable* node, std::string&& static_init) {
-//    std::string name = emit_identifier(node->name);
-//    emit_global_directive_top_level(name, node->is_global);
-//    emit(".data", 1);
-//    emit_alignment_directive_top_level(node->alignment);
-//    emit(name + ":", 0);
-//    emit(std::move(static_init), 2);
-//}
-//
-//// StaticVariable(name, global, init) initialized to zero -> $     <global-directive>
-////                                                           $     .bss
-////                                                           $     <alignment-directive>
-////                                                           $ <name>:
-////                                            if int-init(0) $     .zero 4
-////                                         elif long-init(0) $     .zero 8
-//static void emit_bss_static_variable_top_level(AsmStaticVariable* node, std::string&& static_init) {
-//    std::string name = emit_identifier(node->name);
-//    emit_global_directive_top_level(name, node->is_global);
-//    emit(".bss", 1);
-//    emit_alignment_directive_top_level(node->alignment);
-//    emit(name + ":", 0);
-//    emit(std::move(static_init), 2);
-//}
-//
-//// StaticVariable(name, global, align, init)<i> initialized to non-zero value -> $ <data-static-variable-directives>
-//// StaticVariable(name, global, align, init)<d>                               -> $ <data-static-variable-directives>
-//// StaticVariable(name, global, align, init)<i> initialized to zero           -> $ <bss-static-variable-directives>
-//static void emit_static_variable_top_level(AsmStaticVariable* node) {
-//    std::string static_init;
-//    switch(node->initial_value->type()) {
-//        case AST_T::IntInit_t: {
-//            IntInit* initial_value = static_cast<IntInit*>(node->initial_value.get());
-//            if(initial_value->value != 0) {
-//                static_init = emit_int(initial_value->value);
-//                static_init = ".long " + static_init;
-//                emit_data_static_variable_top_level(node, std::move(static_init));
-//            }
-//            else {
-//                static_init = ".zero 4";
-//                emit_bss_static_variable_top_level(node, std::move(static_init));
-//            }
-//            break;
-//        }
-//        case AST_T::LongInit_t: {
-//            LongInit* initial_value = static_cast<LongInit*>(node->initial_value.get());
-//            if(initial_value->value != 0) {
-//                static_init = emit_long(initial_value->value);
-//                static_init = ".quad " + static_init;
-//                emit_data_static_variable_top_level(node, std::move(static_init));
-//            }
-//            else {
-//                static_init = ".zero 8";
-//                emit_bss_static_variable_top_level(node, std::move(static_init));
-//            }
-//            break;
-//        }
-//        case AST_T::DoubleInit_t: {
-//            static_init = emit_double(static_cast<DoubleInit*>(node->initial_value.get())->binary);
-//            static_init = ".quad " + static_init;
-//            emit_data_static_variable_top_level(node, std::move(static_init));
-//            break;
-//        }
-//        case AST_T::UIntInit_t: {
-//            UIntInit* initial_value = static_cast<UIntInit*>(node->initial_value.get());
-//            if(initial_value->value != 0) {
-//                static_init = emit_uint(initial_value->value);
-//                static_init = ".long " + static_init;
-//                emit_data_static_variable_top_level(node, std::move(static_init));
-//            }
-//            else {
-//                static_init = ".zero 4";
-//                emit_bss_static_variable_top_level(node, std::move(static_init));
-//            }
-//            break;
-//        }
-//        case AST_T::ULongInit_t: {
-//            ULongInit* initial_value = static_cast<ULongInit*>(node->initial_value.get());
-//            if(initial_value->value != 0) {
-//                static_init = emit_ulong(initial_value->value);
-//                static_init = ".quad " + static_init;
-//                emit_data_static_variable_top_level(node, std::move(static_init));
-//            }
-//            else {
-//                static_init = ".zero 8";
-//                emit_bss_static_variable_top_level(node, std::move(static_init));
-//            }
-//            break;
-//        }
-//        default:
-//            RAISE_INTERNAL_ERROR;
-//    }
-//}
+// TODO comment
+static void emit_init_static_variable_top_level(StaticInit* node) {
+    switch(node->type()) {
+        case AST_T::IntInit_t: {
+            std::string value = emit_int(static_cast<IntInit*>(node)->value);
+            emit(".long " + value, 2);
+            break;
+        }
+        case AST_T::LongInit_t: {
+            std::string value = emit_long(static_cast<LongInit*>(node)->value);
+            emit(".quad " + value, 2);
+            break;
+        }
+        case AST_T::DoubleInit_t: {
+            std::string value = emit_double(static_cast<DoubleInit*>(node)->binary);
+            emit(".long " + value, 2);
+            break;
+        }
+        case AST_T::UIntInit_t: {
+            std::string value = emit_uint(static_cast<UIntInit*>(node)->value);
+            emit(".long " + value, 2);
+            break;
+        }
+        case AST_T::ULongInit_t: {
+            std::string value = emit_ulong(static_cast<ULongInit*>(node)->value);
+            emit(".quad " + value, 2);
+            break;
+        }
+        case AST_T::ZeroInit_t: {
+            std::string byte = emit_ulong(static_cast<ZeroInit*>(node)->byte);
+            emit(".zero " + byte, 2);
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
-// StaticConstant(name, align, init) -> $     .section .rodata
-//                                      $     <alignment-directive>
-//                                      $ .L<name>:
-//                                      $     .quad <d>
+// TODO comment
+// StaticVariable(name, global, init*) initialized to zero -> $     <global-directive>
+//                                                         -> $     .bss
+//                                                         -> $     <alignment-directive>
+//                                                         -> $ <name>:
+//                                                         -> $     <init_list>
+
+
+// StaticVariable(name, global, align, init*) initialized to zero           -> $ <bss-static-variable-directives>
+// StaticVariable(name, global, align, init*) initialized to non-zero value -> $ <data-static-variable-directives>
+static void emit_static_variable_top_level(AsmStaticVariable* node) {
+    std::string name = emit_identifier(node->name);
+    emit_global_directive_top_level(name, node->is_global);
+    if(node->static_inits.size() == 1 &&
+       node->static_inits[0]->type() == AST_T::ZeroInit_t) {
+        emit(".bss", 1);
+    }
+    else {
+        emit(".data", 1);
+    }
+    emit(name + ":", 0);
+    for(size_t static_init = 0; static_init < node->static_inits.size(); static_init++) {
+        emit_init_static_variable_top_level(node->static_inits[static_init].get());
+    }
+}
+
+// StaticConstant(name, align, init)<d> -> $     .section .rodata
+//                                         $     <alignment-directive>
+//                                         $ .L<name>:
+//                                         $     .quad <d>
 static void emit_double_static_constant_top_level(AsmStaticConstant* node) {
     std::string name = emit_identifier(node->name);
     std::string static_init = emit_double(static_cast<DoubleInit*>(node->static_init.get())->binary);
@@ -771,9 +735,9 @@ static void emit_static_constant_top_level(AsmStaticConstant* node) {
     }
 }
 
-// Function(name, global, instructions)      -> $ <function-top-level-directives>
-// StaticVariable(name, global, align, init) -> $ <static-variable-top-level-directives>
-// StaticConstant(name, align, init)         -> $ <static-constant-top-level-directives>
+// Function(name, global, instructions)       -> $ <function-top-level-directives>
+// StaticVariable(name, global, align, init*) -> $ <static-variable-top-level-directives>
+// StaticConstant(name, align, init)          -> $ <static-constant-top-level-directives>
 static void emit_top_level(AsmTopLevel* node) {
     emit("", 0);
     switch(node->type()) {
@@ -781,8 +745,7 @@ static void emit_top_level(AsmTopLevel* node) {
             emit_function_top_level(static_cast<AsmFunction*>(node));
             break;
         case AST_T::AsmStaticVariable_t:
-            // TODO
-            // emit_static_variable_top_level(static_cast<AsmStaticVariable*>(node));
+            emit_static_variable_top_level(static_cast<AsmStaticVariable*>(node));
             break;
         case AST_T::AsmStaticConstant_t:
             emit_static_constant_top_level(static_cast<AsmStaticConstant*>(node));
