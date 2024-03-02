@@ -224,9 +224,10 @@ static std::string emit_condition_code(AsmCondCode* node) {
     }
 }
 
-// LongWord -> $ 4
-// QuadWord -> $ 8
-// Double   -> $ 8
+// LongWord  -> $ 4
+// QuadWord  -> $ 8
+// Double    -> $ 8
+// ByteArray -> $ alignment
 static TInt emit_type_alignment_bytes(AssemblyType* node) {
     switch(node->type()) {
         case AST_T::LongWord_t:
@@ -234,6 +235,8 @@ static TInt emit_type_alignment_bytes(AssemblyType* node) {
         case AST_T::QuadWord_t:
         case AST_T::BackendDouble_t:
             return 8;
+        case AST_T::ByteArray_t:
+            return static_cast<ByteArray*>(node)->alignment;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -259,51 +262,75 @@ static std::string emit_type_instruction_suffix(AssemblyType* node) {
     return emit_type_instruction_suffix(node, false);
 }
 
-// Imm(int)         -> $ $<int>
-// Register(reg)    -> $ %reg
-// Memory(int, reg) -> $ <int>(<reg>)
-// Data(identifier) -> $ <identifier>(%rip)
+static std::string emit_imm_operand(AsmImm* node) {
+    std::string value = emit_identifier(node->value);
+    return "$" + value;
+}
+
+static std::string emit_register_operand(AsmRegister* node, TInt byte) {
+    std::string reg;
+    switch(byte) {
+        case 1:
+            reg = emit_register_1byte(node->reg.get());
+            break;
+        case 4:
+            reg = emit_register_4byte(node->reg.get());
+            break;
+        case 8:
+            reg = emit_register_8byte(node->reg.get());
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    return "%" + reg;
+}
+
+static std::string emit_memory_operand(AsmMemory* node) {
+    std::string value = "";
+    if(node->value != 0) {
+        if(node->is_negative) {
+            value += "-";
+        }
+        value += emit_ulong(node->value);
+    }
+    std::string reg = emit_register_8byte(node->reg.get());
+    return value + "(%" + reg + ")";
+}
+
+static std::string emit_data_operand(AsmData* node) {
+    std::string value = emit_identifier(node->name);
+    if(backend_symbol_table.find(value) != backend_symbol_table.end() &&
+       backend_symbol_table[value]->type() == AST_T::BackendObj_t &&
+       static_cast<BackendObj*>(backend_symbol_table[value].get())->is_constant) {
+        value = ".L" + value;
+    }
+    return value + "(%rip)";
+}
+
+static std::string emit_indexed_operand(AsmIndexed* node) {
+    std::string reg_base = emit_register_8byte(node->reg_base.get());
+    std::string reg_index = emit_register_8byte(node->reg_index.get());
+    std::string scale = emit_ulong(node->scale);
+    return "(" + reg_base + ", " + reg_index + ", " + scale + ")";
+}
+
+// Imm(int)                 -> $ $<int>
+// Register(reg)            -> $ %reg
+// Memory(int, reg)         -> $ <int>(<reg>)
+// Data(identifier)         -> $ <identifier>(%rip)
+// Indexed(reg1, reg2, int) -> $ (<reg1>, <reg2>, <int>)
 static std::string emit_operand(AsmOperand* node, TInt byte) {
-    std::string operand;
     switch(node->type()) {
-        case AST_T::AsmImm_t: {
-            operand = emit_identifier(static_cast<AsmImm*>(node)->value);
-            return "$" + operand;
-        }
-        case AST_T::AsmRegister_t: {
-            switch(byte) {
-                case 1:
-                    operand = emit_register_1byte(static_cast<AsmRegister*>(node)->reg.get());
-                    break;
-                case 4:
-                    operand = emit_register_4byte(static_cast<AsmRegister*>(node)->reg.get());
-                    break;
-                case 8:
-                    operand = emit_register_8byte(static_cast<AsmRegister*>(node)->reg.get());
-                    break;
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
-            return "%" + operand;
-        }
-        case AST_T::AsmMemory_t: {
-            AsmMemory* p_node = static_cast<AsmMemory*>(node);
-            std::string value = "";
-            if(p_node->value != 0) {
-                value = emit_int(p_node->value);
-            }
-            operand = emit_register_8byte(p_node->reg.get());
-            return value + "(%" + operand + ")";
-        }
-        case AST_T::AsmData_t: {
-            operand = emit_identifier(static_cast<AsmData*>(node)->name);
-            if(backend_symbol_table.find(operand) != backend_symbol_table.end() &&
-               backend_symbol_table[operand]->type() == AST_T::BackendObj_t &&
-               static_cast<BackendObj*>(backend_symbol_table[operand].get())->is_constant) {
-                operand = ".L" + operand;
-            }
-            return operand + "(%rip)";
-        }
+        case AST_T::AsmImm_t:
+            return emit_imm_operand(static_cast<AsmImm*>(node));
+        case AST_T::AsmRegister_t:
+            return emit_register_operand(static_cast<AsmRegister*>(node), byte);
+        case AST_T::AsmMemory_t:
+            return emit_memory_operand(static_cast<AsmMemory*>(node));
+        case AST_T::AsmData_t:
+            return emit_data_operand(static_cast<AsmData*>(node));
+        case AST_T::AsmIndexed_t:
+            return emit_indexed_operand(static_cast<AsmIndexed*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
