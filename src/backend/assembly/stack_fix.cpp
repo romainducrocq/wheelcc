@@ -430,11 +430,12 @@ static void swap_fix_instruction_back() {
 }
 
 static void fix_allocate_stack_bytes() {
-    if(counter % 8ul != 0ul) {
+    TULong byte = counter;
+    if(byte % 8ul != 0ul) {
         RAISE_INTERNAL_ERROR;
     }
-    if(counter > 0ul) {
-        (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
+    if(byte > 0ul) {
+        (*p_fix_instructions)[0] = allocate_stack_bytes(std::move(byte));
     }
 }
 
