@@ -1196,6 +1196,7 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmMemory", "", ++t);
             AsmMemory* p_node = static_cast<AsmMemory*>(node);
             field("TULong", std::to_string(p_node->value), t+1);
+            field("Bool", std::to_string(p_node->is_negative), t+1);
             print_ast(p_node->reg.get(), t);
             break;
         }

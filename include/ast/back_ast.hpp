@@ -221,9 +221,10 @@ struct AsmPseudo : AsmOperand {
 struct AsmMemory : AsmOperand {
     AST_T type() override;
     AsmMemory() = default;
-    AsmMemory(TULong value, std::unique_ptr<AsmReg> reg);
+    AsmMemory(TULong value, bool is_negative, std::unique_ptr<AsmReg> reg);
 
     TULong value;
+    bool is_negative;
     std::unique_ptr<AsmReg> reg;
 };
 

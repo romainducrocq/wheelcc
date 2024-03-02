@@ -97,8 +97,8 @@ AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
 AsmPseudo::AsmPseudo(TIdentifier name)
     : name(std::move(name)) {}
 
-AsmMemory::AsmMemory(TULong value, std::unique_ptr<AsmReg> reg)
-    : value(value), reg(std::move(reg)) {}
+AsmMemory::AsmMemory(TULong value, bool is_negative, std::unique_ptr<AsmReg> reg)
+    : value(value), is_negative(is_negative), reg(std::move(reg)) {}
 
 AsmData::AsmData(TIdentifier name)
     : name(std::move(name)) {}

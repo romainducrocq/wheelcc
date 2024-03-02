@@ -1006,7 +1006,7 @@ static void generate_load_instructions(TacLoad* node) {
                                                             std::move(dst)));
     }
     {
-        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, 0ul);
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, 0ul, false);
         std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
         std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
@@ -1024,7 +1024,7 @@ static void generate_store_instructions(TacStore* node) {
     }
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
-        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0ul);
+        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0ul, false);
         std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->src.get());
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
                                                             std::move(dst)));
@@ -1060,7 +1060,8 @@ static void generate_constant_index_add_ptr_instructions(TacAddPtr* node) {
                     RAISE_INTERNAL_ERROR;
             }
         }
-        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, index * node->scale);
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, index * node->scale,
+                                                          false);
         std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
         push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
     }
@@ -1344,7 +1345,8 @@ static void generate_reg_param_function_instructions(const TIdentifier& param, R
 }
 
 static void generate_stack_param_function_instructions(const TIdentifier& param, TULong byte) {
-    std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, (byte + 2ul) * 8ul);
+    std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, (byte + 2ul) * 8ul,
+                                                      false);
     std::shared_ptr<AsmOperand> dst;
     {
         TIdentifier name = param;

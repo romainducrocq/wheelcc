@@ -9,7 +9,7 @@
 #include <vector>
 #include <unordered_map>
 
-static TULong counter = 0ul;
+static TULong counter;
 
 static std::unordered_map<TIdentifier, TULong> pseudo_map;
 
@@ -25,12 +25,12 @@ static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* n
 
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
     TULong value = pseudo_map[node->name];
-    return generate_memory(REGISTER_KIND::Bp, std::move(value));
+    return generate_memory(REGISTER_KIND::Bp, std::move(value), true);
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMem* node) {
     TULong value = pseudo_map[node->name] - node->offset;
-    return generate_memory(REGISTER_KIND::Bp, std::move(value));
+    return generate_memory(REGISTER_KIND::Bp, std::move(value), true);
 }
 
 static void align_offset_pseudo_register(TULong size, TInt alignment) {
