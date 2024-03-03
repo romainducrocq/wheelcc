@@ -618,7 +618,7 @@ static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>&
     }
 }
 
-// $ .align <alignment>
+// $ .balign <alignment>
 static void emit_alignment_directive_top_level(TInt alignment) {
     std::string align = emit_int(alignment);
     emit(".balign " + align, 1);
@@ -710,6 +710,7 @@ static void emit_static_variable_top_level(AsmStaticVariable* node) {
     std::string name = emit_identifier(node->name);
     emit_global_directive_top_level(name, node->is_global);
     emit_section_static_variable_top_level(node->static_inits);
+    emit_alignment_directive_top_level(node->alignment);
     emit(name + ":", 0);
     for(size_t static_init = 0; static_init < node->static_inits.size(); static_init++) {
         emit_init_static_variable_top_level(node->static_inits[static_init].get());
