@@ -11,7 +11,7 @@
 #include "frontend/intermediate/semantic.hpp"
 #include "frontend/intermediate/tac_repr.hpp"
 #include "backend/assembly/asm_gen.hpp"
-//#include "backend/emitter/att_code.hpp"
+#include "backend/emitter/att_code.hpp"
 
 #include <string>
 #include <vector>
@@ -123,16 +123,16 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 #endif
 
-//    verbose("-- Code emission ... ", false);
-//    filename = filename.substr(0, filename.size()-2) + ".s";
-//    code_emission(std::move(asm_ast), std::move(filename));
-//    verbose("OK", true);
-//#ifndef __NDEBUG__
-//    if(opt_code == 250) {
-//        debug_asm_code();
-//        return;
-//    }
-//#endif
+    verbose("-- Code emission ... ", false);
+    filename = filename.substr(0, filename.size()-2) + ".s";
+    code_emission(std::move(asm_ast), std::move(filename));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if(opt_code == 250) {
+        debug_asm_code();
+        return;
+    }
+#endif
 
     return;
 }
