@@ -424,9 +424,9 @@ static void swap_fix_instruction_back() {
 }
 
 static void fix_allocate_stack_bytes() {
-    TULong byte = counter;
-    if(byte > 0ul) {
-        (*p_fix_instructions)[0] = allocate_stack_bytes(std::move(byte));
+    if(counter > 0ul) {
+        align_offset_pseudo_register(8ul, 8);
+        (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
     }
 }
 
