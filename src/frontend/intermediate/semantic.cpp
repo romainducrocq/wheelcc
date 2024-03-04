@@ -595,11 +595,12 @@ static void checktype_subscript_expression(CSubscript* node) {
     node->exp_type = std::move(ref_type);
 }
 
-static std::unique_ptr<CExp> checktype_array_typed_expression(std::unique_ptr<CExp>&& node) {
+static std::unique_ptr<CAddrOf> checktype_array_typed_expression(std::unique_ptr<CExp>&& node) {
     std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
-    std::unique_ptr<CExp> exp = std::make_unique<CAddrOf>(std::move(node));
-    exp->exp_type = std::make_shared<Pointer>(std::move(ref_type));
-    return exp;
+    node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
+    std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node));
+    addrof->exp_type = addrof->exp->exp_type;
+    return addrof;
 }
 
 static std::unique_ptr<CExp> checktype_pass_typed_expression(std::unique_ptr<CExp>&& node) {
