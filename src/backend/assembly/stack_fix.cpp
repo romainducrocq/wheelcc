@@ -70,6 +70,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
+            align_offset_pseudo_register(0ul, 8);
         }
     }
 
@@ -86,6 +87,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
+            align_offset_pseudo_register(0ul, 8);
         }
     }
 
@@ -425,7 +427,6 @@ static void swap_fix_instruction_back() {
 
 static void fix_allocate_stack_bytes() {
     if(counter > 0ul) {
-        align_offset_pseudo_register(8ul, 8);
         (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
     }
 }

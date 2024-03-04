@@ -1043,22 +1043,10 @@ static void generate_constant_index_add_ptr_instructions(TacAddPtr* node) {
         TULong index;
         {
             CConst* constant = static_cast<TacConstant*>(node->index.get())->constant.get();
-            switch(constant->type()) {
-                case AST_T::CConstInt_t:
-                    index = static_cast<TULong>(static_cast<CConstInt*>(constant)->value);
-                    break;
-                case AST_T::CConstLong_t:
-                    index = static_cast<TULong>(static_cast<CConstLong*>(constant)->value);
-                    break;
-                case AST_T::CConstUInt_t:
-                    index = static_cast<TULong>(static_cast<CConstUInt*>(constant)->value);
-                    break;
-                case AST_T::CConstULong_t:
-                    index = static_cast<CConstULong*>(constant)->value;
-                    break;
-                default:
-                    RAISE_INTERNAL_ERROR;
+            if(constant->type() != AST_T::CConstULong_t) {
+                RAISE_INTERNAL_ERROR;
             }
+            index = static_cast<CConstULong*>(constant)->value;
         }
         std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, index * node->scale,
                                                           false);

@@ -32,7 +32,9 @@
 
 ## NOTES
 
-- assembly -> set stack bytes to ULong because array type size is ULong
+
+- offset longword is off
+- diff ptr : ptr2 - ptr1 can not be < 0
 
 When Types OK (after c18):
 - refactor type check unary, type check binary
