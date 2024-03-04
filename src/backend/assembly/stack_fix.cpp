@@ -51,8 +51,8 @@ static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
             align_offset_pseudo_register(8ul, 8);
             break;
         case AST_T::ByteArray_t: {
-            ByteArray* byte_arr_assembly_type = static_cast<ByteArray*>(assembly_type);
-            align_offset_pseudo_register(byte_arr_assembly_type->size, byte_arr_assembly_type->alignment);
+            ByteArray* p_assembly_type = static_cast<ByteArray*>(assembly_type);
+            align_offset_pseudo_register(p_assembly_type->size, p_assembly_type->alignment);
             break;
         }
         default:
