@@ -33,12 +33,16 @@ static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMe
     return generate_memory(REGISTER_KIND::Bp, std::move(value), true);
 }
 
-static void align_offset_pseudo_register(TULong size, TInt alignment) {
-    counter += size;
+static void align_offset_pseudo_register(TInt alignment) {
     TULong offset = counter % alignment;
     if(offset != 0ul) {
         counter += alignment - offset;
     }
+}
+
+static void align_offset_pseudo_register(TULong size, TInt alignment) {
+    counter += size;
+    align_offset_pseudo_register(alignment);
 }
 
 static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
@@ -70,7 +74,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
-            align_offset_pseudo_register(0ul, 8);
+            align_offset_pseudo_register(8);
         }
     }
 
@@ -87,7 +91,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
-            align_offset_pseudo_register(0ul, 8);
+            align_offset_pseudo_register(8);
         }
     }
 
