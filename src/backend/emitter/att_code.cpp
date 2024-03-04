@@ -311,7 +311,7 @@ static std::string emit_indexed_operand(AsmIndexed* node) {
     std::string reg_base = emit_register_8byte(node->reg_base.get());
     std::string reg_index = emit_register_8byte(node->reg_index.get());
     std::string scale = emit_ulong(node->scale);
-    return "(" + reg_base + ", " + reg_index + ", " + scale + ")";
+    return "(%" + reg_base + ", %" + reg_index + ", " + scale + ")";
 }
 
 // Imm(int)                 -> $ $<int>
