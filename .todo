@@ -32,10 +32,6 @@
 
 ## NOTES
 
-- review code
-- mem check
-
 When Types OK (after c18):
-- refactor type check unary, type check binary
 - add / clean error msgs in driver
 - clean error msgs in parser + semantic analysis / add line
