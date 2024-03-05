@@ -265,12 +265,12 @@ function compile () {
 function link () {
     if [ ${OPT_CODE} -lt 200 ]; then
         if [ ${LINK_CODE} -eq 0 ]; then
+            FILES_OUT="${FILES}.${EXT_OUT}"
             if [ ${FILE_2} -eq 1 ]; then
-                FILES="$(echo "${FILES}" |\
+                FILES_OUT="$(echo "${FILES_OUT}" |\
                     sed "s/ /.${EXT_OUT} /g")"
             fi
-            FILES="${FILES}.${EXT_OUT}"
-            gcc ${FILES}${LINK_LIBS} -o ${NAME_OUT}
+            gcc ${FILES_OUT}${LINK_LIBS} -o ${NAME_OUT}
             if [ ${?} -ne 0 ]; then return 1; fi
             verbose "Link       -> ${NAME_OUT}"
         elif [ ${LINK_CODE} -eq 1 ]; then
