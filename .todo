@@ -32,9 +32,8 @@
 
 ## NOTES
 
-
-- offset longword is off
-- diff ptr : ptr2 - ptr1 can not be < 0
+- review code
+- mem check
 
 When Types OK (after c18):
 - refactor type check unary, type check binary
