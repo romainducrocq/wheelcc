@@ -148,7 +148,12 @@ static TInt get_scalar_type_size(Type* type_1) {
 static TLong get_type_scale(Type* type_1);
 
 static TLong get_array_aggregate_type_scale(Array* arr_type_1) {
-    return get_type_scale(arr_type_1->elem_type.get()) * arr_type_1->size;
+    TLong size = arr_type_1->size;
+    while(arr_type_1->elem_type->type() == AST_T::Array_t) {
+        arr_type_1 = static_cast<Array*>(arr_type_1->elem_type.get());
+        size *= arr_type_1->size;
+    }
+    return get_type_scale(arr_type_1->elem_type.get()) * size;
 }
 
 static TLong get_aggregate_type_scale(Type* type_1) {

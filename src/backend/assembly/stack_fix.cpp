@@ -54,6 +54,13 @@ static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
         case AST_T::BackendDouble_t:
             align_offset_pseudo_register(8l, 8);
             break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void allocate_offset_pseudo_mem_register(AssemblyType* assembly_type) {
+    switch(assembly_type->type()) {
         case AST_T::ByteArray_t: {
             ByteArray* p_assembly_type = static_cast<ByteArray*>(assembly_type);
             align_offset_pseudo_register(p_assembly_type->size, p_assembly_type->alignment);
@@ -89,7 +96,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
             return replace_pseudo_mem_register_data(node);
         }
         else {
-            allocate_offset_pseudo_register(backend_obj->assembly_type.get());
+            allocate_offset_pseudo_mem_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
             align_offset_pseudo_register(8);
         }
