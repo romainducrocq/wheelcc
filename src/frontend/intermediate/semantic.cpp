@@ -269,34 +269,42 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
     raise_runtime_error("Assignment expressions have incompatible types");
 }
 
-// TODO refactor
+static void checktype_not_unary_expression(CUnary* node) {
+    node->exp_type = std::make_shared<Int>();
+}
+
+static void checktype_complement_unary_expression(CUnary* node) {
+    switch(node->exp->exp_type->type()) {
+        case AST_T::Double_t:
+        case AST_T::Pointer_t:
+            raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                                " can not be used on " + em("floating-point number") + " or " +
+                                em("pointer type"));
+        default:
+            break;
+    }
+    node->exp_type = node->exp->exp_type;
+}
+
+static void checktype_negate_unary_expression(CUnary* node) {
+    if(node->exp->exp_type->type() == AST_T::Pointer_t) {
+        raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                            " can not be used on " + em("pointer type"));
+    }
+    node->exp_type = node->exp->exp_type;
+}
+
 static void checktype_unary_expression(CUnary* node) {
     switch(node->unary_op->type()) {
-        case AST_T::CNot_t: {
-            node->exp_type = std::make_shared<Int>();
+        case AST_T::CNot_t:
+            checktype_not_unary_expression(node);
             break;
-        }
-        case AST_T::CComplement_t: {
-            switch(node->exp->exp_type->type()) {
-                case AST_T::Double_t:
-                case AST_T::Pointer_t:
-                    raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
-                                        " can not be used on " + em("floating-point number") + " or " +
-                                        em("pointer type"));
-                default:
-                    break;
-            }
-            node->exp_type = node->exp->exp_type;
+        case AST_T::CComplement_t:
+            checktype_complement_unary_expression(node);
             break;
-        }
-        case AST_T::CNegate_t: {
-            if(node->exp->exp_type->type() == AST_T::Pointer_t) {
-                raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
-                                    " can not be used on " + em("pointer type"));
-            }
-            node->exp_type = node->exp->exp_type;
+        case AST_T::CNegate_t:
+            checktype_negate_unary_expression(node);
             break;
-        }
         default:
             RAISE_INTERNAL_ERROR;
     }
