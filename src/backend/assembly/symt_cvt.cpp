@@ -24,15 +24,15 @@ TInt generate_scalar_type_alignment(Type* type_1) {
 
 TInt generate_type_alignment(Type* type_1);
 
-static TInt generate_array_aggregate_type_alignment(Array* arr_type_1, TLong& size) {
-    size = arr_type_1->size;
-    while(arr_type_1->elem_type->type() == AST_T::Array_t) {
-        arr_type_1 = static_cast<Array*>(arr_type_1->elem_type.get());
-        size *= arr_type_1->size;
+static TInt generate_array_aggregate_type_alignment(Array* arr_type, TLong& size) {
+    size = arr_type->size;
+    while(arr_type->elem_type->type() == AST_T::Array_t) {
+        arr_type = static_cast<Array*>(arr_type->elem_type.get());
+        size *= arr_type->size;
     }
     TInt alignment;
     {
-        alignment = generate_type_alignment(arr_type_1->elem_type.get());
+        alignment = generate_type_alignment(arr_type->elem_type.get());
         size *= alignment;
         if(size >= 16l) {
             alignment = 16;
@@ -41,38 +41,28 @@ static TInt generate_array_aggregate_type_alignment(Array* arr_type_1, TLong& si
     return alignment;
 }
 
-static TInt generate_array_aggregate_type_alignment(Array* arr_type_1) {
+static TInt generate_array_aggregate_type_alignment(Array* arr_type) {
     TLong size;
-    return generate_array_aggregate_type_alignment(arr_type_1, size);
-}
-
-static TLong generate_aggregate_type_alignment(Type* type_1) {
-    switch(type_1->type()) {
-        case AST_T::Array_t:
-            return generate_array_aggregate_type_alignment(static_cast<Array*>(type_1));
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
+    return generate_array_aggregate_type_alignment(arr_type, size);
 }
 
 TInt generate_type_alignment(Type* type_1) {
     switch(type_1->type()) {
-        case AST_T::Int_t:
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::UInt_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return generate_scalar_type_alignment(type_1);
         case AST_T::Array_t:
-            return generate_aggregate_type_alignment(type_1);
+            return generate_array_aggregate_type_alignment(static_cast<Array*>(type_1));
         default:
-            RAISE_INTERNAL_ERROR;
+            return generate_scalar_type_alignment(type_1);
     }
 }
 
-std::shared_ptr<AssemblyType> convert_scalar_backend_assembly_type(Type* type_1) {
-    switch(type_1->type()) {
+static std::shared_ptr<ByteArray> convert_array_aggregate_assembly_type(Array* arr_type) {
+    TLong size;
+    TInt alignment = generate_array_aggregate_type_alignment(arr_type, size);
+    return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
+}
+
+std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
+    switch(symbol_table[name]->type_t->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return std::make_shared<LongWord>();
@@ -82,37 +72,8 @@ std::shared_ptr<AssemblyType> convert_scalar_backend_assembly_type(Type* type_1)
             return std::make_shared<QuadWord>();
         case AST_T::Double_t:
             return std::make_shared<BackendDouble>();
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static std::shared_ptr<ByteArray> convert_array_aggregate_backend_assembly_type(Array* arr_type_1) {
-    TLong size;
-    TInt alignment = generate_array_aggregate_type_alignment(arr_type_1, size);
-    return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
-}
-
-std::shared_ptr<AssemblyType> convert_aggregate_backend_assembly_type(Type* type_1) {
-    switch(type_1->type()) {
         case AST_T::Array_t:
-            return convert_array_aggregate_backend_assembly_type(static_cast<Array*>(type_1));
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
-    switch(symbol_table[name]->type_t->type()) {
-        case AST_T::Int_t:
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::UInt_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return convert_scalar_backend_assembly_type(symbol_table[name]->type_t.get());
-        case AST_T::Array_t:
-            return convert_aggregate_backend_assembly_type(symbol_table[name]->type_t.get());
+            return convert_array_aggregate_assembly_type(static_cast<Array*>(symbol_table[name]->type_t.get()));
         default:
             RAISE_INTERNAL_ERROR;
     }

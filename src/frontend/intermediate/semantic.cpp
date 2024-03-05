@@ -114,35 +114,21 @@ static TInt get_scalar_type_size(Type* type_1) {
 
 static TLong get_type_scale(Type* type_1);
 
-static TLong get_array_aggregate_type_scale(Array* arr_type_1) {
-    TLong size = arr_type_1->size;
-    while(arr_type_1->elem_type->type() == AST_T::Array_t) {
-        arr_type_1 = static_cast<Array*>(arr_type_1->elem_type.get());
-        size *= arr_type_1->size;
+static TLong get_array_aggregate_type_scale(Array* arr_type) {
+    TLong size = arr_type->size;
+    while(arr_type->elem_type->type() == AST_T::Array_t) {
+        arr_type = static_cast<Array*>(arr_type->elem_type.get());
+        size *= arr_type->size;
     }
-    return get_type_scale(arr_type_1->elem_type.get()) * size;
-}
-
-static TLong get_aggregate_type_scale(Type* type_1) {
-    switch(type_1->type()) {
-        case AST_T::Array_t:
-            return get_array_aggregate_type_scale(static_cast<Array*>(type_1));
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
+    return get_type_scale(arr_type->elem_type.get()) * size;
 }
 
 static TLong get_type_scale(Type* type_1) {
     switch(type_1->type()) {
-        case AST_T::Int_t:
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::UInt_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return get_scalar_type_size(type_1);
+        case AST_T::Array_t:
+            return get_array_aggregate_type_scale(static_cast<Array *>(type_1));
         default:
-            return get_aggregate_type_scale(type_1);
+            return get_scalar_type_size(type_1);
     }
 }
 

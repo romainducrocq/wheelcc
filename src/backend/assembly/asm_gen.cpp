@@ -92,15 +92,10 @@ static std::shared_ptr<AsmPseudoMem> generate_pseudo_mem_operand(TacVariable* no
 
 static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) {
     switch(symbol_table[node->name]->type_t->type()) {
-        case AST_T::Int_t:
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::UInt_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
-            return generate_pseudo_operand(node);
-        default:
+        case AST_T::Array_t:
             return generate_pseudo_mem_operand(node);
+        default:
+            return generate_pseudo_operand(node);
     }
 }
 
