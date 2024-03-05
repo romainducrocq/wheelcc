@@ -658,7 +658,12 @@ static void checktype_subscript_expression(CSubscript* node) {
     node->exp_type = std::move(ref_type);
 }
 
-static std::unique_ptr<CAddrOf> checktype_array_typed_expression(std::unique_ptr<CExp>&& node) {
+static std::unique_ptr<CExp> checktype_scalar_typed_expression(std::unique_ptr<CExp>&& node) {
+    std::unique_ptr<CExp> exp = std::move(node);
+    return exp;
+}
+
+static std::unique_ptr<CAddrOf> checktype_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
     std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
     std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node));
@@ -666,17 +671,12 @@ static std::unique_ptr<CAddrOf> checktype_array_typed_expression(std::unique_ptr
     return addrof;
 }
 
-static std::unique_ptr<CExp> checktype_pass_typed_expression(std::unique_ptr<CExp>&& node) {
-    std::unique_ptr<CExp> exp = std::move(node);
-    return exp;
-}
-
 static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& node) {
     switch(node->exp_type->type()) {
-        case Array_t:
-            return checktype_array_typed_expression(std::move(node));
+        case AST_T::Array_t:
+            return checktype_aggregate_typed_expression(std::move(node));
         default:
-            return checktype_pass_typed_expression(std::move(node));
+            return checktype_scalar_typed_expression(std::move(node));
     }
 }
 
@@ -733,7 +733,7 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
     return std::make_unique<CSingleInit>(std::move(exp));
 }
 
-static std::unique_ptr<CCompoundInit> checktype_compound_init_zero_initializer(Array* arr_type) {
+static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initializer(Array* arr_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
     for(size_t throwaway = 0; throwaway < static_cast<size_t>(arr_type->size); throwaway++) {
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(arr_type->elem_type.get());
@@ -745,7 +745,7 @@ static std::unique_ptr<CCompoundInit> checktype_compound_init_zero_initializer(A
 static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type) {
     switch(init_type->type()) {
         case AST_T::Array_t:
-            return checktype_compound_init_zero_initializer(static_cast<Array*>(init_type));
+            return checktype_array_compound_init_zero_initializer(static_cast<Array*>(init_type));
         default:
             return checktype_single_init_zero_initializer(init_type);
     }
@@ -1681,9 +1681,9 @@ static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* 
 static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_ptr<Type>& init_type) {
     switch(init_type->type()) {
         case AST_T::Array_t: {
-            Array* arr_type = static_cast<Array*>(init_type.get());
-            resolve_array_compound_init_initializer(node, arr_type);
-            checktype_array_compound_init_initializer(node, arr_type, init_type);
+            Array* p_init_type = static_cast<Array*>(init_type.get());
+            resolve_array_compound_init_initializer(node, p_init_type);
+            checktype_array_compound_init_initializer(node, p_init_type, init_type);
             break;
         }
         default:
