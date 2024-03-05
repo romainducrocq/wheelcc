@@ -31,7 +31,7 @@ _Resources_:
 - [x] 12\. Unsigned integers  
 - [x] 13\. Floating-point numbers  
 - [x] 14\. Pointers  
-- [ ] 15\. Arrays and pointer arithmetic  
+- [x] 15\. Arrays and pointer arithmetic  
 - [ ] 16\. Characters and strings  
 - [ ] 17\. Supporting dynamic memory allocation  
 - [ ] 18\. Structures  
