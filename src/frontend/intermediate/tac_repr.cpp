@@ -230,7 +230,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUn
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::unique_ptr<TacExpResult> represent_exp_result_any_binary_instructions(CBinary* node);
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_any_instructions(CBinary* node);
 
 static std::unique_ptr<TacExpResult> represent_exp_result_from_to_pointer_binary_add_instructions(CBinary* node) {
     TLong scale;
@@ -257,7 +257,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_add_instruction
         return represent_exp_result_from_to_pointer_binary_add_instructions(node);
     }
     else {
-        return represent_exp_result_any_binary_instructions(node);
+        return represent_exp_result_binary_any_instructions(node);
     }
 }
 
@@ -311,7 +311,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_subtract_instru
         }
     }
     else {
-        return represent_exp_result_any_binary_instructions(node);
+        return represent_exp_result_binary_any_instructions(node);
     }
 }
 
@@ -375,7 +375,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_or_instructions
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
-static std::unique_ptr<TacExpResult> represent_exp_result_any_binary_instructions(CBinary* node) {
+static std::unique_ptr<TacExpResult> represent_exp_result_binary_any_instructions(CBinary* node) {
     std::shared_ptr<TacValue> src1 = represent_exp_instructions(node->exp_left.get());
     std::shared_ptr<TacValue> src2 = represent_exp_instructions(node->exp_right.get());
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
@@ -395,7 +395,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_instructions(CB
         case AST_T::COr_t:
             return represent_exp_result_binary_or_instructions(node);
         default:
-            return represent_exp_result_any_binary_instructions(node);
+            return represent_exp_result_binary_any_instructions(node);
     }
 }
 

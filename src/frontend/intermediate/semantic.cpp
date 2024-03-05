@@ -269,11 +269,11 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
     raise_runtime_error("Assignment expressions have incompatible types");
 }
 
-static void checktype_not_unary_expression(CUnary* node) {
+static void checktype_unary_not_expression(CUnary* node) {
     node->exp_type = std::make_shared<Int>();
 }
 
-static void checktype_complement_unary_expression(CUnary* node) {
+static void checktype_unary_complement_expression(CUnary* node) {
     switch(node->exp->exp_type->type()) {
         case AST_T::Double_t:
         case AST_T::Pointer_t:
@@ -286,7 +286,7 @@ static void checktype_complement_unary_expression(CUnary* node) {
     node->exp_type = node->exp->exp_type;
 }
 
-static void checktype_negate_unary_expression(CUnary* node) {
+static void checktype_unary_negate_expression(CUnary* node) {
     if(node->exp->exp_type->type() == AST_T::Pointer_t) {
         raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
                             " can not be used on " + em("pointer type"));
@@ -297,20 +297,20 @@ static void checktype_negate_unary_expression(CUnary* node) {
 static void checktype_unary_expression(CUnary* node) {
     switch(node->unary_op->type()) {
         case AST_T::CNot_t:
-            checktype_not_unary_expression(node);
+            checktype_unary_not_expression(node);
             break;
         case AST_T::CComplement_t:
-            checktype_complement_unary_expression(node);
+            checktype_unary_complement_expression(node);
             break;
         case AST_T::CNegate_t:
-            checktype_negate_unary_expression(node);
+            checktype_unary_negate_expression(node);
             break;
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-static void checktype_add_arithmetic_binary_expression(CBinary* node) {
+static void checktype_binary_arithmetic_add_expression(CBinary* node) {
     std::shared_ptr<Type> common_type;
     if(is_type_arithmetic(node->exp_left->exp_type.get()) &&
        is_type_arithmetic(node->exp_right->exp_type.get())) {
@@ -353,7 +353,7 @@ static void checktype_add_arithmetic_binary_expression(CBinary* node) {
     node->exp_type = std::move(common_type);
 }
 
-static void checktype_subtract_arithmetic_binary_expression(CBinary* node) {
+static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
     std::shared_ptr<Type> common_type;
     if(is_type_arithmetic(node->exp_left->exp_type.get()) &&
        is_type_arithmetic(node->exp_right->exp_type.get())) {
@@ -394,7 +394,7 @@ static void checktype_subtract_arithmetic_binary_expression(CBinary* node) {
     node->exp_type = std::move(common_type);
 }
 
-static void checktype_multiply_divide_arithmetic_binary_expression(CBinary* node) {
+static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node) {
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
        node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
@@ -413,7 +413,7 @@ static void checktype_multiply_divide_arithmetic_binary_expression(CBinary* node
     node->exp_type = std::move(common_type);
 }
 
-static void checktype_remainder_bitwise_arithmetic_binary_expression(CBinary* node) {
+static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* node) {
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
        node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
@@ -436,7 +436,7 @@ static void checktype_remainder_bitwise_arithmetic_binary_expression(CBinary* no
     }
 }
 
-static void checktype_bitshift_binary_expression(CBinary* node) {
+static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     // Note: https://stackoverflow.com/a/70130146
     // if the value of the right operand is negative or is greater than or equal
     // to the width of the promoted left operand, the behavior is undefined
@@ -458,11 +458,11 @@ static void checktype_bitshift_binary_expression(CBinary* node) {
     return;
 }
 
-static void checktype_logical_binary_expression(CBinary* node) {
+static void checktype_binary_logical_expression(CBinary* node) {
     node->exp_type = std::make_shared<Int>();
 }
 
-static void checktype_equality_comparison_binary_expression(CBinary* node) {
+static void checktype_binary_comparison_equality_expression(CBinary* node) {
     std::shared_ptr<Type> common_type;
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
        node->exp_right->exp_type->type() == AST_T::Pointer_t) {
@@ -483,7 +483,7 @@ static void checktype_equality_comparison_binary_expression(CBinary* node) {
     node->exp_type = std::make_shared<Int>();
 }
 
-static void checktype_relational_comparison_binary_expression(CBinary* node) {
+static void checktype_binary_comparison_relational_expression(CBinary* node) {
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
        (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) ||
         (node->exp_left->type() == AST_T::CConstant_t &&
@@ -510,38 +510,38 @@ static void checktype_relational_comparison_binary_expression(CBinary* node) {
 static void checktype_binary_expression(CBinary* node) {
     switch(node->binary_op->type()) {
         case AST_T::CAdd_t:
-            checktype_add_arithmetic_binary_expression(node);
+            checktype_binary_arithmetic_add_expression(node);
             break;
         case AST_T::CSubtract_t:
-            checktype_subtract_arithmetic_binary_expression(node);
+            checktype_binary_arithmetic_subtract_expression(node);
             break;
         case AST_T::CMultiply_t:
         case AST_T::CDivide_t:
-            checktype_multiply_divide_arithmetic_binary_expression(node);
+            checktype_binary_arithmetic_multiply_divide_expression(node);
             break;
         case AST_T::CRemainder_t:
         case AST_T::CBitAnd_t:
         case AST_T::CBitOr_t:
         case AST_T::CBitXor_t:
-            checktype_remainder_bitwise_arithmetic_binary_expression(node);
+            checktype_binary_arithmetic_remainder_bitwise_expression(node);
             break;
         case AST_T::CBitShiftLeft_t:
         case AST_T::CBitShiftRight_t:
-            checktype_bitshift_binary_expression(node);
+            checktype_binary_arithmetic_bitshift_expression(node);
             break;
         case AST_T::CAnd_t:
         case AST_T::COr_t:
-            checktype_logical_binary_expression(node);
+            checktype_binary_logical_expression(node);
             break;
         case AST_T::CEqual_t:
         case AST_T::CNotEqual_t:
-            checktype_equality_comparison_binary_expression(node);
+            checktype_binary_comparison_equality_expression(node);
             break;
         case AST_T::CLessThan_t:
         case AST_T::CLessOrEqual_t:
         case AST_T::CGreaterThan_t:
         case AST_T::CGreaterOrEqual_t:
-            checktype_relational_comparison_binary_expression(node);
+            checktype_binary_comparison_relational_expression(node);
             break;
         default:
             RAISE_INTERNAL_ERROR;
