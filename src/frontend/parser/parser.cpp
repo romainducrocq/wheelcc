@@ -231,7 +231,7 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
     return parse_ulong_constant(std::move(value));
 }
 
-static TULong parse_array_size_t() {
+static TLong parse_array_size_t() {
     pop_next();
     std::shared_ptr<CConst> size;
     switch(peek_next().token_kind) {
@@ -250,13 +250,13 @@ static TULong parse_array_size_t() {
     expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
     switch(size->type()) {
         case AST_T::CConstInt_t:
-            return static_cast<TULong>(static_cast<CConstInt*>(size.get())->value);
+            return static_cast<TLong>(static_cast<CConstInt*>(size.get())->value);
         case AST_T::CConstLong_t:
-            return static_cast<TULong>(static_cast<CConstLong*>(size.get())->value);
+            return static_cast<CConstLong*>(size.get())->value;
         case AST_T::CConstUInt_t:
-            return static_cast<TULong>(static_cast<CConstUInt*>(size.get())->value);
+            return static_cast<TLong>(static_cast<CConstUInt*>(size.get())->value);
         case AST_T::CConstULong_t:
-            return static_cast<CConstULong*>(size.get())->value;
+            return static_cast<TLong>(static_cast<CConstULong*>(size.get())->value);
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -348,7 +348,7 @@ static void parse_process_pointer_abstract_declarator(CAbstractPointer* node, st
 
 static void parse_process_array_abstract_declarator(CAbstractArray* node, std::shared_ptr<Type> base_type,
                                                     AbstractDeclarator& abstract_declarator) {
-    TULong size = node->size;
+    TLong size = node->size;
     std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
     parse_process_abstract_declarator(node->abstract_declarator.get(), std::move(derived_type),
                                       abstract_declarator);
@@ -384,7 +384,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator();
 static std::unique_ptr<CAbstractDeclarator> parse_array_direct_abstract_declarator() {
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = std::make_unique<CAbstractBase>();
     do {
-        TULong size = parse_array_size_t();
+        TLong size = parse_array_size_t();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
     } while(peek_next().token_kind == TOKEN_KIND::brackets_open);
     return abstract_declarator;
@@ -396,7 +396,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_declarator() {
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_declarator();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     while(peek_next().token_kind == TOKEN_KIND::brackets_open) {
-        TULong size = parse_array_size_t();
+        TLong size = parse_array_size_t();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
     }
     return abstract_declarator;
@@ -1112,7 +1112,7 @@ static void parse_process_pointer_declarator(CPointerDeclarator* node, std::shar
 
 static void parse_process_array_declarator(CArrayDeclarator* node, std::shared_ptr<Type> base_type,
                                            Declarator& declarator) {
-    TULong size = node->size;
+    TLong size = node->size;
     std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
     parse_process_declarator(node->declarator.get(), std::move(derived_type), declarator);
 }
@@ -1252,7 +1252,7 @@ static std::unique_ptr<CFunDeclarator> parse_fun_declarator_suffix(std::unique_p
 // (array) <declarator-suffix> ::= { "[" <const> "]" }+
 static std::unique_ptr<CDeclarator> parse_array_declarator_suffix(std::unique_ptr<CDeclarator> declarator) {
     do {
-        TULong size = parse_array_size_t();
+        TLong size = parse_array_size_t();
         declarator = std::make_unique<CArrayDeclarator>(std::move(size), std::move(declarator));
     } while(peek_next().token_kind == TOKEN_KIND::brackets_open);
     return declarator;

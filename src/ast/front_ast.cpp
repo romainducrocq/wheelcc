@@ -87,7 +87,7 @@ AST_T CProgram::type() { return AST_T::CProgram_t; }
 CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator)
     : abstract_declarator(std::move(abstract_declarator)) {}
 
-CAbstractArray::CAbstractArray(TULong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator)
+CAbstractArray::CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator)
     : size(size), abstract_declarator(std::move(abstract_declarator)) {}
 
 CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type)
@@ -99,7 +99,7 @@ CIdent::CIdent(TIdentifier name)
 CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
     : declarator(std::move(declarator)) {}
 
-CArrayDeclarator::CArrayDeclarator(TULong size, std::unique_ptr<CDeclarator> declarator)
+CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> declarator)
     : size(size), declarator(std::move(declarator)) {}
 
 CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,

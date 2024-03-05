@@ -31,9 +31,9 @@ struct BackendDouble : AssemblyType {
 struct ByteArray : AssemblyType {
     AST_T type() override;
     ByteArray() = default;
-    ByteArray(TULong size, TInt alignment);
+    ByteArray(TLong size, TInt alignment);
 
-    TULong size;
+    TLong size;
     TInt alignment;
 };
 

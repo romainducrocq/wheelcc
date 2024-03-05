@@ -221,10 +221,9 @@ struct AsmPseudo : AsmOperand {
 struct AsmMemory : AsmOperand {
     AST_T type() override;
     AsmMemory() = default;
-    AsmMemory(TULong value, bool is_negative, std::unique_ptr<AsmReg> reg);
+    AsmMemory(TLong value, std::unique_ptr<AsmReg> reg);
 
-    TULong value;
-    bool is_negative;
+    TLong value;
     std::unique_ptr<AsmReg> reg;
 };
 
@@ -239,18 +238,18 @@ struct AsmData : AsmOperand {
 struct AsmPseudoMem : AsmOperand {
     AST_T type() override;
     AsmPseudoMem() = default;
-    AsmPseudoMem(TIdentifier name, TULong offset);
+    AsmPseudoMem(TIdentifier name, TLong offset);
 
     TIdentifier name;
-    TULong offset;
+    TLong offset;
 };
 
 struct AsmIndexed : AsmOperand {
     AST_T type() override;
     AsmIndexed() = default;
-    AsmIndexed(TULong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index);
+    AsmIndexed(TLong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index);
 
-    TULong scale;
+    TLong scale;
     std::unique_ptr<AsmReg> reg_base;
     std::unique_ptr<AsmReg> reg_index;
 };

@@ -120,11 +120,11 @@ TacLoad::TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> ds
 TacStore::TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr)
     : src(std::move(src)), dst_ptr(std::move(dst_ptr)) {}
 
-TacAddPtr::TacAddPtr(TULong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
+TacAddPtr::TacAddPtr(TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
                      std::shared_ptr<TacValue> dst)
     : scale(scale), src_ptr(std::move(src_ptr)), index(std::move(index)), dst(std::move(dst)) {}
 
-TacCopyToOffset::TacCopyToOffset(TIdentifier dst_name, TULong offset, std::shared_ptr<TacValue> src)
+TacCopyToOffset::TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src)
     : dst_name(std::move(dst_name)), offset(offset), src(std::move(src)) {}
 
 TacJump::TacJump(TIdentifier target)

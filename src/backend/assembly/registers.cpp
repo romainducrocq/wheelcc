@@ -61,13 +61,13 @@ std::shared_ptr<AsmRegister> generate_register(REGISTER_KIND register_kind) {
     return std::make_shared<AsmRegister>(std::move(reg));
 }
 
-std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TULong value, bool is_negative) {
+std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TLong value) {
     std::unique_ptr<AsmReg> reg = generate_reg(register_kind);
-    return std::make_shared<AsmMemory>(std::move(value), std::move(is_negative), std::move(reg));
+    return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
 }
 
 std::shared_ptr<AsmIndexed> generate_indexed(REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index,
-                                             TULong scale) {
+                                             TLong scale) {
     std::unique_ptr<AsmReg> reg_base = generate_reg(register_kind_base);
     std::unique_ptr<AsmReg> reg_index = generate_reg(register_kind_index);
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));

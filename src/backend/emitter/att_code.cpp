@@ -287,11 +287,8 @@ static std::string emit_register_operand(AsmRegister* node, TInt byte) {
 
 static std::string emit_memory_operand(AsmMemory* node) {
     std::string value = "";
-    if(node->value != 0) {
-        if(node->is_negative) {
-            value += "-";
-        }
-        value += emit_ulong(node->value);
+    if(node->value != 0l) {
+        value = emit_long(node->value);
     }
     std::string reg = emit_register_8byte(node->reg.get());
     return value + "(%" + reg + ")";
@@ -310,7 +307,7 @@ static std::string emit_data_operand(AsmData* node) {
 static std::string emit_indexed_operand(AsmIndexed* node) {
     std::string reg_base = emit_register_8byte(node->reg_base.get());
     std::string reg_index = emit_register_8byte(node->reg_index.get());
-    std::string scale = emit_ulong(node->scale);
+    std::string scale = emit_long(node->scale);
     return "(%" + reg_base + ", %" + reg_index + ", " + scale + ")";
 }
 
@@ -680,7 +677,7 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
             break;
         }
         case AST_T::ZeroInit_t: {
-            std::string byte = emit_ulong(static_cast<ZeroInit*>(node)->byte);
+            std::string byte = emit_long(static_cast<ZeroInit*>(node)->byte);
             emit(".zero " + byte, 2);
             break;
         }

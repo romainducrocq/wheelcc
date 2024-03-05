@@ -6,8 +6,8 @@
 
 #include <memory>
 
-std::unique_ptr<AsmBinary> deallocate_stack_bytes(TULong byte);
-std::unique_ptr<AsmBinary> allocate_stack_bytes(TULong byte);
+std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);
+std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node);
 
 #endif

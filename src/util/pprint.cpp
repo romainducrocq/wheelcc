@@ -119,7 +119,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::Array_t: {
             field("Array", "", ++t);
             Array* p_node = static_cast<Array*>(node);
-            field("TULong", std::to_string(p_node->size), t+1);
+            field("TLong", std::to_string(p_node->size), t+1);
             print_ast(p_node->elem_type.get(), t);
             break;
         }
@@ -161,7 +161,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::ZeroInit_t: {
             field("ZeroInit", "", ++t);
             ZeroInit* p_node = static_cast<ZeroInit*>(node);
-            field("TULong", std::to_string(p_node->byte), t+1);
+            field("TLong", std::to_string(p_node->byte), t+1);
             break;
         }
         case AST_T::InitialValue_t: {
@@ -233,7 +233,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::ByteArray_t: {
             field("ByteArray", "", ++t);
             ByteArray* p_node = static_cast<ByteArray*>(node);
-            field("TULong", std::to_string(p_node->size), t+1);
+            field("TLong", std::to_string(p_node->size), t+1);
             field("TInt", std::to_string(p_node->alignment), t+1);
             break;
         }
@@ -360,7 +360,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CAbstractArray_t: {
             field("CAbstractArray", "", ++t);
             CAbstractArray* p_node = static_cast<CAbstractArray*>(node);
-            field("TULong", std::to_string(p_node->size), t+1);
+            field("TLong", std::to_string(p_node->size), t+1);
             print_ast(p_node->abstract_declarator.get(), t);
             break;
         }
@@ -394,7 +394,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CArrayDeclarator_t: {
             field("CArrayDeclarator", "", ++t);
             CArrayDeclarator* p_node = static_cast<CArrayDeclarator*>(node);
-            field("TULong", std::to_string(p_node->size), t+1);
+            field("TLong", std::to_string(p_node->size), t+1);
             print_ast(p_node->declarator.get(), t);
             break;
         }
@@ -949,7 +949,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::TacAddPtr_t: {
             field("TacAddPtr", "", ++t);
             TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
-            field("TULong", std::to_string(p_node->scale), t+1);
+            field("TLong", std::to_string(p_node->scale), t+1);
             print_ast(p_node->src_ptr.get(), t);
             print_ast(p_node->index.get(), t);
             print_ast(p_node->dst.get(), t);
@@ -959,7 +959,7 @@ static void print_ast(Ast* node, size_t t) {
             field("TacCopyToOffset", "", ++t);
             TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
             field("TIdentifier", p_node->dst_name, t+1);
-            field("TULong", std::to_string(p_node->offset), t+1);
+            field("TLong", std::to_string(p_node->offset), t+1);
             print_ast(p_node->src.get(), t);
             break;
         }
@@ -1195,8 +1195,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmMemory_t: {
             field("AsmMemory", "", ++t);
             AsmMemory* p_node = static_cast<AsmMemory*>(node);
-            field("TULong", std::to_string(p_node->value), t+1);
-            field("Bool", std::to_string(p_node->is_negative), t+1);
+            field("TLong", std::to_string(p_node->value), t+1);
             print_ast(p_node->reg.get(), t);
             break;
         }
@@ -1210,13 +1209,13 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmPseudoMem", "", ++t);
             AsmPseudoMem* p_node = static_cast<AsmPseudoMem*>(node);
             field("TIdentifier", p_node->name, t+1);
-            field("TULong", std::to_string(p_node->offset), t+1);
+            field("TLong", std::to_string(p_node->offset), t+1);
             break;
         }
         case AST_T::AsmIndexed_t: {
             field("AsmIndexed", "", ++t);
             AsmIndexed* p_node = static_cast<AsmIndexed*>(node);
-            field("TULong", std::to_string(p_node->scale), t+1);
+            field("TLong", std::to_string(p_node->scale), t+1);
             print_ast(p_node->reg_base.get(), t);
             print_ast(p_node->reg_index.get(), t);
             break;

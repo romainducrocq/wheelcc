@@ -37,7 +37,7 @@ FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr
 Pointer::Pointer(std::shared_ptr<Type> ref_type)
     : ref_type(std::move(ref_type)) {}
 
-Array::Array(TULong size, std::shared_ptr<Type> elem_type)
+Array::Array(TLong size, std::shared_ptr<Type> elem_type)
     : size(size), elem_type(std::move(elem_type)) {}
 
 IntInit::IntInit(TInt value)
@@ -55,7 +55,7 @@ UIntInit::UIntInit(TUInt value)
 ULongInit::ULongInit(TULong value)
     : value(value) {}
 
-ZeroInit::ZeroInit(TULong byte)
+ZeroInit::ZeroInit(TLong byte)
     : byte(byte) {}
 
 Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits)

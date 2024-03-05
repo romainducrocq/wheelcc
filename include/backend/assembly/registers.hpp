@@ -30,8 +30,8 @@ enum REGISTER_KIND {
 };
 
 std::shared_ptr<AsmRegister> generate_register(REGISTER_KIND register_kind);
-std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TULong value, bool is_negative);
+std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TLong value);
 std::shared_ptr<AsmIndexed> generate_indexed(REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index,
-                                             TULong scale);
+                                             TLong scale);
 
 #endif

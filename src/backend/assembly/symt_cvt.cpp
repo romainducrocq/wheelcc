@@ -9,7 +9,7 @@
 
 TInt generate_type_alignment(Type* type_1);
 
-static TInt generate_array_type_alignment(Array* arr_type_1, TULong& size) {
+static TInt generate_array_type_alignment(Array* arr_type_1, TLong& size) {
     size = arr_type_1->size;
     while(arr_type_1->elem_type->type() == AST_T::Array_t) {
         arr_type_1 = static_cast<Array*>(arr_type_1->elem_type.get());
@@ -19,7 +19,7 @@ static TInt generate_array_type_alignment(Array* arr_type_1, TULong& size) {
     {
         alignment = generate_type_alignment(arr_type_1->elem_type.get());
         size *= alignment;
-        if(size >= 16ul) {
+        if(size >= 16l) {
             alignment = 16;
         }
     }
@@ -27,7 +27,7 @@ static TInt generate_array_type_alignment(Array* arr_type_1, TULong& size) {
 }
 
 static TInt generate_array_type_alignment(Array* arr_type_1) {
-    TULong size;
+    TLong size;
     return generate_array_type_alignment(arr_type_1, size);
 }
 
@@ -49,7 +49,7 @@ TInt generate_type_alignment(Type* type_1) {
 }
 
 static std::shared_ptr<ByteArray> convert_array_backend_assembly_type(Array* arr_type) {
-    TULong size;
+    TLong size;
     TInt alignment = generate_array_type_alignment(arr_type, size);
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }

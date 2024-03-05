@@ -112,13 +112,13 @@ static TInt get_scalar_type_size(Type* type_1) {
     }
 }
 
-static TULong get_type_scale(Type* type_1);
+static TLong get_type_scale(Type* type_1);
 
-static TULong get_array_aggregate_type_scale(Array* arr_type_1) {
+static TLong get_array_aggregate_type_scale(Array* arr_type_1) {
     return get_type_scale(arr_type_1->elem_type.get()) * arr_type_1->size;
 }
 
-static TULong get_aggregate_type_scale(Type* type_1) {
+static TLong get_aggregate_type_scale(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Array_t:
             return get_array_aggregate_type_scale(static_cast<Array*>(type_1));
@@ -127,7 +127,7 @@ static TULong get_aggregate_type_scale(Type* type_1) {
     }
 }
 
-static TULong get_type_scale(Type* type_1) {
+static TLong get_type_scale(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::Long_t:
@@ -367,8 +367,7 @@ static void checktype_binary_expression(CBinary* node) {
             }
             else if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
                     is_type_integer(node->exp_right->exp_type.get())) {
-                // TODO see if Long
-                common_type = std::make_shared<ULong>();
+                common_type = std::make_shared<Long>();
                 if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
                     std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
                     node->exp_right = std::move(exp);
@@ -378,8 +377,7 @@ static void checktype_binary_expression(CBinary* node) {
             }
             else if(is_type_integer(node->exp_left->exp_type.get()) &&
                     node->exp_right->exp_type->type() == AST_T::Pointer_t) {
-                // TODO see if Long
-                common_type = std::make_shared<ULong>();
+                common_type = std::make_shared<Long>();
                 if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
                     std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
                     node->exp_left = std::move(exp);
@@ -401,8 +399,7 @@ static void checktype_binary_expression(CBinary* node) {
             }
             else if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
                 if(is_type_integer(node->exp_right->exp_type.get())) {
-                    // TODO see if Long
-                    common_type = std::make_shared<ULong>();
+                    common_type = std::make_shared<Long>();
                     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
                         std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
                         node->exp_right = std::move(exp);
@@ -413,8 +410,7 @@ static void checktype_binary_expression(CBinary* node) {
                 else if(is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) &&
                         !(node->exp_left->type() == AST_T::CConstant_t &&
                           is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get())))) {
-                    // TODO see if Long
-                    common_type = std::make_shared<ULong>();
+                    common_type = std::make_shared<Long>();
                     node->exp_type = std::move(common_type);
                     return;
                 }
@@ -571,8 +567,7 @@ static void checktype_subscript_expression(CSubscript* node) {
     std::shared_ptr<Type> ref_type;
     if(node->primary_exp->exp_type->type() == AST_T::Pointer_t &&
        is_type_integer(node->subscript_exp->exp_type.get())) {
-        // TODO see if Long
-        std::shared_ptr<Type> subscript_type = std::make_shared<ULong>();
+        std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
         if(!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->subscript_exp), subscript_type);
             node->subscript_exp = std::move(exp);
@@ -581,8 +576,7 @@ static void checktype_subscript_expression(CSubscript* node) {
     }
     else if(is_type_integer(node->primary_exp->exp_type.get()) &&
             node->subscript_exp->exp_type->type() == AST_T::Pointer_t) {
-        // TODO see if Long
-        std::shared_ptr<Type> primary_type = std::make_shared<ULong>();
+        std::shared_ptr<Type> primary_type = std::make_shared<Long>();
         if(!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
             std::unique_ptr<CExp> exp = cast_expression(std::move(node->primary_exp), primary_type);
             node->primary_exp = std::move(exp);
@@ -672,7 +666,7 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
 
 static std::unique_ptr<CCompoundInit> checktype_compound_init_zero_initializer(Array* arr_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
-    for(size_t throwaway = 0; throwaway < arr_type->size; throwaway++) {
+    for(size_t throwaway = 0; throwaway < static_cast<size_t>(arr_type->size); throwaway++) {
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(arr_type->elem_type.get());
         zero_initializers.push_back(std::move(initializer));
     }
@@ -689,7 +683,7 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
 }
 
 static void checktype_size_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
-    if(node->initializers.size() > arr_type->size) {
+    if(node->initializers.size() > static_cast<size_t>(arr_type->size)) {
         raise_runtime_error("Array of size " + em(std::to_string(node->initializers.size())) +
                             " was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
     }
@@ -697,7 +691,7 @@ static void checktype_size_array_compound_init_initializer(CCompoundInit* node, 
 
 static void checktype_array_compound_init_initializer(CCompoundInit* node, Array* arr_type,
                                                       std::shared_ptr<Type>& init_type) {
-    while(node->initializers.size() < arr_type->size) {
+    while(node->initializers.size() < static_cast<size_t>(arr_type->size)) {
         std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(arr_type->elem_type.get());
         node->initializers.push_back(std::move(zero_initializer));
     }
@@ -779,7 +773,7 @@ static void push_static_init(std::shared_ptr<StaticInit>&& static_init) {
     p_static_inits->push_back(std::move(static_init));
 }
 
-static void push_zero_init_static_init(TULong&& byte) {
+static void push_zero_init_static_init(TLong&& byte) {
     if(!p_static_inits->empty() &&
        p_static_inits->back()->type() == AST_T::ZeroInit_t) {
         static_cast<ZeroInit*>(p_static_inits->back().get())->byte += byte;
@@ -791,15 +785,15 @@ static void push_zero_init_static_init(TULong&& byte) {
 
 static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
 
-static void checktype_no_initializer_static_init(Type* static_init_type, TULong size) {
-    TULong byte = get_type_scale(static_init_type) * size;
+static void checktype_no_initializer_static_init(Type* static_init_type, TLong size) {
+    TLong byte = get_type_scale(static_init_type) * size;
     push_zero_init_static_init(std::move(byte));
 }
 
 static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* static_init_type) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     p_static_inits = &static_inits;
-    checktype_no_initializer_static_init(static_init_type, 1ul);
+    checktype_no_initializer_static_init(static_init_type, 1l);
     p_static_inits = nullptr;
     return std::make_shared<Initial>(std::move(static_inits));
 }
@@ -833,7 +827,7 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0) {
-                push_zero_init_static_init(4);
+                push_zero_init_static_init(4l);
             }
             else {
                 push_static_init(std::make_shared<IntInit>(std::move(value)));
@@ -867,7 +861,7 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0l) {
-                push_zero_init_static_init(8);
+                push_zero_init_static_init(8l);
             }
             else {
                 push_static_init(std::make_shared<LongInit>(std::move(value)));
@@ -902,7 +896,7 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
             }
             TULong binary = double_to_binary(value);
             if(binary == 0ul) {
-                push_zero_init_static_init(8);
+                push_zero_init_static_init(8l);
             }
             else {
                 push_static_init(std::make_shared<DoubleInit>(std::move(value), std::move(binary)));
@@ -936,7 +930,7 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0u) {
-                push_zero_init_static_init(4);
+                push_zero_init_static_init(4l);
             }
             else {
                 push_static_init(std::make_shared<UIntInit>(std::move(value)));
@@ -970,7 +964,7 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                     RAISE_INTERNAL_ERROR;
             }
             if(value == 0ul) {
-                push_zero_init_static_init(8);
+                push_zero_init_static_init(8l);
             }
             else {
                 push_static_init(std::make_shared<ULongInit>(std::move(value)));
@@ -1005,7 +999,7 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
             if(value != 0ul) {
                 raise_runtime_error("Static pointer type can only be initialized to null integer constant");
             }
-            push_zero_init_static_init(8);
+            push_zero_init_static_init(8l);
             break;
         }
         default:
@@ -1029,7 +1023,7 @@ static void checktype_array_compound_init_initializer_static_init(CCompoundInit*
         checktype_initializer_static_init(node->initializers[initializer].get(),
                                           arr_type->elem_type.get());
     }
-    if(arr_type->size > node->initializers.size()) {
+    if(static_cast<size_t>(arr_type->size) > node->initializers.size()) {
         checktype_no_initializer_static_init(arr_type->elem_type.get(),
                                              arr_type->size - node->initializers.size());
     }

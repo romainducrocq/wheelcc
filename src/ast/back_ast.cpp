@@ -97,16 +97,16 @@ AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
 AsmPseudo::AsmPseudo(TIdentifier name)
     : name(std::move(name)) {}
 
-AsmMemory::AsmMemory(TULong value, bool is_negative, std::unique_ptr<AsmReg> reg)
-    : value(value), is_negative(is_negative), reg(std::move(reg)) {}
+AsmMemory::AsmMemory(TLong value, std::unique_ptr<AsmReg> reg)
+    : value(value), reg(std::move(reg)) {}
 
 AsmData::AsmData(TIdentifier name)
     : name(std::move(name)) {}
 
-AsmPseudoMem::AsmPseudoMem(TIdentifier name, TULong offset)
+AsmPseudoMem::AsmPseudoMem(TIdentifier name, TLong offset)
     : name(std::move(name)), offset(offset) {}
 
-AsmIndexed::AsmIndexed(TULong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index)
+AsmIndexed::AsmIndexed(TLong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index)
     : scale(scale), reg_base(std::move(reg_base)), reg_index(std::move(reg_index)) {}
 
 AsmMov::AsmMov(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,

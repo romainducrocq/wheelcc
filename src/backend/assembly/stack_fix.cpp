@@ -9,9 +9,9 @@
 #include <vector>
 #include <unordered_map>
 
-static TULong counter;
+static TLong counter;
 
-static std::unordered_map<TIdentifier, TULong> pseudo_map;
+static std::unordered_map<TIdentifier, TLong> pseudo_map;
 
 static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     TIdentifier name = node->name;
@@ -24,23 +24,23 @@ static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* n
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
-    TULong value = pseudo_map[node->name];
-    return generate_memory(REGISTER_KIND::Bp, std::move(value), true);
+    TLong value = -1 * pseudo_map[node->name];
+    return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMem* node) {
-    TULong value = pseudo_map[node->name] - node->offset;
-    return generate_memory(REGISTER_KIND::Bp, std::move(value), true);
+    TLong value = -1 * (pseudo_map[node->name] - node->offset);
+    return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static void align_offset_pseudo_register(TInt alignment) {
-    TULong offset = counter % alignment;
-    if(offset != 0ul) {
+    TLong offset = counter % alignment;
+    if(offset != 0l) {
         counter += alignment - offset;
     }
 }
 
-static void align_offset_pseudo_register(TULong size, TInt alignment) {
+static void align_offset_pseudo_register(TLong size, TInt alignment) {
     counter += size;
     align_offset_pseudo_register(alignment);
 }
@@ -48,11 +48,11 @@ static void align_offset_pseudo_register(TULong size, TInt alignment) {
 static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
     switch(assembly_type->type()) {
         case AST_T::LongWord_t:
-            align_offset_pseudo_register(4ul, 4);
+            align_offset_pseudo_register(4l, 4);
             break;
         case AST_T::QuadWord_t:
         case AST_T::BackendDouble_t:
-            align_offset_pseudo_register(8ul, 8);
+            align_offset_pseudo_register(8l, 8);
             break;
         case AST_T::ByteArray_t: {
             ByteArray* p_assembly_type = static_cast<ByteArray*>(assembly_type);
@@ -393,12 +393,12 @@ static void replace_pseudo_registers(AsmInstruction* node) {
     }
 }
 
-std::unique_ptr<AsmBinary> allocate_stack_bytes(TULong byte) {
+std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
-        bool is_quad = byte > 2147483647ul;
+        bool is_quad = byte > 2147483647l;
         TIdentifier value = std::to_string(byte);
         src = std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
     }
@@ -406,12 +406,12 @@ std::unique_ptr<AsmBinary> allocate_stack_bytes(TULong byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-std::unique_ptr<AsmBinary> deallocate_stack_bytes(TULong byte) {
+std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
-        bool is_quad = byte > 2147483647ul;
+        bool is_quad = byte > 2147483647l;
         TIdentifier value = std::to_string(byte);
         src = std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
     }
@@ -430,7 +430,7 @@ static void swap_fix_instruction_back() {
 }
 
 static void fix_allocate_stack_bytes() {
-    if(counter > 0ul) {
+    if(counter > 0l) {
         (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
     }
 }
@@ -859,7 +859,7 @@ static void fix_function_top_level(AsmFunction* node) {
     p_fix_instructions = &node->instructions;
     p_fix_instructions->emplace_back();
 
-    counter = 0ul;
+    counter = 0l;
     pseudo_map.clear();
     for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
         push_fix_instruction(std::move(instructions[instruction]));

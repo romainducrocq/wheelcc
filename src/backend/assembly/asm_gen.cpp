@@ -87,7 +87,7 @@ static std::shared_ptr<AsmPseudo> generate_pseudo_operand(TacVariable* node) {
 
 static std::shared_ptr<AsmPseudoMem> generate_pseudo_mem_operand(TacVariable* node) {
     TIdentifier name = node->name;
-    return std::make_shared<AsmPseudoMem>(std::move(name), 0ul);
+    return std::make_shared<AsmPseudoMem>(std::move(name), 0l);
 }
 
 static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) {
@@ -540,11 +540,11 @@ static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
     }
 }
 
-static void generate_allocate_stack_instructions(TULong byte) {
+static void generate_allocate_stack_instructions(TLong byte) {
     push_instruction(allocate_stack_bytes(byte));
 }
 
-static void generate_deallocate_stack_instructions(TULong byte) {
+static void generate_deallocate_stack_instructions(TLong byte) {
     push_instruction(deallocate_stack_bytes(byte));
 }
 
@@ -580,9 +580,9 @@ static void generate_stack_arg_fun_call_instructions(TacValue* node) {
 }
 
 static void generate_fun_call_instructions(TacFunCall* node) {
-    TULong stack_padding = 0ul;
+    TLong stack_padding = 0l;
     if(node->args.size() % 2 == 1) {
-        stack_padding = 8ul;
+        stack_padding = 8l;
         generate_allocate_stack_instructions(stack_padding);
     }
 
@@ -615,7 +615,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(), ARG_SSE_REGISTERS[i]);
     }
     for(size_t i = i_stacks.size(); i-- > 0;) {
-        stack_padding += 8ul;
+        stack_padding += 8l;
         generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
     }
 
@@ -624,7 +624,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         push_instruction(std::make_unique<AsmCall>(std::move(name)));
     }
 
-    if(stack_padding > 0ul) {
+    if(stack_padding > 0l) {
         generate_deallocate_stack_instructions(stack_padding);
     }
 
@@ -1006,7 +1006,7 @@ static void generate_load_instructions(TacLoad* node) {
                                                             std::move(dst)));
     }
     {
-        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, 0ul, false);
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, 0l);
         std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
         std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
@@ -1024,7 +1024,7 @@ static void generate_store_instructions(TacStore* node) {
     }
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
-        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0ul, false);
+        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0l);
         std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->src.get());
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
                                                             std::move(dst)));
@@ -1040,16 +1040,15 @@ static void generate_constant_index_add_ptr_instructions(TacAddPtr* node) {
                                                             std::move(dst)));
     }
     {
-        TULong index;
+        TLong index;
         {
             CConst* constant = static_cast<TacConstant*>(node->index.get())->constant.get();
-            if(constant->type() != AST_T::CConstULong_t) {
+            if(constant->type() != AST_T::CConstLong_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            index = static_cast<CConstULong*>(constant)->value;
+            index = static_cast<CConstLong*>(constant)->value;
         }
-        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, index * node->scale,
-                                                          false);
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, index * node->scale);
         std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
         push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
     }
@@ -1091,7 +1090,7 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
         push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
     }
     {
-        bool is_quad = node->scale > 2147483647ul;
+        bool is_quad = node->scale > 2147483647l;
         TIdentifier value = std::to_string(node->scale);
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
         std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmMult>();
@@ -1101,7 +1100,7 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
     }
     {
         std::shared_ptr<AsmOperand> src = generate_indexed(REGISTER_KIND::Ax,
-                                                           REGISTER_KIND::Dx, 1ul);
+                                                           REGISTER_KIND::Dx, 1l);
         std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
         push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
     }
@@ -1139,7 +1138,7 @@ static void generate_copy_to_offset_instructions(TacCopyToOffset* node) {
     std::shared_ptr<AsmOperand> dst;
     {
         TIdentifier name = node->dst_name;
-        TULong offset = node->offset;
+        TLong offset = node->offset;
         dst = std::make_shared<AsmPseudoMem>(std::move(name), std::move(offset));
     }
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
@@ -1332,9 +1331,8 @@ static void generate_reg_param_function_instructions(const TIdentifier& param, R
                                                         std::move(dst)));
 }
 
-static void generate_stack_param_function_instructions(const TIdentifier& param, TULong byte) {
-    std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, (byte + 2ul) * 8ul,
-                                                      false);
+static void generate_stack_param_function_instructions(const TIdentifier& param, TLong byte) {
+    std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, (byte + 2l) * 8l);
     std::shared_ptr<AsmOperand> dst;
     {
         TIdentifier name = param;
@@ -1354,7 +1352,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
 
     size_t param_reg = 0;
     size_t param_sse_reg = 0;
-    TULong param_stack = 0ul;
+    TLong param_stack = 0l;
     for(size_t param = 0; param < node->params.size(); param++) {
         if(symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
             if(param_sse_reg < 8) {
@@ -1364,7 +1362,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
             }
             else {
                 generate_stack_param_function_instructions(node->params[param], param_stack);
-                param_stack += 1ul;
+                param_stack += 1l;
             }
         }
         else {
@@ -1374,7 +1372,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
             }
             else {
                 generate_stack_param_function_instructions(node->params[param], param_stack);
-                param_stack += 1ul;
+                param_stack += 1l;
             }
         }
     }

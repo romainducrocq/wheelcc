@@ -145,13 +145,13 @@ static TInt get_scalar_type_size(Type* type_1) {
     }
 }
 
-static TULong get_type_scale(Type* type_1);
+static TLong get_type_scale(Type* type_1);
 
-static TULong get_array_aggregate_type_scale(Array* arr_type_1) {
+static TLong get_array_aggregate_type_scale(Array* arr_type_1) {
     return get_type_scale(arr_type_1->elem_type.get()) * arr_type_1->size;
 }
 
-static TULong get_aggregate_type_scale(Type* type_1) {
+static TLong get_aggregate_type_scale(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Array_t:
             return get_array_aggregate_type_scale(static_cast<Array*>(type_1));
@@ -160,7 +160,7 @@ static TULong get_aggregate_type_scale(Type* type_1) {
     }
 }
 
-static TULong get_type_scale(Type* type_1) {
+static TLong get_type_scale(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Int_t:
         case AST_T::Long_t:
@@ -228,7 +228,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUn
 static std::unique_ptr<TacExpResult> represent_exp_result_any_binary_instructions(CBinary* node);
 
 static std::unique_ptr<TacExpResult> represent_exp_result_from_to_pointer_binary_add_instructions(CBinary* node) {
-    TULong scale;
+    TLong scale;
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
@@ -257,7 +257,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_add_instruction
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_to_pointer_binary_subtract_instructions(CBinary* node) {
-    TULong scale = get_type_scale(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+    TLong scale = get_type_scale(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
     std::shared_ptr<TacValue> src_ptr = represent_exp_instructions(node->exp_left.get());
     std::shared_ptr<TacValue> index;
     {
@@ -285,8 +285,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_pointer_binary_subtrac
     }
     std::shared_ptr<TacValue> src_2;
     {
-        TULong value = get_type_scale(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
-        std::shared_ptr<CConst> constant = std::make_shared<CConstULong>(std::move(value));
+        TLong value = get_type_scale(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
+        std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(std::move(value));
         src_2 = std::make_shared<TacConstant>(std::move(constant));
     }
     std::shared_ptr<TacValue> dst = represent_inner_value(node);
@@ -507,7 +507,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_addrof_instructions(CA
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_subscript_instructions(CSubscript* node) {
-    TULong scale;
+    TLong scale;
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
     if(node->primary_exp->exp_type->type() == AST_T::Pointer_t) {
@@ -766,7 +766,7 @@ static void represent_statement_instructions(CStatement* node) {
 }
 
 static void represent_compound_init_instructions(CInitializer* node, Type* init_type, const TIdentifier& symbol,
-                                                 TULong& size);
+                                                 TLong& size);
 
 static void represent_single_init_instructions(CSingleInit* node, const TIdentifier& symbol) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
@@ -780,16 +780,16 @@ static void represent_single_init_instructions(CSingleInit* node, const TIdentif
 }
 
 static void represent_scalar_compound_init_instructions(CSingleInit* node, Type* init_type, const TIdentifier& symbol,
-                                                        TULong& size) {
+                                                        TLong& size) {
     TIdentifier dst_name = symbol;
-    TULong offset = size;
+    TLong offset = size;
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
     push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), std::move(src)));
     size += get_scalar_type_size(init_type);
 }
 
 static void represent_array_compound_init_instructions(CCompoundInit* node, Array* arr_type, const TIdentifier& symbol,
-                                                       TULong& size) {
+                                                       TLong& size) {
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
         represent_compound_init_instructions(node->initializers[initializer].get(),
                                              arr_type->elem_type.get(), symbol, size);
@@ -797,7 +797,7 @@ static void represent_array_compound_init_instructions(CCompoundInit* node, Arra
 }
 
 static void represent_aggregate_compound_init_instructions(CCompoundInit* node, Type* init_type,
-                                                           const TIdentifier& symbol, TULong& size) {
+                                                           const TIdentifier& symbol, TLong& size) {
     switch(init_type->type()) {
         case AST_T::Array_t:
             represent_array_compound_init_instructions(node,static_cast<Array*>(init_type), symbol, size);
@@ -808,7 +808,7 @@ static void represent_aggregate_compound_init_instructions(CCompoundInit* node, 
 }
 
 static void represent_compound_init_instructions(CInitializer* node, Type* init_type, const TIdentifier& symbol,
-                                                 TULong& size) {
+                                                 TLong& size) {
     switch(node->type()) {
         case AST_T::CSingleInit_t:
             represent_scalar_compound_init_instructions(static_cast<CSingleInit*>(node), init_type, symbol,
@@ -829,7 +829,7 @@ static void represent_variable_declaration_instructions(CVariableDeclaration* no
             represent_single_init_instructions(static_cast<CSingleInit*>(node->init.get()), node->name);
             break;
         case AST_T::CCompoundInit_t: {
-            TULong size = 0ul;
+            TLong size = 0l;
             represent_aggregate_compound_init_instructions(static_cast<CCompoundInit*>(node->init.get()),
                                                            symbol_table[node->name]->type_t.get(),
                                                            node->name, size);
@@ -943,7 +943,7 @@ static void represent_declaration_top_level(CDeclaration* node) {
 static std::vector<std::shared_ptr<StaticInit>> represent_tentative_static_variable_top_level(Type* static_init_type) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     {
-        TULong byte = get_type_scale(static_init_type);
+        TLong byte = get_type_scale(static_init_type);
         std::shared_ptr<StaticInit> static_init = std::make_shared<ZeroInit>(std::move(byte));
         static_inits.push_back(std::move(static_init));
     }

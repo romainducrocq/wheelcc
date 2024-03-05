@@ -336,10 +336,10 @@ struct TacStore : TacInstruction {
 struct TacAddPtr : TacInstruction {
     AST_T type() override;
     TacAddPtr() = default;
-    TacAddPtr(TULong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
+    TacAddPtr(TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
               std::shared_ptr<TacValue> dst);
 
-    TULong scale;
+    TLong scale;
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
     std::shared_ptr<TacValue> dst;
@@ -348,10 +348,10 @@ struct TacAddPtr : TacInstruction {
 struct TacCopyToOffset : TacInstruction {
     AST_T type() override;
     TacCopyToOffset() = default;
-    TacCopyToOffset(TIdentifier dst_name, TULong offset, std::shared_ptr<TacValue> src);
+    TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src);
 
     TIdentifier dst_name;
-    TULong offset;
+    TLong offset;
     std::shared_ptr<TacValue> src;
 };
 

@@ -61,9 +61,9 @@ struct Pointer : Type {
 struct Array : Type {
     AST_T type() override;
     Array() = default;
-    Array(TULong size, std::shared_ptr<Type> elem_type);
+    Array(TLong size, std::shared_ptr<Type> elem_type);
 
-    TULong size;
+    TLong size;
     std::shared_ptr<Type> elem_type;
 };
 
@@ -123,9 +123,9 @@ struct ULongInit : StaticInit {
 struct ZeroInit : StaticInit {
     AST_T type() override;
     ZeroInit() = default;
-    ZeroInit(TULong byte);
+    ZeroInit(TLong byte);
 
-    TULong byte;
+    TLong byte;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
