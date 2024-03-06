@@ -24,6 +24,7 @@ TEST_DIRS=(
 "13_floating-point_numbers"
 "14_pointers"
 "15_arrays_and_pointer_arithmetic"
+"16_characters_and_strings"
 )
 
 function file () {
