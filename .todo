@@ -30,8 +30,90 @@
     - see cython prebuild
 - 8. Implement more standard library
 
+resources:
+https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_would_have_changed_about/
+
 ## NOTES
 
 When Types OK (after c18):
 - add / clean error msgs in driver
 - clean error msgs in parser + semantic analysis / add line
+
+## Grammar ideas
+
+pub fn add:: x: uint32, y: uint32 -> uint32 = {
+    if x eq 0: (
+        # do domething
+    )
+    else if x gt 2: ( 
+        # do domething
+    )
+    else: (
+        # do domething
+    )
+}
+
+or ? 
+
+pub fn add:: x: uint32, y: uint32 -> uint32 = {
+    if x eq 0:
+        # do domething
+        end
+    else if x gt 2: 
+        # do domething
+        end
+    else:
+        # do domething
+        end
+    :
+    #:
+        empty comment
+    end#
+    end
+}
+
+for let x: uint32 <- 0; x lt 50; x += 1: (
+    let res: uint32 <- fn(2, 3);
+    
+)
+
+function is 
+extern -> extern fn
+no specifier -> pub fn
+static -> fn
+
+variable is
+extern -> extern var
+no specifier -> let
+static -> var (or static var)
+
+ternary -> ... then ... else ...
+
+do {} while(); ->
+dowhile ...:
+    ...
+    end
+
+void -> ()
+
+pub fn main:: ()-> (): (
+)
+
+@ instead of &
+
+&& and
+|| or
+== eq
+!= ne
+<= ge
+>= le
+! not
+< lt
+> gt
+
+{
+}
+   only for declaration
+   scope is :
+            end
+
