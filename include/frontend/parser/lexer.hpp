@@ -56,6 +56,7 @@ enum TOKEN_KIND {
 
     preprocessor_directive,
 
+    key_char,
     key_int,
     key_long,
     key_double,
@@ -75,6 +76,8 @@ enum TOKEN_KIND {
     key_extern,
 
     identifier,
+    string_literal,
+    char_constant,
     float_constant,
     unsigned_long_constant,
     unsigned_constant,
