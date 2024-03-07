@@ -58,12 +58,6 @@ static void print_ast(Ast* node, size_t t) {
             field("TLong", std::to_string(p_node->value), t+1);
             break;
         }
-        case AST_T::CConstDouble_t: {
-            field("CConstDouble", "", ++t);
-            CConstDouble* p_node = static_cast<CConstDouble*>(node);
-            field("TDouble", std::to_string(p_node->value), t+1);
-            break;
-        }
         case AST_T::CConstUInt_t: {
             field("CConstUInt", "", ++t);
             CConstUInt* p_node = static_cast<CConstUInt*>(node);
@@ -76,8 +70,38 @@ static void print_ast(Ast* node, size_t t) {
             field("TULong", std::to_string(p_node->value), t+1);
             break;
         }
+        case AST_T::CConstDouble_t: {
+            field("CConstDouble", "", ++t);
+            CConstDouble* p_node = static_cast<CConstDouble*>(node);
+            field("TDouble", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CConstChar_t: {
+            field("CConstChar", "", ++t);
+            CConstChar* p_node = static_cast<CConstChar*>(node);
+            field("TChar", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CConstUChar_t: {
+            field("CConstUChar", "", ++t);
+            CConstUChar* p_node = static_cast<CConstUChar*>(node);
+            field("TUChar", std::to_string(p_node->value), t+1);
+            break;
+        }
         case AST_T::Type_t: {
             field("Type", "", ++t);
+            break;
+        }
+        case AST_T::Char_t: {
+            field("Char", "", ++t);
+            break;
+        }
+        case AST_T::SChar_t: {
+            field("SChar", "", ++t);
+            break;
+        }
+        case AST_T::UChar_t: {
+            field("UChar", "", ++t);
             break;
         }
         case AST_T::Int_t: {
@@ -88,16 +112,16 @@ static void print_ast(Ast* node, size_t t) {
             field("Long", "", ++t);
             break;
         }
-        case AST_T::Double_t: {
-            field("Double", "", ++t);
-            break;
-        }
         case AST_T::UInt_t: {
             field("UInt", "", ++t);
             break;
         }
         case AST_T::ULong_t: {
             field("ULong", "", ++t);
+            break;
+        }
+        case AST_T::Double_t: {
+            field("Double", "", ++t);
             break;
         }
         case AST_T::FunType_t: {
@@ -139,13 +163,6 @@ static void print_ast(Ast* node, size_t t) {
             field("TLong", std::to_string(p_node->value), t+1);
             break;
         }
-        case AST_T::DoubleInit_t: {
-            field("DoubleInit", "", ++t);
-            DoubleInit* p_node = static_cast<DoubleInit*>(node);
-            field("TDouble", std::to_string(p_node->value), t+1);
-            field("TULong", std::to_string(p_node->binary), t+1);
-            break;
-        }
         case AST_T::UIntInit_t: {
             field("UIntInit", "", ++t);
             UIntInit* p_node = static_cast<UIntInit*>(node);
@@ -156,6 +173,13 @@ static void print_ast(Ast* node, size_t t) {
             field("ULongInit", "", ++t);
             ULongInit* p_node = static_cast<ULongInit*>(node);
             field("TULong", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::DoubleInit_t: {
+            field("DoubleInit", "", ++t);
+            DoubleInit* p_node = static_cast<DoubleInit*>(node);
+            field("TDouble", std::to_string(p_node->value), t+1);
+            field("TULong", std::to_string(p_node->binary), t+1);
             break;
         }
         case AST_T::ZeroInit_t: {
@@ -418,6 +442,13 @@ static void print_ast(Ast* node, size_t t) {
             field("CConstant", "", ++t);
             CConstant* p_node = static_cast<CConstant*>(node);
             print_ast(p_node->constant.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CString_t: {
+            field("CString", "", ++t);
+            CString* p_node = static_cast<CString*>(node);
+            field("TString", p_node->value, t+1);
             print_ast(p_node->exp_type.get(), t);
             break;
         }

@@ -1,11 +1,14 @@
 #!/bin/python3
 
+class TIdentifier: name = "TIdentifier"
+class TString: name = "TString"
+class TChar: name = "TChar"
 class TInt: name = "TInt"
 class TLong: name = "TLong"
-class TDouble: name = "TDouble"
+class TUChar: name = "TUChar"
 class TUInt: name = "TUInt"
 class TULong: name = "TULong"
-class TIdentifier: name = "TIdentifier"
+class TDouble: name = "TDouble"
 class Bool: name = "Bool"
 class List: name = "List"
 
@@ -17,26 +20,31 @@ ast = [
     ["CConst", [], []],
     ["CConstInt", [(TInt, "value")], []],
     ["CConstLong", [(TLong, "value")], []],
-    ["CConstDouble", [(TDouble, "value")], []],
     ["CConstUInt", [(TUInt, "value")], []],
     ["CConstULong", [(TULong, "value")], []],
+    ["CConstDouble", [(TDouble, "value")], []],
+    ["CConstChar", [(TChar, "value")], []],
+    ["CConstUChar", [(TUChar, "value")], []],
 
     # /include/ast/front_symt.hpp
     ["Type", [], []],
+    ["Char", [], []],
+    ["SChar", [], []],
+    ["UChar", [], []],
     ["Int", [], []],
     ["Long", [], []],
-    ["Double", [], []],
     ["UInt", [], []],
     ["ULong", [], []],
+    ["Double", [], []],
     ["FunType", [], ["[param_types", "ret_type"]],
     ["Pointer", [], ["ref_type"]],
     ["Array", [(TLong, "size")], ["elem_type"]],
     ["StaticInit", [], []],
     ["IntInit", [(TInt, "value")], []],
     ["LongInit", [(TLong, "value")], []],
-    ["DoubleInit", [(TDouble, "value"), (TULong, "binary")], []],
     ["UIntInit", [(TUInt, "value")], []],
     ["ULongInit", [(TULong, "value")], []],
+    ["DoubleInit", [(TDouble, "value"), (TULong, "binary")], []],
     ["ZeroInit", [(TLong, "byte")], []],
     ["InitialValue", [], []],
     ["Tentative", [], []],
@@ -94,6 +102,7 @@ ast = [
     ["CFunDeclarator", [], ["[param_list", "declarator"]],
     ["CExp", [], ["exp_type"]],
     ["CConstant", [], ["constant", "exp_type"]],
+    ["CString", [(TString, "value")], ["exp_type"]],
     ["CVar", [(TIdentifier, "name")], ["exp_type"]],
     ["CCast", [], ["exp", "target_type", "exp_type"]],
     ["CUnary", [], ["unary_op", "exp", "exp_type"]],

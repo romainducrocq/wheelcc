@@ -11,11 +11,14 @@ cat ../../include/ast/${1}.hpp \
     | sed "s/\s*std::unique_ptr<.*>\s*/\"/g" \
     | sed "s/\s*std::shared_ptr<.*>\s*/\"/g" \
     | sed "s/\s*TIdentifier\s*/(TIdentifier, \"/g" \
+    | sed "s/\s*TString\s*/(TString, \"/g" \
+    | sed "s/\s*TChar\s*/(TChar, \"/g" \
     | sed "s/\s*TInt\s*/(TInt, \"/g" \
     | sed "s/\s*TLong\s*/(TLong, \"/g" \
-    | sed "s/\s*TDouble\s*/(TDouble, \"/g" \
     | sed "s/\s*TUInt\s*/(TUInt, \"/g" \
     | sed "s/\s*TULong\s*/(TULong, \"/g" \
+    | sed "s/\s*TUChar\s*/(TUChar, \"/g" \
+    | sed "s/\s*TDouble\s*/(TDouble, \"/g" \
     | sed "s/\s*bool\s*/(Bool, \"/g" \
     | grep --invert-match "};" \
     | grep --invert-match -P "^(?=.*struct)(?=.*;)" \

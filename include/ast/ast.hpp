@@ -283,10 +283,10 @@ using TString = std::string;
 using TChar = int8_t;
 using TInt = int32_t;
 using TLong = int64_t;
-using TDouble = double;
 using TUChar = uint8_t;
 using TUInt = uint32_t;
 using TULong = uint64_t;
+using TDouble = double;
 
 // https://mkhan45.github.io/2021/05/10/Modeling-ASTs-in-Different-Languages.html
 // https://github.com/agentcooper/cpp-ast-example/blob/main/ast_inheritance.cpp
@@ -294,10 +294,12 @@ using TULong = uint64_t;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // const = ConstInt(int)
-//       | ConstLong(long)
-//       | ConstUInt(uint)
-//       | ConstULong(ulong)
+//       | ConstLong(int)
+//       | ConstUInt(int)
+//       | ConstULong(int)
 //       | ConstDouble(double)
+//       | ConstChar(int)
+//       | ConstUChar(int)
 struct CConst : Ast {
     AST_T type() override;
 };
