@@ -6,20 +6,23 @@
 #include <vector>
 
 AST_T Type::type() { return AST_T::Type_t; }
+AST_T Char::type() { return AST_T::Char_t; }
+AST_T SChar::type() { return AST_T::SChar_t; }
+AST_T UChar::type() { return AST_T::UChar_t; }
 AST_T Int::type() { return AST_T::Int_t; }
 AST_T Long::type() { return AST_T::Long_t; }
-AST_T Double::type() { return AST_T::Double_t; }
 AST_T UInt::type() { return AST_T::UInt_t; }
 AST_T ULong::type() { return AST_T::ULong_t; }
+AST_T Double::type() { return AST_T::Double_t; }
 AST_T FunType::type() { return AST_T::FunType_t; }
 AST_T Pointer::type() { return AST_T::Pointer_t; }
 AST_T Array::type() { return AST_T::Array_t; }
 AST_T StaticInit::type() { return AST_T::StaticInit_t; }
 AST_T IntInit::type() { return AST_T::IntInit_t; }
 AST_T LongInit::type() { return AST_T::LongInit_t; }
-AST_T DoubleInit::type() { return AST_T::DoubleInit_t; }
 AST_T UIntInit::type() { return AST_T::UIntInit_t; }
 AST_T ULongInit::type() { return AST_T::ULongInit_t; }
+AST_T DoubleInit::type() { return AST_T::DoubleInit_t; }
 AST_T ZeroInit::type() { return AST_T::ZeroInit_t; }
 AST_T InitialValue::type() { return AST_T::InitialValue_t; }
 AST_T Tentative::type() { return AST_T::Tentative_t; }
@@ -46,14 +49,14 @@ IntInit::IntInit(TInt value)
 LongInit::LongInit(TLong value)
     : value(value) {}
 
-DoubleInit::DoubleInit(TDouble value, TULong binary)
-    : value(value), binary(binary) {}
-
 UIntInit::UIntInit(TUInt value)
     : value(value) {}
 
 ULongInit::ULongInit(TULong value)
     : value(value) {}
+
+DoubleInit::DoubleInit(TDouble value, TULong binary)
+    : value(value), binary(binary) {}
 
 ZeroInit::ZeroInit(TLong byte)
     : byte(byte) {}

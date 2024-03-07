@@ -40,6 +40,7 @@ AST_T CArrayDeclarator::type() { return AST_T::CArrayDeclarator_t; }
 AST_T CFunDeclarator::type() { return AST_T::CFunDeclarator_t; }
 AST_T CExp::type() { return AST_T::CExp_t; }
 AST_T CConstant::type() { return AST_T::CConstant_t; }
+AST_T CString::type() { return AST_T::CString_t; }
 AST_T CVar::type() { return AST_T::CVar_t; }
 AST_T CCast::type() { return AST_T::CCast_t; }
 AST_T CUnary::type() { return AST_T::CUnary_t; }
@@ -108,6 +109,9 @@ CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,
 
 CConstant::CConstant(std::shared_ptr<CConst> constant)
     : constant(std::move(constant)) {}
+
+CString::CString(TString value)
+    : value(std::move(value)) {}
 
 CVar::CVar(TIdentifier name)
     : name(std::move(name)) {}

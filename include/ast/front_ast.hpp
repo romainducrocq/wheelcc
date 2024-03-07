@@ -214,6 +214,7 @@ struct CFunDeclarator : CDeclarator {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // exp = Constant(const, type)
+//     | String(string)
 //     | Var(identifier, type)
 //     | Cast(type, exp, type)
 //     | Unary(unary_operator, exp, type)
@@ -237,6 +238,17 @@ struct CConstant : CExp {
     CConstant(std::shared_ptr<CConst> constant);
 
     std::shared_ptr<CConst> constant;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CString : CExp {
+    AST_T type() override;
+    CString() = default;
+    CString(TString value);
+
+    TString value;
     /*
     std::shared_ptr<Type> exp_type;
     */

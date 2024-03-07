@@ -7,20 +7,23 @@
 enum AST_T {
     // Symbol table
     Type_t,
+    Char_t,
+    SChar_t,
+    UChar_t,
     Int_t,
     Long_t,
-    Double_t,
     UInt_t,
     ULong_t,
+    Double_t,
     FunType_t,
     Pointer_t,
     Array_t,
     StaticInit_t,
     IntInit_t,
     LongInit_t,
-    DoubleInit_t,
     UIntInit_t,
     ULongInit_t,
+    DoubleInit_t,
     ZeroInit_t,
     InitialValue_t,
     Tentative_t,
@@ -49,6 +52,8 @@ enum AST_T {
     CConstUInt_t,
     CConstULong_t,
     CConstDouble_t,
+    CConstChar_t,
+    CConstUChar_t,
     CUnaryOp_t,
     CComplement_t,
     CNegate_t,
@@ -84,6 +89,7 @@ enum AST_T {
     CFunDeclarator_t,
     CExp_t,
     CConstant_t,
+    CString_t,
     CVar_t,
     CCast_t,
     CUnary_t,
@@ -273,9 +279,12 @@ struct Ast {
 };
 
 using TIdentifier = std::string;
+using TString = std::string;
+using TChar = int8_t;
 using TInt = int32_t;
 using TLong = int64_t;
 using TDouble = double;
+using TUChar = uint8_t;
 using TUInt = uint32_t;
 using TULong = uint64_t;
 
@@ -286,9 +295,9 @@ using TULong = uint64_t;
 
 // const = ConstInt(int)
 //       | ConstLong(long)
-//       | ConstDouble(double)
 //       | ConstUInt(uint)
 //       | ConstULong(ulong)
+//       | ConstDouble(double)
 struct CConst : Ast {
     AST_T type() override;
 };
@@ -309,14 +318,6 @@ struct CConstLong : CConst {
     TLong value;
 };
 
-struct CConstDouble : CConst {
-    AST_T type() override;
-    CConstDouble() = default;
-    CConstDouble(TDouble value);
-
-    TDouble value;
-};
-
 struct CConstUInt : CConst {
     AST_T type() override;
     CConstUInt() = default;
@@ -331,6 +332,30 @@ struct CConstULong : CConst {
     CConstULong(TULong value);
 
     TULong value;
+};
+
+struct CConstDouble : CConst {
+    AST_T type() override;
+    CConstDouble() = default;
+    CConstDouble(TDouble value);
+
+    TDouble value;
+};
+
+struct CConstChar : CConst {
+    AST_T type() override;
+    CConstChar() = default;
+    CConstChar(TChar value);
+
+    TChar value;
+};
+
+struct CConstUChar : CConst {
+    AST_T type() override;
+    CConstUChar() = default;
+    CConstUChar(TUChar value);
+
+    TUChar value;
 };
 
 /*

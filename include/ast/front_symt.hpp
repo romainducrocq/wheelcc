@@ -9,15 +9,30 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// type = Int
+// type = Char
+//      | SChar
+//      | UChar
+//      | Int
 //      | Long
-//      | Double
 //      | UInt
 //      | ULong
+//      | Double
 //      | FunType(type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
 struct Type : Ast {
+    AST_T type() override;
+};
+
+struct Char : Type {
+    AST_T type() override;
+};
+
+struct SChar : Type {
+    AST_T type() override;
+};
+
+struct UChar : Type {
     AST_T type() override;
 };
 
@@ -29,15 +44,15 @@ struct Long : Type {
     AST_T type() override;
 };
 
-struct Double : Type {
-    AST_T type() override;
-};
-
 struct UInt : Type {
     AST_T type() override;
 };
 
 struct ULong : Type {
+    AST_T type() override;
+};
+
+struct Double : Type {
     AST_T type() override;
 };
 
@@ -71,9 +86,9 @@ struct Array : Type {
 
 // static_init = IntInit(int)
 //             | LongInit(int)
-//             | DoubleInit(double, int)
 //             | UIntInit(int)
 //             | ULongInit(int)
+//             | DoubleInit(double, int)
 //             | ZeroInit(int)
 struct StaticInit : Ast {
     AST_T type() override;
@@ -95,15 +110,6 @@ struct LongInit : StaticInit {
     TLong value;
 };
 
-struct DoubleInit : StaticInit {
-    AST_T type() override;
-    DoubleInit() = default;
-    DoubleInit(TDouble value, TULong binary);
-
-    TDouble value;
-    TULong binary;
-};
-
 struct UIntInit : StaticInit {
     AST_T type() override;
     UIntInit() = default;
@@ -118,6 +124,15 @@ struct ULongInit : StaticInit {
     ULongInit(TULong value);
 
     TULong value;
+};
+
+struct DoubleInit : StaticInit {
+    AST_T type() override;
+    DoubleInit() = default;
+    DoubleInit(TDouble value, TULong binary);
+
+    TDouble value;
+    TULong binary;
 };
 
 struct ZeroInit : StaticInit {
