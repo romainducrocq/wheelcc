@@ -60,6 +60,7 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::ternary_else, ":"},
     {TOKEN_KIND::separator_comma, ","},
 
+    {TOKEN_KIND::key_char, "char"},
     {TOKEN_KIND::key_int, "int"},
     {TOKEN_KIND::key_long, "long"},
     {TOKEN_KIND::key_double, "double"},
@@ -79,6 +80,8 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::key_extern, "extern"},
     
     {TOKEN_KIND::identifier, "identifier"},
+    {TOKEN_KIND::string_literal, "string literal"},
+    {TOKEN_KIND::char_constant, "const char8"},
     {TOKEN_KIND::float_constant, "const float64"},
     {TOKEN_KIND::unsigned_long_constant, "const uint64"},
     {TOKEN_KIND::unsigned_constant, "const uint32"},
@@ -160,9 +163,20 @@ static void parse_identifier(TIdentifier& identifier) {
     identifier = std::move(next_token->token);
 }
 
+// <string> ::= ? A string token ?
+static void parse_string_literal(TString& string_literal) {
+    string_literal += string_to_string_literal(next_token->token);
+}
+
 // <int> ::= ? An int constant token ?
 static std::shared_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
+    return std::make_shared<CConstInt>(std::move(value));
+}
+
+// <char> ::= ? A char token ?
+static std::shared_ptr<CConstInt> parse_char_constant() {
+    TInt value = string_to_char_ascii(next_token->token);
     return std::make_shared<CConstInt>(std::move(value));
 }
 
@@ -190,14 +204,19 @@ static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
     return std::make_shared<CConstULong>(std::move(value));
 }
 
-// <const> ::= <int> | <long> | <double>
-// (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double)
+// <const> ::= <int> | <long> | <double> | <char>
+// (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double) | ConstChar(int)
 static std::shared_ptr<CConst> parse_constant() {
-    if(pop_next().token_kind == TOKEN_KIND::float_constant) {
-        return parse_double_constant();
-    }
-    else if(next_token->token_kind == TOKEN_KIND::long_constant) {
-        next_token->token.pop_back();
+    switch(pop_next().token_kind) {
+        case TOKEN_KIND::long_constant:
+            next_token->token.pop_back();
+            break;
+        case TOKEN_KIND::char_constant:
+            return parse_char_constant();
+        case TOKEN_KIND::float_constant:
+            return parse_double_constant();
+        default:
+            break;
     }
 
     intmax_t value = string_to_intmax(next_token->token, next_token->line);
@@ -212,7 +231,7 @@ static std::shared_ptr<CConst> parse_constant() {
 }
 
 // <const> ::= <unsigned int> | <unsigned long>
-// (unsigned) const = ConstUInt(uint) | ConstULong(ulong)
+// (unsigned) const = ConstUInt(uint) | ConstULong(ulong) | ConstUChar(int)
 static std::shared_ptr<CConst> parse_unsigned_constant() {
     if(pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
         next_token->token.pop_back();
@@ -237,6 +256,7 @@ static TLong parse_array_size_t() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::constant:
         case TOKEN_KIND::long_constant:
+        case TOKEN_KIND::char_constant:
             size = parse_constant();
             break;
         case TOKEN_KIND::unsigned_constant:
@@ -456,6 +476,16 @@ static std::unique_ptr<CVar> parse_var_factor() {
     return std::make_unique<CVar>(std::move(name));
 }
 
+static std::unique_ptr<CString> parse_string_literal_factor() {
+    TString string_literal = "";
+    parse_string_literal(string_literal);
+    while(peek_next().token_kind == TOKEN_KIND::string_literal) {
+        pop_next();
+        parse_string_literal(string_literal);
+    }
+    return std::make_unique<CString>(std::move(string_literal));
+}
+
 static void parse_abstract_declarator_cast_factor(std::shared_ptr<Type>& target_type) {
     AbstractDeclarator abstract_declarator;
     parse_process_abstract_declarator(parse_abstract_declarator().get(), std::move(target_type),
@@ -530,11 +560,12 @@ static std::unique_ptr<CExp> parse_pointer_factor() {
     }
 }
 
-// <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | <identifier> "(" [ <argument-list> ] ")"
+// <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
 static std::unique_ptr<CExp> parse_primary_exp_factor() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::constant:
         case TOKEN_KIND::long_constant:
+        case TOKEN_KIND::char_constant:
         case TOKEN_KIND::float_constant:
             return parse_constant_factor();
         case TOKEN_KIND::unsigned_constant:
@@ -546,6 +577,8 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
             }
             return parse_var_factor();
         }
+        case TOKEN_KIND::string_literal:
+            return parse_string_literal_factor();
         case TOKEN_KIND::parenthesis_open:
             return parse_inner_exp_factor();
         default:
@@ -580,6 +613,7 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
             return parse_pointer_factor();
         case TOKEN_KIND::parenthesis_open: {
             switch(peek_next_i(1).token_kind) {
+                case TOKEN_KIND::key_char:
                 case TOKEN_KIND::key_int:
                 case TOKEN_KIND::key_long:
                 case TOKEN_KIND::key_double:
@@ -629,9 +663,10 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
 }
 
 // <exp> ::= <unary-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
-// exp = Constant(const, type) | Var(identifier, type) | Cast(type, exp, type) | Unary(unary_operator, exp, type)
-//     | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type) | Conditional(exp, exp, exp, type)
-//     | FunctionCall(identifier, exp*, type) | Dereference(exp, type) | AddrOf(exp, type) | Subscript(exp, exp)
+// exp = Constant(const, type) | String(string) | Var(identifier, type) | Cast(type, exp, type)
+//     | Unary(unary_operator, exp, type) | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type)
+//     | Conditional(exp, exp, exp, type) | FunctionCall(identifier, exp*, type) | Dereference(exp, type)
+//     | AddrOf(exp, type) | Subscript(exp, exp)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     int32_t precedence;
     std::unique_ptr<CExp> exp_left = parse_unary_exp_factor();
@@ -870,6 +905,7 @@ static std::unique_ptr<CInitExp> parse_exp_for_init() {
 // for_init = InitDecl(variable_declaration) | InitExp(exp?)
 static std::unique_ptr<CForInit> parse_for_init() {
     switch(peek_next().token_kind) {
+        case TOKEN_KIND::key_char:
         case TOKEN_KIND::key_int:
         case TOKEN_KIND::key_long:
         case TOKEN_KIND::key_double:
@@ -899,6 +935,7 @@ static std::unique_ptr<CD> parse_d_block_item() {
 // block_item = S(statement) | D(declaration)
 static std::unique_ptr<CBlockItem> parse_block_item() {
     switch(peek_token->token_kind) {
+        case TOKEN_KIND::key_char:
         case TOKEN_KIND::key_int:
         case TOKEN_KIND::key_long:
         case TOKEN_KIND::key_double:
@@ -930,7 +967,7 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-// <type-specifier> ::= "int" | "long" | "double" | "signed" | "unsigned"
+// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char"
 static std::shared_ptr<Type> parse_type_specifier() {
     size_t specifier = 0;
     size_t line = peek_next().line;
@@ -940,6 +977,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
                 goto Lbreak;
+            case TOKEN_KIND::key_char:
             case TOKEN_KIND::key_int:
             case TOKEN_KIND::key_long:
             case TOKEN_KIND::key_double:
@@ -971,6 +1009,8 @@ static std::shared_ptr<Type> parse_type_specifier() {
     switch(type_token_kinds.size()) {
         case 1: {
             switch(type_token_kinds[0]) {
+                case TOKEN_KIND::key_char:
+                    return std::make_unique<Char>();
                 case TOKEN_KIND::key_int:
                     return std::make_unique<Int>();
                 case TOKEN_KIND::key_long:
@@ -994,19 +1034,27 @@ static std::shared_ptr<Type> parse_type_specifier() {
                     return std::make_unique<UInt>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
-                                    TOKEN_KIND::key_long) != type_token_kinds.end()) {
+                                  TOKEN_KIND::key_long) != type_token_kinds.end()) {
                     return std::make_unique<ULong>();
+                }
+                else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
+                                  TOKEN_KIND::key_char) != type_token_kinds.end()) {
+                    return std::make_unique<UChar>();
                 }
             }
             else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
-                                 TOKEN_KIND::key_signed) != type_token_kinds.end()) {
+                              TOKEN_KIND::key_signed) != type_token_kinds.end()) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_int) != type_token_kinds.end()) {
                     return std::make_unique<Int>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
-                                    TOKEN_KIND::key_long) != type_token_kinds.end()) {
+                                  TOKEN_KIND::key_long) != type_token_kinds.end()) {
                     return std::make_unique<Long>();
+                }
+                else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
+                                  TOKEN_KIND::key_char) != type_token_kinds.end()) {
+                    return std::make_unique<SChar>();
                 }
             }
             else if((std::find(type_token_kinds.begin(), type_token_kinds.end(),
@@ -1226,6 +1274,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
             parse_empty_param_list();
             break;
         }
+        case TOKEN_KIND::key_char:
         case TOKEN_KIND::key_int:
         case TOKEN_KIND::key_long:
         case TOKEN_KIND::key_double:

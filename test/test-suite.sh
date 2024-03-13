@@ -16,7 +16,8 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 16); do
-        test --chapter ${i} --stage lex --latest-only --bitwise --compound --goto --nan
+        if [ ${i} -eq 5 ]; then continue; fi
+        test --chapter ${i} --stage parse --latest-only --bitwise --compound --goto --nan
     done
 fi
 

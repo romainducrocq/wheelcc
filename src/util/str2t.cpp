@@ -29,27 +29,6 @@ int64_t intmax_to_int64(intmax_t intmax) {
     return static_cast<int64_t>(intmax);
 }
 
-double string_to_double(const std::string& s_double, size_t line) {
-    std::vector<char> buffer(s_double.begin(), s_double.end());
-    buffer.push_back('\0');
-    char* end_ptr = nullptr;
-    errno = 0;
-    double float64 = strtod(&buffer[0], &end_ptr);
-
-    if(end_ptr == &buffer[0]) {
-        raise_runtime_error_at_line("String " + em(s_double) + " is not a floating point number",
-                                    line);
-    }
-
-    return float64;
-}
-
-uint64_t double_to_binary(double decimal) {
-    uint64_t binary;
-    std::memcpy(&binary, &decimal, sizeof(uint64_t));
-    return binary;
-}
-
 uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     std::vector<char> buffer(s_uint.begin(), s_uint.end());
     buffer.push_back('\0');
@@ -71,4 +50,34 @@ uint32_t uintmax_to_uint32(uintmax_t uintmax) {
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) {
     return static_cast<uint64_t>(uintmax);
+}
+
+std::string string_to_string_literal(const std::string& s_string) {
+    return s_string.substr(1, s_string.size() - 2);
+}
+
+int32_t string_to_char_ascii(const std::string& s_char) {
+    char c_char = s_char[1];
+    return static_cast<int32_t>(c_char);
+}
+
+double string_to_double(const std::string& s_double, size_t line) {
+    std::vector<char> buffer(s_double.begin(), s_double.end());
+    buffer.push_back('\0');
+    char* end_ptr = nullptr;
+    errno = 0;
+    double float64 = strtod(&buffer[0], &end_ptr);
+
+    if(end_ptr == &buffer[0]) {
+        raise_runtime_error_at_line("String " + em(s_double) + " is not a floating point number",
+                                    line);
+    }
+
+    return float64;
+}
+
+uint64_t double_to_binary(double decimal) {
+    uint64_t binary;
+    std::memcpy(&binary, &decimal, sizeof(uint64_t));
+    return binary;
 }
