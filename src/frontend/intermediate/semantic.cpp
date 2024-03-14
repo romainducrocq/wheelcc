@@ -1485,7 +1485,7 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
         std::shared_ptr<Type> local_var_type = node->var_type;
         std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
                                                                                        std::move(initial_value));
-        std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
+        symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
     }
     symbol_table[node->name] = std::move(symbol);
 }
