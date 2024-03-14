@@ -1,7 +1,6 @@
 #!/bin/python3
 
 class TIdentifier: name = "TIdentifier"
-class TString: name = "TString"
 class TChar: name = "TChar"
 class TInt: name = "TInt"
 class TLong: name = "TLong"
@@ -102,7 +101,7 @@ ast = [
     ["CFunDeclarator", [], ["[param_list", "declarator"]],
     ["CExp", [], ["exp_type"]],
     ["CConstant", [], ["constant", "exp_type"]],
-    ["CString", [(TString, "value")], ["exp_type"]],
+    ["CString", [(TInt, "[value")], ["exp_type"]],
     ["CVar", [(TIdentifier, "name")], ["exp_type"]],
     ["CCast", [], ["exp", "target_type", "exp_type"]],
     ["CUnary", [], ["unary_op", "exp", "exp_type"]],

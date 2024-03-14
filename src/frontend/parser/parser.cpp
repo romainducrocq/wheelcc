@@ -164,8 +164,8 @@ static void parse_identifier(TIdentifier& identifier) {
 }
 
 // <string> ::= ? A string token ?
-static void parse_string_literal(TString& string_literal) {
-    string_literal += string_to_string_literal(next_token->token);
+static void parse_string_literal(std::vector<TInt>& string_literal) {
+    string_to_string_literal(next_token->token, string_literal);
 }
 
 // <int> ::= ? An int constant token ?
@@ -477,7 +477,7 @@ static std::unique_ptr<CVar> parse_var_factor() {
 }
 
 static std::unique_ptr<CString> parse_string_literal_factor() {
-    TString string_literal = "";
+    std::vector<TInt> string_literal;
     parse_string_literal(string_literal);
     while(peek_next().token_kind == TOKEN_KIND::string_literal) {
         pop_next();

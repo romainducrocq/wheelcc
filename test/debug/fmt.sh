@@ -7,11 +7,11 @@ cat ../../include/ast/${1}.hpp \
     | grep -e "struct" -e ";" \
     | sed "s/nstruction/nstr_uction/g" \
     | sed "s/\s*std::vector<TIdentifier>\s*/TIdentifier [/g" \
+    | sed "s/\s*std::vector<TInt>\s*/TInt [/g" \
     | sed "s/\s*std::vector<.*>\s*/\"[/g" \
     | sed "s/\s*std::unique_ptr<.*>\s*/\"/g" \
     | sed "s/\s*std::shared_ptr<.*>\s*/\"/g" \
     | sed "s/\s*TIdentifier\s*/(TIdentifier, \"/g" \
-    | sed "s/\s*TString\s*/(TString, \"/g" \
     | sed "s/\s*TChar\s*/(TChar, \"/g" \
     | sed "s/\s*TInt\s*/(TInt, \"/g" \
     | sed "s/\s*TLong\s*/(TLong, \"/g" \
@@ -88,12 +88,14 @@ echo ""
 function header () {
 echo "#!/bin/python3"
 echo ""
+echo "class TIdentifier: name = \"TIdentifier\""
+echo "class TChar: name = \"TChar\""
 echo "class TInt: name = \"TInt\""
 echo "class TLong: name = \"TLong\""
-echo "class TDouble: name = \"TDouble\""
+echo "class TUChar: name = \"TUChar\""
 echo "class TUInt: name = \"TUInt\""
 echo "class TULong: name = \"TULong\""
-echo "class TIdentifier: name = \"TIdentifier\""
+echo "class TDouble: name = \"TDouble\""
 echo "class Bool: name = \"Bool\""
 echo "class List: name = \"List\""
 echo ""

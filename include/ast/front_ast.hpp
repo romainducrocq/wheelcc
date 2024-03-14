@@ -246,9 +246,9 @@ struct CConstant : CExp {
 struct CString : CExp {
     AST_T type() override;
     CString() = default;
-    CString(TString value);
+    CString(std::vector<TInt> value);
 
-    TString value;
+    std::vector<TInt> value;
     /*
     std::shared_ptr<Type> exp_type;
     */

@@ -110,7 +110,7 @@ CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,
 CConstant::CConstant(std::shared_ptr<CConst> constant)
     : constant(std::move(constant)) {}
 
-CString::CString(TString value)
+CString::CString(std::vector<TInt> value)
     : value(std::move(value)) {}
 
 CVar::CVar(TIdentifier name)

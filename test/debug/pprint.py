@@ -15,7 +15,7 @@ class AstNode:
 
 
 def to_string(field_type, field_name):
-    if field_type in ["TIdentifier", "TString"]:
+    if field_type in ["TIdentifier"]:
         return field_name
     else:
         return f"std::to_string({field_name})"

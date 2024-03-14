@@ -2,10 +2,10 @@
 #include "util/error.hpp"
 
 #include <inttypes.h>
+#include <cstring>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <cstring>
 
 intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
@@ -52,11 +52,7 @@ uint64_t uintmax_to_uint64(uintmax_t uintmax) {
     return static_cast<uint64_t>(uintmax);
 }
 
-#include <iostream>
-// TODO
-// void string_to_string_literal(const std::string& s_string, std::vector<int32_t>& string_literal) {
-std::string string_to_string_literal(const std::string& s_string) {
-    std::vector<int32_t> string_literal; // TODO rm
+void string_to_string_literal(const std::string& s_string, std::vector<int32_t>& string_literal) {
     for(size_t byte = 1; byte < s_string.size() - 1; byte++) {
         char c_char = static_cast<char>(s_string[byte]);
         if(c_char == '\\') {
@@ -103,13 +99,6 @@ std::string string_to_string_literal(const std::string& s_string) {
             string_literal.push_back(static_cast<int32_t>(c_char));
         }
     }
-
-    // TODO rm
-    for(size_t i = 0; i < string_literal.size(); i++) {
-        std::cout << static_cast<char>(string_literal[i]) << " " << string_literal[i] << std::endl;
-    }
-
-    return s_string; // TODO rm
 }
 
 int32_t string_to_char_ascii(const std::string& s_char) {

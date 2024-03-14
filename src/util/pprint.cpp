@@ -448,7 +448,10 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CString_t: {
             field("CString", "", ++t);
             CString* p_node = static_cast<CString*>(node);
-            field("TString", p_node->value, t+1);
+            field("List[" + std::to_string(p_node->value.size()) + "]", "", t+1);
+            for(const auto& item: p_node->value) {
+                field("TInt", std::to_string(item), t+2);
+            }
             print_ast(p_node->exp_type.get(), t);
             break;
         }

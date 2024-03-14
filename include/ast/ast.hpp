@@ -279,7 +279,6 @@ struct Ast {
 };
 
 using TIdentifier = std::string;
-using TString = std::string;
 using TChar = int8_t;
 using TInt = int32_t;
 using TLong = int64_t;
