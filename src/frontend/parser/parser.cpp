@@ -167,10 +167,12 @@ static void parse_identifier(TIdentifier& identifier) {
 // <string> ::= ? A string token ?
 static std::shared_ptr<CStringLiteral> parse_string_literal() {
     std::vector<TChar> value;
-    string_to_string_literal(next_token->token, value);
-    while(peek_next().token_kind == TOKEN_KIND::string_literal) {
-        pop_next();
+    {
         string_to_string_literal(next_token->token, value);
+        while(peek_next().token_kind == TOKEN_KIND::string_literal) {
+            pop_next();
+            string_to_string_literal(next_token->token, value);
+        }
     }
     return std::make_shared<CStringLiteral>(std::move(value));
 }
