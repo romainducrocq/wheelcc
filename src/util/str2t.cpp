@@ -92,7 +92,7 @@ void string_to_string_literal(const std::string& s_string, std::vector<int32_t>&
                     string_literal.push_back(11);
                     break;
                 default:
-                    break;
+                    RAISE_INTERNAL_ERROR;
             }
         }
         else {
@@ -129,10 +129,12 @@ int32_t string_to_char_ascii(const std::string& s_char) {
             case 'v':
                 return 11;
             default:
-                break;
+                RAISE_INTERNAL_ERROR;
         }
     }
-    return static_cast<int32_t>(c_char);
+    else {
+        return static_cast<int32_t>(c_char);
+    }
 }
 
 double string_to_double(const std::string& s_double, size_t line) {

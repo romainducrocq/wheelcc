@@ -34,6 +34,10 @@ TIdentifier represent_variable_identifier(CExp* node) {
             name = "const";
             break;
         }
+        case AST_T::CString_t: {
+            name = "string";
+            break;
+        }
         case AST_T::CVar_t: {
             name = "var";
             break;
