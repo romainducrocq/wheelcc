@@ -93,7 +93,7 @@ static void print_ast(Ast* node, size_t t) {
             CStringLiteral* p_node = static_cast<CStringLiteral*>(node);
             field("List[" + std::to_string(p_node->value.size()) + "]", "", t+1);
             for(const auto& item: p_node->value) {
-                field("TInt", std::to_string(item), t+2);
+                field("TChar", std::to_string(item), t+2);
             }
             break;
         }

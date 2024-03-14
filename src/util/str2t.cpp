@@ -52,7 +52,7 @@ uint64_t uintmax_to_uint64(uintmax_t uintmax) {
     return static_cast<uint64_t>(uintmax);
 }
 
-void string_to_string_literal(const std::string& s_string, std::vector<int32_t>& string_literal) {
+void string_to_string_literal(const std::string& s_string, std::vector<int8_t>& string_literal) {
     for(size_t byte = 1; byte < s_string.size() - 1; byte++) {
         char c_char = static_cast<char>(s_string[byte]);
         if(c_char == '\\') {
@@ -96,7 +96,7 @@ void string_to_string_literal(const std::string& s_string, std::vector<int32_t>&
             }
         }
         else {
-            string_literal.push_back(static_cast<int32_t>(c_char));
+            string_literal.push_back(static_cast<int8_t>(c_char));
         }
     }
 }

@@ -24,7 +24,7 @@ ast = [
     ["CConstDouble", [(TDouble, "value")], []],
     ["CConstChar", [(TChar, "value")], []],
     ["CConstUChar", [(TUChar, "value")], []],
-    ["CStringLiteral", [(TInt, "[value")], []],
+    ["CStringLiteral", [(TChar, "[value")], []],
 
     # /include/ast/front_symt.hpp
     ["Type", [], []],

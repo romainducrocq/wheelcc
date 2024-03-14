@@ -773,7 +773,8 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
     {
         std::shared_ptr<CConst> constant;
         switch(elem_type->type()) {
-            case AST_T::Char_t: {
+            case AST_T::Char_t:
+            case AST_T::SChar_t: {
                 constant = std::make_shared<CConstChar>(0);
                 break;
             }
