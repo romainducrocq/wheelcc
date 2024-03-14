@@ -502,7 +502,6 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
         default:
             break;
     }
-    return;
 }
 
 static void checktype_binary_logical_expression(CBinary* node) {
@@ -711,8 +710,10 @@ static std::unique_ptr<CExp> checktype_scalar_typed_expression(std::unique_ptr<C
 }
 
 static std::unique_ptr<CAddrOf> checktype_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
-    std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
-    node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
+    {
+        std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
+        node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
+    }
     std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node));
     addrof->exp_type = addrof->exp->exp_type;
     return addrof;
@@ -943,9 +944,11 @@ static void checktype_no_initializer_static_init(Type* static_init_type, TLong s
 
 static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* static_init_type) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
-    p_static_inits = &static_inits;
-    checktype_no_initializer_static_init(static_init_type, 1l);
-    p_static_inits = nullptr;
+    {
+        p_static_inits = &static_inits;
+        checktype_no_initializer_static_init(static_init_type, 1l);
+        p_static_inits = nullptr;
+    }
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
@@ -1287,31 +1290,27 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
     checktype_type_pointer_single_init_string_initializer(static_ptr_type);
     TIdentifier name = represent_label_identifier("string");
+    std::unique_ptr<Symbol> symbol;
     {
-        std::unique_ptr<Symbol> symbol;
+        std::shared_ptr<Type> constant_type;
         {
-            std::shared_ptr<Type> constant_type;
-            {
-                TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
-                std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-                constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
-            }
-            std::unique_ptr<IdentifierAttr> constant_attrs;
-            {
-                std::shared_ptr<StaticInit> static_init;
-                {
-                    std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init = std::make_shared<StringInit>(true, std::move(literal));
-                }
-                constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
-            }
-            std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
+            TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
+            std::shared_ptr<Type> elem_type = std::make_shared<Char>();
+            constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
         }
-        symbol_table[name] = std::move(symbol);
+        std::unique_ptr<IdentifierAttr> constant_attrs;
+        {
+            std::shared_ptr<StaticInit> static_init;
+            {
+                std::shared_ptr<CStringLiteral> literal = node->literal;
+                static_init = std::make_shared<StringInit>(true, std::move(literal));
+            }
+            constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
+        }
+        std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
     }
-    {
-        push_static_init(std::make_shared<PointerInit>(std::move(name)));
-    }
+    symbol_table[name] = std::move(symbol);
+    push_static_init(std::make_shared<PointerInit>(std::move(name)));
 }
 
 static void checktype_string_initializer_array_static_init(CString* node, Array* static_arr_type) {
@@ -1322,10 +1321,8 @@ static void checktype_string_initializer_array_static_init(CString* node, Array*
         std::shared_ptr<CStringLiteral> literal = node->literal;
         push_static_init(std::make_shared<StringInit>(std::move(is_null_terminated), std::move(literal)));
     }
-    {
-        if(byte > 0l) {
-            push_zero_init_static_init(std::move(byte));
-        }
+    if(byte > 0l) {
+        push_zero_init_static_init(std::move(byte));
     }
 }
 
@@ -1394,9 +1391,11 @@ static void checktype_initializer_static_init(CInitializer* node, Type* static_i
 
 static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node, Type* static_init_type) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
-    p_static_inits = &static_inits;
-    checktype_initializer_static_init(node, static_init_type);
-    p_static_inits = nullptr;
+    {
+        p_static_inits = &static_inits;
+        checktype_initializer_static_init(node, static_init_type);
+        p_static_inits = nullptr;
+    }
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
@@ -1765,24 +1764,27 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
 
 static void resolve_statement(CStatement* node);
 
-static void resolve_for_block_scope_variable_declaration(CVariableDeclaration* node) {
-    if(node->storage_class) {
-        raise_runtime_error("Variable " + em(node->name) +
+static void resolve_init_decl_for_init(CInitDecl* node) {
+    if(node->init->storage_class) {
+        raise_runtime_error("Variable " + em(node->init->name) +
                             " was not declared with automatic linkage in for loop initializer");
     }
-    resolve_block_scope_variable_declaration(node);
+    resolve_block_scope_variable_declaration(node->init.get());
+}
+
+static void resolve_init_exp_for_init(CInitExp* node) {
+    if(node->init) {
+        node->init = resolve_typed_expression(std::move(node->init));
+    }
 }
 
 static void resolve_for_init(CForInit* node) {
     switch(node->type()) {
         case AST_T::CInitDecl_t:
-            resolve_for_block_scope_variable_declaration(static_cast<CInitDecl*>(node)->init.get());
+            resolve_init_decl_for_init(static_cast<CInitDecl*>(node));
             break;
         case AST_T::CInitExp_t: {
-            CInitExp* init_decl = static_cast<CInitExp*>(node);
-            if(init_decl->init) {
-                init_decl->init = resolve_typed_expression(std::move(init_decl->init));
-            }
+            resolve_init_exp_for_init(static_cast<CInitExp*>(node));
             break;
         }
         default:
