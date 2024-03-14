@@ -172,6 +172,7 @@ static bool is_exp_lvalue(CExp* node) {
         case AST_T::CVar_t:
         case AST_T::CDereference_t:
         case AST_T::CSubscript_t:
+        case AST_T::CString_t:
             return true;
         default:
             return false;
@@ -249,6 +250,12 @@ static void checktype_constant_expression(CConstant* node) {
         default:
             RAISE_INTERNAL_ERROR;
     }
+}
+
+static void checktype_string_expression(CString* node) {
+    TLong size = static_cast<TLong>(node->value.size()) + 1l;
+    std::shared_ptr<Type> elem_type = std::make_shared<Char>();
+    node->exp_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
 }
 
 static void checktype_var_expression(CVar* node) {
@@ -724,6 +731,16 @@ static void checktype_return_statement(CReturn* node) {
         node->exp = std::move(exp);
     }
     node->exp = checktype_typed_expression(std::move(node->exp));
+}
+
+static void checktype_array_single_init_string_initializer(CString* node, Array* arr_type) {
+    if(!is_type_character(arr_type->elem_type.get())) {
+        raise_runtime_error("Array of non-character type was initialized with string literal");
+    }
+    else if(node->value.size() > static_cast<size_t>(arr_type->size)) {
+        raise_runtime_error("String literal of size " + em(std::to_string(node->value.size())) +
+                            " was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
+    }
 }
 
 static void checktype_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
@@ -1578,6 +1595,9 @@ static void resolve_expression(CExp* node) {
         case AST_T::CConstant_t:
             checktype_constant_expression(static_cast<CConstant*>(node));
             break;
+        case AST_T::CString_t:
+            checktype_string_expression(static_cast<CString*>(node));
+            break;
         case AST_T::CVar_t: {
             CVar* p_node = static_cast<CVar*>(node);
             resolve_var_expression(p_node);
@@ -1837,8 +1857,15 @@ static void resolve_block(CBlock* node) {
 
 static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type);
 
-static void resolve_single_init_initializer(CSingleInit* node) {
-    node->exp = resolve_typed_expression(std::move(node->exp));
+static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
+    if(node->exp->type() == AST_T::CString_t &&
+       init_type->type() == AST_T::Array_t) {
+        checktype_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
+                                                       static_cast<Array*>(init_type.get()));
+    }
+    else {
+        node->exp = resolve_typed_expression(std::move(node->exp));
+    }
 }
 
 static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
@@ -1866,7 +1893,7 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
     switch(node->type()) {
         case AST_T::CSingleInit_t: {
             CSingleInit* p_node = static_cast<CSingleInit*>(node);
-            resolve_single_init_initializer(p_node);
+            resolve_single_init_initializer(p_node, init_type);
             checktype_single_init_initializer(p_node, init_type);
             break;
         }
