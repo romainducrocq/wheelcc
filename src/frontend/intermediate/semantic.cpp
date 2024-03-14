@@ -312,8 +312,7 @@ static void checktype_unary_complement_expression(CUnary* node) {
         case AST_T::SChar_t:
         case AST_T::UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), promote_type);
-            node->exp = std::move(exp);
+            node->exp = cast_expression(std::move(node->exp), promote_type);
             break;
         }
         default:
@@ -331,8 +330,7 @@ static void checktype_unary_negate_expression(CUnary* node) {
         case AST_T::SChar_t:
         case AST_T::UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), promote_type);
-            node->exp = std::move(exp);
+            node->exp = cast_expression(std::move(node->exp), promote_type);
             break;
         }
         default:
@@ -367,8 +365,7 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
             is_type_integer(node->exp_right->exp_type.get())) {
         common_type = std::make_shared<Long>();
         if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-            node->exp_right = std::move(exp);
+            node->exp_right = cast_expression(std::move(node->exp_right), common_type);
         }
         node->exp_type = node->exp_left->exp_type;
         return;
@@ -377,8 +374,7 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
             node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         common_type = std::make_shared<Long>();
         if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-            node->exp_left = std::move(exp);
+            node->exp_left = cast_expression(std::move(node->exp_left), common_type);
         }
         node->exp_type = node->exp_right->exp_type;
         return;
@@ -390,12 +386,10 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-        node->exp_left = std::move(exp);
+        node->exp_left = cast_expression(std::move(node->exp_left), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
@@ -410,8 +404,7 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
         if(is_type_integer(node->exp_right->exp_type.get())) {
             common_type = std::make_shared<Long>();
             if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-                std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-                node->exp_right = std::move(exp);
+                node->exp_right = cast_expression(std::move(node->exp_right), common_type);
             }
             node->exp_type = node->exp_left->exp_type;
             return;
@@ -431,12 +424,10 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-        node->exp_left = std::move(exp);
+        node->exp_left = cast_expression(std::move(node->exp_left), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
@@ -450,12 +441,10 @@ static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-        node->exp_left = std::move(exp);
+        node->exp_left = cast_expression(std::move(node->exp_left), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
@@ -469,12 +458,10 @@ static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* no
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-        node->exp_left = std::move(exp);
+        node->exp_left = cast_expression(std::move(node->exp_left), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
     if(node->exp_type->type() == AST_T::Double_t) {
@@ -488,9 +475,7 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     // if the value of the right operand is negative or is greater than or equal
     // to the width of the promoted left operand, the behavior is undefined
     if(!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())){
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right),
-                                                    node->exp_left->exp_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
     }
     node->exp_type = node->exp_left->exp_type;
     switch(node->exp_type->type()) {
@@ -519,12 +504,10 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-        node->exp_left = std::move(exp);
+        node->exp_left = cast_expression(std::move(node->exp_left), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::make_shared<Int>();
 }
@@ -543,12 +526,10 @@ static void checktype_binary_comparison_relational_expression(CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_left), common_type);
-        node->exp_left = std::move(exp);
+        node->exp_left = cast_expression(std::move(node->exp_left), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::make_shared<Int>();
 }
@@ -600,8 +581,7 @@ static void checktype_assignment_expression(CAssignment* node) {
             raise_runtime_error("Left expression is an invalid lvalue");
         }
         if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
-            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
-            node->exp_right = std::move(exp);
+            node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
         }
         node->exp_type = node->exp_left->exp_type;
     }
@@ -617,8 +597,7 @@ static void checktype_assignment_expression(CAssignment* node) {
             raise_runtime_error("Left expression is an invalid lvalue");
         }
         if(!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
-            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
-            node->exp_right = std::move(exp);
+            node->exp_right = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
         }
         node->exp_type = exp_left->exp_type;
     }
@@ -634,12 +613,10 @@ static void checktype_conditional_expression(CConditional* node) {
         common_type = get_joint_type(node->exp_middle.get(), node->exp_right.get());
     }
     if(!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_middle), common_type);
-        node->exp_middle = std::move(exp);
+        node->exp_middle = cast_expression(std::move(node->exp_middle), common_type);
     }
     if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp_right), common_type);
-        node->exp_right = std::move(exp);
+        node->exp_right = cast_expression(std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
@@ -656,8 +633,7 @@ static void checktype_function_call_expression(CFunctionCall* node) {
     }
     for(size_t i = 0; i < node->args.size(); i ++) {
         if(!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
-            std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->args[i]), fun_type->param_types[i]);
-            node->args[i] = std::move(exp);
+            node->args[i] = cast_by_assignment(std::move(node->args[i]), fun_type->param_types[i]);
         }
     }
     node->exp_type = fun_type->ret_type;
@@ -684,8 +660,7 @@ static void checktype_subscript_expression(CSubscript* node) {
        is_type_integer(node->subscript_exp->exp_type.get())) {
         std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
         if(!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->subscript_exp), subscript_type);
-            node->subscript_exp = std::move(exp);
+            node->subscript_exp = cast_expression(std::move(node->subscript_exp), subscript_type);
         }
         ref_type = static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type;
     }
@@ -693,8 +668,7 @@ static void checktype_subscript_expression(CSubscript* node) {
             node->subscript_exp->exp_type->type() == AST_T::Pointer_t) {
         std::shared_ptr<Type> primary_type = std::make_shared<Long>();
         if(!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
-            std::unique_ptr<CExp> exp = cast_expression(std::move(node->primary_exp), primary_type);
-            node->primary_exp = std::move(exp);
+            node->primary_exp = cast_expression(std::move(node->primary_exp), primary_type);
         }
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
@@ -731,8 +705,7 @@ static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& 
 static void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(symbol_table[function_definition_name]->type_t.get());
     if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
-        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
-        node->exp = std::move(exp);
+        node->exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
     }
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
@@ -756,8 +729,7 @@ static void checktype_type_size_array_single_init_string_initializer(CString* no
 
 static void checktype_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if(!is_same_type(node->exp->exp_type.get(), init_type.get())) {
-        std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), init_type);
-        node->exp = std::move(exp);
+        node->exp = cast_by_assignment(std::move(node->exp), init_type);
     }
     node->init_type = init_type;
 }
