@@ -23,6 +23,8 @@ enum AST_T {
     LongInit_t,
     UIntInit_t,
     ULongInit_t,
+    CharInit_t,
+    UCharInit_t,
     DoubleInit_t,
     ZeroInit_t,
     InitialValue_t,

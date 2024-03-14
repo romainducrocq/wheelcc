@@ -88,6 +88,8 @@ struct Array : Type {
 //             | LongInit(int)
 //             | UIntInit(int)
 //             | ULongInit(int)
+//             | CharInit(int)
+//             | UCharInit(int)
 //             | DoubleInit(double, int)
 //             | ZeroInit(int)
 struct StaticInit : Ast {
@@ -124,6 +126,22 @@ struct ULongInit : StaticInit {
     ULongInit(TULong value);
 
     TULong value;
+};
+
+struct CharInit : StaticInit {
+    AST_T type() override;
+    CharInit() = default;
+    CharInit(TChar value);
+
+    TChar value;
+};
+
+struct UCharInit : StaticInit {
+    AST_T type() override;
+    UCharInit() = default;
+    UCharInit(TUChar value);
+
+    TUChar value;
 };
 
 struct DoubleInit : StaticInit {

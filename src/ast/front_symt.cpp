@@ -22,6 +22,8 @@ AST_T IntInit::type() { return AST_T::IntInit_t; }
 AST_T LongInit::type() { return AST_T::LongInit_t; }
 AST_T UIntInit::type() { return AST_T::UIntInit_t; }
 AST_T ULongInit::type() { return AST_T::ULongInit_t; }
+AST_T CharInit::type() { return AST_T::CharInit_t; }
+AST_T UCharInit::type() { return AST_T::UCharInit_t; }
 AST_T DoubleInit::type() { return AST_T::DoubleInit_t; }
 AST_T ZeroInit::type() { return AST_T::ZeroInit_t; }
 AST_T InitialValue::type() { return AST_T::InitialValue_t; }
@@ -53,6 +55,12 @@ UIntInit::UIntInit(TUInt value)
     : value(value) {}
 
 ULongInit::ULongInit(TULong value)
+    : value(value) {}
+
+CharInit::CharInit(TChar value)
+    : value(value) {}
+
+UCharInit::UCharInit(TUChar value)
     : value(value) {}
 
 DoubleInit::DoubleInit(TDouble value, TULong binary)

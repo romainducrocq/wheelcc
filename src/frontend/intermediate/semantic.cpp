@@ -63,9 +63,22 @@ static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
 
 static bool is_type_signed(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
         case AST_T::Int_t:
         case AST_T::Long_t:
         case AST_T::Double_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_type_character(Type* type_1) {
+    switch (type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t:
             return true;
         default:
             return false;
@@ -86,9 +99,12 @@ static bool is_type_integer(Type* type_1) {
 
 static bool is_type_arithmetic(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
         case AST_T::Int_t:
         case AST_T::Long_t:
         case AST_T::Double_t:
+        case AST_T::UChar_t:
         case AST_T::UInt_t:
         case AST_T::ULong_t:
             return true;
@@ -99,6 +115,10 @@ static bool is_type_arithmetic(Type* type_1) {
 
 static TInt get_scalar_type_size(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t:
+            return 1;
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return 4;
@@ -159,6 +179,12 @@ static bool is_exp_lvalue(CExp* node) {
 }
 
 static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
+    if(is_type_character(node_1->exp_type.get())) {
+        node_1->exp_type = std::make_shared<Int>();
+    }
+    if(is_type_character(node_2->exp_type.get())) {
+        node_2->exp_type = std::make_shared<Int>();
+    }
     if(is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
         return node_1->exp_type;
     }
@@ -199,6 +225,9 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
 
 static void checktype_constant_expression(CConstant* node) {
     switch(node->constant->type()) {
+        case AST_T::CConstChar_t:
+            node->exp_type = std::make_shared<Char>();
+            break;
         case AST_T::CConstInt_t:
             node->exp_type = std::make_shared<Int>();
             break;
@@ -207,6 +236,9 @@ static void checktype_constant_expression(CConstant* node) {
             break;
         case AST_T::CConstDouble_t:
             node->exp_type = std::make_shared<Double>();
+            break;
+        case AST_T::CConstUChar_t:
+            node->exp_type = std::make_shared<UChar>();
             break;
         case AST_T::CConstUInt_t:
             node->exp_type = std::make_shared<UInt>();
@@ -266,6 +298,14 @@ static void checktype_unary_complement_expression(CUnary* node) {
             raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
                                 " can not be used on " + em("floating-point number") + " or " +
                                 em("pointer type"));
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t: {
+            std::shared_ptr<Type> promote_type = std::make_shared<Int>();
+            std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), promote_type);
+            node->exp = std::move(exp);
+            break;
+        }
         default:
             break;
     }
@@ -273,9 +313,20 @@ static void checktype_unary_complement_expression(CUnary* node) {
 }
 
 static void checktype_unary_negate_expression(CUnary* node) {
-    if(node->exp->exp_type->type() == AST_T::Pointer_t) {
-        raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
-                            " can not be used on " + em("pointer type"));
+    switch(node->exp->exp_type->type()) {
+        case AST_T::Pointer_t:
+            raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                                " can not be used on " + em("pointer type"));
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t: {
+            std::shared_ptr<Type> promote_type = std::make_shared<Int>();
+            std::unique_ptr<CExp> exp = cast_expression(std::move(node->exp), promote_type);
+            node->exp = std::move(exp);
+            break;
+        }
+        default:
+            break;
     }
     node->exp_type = node->exp->exp_type;
 }
@@ -690,6 +741,10 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
     {
         std::shared_ptr<CConst> constant;
         switch(elem_type->type()) {
+            case AST_T::Char_t: {
+                constant = std::make_shared<CConstChar>(0);
+                break;
+            }
             case AST_T::Int_t: {
                 constant = std::make_shared<CConstInt>(0);
                 break;
@@ -700,6 +755,10 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
             }
             case AST_T::Double_t: {
                 constant = std::make_shared<CConstDouble>(0.0);
+                break;
+            }
+            case AST_T::UChar_t: {
+                constant = std::make_shared<CConstUChar>(0u);
                 break;
             }
             case AST_T::UInt_t: {
@@ -855,9 +914,56 @@ static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* static_in
 
 static void checktype_scalar_initializer_static_init(CConstant* node, Type* static_init_type) {
     switch(static_init_type->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t: {
+            TChar value;
+            switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<CConstChar*>(node->constant.get())->value;
+                    break;
+                }
+                case AST_T::CConstInt_t: {
+                    value = static_cast<TChar>(static_cast<CConstInt*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstLong_t: {
+                    value = static_cast<TChar>(static_cast<CConstLong*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstDouble_t: {
+                    value = static_cast<TChar>(static_cast<CConstDouble*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<TChar>(static_cast<CConstUChar*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUInt_t: {
+                    value = static_cast<TChar>(static_cast<CConstUInt*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstULong_t: {
+                    value = static_cast<TChar>(static_cast<CConstULong*>(node->constant.get())->value);
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+            if(value == 0) {
+                push_zero_init_static_init(1l);
+            }
+            else {
+                push_static_init(std::make_shared<CharInit>(std::move(value)));
+            }
+            break;
+        }
         case AST_T::Int_t: {
             TInt value;
             switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<TInt>(static_cast<CConstChar*>(node->constant.get())->value);
+                    break;
+                }
                 case AST_T::CConstInt_t: {
                     value = static_cast<CConstInt*>(node->constant.get())->value;
                     break;
@@ -868,6 +974,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                 }
                 case AST_T::CConstDouble_t: {
                     value = static_cast<TInt>(static_cast<CConstDouble*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<TInt>(static_cast<CConstUChar*>(node->constant.get())->value);
                     break;
                 }
                 case AST_T::CConstUInt_t: {
@@ -892,6 +1002,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
         case AST_T::Long_t: {
             TLong value;
             switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<TLong>(static_cast<CConstChar*>(node->constant.get())->value);
+                    break;
+                }
                 case AST_T::CConstInt_t: {
                     value = static_cast<TLong>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -902,6 +1016,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                 }
                 case AST_T::CConstDouble_t: {
                     value = static_cast<TLong>(static_cast<CConstDouble*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<TLong>(static_cast<CConstUChar*>(node->constant.get())->value);
                     break;
                 }
                 case AST_T::CConstUInt_t: {
@@ -926,6 +1044,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
         case AST_T::Double_t: {
             TDouble value;
             switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<TDouble>(static_cast<CConstChar*>(node->constant.get())->value);
+                    break;
+                }
                 case AST_T::CConstInt_t: {
                     value = static_cast<TDouble>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -936,6 +1058,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                 }
                 case AST_T::CConstDouble_t: {
                     value = static_cast<CConstDouble*>(node->constant.get())->value;
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<TDouble>(static_cast<CConstUChar*>(node->constant.get())->value);
                     break;
                 }
                 case AST_T::CConstUInt_t: {
@@ -958,9 +1084,55 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
             }
             break;
         }
+        case AST_T::UChar_t: {
+            TUChar value;
+            switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<TUChar>(static_cast<CConstChar*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstInt_t: {
+                    value = static_cast<TUChar>(static_cast<CConstInt*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstLong_t: {
+                    value = static_cast<TUChar>(static_cast<CConstLong*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstDouble_t: {
+                    value = static_cast<TUChar>(static_cast<CConstDouble*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<CConstUChar*>(node->constant.get())->value;
+                    break;
+                }
+                case AST_T::CConstUInt_t: {
+                    value = static_cast<TUChar>(static_cast<CConstUInt*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstULong_t: {
+                    value = static_cast<TUChar>(static_cast<CConstULong*>(node->constant.get())->value);
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+            if(value == 0u) {
+                push_zero_init_static_init(1l);
+            }
+            else {
+                push_static_init(std::make_shared<UCharInit>(std::move(value)));
+            }
+            break;
+        }
         case AST_T::UInt_t: {
             TUInt value;
             switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<TUInt>(static_cast<CConstChar*>(node->constant.get())->value);
+                    break;
+                }
                 case AST_T::CConstInt_t: {
                     value = static_cast<TUInt>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -971,6 +1143,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                 }
                 case AST_T::CConstDouble_t: {
                     value = static_cast<TUInt>(static_cast<CConstDouble*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<TUInt>(static_cast<CConstUChar*>(node->constant.get())->value);
                     break;
                 }
                 case AST_T::CConstUInt_t: {
@@ -995,6 +1171,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
         case AST_T::ULong_t: {
             TULong value;
             switch(node->constant->type()) {
+                case AST_T::CConstChar_t: {
+                    value = static_cast<TULong>(static_cast<CConstChar*>(node->constant.get())->value);
+                    break;
+                }
                 case AST_T::CConstInt_t: {
                     value = static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
                     break;
@@ -1005,6 +1185,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                 }
                 case AST_T::CConstDouble_t: {
                     value = static_cast<TULong>(static_cast<CConstDouble*>(node->constant.get())->value);
+                    break;
+                }
+                case AST_T::CConstUChar_t: {
+                    value =  static_cast<TULong>(static_cast<CConstUChar*>(node->constant.get())->value);
                     break;
                 }
                 case AST_T::CConstUInt_t: {
@@ -1037,9 +1221,6 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                     value = static_cast<TULong>(static_cast<CConstLong*>(node->constant.get())->value);
                     break;
                 }
-                case AST_T::CConstDouble_t: {
-                    raise_runtime_error("Static pointer type can only be initialized to integer constant");
-                }
                 case AST_T::CConstUInt_t: {
                     value = static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
                     break;
@@ -1048,6 +1229,10 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
                     value = static_cast<CConstULong*>(node->constant.get())->value;
                     break;
                 }
+                case AST_T::CConstChar_t:
+                case AST_T::CConstDouble_t:
+                case AST_T::CConstUChar_t:
+                    raise_runtime_error("Static pointer type can only be initialized to integer constant");
                 default:
                     RAISE_INTERNAL_ERROR;
             }
