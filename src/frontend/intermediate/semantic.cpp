@@ -1857,11 +1857,11 @@ static void resolve_block(CBlock* node) {
 
 static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type);
 
-static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
+static void resolve_single_init_initializer(CSingleInit* node, Type* init_type) {
     if(node->exp->type() == AST_T::CString_t &&
        init_type->type() == AST_T::Array_t) {
         checktype_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
-                                                       static_cast<Array*>(init_type.get()));
+                                                       static_cast<Array*>(init_type));
     }
     else {
         node->exp = resolve_typed_expression(std::move(node->exp));
@@ -1893,7 +1893,7 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
     switch(node->type()) {
         case AST_T::CSingleInit_t: {
             CSingleInit* p_node = static_cast<CSingleInit*>(node);
-            resolve_single_init_initializer(p_node, init_type);
+            resolve_single_init_initializer(p_node, init_type.get());
             checktype_single_init_initializer(p_node, init_type);
             break;
         }
