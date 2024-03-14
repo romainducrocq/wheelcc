@@ -24,6 +24,7 @@ ast = [
     ["CConstDouble", [(TDouble, "value")], []],
     ["CConstChar", [(TChar, "value")], []],
     ["CConstUChar", [(TUChar, "value")], []],
+    ["CStringLiteral", [(TInt, "[value")], []],
 
     # /include/ast/front_symt.hpp
     ["Type", [], []],
@@ -43,6 +44,8 @@ ast = [
     ["LongInit", [(TLong, "value")], []],
     ["UIntInit", [(TUInt, "value")], []],
     ["ULongInit", [(TULong, "value")], []],
+    ["CharInit", [(TChar, "value")], []],
+    ["UCharInit", [(TUChar, "value")], []],
     ["DoubleInit", [(TDouble, "value"), (TULong, "binary")], []],
     ["ZeroInit", [(TLong, "byte")], []],
     ["InitialValue", [], []],
@@ -101,7 +104,7 @@ ast = [
     ["CFunDeclarator", [], ["[param_list", "declarator"]],
     ["CExp", [], ["exp_type"]],
     ["CConstant", [], ["constant", "exp_type"]],
-    ["CString", [(TInt, "[value")], ["exp_type"]],
+    ["CString", [], ["literal", "exp_type"]],
     ["CVar", [(TIdentifier, "name")], ["exp_type"]],
     ["CCast", [], ["exp", "target_type", "exp_type"]],
     ["CUnary", [], ["unary_op", "exp", "exp_type"]],

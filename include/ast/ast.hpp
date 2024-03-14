@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 #include <string>
+#include <vector>
 
 enum AST_T {
     // Symbol table
@@ -56,6 +57,7 @@ enum AST_T {
     CConstDouble_t,
     CConstChar_t,
     CConstUChar_t,
+    CStringLiteral_t,
     CUnaryOp_t,
     CComplement_t,
     CNegate_t,
@@ -359,6 +361,14 @@ struct CConstUChar : CConst {
     CConstUChar(TUChar value);
 
     TUChar value;
+};
+
+struct CStringLiteral : Ast {
+    AST_T type() override;
+    CStringLiteral() = default;
+    CStringLiteral(std::vector<TInt> value);
+
+    std::vector<TInt> value;
 };
 
 /*

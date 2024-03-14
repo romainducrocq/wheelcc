@@ -477,13 +477,17 @@ static std::unique_ptr<CVar> parse_var_factor() {
 }
 
 static std::unique_ptr<CString> parse_string_literal_factor() {
-    std::vector<TInt> string_literal;
-    parse_string_literal(string_literal);
-    while(peek_next().token_kind == TOKEN_KIND::string_literal) {
-        pop_next();
-        parse_string_literal(string_literal);
+    std::shared_ptr<CStringLiteral> literal;
+    {
+        std::vector<TInt> value;
+        parse_string_literal(value);
+        while(peek_next().token_kind == TOKEN_KIND::string_literal) {
+            pop_next();
+            parse_string_literal(value);
+        }
+        literal = std::make_shared<CStringLiteral>(std::move(value));
     }
-    return std::make_unique<CString>(std::move(string_literal));
+    return std::make_unique<CString>(std::move(literal));
 }
 
 static void parse_abstract_declarator_cast_factor(std::shared_ptr<Type>& target_type) {

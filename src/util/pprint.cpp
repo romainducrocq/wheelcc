@@ -88,6 +88,15 @@ static void print_ast(Ast* node, size_t t) {
             field("TUChar", std::to_string(p_node->value), t+1);
             break;
         }
+        case AST_T::CStringLiteral_t: {
+            field("CStringLiteral", "", ++t);
+            CStringLiteral* p_node = static_cast<CStringLiteral*>(node);
+            field("List[" + std::to_string(p_node->value.size()) + "]", "", t+1);
+            for(const auto& item: p_node->value) {
+                field("TInt", std::to_string(item), t+2);
+            }
+            break;
+        }
         case AST_T::Type_t: {
             field("Type", "", ++t);
             break;
@@ -173,6 +182,18 @@ static void print_ast(Ast* node, size_t t) {
             field("ULongInit", "", ++t);
             ULongInit* p_node = static_cast<ULongInit*>(node);
             field("TULong", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::CharInit_t: {
+            field("CharInit", "", ++t);
+            CharInit* p_node = static_cast<CharInit*>(node);
+            field("TChar", std::to_string(p_node->value), t+1);
+            break;
+        }
+        case AST_T::UCharInit_t: {
+            field("UCharInit", "", ++t);
+            UCharInit* p_node = static_cast<UCharInit*>(node);
+            field("TUChar", std::to_string(p_node->value), t+1);
             break;
         }
         case AST_T::DoubleInit_t: {
@@ -448,10 +469,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CString_t: {
             field("CString", "", ++t);
             CString* p_node = static_cast<CString*>(node);
-            field("List[" + std::to_string(p_node->value.size()) + "]", "", t+1);
-            for(const auto& item: p_node->value) {
-                field("TInt", std::to_string(item), t+2);
-            }
+            print_ast(p_node->literal.get(), t);
             print_ast(p_node->exp_type.get(), t);
             break;
         }

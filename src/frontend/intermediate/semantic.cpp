@@ -253,7 +253,7 @@ static void checktype_constant_expression(CConstant* node) {
 }
 
 static void checktype_string_expression(CString* node) {
-    TLong size = static_cast<TLong>(node->value.size()) + 1l;
+    TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
     std::shared_ptr<Type> elem_type = std::make_shared<Char>();
     node->exp_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
 }
@@ -737,9 +737,10 @@ static void checktype_array_single_init_string_initializer(CString* node, Array*
     if(!is_type_character(arr_type->elem_type.get())) {
         raise_runtime_error("Array of non-character type was initialized with string literal");
     }
-    else if(node->value.size() > static_cast<size_t>(arr_type->size)) {
-        raise_runtime_error("String literal of size " + em(std::to_string(node->value.size())) +
-                            " was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
+    else if(node->literal->value.size() > static_cast<size_t>(arr_type->size)) {
+        raise_runtime_error("String literal of size " +
+                            em(std::to_string(node->literal->value.size())) + " was initialized with " +
+                            em(std::to_string(arr_type->size)) + " initializers");
     }
 }
 
