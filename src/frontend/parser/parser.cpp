@@ -163,9 +163,16 @@ static void parse_identifier(TIdentifier& identifier) {
     identifier = std::move(next_token->token);
 }
 
+// string = StringLiteral(int*)
 // <string> ::= ? A string token ?
-static void parse_string_literal(std::vector<TInt>& string_literal) {
-    string_to_string_literal(next_token->token, string_literal);
+static std::shared_ptr<CStringLiteral> parse_string_literal() {
+    std::vector<TInt> value;
+    string_to_string_literal(next_token->token, value);
+    while(peek_next().token_kind == TOKEN_KIND::string_literal) {
+        pop_next();
+        string_to_string_literal(next_token->token, value);
+    }
+    return std::make_shared<CStringLiteral>(std::move(value));
 }
 
 // <int> ::= ? An int constant token ?
@@ -477,16 +484,7 @@ static std::unique_ptr<CVar> parse_var_factor() {
 }
 
 static std::unique_ptr<CString> parse_string_literal_factor() {
-    std::shared_ptr<CStringLiteral> literal;
-    {
-        std::vector<TInt> value;
-        parse_string_literal(value);
-        while(peek_next().token_kind == TOKEN_KIND::string_literal) {
-            pop_next();
-            parse_string_literal(value);
-        }
-        literal = std::make_shared<CStringLiteral>(std::move(value));
-    }
+    std::shared_ptr<CStringLiteral> literal = parse_string_literal();
     return std::make_unique<CString>(std::move(literal));
 }
 
