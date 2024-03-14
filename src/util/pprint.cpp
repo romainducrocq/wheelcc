@@ -209,6 +209,19 @@ static void print_ast(Ast* node, size_t t) {
             field("TLong", std::to_string(p_node->byte), t+1);
             break;
         }
+        case AST_T::StringInit_t: {
+            field("StringInit", "", ++t);
+            StringInit* p_node = static_cast<StringInit*>(node);
+            field("Bool", std::to_string(p_node->is_null_terminated), t+1);
+            print_ast(p_node->literal.get(), t);
+            break;
+        }
+        case AST_T::PointerInit_t: {
+            field("PointerInit", "", ++t);
+            PointerInit* p_node = static_cast<PointerInit*>(node);
+            field("TIdentifier", p_node->name, t+1);
+            break;
+        }
         case AST_T::InitialValue_t: {
             field("InitialValue", "", ++t);
             break;
@@ -246,6 +259,12 @@ static void print_ast(Ast* node, size_t t) {
             StaticAttr* p_node = static_cast<StaticAttr*>(node);
             field("Bool", std::to_string(p_node->is_global), t+1);
             print_ast(p_node->init.get(), t);
+            break;
+        }
+        case AST_T::ConstantAttr_t: {
+            field("ConstantAttr", "", ++t);
+            ConstantAttr* p_node = static_cast<ConstantAttr*>(node);
+            print_ast(p_node->static_init.get(), t);
             break;
         }
         case AST_T::LocalAttr_t: {

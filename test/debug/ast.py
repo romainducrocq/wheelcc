@@ -48,6 +48,8 @@ ast = [
     ["UCharInit", [(TUChar, "value")], []],
     ["DoubleInit", [(TDouble, "value"), (TULong, "binary")], []],
     ["ZeroInit", [(TLong, "byte")], []],
+    ["StringInit", [(Bool, "is_null_terminated")], ["literal"]],
+    ["PointerInit", [(TIdentifier, "name")], []],
     ["InitialValue", [], []],
     ["Tentative", [], []],
     ["Initial", [], ["[static_inits"]],
@@ -55,6 +57,7 @@ ast = [
     ["IdentifierAttr", [], []],
     ["FunAttr", [(Bool, "is_defined"), (Bool, "is_global")], []],
     ["StaticAttr", [(Bool, "is_global")], ["init"]],
+    ["ConstantAttr", [], ["static_init"]],
     ["LocalAttr", [], []],
     ["Symbol", [], ["type_t", "attrs"]],
 

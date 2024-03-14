@@ -26,6 +26,8 @@ AST_T CharInit::type() { return AST_T::CharInit_t; }
 AST_T UCharInit::type() { return AST_T::UCharInit_t; }
 AST_T DoubleInit::type() { return AST_T::DoubleInit_t; }
 AST_T ZeroInit::type() { return AST_T::ZeroInit_t; }
+AST_T StringInit::type() { return AST_T::StringInit_t; }
+AST_T PointerInit::type() { return AST_T::PointerInit_t; }
 AST_T InitialValue::type() { return AST_T::InitialValue_t; }
 AST_T Tentative::type() { return AST_T::Tentative_t; }
 AST_T Initial::type() { return AST_T::Initial_t; }
@@ -33,6 +35,7 @@ AST_T NoInitializer::type() { return AST_T::NoInitializer_t; }
 AST_T IdentifierAttr::type() { return AST_T::IdentifierAttr_t; }
 AST_T FunAttr::type() { return AST_T::FunAttr_t; }
 AST_T StaticAttr::type() { return AST_T::StaticAttr_t; }
+AST_T ConstantAttr::type() { return AST_T::ConstantAttr_t; }
 AST_T LocalAttr::type() { return AST_T::LocalAttr_t; }
 AST_T Symbol::type() { return AST_T::Symbol_t; }
 
@@ -69,6 +72,12 @@ DoubleInit::DoubleInit(TDouble value, TULong binary)
 ZeroInit::ZeroInit(TLong byte)
     : byte(byte) {}
 
+StringInit::StringInit(bool is_null_terminated, std::shared_ptr<CStringLiteral> literal)
+    : is_null_terminated(is_null_terminated), literal(std::move(literal)) {}
+
+PointerInit::PointerInit(TIdentifier name)
+    : name(std::move(name)) {}
+
 Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits)
     : static_inits(std::move(static_inits)) {}
 
@@ -77,6 +86,9 @@ FunAttr::FunAttr(bool is_defined, bool is_global)
 
 StaticAttr::StaticAttr(bool is_global, std::shared_ptr<InitialValue> init)
     : is_global(is_global), init(std::move(init)) {}
+
+ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init)
+    : static_init(std::move(static_init)) {}
 
 Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
     : type_t(std::move(type_t)), attrs(std::move(attrs)) {}

@@ -28,6 +28,8 @@ enum AST_T {
     UCharInit_t,
     DoubleInit_t,
     ZeroInit_t,
+    StringInit_t,
+    PointerInit_t,
     InitialValue_t,
     Tentative_t,
     Initial_t,
@@ -35,6 +37,7 @@ enum AST_T {
     IdentifierAttr_t,
     FunAttr_t,
     StaticAttr_t,
+    ConstantAttr_t,
     LocalAttr_t,
     Symbol_t,
 
@@ -363,6 +366,7 @@ struct CConstUChar : CConst {
     TUChar value;
 };
 
+// string = StringLiteral(int*)
 struct CStringLiteral : Ast {
     AST_T type() override;
     CStringLiteral() = default;

@@ -92,6 +92,8 @@ struct Array : Type {
 //             | UCharInit(int)
 //             | DoubleInit(double, int)
 //             | ZeroInit(int)
+//             | StringInit(string, bool)
+//             | PointerInit(identifier)
 struct StaticInit : Ast {
     AST_T type() override;
 };
@@ -161,6 +163,23 @@ struct ZeroInit : StaticInit {
     TLong byte;
 };
 
+struct StringInit : StaticInit {
+    AST_T type() override;
+    StringInit() = default;
+    StringInit(bool is_null_terminated, std::shared_ptr<CStringLiteral> literal);
+
+    bool is_null_terminated;
+    std::shared_ptr<CStringLiteral> literal;
+};
+
+struct PointerInit : StaticInit {
+    AST_T type() override;
+    PointerInit() = default;
+    PointerInit(TIdentifier name);
+
+    TIdentifier name;
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // initial_value = Tentative
@@ -190,6 +209,7 @@ struct NoInitializer : InitialValue {
 
 // identifier_attrs = FunAttr(bool, bool)
 //                  | StaticAttr(initial_value, bool)
+//                  | ConstantAttr(static_init)
 //                  | LocalAttr
 struct IdentifierAttr : Ast {
     AST_T type() override;
@@ -211,6 +231,14 @@ struct StaticAttr : IdentifierAttr {
 
     bool is_global;
     std::shared_ptr<InitialValue> init;
+};
+
+struct ConstantAttr : IdentifierAttr {
+    AST_T type() override;
+    ConstantAttr() = default;
+    ConstantAttr(std::shared_ptr<StaticInit> static_init);
+
+    std::shared_ptr<StaticInit> static_init;
 };
 
 struct LocalAttr : IdentifierAttr {
