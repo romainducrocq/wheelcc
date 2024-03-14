@@ -77,9 +77,12 @@ static std::shared_ptr<TacVariable> represent_variable_value(CVar* node) {
 
 static std::shared_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
     TIdentifier inner_name = represent_variable_identifier(node);
-    std::shared_ptr<Type> inner_type = node->exp_type;
-    std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
+    std::unique_ptr<Symbol> symbol;
+    {
+        std::shared_ptr<Type> inner_type = node->exp_type;
+        std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
+        symbol = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
+    }
     symbol_table[inner_name] = std::move(symbol);
     return std::make_shared<TacVariable>(std::move(inner_name));
 }
@@ -121,6 +124,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_var_instructions(CVar*
 
 static bool is_type_signed(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
         case AST_T::Int_t:
         case AST_T::Long_t:
         case AST_T::Double_t:
@@ -132,6 +137,10 @@ static bool is_type_signed(Type* type_1) {
 
 static TInt get_scalar_type_size(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t:
+            return 1;
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return 4;
@@ -894,14 +903,16 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     }
 
     std::vector<std::unique_ptr<TacInstruction>> body;
-    p_instructions = &body;
-    represent_block(node->body.get());
     {
-        std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
-        std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
-        push_instruction(std::make_unique<TacReturn>(std::move(val)));
+        p_instructions = &body;
+        represent_block(node->body.get());
+        {
+            std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
+            std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
+            push_instruction(std::make_unique<TacReturn>(std::move(val)));
+        }
+        p_instructions = nullptr;
     }
-    p_instructions = nullptr;
 
     return std::make_unique<TacFunction>(std::move(name), std::move(is_global), std::move(params), std::move(body));
 }
@@ -985,18 +996,22 @@ static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) 
 // AST = Program(top_level*, top_level*)
 static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
-    p_top_levels = &function_top_levels;
-    for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
-        represent_declaration_top_level(node->declarations[declaration].get());
+    {
+        p_top_levels = &function_top_levels;
+        for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
+            represent_declaration_top_level(node->declarations[declaration].get());
+        }
+        p_top_levels = nullptr;
     }
-    p_top_levels = nullptr;
 
     std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
-    p_top_levels = &static_variable_top_levels;
-    for(const auto& symbol: symbol_table) {
-        represent_symbol_top_level(symbol.second.get(), symbol.first);
+    {
+        p_top_levels = &static_variable_top_levels;
+        for(const auto& symbol: symbol_table) {
+            represent_symbol_top_level(symbol.second.get(), symbol.first);
+        }
+        p_top_levels = nullptr;
     }
-    p_top_levels = nullptr;
 
     return std::make_unique<TacProgram>(std::move(static_variable_top_levels), std::move(function_top_levels));
 }
