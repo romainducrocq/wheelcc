@@ -818,18 +818,13 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
     node->init_type = init_type;
 }
 
-static std::unique_ptr<Symbol> checktype_param(FunType* fun_type, size_t param) {
-    std::shared_ptr<Type> type_t = fun_type->param_types[param];
-    std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
-    return std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
-}
-
 static void checktype_params(CFunctionDeclaration* node) {
     if(node->body) {
         FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
         for(size_t param = 0; param < node->params.size(); param++) {
-            std::unique_ptr<Symbol> symbol = checktype_param(fun_type, param);
-            symbol_table[node->params[param]] = std::move(symbol);
+            std::shared_ptr<Type> type_t = fun_type->param_types[param];
+            std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
+            symbol_table[node->params[param]] = std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
         }
     }
 }
@@ -881,14 +876,9 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         function_definition_name = node->name;
     }
 
-    std::unique_ptr<Symbol> symbol;
-    {
-        std::shared_ptr<Type> fun_type = node->fun_type;
-        std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined),
-                                                                              std::move(is_global));
-        symbol = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
-    }
-    symbol_table[node->name] = std::move(symbol);
+    std::shared_ptr<Type> fun_type = node->fun_type;
+    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined), std::move(is_global));
+    symbol_table[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
 }
 
 static std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
@@ -1262,26 +1252,22 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
     checktype_type_pointer_single_init_string_initializer(static_ptr_type);
     TIdentifier name = represent_label_identifier("string");
-    std::unique_ptr<Symbol> symbol;
+    std::shared_ptr<Type> constant_type;
     {
-        std::shared_ptr<Type> constant_type;
-        {
-            TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
-            std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-            constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
-        }
-        std::unique_ptr<IdentifierAttr> constant_attrs;
-        {
-            std::shared_ptr<StaticInit> static_init;
-            {
-                std::shared_ptr<CStringLiteral> literal = node->literal;
-                static_init = std::make_shared<StringInit>(true, std::move(literal));
-            }
-            constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
-        }
-        std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
+        TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
+        std::shared_ptr<Type> elem_type = std::make_shared<Char>();
+        constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
     }
-    symbol_table[name] = std::move(symbol);
+    std::unique_ptr<IdentifierAttr> constant_attrs;
+    {
+        std::shared_ptr<StaticInit> static_init;
+        {
+            std::shared_ptr<CStringLiteral> literal = node->literal;
+            static_init = std::make_shared<StringInit>(true, std::move(literal));
+        }
+        constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
+    }
+    symbol_table[name] = std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
     push_static_init(std::make_shared<PointerInit>(std::move(name)));
 }
 
@@ -1414,14 +1400,11 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         }
     }
 
-    std::unique_ptr<Symbol> symbol;
-    {
-        std::shared_ptr<Type> global_var_type = node->var_type;
-        std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(std::move(is_global),
-                                                                                        std::move(initial_value));
-        symbol = std::make_unique<Symbol>(std::move(global_var_type), std::move(global_var_attrs));
-    }
-    symbol_table[node->name] = std::move(symbol);
+    std::shared_ptr<Type> global_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(std::move(is_global),
+                                                                                    std::move(initial_value));
+    symbol_table[node->name] = std::make_unique<Symbol>(std::move(global_var_type),
+                                                        std::move(global_var_attrs));
 }
 
 static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1437,17 +1420,14 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
         return;
     }
 
-    std::unique_ptr<Symbol> symbol;
+    std::shared_ptr<Type> local_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> local_var_attrs;
     {
-        std::shared_ptr<Type> local_var_type = node->var_type;
-        std::unique_ptr<IdentifierAttr> local_var_attrs;
-        {
-            std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
-            local_var_attrs = std::make_unique<StaticAttr>(true, std::move(initial_value));
-        }
-        symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
+        std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
+        local_var_attrs = std::make_unique<StaticAttr>(true, std::move(initial_value));
     }
-    symbol_table[node->name] = std::move(symbol);
+    symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
+                                                        std::move(local_var_attrs));
 }
 
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1460,24 +1440,18 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
         initial_value = checktype_no_initializer_initial(node->var_type.get());
     }
 
-    std::unique_ptr<Symbol> symbol;
-    {
-        std::shared_ptr<Type> local_var_type = node->var_type;
-        std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
-                                                                                       std::move(initial_value));
-        symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    }
-    symbol_table[node->name] = std::move(symbol);
+    std::shared_ptr<Type> local_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
+                                                                                   std::move(initial_value));
+    symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
+                                                        std::move(local_var_attrs));
 }
 
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
-    std::unique_ptr<Symbol> symbol;
-    {
-        std::shared_ptr<Type> local_var_type = node->var_type;
-        std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
-        symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    }
-    symbol_table[node->name] = std::move(symbol);
+    std::shared_ptr<Type> local_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
+    symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
+                                                        std::move(local_var_attrs));
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {

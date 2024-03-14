@@ -77,13 +77,9 @@ static std::shared_ptr<TacVariable> represent_variable_value(CVar* node) {
 
 static std::shared_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
     TIdentifier inner_name = represent_variable_identifier(node);
-    std::unique_ptr<Symbol> symbol;
-    {
-        std::shared_ptr<Type> inner_type = node->exp_type;
-        std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
-        symbol = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
-    }
-    symbol_table[inner_name] = std::move(symbol);
+    std::shared_ptr<Type> inner_type = node->exp_type;
+    std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
+    symbol_table[inner_name] = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
     return std::make_shared<TacVariable>(std::move(inner_name));
 }
 
