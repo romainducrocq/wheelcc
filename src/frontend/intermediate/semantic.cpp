@@ -733,6 +733,12 @@ static void checktype_return_statement(CReturn* node) {
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
+static void checktype_pointer_single_init_string_initializer(Pointer* ptr_type) {
+    if(ptr_type->ref_type->type() != AST_T::Char_t) {
+        raise_runtime_error("Pointer of non-character type was initialized with string literal");
+    }
+}
+
 static void checktype_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if(!is_type_character(arr_type->elem_type.get())) {
         raise_runtime_error("Array of non-character type was initialized with string literal");
@@ -893,9 +899,13 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         function_definition_name = node->name;
     }
 
-    std::shared_ptr<Type> fun_type = node->fun_type;
-    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined), std::move(is_global));
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
+    std::unique_ptr<Symbol> symbol;
+    {
+        std::shared_ptr<Type> fun_type = node->fun_type;
+        std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined),
+                                                                              std::move(is_global));
+        symbol = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
+    }
     symbol_table[node->name] = std::move(symbol);
 }
 
@@ -930,7 +940,7 @@ static std::shared_ptr<Initial> checktype_no_initializer_initial(Type* static_in
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
-static void checktype_scalar_initializer_static_init(CConstant* node, Type* static_init_type) {
+static void checktype_constant_initializer_static_init(CConstant* node, Type* static_init_type) {
     switch(static_init_type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t: {
@@ -1265,12 +1275,74 @@ static void checktype_scalar_initializer_static_init(CConstant* node, Type* stat
     }
 }
 
-static void checktype_single_init_initializer_static_init(CSingleInit* node, Type* static_init_type) {
-    if(node->exp->type() == AST_T::CConstant_t) {
-        checktype_scalar_initializer_static_init(static_cast<CConstant*>(node->exp.get()), static_init_type);
+static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
+    checktype_pointer_single_init_string_initializer(static_ptr_type);
+    TIdentifier name = represent_label_identifier("string");
+    {
+        std::unique_ptr<Symbol> symbol;
+        {
+            std::shared_ptr<Type> constant_type;
+            {
+                TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
+                std::shared_ptr<Type> elem_type = std::make_shared<Char>();
+                constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
+            }
+            std::unique_ptr<IdentifierAttr> constant_attrs;
+            {
+                std::shared_ptr<StaticInit> static_init;
+                {
+                    std::shared_ptr<CStringLiteral> literal = node->literal;
+                    static_init = std::make_shared<StringInit>(true, std::move(literal));
+                }
+                constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
+            }
+            std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
+        }
+        symbol_table[name] = std::move(symbol);
     }
-    else {
-        raise_runtime_error("Variable with static linkage was initialized to a non-constant");
+    {
+        push_static_init(std::make_shared<PointerInit>(std::move(name)));
+    }
+}
+
+static void checktype_string_initializer_array_static_init(CString* node, Array* static_arr_type) {
+    checktype_array_single_init_string_initializer(node, static_arr_type);
+    TLong byte = static_arr_type->size - static_cast<TLong>(node->literal->value.size()) - 1l;
+    {
+        bool is_null_terminated = byte >= 0l;
+        std::shared_ptr<CStringLiteral> literal = node->literal;
+        push_static_init(std::make_shared<StringInit>(std::move(is_null_terminated), std::move(literal)));
+    }
+    {
+        if(byte > 0l) {
+            push_zero_init_static_init(std::move(byte));
+        }
+    }
+}
+
+static void checktype_string_initializer_static_init(CString* node, Type* static_init_type) {
+    switch(static_init_type->type()) {
+        case AST_T::Pointer_t:
+            checktype_string_initializer_pointer_static_init(node, static_cast<Pointer*>(static_init_type));
+            break;
+        case AST_T::Array_t:
+            checktype_string_initializer_array_static_init(node, static_cast<Array*>(static_init_type));
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void checktype_single_init_initializer_static_init(CSingleInit* node, Type* static_init_type) {
+    switch(node->exp->type()) {
+        case AST_T::CConstant_t:
+            checktype_constant_initializer_static_init(static_cast<CConstant*>(node->exp.get()), static_init_type);
+            break;
+        case AST_T::CString_t:
+            checktype_string_initializer_static_init(static_cast<CString*>(node->exp.get()), static_init_type);
+            break;
+        default:
+            raise_runtime_error("Variable with static linkage was initialized to a non-constant");
     }
 }
 
@@ -1362,11 +1434,13 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         }
     }
 
-    std::shared_ptr<Type> global_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(std::move(is_global),
-                                                                                    std::move(initial_value));
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(global_var_type),
-                                                              std::move(global_var_attrs));
+    std::unique_ptr<Symbol> symbol;
+    {
+        std::shared_ptr<Type> global_var_type = node->var_type;
+        std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(std::move(is_global),
+                                                                                        std::move(initial_value));
+        symbol = std::make_unique<Symbol>(std::move(global_var_type), std::move(global_var_attrs));
+    }
     symbol_table[node->name] = std::move(symbol);
 }
 
@@ -1383,12 +1457,16 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
         return;
     }
 
-    std::shared_ptr<Type> local_var_type = node->var_type;
-    std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
-    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(true,
-                                                                                   std::move(initial_value));
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
-                                                              std::move(local_var_attrs));
+    std::unique_ptr<Symbol> symbol;
+    {
+        std::shared_ptr<Type> local_var_type = node->var_type;
+        std::unique_ptr<IdentifierAttr> local_var_attrs;
+        {
+            std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
+            local_var_attrs = std::make_unique<StaticAttr>(true, std::move(initial_value));
+        }
+        symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
+    }
     symbol_table[node->name] = std::move(symbol);
 }
 
@@ -1402,19 +1480,23 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
         initial_value = checktype_no_initializer_initial(node->var_type.get());
     }
 
-    std::shared_ptr<Type> local_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
-                                                                                   std::move(initial_value));
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
-                                                              std::move(local_var_attrs));
+    std::unique_ptr<Symbol> symbol;
+    {
+        std::shared_ptr<Type> local_var_type = node->var_type;
+        std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
+                                                                                       std::move(initial_value));
+        std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
+    }
     symbol_table[node->name] = std::move(symbol);
 }
 
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
-    std::shared_ptr<Type> local_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
-    std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(local_var_type),
-                                                              std::move(local_var_attrs));
+    std::unique_ptr<Symbol> symbol;
+    {
+        std::shared_ptr<Type> local_var_type = node->var_type;
+        std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
+        symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
+    }
     symbol_table[node->name] = std::move(symbol);
 }
 
