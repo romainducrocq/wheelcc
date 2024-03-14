@@ -87,8 +87,11 @@ static bool is_type_character(Type* type_1) {
 
 static bool is_type_integer(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
         case AST_T::Int_t:
         case AST_T::Long_t:
+        case AST_T::UChar_t:
         case AST_T::UInt_t:
         case AST_T::ULong_t:
             return true;
@@ -733,13 +736,13 @@ static void checktype_return_statement(CReturn* node) {
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
-static void checktype_pointer_single_init_string_initializer(Pointer* ptr_type) {
+static void checktype_type_pointer_single_init_string_initializer(Pointer* ptr_type) {
     if(ptr_type->ref_type->type() != AST_T::Char_t) {
         raise_runtime_error("Pointer of non-character type was initialized with string literal");
     }
 }
 
-static void checktype_array_single_init_string_initializer(CString* node, Array* arr_type) {
+static void checktype_type_size_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if(!is_type_character(arr_type->elem_type.get())) {
         raise_runtime_error("Array of non-character type was initialized with string literal");
     }
@@ -755,6 +758,11 @@ static void checktype_single_init_initializer(CSingleInit* node, std::shared_ptr
         std::unique_ptr<CExp> exp = cast_by_assignment(std::move(node->exp), init_type);
         node->exp = std::move(exp);
     }
+    node->init_type = init_type;
+}
+
+static void checktype_array_single_init_string_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
+    node->exp->exp_type = init_type;
     node->init_type = init_type;
 }
 
@@ -1276,7 +1284,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 }
 
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
-    checktype_pointer_single_init_string_initializer(static_ptr_type);
+    checktype_type_pointer_single_init_string_initializer(static_ptr_type);
     TIdentifier name = represent_label_identifier("string");
     {
         std::unique_ptr<Symbol> symbol;
@@ -1306,7 +1314,7 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
 }
 
 static void checktype_string_initializer_array_static_init(CString* node, Array* static_arr_type) {
-    checktype_array_single_init_string_initializer(node, static_arr_type);
+    checktype_type_size_array_single_init_string_initializer(node, static_arr_type);
     TLong byte = static_arr_type->size - static_cast<TLong>(node->literal->value.size()) - 1l;
     {
         bool is_null_terminated = byte >= 0l;
@@ -1940,14 +1948,16 @@ static void resolve_block(CBlock* node) {
 
 static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type);
 
-static void resolve_single_init_initializer(CSingleInit* node, Type* init_type) {
+static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if(node->exp->type() == AST_T::CString_t &&
        init_type->type() == AST_T::Array_t) {
-        checktype_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
-                                                       static_cast<Array*>(init_type));
+        checktype_type_size_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
+                                                                 static_cast<Array*>(init_type.get()));
+        checktype_array_single_init_string_initializer(node, init_type);
     }
     else {
         node->exp = resolve_typed_expression(std::move(node->exp));
+        checktype_single_init_initializer(node, init_type);
     }
 }
 
@@ -1974,12 +1984,9 @@ static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_p
 
 static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_type) {
     switch(node->type()) {
-        case AST_T::CSingleInit_t: {
-            CSingleInit* p_node = static_cast<CSingleInit*>(node);
-            resolve_single_init_initializer(p_node, init_type.get());
-            checktype_single_init_initializer(p_node, init_type);
+        case AST_T::CSingleInit_t:
+            resolve_single_init_initializer(static_cast<CSingleInit*>(node), init_type);
             break;
-        }
         case AST_T::CCompoundInit_t:
             resolve_compound_init_initializer(static_cast<CCompoundInit*>(node), init_type);
             break;
