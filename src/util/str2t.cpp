@@ -52,12 +52,97 @@ uint64_t uintmax_to_uint64(uintmax_t uintmax) {
     return static_cast<uint64_t>(uintmax);
 }
 
+#include <iostream>
+// TODO
+// void string_to_string_literal(const std::string& s_string, std::vector<int32_t>& string_literal) {
 std::string string_to_string_literal(const std::string& s_string) {
-    return s_string.substr(1, s_string.size() - 2);
+    std::vector<int32_t> string_literal; // TODO rm
+    for(size_t byte = 1; byte < s_string.size() - 1; byte++) {
+        char c_char = static_cast<char>(s_string[byte]);
+        if(c_char == '\\') {
+            c_char = static_cast<char>(s_string[++byte]);
+            switch(c_char) {
+                case '\'':
+                    string_literal.push_back(39);
+                    break;
+                case '"':
+                    string_literal.push_back(34);
+                    break;
+                case '?':
+                    string_literal.push_back(63);
+                    break;
+                case '\\':
+                    string_literal.push_back(92);
+                    break;
+                case 'a':
+                    string_literal.push_back(7);
+                    break;
+                case 'b':
+                    string_literal.push_back(8);
+                    break;
+                case 'f':
+                    string_literal.push_back(12);
+                    break;
+                case 'n':
+                    string_literal.push_back(10);
+                    break;
+                case 'r':
+                    string_literal.push_back(13);
+                    break;
+                case 't':
+                    string_literal.push_back(9);
+                    break;
+                case 'v':
+                    string_literal.push_back(11);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else {
+            string_literal.push_back(static_cast<int32_t>(c_char));
+        }
+    }
+
+    // TODO rm
+    for(size_t i = 0; i < string_literal.size(); i++) {
+        std::cout << static_cast<char>(string_literal[i]) << " " << string_literal[i] << std::endl;
+    }
+
+    return s_string; // TODO rm
 }
 
 int32_t string_to_char_ascii(const std::string& s_char) {
-    char c_char = s_char[1];
+    char c_char = static_cast<char>(s_char[1]);
+    if(c_char == '\\') {
+        c_char = static_cast<char>(s_char[2]);
+        switch(c_char) {
+            case '\'':
+                return 39;
+            case '"':
+                return 34;
+            case '?':
+                return 63;
+            case '\\':
+                return 92;
+            case 'a':
+                return 7;
+            case 'b':
+                return 8;
+            case 'f':
+                return 12;
+            case 'n':
+                return 10;
+            case 'r':
+                return 13;
+            case 't':
+                return 9;
+            case 'v':
+                return 11;
+            default:
+                break;
+        }
+    }
     return static_cast<int32_t>(c_char);
 }
 
