@@ -114,6 +114,30 @@ static std::unique_ptr<TacExpResult> represent_exp_result_constant_instructions(
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_string_instructions(CString* node) {
+    TIdentifier name = represent_label_identifier("string");
+    {
+        std::shared_ptr<Type> constant_type;
+        {
+            TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
+            std::shared_ptr<Type> elem_type = std::make_shared<Char>();
+            constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
+        }
+        std::unique_ptr<IdentifierAttr> constant_attrs;
+        {
+            std::shared_ptr<StaticInit> static_init;
+            {
+                std::shared_ptr<CStringLiteral> literal = node->literal;
+                static_init = std::make_shared<StringInit>(true, std::move(literal));
+            }
+            constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
+        }
+        symbol_table[name] = std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
+    }
+    std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(std::move(name));
+    return std::make_unique<TacPlainOperand>(std::move(val));
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_var_instructions(CVar* node) {
     std::shared_ptr<TacValue> val = represent_value(node);
     return std::make_unique<TacPlainOperand>(std::move(val));
@@ -526,6 +550,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
     switch(node->type()) {
         case AST_T::CConstant_t:
             return represent_exp_result_constant_instructions(static_cast<CConstant*>(node));
+        case AST_T::CString_t:
+            return represent_exp_result_string_instructions(static_cast<CString*>(node));
         case AST_T::CVar_t:
             return represent_exp_result_var_instructions(static_cast<CVar*>(node));
         case AST_T::CCast_t:
