@@ -833,24 +833,39 @@ static void represent_array_single_init_string_instructions(CString* node, Array
     }
 }
 
-static void represent_single_init_instructions(CSingleInit* node, const TIdentifier& symbol) {
-    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
-    std::shared_ptr<TacValue> dst;
-    {
-        TIdentifier name = symbol;
-        std::unique_ptr<CExp> exp = std::make_unique<CVar>(std::move(name));
-        dst = represent_value(exp.get());
+static void represent_single_init_instructions(CSingleInit* node, Type* init_type, const TIdentifier& symbol) {
+    if(node->exp->type() == AST_T::CString_t &&
+       init_type->type() == AST_T::Array_t) {
+        represent_array_single_init_string_instructions(static_cast<CString*>(node->exp.get()),
+                                                        static_cast<Array*>(init_type), symbol);
     }
-    push_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    else {
+        std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
+        std::shared_ptr<TacValue> dst;
+        {
+            TIdentifier name = symbol;
+            std::unique_ptr<CExp> exp = std::make_unique<CVar>(std::move(name));
+            dst = represent_value(exp.get());
+        }
+        push_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    }
 }
 
 static void represent_scalar_compound_init_instructions(CSingleInit* node, Type* init_type, const TIdentifier& symbol,
                                                         TLong& size) {
-    TIdentifier dst_name = symbol;
-    TLong offset = size;
-    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
-    push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), std::move(src)));
-    size += get_scalar_type_size(init_type);
+    if(node->exp->type() == AST_T::CString_t &&
+       init_type->type() == AST_T::Array_t) {
+        represent_array_single_init_string_instructions(static_cast<CString*>(node->exp.get()),
+                                                        static_cast<Array*>(init_type), symbol);
+    }
+    else {
+        TIdentifier dst_name = symbol;
+        TLong offset = size;
+        std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
+        push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
+                                                                    std::move(src)));
+    }
+    size += get_type_scale(init_type);
 }
 
 static void represent_array_compound_init_instructions(CCompoundInit* node, Array* arr_type, const TIdentifier& symbol,
@@ -891,7 +906,9 @@ static void represent_compound_init_instructions(CInitializer* node, Type* init_
 static void represent_variable_declaration_instructions(CVariableDeclaration* node) {
     switch(node->init->type()) {
         case AST_T::CSingleInit_t:
-            represent_single_init_instructions(static_cast<CSingleInit*>(node->init.get()), node->name);
+            represent_single_init_instructions(static_cast<CSingleInit*>(node->init.get()),
+                                                                         symbol_table[node->name]->type_t.get(),
+                                                                         node->name);
             break;
         case AST_T::CCompoundInit_t: {
             TLong size = 0l;
