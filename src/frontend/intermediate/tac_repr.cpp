@@ -1094,11 +1094,26 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
                                                                std::move(static_init_type), std::move(static_inits)));
 }
 
+static void represent_static_constant_top_level(Symbol* node, const TIdentifier& symbol) {
+    TIdentifier name = symbol;
+    std::shared_ptr<Type> static_init_type = node->type_t;
+    std::shared_ptr<StaticInit> static_init = static_cast<ConstantAttr*>(node->attrs.get())->static_init;
+    push_top_level(std::make_unique<TacStaticConstant>(std::move(name), std::move(static_init_type),
+                                                               std::move(static_init)));
+}
+
 // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
 // (static constant) top_level = StaticConstant(identifier, type, static_init)
 static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) {
-    if(node->attrs->type() == AST_T::StaticAttr_t) {
-        represent_static_variable_top_level(node, symbol);
+    switch(node->attrs->type()) {
+        case AST_T::StaticAttr_t:
+            represent_static_variable_top_level(node, symbol);
+            break;
+        case AST_T::ConstantAttr_t:
+            represent_static_constant_top_level(node, symbol);
+            break;
+        default:
+            break;
     }
 }
 
