@@ -328,6 +328,9 @@ static bool is_value_double(TacValue* node) {
 
 static std::shared_ptr<AssemblyType> generate_constant_assembly_type(TacConstant* node) {
     switch(node->constant->type()) {
+        case AST_T::CConstChar_t:
+        case AST_T::CConstUChar_t:
+            return std::make_shared<Byte>();
         case AST_T::CConstInt_t:
         case AST_T::CConstUInt_t:
             return std::make_shared<LongWord>();
