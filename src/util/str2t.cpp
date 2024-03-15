@@ -172,7 +172,7 @@ static std::string string_literal_byte_to_hex_string(int8_t val)
     return ss.str();
 }
 
-int8_t string_literal_bytes_to_char(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
     for(size_t byte = byte_at + 1; byte-- > byte_at;) {
         s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
@@ -180,7 +180,7 @@ int8_t string_literal_bytes_to_char(const std::vector<int8_t>& string_literal, s
     return hex_string_to_int8(s_hex);
 }
 
-int32_t string_literal_bytes_to_int(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
     for(size_t byte = byte_at + 4; byte-- > byte_at;) {
         s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
@@ -188,7 +188,7 @@ int32_t string_literal_bytes_to_int(const std::vector<int8_t>& string_literal, s
     return hex_string_to_int32(s_hex);
 }
 
-int64_t string_literal_bytes_to_long(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
     for(size_t byte = byte_at + 8; byte-- > byte_at;) {
         s_hex += string_literal_byte_to_hex_string(string_literal[byte]);

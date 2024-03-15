@@ -1,5 +1,6 @@
 #include "frontend/intermediate/tac_repr.hpp"
 #include "util/error.hpp"
+#include "util/str2t.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
@@ -763,6 +764,74 @@ static void represent_statement_instructions(CStatement* node) {
 
 static void represent_compound_init_instructions(CInitializer* node, Type* init_type, const TIdentifier& symbol,
                                                  TLong& size);
+
+static void represent_array_single_init_string_instructions(CString* node, Array* arr_type, const TIdentifier& symbol) {
+    size_t instruction = 0;
+
+    size_t bytes_copy;
+    size_t bytes_null;
+    if(arr_type->size > static_cast<TLong>(node->literal->value.size())) {
+        bytes_copy = node->literal->value.size();
+        bytes_null = static_cast<size_t>(arr_type->size) - node->literal->value.size();
+    }
+    else {
+        bytes_copy = static_cast<size_t>(arr_type->size);
+        bytes_null = 0;
+    }
+
+    for(size_t byte_at = 0; byte_at < bytes_copy; instruction++) {
+        std::shared_ptr<TacValue> src;
+        {
+            std::shared_ptr<CConst> constant;
+            {
+                size_t bytes_left = node->literal->value.size() - byte_at;
+                if (bytes_left >= 8) {
+                    TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
+                    constant = std::make_shared<CConstLong>(std::move(value));
+                    byte_at += 8;
+                } else if (bytes_left >= 4) {
+                    TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
+                    constant = std::make_shared<CConstInt>(std::move(value));
+                    byte_at += 4;
+                } else {
+                    TChar value = string_literal_bytes_to_int8(node->literal->value, byte_at);
+                    constant = std::make_shared<CConstChar>(std::move(value));
+                    byte_at += 1;
+                }
+            }
+            src = std::make_shared<TacConstant>(std::move(constant));
+        }
+        TIdentifier dst_name = symbol;
+        TLong offset = static_cast<TLong>(instruction);
+        push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
+                                                                    std::move(src)));
+    }
+
+    for(size_t byte_at = 0; byte_at < bytes_null; instruction++) {
+        std::shared_ptr<TacValue> src;
+        {
+            std::shared_ptr<CConst> constant;
+            {
+                size_t bytes_left = node->literal->value.size() - byte_at;
+                if (bytes_left >= 8) {
+                    constant = std::make_shared<CConstLong>(0l);
+                    byte_at += 8;
+                } else if (bytes_left >= 4) {
+                    constant = std::make_shared<CConstInt>(0);
+                    byte_at += 4;
+                } else {
+                    constant = std::make_shared<CConstChar>(0);
+                    byte_at += 1;
+                }
+            }
+            src = std::make_shared<TacConstant>(std::move(constant));
+        }
+        TIdentifier dst_name = symbol;
+        TLong offset = static_cast<TLong>(instruction);
+        push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
+                                                                    std::move(src)));
+    }
+}
 
 static void represent_single_init_instructions(CSingleInit* node, const TIdentifier& symbol) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
