@@ -19,6 +19,11 @@
 
 static std::unordered_map<TIdentifier, TIdentifier> static_const_label_map;
 
+static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
+    TIdentifier value = std::to_string(node->value);
+    return std::make_shared<AsmImm>(false, std::move(value));
+}
+
 static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(false, std::move(value));
@@ -28,6 +33,11 @@ static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
     bool is_quad = node->value > 2147483647l;
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(std::move(is_quad), std::move(value));
+}
+
+static std::shared_ptr<AsmImm> generate_uchar_imm_operand(CConstUChar* node) {
+    TIdentifier value = std::to_string(node->value);
+    return std::make_shared<AsmImm>(false, std::move(value));
 }
 
 static std::shared_ptr<AsmImm> generate_uint_imm_operand(CConstUInt* node) {
@@ -67,12 +77,16 @@ static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* n
 
 static std::shared_ptr<AsmOperand> generate_constant_operand(TacConstant* node) {
     switch(node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return generate_char_imm_operand(static_cast<CConstChar*>(node->constant.get()));
         case AST_T::CConstInt_t:
             return generate_int_imm_operand(static_cast<CConstInt*>(node->constant.get()));
         case AST_T::CConstLong_t:
             return generate_long_imm_operand(static_cast<CConstLong*>(node->constant.get()));
         case AST_T::CConstDouble_t:
             return generate_double_constant_operand(static_cast<CConstDouble*>(node->constant.get()));
+        case AST_T::CConstUChar_t:
+            return generate_uchar_imm_operand(static_cast<CConstUChar*>(node->constant.get()));
         case AST_T::CConstUInt_t:
             return generate_uint_imm_operand(static_cast<CConstUInt*>(node->constant.get()));
         case AST_T::CConstULong_t:
@@ -194,6 +208,7 @@ static std::unique_ptr<AsmBinaryOp> generate_binary_op(TacBinaryOp* node) {
 
 static bool is_constant_value_signed(TacConstant* node) {
     switch(node->constant->type()) {
+        case AST_T::CConstChar_t:
         case AST_T::CConstInt_t:
         case AST_T::CConstLong_t:
             return true;
@@ -204,6 +219,8 @@ static bool is_constant_value_signed(TacConstant* node) {
 
 static bool is_variable_value_signed(TacVariable* node) {
     switch(symbol_table[node->name]->type_t->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
         case AST_T::Int_t:
         case AST_T::Long_t:
         case AST_T::Double_t:
@@ -219,6 +236,37 @@ static bool is_value_signed(TacValue* node) {
             return is_constant_value_signed(static_cast<TacConstant*>(node));
         case AST_T::TacVariable_t:
             return is_variable_value_signed(static_cast<TacVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static bool is_constant_value_8_bits(TacConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstChar_t:
+        case AST_T::CConstUChar_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_variable_value_8_bits(TacVariable* node) {
+    switch(symbol_table[node->name]->type_t->type()) {
+        case AST_T::Char_t:
+        case AST_T::UChar_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_value_8_bits(TacValue* node) {
+    switch(node->type()) {
+        case AST_T::TacConstant_t:
+            return is_constant_value_8_bits(static_cast<TacConstant*>(node));
+        case AST_T::TacVariable_t:
+            return is_variable_value_8_bits(static_cast<TacVariable*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }

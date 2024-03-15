@@ -9,6 +9,10 @@
 
 TInt generate_scalar_type_alignment(Type* type_1) {
     switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t:
+            return 1;
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return 4;
@@ -63,6 +67,10 @@ static std::shared_ptr<ByteArray> convert_array_aggregate_assembly_type(Array* a
 
 std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
     switch(symbol_table[name]->type_t->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t:
+            return std::make_shared<Byte>();
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return std::make_shared<LongWord>();
