@@ -1425,9 +1425,9 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
     p_static_constant_top_levels = &static_constant_top_levels;
 
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
-    for(size_t top_level = 0; top_level < node->static_variable_top_levels.size(); top_level++) {
+    for(size_t top_level = 0; top_level < node->static_top_levels.size(); top_level++) {
         std::unique_ptr<AsmTopLevel> static_variable_top_level =
-                generate_top_level(node->static_variable_top_levels[top_level].get());
+                generate_top_level(node->static_top_levels[top_level].get());
         top_levels.push_back(std::move(static_variable_top_level));
     }
     for(size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {

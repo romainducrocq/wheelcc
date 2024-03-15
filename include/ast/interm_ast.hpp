@@ -393,6 +393,7 @@ struct TacLabel : TacInstruction {
 
 // top_level = Function(identifier, bool, identifier*, instruction*)
 //           | StaticVariable(identifier, bool, type, static_init*)
+//           | StaticConstant(identifier, type, static_init)
 struct TacTopLevel : Ast {
     AST_T type() override;
 };
@@ -421,16 +422,27 @@ struct TacStaticVariable : TacTopLevel {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
 };
 
+struct TacStaticConstant : TacTopLevel {
+    AST_T type() override;
+    TacStaticConstant() = default;
+    TacStaticConstant(TIdentifier name, std::shared_ptr<Type> static_init_type,
+                      std::shared_ptr<StaticInit> static_init);
+
+    TIdentifier name;
+    std::shared_ptr<Type> static_init_type;
+    std::shared_ptr<StaticInit> static_init;
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // AST = Program(top_level*, top_level*)
 struct TacProgram : Ast {
     AST_T type() override;
     TacProgram() = default;
-    TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
+    TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_top_levels,
                std::vector<std::unique_ptr<TacTopLevel>> function_top_levels);
 
-    std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_top_levels;
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
 };
 

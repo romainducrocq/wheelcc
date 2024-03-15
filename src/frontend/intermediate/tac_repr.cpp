@@ -792,7 +792,7 @@ static void represent_compound_init_instructions(CInitializer* node, Type* init_
                                                  TLong& size);
 
 static void represent_array_single_init_string_instructions(CString* node, Array* arr_type, const TIdentifier& symbol) {
-    size_t instruction = 0;
+    TLong size = 0l;
 
     size_t bytes_copy;
     size_t bytes_null;
@@ -805,7 +805,7 @@ static void represent_array_single_init_string_instructions(CString* node, Array
         bytes_null = 0;
     }
 
-    for(size_t byte_at = 0; byte_at < bytes_copy; instruction++) {
+    for(size_t byte_at = 0; byte_at < bytes_copy; size++) {
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
@@ -828,12 +828,12 @@ static void represent_array_single_init_string_instructions(CString* node, Array
             src = std::make_shared<TacConstant>(std::move(constant));
         }
         TIdentifier dst_name = symbol;
-        TLong offset = static_cast<TLong>(instruction);
+        TLong offset = size;
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
                                                                     std::move(src)));
     }
 
-    for(size_t byte_at = 0; byte_at < bytes_null; instruction++) {
+    for(size_t byte_at = 0; byte_at < bytes_null; size++) {
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
@@ -853,7 +853,7 @@ static void represent_array_single_init_string_instructions(CString* node, Array
             src = std::make_shared<TacConstant>(std::move(constant));
         }
         TIdentifier dst_name = symbol;
-        TLong offset = static_cast<TLong>(instruction);
+        TLong offset = size;
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
                                                                     std::move(src)));
     }
@@ -1095,6 +1095,7 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
 }
 
 // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
+// (static constant) top_level = StaticConstant(identifier, type, static_init)
 static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) {
     if(node->attrs->type() == AST_T::StaticAttr_t) {
         represent_static_variable_top_level(node, symbol);
@@ -1112,16 +1113,16 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
         p_top_levels = nullptr;
     }
 
-    std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_top_levels;
     {
-        p_top_levels = &static_variable_top_levels;
+        p_top_levels = &static_top_levels;
         for(const auto& symbol: symbol_table) {
             represent_symbol_top_level(symbol.second.get(), symbol.first);
         }
         p_top_levels = nullptr;
     }
 
-    return std::make_unique<TacProgram>(std::move(static_variable_top_levels), std::move(function_top_levels));
+    return std::make_unique<TacProgram>(std::move(static_top_levels), std::move(function_top_levels));
 }
 
 std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast) {

@@ -194,6 +194,7 @@ enum AST_T {
     TacTopLevel_t,
     TacFunction_t,
     TacStaticVariable_t,
+    TacStaticConstant_t,
     TacProgram_t,
 
     // ASM AST

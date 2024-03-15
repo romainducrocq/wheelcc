@@ -57,6 +57,7 @@ AST_T TacLabel::type() { return AST_T::TacLabel_t; }
 AST_T TacTopLevel::type() { return AST_T::TacTopLevel_t; }
 AST_T TacFunction::type() { return AST_T::TacFunction_t; }
 AST_T TacStaticVariable::type() { return AST_T::TacStaticVariable_t; }
+AST_T TacStaticConstant::type() { return AST_T::TacStaticConstant_t; }
 AST_T TacProgram::type() { return AST_T::TacProgram_t; }
 
 TacConstant::TacConstant(std::shared_ptr<CConst> constant)
@@ -148,7 +149,11 @@ TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shar
     : name(std::move(name)), is_global(is_global), static_init_type(std::move(static_init_type)),
       static_inits(std::move(static_inits)) {}
 
-TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
+TacStaticConstant::TacStaticConstant(TIdentifier name, std::shared_ptr<Type> static_init_type,
+                                     std::shared_ptr<StaticInit> static_init)
+    : name(std::move(name)), static_init_type(std::move(static_init_type)), static_init(std::move(static_init)) {}
+
+TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_top_levels,
                        std::vector<std::unique_ptr<TacTopLevel>> function_top_levels)
-    : static_variable_top_levels(std::move(static_variable_top_levels)),
+    : static_top_levels(std::move(static_top_levels)),
       function_top_levels(std::move(function_top_levels)) {}
