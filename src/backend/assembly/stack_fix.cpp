@@ -47,6 +47,9 @@ static void align_offset_pseudo_register(TLong size, TInt alignment) {
 
 static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
     switch(assembly_type->type()) {
+        case AST_T::Byte_t:
+            align_offset_pseudo_register(1l, 1);
+            break;
         case AST_T::LongWord_t:
             align_offset_pseudo_register(4l, 4);
             break;
