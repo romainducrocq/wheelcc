@@ -1,10 +1,12 @@
 #include "util/str2t.hpp"
 #include "util/error.hpp"
 
+#include <iomanip>
 #include <inttypes.h>
 #include <cstring>
 #include <stdlib.h>
 #include <string>
+#include <sstream>
 #include <vector>
 
 intmax_t string_to_intmax(const std::string& s_int, size_t line) {
@@ -135,6 +137,63 @@ int32_t string_to_char_ascii(const std::string& s_char) {
     else {
         return static_cast<int32_t>(c_char);
     }
+}
+
+static intmax_t hex_string_to_intmax(const std::string& s_hex) {
+    std::vector<char> buffer(s_hex.begin(), s_hex.end());
+    buffer.push_back('\0');
+    char* end_ptr = nullptr;
+    errno = 0;
+    intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 16);
+
+    if(end_ptr == &buffer[0]) {
+        RAISE_INTERNAL_ERROR;
+    }
+
+    return intmax;
+}
+
+static int8_t hex_string_to_int8(const std::string& s_hex) {
+    return static_cast<int8_t>(hex_string_to_intmax(s_hex));
+}
+
+static int32_t hex_string_to_int32(const std::string& s_hex) {
+    return static_cast<int32_t>(hex_string_to_intmax(s_hex));
+}
+
+static int64_t hex_string_to_int64(const std::string& s_hex) {
+    return static_cast<int64_t>(hex_string_to_intmax(s_hex));
+}
+
+static std::string string_literal_byte_to_hex_string(int8_t val)
+{
+    std::stringstream ss;
+    ss << std::setfill('0') << std::setw(sizeof(int8_t)*2) << std::hex << (val|0);
+    return ss.str();
+}
+
+int8_t string_literal_bytes_to_char(const std::vector<int8_t>& string_literal, size_t byte_at) {
+    std::string s_hex = "";
+    for(size_t byte = byte_at + 1; byte-- > byte_at;) {
+        s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
+    }
+    return hex_string_to_int8(s_hex);
+}
+
+int32_t string_literal_bytes_to_int(const std::vector<int8_t>& string_literal, size_t byte_at) {
+    std::string s_hex = "";
+    for(size_t byte = byte_at + 4; byte-- > byte_at;) {
+        s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
+    }
+    return hex_string_to_int32(s_hex);
+}
+
+int64_t string_literal_bytes_to_long(const std::vector<int8_t>& string_literal, size_t byte_at) {
+    std::string s_hex = "";
+    for(size_t byte = byte_at + 8; byte-- > byte_at;) {
+        s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
+    }
+    return hex_string_to_int64(s_hex);
 }
 
 double string_to_double(const std::string& s_double, size_t line) {
