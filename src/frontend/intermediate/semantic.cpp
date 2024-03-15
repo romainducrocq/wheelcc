@@ -710,13 +710,13 @@ static void checktype_return_statement(CReturn* node) {
     node->exp = checktype_typed_expression(std::move(node->exp));
 }
 
-static void checktype_type_pointer_single_init_string_initializer(Pointer* ptr_type) {
+static void checktype_fmt_pointer_single_init_string_initializer(Pointer* ptr_type) {
     if(ptr_type->ref_type->type() != AST_T::Char_t) {
         raise_runtime_error("Pointer of non-character type was initialized with string literal");
     }
 }
 
-static void checktype_type_size_array_single_init_string_initializer(CString* node, Array* arr_type) {
+static void checktype_fmt_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if(!is_type_character(arr_type->elem_type.get())) {
         raise_runtime_error("Array of non-character type was initialized with string literal");
     }
@@ -802,7 +802,7 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
     }
 }
 
-static void checktype_size_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
+static void checktype_fmt_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
     if(node->initializers.size() > static_cast<size_t>(arr_type->size)) {
         raise_runtime_error("Array of size " + em(std::to_string(node->initializers.size())) +
                             " was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
@@ -1250,7 +1250,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 }
 
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
-    checktype_type_pointer_single_init_string_initializer(static_ptr_type);
+    checktype_fmt_pointer_single_init_string_initializer(static_ptr_type);
     TIdentifier name = represent_label_identifier("string");
     std::shared_ptr<Type> constant_type;
     {
@@ -1272,7 +1272,7 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
 }
 
 static void checktype_string_initializer_array_static_init(CString* node, Array* static_arr_type) {
-    checktype_type_size_array_single_init_string_initializer(node, static_arr_type);
+    checktype_fmt_array_single_init_string_initializer(node, static_arr_type);
     TLong byte = static_arr_type->size - static_cast<TLong>(node->literal->value.size()) - 1l;
     {
         bool is_null_terminated = byte >= 0l;
@@ -1311,7 +1311,7 @@ static void checktype_single_init_initializer_static_init(CSingleInit* node, Typ
 }
 
 static void checktype_array_compound_init_initializer_static_init(CCompoundInit* node, Array* arr_type) {
-    checktype_size_array_compound_init_initializer(node, arr_type);
+    checktype_fmt_array_compound_init_initializer(node, arr_type);
 
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
         checktype_initializer_static_init(node->initializers[initializer].get(),
@@ -1900,8 +1900,8 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if(node->exp->type() == AST_T::CString_t &&
        init_type->type() == AST_T::Array_t) {
-        checktype_type_size_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
-                                                                 static_cast<Array*>(init_type.get()));
+        checktype_fmt_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
+                                                           static_cast<Array*>(init_type.get()));
         checktype_array_single_init_string_initializer(node, init_type);
     }
     else {
@@ -1911,7 +1911,7 @@ static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<T
 }
 
 static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
-    checktype_size_array_compound_init_initializer(node, arr_type);
+    checktype_fmt_array_compound_init_initializer(node, arr_type);
 
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
         resolve_initializer(node->initializers[initializer].get(), arr_type->elem_type);
