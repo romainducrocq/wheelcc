@@ -392,7 +392,10 @@ static void generate_return_instructions(TacReturn* node) {
 static void generate_sign_extend_instructions(TacSignExtend* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-    push_instruction(std::make_unique<AsmMovSx>(std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
+    std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+    push_instruction(std::make_unique<AsmMovSx>(std::move(assembly_type_src), std::move(assembly_type_dst),
+                                                          std::move(src), std::move(dst)));
 }
 
 static void generate_imm_truncate_instructions(AsmImm* node) {
@@ -417,7 +420,11 @@ static void generate_truncate_instructions(TacTruncate* node) {
 static void generate_zero_extend_instructions(TacZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-    push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
+    std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+    push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(assembly_type_src),
+                                                                  std::move(assembly_type_dst), std::move(src),
+                                                                  std::move(dst)));
 }
 
 static void generate_double_to_signed_instructions(TacDoubleToInt* node) {
@@ -508,13 +515,15 @@ static void generate_signed_to_double_instructions(TacIntToDouble* node) {
 
 static void generate_uint_unsigned_to_double_instructions(TacUIntToDouble* node) {
     std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<QuadWord>();
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
-        push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
+        push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(assembly_type_src), assembly_type_dst,
+                                                                      std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<QuadWord>();
         push_instruction(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_dst),
                                                                  std::move(src_dst), std::move(dst)));
     }
@@ -1356,13 +1365,13 @@ static void generate_instructions(TacInstruction* node) {
     }
 }
 
-// instruction = Mov(assembly_type, operand, operand) | MovSx(operand, operand) | MovZeroExtend(operand, operand)
-//             | Lea(operand, operand) | Cvttsd2si(assembly_type, operand, operand)
-//             | Cvtsi2sd(assembly_type, operand, operand) | Unary(unary_operator, assembly_type, operand)
-//             | Binary(binary_operator, assembly_type, operand, operand) | Cmp(assembly_type, operand, operand)
-//             | Idiv(assembly_type, operand) | Div(assembly_type, operand) | Cdq(assembly_type) | Jmp(identifier)
-//             | JmpCC(cond_code, identifier) | SetCC(cond_code, operand) | Label(identifier) | Push(operand)
-//             | Call(identifier) | Ret
+// instruction = Mov(assembly_type, operand, operand) | MovSx(assembly_type, assembly_type, operand, operand)
+//             | MovZeroExtend(assembly_type, assembly_type, operand, operand) | Lea(operand, operand)
+//             | Cvttsd2si(assembly_type, operand, operand) | Cvtsi2sd(assembly_type, operand, operand)
+//             | Unary(unary_operator, assembly_type, operand) | Binary(binary_operator, assembly_type, operand, operand)
+//             | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type, operand)
+//             | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code, operand)
+//             | Label(identifier) | Push(operand) | Call(identifier) | Ret
 static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for(size_t instruction = 0; instruction < list_node.size(); instruction++) {
         generate_instructions(list_node[instruction].get());

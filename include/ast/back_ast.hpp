@@ -329,8 +329,8 @@ struct AsmShr : AsmUnaryOp {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // instruction = Mov(assembly_type, operand, operand)
-//             | MovSx(operand, operand)
-//             | MovZeroExtend(operand, operand)
+//             | MovSx(assembly_type, assembly_type, operand, operand)
+//             | MovZeroExtend(assembly_type, assembly_type, operand, operand)
 //             | Lea(operand, operand)
 //             | Cvttsd2si(assembly_type, operand, operand)
 //             | Cvtsi2sd(assembly_type, operand, operand)
@@ -365,8 +365,11 @@ struct AsmMov : AsmInstruction {
 struct AsmMovSx : AsmInstruction {
     AST_T type() override;
     AsmMovSx() = default;
-    AsmMovSx(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+    AsmMovSx(std::shared_ptr<AssemblyType> assembly_type_src, std::shared_ptr<AssemblyType> assembly_type_dst,
+             std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
+    std::shared_ptr<AssemblyType> assembly_type_src;
+    std::shared_ptr<AssemblyType> assembly_type_dst;
     std::shared_ptr<AsmOperand> src;
     std::shared_ptr<AsmOperand> dst;
 };
@@ -374,8 +377,11 @@ struct AsmMovSx : AsmInstruction {
 struct AsmMovZeroExtend : AsmInstruction {
     AST_T type() override;
     AsmMovZeroExtend() = default;
-    AsmMovZeroExtend(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+    AsmMovZeroExtend(std::shared_ptr<AssemblyType> assembly_type_src, std::shared_ptr<AssemblyType> assembly_type_dst,
+                     std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
+    std::shared_ptr<AssemblyType> assembly_type_src;
+    std::shared_ptr<AssemblyType> assembly_type_dst;
     std::shared_ptr<AsmOperand> src;
     std::shared_ptr<AsmOperand> dst;
 };

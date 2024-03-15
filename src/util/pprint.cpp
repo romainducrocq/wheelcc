@@ -1374,6 +1374,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmMovSx_t: {
             field("AsmMovSx", "", ++t);
             AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
+            print_ast(p_node->assembly_type_src.get(), t);
+            print_ast(p_node->assembly_type_dst.get(), t);
             print_ast(p_node->src.get(), t);
             print_ast(p_node->dst.get(), t);
             break;
@@ -1381,6 +1383,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmMovZeroExtend_t: {
             field("AsmMovZeroExtend", "", ++t);
             AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
+            print_ast(p_node->assembly_type_src.get(), t);
+            print_ast(p_node->assembly_type_dst.get(), t);
             print_ast(p_node->src.get(), t);
             print_ast(p_node->dst.get(), t);
             break;

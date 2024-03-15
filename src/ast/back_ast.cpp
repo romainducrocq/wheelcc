@@ -113,11 +113,16 @@ AsmMov::AsmMov(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmO
                std::shared_ptr<AsmOperand> dst)
     : assembly_type(std::move(assembly_type)), src(std::move(src)), dst(std::move(dst)) {}
 
-AsmMovSx::AsmMovSx(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
-    : src(std::move(src)), dst(std::move(dst)) {}
+AsmMovSx::AsmMovSx(std::shared_ptr<AssemblyType> assembly_type_src, std::shared_ptr<AssemblyType> assembly_type_dst,
+                   std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+    : assembly_type_src(std::move(assembly_type_src)), assembly_type_dst(std::move(assembly_type_dst)),
+      src(std::move(src)), dst(std::move(dst)) {}
 
-AsmMovZeroExtend::AsmMovZeroExtend(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
-    : src(std::move(src)), dst(std::move(dst)) {}
+AsmMovZeroExtend::AsmMovZeroExtend(std::shared_ptr<AssemblyType> assembly_type_src,
+                                   std::shared_ptr<AssemblyType> assembly_type_dst,
+                                   std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+    : assembly_type_src(std::move(assembly_type_src)), assembly_type_dst(std::move(assembly_type_dst)),
+      src(std::move(src)), dst(std::move(dst)) {}
 
 AsmLea::AsmLea(std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
     : src(std::move(src)), dst(std::move(dst)) {}
