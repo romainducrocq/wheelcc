@@ -8,11 +8,16 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// assembly_type = LongWord
+// assembly_type = Byte
+//               | LongWord
 //               | QuadWord
 //               | BackendDouble
 //               | ByteArray(int, int)
 struct AssemblyType : Ast {
+    AST_T type() override;
+};
+
+struct Byte : AssemblyType {
     AST_T type() override;
 };
 

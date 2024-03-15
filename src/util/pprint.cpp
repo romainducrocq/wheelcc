@@ -282,6 +282,10 @@ static void print_ast(Ast* node, size_t t) {
             field("AssemblyType", "", ++t);
             break;
         }
+        case AST_T::Byte_t: {
+            field("Byte", "", ++t);
+            break;
+        }
         case AST_T::LongWord_t: {
             field("LongWord", "", ++t);
             break;

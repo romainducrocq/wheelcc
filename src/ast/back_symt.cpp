@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 AST_T AssemblyType::type() { return AST_T::AssemblyType_t; }
+AST_T Byte::type() { return AST_T::Byte_t; }
 AST_T LongWord::type() { return AST_T::LongWord_t; }
 AST_T QuadWord::type() { return AST_T::QuadWord_t; }
 AST_T BackendDouble::type() { return AST_T::BackendDouble_t; }

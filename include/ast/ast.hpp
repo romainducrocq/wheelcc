@@ -43,6 +43,7 @@ enum AST_T {
 
     // Backend st
     AssemblyType_t,
+    Byte_t,
     LongWord_t,
     QuadWord_t,
     BackendDouble_t,

@@ -63,6 +63,7 @@ ast = [
 
     # /include/ast/back_symt.hpp
     ["AssemblyType", [], []],
+    ["Byte", [], []],
     ["LongWord", [], []],
     ["QuadWord", [], []],
     ["BackendDouble", [], []],
