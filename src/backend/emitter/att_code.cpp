@@ -401,9 +401,21 @@ static void emit_mov_instructions(AsmMov* node) {
 }
 
 static void emit_mov_sx_instructions(AsmMovSx* node) {
-    std::string src = emit_operand(node->src.get(), 4);
-    std::string dst = emit_operand(node->dst.get(), 8);
-    emit("movslq " + src + ", " + dst, 2);
+    TInt byte_src = emit_type_alignment_bytes(node->assembly_type_src.get());
+    TInt byte_dst = emit_type_alignment_bytes(node->assembly_type_dst.get());
+    std::string t_src = emit_type_instruction_suffix(node->assembly_type_src.get());
+    std::string t_dst = emit_type_instruction_suffix(node->assembly_type_dst.get());
+    std::string src = emit_operand(node->src.get(), byte_src);
+    std::string dst = emit_operand(node->dst.get(), byte_dst);
+    emit("movs" + t_src + t_dst + " " + src + ", " + dst, 2);
+}
+
+static void emit_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
+    TInt byte = emit_type_alignment_bytes(node->assembly_type_dst.get());
+    std::string t = emit_type_instruction_suffix(node->assembly_type_dst.get());
+    std::string src = emit_operand(node->src.get(), 1);
+    std::string dst = emit_operand(node->dst.get(), byte);
+    emit("movzb" + t + " " + src + ", " + dst, 2);
 }
 
 static void emit_lea_instructions(AsmLea* node) {
@@ -526,28 +538,29 @@ static void emit_ret_instructions() {
     emit("ret", 1);
 }
 
-// Mov(t, src, dst)                     -> $ mov<t> <src>, <dst>
-// MovSx(src, dst)                      -> $ movslq <src>, <dst>
-// Lea(src, dst)                        -> $ leaq <src>, <dst>
-// Cvttsd2si(t, src, dst)               -> $ cvttsd2si<t> <src>, <dst>
-// Cvtsi2sd(t, src, dst)                -> $ cvtsi2sd<t> <src>, <dst>
-// Unary(unary_operator, t, operand)    -> $ <unary_operator><t> <operand>
-// Binary(binary_operator, t, src, dst) -> $ <binary_operator><t> <src>, <dst>
-// Cmp(t, operand, operand)<i>          -> $ cmp<t> <operand>, <operand>
-// Cmp(operand, operand)<d>             -> $ comisd <operand>, <operand>
-// Idiv(t, operand)                     -> $ idiv<t> <operand>
-// Div(t, operand)                      -> $ div<t> <operand>
-// Cdq<l>                               -> $ cdq
-// Cdq<q>                               -> $ cqo
-// Jmp(label)                           -> $ jmp .L<label>
-// JmpCC(cond_code, label)              -> $ j<cond_code> .L<label>
-// SetCC(cond_code, operand)            -> $ set<cond_code> <operand>
-// Label(label)                         -> $ .L<label>:
-// Push(operand)                        -> $ pushq <operand>
-// Call(label)                          -> $ call <label>@PLT
-// Ret                                  -> $ movq %rbp, %rsp
-//                                         $ popq %rbp
-//                                         $ ret
+// Mov(t, src, dst)                      -> $ mov<t> <src>, <dst>
+// Movsx(src_t, dst_t, src, dst)         -> $ movs<src_t><dst_t> <src>, <dst>
+// MovZeroExtend(src_t, dst_t, src, dst) -> $ movz<src_t><dst_t> <src>, <dst>
+// Lea(src, dst)                         -> $ leaq <src>, <dst>
+// Cvttsd2si(t, src, dst)                -> $ cvttsd2si<t> <src>, <dst>
+// Cvtsi2sd(t, src, dst)                 -> $ cvtsi2sd<t> <src>, <dst>
+// Unary(unary_operator, t, operand)     -> $ <unary_operator><t> <operand>
+// Binary(binary_operator, t, src, dst)  -> $ <binary_operator><t> <src>, <dst>
+// Cmp(t, operand, operand)<i>           -> $ cmp<t> <operand>, <operand>
+// Cmp(operand, operand)<d>              -> $ comisd <operand>, <operand>
+// Idiv(t, operand)                      -> $ idiv<t> <operand>
+// Div(t, operand)                       -> $ div<t> <operand>
+// Cdq<l>                                -> $ cdq
+// Cdq<q>                                -> $ cqo
+// Jmp(label)                            -> $ jmp .L<label>
+// JmpCC(cond_code, label)               -> $ j<cond_code> .L<label>
+// SetCC(cond_code, operand)             -> $ set<cond_code> <operand>
+// Label(label)                          -> $ .L<label>:
+// Push(operand)                         -> $ pushq <operand>
+// Call(label)                           -> $ call <label>@PLT
+// Ret                                   -> $ movq %rbp, %rsp
+//                                          $ popq %rbp
+//                                          $ ret
 static void emit_instructions(AsmInstruction* node) {
     switch(node->type()) {
         case AST_T::AsmMov_t:
@@ -555,6 +568,9 @@ static void emit_instructions(AsmInstruction* node) {
             break;
         case AST_T::AsmMovSx_t:
             emit_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            break;
+        case AST_T::AsmMovZeroExtend_t:
+            emit_mov_zero_extend_instructions(static_cast<AsmMovZeroExtend*>(node));
             break;
         case AST_T::AsmLea_t:
             emit_lea_instructions(static_cast<AsmLea*>(node));

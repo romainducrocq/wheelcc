@@ -534,16 +534,16 @@ static void fix_mov_sx_instruction(AsmMovSx* node) {
     }
 }
 
-static void fix_mov_zero_extend_from_imm_to_any_instruction(AsmMovZeroExtend* node) {
+static void fix_byte_mov_zero_extend_from_imm_to_any_instruction(AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
-    std::shared_ptr<AssemblyType> assembly_type = node->assembly_type_src;
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<Byte>();
     node->src = dst;
     push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
     swap_fix_instruction_back();
 }
 
-static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMovZeroExtend* node) {
+static void fix_byte_mov_zero_extend_from_any_to_addr_instruction(AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type_dst;
@@ -551,12 +551,36 @@ static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMovZeroExtend* n
     push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
+static void fix_mov_zero_extend_from_any_to_any_instruction(AsmMovZeroExtend* node) {
+    std::shared_ptr<AsmOperand> src = std::move(node->src);
+    std::shared_ptr<AsmOperand> dst = std::move(node->dst);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<LongWord>();
+    p_fix_instructions->back() = std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst));
+}
+
+static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov* node) {
+    std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
+    std::shared_ptr<AsmOperand> dst = std::move(node->dst);
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    node->dst = src;
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+}
+
 static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
-    if(is_type_imm(node->src.get())) {
-        fix_mov_zero_extend_from_imm_to_any_instruction(node);
+    if(node->assembly_type_src->type() == AST_T::Byte_t) {
+        if(is_type_imm(node->src.get())) {
+            fix_byte_mov_zero_extend_from_imm_to_any_instruction(node);
+        }
+        if(is_type_addr(node->dst.get())) {
+            fix_byte_mov_zero_extend_from_any_to_addr_instruction(node);
+        }
     }
-    if(is_type_addr(node->dst.get())) {
-        fix_mov_zero_extend_from_any_to_addr_instruction(node);
+    else {
+        fix_mov_zero_extend_from_any_to_any_instruction(node);
+        AsmMov* node_2 = static_cast<AsmMov*>(p_fix_instructions->back().get());
+        if(is_type_addr(node_2->dst.get())) {
+            fix_mov_zero_extend_from_any_to_addr_instruction(node_2);
+        }
     }
 }
 
