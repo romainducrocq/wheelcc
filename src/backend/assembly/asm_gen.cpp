@@ -403,30 +403,35 @@ static void generate_sign_extend_instructions(TacSignExtend* node) {
 }
 
 static void generate_imm_byte_truncate_instructions(AsmImm* node) {
-    // TODO
+    if(!node->is_byte) {
+        node->value = std::to_string(string_to_uint64(std::move(node->value)) % 256l);
+    }
 }
 
 static void generate_byte_truncate_instructions(TacTruncate* node) {
-    // TODO
+    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<Byte>();
+    if(src->type() == AST_T::AsmImm_t) {
+        generate_imm_byte_truncate_instructions(static_cast<AsmImm*>(src.get()));
+    }
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
 static void generate_imm_long_truncate_instructions(AsmImm* node) {
     if(node->is_quad) {
-        TIdentifier value = std::to_string(uintmax_to_uint64(
-                                        string_to_uintmax(std::move(node->value), 0)) - 4294967296ul);
-        node->value = std::move(value);
+        node->value = std::to_string(string_to_uint64(std::move(node->value)) - 4294967296ul);
     }
 }
 
 static void generate_long_truncate_instructions(TacTruncate* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<LongWord>();
     if(src->type() == AST_T::AsmImm_t) {
         generate_imm_long_truncate_instructions(static_cast<AsmImm*>(src.get()));
     }
-    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
-                                              std::move(dst)));
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
 static void generate_truncate_instructions(TacTruncate* node) {
