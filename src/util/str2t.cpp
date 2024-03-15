@@ -17,7 +17,12 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error_at_line("String " + em(s_int) + " is not an integer", line);
+        if(line > 0) {
+            raise_runtime_error_at_line("String " + em(s_int) + " is not an integer", line);
+        }
+        else {
+            RAISE_INTERNAL_ERROR;
+        }
     }
 
     return intmax;
@@ -39,8 +44,13 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
 
     if(end_ptr == &buffer[0]) {
-        raise_runtime_error_at_line("String " + em(s_uint) + " is not an unsigned integer",
-                                    line);
+        if(line > 0) {
+            raise_runtime_error_at_line("String " + em(s_uint) + " is not an unsigned integer",
+                                        line);
+        }
+        else {
+            RAISE_INTERNAL_ERROR;
+        }
     }
 
     return uintmax;

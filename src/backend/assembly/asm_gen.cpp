@@ -47,14 +47,16 @@ static void append_double_static_constant_top_level(const TIdentifier& identifie
 
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
     TIdentifier static_constant_label;
-    TIdentifier str_binary = std::to_string(binary);
-    if(static_const_label_map.find(str_binary) != static_const_label_map.end()) {
-        static_constant_label = static_const_label_map[str_binary];
-    }
-    else {
-        static_constant_label = represent_label_identifier("double");
-        static_const_label_map[str_binary] = static_constant_label;
-        append_double_static_constant_top_level(static_constant_label, value, binary, byte);
+    {
+        TIdentifier str_binary = std::to_string(binary);
+        if(static_const_label_map.find(str_binary) != static_const_label_map.end()) {
+            static_constant_label = static_const_label_map[str_binary];
+        }
+        else {
+            static_constant_label = represent_label_identifier("double");
+            static_const_label_map[str_binary] = static_constant_label;
+            append_double_static_constant_top_level(static_constant_label, value, binary, byte);
+        }
     }
     return std::make_shared<AsmData>(std::move(static_constant_label));
 }
@@ -575,52 +577,57 @@ static void generate_stack_arg_fun_call_instructions(TacValue* node) {
 }
 
 static void generate_fun_call_instructions(TacFunCall* node) {
-    TLong stack_padding = 0l;
-    if(node->args.size() % 2 == 1) {
-        stack_padding = 8l;
-        generate_allocate_stack_instructions(stack_padding);
-    }
-
-    std::vector<size_t> i_regs;
-    std::vector<size_t> i_sse_regs;
-    std::vector<size_t> i_stacks;
-    for(size_t i = 0; i < node->args.size(); i++) {
-        if(is_value_double(node->args[i].get())) {
-            if(i_sse_regs.size() < 8) {
-                i_sse_regs.push_back(i);
-            }
-            else {
-                i_stacks.push_back(i);
-            }
-        }
-        else {
-            if(i_regs.size() < 6) {
-                i_regs.push_back(i);
-            }
-            else {
-                i_stacks.push_back(i);
-            }
-        }
-    }
-
-    for(size_t i = 0; i < i_regs.size(); i++) {
-        generate_reg_arg_fun_call_instructions(node->args[i_regs[i]].get(), ARG_REGISTERS[i]);
-    }
-    for(size_t i = 0; i < i_sse_regs.size(); i++) {
-        generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(), ARG_SSE_REGISTERS[i]);
-    }
-    for(size_t i = i_stacks.size(); i-- > 0;) {
-        stack_padding += 8l;
-        generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
-    }
-
     {
-        TIdentifier name = node->name;
-        push_instruction(std::make_unique<AsmCall>(std::move(name)));
-    }
+        TLong stack_padding = 0l;
+        if(node->args.size() % 2 == 1) {
+            stack_padding = 8l;
+            generate_allocate_stack_instructions(stack_padding);
+        }
 
-    if(stack_padding > 0l) {
-        generate_deallocate_stack_instructions(stack_padding);
+        {
+            std::vector<size_t> i_regs;
+            std::vector<size_t> i_sse_regs;
+            std::vector<size_t> i_stacks;
+            for(size_t i = 0; i < node->args.size(); i++) {
+                if(is_value_double(node->args[i].get())) {
+                    if(i_sse_regs.size() < 8) {
+                        i_sse_regs.push_back(i);
+                    }
+                    else {
+                        i_stacks.push_back(i);
+                    }
+                }
+                else {
+                    if(i_regs.size() < 6) {
+                        i_regs.push_back(i);
+                    }
+                    else {
+                        i_stacks.push_back(i);
+                    }
+                }
+            }
+
+            for(size_t i = 0; i < i_regs.size(); i++) {
+                generate_reg_arg_fun_call_instructions(node->args[i_regs[i]].get(), ARG_REGISTERS[i]);
+            }
+            for(size_t i = 0; i < i_sse_regs.size(); i++) {
+                generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(),
+                                                       ARG_SSE_REGISTERS[i]);
+            }
+            for(size_t i = i_stacks.size(); i-- > 0;) {
+                stack_padding += 8l;
+                generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
+            }
+        }
+
+        {
+            TIdentifier name = node->name;
+            push_instruction(std::make_unique<AsmCall>(std::move(name)));
+        }
+
+        if(stack_padding > 0l) {
+            generate_deallocate_stack_instructions(stack_padding);
+        }
     }
 
     std::shared_ptr<AsmOperand> src;
@@ -1343,37 +1350,42 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
     bool is_global = node->is_global;
 
     std::vector<std::unique_ptr<AsmInstruction>> body;
-    p_instructions = &body;
+    {
+        p_instructions = &body;
 
-    size_t param_reg = 0;
-    size_t param_sse_reg = 0;
-    TLong param_stack = 0l;
-    for(size_t param = 0; param < node->params.size(); param++) {
-        if(symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
-            if(param_sse_reg < 8) {
-                generate_reg_param_function_instructions(node->params[param],
-                                                         ARG_SSE_REGISTERS[param_sse_reg]);
-                param_sse_reg += 1;
-            }
-            else {
-                generate_stack_param_function_instructions(node->params[param], param_stack);
-                param_stack += 1l;
+        {
+            size_t param_reg = 0;
+            size_t param_sse_reg = 0;
+            TLong param_stack = 0l;
+            for(size_t param = 0; param < node->params.size(); param++) {
+                if(symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
+                    if(param_sse_reg < 8) {
+                        generate_reg_param_function_instructions(node->params[param],
+                                                                 ARG_SSE_REGISTERS[param_sse_reg]);
+                        param_sse_reg += 1;
+                    }
+                    else {
+                        generate_stack_param_function_instructions(node->params[param], param_stack);
+                        param_stack += 1l;
+                    }
+                }
+                else {
+                    if(param_reg < 6) {
+                        generate_reg_param_function_instructions(node->params[param],
+                                                                 ARG_REGISTERS[param_reg]);
+                        param_reg += 1;
+                    }
+                    else {
+                        generate_stack_param_function_instructions(node->params[param], param_stack);
+                        param_stack += 1l;
+                    }
+                }
             }
         }
-        else {
-            if(param_reg < 6) {
-                generate_reg_param_function_instructions(node->params[param], ARG_REGISTERS[param_reg]);
-                param_reg += 1;
-            }
-            else {
-                generate_stack_param_function_instructions(node->params[param], param_stack);
-                param_stack += 1l;
-            }
-        }
+
+        generate_list_instructions(node->body);
+        p_instructions = nullptr;
     }
-
-    generate_list_instructions(node->body);
-    p_instructions = nullptr;
 
     return std::make_unique<AsmFunction>(std::move(name), std::move(is_global), std::move(body));
 }
@@ -1421,21 +1433,23 @@ static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
 
 // AST = Program(top_level*, top_level*)
 static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
-    std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
-    p_static_constant_top_levels = &static_constant_top_levels;
-
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
-    for(size_t top_level = 0; top_level < node->static_top_levels.size(); top_level++) {
-        std::unique_ptr<AsmTopLevel> static_variable_top_level =
-                generate_top_level(node->static_top_levels[top_level].get());
-        top_levels.push_back(std::move(static_variable_top_level));
+    std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
+    {
+        p_static_constant_top_levels = &static_constant_top_levels;
+
+        for(size_t top_level = 0; top_level < node->static_top_levels.size(); top_level++) {
+            std::unique_ptr<AsmTopLevel> static_variable_top_level =
+                    generate_top_level(node->static_top_levels[top_level].get());
+            top_levels.push_back(std::move(static_variable_top_level));
+        }
+        for(size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {
+            std::unique_ptr<AsmTopLevel> function_top_level =
+                    generate_top_level(node->function_top_levels[top_level].get());
+            top_levels.push_back(std::move(function_top_level));
+        }
+        p_static_constant_top_levels = nullptr;
     }
-    for(size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {
-        std::unique_ptr<AsmTopLevel> function_top_level =
-                generate_top_level(node->function_top_levels[top_level].get());
-        top_levels.push_back(std::move(function_top_level));
-    }
-    p_static_constant_top_levels = nullptr;
 
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
 }
