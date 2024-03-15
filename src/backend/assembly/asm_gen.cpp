@@ -427,12 +427,53 @@ static void generate_zero_extend_instructions(TacZeroExtend* node) {
                                                                   std::move(dst)));
 }
 
-static void generate_double_to_signed_instructions(TacDoubleToInt* node) {
+static void generate_char_double_to_signed_instructions(TacDoubleToInt* node) {
+    std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Ax);
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
+        push_instruction(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src),
+                                                                 std::move(src), src_dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<Byte>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                            std::move(src_dst), std::move(dst)));
+    }
+}
+
+static void generate_int_long_double_to_signed_instructions(TacDoubleToInt* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->dst.get());
     push_instruction(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src), std::move(src),
                                                               std::move(dst)));
+}
+
+static void generate_double_to_signed_instructions(TacDoubleToInt* node) {
+    if(is_value_8_bits(node->dst.get())) {
+        generate_char_double_to_signed_instructions(node);
+    }
+    else {
+        generate_int_long_double_to_signed_instructions(node);
+    }
+}
+
+static void generate_uchar_double_to_unsigned_instructions(TacDoubleToUInt* node) {
+    std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Ax);
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
+        push_instruction(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src),
+                                                                 std::move(src), src_dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<Byte>();
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
+                                                           std::move(src_dst), std::move(dst)));
+    }
 }
 
 static void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt* node) {
@@ -497,7 +538,10 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
 }
 
 static void generate_double_to_unsigned_instructions(TacDoubleToUInt* node) {
-    if(is_value_32_bits(node->dst.get())) {
+    if(is_value_8_bits(node->dst.get())) {
+        generate_uchar_double_to_unsigned_instructions(node);
+    }
+    else if(is_value_32_bits(node->dst.get())) {
         generate_uint_double_to_unsigned_instructions(node);
     }
     else {
@@ -505,12 +549,53 @@ static void generate_double_to_unsigned_instructions(TacDoubleToUInt* node) {
     }
 }
 
-static void generate_signed_to_double_instructions(TacIntToDouble* node) {
+static void generate_char_signed_to_double_instructions(TacIntToDouble* node) {
+    std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<Byte>();
+        push_instruction(std::make_unique<AsmMovSx>(std::move(assembly_type_src), assembly_type_dst,
+                                                             std::move(src), src_dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_dst),
+                                                                 std::move(src_dst), std::move(dst)));
+    }
+}
+
+static void generate_int_long_signed_to_double_instructions(TacIntToDouble* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
     push_instruction(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_src), std::move(src),
                                                              std::move(dst)));
+}
+
+static void generate_signed_to_double_instructions(TacIntToDouble* node) {
+    if(is_value_8_bits(node->src.get())) {
+        generate_char_signed_to_double_instructions(node);
+    }
+    else {
+        generate_int_long_signed_to_double_instructions(node);
+    }
+}
+
+static void generate_uchar_unsigned_to_double_instructions(TacUIntToDouble* node) {
+    std::shared_ptr<AsmOperand> src_dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+    {
+        std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<Byte>();
+        push_instruction(std::make_unique<AsmMovZeroExtend>(std::move(assembly_type_src), assembly_type_dst,
+                                                                     std::move(src), src_dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        push_instruction(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_dst),
+                                                                 std::move(src_dst), std::move(dst)));
+    }
 }
 
 static void generate_uint_unsigned_to_double_instructions(TacUIntToDouble* node) {
@@ -586,7 +671,10 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
 }
 
 static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
-    if(is_value_32_bits(node->src.get())) {
+    if(is_value_8_bits(node->src.get())) {
+        generate_uchar_unsigned_to_double_instructions(node);
+    }
+    else if(is_value_32_bits(node->src.get())) {
         generate_uint_unsigned_to_double_instructions(node);
     }
     else {
