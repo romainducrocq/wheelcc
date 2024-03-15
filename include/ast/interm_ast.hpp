@@ -435,14 +435,16 @@ struct TacStaticConstant : TacTopLevel {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// AST = Program(top_level*, top_level*)
+// AST = Program(top_level*, top_level*, top_level*)
 struct TacProgram : Ast {
     AST_T type() override;
     TacProgram() = default;
-    TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_top_levels,
+    TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels,
+               std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
                std::vector<std::unique_ptr<TacTopLevel>> function_top_levels);
 
-    std::vector<std::unique_ptr<TacTopLevel>> static_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
 };
 

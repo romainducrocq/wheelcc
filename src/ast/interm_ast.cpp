@@ -153,7 +153,9 @@ TacStaticConstant::TacStaticConstant(TIdentifier name, std::shared_ptr<Type> sta
                                      std::shared_ptr<StaticInit> static_init)
     : name(std::move(name)), static_init_type(std::move(static_init_type)), static_init(std::move(static_init)) {}
 
-TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_top_levels,
+TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels,
+                       std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
                        std::vector<std::unique_ptr<TacTopLevel>> function_top_levels)
-    : static_top_levels(std::move(static_top_levels)),
+    : static_constant_top_levels(std::move(static_constant_top_levels)),
+      static_variable_top_levels(std::move(static_variable_top_levels)),
       function_top_levels(std::move(function_top_levels)) {}

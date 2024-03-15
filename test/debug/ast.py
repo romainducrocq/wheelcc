@@ -207,7 +207,7 @@ ast = [
     ["TacFunction", [(TIdentifier, "name"), (Bool, "is_global"), (TIdentifier, "[params")], ["[body"]],
     ["TacStaticVariable", [(TIdentifier, "name"), (Bool, "is_global")], ["static_init_type", "[static_inits"]],
     ["TacStaticConstant", [(TIdentifier, "name")], ["static_init_type", "static_init"]],
-    ["TacProgram", [], ["[static_top_levels", "[function_top_levels"]],
+    ["TacProgram", [], ["[static_constant_top_levels", "[static_variable_top_levels", "[function_top_levels"]],
 
     # /include/ast/back_ast.hpp
     ["AsmReg", [], []],

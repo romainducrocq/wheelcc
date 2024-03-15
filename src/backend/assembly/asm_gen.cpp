@@ -1563,6 +1563,13 @@ static void append_double_static_constant_top_level(const TIdentifier& identifie
                                                                                              std::move(static_init)));
 }
 
+static std::unique_ptr<AsmStaticConstant> generate_static_constant_top_level(TacStaticConstant* node) {
+    TIdentifier name = node->name;
+    TInt alignment = generate_type_alignment(node->static_init_type.get());
+    std::shared_ptr<StaticInit> static_init = node->static_init;
+    return std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init));
+}
+
 // top_level = Function(identifier, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
@@ -1571,6 +1578,8 @@ static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
             return generate_function_top_level(static_cast<TacFunction*>(node));
         case AST_T::TacStaticVariable_t:
             return generate_static_variable_top_level(static_cast<TacStaticVariable*>(node));
+        case AST_T::TacStaticConstant_t:
+            return generate_static_constant_top_level(static_cast<TacStaticConstant*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -1578,14 +1587,22 @@ static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
 
 // AST = Program(top_level*, top_level*)
 static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
-    std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
     std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
+    {
+        for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
+            std::unique_ptr<AsmTopLevel> static_constant_top_level =
+                    generate_top_level(node->static_constant_top_levels[top_level].get());
+            static_constant_top_levels.push_back(std::move(static_constant_top_level));
+        }
+    }
+
+    std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
     {
         p_static_constant_top_levels = &static_constant_top_levels;
 
-        for(size_t top_level = 0; top_level < node->static_top_levels.size(); top_level++) {
+        for(size_t top_level = 0; top_level < node->static_variable_top_levels.size(); top_level++) {
             std::unique_ptr<AsmTopLevel> static_variable_top_level =
-                    generate_top_level(node->static_top_levels[top_level].get());
+                    generate_top_level(node->static_variable_top_levels[top_level].get());
             top_levels.push_back(std::move(static_variable_top_level));
         }
         for(size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {
@@ -1593,6 +1610,7 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
                     generate_top_level(node->function_top_levels[top_level].get());
             top_levels.push_back(std::move(function_top_level));
         }
+
         p_static_constant_top_levels = nullptr;
     }
 

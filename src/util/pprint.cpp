@@ -1106,8 +1106,12 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::TacProgram_t: {
             field("TacProgram", "", ++t);
             TacProgram* p_node = static_cast<TacProgram*>(node);
-            field("List[" + std::to_string(p_node->static_top_levels.size()) + "]", "", t+1);
-            for(const auto& item: p_node->static_top_levels) {
+            field("List[" + std::to_string(p_node->static_constant_top_levels.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_constant_top_levels) {
+                print_ast(item.get(), t+1);
+            }
+            field("List[" + std::to_string(p_node->static_variable_top_levels.size()) + "]", "", t+1);
+            for(const auto& item: p_node->static_variable_top_levels) {
                 print_ast(item.get(), t+1);
             }
             field("List[" + std::to_string(p_node->function_top_levels.size()) + "]", "", t+1);

@@ -1094,12 +1094,19 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
                                                                std::move(static_init_type), std::move(static_inits)));
 }
 
+static std::vector<std::unique_ptr<TacTopLevel>>* p_static_constant_top_levels;
+
+static void push_static_constant_top_levels(std::unique_ptr<TacTopLevel>&& static_constant_top_levels) {
+    p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
+}
+
 static void represent_static_constant_top_level(Symbol* node, const TIdentifier& symbol) {
     TIdentifier name = symbol;
     std::shared_ptr<Type> static_init_type = node->type_t;
     std::shared_ptr<StaticInit> static_init = static_cast<ConstantAttr*>(node->attrs.get())->static_init;
-    push_top_level(std::make_unique<TacStaticConstant>(std::move(name), std::move(static_init_type),
-                                                               std::move(static_init)));
+    push_static_constant_top_levels(std::make_unique<TacStaticConstant>(std::move(name),
+                                                                                            std::move(static_init_type),
+                                                                                            std::move(static_init)));
 }
 
 // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
@@ -1117,7 +1124,7 @@ static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) 
     }
 }
 
-// AST = Program(top_level*, top_level*)
+// AST = Program(top_level*, top_level*, top_level*)
 static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
     {
@@ -1128,16 +1135,19 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
         p_top_levels = nullptr;
     }
 
-    std::vector<std::unique_ptr<TacTopLevel>> static_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels;
     {
-        p_top_levels = &static_top_levels;
+        p_top_levels = &static_variable_top_levels;
+        p_static_constant_top_levels = &static_constant_top_levels;
         for(const auto& symbol: symbol_table) {
             represent_symbol_top_level(symbol.second.get(), symbol.first);
         }
         p_top_levels = nullptr;
     }
 
-    return std::make_unique<TacProgram>(std::move(static_top_levels), std::move(function_top_levels));
+    return std::make_unique<TacProgram>(std::move(static_constant_top_levels), std::move(static_variable_top_levels),
+                                        std::move(function_top_levels));
 }
 
 std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast) {
