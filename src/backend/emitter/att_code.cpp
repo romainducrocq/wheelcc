@@ -14,6 +14,16 @@ static const std::string& emit_identifier(const TIdentifier& identifier) {
     return identifier;
 }
 
+// string -> $ string // TODO
+static std::string emit_string(const std::vector<TChar> /**/) {
+    return "";
+}
+
+// char -> $ char
+static std::string emit_char(TChar value) {
+    return std::to_string(value);
+}
+
 // int -> $ int
 static std::string emit_int(TInt value) {
     return std::to_string(value);
@@ -27,6 +37,11 @@ static std::string emit_long(TLong value) {
 // double -> $ double
 static std::string emit_double(TULong binary) {
     return std::to_string(binary);
+}
+
+// uchar -> $ uchar
+static std::string emit_uchar(TUChar value) {
+    return std::to_string(value);
 }
 
 // uint -> $ uint
@@ -224,12 +239,15 @@ static std::string emit_condition_code(AsmCondCode* node) {
     }
 }
 
+// Byte      -> $ 1
 // LongWord  -> $ 4
 // QuadWord  -> $ 8
 // Double    -> $ 8
 // ByteArray -> $ alignment
 static TInt emit_type_alignment_bytes(AssemblyType* node) {
     switch(node->type()) {
+        case AST_T::Byte_t:
+            return 1;
         case AST_T::LongWord_t:
             return 4;
         case AST_T::QuadWord_t:
@@ -242,11 +260,14 @@ static TInt emit_type_alignment_bytes(AssemblyType* node) {
     }
 }
 
+// Byte     -> $ b
 // LongWord -> $ l
 // QuadWord -> $ q
 // Double   -> $ sd
 static std::string emit_type_instruction_suffix(AssemblyType* node, bool c) {
     switch(node->type()) {
+        case AST_T::Byte_t:
+            return "b";
         case AST_T::LongWord_t:
             return "l";
         case AST_T::QuadWord_t:
@@ -633,8 +654,10 @@ static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>&
 
 // $ .balign <alignment>
 static void emit_alignment_directive_top_level(TInt alignment) {
-    std::string align = emit_int(alignment);
-    emit(".balign " + align, 1);
+    if(alignment > 1) {
+        std::string align = emit_int(alignment);
+        emit(".balign " + align, 1);
+    }
 }
 
 // -> if is_global $ .globl <identifier>
@@ -660,13 +683,23 @@ static void emit_function_top_level(AsmFunction* node) {
     emit_list_instructions(node->instructions);
 }
 
-// IntInit(i)   -> .long <i>
-// LongInit(i)  -> .quad <i>
-// UIntInit(i)  -> .long <i>
-// ULongInit(i) -> .quad <i>
-// ZeroInit(n)  -> .zero <n>
+// CharInit(i)                         -> .byte <i>
+// IntInit(i)                          -> .long <i>
+// LongInit(i)                         -> .quad <i>
+// UCharInit(i)                        -> .byte <i>
+// UIntInit(i)                         -> .long <i>
+// ULongInit(i)                        -> .quad <i>
+// ZeroInit(n)                         -> .zero <n>
+// StringInit(s, b) if null terminated -> .asciz "<s>"
+//                                else -> .ascii "<s>"
+// PointerInit(label)                  -> .quad <label>
 static void emit_init_static_variable_top_level(StaticInit* node) {
     switch(node->type()) {
+        case AST_T::CharInit_t: {
+            std::string value = emit_char(static_cast<CharInit*>(node)->value);
+            emit(".byte " + value, 2);
+            break;
+        }
         case AST_T::IntInit_t: {
             std::string value = emit_int(static_cast<IntInit*>(node)->value);
             emit(".long " + value, 2);
@@ -682,6 +715,11 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
             emit(".quad " + value, 2);
             break;
         }
+        case AST_T::UCharInit_t: {
+            std::string value = emit_uchar(static_cast<UCharInit*>(node)->value);
+            emit(".byte " + value, 2);
+            break;
+        }
         case AST_T::UIntInit_t: {
             std::string value = emit_uint(static_cast<UIntInit*>(node)->value);
             emit(".long " + value, 2);
@@ -695,6 +733,18 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
         case AST_T::ZeroInit_t: {
             std::string byte = emit_long(static_cast<ZeroInit*>(node)->byte);
             emit(".zero " + byte, 2);
+            break;
+        }
+        case AST_T::StringInit_t: {
+            StringInit* p_node = static_cast<StringInit*>(node);
+            std::string term = p_node->is_null_terminated ? "z" : "i";
+            std::string value = emit_string(p_node->literal->value); // TODO
+            emit(".asci" + term + " \"" + value + "\"", 2);
+            break;
+        }
+        case AST_T::PointerInit_t: {
+            std::string name = emit_identifier(static_cast<PointerInit*>(node)->name);
+            emit(".quad " + name, 2);
             break;
         }
         default:
@@ -743,6 +793,7 @@ static void emit_double_static_constant_top_level(AsmStaticConstant* node) {
     emit(".quad " + static_init, 2);
 }
 
+// TODO StringInit_t
 // StaticConstant(name, align, init)<d> -> $ <double-static-constant-directives>
 static void emit_static_constant_top_level(AsmStaticConstant* node) {
     switch(node->static_init->type()) {

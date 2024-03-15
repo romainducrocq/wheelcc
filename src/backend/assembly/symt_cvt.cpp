@@ -98,9 +98,8 @@ static void convert_double_static_constant() {
     add_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
 }
 
-static void convert_string_static_constant() {
-    std::shared_ptr<AssemblyType> assembly_type =
-               convert_array_aggregate_assembly_type(static_cast<Array*>(symbol_table[*p_symbol]->type_t.get()));
+static void convert_string_static_constant(Array* arr_type) {
+    std::shared_ptr<AssemblyType> assembly_type = convert_array_aggregate_assembly_type(arr_type);
     add_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
 }
 
@@ -111,7 +110,7 @@ static void convert_static_constant_top_level(AsmStaticConstant* node) {
             convert_double_static_constant();
             break;
         case AST_T::StringInit_t:
-            convert_string_static_constant();
+            convert_string_static_constant(static_cast<Array*>(symbol_table[node->name]->type_t.get()));
             break;
         default:
             RAISE_INTERNAL_ERROR;
