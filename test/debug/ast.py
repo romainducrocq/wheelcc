@@ -245,7 +245,7 @@ ast = [
     ["AsmBE", [], []],
     ["AsmP", [], []],
     ["AsmOperand", [], []],
-    ["AsmImm", [(Bool, "is_quad"), (TIdentifier, "value")], []],
+    ["AsmImm", [(Bool, "is_byte"), (Bool, "is_quad"), (TIdentifier, "value")], []],
     ["AsmRegister", [], ["reg"]],
     ["AsmPseudo", [(TIdentifier, "name")], []],
     ["AsmMemory", [(TLong, "value")], ["reg"]],

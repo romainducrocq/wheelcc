@@ -182,7 +182,7 @@ struct AsmP : AsmCondCode {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// operand = Imm(int, bool)
+// operand = Imm(int, bool, bool)
 //         | Reg(reg)
 //         | Pseudo(identifier)
 //         | Memory(int, reg)
@@ -196,8 +196,9 @@ struct AsmOperand : Ast {
 struct AsmImm : AsmOperand {
     AST_T type() override;
     AsmImm() = default;
-    AsmImm(bool is_quad, TIdentifier value);
+    AsmImm(bool is_byte, bool is_quad, TIdentifier value);
 
+    bool is_byte;
     bool is_quad;
     TIdentifier value;
 };
