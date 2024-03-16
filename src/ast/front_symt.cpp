@@ -72,8 +72,10 @@ DoubleInit::DoubleInit(TDouble value, TULong binary)
 ZeroInit::ZeroInit(TLong byte)
     : byte(byte) {}
 
-StringInit::StringInit(bool is_null_terminated, std::shared_ptr<CStringLiteral> literal)
-    : is_null_terminated(is_null_terminated), literal(std::move(literal)) {}
+StringInit::StringInit(bool is_null_terminated, TIdentifier string_constant,
+                       std::shared_ptr<CStringLiteral> literal)
+    : is_null_terminated(is_null_terminated), string_constant(std::move(string_constant)),
+      literal(std::move(literal)) {}
 
 PointerInit::PointerInit(TIdentifier name)
     : name(std::move(name)) {}

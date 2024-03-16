@@ -213,6 +213,7 @@ static void print_ast(Ast* node, size_t t) {
             field("StringInit", "", ++t);
             StringInit* p_node = static_cast<StringInit*>(node);
             field("Bool", std::to_string(p_node->is_null_terminated), t+1);
+            field("TIdentifier", p_node->string_constant, t+1);
             print_ast(p_node->literal.get(), t);
             break;
         }

@@ -92,7 +92,7 @@ struct Array : Type {
 //             | UCharInit(int)
 //             | DoubleInit(double, int)
 //             | ZeroInit(int)
-//             | StringInit(string, bool)
+//             | StringInit(bool, identifier, string)
 //             | PointerInit(identifier)
 struct StaticInit : Ast {
     AST_T type() override;
@@ -166,9 +166,10 @@ struct ZeroInit : StaticInit {
 struct StringInit : StaticInit {
     AST_T type() override;
     StringInit() = default;
-    StringInit(bool is_null_terminated, std::shared_ptr<CStringLiteral> literal);
+    StringInit(bool is_null_terminated, TIdentifier string_constant, std::shared_ptr<CStringLiteral> literal);
 
     bool is_null_terminated;
+    TIdentifier string_constant;
     std::shared_ptr<CStringLiteral> literal;
 };
 

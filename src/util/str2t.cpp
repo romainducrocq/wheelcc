@@ -210,6 +210,51 @@ int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal,
     return hex_string_to_int64(s_hex);
 }
 
+std::string string_literal_to_string_constant(const std::vector<int8_t>& string_literal) {
+    std::string string_constant = "";
+    for(const auto& byte: string_literal) {
+        switch(byte) {
+            case 39:
+                string_constant += "\\047";
+                break;
+            case 34:
+                string_constant += "\\042";
+                break;
+            case 63:
+                string_constant += "\\077";
+                break;
+            case 92:
+                string_constant += "\\134";
+                break;
+            case 7:
+                string_constant += "\\007";
+                break;
+            case 8:
+                string_constant += "\\010";
+                break;
+            case 12:
+                string_constant += "\\014";
+                break;
+            case 10:
+                string_constant += "\\012";
+                break;
+            case 13:
+                string_constant += "\\013";
+                break;
+            case 9:
+                string_constant += "\\011";
+                break;
+            case 11:
+                string_constant += "\\013";
+                break;
+            default:
+                string_constant += static_cast<char>(byte);
+                break;
+        }
+    }
+    return string_constant;
+}
+
 double string_to_double(const std::string& s_double, size_t line) {
     std::vector<char> buffer(s_double.begin(), s_double.end());
     buffer.push_back('\0');

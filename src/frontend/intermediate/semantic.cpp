@@ -1262,8 +1262,10 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
     {
         std::shared_ptr<StaticInit> static_init;
         {
+            TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
             std::shared_ptr<CStringLiteral> literal = node->literal;
-            static_init = std::make_shared<StringInit>(true, std::move(literal));
+            static_init = std::make_shared<StringInit>(true, std::move(string_constant),
+                                                       std::move(literal));
         }
         constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
     }
@@ -1276,8 +1278,10 @@ static void checktype_string_initializer_array_static_init(CString* node, Array*
     TLong byte = static_arr_type->size - static_cast<TLong>(node->literal->value.size()) - 1l;
     {
         bool is_null_terminated = byte >= 0l;
+        TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
         std::shared_ptr<CStringLiteral> literal = node->literal;
-        push_static_init(std::make_shared<StringInit>(std::move(is_null_terminated), std::move(literal)));
+        push_static_init(std::make_shared<StringInit>(std::move(is_null_terminated), std::move(string_constant),
+                                                               std::move(literal)));
     }
     if(byte > 0l) {
         push_zero_init_static_init(std::move(byte));

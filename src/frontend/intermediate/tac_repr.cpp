@@ -127,8 +127,10 @@ static std::unique_ptr<TacExpResult> represent_exp_result_string_instructions(CS
         {
             std::shared_ptr<StaticInit> static_init;
             {
+                TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
                 std::shared_ptr<CStringLiteral> literal = node->literal;
-                static_init = std::make_shared<StringInit>(true, std::move(literal));
+                static_init = std::make_shared<StringInit>(true, std::move(string_constant),
+                                                           std::move(literal));
             }
             constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
         }

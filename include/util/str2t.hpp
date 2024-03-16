@@ -17,6 +17,7 @@ int32_t string_to_char_ascii(const std::string& s_char);
 int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at);
 int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at);
 int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at);
+std::string string_literal_to_string_constant(const std::vector<int8_t>& string_literal);
 double string_to_double(const std::string& s_double, size_t line);
 uint64_t double_to_binary(double decimal);
 
