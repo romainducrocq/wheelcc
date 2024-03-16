@@ -14,9 +14,9 @@ static const std::string& emit_identifier(const TIdentifier& identifier) {
     return identifier;
 }
 
-// string -> $ string // TODO
-static std::string emit_string(const std::vector<TChar> /**/) {
-    return "";
+// string -> $ string
+static const std::string& emit_string(const TIdentifier& string_constant) {
+    return string_constant;
 }
 
 // char -> $ char
@@ -738,7 +738,7 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
         case AST_T::StringInit_t: {
             StringInit* p_node = static_cast<StringInit*>(node);
             std::string term = p_node->is_null_terminated ? "z" : "i";
-            std::string value = emit_string(p_node->literal->value); // TODO
+            std::string value = emit_string(p_node->string_constant);
             emit(".asci" + term + " \"" + value + "\"", 2);
             break;
         }
@@ -780,29 +780,16 @@ static void emit_static_variable_top_level(AsmStaticVariable* node) {
     }
 }
 
-// StaticConstant(name, align, init)<d> -> $     .section .rodata
-//                                         $     <alignment-directive>
-//                                         $ .L<name>:
-//                                         $     .quad <d>
-static void emit_double_static_constant_top_level(AsmStaticConstant* node) {
+// StaticConstant(name, align, init) -> $     .section .rodata
+//                                      $     <alignment-directive>
+//                                      $ .L<name>:
+//                                      $     <init>
+static void emit_static_constant_top_level(AsmStaticConstant* node) {
     std::string name = emit_identifier(node->name);
-    std::string static_init = emit_double(static_cast<DoubleInit*>(node->static_init.get())->binary);
     emit(".section .rodata", 1);
     emit_alignment_directive_top_level(node->alignment);
     emit(".L" + name + ":", 0);
-    emit(".quad " + static_init, 2);
-}
-
-// TODO StringInit_t
-// StaticConstant(name, align, init)<d> -> $ <double-static-constant-directives>
-static void emit_static_constant_top_level(AsmStaticConstant* node) {
-    switch(node->static_init->type()) {
-        case AST_T::DoubleInit_t:
-            emit_double_static_constant_top_level(node);
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
+    emit_init_static_variable_top_level(node->static_init.get());
 }
 
 // Function(name, global, instructions)       -> $ <function-top-level-directives>
