@@ -15,7 +15,7 @@ cd ${ROOT}/../writing-a-c-compiler-tests/
 if [ ${#} -ne 0 ]; then
     test ${@}
 else
-    for i in $(seq 1 15); do
+    for i in $(seq 1 16); do
         test --chapter ${i} --latest-only --bitwise --compound --goto --nan
     done
 fi

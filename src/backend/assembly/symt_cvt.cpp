@@ -140,10 +140,6 @@ static void convert_obj_type(IdentifierAttr* node) {
 }
 
 static void convert_program(AsmProgram* node) {
-    for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
-        convert_top_level(node->static_constant_top_levels[top_level].get());
-    }
-
     for(const auto& symbol: symbol_table) {
         p_symbol = &symbol.first;
         if(symbol.second->type_t->type() == AST_T::FunType_t) {
@@ -152,6 +148,10 @@ static void convert_program(AsmProgram* node) {
         else {
             convert_obj_type(symbol.second->attrs.get());
         }
+    }
+
+    for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
+        convert_top_level(node->static_constant_top_levels[top_level].get());
     }
     p_symbol = nullptr;
 }

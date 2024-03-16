@@ -443,6 +443,7 @@ static void swap_fix_instruction_back() {
 
 static void fix_allocate_stack_bytes() {
     if(counter > 0l) {
+        align_offset_pseudo_register(16);
         (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
     }
 }

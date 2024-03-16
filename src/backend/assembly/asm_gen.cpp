@@ -1169,7 +1169,19 @@ static void generate_copy_instructions(TacCopy* node) {
 }
 
 static void generate_get_address_instructions(TacGetAddress* node) {
-    std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
+    std::shared_ptr<AsmOperand> src;
+    {
+        if(node->src->type() == AST_T::TacVariable_t) {
+            TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
+            if(symbol_table.find(name) != symbol_table.end() &&
+               symbol_table[name]->attrs->type() == AST_T::ConstantAttr_t) {
+                src = std::make_shared<AsmData>(std::move(name));
+                goto Lpass;
+            }
+        }
+        src = generate_operand(node->src.get());
+        Lpass: ;
+    }
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
 }
