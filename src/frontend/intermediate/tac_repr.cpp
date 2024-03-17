@@ -793,79 +793,63 @@ static void represent_statement_instructions(CStatement* node) {
 static void represent_compound_init_instructions(CInitializer* node, Type* init_type, const TIdentifier& symbol,
                                                  TLong& size);
 
-static void represent_array_single_init_string_instructions(CString* node, Array* arr_type, const TIdentifier& symbol) {
-    TLong size = 0l;
+static void represent_array_single_init_string_instructions(CString* node, Array* arr_type, const TIdentifier& symbol,
+                                                            TLong size) {
     size_t byte_at = 0;
 
     size_t bytes_size = static_cast<size_t>(arr_type->size);
     size_t bytes_copy = arr_type->size > static_cast<TLong>(node->literal->value.size()) ? node->literal->value.size() :
                                                                                            bytes_size;
 
-    for(; byte_at < bytes_copy; size++) {
+    while(byte_at < bytes_copy) {
+        TIdentifier dst_name = symbol;
+        TLong offset = size + static_cast<TLong>(byte_at);
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
             {
-                switch(bytes_copy - byte_at) {
-                    case 1: {
-                        TChar value = string_literal_bytes_to_int8(node->literal->value, byte_at);
-                        constant = std::make_shared<CConstChar>(std::move(value));
-                        byte_at += 1;
-                        break;
-                    }
-                    case 2:
-                    case 3:
-                    case 4: {
-                        TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
-                        constant = std::make_shared<CConstInt>(std::move(value));
-                        byte_at += 4;
-                        break;
-                    }
-                    default: {
-                        TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
-                        constant = std::make_shared<CConstLong>(std::move(value));
-                        byte_at += 8;
-                        break;
-                    }
+                size_t bytes_left = bytes_size - byte_at;
+                if(bytes_left < 4) {
+                    TChar value = string_literal_bytes_to_int8(node->literal->value, byte_at);
+                    constant = std::make_shared<CConstChar>(std::move(value));
+                    byte_at += 1;
+                } else if(bytes_left < 8) {
+                    TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
+                    constant = std::make_shared<CConstInt>(std::move(value));
+                    byte_at += 4;
+                } else {
+                    TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
+                    constant = std::make_shared<CConstLong>(std::move(value));
+                    byte_at += 8;
                 }
             }
             src = std::make_shared<TacConstant>(std::move(constant));
         }
-        TIdentifier dst_name = symbol;
-        TLong offset = size;
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
                                                                      std::move(src)));
     }
 
-    for(; byte_at < bytes_size; size++) {
+    while(byte_at < bytes_size) {
+        TIdentifier dst_name = symbol;
+        TLong offset = size + static_cast<TLong>(byte_at);
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
             {
-                switch(bytes_size - byte_at) {
-                    case 1: {
-                        constant = std::make_shared<CConstChar>(0);
-                        byte_at += 1;
-                        break;
-                    }
-                    case 2:
-                    case 3:
-                    case 4: {
-                        constant = std::make_shared<CConstInt>(0);
-                        byte_at += 4;
-                        break;
-                    }
-                    default: {
-                        constant = std::make_shared<CConstLong>(0l);
-                        byte_at += 8;
-                        break;
-                    }
+                size_t bytes_left = bytes_size - byte_at;
+                if(bytes_left < 4) {
+                    constant = std::make_shared<CConstChar>(0);
+                    byte_at += 1;
+                } else if(bytes_left < 8) {
+                    constant = std::make_shared<CConstInt>(0);
+                    byte_at += 4;
+                } else {
+                    constant = std::make_shared<CConstLong>(0l);
+                    byte_at += 8;
                 }
             }
             src = std::make_shared<TacConstant>(std::move(constant));
         }
-        TIdentifier dst_name = symbol;
-        TLong offset = size;
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
                                                                      std::move(src)));
     }
@@ -875,7 +859,7 @@ static void represent_single_init_instructions(CSingleInit* node, Type* init_typ
     if(node->exp->type() == AST_T::CString_t &&
        init_type->type() == AST_T::Array_t) {
         represent_array_single_init_string_instructions(static_cast<CString*>(node->exp.get()),
-                                                        static_cast<Array*>(init_type), symbol);
+                                                        static_cast<Array*>(init_type), symbol, 0l);
     }
     else {
         std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
@@ -894,7 +878,7 @@ static void represent_scalar_compound_init_instructions(CSingleInit* node, Type*
     if(node->exp->type() == AST_T::CString_t &&
        init_type->type() == AST_T::Array_t) {
         represent_array_single_init_string_instructions(static_cast<CString*>(node->exp.get()),
-                                                        static_cast<Array*>(init_type), symbol);
+                                                        static_cast<Array*>(init_type), symbol, size);
     }
     else {
         TIdentifier dst_name = symbol;
