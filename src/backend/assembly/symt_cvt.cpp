@@ -133,10 +133,12 @@ static void convert_fun_type(FunAttr* node) {
 }
 
 static void convert_obj_type(IdentifierAttr* node) {
-    std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*p_symbol);
-    bool is_static = node->type() == AST_T::StaticAttr_t;
-    add_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false,
-                                                          std::move(assembly_type)));
+    if(node->type() != AST_T::ConstantAttr_t) {
+        std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*p_symbol);
+        bool is_static = node->type() == AST_T::StaticAttr_t;
+        add_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false,
+                                                              std::move(assembly_type)));
+    }
 }
 
 static void convert_program(AsmProgram* node) {
