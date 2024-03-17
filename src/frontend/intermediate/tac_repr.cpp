@@ -796,26 +796,37 @@ static void represent_compound_init_instructions(CInitializer* node, Type* init_
 static void represent_array_single_init_string_instructions(CString* node, Array* arr_type, const TIdentifier& symbol) {
     TLong size = 0l;
     size_t byte_at = 0;
-    
-    for(; byte_at < (arr_type->size > static_cast<TLong>(node->literal->value.size()) ?
-                     node->literal->value.size() : static_cast<size_t>(arr_type->size)); size++) {
+
+    size_t bytes_size = static_cast<size_t>(arr_type->size);
+    size_t bytes_copy = arr_type->size > static_cast<TLong>(node->literal->value.size()) ? node->literal->value.size() :
+                                                                                           bytes_size;
+
+    for(; byte_at < bytes_copy; size++) {
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
             {
-                size_t bytes_left = node->literal->value.size() - byte_at;
-                if(bytes_left > 4) {
-                    TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
-                    constant = std::make_shared<CConstLong>(std::move(value));
-                    byte_at += 8;
-                } else if(bytes_left > 1) {
-                    TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
-                    constant = std::make_shared<CConstInt>(std::move(value));
-                    byte_at += 4;
-                } else {
-                    TChar value = string_literal_bytes_to_int8(node->literal->value, byte_at);
-                    constant = std::make_shared<CConstChar>(std::move(value));
-                    byte_at += 1;
+                switch(bytes_copy - byte_at) {
+                    case 1: {
+                        TChar value = string_literal_bytes_to_int8(node->literal->value, byte_at);
+                        constant = std::make_shared<CConstChar>(std::move(value));
+                        byte_at += 1;
+                        break;
+                    }
+                    case 2:
+                    case 3:
+                    case 4: {
+                        TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
+                        constant = std::make_shared<CConstInt>(std::move(value));
+                        byte_at += 4;
+                        break;
+                    }
+                    default: {
+                        TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
+                        constant = std::make_shared<CConstLong>(std::move(value));
+                        byte_at += 8;
+                        break;
+                    }
                 }
             }
             src = std::make_shared<TacConstant>(std::move(constant));
@@ -823,24 +834,32 @@ static void represent_array_single_init_string_instructions(CString* node, Array
         TIdentifier dst_name = symbol;
         TLong offset = size;
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
-                                                                    std::move(src)));
+                                                                     std::move(src)));
     }
 
-    for(; byte_at < static_cast<size_t>(arr_type->size); size++) {
+    for(; byte_at < bytes_size; size++) {
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
             {
-                size_t bytes_left = node->literal->value.size() - byte_at;
-                if(bytes_left > 4) {
-                    constant = std::make_shared<CConstLong>(0l);
-                    byte_at += 8;
-                } else if(bytes_left > 1) {
-                    constant = std::make_shared<CConstInt>(0);
-                    byte_at += 4;
-                } else {
-                    constant = std::make_shared<CConstChar>(0);
-                    byte_at += 1;
+                switch(bytes_size - byte_at) {
+                    case 1: {
+                        constant = std::make_shared<CConstChar>(0);
+                        byte_at += 1;
+                        break;
+                    }
+                    case 2:
+                    case 3:
+                    case 4: {
+                        constant = std::make_shared<CConstInt>(0);
+                        byte_at += 4;
+                        break;
+                    }
+                    default: {
+                        constant = std::make_shared<CConstLong>(0l);
+                        byte_at += 8;
+                        break;
+                    }
                 }
             }
             src = std::make_shared<TacConstant>(std::move(constant));
@@ -848,7 +867,7 @@ static void represent_array_single_init_string_instructions(CString* node, Array
         TIdentifier dst_name = symbol;
         TLong offset = size;
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
-                                                                    std::move(src)));
+                                                                     std::move(src)));
     }
 }
 
