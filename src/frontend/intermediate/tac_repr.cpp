@@ -795,29 +795,20 @@ static void represent_compound_init_instructions(CInitializer* node, Type* init_
 
 static void represent_array_single_init_string_instructions(CString* node, Array* arr_type, const TIdentifier& symbol) {
     TLong size = 0l;
-
-    size_t bytes_copy;
-    size_t bytes_null;
-    if(arr_type->size > static_cast<TLong>(node->literal->value.size())) {
-        bytes_copy = node->literal->value.size();
-        bytes_null = static_cast<size_t>(arr_type->size) - node->literal->value.size();
-    }
-    else {
-        bytes_copy = static_cast<size_t>(arr_type->size);
-        bytes_null = 0;
-    }
-
-    for(size_t byte_at = 0; byte_at < bytes_copy; size++) {
+    size_t byte_at = 0;
+    
+    for(; byte_at < (arr_type->size > static_cast<TLong>(node->literal->value.size()) ?
+                     node->literal->value.size() : static_cast<size_t>(arr_type->size)); size++) {
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
             {
                 size_t bytes_left = node->literal->value.size() - byte_at;
-                if (bytes_left >= 8) {
+                if(bytes_left > 4) {
                     TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
                     constant = std::make_shared<CConstLong>(std::move(value));
                     byte_at += 8;
-                } else if (bytes_left >= 4) {
+                } else if(bytes_left > 1) {
                     TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
                     constant = std::make_shared<CConstInt>(std::move(value));
                     byte_at += 4;
@@ -835,16 +826,16 @@ static void represent_array_single_init_string_instructions(CString* node, Array
                                                                     std::move(src)));
     }
 
-    for(size_t byte_at = 0; byte_at < bytes_null; size++) {
+    for(; byte_at < static_cast<size_t>(arr_type->size); size++) {
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
             {
                 size_t bytes_left = node->literal->value.size() - byte_at;
-                if (bytes_left >= 8) {
+                if(bytes_left > 4) {
                     constant = std::make_shared<CConstLong>(0l);
                     byte_at += 8;
-                } else if (bytes_left >= 4) {
+                } else if(bytes_left > 1) {
                     constant = std::make_shared<CConstInt>(0);
                     byte_at += 4;
                 } else {
