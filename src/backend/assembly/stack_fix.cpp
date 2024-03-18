@@ -84,7 +84,6 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
-            align_offset_pseudo_register(8);
         }
     }
 
@@ -101,7 +100,6 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         else {
             allocate_offset_pseudo_mem_register(backend_obj->assembly_type.get());
             pseudo_map[node->name] = counter;
-            align_offset_pseudo_register(8);
         }
     }
 

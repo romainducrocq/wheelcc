@@ -76,16 +76,21 @@ static std::shared_ptr<TacVariable> represent_variable_value(CVar* node) {
     return std::make_shared<TacVariable>(std::move(name));
 }
 
-static std::shared_ptr<TacVariable> represent_inner_exp_value(CExp* node) {
+static std::shared_ptr<TacVariable> represent_inner_exp_value(CExp* node, std::shared_ptr<Type>&& inner_type) {
     TIdentifier inner_name = represent_variable_identifier(node);
-    std::shared_ptr<Type> inner_type = node->exp_type;
     std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
     symbol_table[inner_name] = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
     return std::make_shared<TacVariable>(std::move(inner_name));
 }
 
-static std::shared_ptr<TacValue> represent_inner_value(CExp* node) {
-    return represent_inner_exp_value(node);
+static std::shared_ptr<TacValue> represent_plain_inner_value(CExp* node) {
+    std::shared_ptr<Type> inner_type = node->exp_type;
+    return represent_inner_exp_value(node, std::move(inner_type));
+}
+
+static std::shared_ptr<TacValue> represent_pointer_inner_value(CExp* node) {
+    std::shared_ptr<Type> inner_type = std::make_shared<Long>();
+    return represent_inner_exp_value(node, std::move(inner_type));
 }
 
 // val = Constant(int) | Var(identifier)
@@ -203,7 +208,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCas
         return std::make_unique<TacPlainOperand>(std::move(src));
     }
 
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     if(node->exp->exp_type->type() == AST_T::Double_t) {
         if(is_type_signed(node->target_type.get())) {
             push_instruction(std::make_unique<TacDoubleToInt>(std::move(src), dst));
@@ -242,7 +247,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCas
 
 static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUnary* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     std::unique_ptr<TacUnaryOp> unary_op = represent_unary_op(node->unary_op.get());
     push_instruction(std::make_unique<TacUnary>(std::move(unary_op), std::move(src), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
@@ -264,7 +269,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_from_to_pointer_binary
         src_ptr = represent_exp_instructions(node->exp_right.get());
         index = represent_exp_instructions(node->exp_left.get());
     }
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     push_instruction(std::make_unique<TacAddPtr>(std::move(scale), std::move(src_ptr), std::move(index), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
@@ -285,12 +290,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_to_pointer_binary_subt
     std::shared_ptr<TacValue> index;
     {
         index = represent_exp_instructions(node->exp_right.get());
-        std::shared_ptr<TacValue> dst = represent_inner_value(node);
+        std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
         std::unique_ptr<TacUnaryOp> unary_op = std::make_unique<TacNegate>();
         push_instruction(std::make_unique<TacUnary>(std::move(unary_op), std::move(index), dst));
         index = std::move(dst);
     }
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     push_instruction(std::make_unique<TacAddPtr>(std::move(scale), std::move(src_ptr), std::move(index), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
@@ -300,7 +305,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_pointer_binary_subtrac
     {
         src_1 = represent_exp_instructions(node->exp_left.get());
         std::shared_ptr<TacValue> src_2 = represent_exp_instructions(node->exp_right.get());
-        std::shared_ptr<TacValue> dst = represent_inner_value(node);
+        std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
         std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacSubtract>();
         push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src_1),
                                                               std::move(src_2), dst));
@@ -312,7 +317,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_pointer_binary_subtrac
         std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(std::move(value));
         src_2 = std::make_shared<TacConstant>(std::move(constant));
     }
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacDivide>();
     push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src_1),
                                                           std::move(src_2), dst));
@@ -336,7 +341,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_subtract_instru
 static std::unique_ptr<TacExpResult> represent_exp_result_binary_and_instructions(CBinary* node) {
     TIdentifier target_false = represent_label_identifier("and_false");
     TIdentifier target_true = represent_label_identifier("and_true");
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
         push_instruction(std::make_unique<TacJumpIfZero>(target_false,
@@ -366,7 +371,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_and_instruction
 static std::unique_ptr<TacExpResult> represent_exp_result_binary_or_instructions(CBinary* node) {
     TIdentifier target_true = represent_label_identifier("or_true");
     TIdentifier target_false = represent_label_identifier("or_false");
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
         push_instruction(std::make_unique<TacJumpIfNotZero>(target_true,
@@ -396,7 +401,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_or_instructions
 static std::unique_ptr<TacExpResult> represent_exp_result_binary_any_instructions(CBinary* node) {
     std::shared_ptr<TacValue> src1 = represent_exp_instructions(node->exp_left.get());
     std::shared_ptr<TacValue> src2 = represent_exp_instructions(node->exp_right.get());
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     std::unique_ptr<TacBinaryOp> binary_op = represent_binary_op(node->binary_op.get());
     push_instruction(std::make_unique<TacBinary>(std::move(binary_op), std::move(src1), std::move(src2), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
@@ -465,7 +470,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
 static std::unique_ptr<TacExpResult> represent_exp_result_conditional_instructions(CConditional* node) {
     TIdentifier target_else = represent_label_identifier("ternary_else");
     TIdentifier target_false = represent_label_identifier("ternary_false");
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
         push_instruction(std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
@@ -491,7 +496,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_fun_call_instructions(
         std::shared_ptr<TacValue> arg = represent_exp_instructions(node->args[i].get());
         args.push_back(std::move(arg));
     }
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     push_instruction(std::make_unique<TacFunCall>(std::move(name), std::move(args), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
@@ -504,7 +509,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_dereference_instructio
 static std::unique_ptr<TacExpResult> represent_exp_result_plain_operand_addrof_instructions(TacPlainOperand* res,
                                                                                             CAddrOf* node) {
     std::shared_ptr<TacValue> src = std::move(res->val);
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
@@ -543,7 +548,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_subscript_instructions
         src_ptr = represent_exp_instructions(node->subscript_exp.get());
         index = represent_exp_instructions(node->primary_exp.get());
     }
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     push_instruction(std::make_unique<TacAddPtr>(std::move(scale), std::move(src_ptr), std::move(index), dst));
     return std::make_unique<TacDereferencedPointer>(std::move(dst));
 }
@@ -587,7 +592,7 @@ static std::shared_ptr<TacValue> represent_exp_plain_operand_instructions(TacPla
 static std::shared_ptr<TacValue> represent_exp_dereferenced_pointer_instructions(TacDereferencedPointer* res,
                                                                                  CExp* node) {
     std::shared_ptr<TacValue> src = std::move(res->val);
-    std::shared_ptr<TacValue> dst = represent_inner_value(node);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     push_instruction(std::make_unique<TacLoad>(std::move(src), dst));
     return dst;
 }
