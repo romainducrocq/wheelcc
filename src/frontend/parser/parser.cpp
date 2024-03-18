@@ -486,6 +486,7 @@ static std::unique_ptr<CVar> parse_var_factor() {
 }
 
 static std::unique_ptr<CString> parse_string_literal_factor() {
+    pop_next();
     std::shared_ptr<CStringLiteral> literal = parse_string_literal();
     return std::make_unique<CString>(std::move(literal));
 }
