@@ -205,16 +205,16 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
         return std::make_shared<Double>();
     }
 
-    TInt type1_size = get_scalar_type_size(node_1->exp_type.get());
-    TInt type2_size = get_scalar_type_size(node_2->exp_type.get());
-    if(type1_size == type2_size) {
+    TInt type_size_1 = get_scalar_type_size(node_1->exp_type.get());
+    TInt type_size_2 = get_scalar_type_size(node_2->exp_type.get());
+    if(type_size_1 == type_size_2) {
         if(is_type_signed(node_1->exp_type.get())) {
             return node_2->exp_type;
         } else {
             return node_1->exp_type;
         }
     }
-    if(type1_size > type2_size) {
+    if(type_size_1 > type_size_2) {
         return node_1->exp_type;
     } else {
         return node_2->exp_type;
