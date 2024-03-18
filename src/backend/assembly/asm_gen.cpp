@@ -258,6 +258,7 @@ static bool is_constant_value_8_bits(TacConstant* node) {
 static bool is_variable_value_8_bits(TacVariable* node) {
     switch(symbol_table[node->name]->type_t->type()) {
         case AST_T::Char_t:
+        case AST_T::SChar_t:
         case AST_T::UChar_t:
             return true;
         default:
