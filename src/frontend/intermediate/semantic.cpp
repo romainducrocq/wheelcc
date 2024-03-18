@@ -184,10 +184,10 @@ static bool is_exp_lvalue(CExp* node) {
 
 static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     if(is_type_character(node_1->exp_type.get())) {
-        node_1->exp_type = std::make_shared<Int>();
+        return std::make_shared<Int>();
     }
     if(is_type_character(node_2->exp_type.get())) {
-        node_2->exp_type = std::make_shared<Int>();
+        return std::make_shared<Int>();
     }
     if(is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
         return node_1->exp_type;
