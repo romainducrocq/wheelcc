@@ -184,18 +184,27 @@ static bool is_exp_lvalue(CExp* node) {
 
 static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     if(is_type_character(node_1->exp_type.get())) {
-        return std::make_shared<Int>();
+        std::shared_ptr<Type> exp_type_1 = std::move(node_1->exp_type);
+        node_1->exp_type = std::make_shared<Int>();
+        std::shared_ptr<Type> joint_type = get_joint_type(node_1, node_2);
+        node_1->exp_type = std::move(exp_type_1);
+        return joint_type;
     }
-    if(is_type_character(node_2->exp_type.get())) {
-        return std::make_shared<Int>();
+    else if(is_type_character(node_2->exp_type.get())) {
+        std::shared_ptr<Type> exp_type_2 = std::move(node_2->exp_type);
+        node_2->exp_type = std::make_shared<Int>();
+        std::shared_ptr<Type> joint_type = get_joint_type(node_1, node_2);
+        node_2->exp_type = std::move(exp_type_2);
+        return joint_type;
     }
-    if(is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
+    else if(is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
         return node_1->exp_type;
     }
     else if(node_1->exp_type->type() == AST_T::Double_t ||
             node_2->exp_type->type() == AST_T::Double_t) {
         return std::make_shared<Double>();
     }
+
     TInt type1_size = get_scalar_type_size(node_1->exp_type.get());
     TInt type2_size = get_scalar_type_size(node_2->exp_type.get());
     if(type1_size == type2_size) {
