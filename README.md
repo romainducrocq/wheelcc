@@ -106,16 +106,16 @@ FILES:           list of .c files to compile
 
 - This language was developped and tested with:  
 ```
-gcc: (Debian 10.2.1-6) 10.2.1 20210110
-g++: (Debian 10.2.1-6) 10.2.1 20210110
-GLIBC: 2.31
+gcc:     (Debian 10.2.1-6) 10.2.1 20210110
+g++:     (Debian 10.2.1-6) 10.2.1 20210110
+GLIBC:   2.31
 GLIBCXX: 20210110
 
-OS: Debian GNU/Linux 11 (bullseye) on Windows 10 x86_64
-Kernel: 5.15.133.1-microsoft-standard-WSL2
-Shell: bash 5.1.4
-CPU: 11th Gen Intel i7-11850H (16) @ 2.496GHz
-Memory: 15860MiB
+OS:      Debian GNU/Linux 11 (bullseye) on Windows 10 x86_64
+Kernel:  5.15.133.1-microsoft-standard-WSL2
+Shell:   bash 5.1.4
+CPU:     11th Gen Intel i7-11850H (16) @ 2.496GHz
+Memory:  15860MiB
 ```
 
 ****
