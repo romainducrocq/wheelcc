@@ -669,10 +669,10 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
 }
 
 // <exp> ::= <unary-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
-// exp = Constant(const, type) | String(string) | Var(identifier, type) | Cast(type, exp, type)
+// exp = Constant(const, type) | String(string, type) | Var(identifier, type) | Cast(type, exp, type)
 //     | Unary(unary_operator, exp, type) | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type)
 //     | Conditional(exp, exp, exp, type) | FunctionCall(identifier, exp*, type) | Dereference(exp, type)
-//     | AddrOf(exp, type) | Subscript(exp, exp)
+//     | AddrOf(exp, type) | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     int32_t precedence;
     std::unique_ptr<CExp> exp_left = parse_unary_exp_factor();
@@ -844,7 +844,7 @@ static std::unique_ptr<CNull> parse_null_statement() {
 //               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
 //               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
 //               | "break" ";" | "continue" ";" | <exp> ";"
-// statement = Return(exp) | Expression(exp) | If(exp, statement, statement?) | Goto(identifier)
+// statement = Return(exp?) | Expression(exp) | If(exp, statement, statement?) | Goto(identifier)
 //           | Label(identifier, target) | Compound(block) | While(exp, statement, identifier)
 //           | DoWhile(statement, exp, identifier) | For(for_init, exp?, exp?, statement, identifier)
 //           | Break(identifier) | Continue(identifier) | Null

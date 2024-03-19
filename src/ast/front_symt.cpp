@@ -14,6 +14,7 @@ AST_T Long::type() { return AST_T::Long_t; }
 AST_T UInt::type() { return AST_T::UInt_t; }
 AST_T ULong::type() { return AST_T::ULong_t; }
 AST_T Double::type() { return AST_T::Double_t; }
+AST_T Void::type() { return AST_T::Void_t; }
 AST_T FunType::type() { return AST_T::FunType_t; }
 AST_T Pointer::type() { return AST_T::Pointer_t; }
 AST_T Array::type() { return AST_T::Array_t; }

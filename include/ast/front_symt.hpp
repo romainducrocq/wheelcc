@@ -17,6 +17,7 @@
 //      | UInt
 //      | ULong
 //      | Double
+//      | Void
 //      | FunType(type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
@@ -53,6 +54,10 @@ struct ULong : Type {
 };
 
 struct Double : Type {
+    AST_T type() override;
+};
+
+struct Void : Type {
     AST_T type() override;
 };
 

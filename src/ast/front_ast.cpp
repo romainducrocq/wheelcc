@@ -51,6 +51,8 @@ AST_T CFunctionCall::type() { return AST_T::CFunctionCall_t; }
 AST_T CDereference::type() { return AST_T::CDereference_t; }
 AST_T CAddrOf::type() { return AST_T::CAddrOf_t; }
 AST_T CSubscript::type() { return AST_T::CSubscript_t; }
+AST_T CSizeOf::type() { return AST_T::CSizeOf_t; }
+AST_T CSizeOfT::type() { return AST_T::CSizeOfT_t; }
 AST_T CStatement::type() { return AST_T::CStatement_t; }
 AST_T CReturn::type() { return AST_T::CReturn_t; }
 AST_T CExpression::type() { return AST_T::CExpression_t; }
@@ -146,6 +148,12 @@ CAddrOf::CAddrOf(std::unique_ptr<CExp> exp)
 
 CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp)
     : primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)) {}
+
+CSizeOf::CSizeOf(std::unique_ptr<CExp> exp)
+    : exp(std::move(exp)) {}
+
+CSizeOfT::CSizeOfT(std::shared_ptr<Type> type_t)
+    : type_t(std::move(type_t)) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}

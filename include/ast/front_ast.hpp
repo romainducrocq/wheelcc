@@ -214,7 +214,7 @@ struct CFunDeclarator : CDeclarator {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // exp = Constant(const, type)
-//     | String(string)
+//     | String(string, type)
 //     | Var(identifier, type)
 //     | Cast(type, exp, type)
 //     | Unary(unary_operator, exp, type)
@@ -224,7 +224,9 @@ struct CFunDeclarator : CDeclarator {
 //     | FunctionCall(identifier, exp*, type)
 //     | Dereference(exp, type)
 //     | AddrOf(exp, type)
-//     | Subscript(exp, exp)
+//     | Subscript(exp, exp, type)
+//     | SizeOf(exp, type)
+//     | SizeOfT(type, type)
 struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
@@ -376,9 +378,31 @@ struct CSubscript : CExp {
     */
 };
 
+struct CSizeOf : CExp {
+    AST_T type() override;
+    CSizeOf() = default;
+    CSizeOf(std::unique_ptr<CExp> exp);
+
+    std::unique_ptr<CExp> exp;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CSizeOfT : CExp {
+    AST_T type() override;
+    CSizeOfT() = default;
+    CSizeOfT(std::shared_ptr<Type> type_t);
+
+    std::shared_ptr<Type> type_t;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// statement = Return(exp)
+// statement = Return(exp?)
 //           | Expression(exp)
 //           | If(exp, statement, statement?)
 //           | Goto(identifier)
@@ -399,6 +423,7 @@ struct CReturn : CStatement {
     CReturn() = default;
     CReturn(std::unique_ptr<CExp> exp);
 
+    // Optional
     std::unique_ptr<CExp> exp;
 };
 
