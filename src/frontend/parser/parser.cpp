@@ -760,15 +760,12 @@ static std::unique_ptr<CStatement> parse_statement();
 
 static std::unique_ptr<CReturn> parse_return_statement() {
     pop_next();
-    std::unique_ptr<CExp> exp = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    switch(exp->type()) {
-        case AST_T::CSizeOf_t:
-        case AST_T::CSizeOfT_t:
-            return std::make_unique<CReturn>(nullptr);
-        default:
-            return std::make_unique<CReturn>(std::move(exp));
+    std::unique_ptr<CExp> exp;
+    if(peek_next().token_kind != TOKEN_KIND::semicolon) {
+        exp = parse_exp(0);
     }
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CReturn>(std::move(exp));
 }
 
 static std::unique_ptr<CExpression> parse_expression_statement() {
