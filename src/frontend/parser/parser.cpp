@@ -464,7 +464,29 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
 static std::shared_ptr<Type> parse_type_specifier();
 
 static std::unique_ptr<CExp> parse_unary_exp_factor();
+static std::unique_ptr<CExp> parse_cast_exp_factor();
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence);
+
+static void parse_abstract_declarator_cast_factor(std::shared_ptr<Type>& target_type) {
+    AbstractDeclarator abstract_declarator;
+    parse_process_abstract_declarator(parse_abstract_declarator().get(), std::move(target_type),
+                                      abstract_declarator);
+    target_type = std::move(abstract_declarator.derived_type);
+}
+
+// <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
+static std::shared_ptr<Type> parse_type_name() {
+    std::shared_ptr<Type> type_name = parse_type_specifier();
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::binop_multiplication:
+        case TOKEN_KIND::parenthesis_open:
+        case TOKEN_KIND::brackets_open:
+            parse_abstract_declarator_cast_factor(type_name);
+        default:
+            break;
+    }
+    return type_name;
+}
 
 // <argument-list> ::= <exp> { "," <exp> }
 static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
@@ -481,41 +503,6 @@ static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
     return args;
 }
 
-static std::unique_ptr<CVar> parse_var_factor() {
-    TIdentifier name; parse_identifier(name);
-    return std::make_unique<CVar>(std::move(name));
-}
-
-static std::unique_ptr<CString> parse_string_literal_factor() {
-    pop_next();
-    std::shared_ptr<CStringLiteral> literal = parse_string_literal();
-    return std::make_unique<CString>(std::move(literal));
-}
-
-static void parse_abstract_declarator_cast_factor(std::shared_ptr<Type>& target_type) {
-    AbstractDeclarator abstract_declarator;
-    parse_process_abstract_declarator(parse_abstract_declarator().get(), std::move(target_type),
-                                      abstract_declarator);
-    target_type = std::move(abstract_declarator.derived_type);
-}
-
-// "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <factor>
-static std::unique_ptr<CCast> parse_cast_factor() {
-    pop_next();
-    std::shared_ptr<Type> target_type = parse_type_specifier();
-    switch(peek_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::parenthesis_open:
-        case TOKEN_KIND::brackets_open:
-            parse_abstract_declarator_cast_factor(target_type);
-        default:
-            break;
-    }
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    std::unique_ptr<CExp> exp = parse_unary_exp_factor();
-    return std::make_unique<CCast>(std::move(exp), std::move(target_type));
-}
-
 static std::unique_ptr<CConstant> parse_constant_factor() {
     std::shared_ptr<CConst> constant = parse_constant();
     return std::make_unique<CConstant>(std::move(constant));
@@ -526,17 +513,15 @@ static std::unique_ptr<CConstant> parse_unsigned_constant_factor() {
     return std::make_unique<CConstant>(std::move(constant));
 }
 
-static std::unique_ptr<CUnary> parse_unary_factor() {
-    std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
-    std::unique_ptr<CExp> exp = parse_unary_exp_factor();
-    return std::make_unique<CUnary>(std::move(unary_op), std::move(exp));
+static std::unique_ptr<CString> parse_string_literal_factor() {
+    pop_next();
+    std::shared_ptr<CStringLiteral> literal = parse_string_literal();
+    return std::make_unique<CString>(std::move(literal));
 }
 
-static std::unique_ptr<CExp> parse_inner_exp_factor() {
-    pop_next();
-    std::unique_ptr<CExp> inner_exp = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    return inner_exp;
+static std::unique_ptr<CVar> parse_var_factor() {
+    TIdentifier name; parse_identifier(name);
+    return std::make_unique<CVar>(std::move(name));
 }
 
 static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
@@ -550,20 +535,55 @@ static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
     return std::make_unique<CFunctionCall>(std::move(name), std::move(args));
 }
 
+static std::unique_ptr<CExp> parse_inner_exp_factor() {
+    pop_next();
+    std::unique_ptr<CExp> inner_exp = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return inner_exp;
+}
+
+static std::unique_ptr<CUnary> parse_unary_factor() {
+    std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
+    std::unique_ptr<CExp> exp = parse_cast_exp_factor();
+    return std::make_unique<CUnary>(std::move(unary_op), std::move(exp));
+}
+
 static std::unique_ptr<CExp> parse_pointer_factor() {
     switch(pop_next().token_kind) {
         case TOKEN_KIND::binop_multiplication: {
-            std::unique_ptr<CExp> exp = parse_unary_exp_factor();
+            std::unique_ptr<CExp> exp = parse_cast_exp_factor();
             return std::make_unique<CDereference>(std::move(exp));
         }
         case TOKEN_KIND::binop_bitand: {
-            std::unique_ptr<CExp> exp = parse_unary_exp_factor();
+            std::unique_ptr<CExp> exp = parse_cast_exp_factor();
             return std::make_unique<CAddrOf>(std::move(exp));
         }
         default:
             raise_runtime_error_at_line("Expected token type " + em("unary operator") +
                                         " but found token " + em(next_token->token), next_token->line);
     }
+}
+
+static std::unique_ptr<CExp> parse_sizeof_factor() {
+    pop_next();
+    if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
+        pop_next();
+        std::shared_ptr<Type> type_t = parse_type_name();
+        expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+        return std::make_unique<CSizeOfT>(std::move(type_t));
+    }
+    else {
+        std::unique_ptr<CExp> exp = parse_unary_exp_factor();
+        return std::make_unique<CSizeOf>(std::move(exp));
+    }
+}
+
+static std::unique_ptr<CCast> parse_cast_factor() {
+    pop_next();
+    std::shared_ptr<Type> target_type = parse_type_name();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    std::unique_ptr<CExp> exp = parse_cast_exp_factor();
+    return std::make_unique<CCast>(std::move(exp), std::move(target_type));
 }
 
 // <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
@@ -606,22 +626,7 @@ static std::unique_ptr<CExp> parse_postfix_exp_factor() {
     return primary_exp;
 }
 
-// <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
-static std::shared_ptr<Type> parse_type_name() {
-    std::shared_ptr<Type> type_name = parse_type_specifier();
-    switch(peek_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::parenthesis_open:
-        case TOKEN_KIND::brackets_open:
-            parse_abstract_declarator_cast_factor(type_name);
-        default:
-            break;
-    }
-    return type_name;
-}
-
-// <unary-exp> ::= <unop> <unary-exp> | "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <unary-exp>
-//               | <postfix-exp>
+//<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" | <postfix-exp>
 static std::unique_ptr<CExp> parse_unary_exp_factor() {
     switch(peek_next().token_kind) {
         case TOKEN_KIND::unop_complement:
@@ -631,36 +636,29 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::binop_bitand:
             return parse_pointer_factor();
-        case TOKEN_KIND::parenthesis_open: {
-            switch(peek_next_i(1).token_kind) {
-                case TOKEN_KIND::key_char:
-                case TOKEN_KIND::key_int:
-                case TOKEN_KIND::key_long:
-                case TOKEN_KIND::key_double:
-                case TOKEN_KIND::key_unsigned:
-                case TOKEN_KIND::key_signed:
-                    return parse_cast_factor();
-                default:
-                    break;
-            }
-            break;
-        }
+        case TOKEN_KIND::key_sizeof:
+            return parse_sizeof_factor();
         default:
-            break;
+            return parse_postfix_exp_factor();
     }
-    return parse_postfix_exp_factor();
 }
 
 // <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
 static std::unique_ptr<CExp> parse_cast_exp_factor() {
-    // TODO
-//    pop_next();
-//    std::shared_ptr<Type> target_type = parse_type_name();
-//    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-//    if(peek_next().token_kind == AST_T::parenthesis_open) {
-//        parse_cast_exp_factor();
-//    }
-    return nullptr;
+    if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
+        switch(peek_next_i(1).token_kind) {
+            case TOKEN_KIND::key_char:
+            case TOKEN_KIND::key_int:
+            case TOKEN_KIND::key_long:
+            case TOKEN_KIND::key_double:
+            case TOKEN_KIND::key_unsigned:
+            case TOKEN_KIND::key_signed:
+                return parse_cast_factor();
+            default:
+                break;
+        }
+    }
+    return parse_unary_exp_factor();
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
@@ -694,14 +692,14 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
     return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right));
 }
 
-// <exp> ::= <unary-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
+// <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 // exp = Constant(const, type) | String(string, type) | Var(identifier, type) | Cast(type, exp, type)
 //     | Unary(unary_operator, exp, type) | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type)
 //     | Conditional(exp, exp, exp, type) | FunctionCall(identifier, exp*, type) | Dereference(exp, type)
 //     | AddrOf(exp, type) | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     int32_t precedence;
-    std::unique_ptr<CExp> exp_left = parse_unary_exp_factor();
+    std::unique_ptr<CExp> exp_left = parse_cast_exp_factor();
     while(true) {
         precedence = parse_token_precedence(peek_next().token_kind);
         if(precedence < min_precedence) {
