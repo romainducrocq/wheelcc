@@ -95,4 +95,6 @@ ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init)
 Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
     : type_t(std::move(type_t)), attrs(std::move(attrs)) {}
 
+std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
+
 std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;

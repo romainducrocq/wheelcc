@@ -56,20 +56,20 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
 }
 
-static void append_double_static_constant_top_level(const TIdentifier& identifier, TDouble value, TULong binary,
-                                                    TInt byte);
+static void generate_double_static_constant_top_level(const TIdentifier& identifier, TDouble value, TULong binary,
+                                                      TInt byte);
 
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
     TIdentifier static_constant_label;
     {
-        TIdentifier str_binary = std::to_string(binary);
-        if(static_const_label_map.find(str_binary) != static_const_label_map.end()) {
-            static_constant_label = static_const_label_map[str_binary];
+        TIdentifier static_constant_hash = std::to_string(binary);
+        if(static_constant_hash_map.find(static_constant_hash) != static_constant_hash_map.end()) {
+            static_constant_label = static_constant_hash_map[static_constant_hash];
         }
         else {
             static_constant_label = represent_label_identifier("double");
-            static_const_label_map[str_binary] = static_constant_label;
-            append_double_static_constant_top_level(static_constant_label, value, binary, byte);
+            static_constant_hash_map[static_constant_hash] = static_constant_label;
+            generate_double_static_constant_top_level(static_constant_label, value, binary, byte);
         }
     }
     return std::make_shared<AsmData>(std::move(static_constant_label));
@@ -1598,8 +1598,8 @@ static void push_static_constant_top_levels(std::unique_ptr<AsmTopLevel>&& stati
     p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
-static void append_double_static_constant_top_level(const TIdentifier& identifier, TDouble value, TULong binary,
-                                                    TInt byte) {
+static void generate_double_static_constant_top_level(const TIdentifier& identifier, TDouble value, TULong binary,
+                                                      TInt byte) {
     TIdentifier name = identifier;
     TInt alignment = byte;
     std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(value, binary);
