@@ -33,7 +33,7 @@ static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMe
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
-static void align_offset_pseudo_register(TInt alignment) {
+static void align_offset_stack_bytes(TInt alignment) {
     TLong offset = counter % alignment;
     if(offset != 0l) {
         counter += alignment - offset;
@@ -42,7 +42,7 @@ static void align_offset_pseudo_register(TInt alignment) {
 
 static void align_offset_pseudo_register(TLong size, TInt alignment) {
     counter += size;
-    align_offset_pseudo_register(alignment);
+    align_offset_stack_bytes(alignment);
 }
 
 static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
@@ -441,7 +441,7 @@ static void swap_fix_instruction_back() {
 
 static void fix_allocate_stack_bytes() {
     if(counter > 0l) {
-        align_offset_pseudo_register(16);
+        align_offset_stack_bytes(16);
         (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
     }
 }
