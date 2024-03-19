@@ -568,9 +568,9 @@ static std::unique_ptr<CExp> parse_sizeof_factor() {
     pop_next();
     if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
         pop_next();
-        std::shared_ptr<Type> type_t = parse_type_name();
+        std::shared_ptr<Type> target_type = parse_type_name();
         expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-        return std::make_unique<CSizeOfT>(std::move(type_t));
+        return std::make_unique<CSizeOfT>(std::move(target_type));
     }
     else {
         std::unique_ptr<CExp> exp = parse_unary_exp_factor();
@@ -761,7 +761,13 @@ static std::unique_ptr<CReturn> parse_return_statement() {
     pop_next();
     std::unique_ptr<CExp> exp = parse_exp(0);
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CReturn>(std::move(exp));
+    switch(exp->type()) {
+        case AST_T::CSizeOf_t:
+        case AST_T::CSizeOfT_t:
+            return std::make_unique<CReturn>(nullptr);
+        default:
+            return std::make_unique<CReturn>(std::move(exp));
+    }
 }
 
 static std::unique_ptr<CExpression> parse_expression_statement() {
@@ -864,7 +870,7 @@ static std::unique_ptr<CNull> parse_null_statement() {
     return std::make_unique<CNull>();
 }
 
-// <statement> ::= ";" | "return" <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
+// <statement> ::= ";" | "return" [ <exp> ] ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
 //               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
 //               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
 //               | "break" ";" | "continue" ";" | <exp> ";"
