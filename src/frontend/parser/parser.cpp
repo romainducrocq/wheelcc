@@ -606,6 +606,20 @@ static std::unique_ptr<CExp> parse_postfix_exp_factor() {
     return primary_exp;
 }
 
+// <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
+static std::shared_ptr<Type> parse_type_name() {
+    std::shared_ptr<Type> type_name = parse_type_specifier();
+    switch(peek_next().token_kind) {
+        case TOKEN_KIND::binop_multiplication:
+        case TOKEN_KIND::parenthesis_open:
+        case TOKEN_KIND::brackets_open:
+            parse_abstract_declarator_cast_factor(type_name);
+        default:
+            break;
+    }
+    return type_name;
+}
+
 // <unary-exp> ::= <unop> <unary-exp> | "(" { <type-specifier> }+ [ <abstract-declarator> ] ")" <unary-exp>
 //               | <postfix-exp>
 static std::unique_ptr<CExp> parse_unary_exp_factor() {
@@ -635,6 +649,18 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
             break;
     }
     return parse_postfix_exp_factor();
+}
+
+// <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
+static std::unique_ptr<CExp> parse_cast_exp_factor() {
+    // TODO
+//    pop_next();
+//    std::shared_ptr<Type> target_type = parse_type_name();
+//    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+//    if(peek_next().token_kind == AST_T::parenthesis_open) {
+//        parse_cast_exp_factor();
+//    }
+    return nullptr;
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
@@ -973,7 +999,7 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char"
+// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
 static std::shared_ptr<Type> parse_type_specifier() {
     size_t specifier = 0;
     size_t line = peek_next().line;
@@ -983,6 +1009,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
                 goto Lbreak;
+            case TOKEN_KIND::key_void:
             case TOKEN_KIND::key_char:
             case TOKEN_KIND::key_int:
             case TOKEN_KIND::key_long:
@@ -1015,18 +1042,20 @@ static std::shared_ptr<Type> parse_type_specifier() {
     switch(type_token_kinds.size()) {
         case 1: {
             switch(type_token_kinds[0]) {
+                case TOKEN_KIND::key_void:
+                    return std::make_shared<Void>();
                 case TOKEN_KIND::key_char:
-                    return std::make_unique<Char>();
+                    return std::make_shared<Char>();
                 case TOKEN_KIND::key_int:
-                    return std::make_unique<Int>();
+                    return std::make_shared<Int>();
                 case TOKEN_KIND::key_long:
-                    return std::make_unique<Long>();
+                    return std::make_shared<Long>();
                 case TOKEN_KIND::key_double:
-                    return std::make_unique<Double>();
+                    return std::make_shared<Double>();
                 case TOKEN_KIND::key_unsigned:
-                    return std::make_unique<UInt>();
+                    return std::make_shared<UInt>();
                 case TOKEN_KIND::key_signed:
-                    return std::make_unique<Int>();
+                    return std::make_shared<Int>();
                 default:
                     break;
             }
@@ -1037,37 +1066,37 @@ static std::shared_ptr<Type> parse_type_specifier() {
                          TOKEN_KIND::key_unsigned) != type_token_kinds.end()) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_int) != type_token_kinds.end()) {
-                    return std::make_unique<UInt>();
+                    return std::make_shared<UInt>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                   TOKEN_KIND::key_long) != type_token_kinds.end()) {
-                    return std::make_unique<ULong>();
+                    return std::make_shared<ULong>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                   TOKEN_KIND::key_char) != type_token_kinds.end()) {
-                    return std::make_unique<UChar>();
+                    return std::make_shared<UChar>();
                 }
             }
             else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                               TOKEN_KIND::key_signed) != type_token_kinds.end()) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_int) != type_token_kinds.end()) {
-                    return std::make_unique<Int>();
+                    return std::make_shared<Int>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                   TOKEN_KIND::key_long) != type_token_kinds.end()) {
-                    return std::make_unique<Long>();
+                    return std::make_shared<Long>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                   TOKEN_KIND::key_char) != type_token_kinds.end()) {
-                    return std::make_unique<SChar>();
+                    return std::make_shared<SChar>();
                 }
             }
             else if((std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                 TOKEN_KIND::key_int) != type_token_kinds.end()) &&
                     (std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                TOKEN_KIND::key_long) != type_token_kinds.end())) {
-                return std::make_unique<Long>();
+                return std::make_shared<Long>();
             }
             break;
         }
@@ -1078,11 +1107,11 @@ static std::shared_ptr<Type> parse_type_specifier() {
                           TOKEN_KIND::key_long) != type_token_kinds.end())) {
                 if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                              TOKEN_KIND::key_unsigned) != type_token_kinds.end()) {
-                    return std::make_unique<ULong>();
+                    return std::make_shared<ULong>();
                 }
                 else if(std::find(type_token_kinds.begin(), type_token_kinds.end(),
                                    TOKEN_KIND::key_signed) != type_token_kinds.end()) {
-                    return std::make_unique<Long>();
+                    return std::make_shared<Long>();
                 }
             }
             break;
