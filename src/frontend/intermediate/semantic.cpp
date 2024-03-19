@@ -1260,26 +1260,38 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
     checktype_fmt_pointer_single_init_string_initializer(static_ptr_type);
-    TIdentifier name = represent_label_identifier("string");
-    std::shared_ptr<Type> constant_type;
+    TIdentifier static_constant_label;
     {
-        TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
-        std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-        constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
-    }
-    std::unique_ptr<IdentifierAttr> constant_attrs;
-    {
-        std::shared_ptr<StaticInit> static_init;
-        {
-            TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
-            std::shared_ptr<CStringLiteral> literal = node->literal;
-            static_init = std::make_shared<StringInit>(true, std::move(string_constant),
-                                                       std::move(literal));
+        TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
+        TIdentifier static_constant_hash = std::to_string(std::hash<std::string>{}(string_constant));
+        if(static_constant_hash_map.find(static_constant_hash) != static_constant_hash_map.end()) {
+            static_constant_label = static_constant_hash_map[static_constant_hash];
         }
-        constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
+        else {
+            static_constant_label = represent_label_identifier("string");
+            static_constant_hash_map[static_constant_hash] = static_constant_label;
+            std::shared_ptr<Type> constant_type;
+            {
+                TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
+                std::shared_ptr<Type> elem_type = std::make_shared<Char>();
+                constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
+            }
+            std::unique_ptr<IdentifierAttr> constant_attrs;
+            {
+                std::shared_ptr<StaticInit> static_init;
+                {
+                    TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
+                    std::shared_ptr<CStringLiteral> literal = node->literal;
+                    static_init = std::make_shared<StringInit>(true, std::move(string_constant),
+                                                               std::move(literal));
+                }
+                constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
+            }
+            symbol_table[static_constant_label] = std::make_unique<Symbol>(std::move(constant_type),
+                                                                           std::move(constant_attrs));
+        }
     }
-    symbol_table[name] = std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-    push_static_init(std::make_shared<PointerInit>(std::move(name)));
+    push_static_init(std::make_shared<PointerInit>(std::move(static_constant_label)));
 }
 
 static void checktype_string_initializer_array_static_init(CString* node, Array* static_arr_type) {
