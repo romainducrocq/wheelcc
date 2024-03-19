@@ -133,6 +133,10 @@ static void print_ast(Ast* node, size_t t) {
             field("Double", "", ++t);
             break;
         }
+        case AST_T::Void_t: {
+            field("Void", "", ++t);
+            break;
+        }
         case AST_T::FunType_t: {
             field("FunType", "", ++t);
             FunType* p_node = static_cast<FunType*>(node);
@@ -576,6 +580,20 @@ static void print_ast(Ast* node, size_t t) {
             CSubscript* p_node = static_cast<CSubscript*>(node);
             print_ast(p_node->primary_exp.get(), t);
             print_ast(p_node->subscript_exp.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CSizeOf_t: {
+            field("CSizeOf", "", ++t);
+            CSizeOf* p_node = static_cast<CSizeOf*>(node);
+            print_ast(p_node->exp.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CSizeOfT_t: {
+            field("CSizeOfT", "", ++t);
+            CSizeOfT* p_node = static_cast<CSizeOfT*>(node);
+            print_ast(p_node->target_type.get(), t);
             print_ast(p_node->exp_type.get(), t);
             break;
         }

@@ -152,8 +152,8 @@ CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> 
 CSizeOf::CSizeOf(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
 
-CSizeOfT::CSizeOfT(std::shared_ptr<Type> type_t)
-    : type_t(std::move(type_t)) {}
+CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type)
+    : target_type(std::move(target_type)) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}

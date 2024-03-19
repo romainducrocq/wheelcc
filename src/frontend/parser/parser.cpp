@@ -653,6 +653,7 @@ static std::unique_ptr<CExp> parse_cast_exp_factor() {
             case TOKEN_KIND::key_double:
             case TOKEN_KIND::key_unsigned:
             case TOKEN_KIND::key_signed:
+            case TOKEN_KIND::key_void:
                 return parse_cast_factor();
             default:
                 break;
@@ -947,6 +948,7 @@ static std::unique_ptr<CForInit> parse_for_init() {
         case TOKEN_KIND::key_double:
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed:
+        case TOKEN_KIND::key_void:
         case TOKEN_KIND::key_static:
         case TOKEN_KIND::key_extern:
             return parse_decl_for_init();
@@ -977,6 +979,7 @@ static std::unique_ptr<CBlockItem> parse_block_item() {
         case TOKEN_KIND::key_double:
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed:
+        case TOKEN_KIND::key_void:
         case TOKEN_KIND::key_static:
         case TOKEN_KIND::key_extern:
             return parse_d_block_item();
@@ -1013,13 +1016,13 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
                 goto Lbreak;
-            case TOKEN_KIND::key_void:
             case TOKEN_KIND::key_char:
             case TOKEN_KIND::key_int:
             case TOKEN_KIND::key_long:
             case TOKEN_KIND::key_double:
             case TOKEN_KIND::key_unsigned:
             case TOKEN_KIND::key_signed:
+            case TOKEN_KIND::key_void:
                 type_token_kinds.push_back(pop_next_i(specifier).token_kind);
                 break;
             case TOKEN_KIND::key_static:
@@ -1046,8 +1049,6 @@ static std::shared_ptr<Type> parse_type_specifier() {
     switch(type_token_kinds.size()) {
         case 1: {
             switch(type_token_kinds[0]) {
-                case TOKEN_KIND::key_void:
-                    return std::make_shared<Void>();
                 case TOKEN_KIND::key_char:
                     return std::make_shared<Char>();
                 case TOKEN_KIND::key_int:
@@ -1060,6 +1061,8 @@ static std::shared_ptr<Type> parse_type_specifier() {
                     return std::make_shared<UInt>();
                 case TOKEN_KIND::key_signed:
                     return std::make_shared<Int>();
+                case TOKEN_KIND::key_void:
+                    return std::make_shared<Void>();
                 default:
                     break;
             }
@@ -1310,7 +1313,12 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
     std::vector<std::unique_ptr<CParam>> param_list;
     switch(peek_next().token_kind) {
         case TOKEN_KIND::key_void: {
-            parse_empty_param_list();
+            if(peek_next_i(1).token_kind == TOKEN_KIND::parenthesis_close) {
+                parse_empty_param_list();
+            }
+            else {
+                param_list = parse_non_empty_param_list();
+            }
             break;
         }
         case TOKEN_KIND::key_char:

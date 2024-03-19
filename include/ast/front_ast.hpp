@@ -392,9 +392,9 @@ struct CSizeOf : CExp {
 struct CSizeOfT : CExp {
     AST_T type() override;
     CSizeOfT() = default;
-    CSizeOfT(std::shared_ptr<Type> type_t);
+    CSizeOfT(std::shared_ptr<Type> target_type);
 
-    std::shared_ptr<Type> type_t;
+    std::shared_ptr<Type> target_type;
     /*
     std::shared_ptr<Type> exp_type;
     */
