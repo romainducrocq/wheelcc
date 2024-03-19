@@ -128,7 +128,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_string_instructions(CS
             static_constant_label = static_constant_hash_map[static_constant_hash];
         }
         else {
-            static_constant_label = represent_label_identifier("string");
+            static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
             static_constant_hash_map[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
             {
@@ -349,8 +349,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_subtract_instru
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_binary_and_instructions(CBinary* node) {
-    TIdentifier target_false = represent_label_identifier("and_false");
-    TIdentifier target_true = represent_label_identifier("and_true");
+    TIdentifier target_false = represent_label_identifier(LABEL_KIND::Land_false);
+    TIdentifier target_true = represent_label_identifier(LABEL_KIND::Land_true);
     std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
@@ -379,8 +379,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_binary_and_instruction
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_binary_or_instructions(CBinary* node) {
-    TIdentifier target_true = represent_label_identifier("or_true");
-    TIdentifier target_false = represent_label_identifier("or_false");
+    TIdentifier target_true = represent_label_identifier(LABEL_KIND::Lor_true);
+    TIdentifier target_false = represent_label_identifier(LABEL_KIND::Lor_false);
     std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = represent_exp_instructions(node->exp_left.get());
@@ -478,8 +478,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_conditional_instructions(CConditional* node) {
-    TIdentifier target_else = represent_label_identifier("ternary_else");
-    TIdentifier target_false = represent_label_identifier("ternary_false");
+    TIdentifier target_else = represent_label_identifier(LABEL_KIND::Lternary_else);
+    TIdentifier target_false = represent_label_identifier(LABEL_KIND::Lternary_false);
     std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
@@ -636,7 +636,7 @@ static void represent_statement_expression_instructions(CExpression* node) {
 }
 
 static void represent_statement_if_only_instructions(CIf* node) {
-    TIdentifier target_false = represent_label_identifier("if_false");
+    TIdentifier target_false = represent_label_identifier(LABEL_KIND::Lif_false);
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
         push_instruction(std::make_unique<TacJumpIfZero>(target_false, std::move(condition)));
@@ -646,8 +646,8 @@ static void represent_statement_if_only_instructions(CIf* node) {
 }
 
 static void represent_statement_if_else_instructions(CIf* node) {
-    TIdentifier target_else = represent_label_identifier("if_else");
-    TIdentifier target_false = represent_label_identifier("if_false");
+    TIdentifier target_else = represent_label_identifier(LABEL_KIND::Lif_else);
+    TIdentifier target_false = represent_label_identifier(LABEL_KIND::Lif_false);
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
         push_instruction(std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
@@ -697,7 +697,7 @@ static void represent_statement_while_instructions(CWhile* node) {
 }
 
 static void represent_statement_do_while_instructions(CDoWhile* node) {
-    TIdentifier target_do_while_start = represent_label_identifier("do_while_start");
+    TIdentifier target_do_while_start = represent_label_identifier(LABEL_KIND::Ldo_while_start);
     TIdentifier target_continue = "continue_" + node->target;
     TIdentifier target_break = "break_" + node->target;
     push_instruction(std::make_unique<TacLabel>(target_do_while_start));
@@ -735,7 +735,7 @@ static void represent_statement_for_init_instructions(CForInit* node) {
 }
 
 static void represent_statement_for_instructions(CFor* node) {
-    TIdentifier target_for_start = represent_label_identifier("for_start");
+    TIdentifier target_for_start = represent_label_identifier(LABEL_KIND::Lfor_start);
     TIdentifier target_break = "break_" + node->target;
     TIdentifier target_continue = "continue_" + node->target;
     represent_statement_for_init_instructions(node->init.get());

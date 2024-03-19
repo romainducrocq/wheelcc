@@ -67,7 +67,7 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
             static_constant_label = static_constant_hash_map[static_constant_hash];
         }
         else {
-            static_constant_label = represent_label_identifier("double");
+            static_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
             static_constant_hash_map[static_constant_hash] = static_constant_label;
             generate_double_static_constant_top_level(static_constant_label, value, binary, byte);
         }
@@ -523,8 +523,8 @@ static void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt* node)
 }
 
 static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node) {
-    TIdentifier target_out_of_range = represent_label_identifier("sd2si_out_of_range");
-    TIdentifier target_after = represent_label_identifier("sd2si_after");
+    TIdentifier target_out_of_range = represent_label_identifier(LABEL_KIND::Lsd2si_out_of_range);
+    TIdentifier target_after = represent_label_identifier(LABEL_KIND::Lsd2si_after);
     std::shared_ptr<AsmOperand> upper_bound_sd = generate_double_static_constant_operand(9223372036854775808.0,
                                                                                          4890909195324358656ul,
                                                                                          8);
@@ -646,8 +646,8 @@ static void generate_uint_unsigned_to_double_instructions(TacUIntToDouble* node)
 }
 
 static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node) {
-    TIdentifier target_out_of_range = represent_label_identifier("si2sd_out_of_range");
-    TIdentifier target_after = represent_label_identifier("si2sd_after");
+    TIdentifier target_out_of_range = represent_label_identifier(LABEL_KIND::Lsi2sd_out_of_range);
+    TIdentifier target_after = represent_label_identifier(LABEL_KIND::Lsi2sd_after);
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AsmOperand> dst_out_of_range_si = generate_register(REGISTER_KIND::Ax);
@@ -1095,7 +1095,7 @@ static void generate_binary_operator_conditional_integer_instructions(TacBinary*
 }
 
 static void generate_binary_operator_conditional_double_instructions(TacBinary* node) {
-    TIdentifier target_nan = represent_label_identifier("comisd_nan");
+    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());

@@ -35,8 +35,6 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
-- check for unique constant_label in constant_label_map for strings like with doubles
-
 When Types OK (after c18):
 - add / clean error msgs in driver
 - clean error msgs in parser + semantic analysis / add line

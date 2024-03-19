@@ -1268,7 +1268,7 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
             static_constant_label = static_constant_hash_map[static_constant_hash];
         }
         else {
-            static_constant_label = represent_label_identifier("string");
+            static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
             static_constant_hash_map[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
             {
@@ -1504,17 +1504,17 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 static std::vector<TIdentifier> loop_labels;
 
 static void annotate_while_loop(CWhile* node) {
-    node->target = represent_label_identifier("while");
+    node->target = represent_label_identifier(LABEL_KIND::Lwhile);
     loop_labels.push_back(node->target);
 }
 
 static void annotate_do_while_loop(CDoWhile* node) {
-    node->target = represent_label_identifier("do_while");
+    node->target = represent_label_identifier(LABEL_KIND::Ldo_while);
     loop_labels.push_back(node->target);
 }
 
 static void annotate_for_loop(CFor* node) {
-    node->target = represent_label_identifier("for");
+    node->target = represent_label_identifier(LABEL_KIND::Lfor);
     loop_labels.push_back(node->target);
 }
 
