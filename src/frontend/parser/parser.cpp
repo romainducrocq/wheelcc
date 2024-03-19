@@ -548,34 +548,57 @@ static std::unique_ptr<CUnary> parse_unary_factor() {
     return std::make_unique<CUnary>(std::move(unary_op), std::move(exp));
 }
 
-static std::unique_ptr<CExp> parse_pointer_factor() {
+static std::unique_ptr<CDereference> parse_dereference_factor() {
+    std::unique_ptr<CExp> exp = parse_cast_exp_factor();
+    return std::make_unique<CDereference>(std::move(exp));
+}
+
+static std::unique_ptr<CAddrOf> parse_addrof_factor() {
+    std::unique_ptr<CExp> exp = parse_cast_exp_factor();
+    return std::make_unique<CAddrOf>(std::move(exp));
+}
+
+static std::unique_ptr<CExp> parse_pointer_unary_factor() {
     switch(pop_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication: {
-            std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-            return std::make_unique<CDereference>(std::move(exp));
-        }
-        case TOKEN_KIND::binop_bitand: {
-            std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-            return std::make_unique<CAddrOf>(std::move(exp));
-        }
+        case TOKEN_KIND::binop_multiplication:
+            return parse_dereference_factor();
+        case TOKEN_KIND::binop_bitand:
+            return parse_addrof_factor();
         default:
             raise_runtime_error_at_line("Expected token type " + em("unary operator") +
                                         " but found token " + em(next_token->token), next_token->line);
     }
 }
 
-static std::unique_ptr<CExp> parse_sizeof_factor() {
+static std::unique_ptr<CSizeOfT> parse_sizeoft_factor() {
+    pop_next();
+    std::shared_ptr<Type> target_type = parse_type_name();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    return std::make_unique<CSizeOfT>(std::move(target_type));
+}
+
+static std::unique_ptr<CSizeOf> parse_sizeof_factor() {
+    std::unique_ptr<CExp> exp = parse_unary_exp_factor();
+    return std::make_unique<CSizeOf>(std::move(exp));
+}
+
+static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
     pop_next();
     if(peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
-        pop_next();
-        std::shared_ptr<Type> target_type = parse_type_name();
-        expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-        return std::make_unique<CSizeOfT>(std::move(target_type));
+        switch(peek_next_i(1).token_kind) {
+            case TOKEN_KIND::key_char:
+            case TOKEN_KIND::key_int:
+            case TOKEN_KIND::key_long:
+            case TOKEN_KIND::key_double:
+            case TOKEN_KIND::key_unsigned:
+            case TOKEN_KIND::key_signed:
+            case TOKEN_KIND::key_void:
+                return parse_sizeoft_factor();
+            default:
+                break;
+        }
     }
-    else {
-        std::unique_ptr<CExp> exp = parse_unary_exp_factor();
-        return std::make_unique<CSizeOf>(std::move(exp));
-    }
+    return parse_sizeof_factor();
 }
 
 static std::unique_ptr<CCast> parse_cast_factor() {
@@ -635,9 +658,9 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
             return parse_unary_factor();
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::binop_bitand:
-            return parse_pointer_factor();
+            return parse_pointer_unary_factor();
         case TOKEN_KIND::key_sizeof:
-            return parse_sizeof_factor();
+            return parse_sizeof_unary_factor();
         default:
             return parse_postfix_exp_factor();
     }
