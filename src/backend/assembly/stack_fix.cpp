@@ -9,7 +9,7 @@
 #include <vector>
 #include <unordered_map>
 
-static TLong counter;
+static TLong stack_bytes;
 
 static std::unordered_map<TIdentifier, TLong> pseudo_map;
 
@@ -34,14 +34,14 @@ static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMe
 }
 
 static void align_offset_stack_bytes(TInt alignment) {
-    TLong offset = counter % alignment;
+    TLong offset = stack_bytes % alignment;
     if(offset != 0l) {
-        counter += alignment - offset;
+        stack_bytes += alignment - offset;
     }
 }
 
 static void align_offset_pseudo_register(TLong size, TInt alignment) {
-    counter += size;
+    stack_bytes += size;
     align_offset_stack_bytes(alignment);
 }
 
@@ -83,7 +83,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         }
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
-            pseudo_map[node->name] = counter;
+            pseudo_map[node->name] = stack_bytes;
         }
     }
 
@@ -99,7 +99,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         }
         else {
             allocate_offset_pseudo_mem_register(backend_obj->assembly_type.get());
-            pseudo_map[node->name] = counter;
+            pseudo_map[node->name] = stack_bytes;
         }
     }
 
@@ -440,9 +440,9 @@ static void swap_fix_instruction_back() {
 }
 
 static void fix_allocate_stack_bytes() {
-    if(counter > 0l) {
+    if(stack_bytes > 0l) {
         align_offset_stack_bytes(16);
-        (*p_fix_instructions)[0] = allocate_stack_bytes(counter);
+        (*p_fix_instructions)[0] = allocate_stack_bytes(stack_bytes);
     }
 }
 
@@ -897,7 +897,7 @@ static void fix_function_top_level(AsmFunction* node) {
     p_fix_instructions = &node->instructions;
     p_fix_instructions->emplace_back();
 
-    counter = 0l;
+    stack_bytes = 0l;
     pseudo_map.clear();
     for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
         push_fix_instruction(std::move(instructions[instruction]));
