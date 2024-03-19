@@ -67,6 +67,7 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::key_signed, "signed"},
     {TOKEN_KIND::key_unsigned, "unsigned"},
     {TOKEN_KIND::key_void, "void"},
+    {TOKEN_KIND::key_sizeof, "sizeof"},
     {TOKEN_KIND::key_return, "return"},
     {TOKEN_KIND::key_if, "if"},
     {TOKEN_KIND::key_else, "else"},

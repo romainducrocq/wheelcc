@@ -68,6 +68,7 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(signed\b)",
     R"(unsigned\b)",
     R"(void\b)",
+    R"(sizeof\b)",
     R"(return\b)",
     R"(if\b)",
     R"(else\b)",

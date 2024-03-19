@@ -63,6 +63,7 @@ enum TOKEN_KIND {
     key_signed,
     key_unsigned,
     key_void,
+    key_sizeof,
     key_return,
     key_if,
     key_else,
