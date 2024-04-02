@@ -805,7 +805,7 @@ static void checktype_subscript_expression(CSubscript* node) {
 }
 
 static void checktype_sizeof_expression(CSizeOf* node) {
-    if(!is_type_complete(node->exp_type.get())) {
+    if(!is_type_complete(node->exp->exp_type.get())) {
         raise_runtime_error("Can not get the size of an incomplete type");
     }
     node->exp_type = std::make_shared<ULong>();
@@ -813,7 +813,7 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 
 static void checktype_sizeoft_expression(CSizeOfT* node) {
     is_valid_type(node->target_type.get());
-    if(!is_type_complete(node->exp_type.get())) {
+    if(!is_type_complete(node->target_type.get())) {
         raise_runtime_error("Can not get the size of an incomplete type");
     }
     node->exp_type = std::make_shared<ULong>();
