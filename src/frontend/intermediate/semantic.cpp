@@ -116,6 +116,68 @@ static bool is_type_arithmetic(Type* type_1) {
     }
 }
 
+static bool is_type_scalar(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::UChar_t:
+        case AST_T::UInt_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_type_complete(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Void_t:
+            return false;
+        default:
+            return true;
+    }
+}
+
+static void is_valid_type(Type* type_1);
+
+static void is_valid_ptr_type(Pointer* ptr_type_1) {
+    is_valid_type(ptr_type_1->ref_type.get());
+}
+
+static void is_valid_arr_type(Array* arr_type_1) {
+    if(!is_type_complete(arr_type_1->elem_type.get())) {
+        raise_runtime_error("Array must be of complete type");
+    }
+    is_valid_type(arr_type_1->elem_type.get());
+}
+
+static void is_valid_fun_type(FunType* fun_type_1) {
+    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
+        is_valid_type(fun_type_1->param_types[param_type].get());
+    }
+    is_valid_type(fun_type_1->ret_type.get());
+}
+
+static void is_valid_type(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Pointer_t:
+            is_valid_ptr_type(static_cast<Pointer*>(type_1));
+            break;
+        case AST_T::Array_t:
+            is_valid_arr_type(static_cast<Array*>(type_1));
+            break;
+        case AST_T::FunType_t:
+            is_valid_fun_type(static_cast<FunType*>(type_1));
+            break;
+        default:
+            break;
+    }
+}
+
 static TInt get_scalar_type_size(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Char_t:
@@ -233,6 +295,16 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
             is_constant_null_pointer(static_cast<CConstant*>(node_2))) {
         return node_1->exp_type;
     }
+    else if(node_1->exp_type->type() == AST_T::Pointer_t &&
+            static_cast<Pointer*>(node_1->exp_type.get())->ref_type->type() == AST_T::Void_t &&
+            node_2->exp_type->type() == AST_T::Pointer_t) {
+        return node_1->exp_type;
+    }
+    else if(node_2->exp_type->type() == AST_T::Pointer_t &&
+            static_cast<Pointer*>(node_2->exp_type.get())->ref_type->type() == AST_T::Void_t &&
+            node_1->exp_type->type() == AST_T::Pointer_t) {
+        return node_2->exp_type;
+    }
     raise_runtime_error("Maybe-pointer expressions have incompatible types");
 }
 
@@ -278,12 +350,23 @@ static void checktype_var_expression(CVar* node) {
 }
 
 static void checktype_cast_expression(CCast* node) {
+    is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
-    if((node->exp_type->type() == AST_T::Double_t && node->exp->exp_type->type() == AST_T::Pointer_t) ||
-       (node->exp_type->type() == AST_T::Pointer_t && node->exp->exp_type->type() == AST_T::Double_t) ||
-       node->exp_type->type() == AST_T::Array_t) {
-        raise_runtime_error("Types can not be converted between floating-point number and pointer type, "
-                            "or to array type");
+
+    if(node->exp->exp_type->type() == AST_T::Double_t &&
+       node->exp_type->type() == AST_T::Pointer_t) {
+        raise_runtime_error("Types can not be converted from floating-point number to pointer type");
+    }
+    else if(node->exp->exp_type->type() == AST_T::Pointer_t &&
+            node->exp_type->type() == AST_T::Double_t) {
+        raise_runtime_error("Types can not be converted from pointer type to floating-point number");
+    }
+    else if(node->exp_type->type() != AST_T::Void_t &&
+            !is_type_scalar(node->exp_type.get())) {
+        raise_runtime_error("Types can not be converted to non-scalar and non-void type");
+    }
+    else if(!is_type_scalar(node->exp->exp_type.get())) {
+        raise_runtime_error("Types can not be converted from non-scalar type");
     }
 }
 
@@ -303,10 +386,24 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
             is_constant_null_pointer(static_cast<CConstant*>(node.get()))) {
         return cast_expression(std::move(node), exp_type);
     }
+    else if(exp_type->type() == AST_T::Pointer_t &&
+            static_cast<Pointer*>(exp_type.get())->ref_type->type() == AST_T::Void_t &&
+            node->exp_type->type() == AST_T::Pointer_t) {
+        return cast_expression(std::move(node), exp_type);
+    }
+    else if(node->exp_type->type() == AST_T::Pointer_t &&
+            static_cast<Pointer*>(node->exp_type.get())->ref_type->type() == AST_T::Void_t &&
+            exp_type->type() == AST_T::Pointer_t) {
+        return cast_expression(std::move(node), exp_type);
+    }
     raise_runtime_error("Assignment expressions have incompatible types");
 }
 
 static void checktype_unary_not_expression(CUnary* node) {
+    if(!is_type_scalar(node->exp->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                            " can not be used on " + em("non-scalar type"));
+    }
     node->exp_type = std::make_shared<Int>();
 }
 
@@ -371,6 +468,7 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
     else if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
+            is_type_complete(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get()) &&
             is_type_integer(node->exp_right->exp_type.get())) {
         common_type = std::make_shared<Long>();
         if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
@@ -380,7 +478,8 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
         return;
     }
     else if(is_type_integer(node->exp_left->exp_type.get()) &&
-            node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+            node->exp_right->exp_type->type() == AST_T::Pointer_t &&
+            is_type_complete(static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get())) {
         common_type = std::make_shared<Long>();
         if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
             node->exp_left = cast_expression(std::move(node->exp_left), common_type);
@@ -390,8 +489,8 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
     }
     else {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                            " can not be used with " + em("non-integer") + " and "
-                            + em("pointer type"));
+                            " can not be used with " + em("non-arithmetic") + " and "
+                            + em("pointer to incomplete type"));
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -409,7 +508,8 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
        is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
-    else if(node->exp_left->exp_type->type() == AST_T::Pointer_t) {
+    else if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
+            is_type_complete(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get())) {
         if(is_type_integer(node->exp_right->exp_type.get())) {
             common_type = std::make_shared<Long>();
             if(!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
@@ -429,7 +529,7 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
     else {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
                             " can not be used with " + em("non-integer") + " or "
-                            + em("constant null pointer") + " and " + em("pointer type"));
+                            + em("constant null pointer") + " and " + em("pointer to incomplete type"));
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -442,10 +542,10 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
 }
 
 static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node) {
-    if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
-       node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+    if(!is_type_arithmetic(node->exp_left->exp_type.get()) ||
+       !is_type_arithmetic(node->exp_right->exp_type.get())) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                            " can not be used on " + em("pointer type"));
+                            " can not be used on " + em("non-arithmetic type"));
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -459,10 +559,10 @@ static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node
 }
 
 static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* node) {
-    if(node->exp_left->exp_type->type() == AST_T::Pointer_t ||
-       node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+    if(!is_type_arithmetic(node->exp_left->exp_type.get()) ||
+       !is_type_arithmetic(node->exp_right->exp_type.get())) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                            " can not be used on " + em("pointer type"));
+                            " can not be used on " + em("non-arithmetic type"));
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -483,18 +583,17 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     // Note: https://stackoverflow.com/a/70130146
     // if the value of the right operand is negative or is greater than or equal
     // to the width of the promoted left operand, the behavior is undefined
+    if(!is_type_arithmetic(node->exp_left->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                            " can not be used on " + em("non-arithmetic type"));
+    }
     if(!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())){
         node->exp_right = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
     }
     node->exp_type = node->exp_left->exp_type;
-    switch(node->exp_type->type()) {
-        case AST_T::Double_t:
-        case AST_T::Pointer_t:
-            raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
-                                " can not be used on " + em("floating-point number") + " or " +
-                                em("pointer type"));
-        default:
-            break;
+    if(node->exp_type->type() == AST_T::Double_t) {
+        raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                            " can not be used on " + em("floating-point number"));
     }
 }
 
@@ -508,8 +607,12 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
        node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         common_type = get_joint_pointer_type(node->exp_left.get(), node->exp_right.get());
     }
-    else {
+    else if(is_type_arithmetic(node->exp_left->exp_type.get()) &&
+            is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
+    }
+    else {
+        raise_runtime_error("Binary operator equality has operands of invalid types");
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -614,12 +717,23 @@ static void checktype_assignment_expression(CAssignment* node) {
 
 static void checktype_conditional_expression(CConditional* node) {
     std::shared_ptr<Type> common_type;
-    if(node->exp_middle->exp_type->type() == AST_T::Pointer_t ||
-       node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+    if(!is_type_scalar(node->exp_middle->exp_type.get())) {
+        raise_runtime_error("Ternary operator must have a conditional expression of scalar type");
+    }
+    else if(is_type_arithmetic(node->exp_middle->exp_type.get()) &&
+            is_type_arithmetic(node->exp_right->exp_type.get())) {
+        common_type = get_joint_type(node->exp_middle.get(), node->exp_right.get());
+    }
+    else if(node->exp_middle->exp_type->type() == AST_T::Pointer_t ||
+            node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         common_type = get_joint_pointer_type(node->exp_middle.get(), node->exp_right.get());
     }
+    else if(node->exp_middle->exp_type->type() == AST_T::Void_t &&
+            node->exp_right->exp_type->type() == AST_T::Void_t) {
+            common_type = std::make_shared<Void>();
+    }
     else {
-        common_type = get_joint_type(node->exp_middle.get(), node->exp_right.get());
+        raise_runtime_error("Ternary operator must have both void or non-void expressions");
     }
     if(!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
         node->exp_middle = cast_expression(std::move(node->exp_middle), common_type);
@@ -666,6 +780,7 @@ static void checktype_addrof_expression(CAddrOf* node) {
 static void checktype_subscript_expression(CSubscript* node) {
     std::shared_ptr<Type> ref_type;
     if(node->primary_exp->exp_type->type() == AST_T::Pointer_t &&
+       is_type_complete(static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get()) &&
        is_type_integer(node->subscript_exp->exp_type.get())) {
         std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
         if(!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
@@ -674,7 +789,8 @@ static void checktype_subscript_expression(CSubscript* node) {
         ref_type = static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type;
     }
     else if(is_type_integer(node->primary_exp->exp_type.get()) &&
-            node->subscript_exp->exp_type->type() == AST_T::Pointer_t) {
+            node->subscript_exp->exp_type->type() == AST_T::Pointer_t &&
+            is_type_complete(static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get())) {
         std::shared_ptr<Type> primary_type = std::make_shared<Long>();
         if(!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
             node->primary_exp = cast_expression(std::move(node->primary_exp), primary_type);
@@ -682,9 +798,25 @@ static void checktype_subscript_expression(CSubscript* node) {
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
     else {
-        raise_runtime_error("Subscript must consist of an integer operand and a pointer type operand");
+        raise_runtime_error("Subscript must consist of an integer operand and a pointer to complete type "
+                            "operand");
     }
     node->exp_type = std::move(ref_type);
+}
+
+static void checktype_sizeof_expression(CSizeOf* node) {
+    if(!is_type_complete(node->exp_type.get())) {
+        raise_runtime_error("Can not get the size of an incomplete type");
+    }
+    node->exp_type = std::make_shared<ULong>();
+}
+
+static void checktype_sizeoft_expression(CSizeOfT* node) {
+    is_valid_type(node->target_type.get());
+    if(!is_type_complete(node->exp_type.get())) {
+        raise_runtime_error("Can not get the size of an incomplete type");
+    }
+    node->exp_type = std::make_shared<ULong>();
 }
 
 static std::unique_ptr<CExp> checktype_scalar_typed_expression(std::unique_ptr<CExp>&& node) {
@@ -713,6 +845,15 @@ static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& 
 
 static void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(symbol_table[function_definition_name]->type_t.get());
+    if(fun_type->ret_type->type() == AST_T::Void_t) {
+        if(node->exp) {
+            raise_runtime_error("Void type function can not return a value");
+        }
+    }
+    else if(!node->exp) {
+        raise_runtime_error("Non-void type function must return a value");
+    }
+
     if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
         node->exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
     }
@@ -839,6 +980,7 @@ static void checktype_params(CFunctionDeclaration* node) {
 }
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
+    is_valid_type(node->fun_type.get());
     bool is_defined = defined_set.find(node->name) != defined_set.end();
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
@@ -1480,6 +1622,7 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
+    is_valid_type(node->var_type.get());
     if(node->storage_class) {
         switch(node->storage_class->type()) {
             case AST_T::CExtern_t:
@@ -1652,6 +1795,10 @@ static void resolve_subscript_expression(CSubscript* node) {
     node->subscript_exp = resolve_typed_expression(std::move(node->subscript_exp));
 }
 
+static void resolve_sizeof_expression(CSizeOf* node) {
+    resolve_expression(node->exp.get());
+}
+
 static void resolve_expression(CExp* node) {
     switch(node->type()) {
         case AST_T::CConstant_t:
@@ -1720,6 +1867,15 @@ static void resolve_expression(CExp* node) {
             checktype_subscript_expression(p_node);
             break;
         }
+        case AST_T::CSizeOf_t: {
+            CSizeOf* p_node = static_cast<CSizeOf*>(node);
+            resolve_sizeof_expression(p_node);
+            checktype_sizeof_expression(p_node);
+            break;
+        }
+        case AST_T::CSizeOfT_t:
+            checktype_sizeoft_expression(static_cast<CSizeOfT*>(node));
+            break;
         default:
             RAISE_INTERNAL_ERROR;
     }
