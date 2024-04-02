@@ -349,7 +349,6 @@ static void checktype_var_expression(CVar* node) {
     node->exp_type = symbol_table[node->name]->type_t;
 }
 
-// TODO reorder
 static void checktype_cast_expression(CCast* node) {
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
@@ -366,10 +365,10 @@ static void checktype_cast_expression(CCast* node) {
         raise_runtime_error("Types can not be converted from pointer type to floating-point number");
     }
     else if(!is_type_scalar(node->exp->exp_type.get())) {
-        raise_runtime_error("Types can not be converted to non-scalar type");
+        raise_runtime_error("Types can not be converted from non-scalar type");
     }
     else if(!is_type_scalar(node->exp_type.get())) {
-        raise_runtime_error("Types can not be converted from non-scalar or void type");
+        raise_runtime_error("Types can not be converted to non-scalar and non-void type");
     }
 }
 
@@ -407,16 +406,20 @@ static void checktype_unary_not_expression(CUnary* node) {
         raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
                             " can not be used on " + em("non-scalar type"));
     }
+
     node->exp_type = std::make_shared<Int>();
 }
 
 static void checktype_unary_complement_expression(CUnary* node) {
+    if(!is_type_arithmetic(node->exp->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                            " can not be used on " + em("non-arithmetic type"));
+    }
+
     switch(node->exp->exp_type->type()) {
         case AST_T::Double_t:
-        case AST_T::Pointer_t:
             raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
-                                " can not be used on " + em("floating-point number") + " or " +
-                                em("pointer type"));
+                                " can not be used on " + em("floating-point number"));
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t: {
@@ -431,10 +434,12 @@ static void checktype_unary_complement_expression(CUnary* node) {
 }
 
 static void checktype_unary_negate_expression(CUnary* node) {
+    if(!is_type_arithmetic(node->exp->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
+                            " can not be used on " + em("non-arithmetic type"));
+    }
+
     switch(node->exp->exp_type->type()) {
-        case AST_T::Pointer_t:
-            raise_runtime_error("An error occurred in type checking, " + em("unary operator") +
-                                " can not be used on " + em("pointer type"));
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t: {
@@ -621,7 +626,8 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
     else {
-        raise_runtime_error("Binary operator equality has operands of invalid types");
+        raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                            " can not be used on " + em("non-scalar type"));
     }
 
     if(!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -634,6 +640,12 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
 }
 
 static void checktype_binary_comparison_relational_expression(CBinary* node) {
+    if(!is_type_scalar(node->exp_left->exp_type.get()) ||
+       !is_type_scalar(node->exp_right->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                            " can not be used on " + em("non-scalar type"));
+    }
+
     if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
        (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) ||
         (node->exp_left->type() == AST_T::CConstant_t &&
@@ -698,8 +710,11 @@ static void checktype_binary_expression(CBinary* node) {
 
 static void checktype_assignment_expression(CAssignment* node) {
     if(node->exp_left) {
-        if(!is_exp_lvalue(node->exp_left.get())) {
-            raise_runtime_error("Left expression is an invalid lvalue");
+        if(node->exp_left->exp_type->type() == AST_T::Void_t) {
+            raise_runtime_error("Assignment left expression can not have void type");
+        }
+        else if(!is_exp_lvalue(node->exp_left.get())) {
+            raise_runtime_error("Assignment left expression is an invalid lvalue");
         }
         if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
@@ -1011,9 +1026,13 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
 }
 
 static void checktype_params(CFunctionDeclaration* node) {
-    if(node->body) {
-        FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-        for(size_t param = 0; param < node->params.size(); param++) {
+    FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
+    for(size_t param = 0; param < node->params.size(); param++) {
+        if(fun_type->param_types[param]->type() == AST_T::Void_t) {
+            raise_runtime_error("Function parameters can not have void type");
+        }
+        
+        if(node->body) {
             std::shared_ptr<Type> type_t = fun_type->param_types[param];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
             symbol_table[node->params[param]] = std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
@@ -1023,6 +1042,10 @@ static void checktype_params(CFunctionDeclaration* node) {
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
     is_valid_type(node->fun_type.get());
+    if(node->fun_type->type() == AST_T::Void_t) {
+        raise_runtime_error("Function declaration can not have void type");
+    }
+
     bool is_defined = defined_set.find(node->name) != defined_set.end();
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
@@ -1568,6 +1591,10 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     is_valid_type(node->var_type.get());
+    if(node->var_type->type() == AST_T::Void_t) {
+        raise_runtime_error("Variable declaration can not have void type");
+    }
+
     std::shared_ptr<InitialValue> initial_value;
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
@@ -1666,6 +1693,10 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
     is_valid_type(node->var_type.get());
+    if(node->var_type->type() == AST_T::Void_t) {
+        raise_runtime_error("Variable declaration can not have void type");
+    }
+
     if(node->storage_class) {
         switch(node->storage_class->type()) {
             case AST_T::CExtern_t:
@@ -2191,9 +2222,7 @@ static void resolve_params(CFunctionDeclaration* node) {
         node->params[param] = scoped_identifier_maps.back()[node->params[param]];
     }
 
-    if(node->body) {
-        checktype_params(node);
-    }
+    checktype_params(node);
 }
 
 static void resolve_function_declaration(CFunctionDeclaration* node) {
