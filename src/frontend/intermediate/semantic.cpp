@@ -726,7 +726,7 @@ static void checktype_assignment_expression(CAssignment* node) {
 
 static void checktype_conditional_expression(CConditional* node) {
     std::shared_ptr<Type> common_type;
-    if(!is_type_scalar(node->exp_middle->exp_type.get())) {
+    if(!is_type_scalar(node->condition->exp_type.get())) {
         raise_runtime_error("Ternary operator must have a conditional expression of scalar type");
     }
     else if(is_type_arithmetic(node->exp_middle->exp_type.get()) &&
@@ -1541,6 +1541,7 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
+    is_valid_type(node->var_type.get());
     std::shared_ptr<InitialValue> initial_value;
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);

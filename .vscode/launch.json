@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/wheelcc",
-            "args": ["255", "return_0.c"],
+            "args": ["253", "void_array_nested_in_declaration.c"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
