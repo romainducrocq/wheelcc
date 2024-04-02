@@ -17,7 +17,7 @@ if [ ${#} -ne 0 ]; then
 else
     for i in $(seq 1 17); do
         test --chapter ${i} --latest-only --bitwise --compound --goto --nan \
-             --stage tacky
+             --stage codegen
     done
 fi
 

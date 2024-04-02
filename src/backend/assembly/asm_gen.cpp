@@ -367,34 +367,30 @@ static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
 }
 
 static void generate_return_integer_instructions(TacReturn* node) {
-    {
-        std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
-        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
-        std::shared_ptr<AssemblyType> assembly_type_val = generate_assembly_type(node->val.get());
-        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src),
-                                                            std::move(dst)));
-    }
-    push_instruction(std::make_unique<AsmRet>());
+    std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_val = generate_assembly_type(node->val.get());
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src),
+                                                        std::move(dst)));
 }
 
 static void generate_return_double_instructions(TacReturn* node) {
-    {
-        std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
-        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
-        std::shared_ptr<AssemblyType> assembly_type_val = std::make_shared<BackendDouble>();
-        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src),
-                                                            std::move(dst)));
-    }
-    push_instruction(std::make_unique<AsmRet>());
+    std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
+    std::shared_ptr<AssemblyType> assembly_type_val = std::make_shared<BackendDouble>();
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src),
+                                                        std::move(dst)));
 }
 
 static void generate_return_instructions(TacReturn* node) {
-    if(is_value_double(node->val.get())) {
-        generate_return_double_instructions(node);
+    if(node->val) {
+        if (is_value_double(node->val.get())) {
+            generate_return_double_instructions(node);
+        } else {
+            generate_return_integer_instructions(node);
+        }
     }
-    else {
-        generate_return_integer_instructions(node);
-    }
+    push_instruction(std::make_unique<AsmRet>());
 }
 
 static void generate_sign_extend_instructions(TacSignExtend* node) {
@@ -806,17 +802,19 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         }
     }
 
-    std::shared_ptr<AsmOperand> src;
-    if(is_value_double(node->dst.get())) {
-        src = generate_register(REGISTER_KIND::Xmm0);
+    if(node->dst) {
+        std::shared_ptr<AsmOperand> src;
+        if(is_value_double(node->dst.get())) {
+            src = generate_register(REGISTER_KIND::Xmm0);
+        }
+        else {
+            src = generate_register(REGISTER_KIND::Ax);
+        }
+        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+        std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                            std::move(dst)));
     }
-    else {
-        src = generate_register(REGISTER_KIND::Ax);
-    }
-    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
-    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
-                                                        std::move(dst)));
 }
 
 static void generate_unary_operator_conditional_integer_instructions(TacUnary* node) {
