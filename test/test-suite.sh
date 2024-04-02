@@ -16,8 +16,7 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 17); do
-        test --chapter ${i} --latest-only --bitwise --compound --goto --nan \
-             --stage codegen
+        test --chapter ${i} --latest-only --bitwise --compound --goto --nan
     done
 fi
 
