@@ -353,20 +353,23 @@ static void checktype_cast_expression(CCast* node) {
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
 
-    if(node->exp->exp_type->type() == AST_T::Double_t &&
-       node->exp_type->type() == AST_T::Pointer_t) {
+    if(node->exp->exp_type->type() == AST_T::Void_t) {
+        return;
+    }
+    else if(node->exp->exp_type->type() == AST_T::Double_t &&
+            node->exp_type->type() == AST_T::Pointer_t) {
         raise_runtime_error("Types can not be converted from floating-point number to pointer type");
     }
     else if(node->exp->exp_type->type() == AST_T::Pointer_t &&
             node->exp_type->type() == AST_T::Double_t) {
         raise_runtime_error("Types can not be converted from pointer type to floating-point number");
     }
+    else if(!is_type_scalar(node->exp->exp_type.get())) {
+        raise_runtime_error("Types can not be converted from non-scalar type");
+    }
     else if(node->exp_type->type() != AST_T::Void_t &&
             !is_type_scalar(node->exp_type.get())) {
         raise_runtime_error("Types can not be converted to non-scalar and non-void type");
-    }
-    else if(!is_type_scalar(node->exp->exp_type.get())) {
-        raise_runtime_error("Types can not be converted from non-scalar type");
     }
 }
 
@@ -598,6 +601,12 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
 }
 
 static void checktype_binary_logical_expression(CBinary* node) {
+    if(!is_type_scalar(node->exp_left->exp_type.get()) ||
+       !is_type_scalar(node->exp_right->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
+                            " can not be used on " + em("non-scalar type"));
+    }
+
     node->exp_type = std::make_shared<Int>();
 }
 
@@ -858,6 +867,13 @@ static void checktype_return_statement(CReturn* node) {
         node->exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
     }
     node->exp = checktype_typed_expression(std::move(node->exp));
+}
+
+static void checktype_if_statement(CIf* node) {
+    if(!is_type_scalar(node->condition->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("if statement") +
+                            " can not be used on " + em("non-scalar type"));
+    }
 }
 
 static void checktype_fmt_pointer_single_init_string_initializer(Pointer* ptr_type) {
@@ -2015,9 +2031,12 @@ static void resolve_statement(CStatement* node) {
         case AST_T::CExpression_t:
             resolve_expression_statement(static_cast<CExpression*>(node));
             break;
-        case AST_T::CIf_t:
-            resolve_if_statement(static_cast<CIf*>(node));
+        case AST_T::CIf_t: {
+            CIf* p_node = static_cast<CIf*>(node);
+            resolve_if_statement(p_node);
+            checktype_if_statement(p_node);
             break;
+        }
         case AST_T::CGoto_t:
             resolve_goto_statement(static_cast<CGoto*>(node));
             break;
