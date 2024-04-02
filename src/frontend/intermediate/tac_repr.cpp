@@ -694,10 +694,11 @@ static void represent_statement_instructions(CStatement* node);
 static void represent_variable_declaration_instructions(CVariableDeclaration* node);
 
 static void represent_statement_return_instructions(CReturn* node) {
+    std::shared_ptr<TacValue> val;
     if(node->exp) {
-        std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
-        push_instruction(std::make_unique<TacReturn>(std::move(val)));
+        val = represent_exp_instructions(node->exp.get());
     }
+    push_instruction(std::make_unique<TacReturn>(std::move(val)));
 }
 
 static void represent_statement_expression_instructions(CExpression* node) {
