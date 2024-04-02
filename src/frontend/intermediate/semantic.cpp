@@ -349,11 +349,12 @@ static void checktype_var_expression(CVar* node) {
     node->exp_type = symbol_table[node->name]->type_t;
 }
 
+// TODO reorder
 static void checktype_cast_expression(CCast* node) {
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
 
-    if(node->exp->exp_type->type() == AST_T::Void_t) {
+    if(node->exp_type->type() == AST_T::Void_t) {
         return;
     }
     else if(node->exp->exp_type->type() == AST_T::Double_t &&
@@ -365,11 +366,10 @@ static void checktype_cast_expression(CCast* node) {
         raise_runtime_error("Types can not be converted from pointer type to floating-point number");
     }
     else if(!is_type_scalar(node->exp->exp_type.get())) {
-        raise_runtime_error("Types can not be converted from non-scalar type");
+        raise_runtime_error("Types can not be converted to non-scalar type");
     }
-    else if(node->exp_type->type() != AST_T::Void_t &&
-            !is_type_scalar(node->exp_type.get())) {
-        raise_runtime_error("Types can not be converted to non-scalar and non-void type");
+    else if(!is_type_scalar(node->exp_type.get())) {
+        raise_runtime_error("Types can not be converted from non-scalar or void type");
     }
 }
 
@@ -858,6 +858,7 @@ static void checktype_return_statement(CReturn* node) {
         if(node->exp) {
             raise_runtime_error("Void type function can not return a value");
         }
+        return;
     }
     else if(!node->exp) {
         raise_runtime_error("Non-void type function must return a value");
@@ -870,8 +871,33 @@ static void checktype_return_statement(CReturn* node) {
 }
 
 static void checktype_if_statement(CIf* node) {
-    if(!is_type_scalar(node->condition->exp_type.get())) {
+    if(node->condition && 
+       !is_type_scalar(node->condition->exp_type.get())) {
         raise_runtime_error("An error occurred in type checking, " + em("if statement") +
+                            " can not be used on " + em("non-scalar type"));
+    }
+}
+
+static void checktype_while_statement(CWhile* node) {
+    if(node->condition &&
+       !is_type_scalar(node->condition->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("while statement") +
+                            " can not be used on " + em("non-scalar type"));
+    }
+}
+
+static void checktype_do_while_statement(CDoWhile* node) {
+    if(node->condition &&
+       !is_type_scalar(node->condition->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("do while statement") +
+                            " can not be used on " + em("non-scalar type"));
+    }
+}
+
+static void checktype_for_statement(CFor* node) {
+    if(node->condition &&
+       !is_type_scalar(node->condition->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("for statement") +
                             " can not be used on " + em("non-scalar type"));
     }
 }
@@ -1937,7 +1963,9 @@ static void resolve_for_init(CForInit* node) {
 }
 
 static void resolve_return_statement(CReturn* node) {
-    node->exp = resolve_typed_expression(std::move(node->exp));
+    if(node->exp) {
+        node->exp = resolve_typed_expression(std::move(node->exp));
+    }
 }
 
 static void resolve_expression_statement(CExpression* node) {
@@ -2047,15 +2075,24 @@ static void resolve_statement(CStatement* node) {
         case AST_T::CCompound_t:
             resolve_compound_statement(static_cast<CCompound*>(node));
             break;
-        case AST_T::CWhile_t:
-            resolve_while_statement(static_cast<CWhile*>(node));
+        case AST_T::CWhile_t: {
+            CWhile* p_node = static_cast<CWhile*>(node);
+            resolve_while_statement(p_node);
+            checktype_while_statement(p_node);
             break;
-        case AST_T::CDoWhile_t:
-            resolve_do_while_statement(static_cast<CDoWhile*>(node));
+        }
+        case AST_T::CDoWhile_t: {
+            CDoWhile* p_node = static_cast<CDoWhile*>(node);
+            resolve_do_while_statement(p_node);
+            checktype_do_while_statement(p_node);
             break;
-        case AST_T::CFor_t:
-            resolve_for_statement(static_cast<CFor*>(node));
+        }
+        case AST_T::CFor_t: {
+            CFor* p_node = static_cast<CFor*>(node);
+            resolve_for_statement(p_node);
+            checktype_for_statement(p_node);
             break;
+        }
         case AST_T::CBreak_t:
             resolve_break_statement(static_cast<CBreak*>(node));
             break;
