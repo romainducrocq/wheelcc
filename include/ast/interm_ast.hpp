@@ -164,7 +164,7 @@ struct TacDereferencedPointer : TacExpResult {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// instruction = Return(val)
+// instruction = Return(val?)
 //             | SignExtend(val, val)
 //             | Truncate(val, val)
 //             | ZeroExtend(val, val)
@@ -172,7 +172,7 @@ struct TacDereferencedPointer : TacExpResult {
 //             | TacDoubleToUInt(val, val)
 //             | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val)
-//             | FunCall(identifier, val*, val)
+//             | FunCall(identifier, val*, val?)
 //             | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val)
 //             | Copy(val, val)
@@ -197,6 +197,7 @@ struct TacReturn : TacInstruction {
     TacReturn() = default;
     TacReturn(std::shared_ptr<TacValue> val);
 
+    // Optional
     std::shared_ptr<TacValue> val;
 };
 
@@ -271,6 +272,7 @@ struct TacFunCall : TacInstruction {
 
     TIdentifier name;
     std::vector<std::shared_ptr<TacValue>> args;
+    // Optional
     std::shared_ptr<TacValue> dst;
 };
 

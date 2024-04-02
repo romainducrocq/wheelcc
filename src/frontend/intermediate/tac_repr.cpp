@@ -212,7 +212,13 @@ static TLong get_type_scale(Type* type_1) {
     }
 }
 
-static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCast* node) {
+static std::unique_ptr<TacExpResult> represent_void_exp_result_cast_instructions(CCast* node) {
+    represent_exp_instructions(node->exp.get());
+    std::shared_ptr<TacValue> dst;
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_complete_exp_result_cast_instructions(CCast* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp.get());
     if(node->target_type->type() == node->exp->exp_type->type()) {
         return std::make_unique<TacPlainOperand>(std::move(src));
@@ -253,6 +259,15 @@ static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCas
         push_instruction(std::make_unique<TacZeroExtend>(std::move(src), dst));
     }
     return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_cast_instructions(CCast* node) {
+    if(node->target_type->type() == AST_T::Void_t) {
+        return represent_void_exp_result_cast_instructions(node);
+    }
+    else {
+        return represent_complete_exp_result_cast_instructions(node);
+    }
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_unary_instructions(CUnary* node) {
@@ -506,7 +521,10 @@ static std::unique_ptr<TacExpResult> represent_exp_result_fun_call_instructions(
         std::shared_ptr<TacValue> arg = represent_exp_instructions(node->args[i].get());
         args.push_back(std::move(arg));
     }
-    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
+    std::shared_ptr<TacValue> dst;
+    if(node->exp_type->type() != AST_T::Void_t) {
+        dst = represent_plain_inner_value(node);
+    }
     push_instruction(std::make_unique<TacFunCall>(std::move(name), std::move(args), dst));
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
@@ -627,8 +645,10 @@ static void represent_statement_instructions(CStatement* node);
 static void represent_variable_declaration_instructions(CVariableDeclaration* node);
 
 static void represent_statement_return_instructions(CReturn* node) {
-    std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
-    push_instruction(std::make_unique<TacReturn>(std::move(val)));
+    if(node->exp) {
+        std::shared_ptr<TacValue> val = represent_exp_instructions(node->exp.get());
+        push_instruction(std::make_unique<TacReturn>(std::move(val)));
+    }
 }
 
 static void represent_statement_expression_instructions(CExpression* node) {
@@ -980,9 +1000,9 @@ static void represent_declaration_instructions(CDeclaration* node) {
     }
 }
 
-// instruction = Return(val) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
+// instruction = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
-//             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val) | Unary(unary_operator, val, val)
+//             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val?) | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
 //             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val) | Jump(identifier)
 //             | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier) | Label(identifier)
