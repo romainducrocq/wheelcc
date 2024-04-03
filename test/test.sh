@@ -233,6 +233,12 @@ function check_test () {
         return
     fi
 
+    # gcc outputs only a warning here
+    if [[ "${FILE}" == "17_supporting_dynamic_memory_allocation/invalid_types/void/void_fun_params" ]]; then
+        check_fail 0
+        return
+    fi
+
     check_single
 }
 
