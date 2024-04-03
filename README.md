@@ -104,7 +104,7 @@ FILES:           list of .c files to compile
 
 ## System specs
 
-- This language was developped and tested with:  
+- This compiler was developped and tested with:  
 ```
 gcc      (Debian 10.2.1-6) 10.2.1 20210110
 g++      (Debian 10.2.1-6) 10.2.1 20210110
