@@ -227,6 +227,8 @@ struct CFunDeclarator : CDeclarator {
 //     | Subscript(exp, exp, type)
 //     | SizeOf(exp, type)
 //     | SizeOfT(type, type)
+//     | Dot(exp, identifier, type)
+//     | Arrow(exp, identifier, type)
 struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
@@ -395,6 +397,30 @@ struct CSizeOfT : CExp {
     CSizeOfT(std::shared_ptr<Type> target_type);
 
     std::shared_ptr<Type> target_type;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CDot : CExp {
+    AST_T type() override;
+    CDot() = default;
+    CDot(TIdentifier member, std::unique_ptr<CExp> structure);
+
+    TIdentifier member;
+    std::unique_ptr<CExp> structure;
+    /*
+    std::shared_ptr<Type> exp_type;
+    */
+};
+
+struct CArrow : CExp {
+    AST_T type() override;
+    CArrow() = default;
+    CArrow(TIdentifier member, std::unique_ptr<CExp> pointer);
+
+    TIdentifier member;
+    std::unique_ptr<CExp> pointer;
     /*
     std::shared_ptr<Type> exp_type;
     */
@@ -643,6 +669,30 @@ struct CCompoundInit : CInitializer {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// member_declaration = CMemberDeclaration(identifier member_name, type member_type)
+struct CMemberDeclaration : Ast {
+    AST_T type() override;
+    CMemberDeclaration() = default;
+    CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type);
+
+    TIdentifier member_name;
+    std::shared_ptr<Type> member_type;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// struct_declaration = StructDeclaration(identifier tag, member_declaration* members)
+struct CStructDeclaration : Ast {
+    AST_T type() override;
+    CStructDeclaration() = default;
+    CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members);
+
+    TIdentifier tag;
+    std::vector<std::unique_ptr<CMemberDeclaration>> members;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // function_declaration = FunctionDeclaration(identifier name, identifier* params, block? body, type fun_type,
 //                                            storage_class?)
 struct CFunctionDeclaration : Ast {
@@ -681,6 +731,7 @@ struct CVariableDeclaration : Ast {
 
 // declaration = FunDecl(function_declaration)
 //             | VarDecl(variable_declaration)
+//             | StructDecl(struct_declaration)
 struct CDeclaration : Ast {
     AST_T type() override;
 };
@@ -699,6 +750,14 @@ struct CVarDecl : CDeclaration {
     CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl);
 
     std::unique_ptr<CVariableDeclaration> variable_decl;
+};
+
+struct CStructDecl : CDeclaration {
+    AST_T type() override;
+    CStructDecl() = default;
+    CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl);
+
+    std::unique_ptr<CStructDeclaration> struct_decl;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

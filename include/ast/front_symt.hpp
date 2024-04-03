@@ -21,6 +21,7 @@
 //      | FunType(type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
+//      | Structure(identifier)
 struct Type : Ast {
     AST_T type() override;
 };
@@ -85,6 +86,14 @@ struct Array : Type {
 
     TLong size;
     std::shared_ptr<Type> elem_type;
+};
+
+struct Structure : Type {
+    AST_T type() override;
+    Structure() = default;
+    Structure(TIdentifier tag);
+
+    TIdentifier tag;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

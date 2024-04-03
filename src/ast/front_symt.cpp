@@ -18,6 +18,7 @@ AST_T Void::type() { return AST_T::Void_t; }
 AST_T FunType::type() { return AST_T::FunType_t; }
 AST_T Pointer::type() { return AST_T::Pointer_t; }
 AST_T Array::type() { return AST_T::Array_t; }
+AST_T Structure::type() { return AST_T::Structure_t; }
 AST_T StaticInit::type() { return AST_T::StaticInit_t; }
 AST_T IntInit::type() { return AST_T::IntInit_t; }
 AST_T LongInit::type() { return AST_T::LongInit_t; }
@@ -48,6 +49,9 @@ Pointer::Pointer(std::shared_ptr<Type> ref_type)
 
 Array::Array(TLong size, std::shared_ptr<Type> elem_type)
     : size(size), elem_type(std::move(elem_type)) {}
+
+Structure::Structure(TIdentifier tag)
+    : tag(std::move(tag)) {}
 
 IntInit::IntInit(TInt value)
     : value(value) {}

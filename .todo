@@ -35,6 +35,10 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
+- clean comments
+- parser: pop_next() in parse_identifier and check before call
+- error message: get line with c fopen or c++ stream instead of calling bash cmd
+
 - add limits of compiler in readme:
     - no memory overflow check, max memory allocation is (2^63)-1 bits (function stack, aggregate type)
     - same for memory addresses / pointer values

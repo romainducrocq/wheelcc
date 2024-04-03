@@ -160,6 +160,12 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->elem_type.get(), t);
             break;
         }
+        case AST_T::Structure_t: {
+            field("Structure", "", ++t);
+            Structure* p_node = static_cast<Structure*>(node);
+            field("TIdentifier", p_node->tag, t+1);
+            break;
+        }
         case AST_T::StaticInit_t: {
             field("StaticInit", "", ++t);
             break;
@@ -597,6 +603,22 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->exp_type.get(), t);
             break;
         }
+        case AST_T::CDot_t: {
+            field("CDot", "", ++t);
+            CDot* p_node = static_cast<CDot*>(node);
+            field("TIdentifier", p_node->member, t+1);
+            print_ast(p_node->structure.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
+        case AST_T::CArrow_t: {
+            field("CArrow", "", ++t);
+            CArrow* p_node = static_cast<CArrow*>(node);
+            field("TIdentifier", p_node->member, t+1);
+            print_ast(p_node->pointer.get(), t);
+            print_ast(p_node->exp_type.get(), t);
+            break;
+        }
         case AST_T::CStatement_t: {
             field("CStatement", "", ++t);
             break;
@@ -762,6 +784,23 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->init_type.get(), t);
             break;
         }
+        case AST_T::CMemberDeclaration_t: {
+            field("CMemberDeclaration", "", ++t);
+            CMemberDeclaration* p_node = static_cast<CMemberDeclaration*>(node);
+            field("TIdentifier", p_node->member_name, t+1);
+            print_ast(p_node->member_type.get(), t);
+            break;
+        }
+        case AST_T::CStructDeclaration_t: {
+            field("CStructDeclaration", "", ++t);
+            CStructDeclaration* p_node = static_cast<CStructDeclaration*>(node);
+            field("TIdentifier", p_node->tag, t+1);
+            field("List[" + std::to_string(p_node->members.size()) + "]", "", t+1);
+            for(const auto& item: p_node->members) {
+                print_ast(item.get(), t+1);
+            }
+            break;
+        }
         case AST_T::CFunctionDeclaration_t: {
             field("CFunctionDeclaration", "", ++t);
             CFunctionDeclaration* p_node = static_cast<CFunctionDeclaration*>(node);
@@ -798,6 +837,12 @@ static void print_ast(Ast* node, size_t t) {
             field("CVarDecl", "", ++t);
             CVarDecl* p_node = static_cast<CVarDecl*>(node);
             print_ast(p_node->variable_decl.get(), t);
+            break;
+        }
+        case AST_T::CStructDecl_t: {
+            field("CStructDecl", "", ++t);
+            CStructDecl* p_node = static_cast<CStructDecl*>(node);
+            print_ast(p_node->struct_decl.get(), t);
             break;
         }
         case AST_T::CProgram_t: {

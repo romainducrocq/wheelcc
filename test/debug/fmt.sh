@@ -4,8 +4,10 @@ function fmt () {
 cat ../../include/ast/${1}.hpp \
     | grep --invert-match ")" \
     | grep --invert-match "(" \
-    | grep -e "struct" -e ";" \
     | sed "s/nstruction/nstr_uction/g" \
+    | sed "s/structure/str_ucture/g" \
+    | sed "s/struct_decl/str_uct_decl/g" \
+    | grep -e "struct" -e ";" \
     | sed "s/\s*std::vector<TIdentifier>\s*/TIdentifier [/g" \
     | sed "s/\s*std::vector<TChar>\s*/TChar [/g" \
     | sed "s/\s*std::vector<.*>\s*/\"[/g" \
@@ -61,6 +63,8 @@ cat tmp \
     | sed "s/\", \[\"/\", \[\], \[\"/g" \
     | sed "s/\", \[\]\],/\", \[\], \[\]\],/g" \
     | sed "s/nstr_uction/nstruction/g" \
+    | sed "s/str_ucture/structure/g" \
+    | sed "s/str_uct_decl/struct_decl/g" \
     | grep --invert-match "Ast {  using(" > tmp2
 rm tmp
 

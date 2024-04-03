@@ -53,6 +53,8 @@ AST_T CAddrOf::type() { return AST_T::CAddrOf_t; }
 AST_T CSubscript::type() { return AST_T::CSubscript_t; }
 AST_T CSizeOf::type() { return AST_T::CSizeOf_t; }
 AST_T CSizeOfT::type() { return AST_T::CSizeOfT_t; }
+AST_T CDot::type() { return AST_T::CDot_t; }
+AST_T CArrow::type() { return AST_T::CArrow_t; }
 AST_T CStatement::type() { return AST_T::CStatement_t; }
 AST_T CReturn::type() { return AST_T::CReturn_t; }
 AST_T CExpression::type() { return AST_T::CExpression_t; }
@@ -80,11 +82,14 @@ AST_T CExtern::type() { return AST_T::CExtern_t; }
 AST_T CInitializer::type() { return AST_T::CInitializer_t; }
 AST_T CSingleInit::type() { return AST_T::CSingleInit_t; }
 AST_T CCompoundInit::type() { return AST_T::CCompoundInit_t; }
+AST_T CMemberDeclaration::type() { return AST_T::CMemberDeclaration_t; }
+AST_T CStructDeclaration::type() { return AST_T::CStructDeclaration_t; }
 AST_T CFunctionDeclaration::type() { return AST_T::CFunctionDeclaration_t; }
 AST_T CVariableDeclaration::type() { return AST_T::CVariableDeclaration_t; }
 AST_T CDeclaration::type() { return AST_T::CDeclaration_t; }
 AST_T CFunDecl::type() { return AST_T::CFunDecl_t; }
 AST_T CVarDecl::type() { return AST_T::CVarDecl_t; }
+AST_T CStructDecl::type() { return AST_T::CStructDecl_t; }
 AST_T CProgram::type() { return AST_T::CProgram_t; }
 
 CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator)
@@ -155,6 +160,12 @@ CSizeOf::CSizeOf(std::unique_ptr<CExp> exp)
 CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type)
     : target_type(std::move(target_type)) {}
 
+CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure)
+    : member(std::move(member)), structure(std::move(structure)) {}
+
+CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer)
+    : member(std::move(member)), pointer(std::move(pointer)) {}
+
 CReturn::CReturn(std::unique_ptr<CExp> exp)
     : exp(std::move(exp)) {}
 
@@ -205,6 +216,12 @@ CSingleInit::CSingleInit(std::unique_ptr<CExp> exp)
 CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers)
     : initializers(std::move(initializers)) {}
 
+CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type)
+    : member_name(std::move(member_name)), member_type(std::move(member_type)) {}
+
+CStructDeclaration::CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members)
+    : tag(std::move(tag)), members(std::move(members)) {}
+
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
                                            std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
                                            std::unique_ptr<CStorageClass> storage_class)
@@ -222,6 +239,9 @@ CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl)
 
 CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl)
     : variable_decl(std::move(variable_decl)) {}
+
+CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl)
+    : struct_decl(std::move(struct_decl)) {}
 
 CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations)
     : declarations(std::move(declarations)) {}
