@@ -26,6 +26,7 @@ TEST_DIRS=(
 "15_arrays_and_pointer_arithmetic"
 "16_characters_and_strings"
 "17_supporting_dynamic_memory_allocation"
+"18_structures"
 )
 
 function file () {
