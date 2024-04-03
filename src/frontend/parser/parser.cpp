@@ -35,6 +35,7 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::assignment_bitand, "&="},
     {TOKEN_KIND::assignment_bitor, "|="},
     {TOKEN_KIND::assignment_bitxor, "^="},
+    {TOKEN_KIND::structop_pointer, "->"},
 
     {TOKEN_KIND::parenthesis_open, "("},
     {TOKEN_KIND::parenthesis_close, ")"},
@@ -59,6 +60,7 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::ternary_if, "?"},
     {TOKEN_KIND::ternary_else, ":"},
     {TOKEN_KIND::separator_comma, ","},
+    {TOKEN_KIND::structop_member, "."},
 
     {TOKEN_KIND::key_char, "char"},
     {TOKEN_KIND::key_int, "int"},
@@ -66,6 +68,7 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::key_double, "double"},
     {TOKEN_KIND::key_signed, "signed"},
     {TOKEN_KIND::key_unsigned, "unsigned"},
+    {TOKEN_KIND::key_struct, "struct"},
     {TOKEN_KIND::key_void, "void"},
     {TOKEN_KIND::key_sizeof, "sizeof"},
     {TOKEN_KIND::key_return, "return"},

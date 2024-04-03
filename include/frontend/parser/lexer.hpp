@@ -25,6 +25,7 @@ enum TOKEN_KIND {
     assignment_bitand,
     assignment_bitor,
     assignment_bitxor,
+    structop_pointer,
 
     comment_singleline,
     comment_multilinestart,
@@ -53,6 +54,7 @@ enum TOKEN_KIND {
     ternary_if,
     ternary_else,
     separator_comma,
+    structop_member,
 
     preprocessor_directive,
 
@@ -62,6 +64,7 @@ enum TOKEN_KIND {
     key_double,
     key_signed,
     key_unsigned,
+    key_struct,
     key_void,
     key_sizeof,
     key_return,
