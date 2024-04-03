@@ -33,7 +33,7 @@ _Resources_:
 - [x] 14\. Pointers  
 - [x] 15\. Arrays and pointer arithmetic  
 - [x] 16\. Characters and strings  
-- [ ] 17\. Supporting dynamic memory allocation  
+- [x] 17\. Supporting dynamic memory allocation  
 - [ ] 18\. Structures  
 
 ### Optimization
