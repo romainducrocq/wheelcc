@@ -68,8 +68,8 @@ static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::key_double, "double"},
     {TOKEN_KIND::key_signed, "signed"},
     {TOKEN_KIND::key_unsigned, "unsigned"},
-    {TOKEN_KIND::key_struct, "struct"},
     {TOKEN_KIND::key_void, "void"},
+    {TOKEN_KIND::key_struct, "struct"},
     {TOKEN_KIND::key_sizeof, "sizeof"},
     {TOKEN_KIND::key_return, "return"},
     {TOKEN_KIND::key_if, "if"},
@@ -660,24 +660,25 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
 }
 
 // <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
-static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp> primary_exp) {
+static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&& primary_exp) {
+    std::unique_ptr<CExp> postfix_exp = std::move(primary_exp);
     switch(peek_next().token_kind) {
         case TOKEN_KIND::brackets_open: {
-            primary_exp = parse_subscript_factor(std::move(primary_exp));
+            postfix_exp = parse_subscript_factor(std::move(postfix_exp));
             break;
         }
         case TOKEN_KIND::structop_member: {
-            primary_exp = parse_dot_factor(std::move(primary_exp));
+            postfix_exp = parse_dot_factor(std::move(postfix_exp));
             break;
         }
         case TOKEN_KIND::structop_pointer: {
-            primary_exp = parse_arrow_factor(std::move(primary_exp));
+            postfix_exp = parse_arrow_factor(std::move(postfix_exp));
             break;
         }
         default:
-            return primary_exp;
+            return postfix_exp;
     }
-    return parse_postfix_op_exp_factor(std::move(primary_exp));
+    return parse_postfix_op_exp_factor(std::move(postfix_exp));
 }
 
 // <postfix-exp> ::= <primary-exp> { <postfix-op> }
@@ -1070,7 +1071,12 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
+static std::shared_ptr<Structure> parse_struct_type_specifier() {
+    TIdentifier tag; parse_identifier(tag);
+    return std::make_shared<Structure>(std::move(tag));
+}
+
+// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void" | "struct" <identifier>
 static std::shared_ptr<Type> parse_type_specifier() {
     size_t specifier = 0;
     size_t line = peek_next().line;
@@ -1087,6 +1093,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_unsigned:
             case TOKEN_KIND::key_signed:
             case TOKEN_KIND::key_void:
+            case TOKEN_KIND::key_struct:
                 type_token_kinds.push_back(pop_next_i(specifier).token_kind);
                 break;
             case TOKEN_KIND::key_static:
@@ -1127,6 +1134,8 @@ static std::shared_ptr<Type> parse_type_specifier() {
                     return std::make_shared<Int>();
                 case TOKEN_KIND::key_void:
                     return std::make_shared<Void>();
+                case TOKEN_KIND::key_struct:
+                    return parse_struct_type_specifier();
                 default:
                     break;
             }

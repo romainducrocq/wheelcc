@@ -69,8 +69,8 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(double\b)", // key_double
     R"(signed\b)", // key_signed
     R"(unsigned\b)", // key_unsigned
-    R"(struct\b)", // key_struct
     R"(void\b)", // key_void
+    R"(struct\b)", // key_struct
     R"(sizeof\b)", // key_sizeof
     R"(return\b)", // key_return
     R"(if\b)", // key_if
