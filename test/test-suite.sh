@@ -16,9 +16,8 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 17); do
-        if [ ${i} -eq 5 ]; then continue; fi
-        test --chapter ${i} --latest-only --bitwise --compound --goto --nan \
-             --stage parse
+        test --chapter ${i} --latest-only --bitwise --compound --goto --nan #\
+#             --stage parse
     done
 fi
 
