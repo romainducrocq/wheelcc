@@ -545,6 +545,22 @@ static std::unique_ptr<CExp> parse_inner_exp_factor() {
     return inner_exp;
 }
 
+static std::unique_ptr<CSubscript> parse_subscript_factor(std::unique_ptr<CExp> primary_exp) {
+    std::unique_ptr<CExp> subscript_exp = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+    return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp));
+}
+
+static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
+    TIdentifier member; parse_identifier(member);
+    return std::make_unique<CDot>(std::move(member), std::move(structure));
+}
+
+static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer) {
+    TIdentifier member; parse_identifier(member);
+    return std::make_unique<CArrow>(std::move(member), std::move(pointer));
+}
+
 static std::unique_ptr<CUnary> parse_unary_factor() {
     std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
@@ -637,18 +653,41 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
             break;
     }
     raise_runtime_error_at_line("Expected token type " + em("factor") +
+                                " but found token " + em(peek_token->token), peek_token->line);
+}
+
+// <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
+static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp> primary_exp) {
+    switch(pop_next().token_kind) {
+        case TOKEN_KIND::brackets_open:
+            return parse_subscript_factor(std::move(primary_exp));
+        case TOKEN_KIND::structop_member:
+            return parse_dot_factor(std::move(primary_exp));
+        case TOKEN_KIND::structop_pointer:
+            return parse_arrow_factor(std::move(primary_exp));
+        default:
+            break;
+    }
+    raise_runtime_error_at_line("Expected token type " + em("postfix factor") +
                                 " but found token " + em(next_token->token), next_token->line);
 }
 
-// <postfix-exp> ::= <primary-exp> { "[" <exp> "]" }
+// <postfix-exp> ::= <primary-exp> { <postfix-op> }
 static std::unique_ptr<CExp> parse_postfix_exp_factor() {
     std::unique_ptr<CExp> primary_exp = parse_primary_exp_factor();
-    while(peek_next().token_kind == TOKEN_KIND::brackets_open) {
-        pop_next();
-        std::unique_ptr<CExp> subscript_exp = parse_exp(0);
-        expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
-        primary_exp = std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp));
+    while(true) {
+        switch(peek_next().token_kind) {
+            case TOKEN_KIND::brackets_open:
+            case TOKEN_KIND::structop_member:
+            case TOKEN_KIND::structop_pointer: {
+                primary_exp = parse_postfix_op_exp_factor(std::move(primary_exp));
+                break;
+            }
+            default:
+                goto Lbreak;
+        }
     }
+    Lbreak:
     return primary_exp;
 }
 
