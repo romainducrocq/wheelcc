@@ -163,13 +163,7 @@ static const Token& peek_next_i(size_t i) {
 
 // <identifier> ::= ? An identifier token ?
 static void parse_identifier(TIdentifier& identifier) {
-    expect_next_is(pop_next(), TOKEN_KIND::identifier);
-    identifier = std::move(next_token->token);
-}
-
-static void parse_identifier(TIdentifier& identifier, size_t i) {
-    expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
-    identifier = std::move(pop_next_i(i).token);
+    identifier = std::move(pop_next().token);
 }
 
 // string = StringLiteral(int*)
@@ -534,7 +528,7 @@ static std::unique_ptr<CVar> parse_var_factor() {
 
 static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
     TIdentifier name; parse_identifier(name);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    pop_next();
     std::vector<std::unique_ptr<CExp>> args;
     if(peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
         args = parse_argument_list();
@@ -559,12 +553,14 @@ static std::unique_ptr<CSubscript> parse_subscript_factor(std::unique_ptr<CExp> 
 
 static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
     pop_next();
+    expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier member; parse_identifier(member);
     return std::make_unique<CDot>(std::move(member), std::move(structure));
 }
 
 static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer) {
     pop_next();
+    expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier member; parse_identifier(member);
     return std::make_unique<CArrow>(std::move(member), std::move(pointer));
 }
@@ -867,6 +863,7 @@ static std::unique_ptr<CIf> parse_if_statement() {
 
 static std::unique_ptr<CGoto> parse_goto_statement() {
     pop_next();
+    expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier target; parse_identifier(target);
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CGoto>(std::move(target));
@@ -874,7 +871,7 @@ static std::unique_ptr<CGoto> parse_goto_statement() {
 
 static std::unique_ptr<CLabel> parse_label_statement() {
     TIdentifier target; parse_identifier(target);
-    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    pop_next();
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
     return std::make_unique<CLabel>(std::move(target), std::move(jump_to));
@@ -1074,14 +1071,15 @@ static std::unique_ptr<CB> parse_b_block() {
 // <block> ::= "{" { <block-item> } "}"
 // block = B(block_item*)
 static std::unique_ptr<CBlock> parse_block() {
-    expect_next_is(pop_next(), TOKEN_KIND::brace_open);
+    pop_next();
     std::unique_ptr<CBlock> block = parse_b_block();
     expect_next_is(pop_next(), TOKEN_KIND::brace_close);
     return block;
 }
 
 static std::shared_ptr<Structure> parse_struct_type_specifier(size_t i) {
-    TIdentifier tag; parse_identifier(tag, i);
+    expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
+    TIdentifier tag = std::move(pop_next_i(i).token);
     return std::make_shared<Structure>(std::move(tag));
 }
 
@@ -1480,6 +1478,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(std::uni
         pop_next();
     }
     else {
+        expect_next_is(peek_next(), TOKEN_KIND::brace_open);
         body = parse_block();
     }
     return std::make_unique<CFunctionDeclaration>(std::move(declarator.name), std::move(declarator.params),
@@ -1518,6 +1517,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
 
 static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
     pop_next();
+    expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier tag; parse_identifier(tag);
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
     if(pop_next().token_kind == TOKEN_KIND::brace_open) {
