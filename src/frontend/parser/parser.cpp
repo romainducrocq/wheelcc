@@ -167,6 +167,11 @@ static void parse_identifier(TIdentifier& identifier) {
     identifier = std::move(next_token->token);
 }
 
+static void parse_identifier(TIdentifier& identifier, size_t i) {
+    expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
+    identifier = std::move(pop_next_i(i).token);
+}
+
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
 static std::shared_ptr<CStringLiteral> parse_string_literal() {
@@ -615,6 +620,7 @@ static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
             case TOKEN_KIND::key_unsigned:
             case TOKEN_KIND::key_signed:
             case TOKEN_KIND::key_void:
+            case TOKEN_KIND::key_struct:
                 return parse_sizeoft_factor();
             default:
                 break;
@@ -722,6 +728,7 @@ static std::unique_ptr<CExp> parse_cast_exp_factor() {
             case TOKEN_KIND::key_unsigned:
             case TOKEN_KIND::key_signed:
             case TOKEN_KIND::key_void:
+            case TOKEN_KIND::key_struct:
                 return parse_cast_factor();
             default:
                 break;
@@ -1014,6 +1021,7 @@ static std::unique_ptr<CForInit> parse_for_init() {
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed:
         case TOKEN_KIND::key_void:
+        case TOKEN_KIND::key_struct:
         case TOKEN_KIND::key_static:
         case TOKEN_KIND::key_extern:
             return parse_decl_for_init();
@@ -1045,6 +1053,7 @@ static std::unique_ptr<CBlockItem> parse_block_item() {
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed:
         case TOKEN_KIND::key_void:
+        case TOKEN_KIND::key_struct:
         case TOKEN_KIND::key_static:
         case TOKEN_KIND::key_extern:
             return parse_d_block_item();
@@ -1071,8 +1080,8 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-static std::shared_ptr<Structure> parse_struct_type_specifier() {
-    TIdentifier tag; parse_identifier(tag);
+static std::shared_ptr<Structure> parse_struct_type_specifier(size_t i) {
+    TIdentifier tag; parse_identifier(tag, i);
     return std::make_shared<Structure>(std::move(tag));
 }
 
@@ -1135,7 +1144,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
                 case TOKEN_KIND::key_void:
                     return std::make_shared<Void>();
                 case TOKEN_KIND::key_struct:
-                    return parse_struct_type_specifier();
+                    return parse_struct_type_specifier(specifier);
                 default:
                     break;
             }
@@ -1399,7 +1408,8 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         case TOKEN_KIND::key_long:
         case TOKEN_KIND::key_double:
         case TOKEN_KIND::key_unsigned:
-        case TOKEN_KIND::key_signed: {
+        case TOKEN_KIND::key_signed:
+        case TOKEN_KIND::key_struct: {
             param_list = parse_non_empty_param_list();
             break;
         }
@@ -1491,6 +1501,37 @@ static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(std::uni
                                                   std::move(declarator.derived_type), std::move(storage_class));
 }
 
+static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
+    Declarator declarator;
+    if(parse_declarator_declaration(declarator)) {
+        raise_runtime_error_at_line("Structure member declaration can not have a storage class specifier",
+                                    next_token->line);
+    }
+    else if(declarator.derived_type->type() == AST_T::FunType_t) {
+        raise_runtime_error_at_line("Declaration in for loop initialization must be a variable type",
+                                    next_token->line);
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    return std::make_unique<CMemberDeclaration>(std::move(declarator.name),
+                                                std::move(declarator.derived_type));
+}
+
+static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
+    pop_next();
+    TIdentifier tag; parse_identifier(tag);
+    std::vector<std::unique_ptr<CMemberDeclaration>> members;
+    if(pop_next().token_kind == TOKEN_KIND::brace_open) {
+        do {
+            std::unique_ptr<CMemberDeclaration> member = parse_member_declaration();
+            members.push_back(std::move(member));
+        } while(peek_next().token_kind != TOKEN_KIND::brace_close);
+        pop_next();
+        pop_next();
+    }
+    expect_next_is(*next_token, TOKEN_KIND::semicolon);
+    return std::make_unique<CStructDeclaration>(std::move(tag), std::move(members));
+}
+
 static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(std::unique_ptr<CStorageClass> storage_class,
                                                             Declarator&& declarator) {
     std::unique_ptr<CFunctionDeclaration> function_decl = parse_function_declaration(std::move(storage_class),
@@ -1503,6 +1544,11 @@ static std::unique_ptr<CVarDecl> parse_var_decl_declaration(std::unique_ptr<CSto
     std::unique_ptr<CVariableDeclaration> variable_decl = parse_variable_declaration(std::move(storage_class),
                                                                                      std::move(declarator));
     return std::make_unique<CVarDecl>(std::move(variable_decl));
+}
+
+static std::unique_ptr<CStructDecl> parse_struct_decl_declaration() {
+    std::unique_ptr<CStructDeclaration> struct_decl = parse_structure_declaration();
+    return std::make_unique<CStructDecl>(std::move(struct_decl));
 }
 
 static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& declarator) {
@@ -1520,9 +1566,18 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
     return storage_class;
 }
 
-// <declaration> ::= <variable-declaration> | <function-declaration>
+// <declaration> ::= <variable-declaration> | <function-declaration> | <struct-declaration>
 // declaration = FunDecl(function_declaration) | VarDecl(variable_declaration)
 static std::unique_ptr<CDeclaration> parse_declaration() {
+    if(peek_next().token_kind == TOKEN_KIND::key_struct) {
+        switch(peek_next_i(2).token_kind) {
+            case TOKEN_KIND::brace_open:
+            case TOKEN_KIND::semicolon:
+                return parse_struct_decl_declaration();
+            default:
+                break;
+        }
+    }
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
     if(declarator.derived_type->type() == AST_T::FunType_t) {
