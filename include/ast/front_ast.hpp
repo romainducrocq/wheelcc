@@ -172,7 +172,7 @@ struct CParam : Ast {
 // declarator = Ident(identifier)
 //            | PointerDeclarator(declarator)
 //            | ArrayDeclarator(int, declarator)
-//            | FunDeclarator(param_info* params, declarator)
+//            | FunDeclarator(param_info*, declarator)
 struct CDeclarator : Ast {
     AST_T type() override;
 };
@@ -669,7 +669,7 @@ struct CCompoundInit : CInitializer {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// member_declaration = CMemberDeclaration(identifier member_name, type member_type)
+// member_declaration = CMemberDeclaration(identifier, type)
 struct CMemberDeclaration : Ast {
     AST_T type() override;
     CMemberDeclaration() = default;
@@ -681,7 +681,7 @@ struct CMemberDeclaration : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// struct_declaration = StructDeclaration(identifier tag, member_declaration* members)
+// struct_declaration = StructDeclaration(identifier, member_declaration*)
 struct CStructDeclaration : Ast {
     AST_T type() override;
     CStructDeclaration() = default;
@@ -693,8 +693,7 @@ struct CStructDeclaration : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// function_declaration = FunctionDeclaration(identifier name, identifier* params, block? body, type fun_type,
-//                                            storage_class?)
+// function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
@@ -713,7 +712,7 @@ struct CFunctionDeclaration : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// variable_declaration = VariableDeclaration(identifier name, initializer? init, type var_type, storage_class?)
+// variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
