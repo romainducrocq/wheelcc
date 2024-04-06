@@ -22,11 +22,11 @@ static TIdentifier function_definition_name;
 
 static bool is_same_type(Type* type_1, Type* type_2);
 
-static bool is_same_ptr_type(Pointer* ptr_type_1, Pointer* ptr_type_2) {
+static bool is_pointer_same_type(Pointer* ptr_type_1, Pointer* ptr_type_2) {
     return is_same_type(ptr_type_1->ref_type.get(), ptr_type_2->ref_type.get());
 }
 
-static bool is_same_arr_type(Array* arr_type_1, Array* arr_type_2) {
+static bool is_array_same_type(Array* arr_type_1, Array* arr_type_2) {
     return arr_type_1->size == arr_type_2->size &&
            is_same_type(arr_type_1->elem_type.get(), arr_type_2->elem_type.get());
 }
@@ -34,11 +34,15 @@ static bool is_same_arr_type(Array* arr_type_1, Array* arr_type_2) {
 static bool is_same_type(Type* type_1, Type* type_2) {
     if(type_1->type() == AST_T::Pointer_t &&
        type_2->type() == AST_T::Pointer_t) {
-        return is_same_ptr_type(static_cast<Pointer*>(type_1), static_cast<Pointer*>(type_2));
+        return is_pointer_same_type(static_cast<Pointer*>(type_1), static_cast<Pointer*>(type_2));
     }
     else if(type_1->type() == AST_T::Array_t &&
             type_2->type() == AST_T::Array_t) {
-        return is_same_arr_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
+        return is_array_same_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
+    }
+    else if(type_1->type() == AST_T::FunType_t &&
+            type_2->type() == AST_T::FunType_t) {
+        RAISE_INTERNAL_ERROR;
     }
     else {
         return type_1->type() == type_2->type();
@@ -49,7 +53,7 @@ static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
     if(fun_type_1->param_types.size() != fun_type_2->param_types.size()) {
         return false;
     }
-    if(!is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
+    else if(!is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
         return false;
     }
     for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
@@ -75,7 +79,7 @@ static bool is_type_signed(Type* type_1) {
 }
 
 static bool is_type_character(Type* type_1) {
-    switch (type_1->type()) {
+    switch(type_1->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -144,35 +148,27 @@ static bool is_type_complete(Type* type_1) {
 
 static void is_valid_type(Type* type_1);
 
-static void is_valid_ptr_type(Pointer* ptr_type_1) {
+static void is_pointer_valid_type(Pointer* ptr_type_1) {
     is_valid_type(ptr_type_1->ref_type.get());
 }
 
-static void is_valid_arr_type(Array* arr_type_1) {
+static void is_array_valid_type(Array* arr_type_1) {
     if(!is_type_complete(arr_type_1->elem_type.get())) {
         raise_runtime_error("Array must be of complete type");
     }
     is_valid_type(arr_type_1->elem_type.get());
 }
 
-static void is_valid_fun_type(FunType* fun_type_1) {
-    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
-        is_valid_type(fun_type_1->param_types[param_type].get());
-    }
-    is_valid_type(fun_type_1->ret_type.get());
-}
-
 static void is_valid_type(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Pointer_t:
-            is_valid_ptr_type(static_cast<Pointer*>(type_1));
+            is_pointer_valid_type(static_cast<Pointer*>(type_1));
             break;
         case AST_T::Array_t:
-            is_valid_arr_type(static_cast<Array*>(type_1));
+            is_array_valid_type(static_cast<Array*>(type_1));
             break;
         case AST_T::FunType_t:
-            is_valid_fun_type(static_cast<FunType*>(type_1));
-            break;
+            RAISE_INTERNAL_ERROR;
         default:
             break;
     }
@@ -350,26 +346,25 @@ static void checktype_var_expression(CVar* node) {
 }
 
 static void checktype_cast_expression(CCast* node) {
+    if(node->target_type->type() != AST_T::Void_t) {
+        if(node->exp->exp_type->type() == AST_T::Double_t &&
+           node->target_type->type() == AST_T::Pointer_t) {
+            raise_runtime_error("Types can not be converted from floating-point number to pointer type");
+        }
+        else if(node->exp->exp_type->type() == AST_T::Pointer_t &&
+                node->target_type->type() == AST_T::Double_t) {
+            raise_runtime_error("Types can not be converted from pointer type to floating-point number");
+        }
+        else if(!is_type_scalar(node->exp->exp_type.get())) {
+            raise_runtime_error("Types can not be converted from non-scalar type");
+        }
+        else if(!is_type_scalar(node->target_type.get())) {
+            raise_runtime_error("Types can not be converted to non-scalar and non-void type");
+        }
+    }
+
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
-
-    if(node->exp_type->type() == AST_T::Void_t) {
-        return;
-    }
-    else if(node->exp->exp_type->type() == AST_T::Double_t &&
-            node->exp_type->type() == AST_T::Pointer_t) {
-        raise_runtime_error("Types can not be converted from floating-point number to pointer type");
-    }
-    else if(node->exp->exp_type->type() == AST_T::Pointer_t &&
-            node->exp_type->type() == AST_T::Double_t) {
-        raise_runtime_error("Types can not be converted from pointer type to floating-point number");
-    }
-    else if(!is_type_scalar(node->exp->exp_type.get())) {
-        raise_runtime_error("Types can not be converted from non-scalar type");
-    }
-    else if(!is_type_scalar(node->exp_type.get())) {
-        raise_runtime_error("Types can not be converted to non-scalar and non-void type");
-    }
 }
 
 static std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
@@ -836,10 +831,10 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 }
 
 static void checktype_sizeoft_expression(CSizeOfT* node) {
-    is_valid_type(node->target_type.get());
     if(!is_type_complete(node->target_type.get())) {
         raise_runtime_error("Can not get the size of an incomplete type");
     }
+    is_valid_type(node->target_type.get());
     node->exp_type = std::make_shared<ULong>();
 }
 
@@ -1035,7 +1030,6 @@ static void checktype_params(CFunctionDeclaration* node) {
 }
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
-    is_valid_type(node->fun_type.get());
     if(node->fun_type->type() == AST_T::Void_t) {
         raise_runtime_error("Function declaration can not have void type");
     }
@@ -1045,10 +1039,12 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
                        node->storage_class->type() == AST_T::CStatic_t);
 
     FunType* fun_type_1 = static_cast<FunType*>(node->fun_type.get());
+    is_valid_type(fun_type_1->ret_type.get());
     if(fun_type_1->ret_type->type() == AST_T::Array_t) {
         raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
     }
     for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
+        is_valid_type(fun_type_1->param_types[param_type].get());
         if(fun_type_1->param_types[param_type]->type() == AST_T::Array_t) {
             std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type_1->param_types[param_type].get())->elem_type;
             fun_type_1->param_types[param_type] = std::make_shared<Pointer>(std::move(ref_type));
@@ -1587,10 +1583,10 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
-    is_valid_type(node->var_type.get());
     if(node->var_type->type() == AST_T::Void_t) {
         raise_runtime_error("Variable declaration can not have void type");
     }
+    is_valid_type(node->var_type.get());
 
     std::shared_ptr<InitialValue> initial_value;
     bool is_global = !(node->storage_class && 
@@ -1689,10 +1685,10 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
-    is_valid_type(node->var_type.get());
     if(node->var_type->type() == AST_T::Void_t) {
         raise_runtime_error("Variable declaration can not have void type");
     }
+    is_valid_type(node->var_type.get());
 
     if(node->storage_class) {
         switch(node->storage_class->type()) {
