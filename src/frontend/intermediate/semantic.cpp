@@ -1797,14 +1797,14 @@ static void resolve_label() {
     }
 }
 
-static void resolve_structure_type(Type* type_1);
+static void resolve_struct_type(Type* type_1);
 
-static void resolve_structure_ptr_type(Pointer* ptr_type_1) {
-    resolve_structure_type(ptr_type_1->ref_type.get());
+static void resolve_pointer_struct_type(Pointer* ptr_type_1) {
+    resolve_struct_type(ptr_type_1->ref_type.get());
 }
 
-static void resolve_structure_arr_type(Array* arr_type_1) {
-    resolve_structure_type(arr_type_1->elem_type.get());
+static void resolve_array_struct_type(Array* arr_type_1) {
+    resolve_struct_type(arr_type_1->elem_type.get());
 }
 
 static void resolve_structure_struct_type(Structure* struct_type_1) {
@@ -1817,27 +1817,27 @@ static void resolve_structure_struct_type(Structure* struct_type_1) {
     raise_runtime_error("Structure type " + em(struct_type_1->tag) + " was not declared in this scope");
 }
 
-static void resolve_structure_fun_type(FunType* fun_type_1) {
-    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
-        resolve_structure_type(fun_type_1->param_types[param_type].get());
-    }
-    resolve_structure_type(fun_type_1->ret_type.get());
-}
+// TODO rm
+//static void resolve_structure_fun_type(FunType* fun_type_1) {
+//    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
+//        resolve_structure_type(fun_type_1->param_types[param_type].get());
+//    }
+//    resolve_structure_type(fun_type_1->ret_type.get());
+//}
 
-static void resolve_structure_type(Type* type_1) {
+static void resolve_struct_type(Type* type_1) {
     switch(type_1->type()) {
         case AST_T::Pointer_t:
-            resolve_structure_ptr_type(static_cast<Pointer*>(type_1));
+            resolve_pointer_struct_type(static_cast<Pointer*>(type_1));
             break;
         case AST_T::Array_t:
-            resolve_structure_arr_type(static_cast<Array*>(type_1));
+            resolve_array_struct_type(static_cast<Array*>(type_1));
             break;
         case AST_T::Structure_t:
             resolve_structure_struct_type(static_cast<Structure*>(type_1));
             break;
         case AST_T::FunType_t:
-            resolve_structure_fun_type(static_cast<FunType*>(type_1));
-            break;
+            RAISE_INTERNAL_ERROR;
         default:
             break;
     }
@@ -1857,7 +1857,7 @@ static void resolve_var_expression(CVar* node) {
 }
 
 static void resolve_cast_expression(CCast* node) {
-    resolve_structure_type(node->target_type.get());
+    resolve_struct_type(node->target_type.get());
     node->exp = resolve_typed_expression(std::move(node->exp));
 }
 
@@ -1916,7 +1916,7 @@ static void resolve_sizeof_expression(CSizeOf* node) {
 }
 
 static void resolve_sizeoft_expression(CSizeOfT* node) {
-    resolve_structure_type(node->target_type.get());
+    resolve_struct_type(node->target_type.get());
 }
 
 static void resolve_expression(CExp* node) {
