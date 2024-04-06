@@ -40,8 +40,7 @@ static bool is_same_type(Type* type_1, Type* type_2) {
             type_2->type() == AST_T::Array_t) {
         return is_array_same_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
     }
-    else if(type_1->type() == AST_T::FunType_t &&
-            type_2->type() == AST_T::FunType_t) {
+    else if(type_1->type() == AST_T::FunType_t) {
         RAISE_INTERNAL_ERROR;
     }
     else {
@@ -65,8 +64,8 @@ static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
     return true;
 }
 
-static bool is_type_signed(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_signed(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::Int_t:
@@ -78,8 +77,8 @@ static bool is_type_signed(Type* type_1) {
     }
 }
 
-static bool is_type_character(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_character(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -89,8 +88,8 @@ static bool is_type_character(Type* type_1) {
     }
 }
 
-static bool is_type_integer(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_integer(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::Int_t:
@@ -104,8 +103,8 @@ static bool is_type_integer(Type* type_1) {
     }
 }
 
-static bool is_type_arithmetic(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_arithmetic(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::Int_t:
@@ -120,8 +119,8 @@ static bool is_type_arithmetic(Type* type_1) {
     }
 }
 
-static bool is_type_scalar(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_scalar(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::Int_t:
@@ -137,8 +136,8 @@ static bool is_type_scalar(Type* type_1) {
     }
 }
 
-static bool is_type_complete(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_complete(Type* type) {
+    switch(type->type()) {
         case AST_T::Void_t:
             return false;
         default:
@@ -146,26 +145,26 @@ static bool is_type_complete(Type* type_1) {
     }
 }
 
-static void is_valid_type(Type* type_1);
+static void is_valid_type(Type* type);
 
-static void is_pointer_valid_type(Pointer* ptr_type_1) {
-    is_valid_type(ptr_type_1->ref_type.get());
+static void is_pointer_valid_type(Pointer* ptr_type) {
+    is_valid_type(ptr_type->ref_type.get());
 }
 
-static void is_array_valid_type(Array* arr_type_1) {
-    if(!is_type_complete(arr_type_1->elem_type.get())) {
+static void is_array_valid_type(Array* arr_type) {
+    if(!is_type_complete(arr_type->elem_type.get())) {
         raise_runtime_error("Array must be of complete type");
     }
-    is_valid_type(arr_type_1->elem_type.get());
+    is_valid_type(arr_type->elem_type.get());
 }
 
-static void is_valid_type(Type* type_1) {
-    switch(type_1->type()) {
+static void is_valid_type(Type* type) {
+    switch(type->type()) {
         case AST_T::Pointer_t:
-            is_pointer_valid_type(static_cast<Pointer*>(type_1));
+            is_pointer_valid_type(static_cast<Pointer*>(type));
             break;
         case AST_T::Array_t:
-            is_array_valid_type(static_cast<Array*>(type_1));
+            is_array_valid_type(static_cast<Array*>(type));
             break;
         case AST_T::FunType_t:
             RAISE_INTERNAL_ERROR;
@@ -174,8 +173,8 @@ static void is_valid_type(Type* type_1) {
     }
 }
 
-static TInt get_scalar_type_size(Type* type_1) {
-    switch(type_1->type()) {
+static TInt get_scalar_type_size(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -193,7 +192,7 @@ static TInt get_scalar_type_size(Type* type_1) {
     }
 }
 
-static TLong get_type_scale(Type* type_1);
+static TLong get_type_scale(Type* type);
 
 static TLong get_array_aggregate_type_scale(Array* arr_type) {
     TLong size = arr_type->size;
@@ -204,12 +203,12 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
     return get_type_scale(arr_type->elem_type.get()) * size;
 }
 
-static TLong get_type_scale(Type* type_1) {
-    switch(type_1->type()) {
+static TLong get_type_scale(Type* type) {
+    switch(type->type()) {
         case AST_T::Array_t:
-            return get_array_aggregate_type_scale(static_cast<Array *>(type_1));
+            return get_array_aggregate_type_scale(static_cast<Array *>(type));
         default:
-            return get_scalar_type_size(type_1);
+            return get_scalar_type_size(type);
     }
 }
 
@@ -242,10 +241,10 @@ static bool is_exp_lvalue(CExp* node) {
 
 static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     if(is_type_character(node_1->exp_type.get())) {
-        std::shared_ptr<Type> exp_type_1 = std::move(node_1->exp_type);
+        std::shared_ptr<Type> exp_type = std::move(node_1->exp_type);
         node_1->exp_type = std::make_shared<Int>();
         std::shared_ptr<Type> joint_type = get_joint_type(node_1, node_2);
-        node_1->exp_type = std::move(exp_type_1);
+        node_1->exp_type = std::move(exp_type);
         return joint_type;
     }
     else if(is_type_character(node_2->exp_type.get())) {
@@ -1798,36 +1797,36 @@ static void resolve_label() {
     }
 }
 
-static void resolve_struct_type(Type* type_1);
+static void resolve_struct_type(Type* type);
 
-static void resolve_pointer_struct_type(Pointer* ptr_type_1) {
-    resolve_struct_type(ptr_type_1->ref_type.get());
+static void resolve_pointer_struct_type(Pointer* ptr_type) {
+    resolve_struct_type(ptr_type->ref_type.get());
 }
 
-static void resolve_array_struct_type(Array* arr_type_1) {
-    resolve_struct_type(arr_type_1->elem_type.get());
+static void resolve_array_struct_type(Array* arr_type) {
+    resolve_struct_type(arr_type->elem_type.get());
 }
 
-static void resolve_structure_struct_type(Structure* struct_type_1) {
+static void resolve_structure_struct_type(Structure* struct_type) {
     for(size_t i = current_scope_depth(); i-- > 0;) {
-        if(scoped_structure_tag_maps[i].find(struct_type_1->tag) != scoped_structure_tag_maps[i].end()) {
-            struct_type_1->tag = scoped_structure_tag_maps[i][struct_type_1->tag];
+        if(scoped_structure_tag_maps[i].find(struct_type->tag) != scoped_structure_tag_maps[i].end()) {
+            struct_type->tag = scoped_structure_tag_maps[i][struct_type->tag];
             return;
         }
     }
-    raise_runtime_error("Structure type " + em(struct_type_1->tag) + " was not declared in this scope");
+    raise_runtime_error("Structure type " + em(struct_type->tag) + " was not declared in this scope");
 }
 
-static void resolve_struct_type(Type* type_1) {
-    switch(type_1->type()) {
+static void resolve_struct_type(Type* type) {
+    switch(type->type()) {
         case AST_T::Pointer_t:
-            resolve_pointer_struct_type(static_cast<Pointer*>(type_1));
+            resolve_pointer_struct_type(static_cast<Pointer*>(type));
             break;
         case AST_T::Array_t:
-            resolve_array_struct_type(static_cast<Array*>(type_1));
+            resolve_array_struct_type(static_cast<Array*>(type));
             break;
         case AST_T::Structure_t:
-            resolve_structure_struct_type(static_cast<Structure*>(type_1));
+            resolve_structure_struct_type(static_cast<Structure*>(type));
             break;
         case AST_T::FunType_t:
             RAISE_INTERNAL_ERROR;
