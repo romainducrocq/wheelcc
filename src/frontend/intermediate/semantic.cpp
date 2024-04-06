@@ -1019,8 +1019,13 @@ static void checktype_params(CFunctionDeclaration* node) {
         if(fun_type->param_types[param_type]->type() == AST_T::Void_t) {
             raise_runtime_error("Function parameters can not have void type");
         }
+        is_valid_type(fun_type->param_types[param_type].get());
+        if(fun_type->param_types[param_type]->type() == AST_T::Array_t) {
+            std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[param_type].get())->elem_type;
+            fun_type->param_types[param_type] = std::make_shared<Pointer>(std::move(ref_type));
+        }
 
-        else if(node->body) {
+        if(node->body) {
             std::shared_ptr<Type> type_t = fun_type->param_types[param_type];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
             symbol_table[node->params[param_type]] = std::make_unique<Symbol>(std::move(type_t),
@@ -1043,13 +1048,9 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     if(fun_type_1->ret_type->type() == AST_T::Array_t) {
         raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
     }
-    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
-        is_valid_type(fun_type_1->param_types[param_type].get());
-        if(fun_type_1->param_types[param_type]->type() == AST_T::Array_t) {
-            std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type_1->param_types[param_type].get())->elem_type;
-            fun_type_1->param_types[param_type] = std::make_shared<Pointer>(std::move(ref_type));
-        }
-    }
+
+
+    checktype_params(node);
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
 
@@ -2262,8 +2263,6 @@ static void resolve_params(CFunctionDeclaration* node) {
         scoped_identifier_maps.back()[node->params[param]] = resolve_variable_identifier(node->params[param]);
         node->params[param] = scoped_identifier_maps.back()[node->params[param]];
     }
-
-    checktype_params(node);
 }
 
 static void resolve_function_declaration(CFunctionDeclaration* node) {
@@ -2287,12 +2286,13 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
     }
 
     scoped_identifier_maps.back()[node->name] = node->name;
-    checktype_function_declaration(node);
 
     enter_scope();
     if(!node->params.empty()) {
         resolve_params(node);
     }
+    checktype_function_declaration(node);
+
     if(node->body) {
         resolve_block(node->body.get());
     }
