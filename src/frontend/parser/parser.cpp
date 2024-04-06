@@ -1107,9 +1107,10 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_static:
             case TOKEN_KIND::key_extern:
             case TOKEN_KIND::binop_multiplication:
-            case TOKEN_KIND::parenthesis_open:
+            case TOKEN_KIND::parenthesis_open: {
                 specifier += 1;
                 break;
+            }
             case TOKEN_KIND::brackets_open: {
                 specifier += 1;
                 while(peek_next_i(specifier).token_kind != TOKEN_KIND::brackets_close) {

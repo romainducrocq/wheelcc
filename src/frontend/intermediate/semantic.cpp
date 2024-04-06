@@ -1764,6 +1764,8 @@ static std::unordered_map<TIdentifier, size_t> external_linkage_scope_map;
 
 static std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
 
+static std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_structure_tag_maps;
+
 static std::unordered_map<TIdentifier, TIdentifier> goto_map;
 
 static std::unordered_set<TIdentifier> label_set;
@@ -1796,6 +1798,44 @@ static void resolve_label() {
             raise_runtime_error("An error occurred in variable resolution, goto " + em(target.first) +
                                 " has no target label");
         }
+    }
+}
+
+static void resolve_struct_tag(Type* type_1);
+
+static void resolve_pointer_struct_tag(Pointer* ptr_type_1) {
+    resolve_struct_tag(ptr_type_1->ref_type.get());
+}
+
+static void resolve_array_struct_tag(Array* arr_type_1) {
+    resolve_struct_tag(arr_type_1->elem_type.get());
+}
+
+static void resolve_structure_struct_tag(Structure* struct_type_1) {
+    for(size_t i = current_scope_depth(); i-- > 0;) {
+        if(scoped_structure_tag_maps[i].find(struct_type_1->tag) != scoped_structure_tag_maps[i].end()) {
+            struct_type_1->tag = scoped_structure_tag_maps[i][struct_type_1->tag];
+            return;
+        }
+    }
+    raise_runtime_error("Structure type " + em(struct_type_1->tag) + " was not declared in this scope");
+}
+
+static void resolve_struct_tag(Type* type_1) {
+    switch(type_1->type()) {
+        case AST_T::Pointer_t:
+            resolve_pointer_struct_tag(static_cast<Pointer*>(type_1));
+            break;
+        case AST_T::Array_t:
+            resolve_array_struct_tag(static_cast<Array*>(type_1));
+            break;
+        case AST_T::Structure_t:
+            resolve_structure_struct_tag(static_cast<Structure*>(type_1));
+            break;
+        case AST_T::FunType_t:
+            RAISE_INTERNAL_ERROR;
+        default:
+            break;
     }
 }
 
