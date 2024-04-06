@@ -303,6 +303,8 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     raise_runtime_error("Maybe-pointer expressions have incompatible types");
 }
 
+static void resolve_struct_type(Type* type, bool is_fun_type);
+
 static void checktype_constant_expression(CConstant* node) {
     switch(node->constant->type()) {
         case AST_T::CConstChar_t:
@@ -345,6 +347,7 @@ static void checktype_var_expression(CVar* node) {
 }
 
 static void checktype_cast_expression(CCast* node) {
+    resolve_struct_type(node->target_type.get(), false);
     if(node->target_type->type() != AST_T::Void_t) {
         if(node->exp->exp_type->type() == AST_T::Double_t &&
            node->target_type->type() == AST_T::Pointer_t) {
@@ -361,7 +364,6 @@ static void checktype_cast_expression(CCast* node) {
             raise_runtime_error("Types can not be converted to non-scalar and non-void type");
         }
     }
-
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
 }
@@ -830,6 +832,7 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 }
 
 static void checktype_sizeoft_expression(CSizeOfT* node) {
+    resolve_struct_type(node->target_type.get(), false);
     if(!is_type_complete(node->target_type.get())) {
         raise_runtime_error("Can not get the size of an incomplete type");
     }
@@ -1016,6 +1019,7 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
 static void checktype_params(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for(size_t param_type = 0; param_type < node->params.size(); param_type++) {
+        resolve_struct_type(fun_type->param_types[param_type].get(), false);
         if(fun_type->param_types[param_type]->type() == AST_T::Void_t) {
             raise_runtime_error("Function parameters can not have void type");
         }
@@ -1044,12 +1048,11 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
                        node->storage_class->type() == AST_T::CStatic_t);
 
     FunType* fun_type_1 = static_cast<FunType*>(node->fun_type.get());
+    resolve_struct_type(fun_type_1->ret_type.get(), true);
     is_valid_type(fun_type_1->ret_type.get());
     if(fun_type_1->ret_type->type() == AST_T::Array_t) {
         raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
     }
-
-
     checktype_params(node);
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
@@ -1584,6 +1587,7 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
+    resolve_struct_type(node->var_type.get(), false);
     if(node->var_type->type() == AST_T::Void_t) {
         raise_runtime_error("Variable declaration can not have void type");
     }
@@ -1686,6 +1690,7 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
+    resolve_struct_type(node->var_type.get(), false);
     if(node->var_type->type() == AST_T::Void_t) {
         raise_runtime_error("Variable declaration can not have void type");
     }
@@ -1798,18 +1803,16 @@ static void resolve_label() {
     }
 }
 
-static void resolve_struct_type(Type* type);
-
-static void resolve_pointer_struct_type(Pointer* ptr_type) {
-    resolve_struct_type(ptr_type->ref_type.get());
+static void resolve_pointer_struct_type(Pointer* ptr_type, bool is_fun_type) {
+    resolve_struct_type(ptr_type->ref_type.get(), is_fun_type);
 }
 
-static void resolve_array_struct_type(Array* arr_type) {
-    resolve_struct_type(arr_type->elem_type.get());
+static void resolve_array_struct_type(Array* arr_type, bool is_fun_type) {
+    resolve_struct_type(arr_type->elem_type.get(), is_fun_type);
 }
 
-static void resolve_structure_struct_type(Structure* struct_type) {
-    for(size_t i = current_scope_depth(); i-- > 0;) {
+static void resolve_structure_struct_type(Structure* struct_type, bool is_fun_type) {
+    for(size_t i = is_fun_type ? current_scope_depth() - 1 : current_scope_depth(); i-- > 0;) {
         if(scoped_structure_tag_maps[i].find(struct_type->tag) != scoped_structure_tag_maps[i].end()) {
             struct_type->tag = scoped_structure_tag_maps[i][struct_type->tag];
             return;
@@ -1818,16 +1821,16 @@ static void resolve_structure_struct_type(Structure* struct_type) {
     raise_runtime_error("Structure type " + em(struct_type->tag) + " was not declared in this scope");
 }
 
-static void resolve_struct_type(Type* type) {
+static void resolve_struct_type(Type* type, bool is_fun_type) {
     switch(type->type()) {
         case AST_T::Pointer_t:
-            resolve_pointer_struct_type(static_cast<Pointer*>(type));
+            resolve_pointer_struct_type(static_cast<Pointer*>(type), is_fun_type);
             break;
         case AST_T::Array_t:
-            resolve_array_struct_type(static_cast<Array*>(type));
+            resolve_array_struct_type(static_cast<Array*>(type), is_fun_type);
             break;
         case AST_T::Structure_t:
-            resolve_structure_struct_type(static_cast<Structure*>(type));
+            resolve_structure_struct_type(static_cast<Structure*>(type), is_fun_type);
             break;
         case AST_T::FunType_t:
             RAISE_INTERNAL_ERROR;
@@ -1850,7 +1853,6 @@ static void resolve_var_expression(CVar* node) {
 }
 
 static void resolve_cast_expression(CCast* node) {
-    resolve_struct_type(node->target_type.get());
     node->exp = resolve_typed_expression(std::move(node->exp));
 }
 
@@ -1906,10 +1908,6 @@ static void resolve_subscript_expression(CSubscript* node) {
 
 static void resolve_sizeof_expression(CSizeOf* node) {
     resolve_expression(node->exp.get());
-}
-
-static void resolve_sizeoft_expression(CSizeOfT* node) {
-    resolve_struct_type(node->target_type.get());
 }
 
 static void resolve_expression(CExp* node) {
@@ -1986,12 +1984,9 @@ static void resolve_expression(CExp* node) {
             checktype_sizeof_expression(p_node);
             break;
         }
-        case AST_T::CSizeOfT_t: {
-            CSizeOfT* p_node = static_cast<CSizeOfT*>(node);
-            resolve_sizeoft_expression(p_node);
-            checktype_sizeoft_expression(p_node);
+        case AST_T::CSizeOfT_t:
+            checktype_sizeoft_expression(static_cast<CSizeOfT*>(node));
             break;
-        }
         default:
             RAISE_INTERNAL_ERROR;
     }
