@@ -1861,6 +1861,7 @@ static void resolve_var_expression(CVar* node) {
 }
 
 static void resolve_cast_expression(CCast* node) {
+    resolve_structure_type(node->target_type.get());
     node->exp = resolve_typed_expression(std::move(node->exp));
 }
 
@@ -1916,6 +1917,10 @@ static void resolve_subscript_expression(CSubscript* node) {
 
 static void resolve_sizeof_expression(CSizeOf* node) {
     resolve_expression(node->exp.get());
+}
+
+static void resolve_sizeoft_expression(CSizeOfT* node) {
+    resolve_structure_type(node->target_type.get());
 }
 
 static void resolve_expression(CExp* node) {
@@ -1992,9 +1997,12 @@ static void resolve_expression(CExp* node) {
             checktype_sizeof_expression(p_node);
             break;
         }
-        case AST_T::CSizeOfT_t:
-            checktype_sizeoft_expression(static_cast<CSizeOfT*>(node));
+        case AST_T::CSizeOfT_t: {
+            CSizeOfT* p_node = static_cast<CSizeOfT*>(node);
+            resolve_sizeoft_expression(p_node);
+            checktype_sizeoft_expression(p_node);
             break;
+        }
         default:
             RAISE_INTERNAL_ERROR;
     }
