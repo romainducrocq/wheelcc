@@ -303,7 +303,7 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     raise_runtime_error("Maybe-pointer expressions have incompatible types");
 }
 
-static void resolve_struct_type(Type* type, bool is_fun_type);
+static void resolve_struct_type(Type* type);
 
 static void checktype_constant_expression(CConstant* node) {
     switch(node->constant->type()) {
@@ -347,7 +347,7 @@ static void checktype_var_expression(CVar* node) {
 }
 
 static void checktype_cast_expression(CCast* node) {
-    resolve_struct_type(node->target_type.get(), false);
+    resolve_struct_type(node->target_type.get());
     if(node->target_type->type() != AST_T::Void_t) {
         if(node->exp->exp_type->type() == AST_T::Double_t &&
            node->target_type->type() == AST_T::Pointer_t) {
@@ -832,7 +832,7 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 }
 
 static void checktype_sizeoft_expression(CSizeOfT* node) {
-    resolve_struct_type(node->target_type.get(), false);
+    resolve_struct_type(node->target_type.get());
     if(!is_type_complete(node->target_type.get())) {
         raise_runtime_error("Can not get the size of an incomplete type");
     }
@@ -1019,7 +1019,7 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
 static void checktype_params(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for(size_t param_type = 0; param_type < node->params.size(); param_type++) {
-        resolve_struct_type(fun_type->param_types[param_type].get(), false);
+        resolve_struct_type(fun_type->param_types[param_type].get());
         if(fun_type->param_types[param_type]->type() == AST_T::Void_t) {
             raise_runtime_error("Function parameters can not have void type");
         }
@@ -1038,6 +1038,15 @@ static void checktype_params(CFunctionDeclaration* node) {
     }
 }
 
+static void checktype_return_function_declaration(CFunctionDeclaration* node) {
+    FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
+    resolve_struct_type(fun_type->ret_type.get());
+    is_valid_type(fun_type->ret_type.get());
+    if(fun_type->ret_type->type() == AST_T::Array_t) {
+        raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
+    }
+}
+
 static void checktype_function_declaration(CFunctionDeclaration* node) {
     if(node->fun_type->type() == AST_T::Void_t) {
         raise_runtime_error("Function declaration can not have void type");
@@ -1047,12 +1056,6 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
-    FunType* fun_type_1 = static_cast<FunType*>(node->fun_type.get());
-    resolve_struct_type(fun_type_1->ret_type.get(), true);
-    is_valid_type(fun_type_1->ret_type.get());
-    if(fun_type_1->ret_type->type() == AST_T::Array_t) {
-        raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
-    }
     checktype_params(node);
 
     if(symbol_table.find(node->name) != symbol_table.end()) {
@@ -1060,7 +1063,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         FunType* fun_type_2 = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
         if(!(symbol_table[node->name]->type_t->type() == AST_T::FunType_t &&
              fun_type_2->param_types.size() == node->params.size() &&
-             is_same_fun_type(fun_type_1, fun_type_2))) {
+             is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type_2))) {
             raise_runtime_error("Function declaration " + em(node->name) +
                                 " was redeclared with conflicting type");
         }
@@ -1587,7 +1590,7 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
-    resolve_struct_type(node->var_type.get(), false);
+    resolve_struct_type(node->var_type.get());
     if(node->var_type->type() == AST_T::Void_t) {
         raise_runtime_error("Variable declaration can not have void type");
     }
@@ -1690,7 +1693,7 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
-    resolve_struct_type(node->var_type.get(), false);
+    resolve_struct_type(node->var_type.get());
     if(node->var_type->type() == AST_T::Void_t) {
         raise_runtime_error("Variable declaration can not have void type");
     }
@@ -1782,6 +1785,7 @@ static bool is_file_scope() {
 
 static void enter_scope() {
     scoped_identifier_maps.emplace_back();
+    scoped_structure_tag_maps.emplace_back();
 }
 
 static void exit_scope() {
@@ -1792,6 +1796,7 @@ static void exit_scope() {
         }
     }
     scoped_identifier_maps.pop_back();
+    scoped_structure_tag_maps.pop_back();
 }
 
 static void resolve_label() {
@@ -1803,16 +1808,16 @@ static void resolve_label() {
     }
 }
 
-static void resolve_pointer_struct_type(Pointer* ptr_type, bool is_fun_type) {
-    resolve_struct_type(ptr_type->ref_type.get(), is_fun_type);
+static void resolve_pointer_struct_type(Pointer* ptr_type) {
+    resolve_struct_type(ptr_type->ref_type.get());
 }
 
-static void resolve_array_struct_type(Array* arr_type, bool is_fun_type) {
-    resolve_struct_type(arr_type->elem_type.get(), is_fun_type);
+static void resolve_array_struct_type(Array* arr_type) {
+    resolve_struct_type(arr_type->elem_type.get());
 }
 
-static void resolve_structure_struct_type(Structure* struct_type, bool is_fun_type) {
-    for(size_t i = is_fun_type ? current_scope_depth() - 1 : current_scope_depth(); i-- > 0;) {
+static void resolve_structure_struct_type(Structure* struct_type) {
+    for(size_t i = current_scope_depth(); i-- > 0;) {
         if(scoped_structure_tag_maps[i].find(struct_type->tag) != scoped_structure_tag_maps[i].end()) {
             struct_type->tag = scoped_structure_tag_maps[i][struct_type->tag];
             return;
@@ -1821,16 +1826,16 @@ static void resolve_structure_struct_type(Structure* struct_type, bool is_fun_ty
     raise_runtime_error("Structure type " + em(struct_type->tag) + " was not declared in this scope");
 }
 
-static void resolve_struct_type(Type* type, bool is_fun_type) {
+static void resolve_struct_type(Type* type) {
     switch(type->type()) {
         case AST_T::Pointer_t:
-            resolve_pointer_struct_type(static_cast<Pointer*>(type), is_fun_type);
+            resolve_pointer_struct_type(static_cast<Pointer*>(type));
             break;
         case AST_T::Array_t:
-            resolve_array_struct_type(static_cast<Array*>(type), is_fun_type);
+            resolve_array_struct_type(static_cast<Array*>(type));
             break;
         case AST_T::Structure_t:
-            resolve_structure_struct_type(static_cast<Structure*>(type), is_fun_type);
+            resolve_structure_struct_type(static_cast<Structure*>(type));
             break;
         case AST_T::FunType_t:
             RAISE_INTERNAL_ERROR;
@@ -2281,6 +2286,7 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
     }
 
     scoped_identifier_maps.back()[node->name] = node->name;
+    checktype_return_function_declaration(node);
 
     enter_scope();
     if(!node->params.empty()) {
