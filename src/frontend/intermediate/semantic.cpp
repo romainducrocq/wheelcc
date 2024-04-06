@@ -272,7 +272,7 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
             return node_1->exp_type;
         }
     }
-    if(type_size_1 > type_size_2) {
+    else if(type_size_1 > type_size_2) {
         return node_1->exp_type;
     } else {
         return node_2->exp_type;
@@ -590,7 +590,7 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") +
                             " can not be used on " + em("non-arithmetic type"));
     }
-    if(!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())){
+    else if(!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())){
         node->exp_right = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
     }
     node->exp_type = node->exp_left->exp_type;
@@ -641,7 +641,7 @@ static void checktype_binary_comparison_relational_expression(CBinary* node) {
                             " can not be used on " + em("non-scalar type"));
     }
 
-    if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
+    else if(node->exp_left->exp_type->type() == AST_T::Pointer_t &&
        (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get()) ||
         (node->exp_left->type() == AST_T::CConstant_t &&
          is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get()))) ||
@@ -711,7 +711,7 @@ static void checktype_assignment_expression(CAssignment* node) {
         else if(!is_exp_lvalue(node->exp_left.get())) {
             raise_runtime_error("Assignment left expression is an invalid lvalue");
         }
-        if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
+        else if(!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
         }
         node->exp_type = node->exp_left->exp_type;
@@ -727,7 +727,7 @@ static void checktype_assignment_expression(CAssignment* node) {
         if(!is_exp_lvalue(exp_left)) {
             raise_runtime_error("Left expression is an invalid lvalue");
         }
-        if(!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
+        else if(!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
         }
         node->exp_type = exp_left->exp_type;
@@ -874,7 +874,7 @@ static void checktype_return_statement(CReturn* node) {
         raise_runtime_error("Non-void type function must return a value");
     }
 
-    if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
+    else if(!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
         node->exp = cast_by_assignment(std::move(node->exp), fun_type->ret_type);
     }
     node->exp = checktype_typed_expression(std::move(node->exp));
@@ -1016,15 +1016,16 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
 
 static void checktype_params(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-    for(size_t param = 0; param < node->params.size(); param++) {
-        if(fun_type->param_types[param]->type() == AST_T::Void_t) {
+    for(size_t param_type = 0; param_type < node->params.size(); param_type++) {
+        if(fun_type->param_types[param_type]->type() == AST_T::Void_t) {
             raise_runtime_error("Function parameters can not have void type");
         }
-        
-        if(node->body) {
-            std::shared_ptr<Type> type_t = fun_type->param_types[param];
+
+        else if(node->body) {
+            std::shared_ptr<Type> type_t = fun_type->param_types[param_type];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
-            symbol_table[node->params[param]] = std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
+            symbol_table[node->params[param_type]] = std::make_unique<Symbol>(std::move(type_t),
+                                                                              std::move(param_attrs));
         }
     }
 }
@@ -1056,12 +1057,12 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         FunType* fun_type_2 = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
         if(!(symbol_table[node->name]->type_t->type() == AST_T::FunType_t &&
              fun_type_2->param_types.size() == node->params.size() &&
-            is_same_fun_type(fun_type_1, fun_type_2))) {
+             is_same_fun_type(fun_type_1, fun_type_2))) {
             raise_runtime_error("Function declaration " + em(node->name) +
                                 " was redeclared with conflicting type");
         }
 
-        if(is_defined &&
+        else if(is_defined &&
            node->body) {
             raise_runtime_error("Function declaration " + em(node->name) +
                                 " was already defined");
@@ -1642,7 +1643,7 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
         raise_runtime_error("Block scope variable " + em(node->name) +
                             " with external linkage was defined");
     }
-    if(symbol_table.find(node->name) != symbol_table.end()) {
+    else if(symbol_table.find(node->name) != symbol_table.end()) {
         if(!is_same_type(symbol_table[node->name]->type_t.get(), node->var_type.get())) {
             raise_runtime_error("Block scope variable " + em(node->name) +
                                 " was redeclared with conflicting type");
@@ -1816,14 +1817,6 @@ static void resolve_structure_struct_type(Structure* struct_type_1) {
     }
     raise_runtime_error("Structure type " + em(struct_type_1->tag) + " was not declared in this scope");
 }
-
-// TODO rm
-//static void resolve_structure_fun_type(FunType* fun_type_1) {
-//    for(size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
-//        resolve_structure_type(fun_type_1->param_types[param_type].get());
-//    }
-//    resolve_structure_type(fun_type_1->ret_type.get());
-//}
 
 static void resolve_struct_type(Type* type_1) {
     switch(type_1->type()) {
@@ -2280,7 +2273,7 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
             raise_runtime_error("Block scoped function definition " + em(node->name) +
                                 " can not be nested");
         }
-        if(node->storage_class && 
+        else if(node->storage_class &&
            node->storage_class->type() == AST_T::CStatic_t) {
             raise_runtime_error("Block scoped function definition " + em(node->name) +
                                 " can not be static");
@@ -2328,7 +2321,7 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
           node->storage_class->type() == AST_T::CExtern_t))) {
        raise_runtime_error("Variable " + em(node->name) + " was already declared in this scope");
     }
-    if(node->storage_class && 
+    else if(node->storage_class &&
        node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);
         return;
