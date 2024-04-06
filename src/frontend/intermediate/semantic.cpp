@@ -1016,7 +1016,16 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
     node->init_type = init_type;
 }
 
-static void checktype_params(CFunctionDeclaration* node) {
+static void checktype_return_function_declaration(CFunctionDeclaration* node) {
+    FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
+    resolve_struct_type(fun_type->ret_type.get());
+    is_valid_type(fun_type->ret_type.get());
+    if(fun_type->ret_type->type() == AST_T::Array_t) {
+        raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
+    }
+}
+
+static void checktype_params_function_declaration(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for(size_t param_type = 0; param_type < node->params.size(); param_type++) {
         resolve_struct_type(fun_type->param_types[param_type].get());
@@ -1038,15 +1047,6 @@ static void checktype_params(CFunctionDeclaration* node) {
     }
 }
 
-static void checktype_return_function_declaration(CFunctionDeclaration* node) {
-    FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-    resolve_struct_type(fun_type->ret_type.get());
-    is_valid_type(fun_type->ret_type.get());
-    if(fun_type->ret_type->type() == AST_T::Array_t) {
-        raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
-    }
-}
-
 static void checktype_function_declaration(CFunctionDeclaration* node) {
     if(node->fun_type->type() == AST_T::Void_t) {
         raise_runtime_error("Function declaration can not have void type");
@@ -1056,14 +1056,12 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
-    checktype_params(node);
-
     if(symbol_table.find(node->name) != symbol_table.end()) {
 
-        FunType* fun_type_2 = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
+        FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
         if(!(symbol_table[node->name]->type_t->type() == AST_T::FunType_t &&
-             fun_type_2->param_types.size() == node->params.size() &&
-             is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type_2))) {
+             fun_type->param_types.size() == node->params.size() &&
+             is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             raise_runtime_error("Function declaration " + em(node->name) +
                                 " was redeclared with conflicting type");
         }
@@ -2255,7 +2253,7 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
     }
 }
 
-static void resolve_params(CFunctionDeclaration* node) {
+static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for(size_t param = 0; param < node->params.size(); param++) {
         if(scoped_identifier_maps.back().find(node->params[param]) != scoped_identifier_maps.back().end()) {
             raise_runtime_error("Variable " + node->params[param] + " was already declared in this scope");
@@ -2290,7 +2288,8 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
 
     enter_scope();
     if(!node->params.empty()) {
-        resolve_params(node);
+        resolve_params_function_declaration(node);
+        checktype_params_function_declaration(node);
     }
     checktype_function_declaration(node);
 
