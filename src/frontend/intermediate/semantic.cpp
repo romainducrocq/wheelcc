@@ -1714,6 +1714,16 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
     }
 }
 
+static void checktype_members_structure_declaration(CStructDeclaration* node) {
+    for(size_t member = 0; member < node->members.size(); member++) {
+        resolve_struct_type(node->members[member].get()->member_type.get());
+    }
+}
+
+// TODO
+// static void checktype_structure_declaration(CStructDeclaration* node) {
+// }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Loop labeling
@@ -2336,6 +2346,22 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
     }
 }
 
+static void resolve_members_structure_declaration(CStructDeclaration* node) {
+    checktype_members_structure_declaration(node);
+}
+
+static void resolve_structure_declaration(CStructDeclaration* node) {
+    if(scoped_structure_tag_maps.back().find(node->tag) != scoped_structure_tag_maps.back().end()) {
+        node->tag = scoped_structure_tag_maps.back()[node->tag];
+    }
+    else {
+        scoped_structure_tag_maps.back()[node->tag] = resolve_structure_tag(node->tag);
+        node->tag = scoped_structure_tag_maps.back()[node->tag];
+    }
+    // TODO checktype_structure_declaration(node);
+    resolve_members_structure_declaration(node);
+}
+
 static void clear_resolve_labels() {
     goto_map.clear();
     label_set.clear();
@@ -2361,6 +2387,10 @@ static void resolve_var_decl_declaration(CVarDecl* node) {
     }
 }
 
+static void resolve_struct_decl_declaration(CStructDecl* node) {
+    resolve_structure_declaration(node->struct_decl.get());
+}
+
 static void resolve_declaration(CDeclaration* node) {
     switch(node->type()) {
         case AST_T::CFunDecl_t:
@@ -2368,6 +2398,9 @@ static void resolve_declaration(CDeclaration* node) {
             break;
         case AST_T::CVarDecl_t:
             resolve_var_decl_declaration(static_cast<CVarDecl*>(node));
+            break;
+        case AST_T::CStructDecl_t:
+            resolve_struct_decl_declaration(static_cast<CStructDecl*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;
