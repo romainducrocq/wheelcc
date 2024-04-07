@@ -1855,27 +1855,41 @@ static void resolve_struct_type(Type* type) {
 static void resolve_expression(CExp* node);
 static std::unique_ptr<CExp> resolve_typed_expression(std::unique_ptr<CExp>&& node);
 
+static void resolve_constant_expression(CConstant* node) {
+    checktype_constant_expression(node);
+}
+
+static void resolve_string_expression(CString* node) {
+    checktype_string_expression(node);
+}
+
 static void resolve_var_expression(CVar* node) {
     for(size_t i = current_scope_depth(); i-- > 0;) {
         if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
             node->name = scoped_identifier_maps[i][node->name];
-            return;
+            goto Lelse;
         }
     }
     raise_runtime_error("Variable " + em(node->name) + " was not declared in this scope");
+    Lelse:
+
+    checktype_var_expression(node);
 }
 
 static void resolve_cast_expression(CCast* node) {
     node->exp = resolve_typed_expression(std::move(node->exp));
+    checktype_cast_expression(node);
 }
 
 static void resolve_unary_expression(CUnary* node) {
     node->exp = resolve_typed_expression(std::move(node->exp));
+    checktype_unary_expression(node);
 }
 
 static void resolve_binary_expression(CBinary* node) {
     node->exp_left = resolve_typed_expression(std::move(node->exp_left));
     node->exp_right = resolve_typed_expression(std::move(node->exp_right));
+    checktype_binary_expression(node);
 }
 
 static void resolve_assignment_expression(CAssignment* node) {
@@ -1883,12 +1897,14 @@ static void resolve_assignment_expression(CAssignment* node) {
         node->exp_left = resolve_typed_expression(std::move(node->exp_left));
     }
     node->exp_right = resolve_typed_expression(std::move(node->exp_right));
+    checktype_assignment_expression(node);
 }
 
 static void resolve_conditional_expression(CConditional* node) {
     node->condition = resolve_typed_expression(std::move(node->condition));
     node->exp_middle = resolve_typed_expression(std::move(node->exp_middle));
     node->exp_right = resolve_typed_expression(std::move(node->exp_right));
+    checktype_conditional_expression(node);
 }
 
 static void resolve_function_call_expression(CFunctionCall* node) {
@@ -1904,101 +1920,77 @@ static void resolve_function_call_expression(CFunctionCall* node) {
     for(size_t i = 0; i < node->args.size(); i++) {
         node->args[i] = resolve_typed_expression(std::move(node->args[i]));
     }
+    checktype_function_call_expression(node);
 }
 
 static void resolve_dereference_expression(CDereference* node) {
     node->exp = resolve_typed_expression(std::move(node->exp));
+    checktype_dereference_expression(node);
 }
 
 static void resolve_addrof_expression(CAddrOf* node) {
     resolve_expression(node->exp.get());
+    checktype_addrof_expression(node);
 }
 
 static void resolve_subscript_expression(CSubscript* node) {
     node->primary_exp = resolve_typed_expression(std::move(node->primary_exp));
     node->subscript_exp = resolve_typed_expression(std::move(node->subscript_exp));
+    checktype_subscript_expression(node);
 }
 
 static void resolve_sizeof_expression(CSizeOf* node) {
     resolve_expression(node->exp.get());
+    checktype_sizeof_expression(node);
+}
+
+static void resolve_sizeoft_expression(CSizeOfT* node) {
+    checktype_sizeoft_expression(node);
 }
 
 static void resolve_expression(CExp* node) {
     switch(node->type()) {
         case AST_T::CConstant_t:
-            checktype_constant_expression(static_cast<CConstant*>(node));
+            resolve_constant_expression(static_cast<CConstant*>(node));
             break;
         case AST_T::CString_t:
-            checktype_string_expression(static_cast<CString*>(node));
+            resolve_string_expression(static_cast<CString*>(node));
             break;
-        case AST_T::CVar_t: {
-            CVar* p_node = static_cast<CVar*>(node);
-            resolve_var_expression(p_node);
-            checktype_var_expression(p_node);
+        case AST_T::CVar_t:
+            resolve_var_expression(static_cast<CVar*>(node));
             break;
-        }
-        case AST_T::CCast_t: {
-            CCast* p_node = static_cast<CCast*>(node);
-            resolve_cast_expression(p_node);
-            checktype_cast_expression(p_node);
+        case AST_T::CCast_t:
+            resolve_cast_expression(static_cast<CCast*>(node));
             break;
-        }
-        case AST_T::CUnary_t: {
-            CUnary* p_node = static_cast<CUnary*>(node);
-            resolve_unary_expression(p_node);
-            checktype_unary_expression(p_node);
+        case AST_T::CUnary_t:
+            resolve_unary_expression(static_cast<CUnary*>(node));
             break;
-        }
-        case AST_T::CBinary_t: {
-            CBinary* p_node = static_cast<CBinary*>(node);
-            resolve_binary_expression(p_node);
-            checktype_binary_expression(p_node);
+        case AST_T::CBinary_t:
+            resolve_binary_expression(static_cast<CBinary*>(node));
             break;
-        }
-        case AST_T::CAssignment_t: {
-            CAssignment* p_node = static_cast<CAssignment*>(node);
-            resolve_assignment_expression(p_node);
-            checktype_assignment_expression(p_node);
+        case AST_T::CAssignment_t:
+            resolve_assignment_expression(static_cast<CAssignment*>(node));
             break;
-        }
-        case AST_T::CConditional_t: {
-            CConditional* p_node = static_cast<CConditional*>(node);
-            resolve_conditional_expression(p_node);
-            checktype_conditional_expression(p_node);
+        case AST_T::CConditional_t:
+            resolve_conditional_expression(static_cast<CConditional*>(node));
             break;
-        }
-        case AST_T::CFunctionCall_t: {
-            CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
-            resolve_function_call_expression(p_node);
-            checktype_function_call_expression(p_node);
+        case AST_T::CFunctionCall_t:
+            resolve_function_call_expression(static_cast<CFunctionCall*>(node));
             break;
-        }
-        case AST_T::CDereference_t: {
-            CDereference* p_node = static_cast<CDereference*>(node);
-            resolve_dereference_expression(p_node);
-            checktype_dereference_expression(p_node);
+        case AST_T::CDereference_t:
+            resolve_dereference_expression(static_cast<CDereference*>(node));
             break;
-        }
-        case AST_T::CAddrOf_t: {
-            CAddrOf* p_node = static_cast<CAddrOf*>(node);
-            resolve_addrof_expression(p_node);
-            checktype_addrof_expression(p_node);
+        case AST_T::CAddrOf_t:
+            resolve_addrof_expression(static_cast<CAddrOf*>(node));
             break;
-        }
-        case AST_T::CSubscript_t: {
-            CSubscript* p_node = static_cast<CSubscript*>(node);
-            resolve_subscript_expression(p_node);
-            checktype_subscript_expression(p_node);
+        case AST_T::CSubscript_t:
+            resolve_subscript_expression(static_cast<CSubscript*>(node));
             break;
-        }
-        case AST_T::CSizeOf_t: {
-            CSizeOf* p_node = static_cast<CSizeOf*>(node);
-            resolve_sizeof_expression(p_node);
-            checktype_sizeof_expression(p_node);
+        case AST_T::CSizeOf_t:
+            resolve_sizeof_expression(static_cast<CSizeOf*>(node));
             break;
-        }
         case AST_T::CSizeOfT_t:
-            checktype_sizeoft_expression(static_cast<CSizeOfT*>(node));
+            resolve_sizeoft_expression(static_cast<CSizeOfT*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -2047,6 +2039,7 @@ static void resolve_return_statement(CReturn* node) {
     if(node->exp) {
         node->exp = resolve_typed_expression(std::move(node->exp));
     }
+    checktype_return_statement(node);
 }
 
 static void resolve_expression_statement(CExpression* node) {
@@ -2059,6 +2052,7 @@ static void resolve_if_statement(CIf* node) {
     if(node->else_fi) {
         resolve_statement(node->else_fi.get());
     }
+    checktype_if_statement(node);
 }
 
 static void resolve_goto_statement(CGoto* node) {
@@ -2098,6 +2092,7 @@ static void resolve_while_statement(CWhile* node) {
     node->condition = resolve_typed_expression(std::move(node->condition));
     resolve_statement(node->body.get());
     deannotate_loop();
+    checktype_while_statement(node);
 }
 
 static void resolve_do_while_statement(CDoWhile* node) {
@@ -2105,6 +2100,7 @@ static void resolve_do_while_statement(CDoWhile* node) {
     resolve_statement(node->body.get());
     node->condition = resolve_typed_expression(std::move(node->condition));
     deannotate_loop();
+    checktype_do_while_statement(node);
 }
 
 static void resolve_for_statement(CFor* node) {
@@ -2120,6 +2116,7 @@ static void resolve_for_statement(CFor* node) {
     resolve_statement(node->body.get());
     exit_scope();
     deannotate_loop();
+    checktype_for_statement(node);
 }
 
 static void resolve_break_statement(CBreak* node) {
@@ -2132,21 +2129,15 @@ static void resolve_continue_statement(CContinue* node) {
 
 static void resolve_statement(CStatement* node) {
     switch(node->type()) {
-        case AST_T::CReturn_t: {
-            CReturn* p_node = static_cast<CReturn*>(node);
-            resolve_return_statement(p_node);
-            checktype_return_statement(p_node);
+        case AST_T::CReturn_t:
+            resolve_return_statement(static_cast<CReturn*>(node));
             break;
-        }
         case AST_T::CExpression_t:
             resolve_expression_statement(static_cast<CExpression*>(node));
             break;
-        case AST_T::CIf_t: {
-            CIf* p_node = static_cast<CIf*>(node);
-            resolve_if_statement(p_node);
-            checktype_if_statement(p_node);
+        case AST_T::CIf_t:
+            resolve_if_statement(static_cast<CIf*>(node));
             break;
-        }
         case AST_T::CGoto_t:
             resolve_goto_statement(static_cast<CGoto*>(node));
             break;
@@ -2156,24 +2147,15 @@ static void resolve_statement(CStatement* node) {
         case AST_T::CCompound_t:
             resolve_compound_statement(static_cast<CCompound*>(node));
             break;
-        case AST_T::CWhile_t: {
-            CWhile* p_node = static_cast<CWhile*>(node);
-            resolve_while_statement(p_node);
-            checktype_while_statement(p_node);
+        case AST_T::CWhile_t:
+            resolve_while_statement(static_cast<CWhile*>(node));
             break;
-        }
-        case AST_T::CDoWhile_t: {
-            CDoWhile* p_node = static_cast<CDoWhile*>(node);
-            resolve_do_while_statement(p_node);
-            checktype_do_while_statement(p_node);
+        case AST_T::CDoWhile_t:
+            resolve_do_while_statement(static_cast<CDoWhile*>(node));
             break;
-        }
-        case AST_T::CFor_t: {
-            CFor* p_node = static_cast<CFor*>(node);
-            resolve_for_statement(p_node);
-            checktype_for_statement(p_node);
+        case AST_T::CFor_t:
+            resolve_for_statement(static_cast<CFor*>(node));
             break;
-        }
         case AST_T::CBreak_t:
             resolve_break_statement(static_cast<CBreak*>(node));
             break;
