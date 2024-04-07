@@ -1716,13 +1716,29 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 
 static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for(size_t member = 0; member < node->members.size(); member++) {
+        for(size_t other_member = member + 1; other_member < node->members.size(); other_member++) {
+            if(node->members[member]->member_name.compare(node->members[other_member]->member_name)) {
+                raise_runtime_error("Structure member was already declared in this scope");
+            }
+        }
         resolve_struct_type(node->members[member].get()->member_type.get());
+        if(!is_type_complete(node->members[member].get()->member_type.get())) {
+            raise_runtime_error("Structure member must be declared with a complete type");
+        }
+        is_valid_type(node->members[member].get()->member_type.get());
     }
 }
 
-// TODO
-// static void checktype_structure_declaration(CStructDeclaration* node) {
-// }
+static void checktype_structure_declaration(CStructDeclaration* node) {
+    if(struct_type_table.find(node->tag) != struct_type_table.end()) {
+        raise_runtime_error("Structure type " + em(node->tag) + " was already declared in this scope");
+    }
+    // TODO
+    TInt alignment = 0;
+    TLong size = 0l;
+    for(size_t member = 0; member < node->members.size(); member++) {
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2340,8 +2356,10 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
         scoped_structure_tag_maps.back()[node->tag] = resolve_structure_tag(node->tag);
         node->tag = scoped_structure_tag_maps.back()[node->tag];
     }
-    // TODO checktype_structure_declaration(node);
-    resolve_members_structure_declaration(node);
+    if(!node->members.empty()) {
+        resolve_members_structure_declaration(node);
+        checktype_structure_declaration(node);
+    }
 }
 
 static void clear_resolve_labels() {
