@@ -1510,7 +1510,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
                                     next_token->line);
     }
     else if(declarator.derived_type->type() == AST_T::FunType_t) {
-        raise_runtime_error_at_line("Declaration in for loop initialization must be a variable type",
+        raise_runtime_error_at_line("Structure member declaration can not be of function type",
                                     next_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);

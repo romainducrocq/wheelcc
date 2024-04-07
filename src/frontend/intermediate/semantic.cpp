@@ -1716,10 +1716,13 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 
 static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for(size_t member = 0; member < node->members.size(); member++) {
-        for(size_t other_member = member + 1; other_member < node->members.size(); other_member++) {
-            if(node->members[member]->member_name.compare(node->members[other_member]->member_name)) {
+        for(size_t member_other = member + 1; member_other < node->members.size(); member_other++) {
+            if(node->members[member]->member_name.compare(node->members[member_other]->member_name)) {
                 raise_runtime_error("Structure member was already declared in this scope");
             }
+        }
+        if(node->members[member].get()->member_type->type() == AST_T::FunType_t) {
+            RAISE_INTERNAL_ERROR;
         }
         resolve_struct_type(node->members[member].get()->member_type.get());
         if(!is_type_complete(node->members[member].get()->member_type.get())) {
