@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -272,6 +273,32 @@ struct Symbol : Ast {
     std::unique_ptr<IdentifierAttr> attrs;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// struct_member = StructMember(int, identifier, type)
+struct StructMember : Ast {
+    AST_T type() override;
+    StructMember() = default;
+    StructMember(TLong offset, TIdentifier member_name, std::shared_ptr<Type> member_type);
+
+    TLong offset;
+    TIdentifier member_name;
+    std::shared_ptr<Type> member_type;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// struct_type(int, int, struct_member*)
+struct StructType : Ast {
+    AST_T type() override;
+    StructType() = default;
+    StructType(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members);
+
+    TInt alignment;
+    TLong size;
+    std::map<TIdentifier, std::unique_ptr<StructMember>> members;
+};
+
 /*
 struct Dummy : Ast {
 };
@@ -280,5 +307,7 @@ struct Dummy : Ast {
 extern std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
+
+extern std::unordered_map<TIdentifier, std::unique_ptr<StructType>> struct_type_table;
 
 #endif

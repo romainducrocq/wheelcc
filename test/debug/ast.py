@@ -62,6 +62,8 @@ ast = [
     ["ConstantAttr", [], ["static_init"]],
     ["LocalAttr", [], []],
     ["Symbol", [], ["type_t", "attrs"]],
+    ["StructMember", [(TLong, "offset"), (TIdentifier, "member_name")], ["member_type"]],
+    ["StructType", [(TInt, "alignment"), (TLong, "size"), std::map<(TIdentifier, ","members"]],
 
     # /include/ast/back_symt.hpp
     ["AssemblyType", [], []],
