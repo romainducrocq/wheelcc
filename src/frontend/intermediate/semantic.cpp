@@ -2253,6 +2253,7 @@ static void resolve_params_function_declaration(CFunctionDeclaration* node) {
         scoped_identifier_maps.back()[node->params[param]] = resolve_variable_identifier(node->params[param]);
         node->params[param] = scoped_identifier_maps.back()[node->params[param]];
     }
+    checktype_params_function_declaration(node);
 }
 
 static void resolve_function_declaration(CFunctionDeclaration* node) {
@@ -2281,7 +2282,6 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
     enter_scope();
     if(!node->params.empty()) {
         resolve_params_function_declaration(node);
-        checktype_params_function_declaration(node);
     }
     checktype_function_declaration(node);
 
