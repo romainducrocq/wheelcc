@@ -38,10 +38,10 @@ def print_ast_case(node):
             print(f"            field(\"{field[0]().name}\", {to_string(field[0]().name, 'p_node->' + field[1])}, t+1);")
     
     for child in node.children:
-        if child[0] == "[":
+        if child[0] in ("[", "("):
             print(f"            field(\"List[\" + std::to_string(p_node->{child[1:]}.size()) + \"]\", \"\", t+1);")
             print(f"            for(const auto& item: p_node->{child[1:]}) {{")
-            print(f"                print_ast(item.get(), t+1);")
+            print(f"                print_ast(item{'.second' if child[0] == '(' else ''}.get(), t+1);")
             print(f"            }}")
         else:
             print(f"            print_ast(p_node->{child}.get(), t);")

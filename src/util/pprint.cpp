@@ -289,6 +289,25 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->attrs.get(), t);
             break;
         }
+        case AST_T::StructMember_t: {
+            field("StructMember", "", ++t);
+            StructMember* p_node = static_cast<StructMember*>(node);
+            field("TLong", std::to_string(p_node->offset), t+1);
+            field("TIdentifier", p_node->member_name, t+1);
+            print_ast(p_node->member_type.get(), t);
+            break;
+        }
+        case AST_T::StructType_t: {
+            field("StructType", "", ++t);
+            StructType* p_node = static_cast<StructType*>(node);
+            field("TInt", std::to_string(p_node->alignment), t+1);
+            field("TLong", std::to_string(p_node->size), t+1);
+            field("List[" + std::to_string(p_node->members.size()) + "]", "", t+1);
+            for(const auto& item: p_node->members) {
+                print_ast(item.second.get(), t+1);
+            }
+            break;
+        }
         case AST_T::AssemblyType_t: {
             field("AssemblyType", "", ++t);
             break;
