@@ -11,6 +11,7 @@ cat ../../include/ast/${1}.hpp \
     | sed "s/\s*std::vector<TIdentifier>\s*/TIdentifier [/g" \
     | sed "s/\s*std::vector<TChar>\s*/TChar [/g" \
     | sed "s/\s*std::vector<.*>\s*/\"[/g" \
+    | sed "s/\s*std::map<TIdentifier,.*>>\s*/\"(/g" \
     | sed "s/\s*std::unique_ptr<.*>\s*/\"/g" \
     | sed "s/\s*std::shared_ptr<.*>\s*/\"/g" \
     | sed "s/\s*TIdentifier\s*/(TIdentifier, \"/g" \

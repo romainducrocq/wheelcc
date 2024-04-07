@@ -47,6 +47,12 @@ static void debug_symbol_table() {
     }
 }
 
+static void debug_struct_type_table() {
+    if(VERBOSE) {
+        pretty_print_struct_type_table();
+    }
+}
+
 static void debug_backend_symbol_table() {
     if(VERBOSE) {
         pretty_print_backend_symbol_table();
@@ -96,6 +102,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     if(opt_code == 253) {
         debug_ast(c_ast.get(), "C AST");
         debug_symbol_table();
+        debug_struct_type_table();
         return;
     }
 #endif
@@ -107,6 +114,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     if(opt_code == 252) {
         debug_ast(tac_ast.get(), "TAC AST");
         debug_symbol_table();
+        debug_struct_type_table();
         return;
     }
 #endif
@@ -118,6 +126,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     if(opt_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
         debug_symbol_table();
+        debug_struct_type_table();
         debug_backend_symbol_table();
         return;
     }

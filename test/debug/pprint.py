@@ -118,6 +118,16 @@ void pretty_print_symbol_table() {
     std::cout << std::endl;
 }
 
+void pretty_print_struct_type_table() {
+    header_string("Structure Type Table");
+    std::cout << "\nDict(" + std::to_string(struct_type_table.size()) + "):";
+    for(const auto& struct_type: struct_type_table) {
+        field("[" + struct_type.first + "]", "", 2);
+        print_ast(struct_type.second.get(), 2);
+    }
+    std::cout << std::endl;
+}
+
 void pretty_print_backend_symbol_table() {
     header_string("Backend Symbol Table");
     std::cout << "\nDict(" + std::to_string(backend_symbol_table.size()) + "):";
