@@ -890,6 +890,34 @@ static void checktype_sizeoft_expression(CSizeOfT* node) {
     node->exp_type = std::make_shared<ULong>();
 }
 
+static void checktype_dot_expression(CDot* node) {
+    if(node->structure->exp_type->type() != AST_T::Structure_t) {
+        raise_runtime_error("Can not access member on expression with non-structure type");
+    }
+    Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
+    if(struct_typedef_table[struct_type->tag]->members.find(node->member) ==
+                                                                struct_typedef_table[struct_type->tag]->members.end()) {
+        raise_runtime_error("Structure does not have a member named " + em(node->member));
+    }
+    node->exp_type = struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
+}
+
+static void checktype_arrow_expression(CArrow* node) {
+    if(node->pointer->exp_type->type() != AST_T::Pointer_t) {
+        raise_runtime_error("Can not access member on expression with non-pointer to structure type");
+    }
+    Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
+    if(ptr_type->ref_type->type() != AST_T::Structure_t) {
+        raise_runtime_error("Can not access member on expression with non-pointer to structure type");
+    }
+    Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
+    if(struct_typedef_table[struct_type->tag]->members.find(node->member) ==
+       struct_typedef_table[struct_type->tag]->members.end()) {
+        raise_runtime_error("Structure does not have a member named " + em(node->member));
+    }
+    node->exp_type = struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
+}
+
 static std::unique_ptr<CExp> checktype_scalar_typed_expression(std::unique_ptr<CExp>&& node) {
     std::unique_ptr<CExp> exp = std::move(node);
     return exp;
@@ -2085,6 +2113,16 @@ static void resolve_sizeoft_expression(CSizeOfT* node) {
     checktype_sizeoft_expression(node);
 }
 
+static void resolve_dot_expression(CDot* node) {
+    node->structure = resolve_typed_expression(std::move(node->structure));
+    checktype_dot_expression(node);
+}
+
+static void resolve_arrow_expression(CArrow* node) {
+    node->pointer = resolve_typed_expression(std::move(node->pointer));
+    checktype_arrow_expression(node);
+}
+
 static void resolve_expression(CExp* node) {
     switch(node->type()) {
         case AST_T::CConstant_t:
@@ -2128,6 +2166,12 @@ static void resolve_expression(CExp* node) {
             break;
         case AST_T::CSizeOfT_t:
             resolve_sizeoft_expression(static_cast<CSizeOfT*>(node));
+            break;
+        case AST_T::CDot_t:
+            resolve_dot_expression(static_cast<CDot*>(node));
+            break;
+        case AST_T::CArrow_t:
+            resolve_arrow_expression(static_cast<CArrow*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;
