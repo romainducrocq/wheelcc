@@ -62,7 +62,7 @@ ast = [
     ["ConstantAttr", [], ["static_init"]],
     ["LocalAttr", [], []],
     ["Symbol", [], ["type_t", "attrs"]],
-    ["StructMember", [(TLong, "offset"), (TIdentifier, "member_name")], ["member_type"]],
+    ["StructMember", [(TLong, "offset")], ["member_type"]],
     ["StructTypedef", [(TInt, "alignment"), (TLong, "size")], ["(members"]],
 
     # /include/ast/back_symt.hpp

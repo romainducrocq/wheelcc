@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -224,20 +225,7 @@ static TLong get_type_scale(Type* type) {
 static TInt get_type_alignment(Type* type);
 
 TInt get_array_aggregate_type_alignment(Array* arr_type) {
-    TLong size = arr_type->size;
-    while(arr_type->elem_type->type() == AST_T::Array_t) {
-        arr_type = static_cast<Array*>(arr_type->elem_type.get());
-        size *= arr_type->size;
-    }
-    TInt alignment;
-    {
-        alignment = get_type_alignment(arr_type->elem_type.get());
-        size *= alignment;
-        if(size >= 16l) {
-            alignment = 16;
-        }
-    }
-    return alignment;
+    return get_type_alignment(arr_type->elem_type.get());
 }
 
 TInt get_structure_aggregate_type_alignment(Structure* struct_type) {
@@ -1782,14 +1770,31 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     if(struct_typedef_table.find(node->tag) != struct_typedef_table.end()) {
         raise_runtime_error("Structure type " + em(node->tag) + " was already declared in this scope");
     }
-    // TODO
     TInt alignment = 0;
     TLong size = 0l;
-
-    std::unique_ptr<StructTypedef> struct_typedef;
+    std::map<TIdentifier, std::unique_ptr<StructMember>> members;
     for(size_t member = 0; member < node->members.size(); member++) {
-
+        TInt member_alignment = get_type_alignment(node->members[member]->member_type.get());
+        {
+            TLong offset = size % member_alignment;
+            offset = offset == 0l ? size : size + member_alignment - offset;
+            std::shared_ptr<Type> member_type = node->members[member]->member_type;
+            members[node->members[member]->member_name] = std::make_unique<StructMember>(std::move(offset),
+                                                                                         std::move(member_type));
+        }
+        if(alignment < member_alignment) {
+            alignment = member_alignment;
+        }
+        size += get_type_scale(node->members[member]->member_type.get());
     }
+    {
+        TLong offset = size % alignment;
+        if(offset != 0l) {
+            size += alignment - offset;
+        }
+    }
+    struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(std::move(alignment), std::move(size),
+                                                                      std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

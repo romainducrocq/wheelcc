@@ -275,14 +275,13 @@ struct Symbol : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// struct_member = StructMember(int, identifier, type)
+// struct_member = StructMember(int, type)
 struct StructMember : Ast {
     AST_T type() override;
     StructMember() = default;
-    StructMember(TLong offset, TIdentifier member_name, std::shared_ptr<Type> member_type);
+    StructMember(TLong offset, std::shared_ptr<Type> member_type);
 
     TLong offset;
-    TIdentifier member_name;
     std::shared_ptr<Type> member_type;
 };
 

@@ -103,8 +103,8 @@ ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init)
 Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
     : type_t(std::move(type_t)), attrs(std::move(attrs)) {}
 
-StructMember::StructMember(TLong offset, TIdentifier member_name, std::shared_ptr<Type> member_type)
-    : offset(offset), member_name(std::move(member_name)), member_type(std::move(member_type)) {}
+StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type)
+    : offset(offset), member_type(std::move(member_type)) {}
 
 StructTypedef::StructTypedef(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members)
     : alignment(alignment), size(size), members(std::move(members)) {}

@@ -293,7 +293,6 @@ static void print_ast(Ast* node, size_t t) {
             field("StructMember", "", ++t);
             StructMember* p_node = static_cast<StructMember*>(node);
             field("TLong", std::to_string(p_node->offset), t+1);
-            field("TIdentifier", p_node->member_name, t+1);
             print_ast(p_node->member_type.get(), t);
             break;
         }
