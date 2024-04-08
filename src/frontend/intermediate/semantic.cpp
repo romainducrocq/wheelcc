@@ -895,7 +895,7 @@ static std::unique_ptr<CExp> checktype_scalar_typed_expression(std::unique_ptr<C
     return exp;
 }
 
-static std::unique_ptr<CAddrOf> checktype_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
+static std::unique_ptr<CAddrOf> checktype_array_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
     {
         std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
         node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
@@ -905,10 +905,21 @@ static std::unique_ptr<CAddrOf> checktype_aggregate_typed_expression(std::unique
     return addrof;
 }
 
+static std::unique_ptr<CExp> checktype_structure_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
+    if(!is_struct_type_complete(static_cast<Structure*>(node->exp_type.get()))) {
+        raise_runtime_error("Expression was declared with incomplete structure type");
+    }
+
+    std::unique_ptr<CExp> exp = std::move(node);
+    return exp;
+}
+
 static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& node) {
     switch(node->exp_type->type()) {
         case AST_T::Array_t:
-            return checktype_aggregate_typed_expression(std::move(node));
+            return checktype_array_aggregate_typed_expression(std::move(node));
+        case AST_T::Structure_t:
+            return checktype_structure_aggregate_typed_expression(std::move(node));
         default:
             return checktype_scalar_typed_expression(std::move(node));
     }
