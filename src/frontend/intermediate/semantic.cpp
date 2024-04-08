@@ -795,31 +795,38 @@ static void checktype_assignment_expression(CAssignment* node) {
 }
 
 static void checktype_conditional_expression(CConditional* node) {
-    std::shared_ptr<Type> common_type;
     if(!is_type_scalar(node->condition->exp_type.get())) {
         raise_runtime_error("Ternary operator must have a conditional expression of scalar type");
     }
-    else if(is_type_arithmetic(node->exp_middle->exp_type.get()) &&
-            is_type_arithmetic(node->exp_right->exp_type.get())) {
+    else if(node->exp_middle->exp_type->type() == AST_T::Void_t &&
+            node->exp_right->exp_type->type() == AST_T::Void_t) {
+        node->exp_type = node->exp_middle->exp_type;
+        return;
+    }
+    else if(node->exp_middle->exp_type->type() == AST_T::Structure_t ||
+            node->exp_right->exp_type->type() == AST_T::Structure_t) {
+        if(!is_same_type(node->exp_middle->exp_type.get(), node->exp_right->exp_type.get())) {
+            raise_runtime_error("Ternary operator must have matching structure type expressions");
+        }
+        node->exp_type = node->exp_middle->exp_type;
+        return;
+    }
+
+    std::shared_ptr<Type> common_type;
+    if(is_type_arithmetic(node->exp_middle->exp_type.get()) &&
+       is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_middle.get(), node->exp_right.get());
     }
     else if(node->exp_middle->exp_type->type() == AST_T::Pointer_t ||
             node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         common_type = get_joint_pointer_type(node->exp_middle.get(), node->exp_right.get());
     }
+    else if(node->exp_middle->exp_type->type() == AST_T::Void_t ||
+            node->exp_right->exp_type->type() == AST_T::Void_t) {
+        raise_runtime_error("Ternary operator must have both void type expressions");
+    }
     else {
-        switch(node->exp_middle->exp_type->type()) {
-            case AST_T::Void_t:
-            case AST_T::Structure_t: {
-                if(!is_same_type(node->exp_middle->exp_type.get(), node->exp_right->exp_type.get())) {
-                    raise_runtime_error("Ternary operator must have both void or same structure type expressions");
-                }
-                node->exp_type = node->exp_middle->exp_type;
-                return;
-            }
-            default:
-                raise_runtime_error("Ternary operator must have both scalar type expressions");
-        }
+        raise_runtime_error("Ternary operator must have both scalar type expressions");
     }
     if(!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
         node->exp_middle = cast_expression(std::move(node->exp_middle), common_type);
