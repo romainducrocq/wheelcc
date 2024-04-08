@@ -1070,8 +1070,14 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     resolve_struct_type(fun_type->ret_type.get());
     is_valid_type(fun_type->ret_type.get());
+
     if(fun_type->ret_type->type() == AST_T::Array_t) {
         raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
+    }
+    else if(fun_type->ret_type->type() == AST_T::Structure_t &&
+            !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
+        raise_runtime_error("Function " + em(node->name) + " was declared with incomplete structure"
+                            "return type");
     }
 }
 
@@ -1089,6 +1095,10 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
         }
 
         if(node->body) {
+            if(fun_type->param_types[param_type]->type() == AST_T::Structure_t &&
+               !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[param_type].get()))) {
+                raise_runtime_error("Function parameter was declared with incomplete structure type");
+            }
             std::shared_ptr<Type> type_t = fun_type->param_types[param_type];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
             symbol_table[node->params[param_type]] = std::make_unique<Symbol>(std::move(type_t),
@@ -1649,6 +1659,11 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
                        node->storage_class->type() == AST_T::CStatic_t);
 
     if(node->init) {
+        if(node->var_type->type() == AST_T::Structure_t &&
+           !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
+            raise_runtime_error("Non-extern file scope variable " + em(node->name) + " was declared "
+                                " with incomplete structure type");
+        }
         initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
     else {
@@ -1656,6 +1671,11 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
            node->storage_class->type() == AST_T::CExtern_t) {
             initial_value = std::make_shared<NoInitializer>();
         } else {
+            if(node->var_type->type() == AST_T::Structure_t &&
+               !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
+                raise_runtime_error("Non-extern file scope variable " + em(node->name) + " was declared "
+                                    " with incomplete structure type");
+            }
             initial_value = std::make_shared<Tentative>();
         }
     }
@@ -1717,8 +1737,13 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
 }
 
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
-    std::shared_ptr<InitialValue> initial_value;
+    if(node->var_type->type() == AST_T::Structure_t &&
+       !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
+        raise_runtime_error("Non-extern file scope variable " + em(node->name) + " was declared "
+                            " with incomplete structure type");
+    }
 
+    std::shared_ptr<InitialValue> initial_value;
     if(node->init) {
         initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
@@ -1734,6 +1759,12 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 }
 
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
+    if(node->var_type->type() == AST_T::Structure_t &&
+       !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
+        raise_runtime_error("Non-extern file scope variable " + em(node->name) + " was declared "
+                            " with incomplete structure type");
+    }
+
     std::shared_ptr<Type> local_var_type = node->var_type;
     std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
     symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
