@@ -1071,13 +1071,18 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
     resolve_struct_type(fun_type->ret_type.get());
     is_valid_type(fun_type->ret_type.get());
 
-    if(fun_type->ret_type->type() == AST_T::Array_t) {
-        raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
-    }
-    else if(fun_type->ret_type->type() == AST_T::Structure_t &&
-            !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
-        raise_runtime_error("Function " + em(node->name) + " was declared with incomplete structure"
-                            "return type");
+    switch(fun_type->ret_type->type()) {
+        case AST_T::Array_t:
+            raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
+        case AST_T::Structure_t: {
+            if(!is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
+                raise_runtime_error("Function " + em(node->name) + " was declared with incomplete "
+                                    " structure return type");
+            }
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -1670,7 +1675,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         if(node->storage_class && 
            node->storage_class->type() == AST_T::CExtern_t) {
             initial_value = std::make_shared<NoInitializer>();
-        } else {
+        }
+        else {
             if(node->var_type->type() == AST_T::Structure_t &&
                !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
                 raise_runtime_error("Non-extern file scope variable " + em(node->name) + " was declared "
