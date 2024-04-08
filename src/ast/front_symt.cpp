@@ -42,7 +42,7 @@ AST_T ConstantAttr::type() { return AST_T::ConstantAttr_t; }
 AST_T LocalAttr::type() { return AST_T::LocalAttr_t; }
 AST_T Symbol::type() { return AST_T::Symbol_t; }
 AST_T StructMember::type() { return AST_T::StructMember_t; }
-AST_T StructType::type() { return AST_T::StructType_t; }
+AST_T StructTypedef::type() { return AST_T::StructTypedef_t; }
 
 FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type)
     : param_types(std::move(param_types)), ret_type(std::move(ret_type)) {}
@@ -106,11 +106,11 @@ Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> att
 StructMember::StructMember(TLong offset, TIdentifier member_name, std::shared_ptr<Type> member_type)
     : offset(offset), member_name(std::move(member_name)), member_type(std::move(member_type)) {}
 
-StructType::StructType(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members)
+StructTypedef::StructTypedef(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members)
     : alignment(alignment), size(size), members(std::move(members)) {}
 
 std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
 
 std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
-std::unordered_map<TIdentifier, std::unique_ptr<StructType>> struct_type_table;
+std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;

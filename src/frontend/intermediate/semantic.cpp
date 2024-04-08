@@ -203,10 +203,56 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
     return get_type_scale(arr_type->elem_type.get()) * size;
 }
 
+static TLong get_structure_aggregate_type_scale(Structure* struct_type) {
+    if(struct_typedef_table.find(struct_type->tag) == struct_typedef_table.end()) {
+        raise_runtime_error("Structure type " + em(struct_type->tag) + "was not declared in this scope");
+    }
+    return struct_typedef_table[struct_type->tag]->size;
+}
+
 static TLong get_type_scale(Type* type) {
     switch(type->type()) {
         case AST_T::Array_t:
-            return get_array_aggregate_type_scale(static_cast<Array *>(type));
+            return get_array_aggregate_type_scale(static_cast<Array*>(type));
+        case AST_T::Structure_t:
+            return get_structure_aggregate_type_scale(static_cast<Structure*>(type));
+        default:
+            return get_scalar_type_size(type);
+    }
+}
+
+static TInt get_type_alignment(Type* type);
+
+TInt get_array_aggregate_type_alignment(Array* arr_type) {
+    TLong size = arr_type->size;
+    while(arr_type->elem_type->type() == AST_T::Array_t) {
+        arr_type = static_cast<Array*>(arr_type->elem_type.get());
+        size *= arr_type->size;
+    }
+    TInt alignment;
+    {
+        alignment = get_type_alignment(arr_type->elem_type.get());
+        size *= alignment;
+        if(size >= 16l) {
+            alignment = 16;
+        }
+    }
+    return alignment;
+}
+
+TInt get_structure_aggregate_type_alignment(Structure* struct_type) {
+    if(struct_typedef_table.find(struct_type->tag) == struct_typedef_table.end()) {
+        raise_runtime_error("Structure type " + em(struct_type->tag) + "was not declared in this scope");
+    }
+    return struct_typedef_table[struct_type->tag]->alignment;
+}
+
+TInt get_type_alignment(Type* type) {
+    switch(type->type()) {
+        case AST_T::Array_t:
+            return get_array_aggregate_type_alignment(static_cast<Array*>(type));
+        case AST_T::Structure_t:
+            return get_structure_aggregate_type_alignment(static_cast<Structure*>(type));
         default:
             return get_scalar_type_size(type);
     }
@@ -1733,13 +1779,16 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 }
 
 static void checktype_structure_declaration(CStructDeclaration* node) {
-    if(struct_type_table.find(node->tag) != struct_type_table.end()) {
+    if(struct_typedef_table.find(node->tag) != struct_typedef_table.end()) {
         raise_runtime_error("Structure type " + em(node->tag) + " was already declared in this scope");
     }
     // TODO
     TInt alignment = 0;
     TLong size = 0l;
+
+    std::unique_ptr<StructTypedef> struct_typedef;
     for(size_t member = 0; member < node->members.size(); member++) {
+
     }
 }
 

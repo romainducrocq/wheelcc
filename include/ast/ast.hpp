@@ -43,7 +43,7 @@ enum AST_T {
     LocalAttr_t,
     Symbol_t,
     StructMember_t,
-    StructType_t,
+    StructTypedef_t,
 
     // Backend st
     AssemblyType_t,

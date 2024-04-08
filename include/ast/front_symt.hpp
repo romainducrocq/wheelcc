@@ -288,11 +288,11 @@ struct StructMember : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// struct_type(int, int, struct_member*)
-struct StructType : Ast {
+// struct_typedef(int, int, struct_member*)
+struct StructTypedef : Ast {
     AST_T type() override;
-    StructType() = default;
-    StructType(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members);
+    StructTypedef() = default;
+    StructTypedef(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members);
 
     TInt alignment;
     TLong size;
@@ -308,6 +308,6 @@ extern std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
-extern std::unordered_map<TIdentifier, std::unique_ptr<StructType>> struct_type_table;
+extern std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
 
 #endif

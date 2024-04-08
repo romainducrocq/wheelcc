@@ -63,7 +63,7 @@ ast = [
     ["LocalAttr", [], []],
     ["Symbol", [], ["type_t", "attrs"]],
     ["StructMember", [(TLong, "offset"), (TIdentifier, "member_name")], ["member_type"]],
-    ["StructType", [(TInt, "alignment"), (TLong, "size")], ["(members"]],
+    ["StructTypedef", [(TInt, "alignment"), (TLong, "size")], ["(members"]],
 
     # /include/ast/back_symt.hpp
     ["AssemblyType", [], []],
