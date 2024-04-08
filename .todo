@@ -35,6 +35,7 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
+- replace *type_1 with *type
 - (? maybe not as bash is a requirement for the driver anyway) error message: get line with c fopen or c++ stream instead of calling bash cmd
 
 - add limits of compiler in readme:

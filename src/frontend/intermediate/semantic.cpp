@@ -190,6 +190,42 @@ static void is_valid_type(Type* type) {
     }
 }
 
+static bool is_exp_lvalue(CExp* node);
+
+static bool is_dot_exp_lvalue(CDot* node) {
+    return is_exp_lvalue(node->structure.get());
+}
+
+static bool is_exp_lvalue(CExp* node) {
+    switch(node->type()) {
+        case AST_T::CString_t:
+        case AST_T::CVar_t:
+        case AST_T::CDereference_t:
+        case AST_T::CSubscript_t:
+        case AST_T::CArrow_t:
+            return true;
+        case AST_T::CDot_t:
+            return is_dot_exp_lvalue(static_cast<CDot*>(node));
+        default:
+            return false;
+    }
+}
+
+static bool is_constant_null_pointer(CConstant* node) {
+    switch(node->constant->type()) {
+        case AST_T::CConstInt_t:
+            return static_cast<CConstInt*>(node->constant.get())->value == 0;
+        case AST_T::CConstLong_t:
+            return static_cast<CConstLong*>(node->constant.get())->value == 0l;
+        case AST_T::CConstUInt_t:
+            return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
+        default:
+            return false;
+    }
+}
+
 static TInt get_scalar_type_size(Type* type) {
     switch(type->type()) {
         case AST_T::Char_t:
@@ -259,33 +295,6 @@ TInt get_type_alignment(Type* type) {
             return get_structure_aggregate_type_alignment(static_cast<Structure*>(type));
         default:
             return get_scalar_type_size(type);
-    }
-}
-
-static bool is_constant_null_pointer(CConstant* node) {
-    switch(node->constant->type()) {
-        case AST_T::CConstInt_t:
-            return static_cast<CConstInt*>(node->constant.get())->value == 0;
-        case AST_T::CConstLong_t:
-            return static_cast<CConstLong*>(node->constant.get())->value == 0l;
-        case AST_T::CConstUInt_t:
-            return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
-        case AST_T::CConstULong_t:
-            return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
-        default:
-            return false;
-    }
-}
-
-static bool is_exp_lvalue(CExp* node) {
-    switch(node->type()) {
-        case AST_T::CVar_t:
-        case AST_T::CDereference_t:
-        case AST_T::CSubscript_t:
-        case AST_T::CString_t:
-            return true;
-        default:
-            return false;
     }
 }
 
@@ -802,8 +811,17 @@ static void checktype_conditional_expression(CConditional* node) {
             node->exp_right->exp_type->type() == AST_T::Void_t) {
             common_type = std::make_shared<Void>();
     }
+    else if(node->exp_middle->exp_type->type() == AST_T::Structure_t &&
+            node->exp_right->exp_type->type() == AST_T::Structure_t) {
+        if(!is_structure_same_type(static_cast<Structure*>(node->exp_middle->exp_type.get()),
+                                   static_cast<Structure*>(node->exp_right->exp_type.get()))) {
+            raise_runtime_error("Ternary operator must have both same structure typed expressions");
+        }
+        node->exp_type = node->exp_middle->exp_type;
+        return;
+    }
     else {
-        raise_runtime_error("Ternary operator must have both void or non-void expressions");
+        raise_runtime_error("Ternary operator must have both void, non-void or structure typed expressions");
     }
     if(!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
         node->exp_middle = cast_expression(std::move(node->exp_middle), common_type);
