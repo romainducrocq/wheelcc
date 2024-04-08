@@ -17,9 +17,9 @@
 
 // Type checking
 
-static std::unordered_set<TIdentifier> defined_set;
-
 static TIdentifier function_definition_name;
+
+static std::unordered_set<TIdentifier> defined_set;
 
 static bool is_same_type(Type* type_1, Type* type_2);
 
@@ -37,24 +37,25 @@ static bool is_structure_same_type(Structure* struct_type_1, Structure* struct_t
 }
 
 static bool is_same_type(Type* type_1, Type* type_2) {
-    if(type_1->type() == AST_T::Pointer_t &&
-       type_2->type() == AST_T::Pointer_t) {
-        return is_pointer_same_type(static_cast<Pointer*>(type_1), static_cast<Pointer*>(type_2));
-    }
-    else if(type_1->type() == AST_T::Array_t &&
-            type_2->type() == AST_T::Array_t) {
-        return is_array_same_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
-    }
-    else if(type_1->type() == AST_T::Structure_t &&
-            type_2->type() == AST_T::Structure_t) {
-        return is_structure_same_type(static_cast<Structure*>(type_1),
-                                      static_cast<Structure*>(type_2));
-    }
-    else if(type_1->type() == AST_T::FunType_t) {
-        RAISE_INTERNAL_ERROR;
+    if(type_1->type() == type_2->type()) {
+        switch(type_1->type()) {
+            case AST_T::Pointer_t:
+                return is_pointer_same_type(static_cast<Pointer*>(type_1),
+                                            static_cast<Pointer*>(type_2));
+            case AST_T::Array_t:
+                return is_array_same_type(static_cast<Array*>(type_1),
+                                          static_cast<Array*>(type_2));
+            case AST_T::Structure_t:
+                return is_structure_same_type(static_cast<Structure*>(type_1),
+                                              static_cast<Structure*>(type_2));
+            case AST_T::FunType_t:
+                RAISE_INTERNAL_ERROR;
+            default:
+                return true;
+        }
     }
     else {
-        return type_1->type() == type_2->type();
+        return false;
     }
 }
 
