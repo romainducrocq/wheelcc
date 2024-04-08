@@ -32,6 +32,10 @@ static bool is_array_same_type(Array* arr_type_1, Array* arr_type_2) {
            is_same_type(arr_type_1->elem_type.get(), arr_type_2->elem_type.get());
 }
 
+static bool is_structure_same_type(Structure* struct_type_1, Structure* struct_type_2) {
+    return struct_type_1->tag.compare(struct_type_2->tag);
+}
+
 static bool is_same_type(Type* type_1, Type* type_2) {
     if(type_1->type() == AST_T::Pointer_t &&
        type_2->type() == AST_T::Pointer_t) {
@@ -40,6 +44,11 @@ static bool is_same_type(Type* type_1, Type* type_2) {
     else if(type_1->type() == AST_T::Array_t &&
             type_2->type() == AST_T::Array_t) {
         return is_array_same_type(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
+    }
+    else if(type_1->type() == AST_T::Structure_t &&
+            type_2->type() == AST_T::Structure_t) {
+        return is_structure_same_type(static_cast<Structure*>(type_1),
+                                      static_cast<Structure*>(type_2));
     }
     else if(type_1->type() == AST_T::FunType_t) {
         RAISE_INTERNAL_ERROR;
@@ -137,10 +146,16 @@ static bool is_type_scalar(Type* type) {
     }
 }
 
+static bool is_struct_type_complete(Structure* struct_type) {
+    return struct_typedef_table.find(struct_type->tag) != struct_typedef_table.end();
+}
+
 static bool is_type_complete(Type* type) {
     switch(type->type()) {
         case AST_T::Void_t:
             return false;
+        case AST_T::Structure_t:
+            return is_struct_type_complete(static_cast<Structure*>(type));
         default:
             return true;
     }
