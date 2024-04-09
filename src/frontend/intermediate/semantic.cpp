@@ -1169,7 +1169,8 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
         case AST_T::Array_t:
             raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
         case AST_T::Structure_t: {
-            if(!is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
+            if(node->body &&
+               !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
                 raise_runtime_error("Function " + em(node->name) + " was declared with incomplete "
                                     " structure return type");
             }
