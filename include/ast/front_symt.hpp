@@ -309,4 +309,6 @@ extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
 
+typedef std::map<TIdentifier, std::unique_ptr<StructMember>>::iterator member_iterator;
+
 #endif

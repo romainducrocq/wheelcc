@@ -1103,10 +1103,21 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
     return std::make_unique<CCompoundInit>(std::move(zero_initializers));
 }
 
+static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
+    std::vector<std::unique_ptr<CInitializer>> zero_initializers;
+    for(auto& member : struct_typedef_table[struct_type->tag]->members) {
+        std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member.second->member_type.get());
+        zero_initializers.push_back(std::move(initializer));
+    }
+    return std::make_unique<CCompoundInit>(std::move(zero_initializers));
+}
+
 static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type) {
     switch(init_type->type()) {
         case AST_T::Array_t:
             return checktype_array_compound_init_zero_initializer(static_cast<Array*>(init_type));
+        case AST_T::Structure_t:
+            return checktype_structure_compound_init_zero_initializer(static_cast<Structure*>(init_type));
         default:
             return checktype_single_init_zero_initializer(init_type);
     }
@@ -1114,8 +1125,18 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
 
 static void checktype_bound_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
     if(node->initializers.size() > static_cast<size_t>(arr_type->size)) {
-        raise_runtime_error("Array of size " + em(std::to_string(node->initializers.size())) +
-                            " was initialized with " + em(std::to_string(arr_type->size)) + " initializers");
+        raise_runtime_error("Array of size " + em(std::to_string(arr_type->size)) +
+                            " was initialized with " + em(std::to_string(node->initializers.size())) +
+                            " initializers");
+    }
+}
+
+static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
+    if(node->initializers.size() > struct_typedef_table[struct_type->tag]->members.size()) {
+        raise_runtime_error("Structure with " +
+                            em(std::to_string(struct_typedef_table[struct_type->tag]->members.size())) +
+                            " members was initialized with " + em(std::to_string(node->initializers.size())) +
+                            " initializers");
     }
 }
 
@@ -1124,6 +1145,17 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
     while(node->initializers.size() < static_cast<size_t>(arr_type->size)) {
         std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(arr_type->elem_type.get());
         node->initializers.push_back(std::move(zero_initializer));
+    }
+    node->init_type = init_type;
+}
+
+static void checktype_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
+                                                          std::shared_ptr<Type>& init_type, member_iterator& member) {
+    while(node->initializers.size() < struct_typedef_table[struct_type->tag]->members.size()) {
+        std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(
+                                                                             member->second->member_type.get());
+        node->initializers.push_back(std::move(zero_initializer));
+        member++;
     }
     node->init_type = init_type;
 }
@@ -2425,10 +2457,26 @@ static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* 
     checktype_array_compound_init_initializer(node, arr_type, init_type);
 }
 
+static void resolve_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
+                                                        std::shared_ptr<Type>& init_type) {
+    checktype_bound_structure_compound_init_initializer(node, struct_type);
+
+    member_iterator member = struct_typedef_table[struct_type->tag]->members.begin();
+    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
+        resolve_initializer(node->initializers[initializer].get(), member->second->member_type);
+        member++;
+    }
+    checktype_structure_compound_init_initializer(node, struct_type, init_type, member);
+}
+
 static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_ptr<Type>& init_type) {
     switch(init_type->type()) {
         case AST_T::Array_t:
             resolve_array_compound_init_initializer(node, static_cast<Array*>(init_type.get()), init_type);
+            break;
+        case AST_T::Structure_t:
+            resolve_structure_compound_init_initializer(node, static_cast<Structure*>(init_type.get()),
+                                                        init_type);
             break;
         default:
             raise_runtime_error("Compound initializer can not be initialized with scalar type");
