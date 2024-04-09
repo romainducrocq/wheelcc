@@ -2415,22 +2415,21 @@ static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<T
     }
 }
 
-static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
+static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* arr_type,
+                                                    std::shared_ptr<Type>& init_type) {
     checktype_bound_array_compound_init_initializer(node, arr_type);
 
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
         resolve_initializer(node->initializers[initializer].get(), arr_type->elem_type);
     }
+    checktype_array_compound_init_initializer(node, arr_type, init_type);
 }
 
 static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_ptr<Type>& init_type) {
     switch(init_type->type()) {
-        case AST_T::Array_t: {
-            Array* p_init_type = static_cast<Array*>(init_type.get());
-            resolve_array_compound_init_initializer(node, p_init_type);
-            checktype_array_compound_init_initializer(node, p_init_type, init_type);
+        case AST_T::Array_t:
+            resolve_array_compound_init_initializer(node, static_cast<Array*>(init_type.get()), init_type);
             break;
-        }
         default:
             raise_runtime_error("Compound initializer can not be initialized with scalar type");
     }
