@@ -19,7 +19,9 @@
 
 static TIdentifier function_definition_name;
 
-static std::unordered_set<TIdentifier> defined_set;
+static std::unordered_set<TIdentifier> function_definition_set;
+
+static std::unordered_set<TIdentifier> structure_definition_set;
 
 static bool is_same_type(Type* type_1, Type* type_2);
 
@@ -1212,7 +1214,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         raise_runtime_error("Function declaration can not have void type");
     }
 
-    bool is_defined = defined_set.find(node->name) != defined_set.end();
+    bool is_defined = function_definition_set.find(node->name) != function_definition_set.end();
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
@@ -1242,7 +1244,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     }
 
     if(node->body) {
-        defined_set.insert(node->name);
+        function_definition_set.insert(node->name);
         is_defined = true;
         function_definition_name = node->name;
     }
@@ -2071,6 +2073,9 @@ static void resolve_array_struct_type(Array* arr_type) {
 }
 
 static void resolve_structure_struct_type(Structure* struct_type) {
+    if(structure_definition_set.find(struct_type->tag) != structure_definition_set.end()) {
+        return;
+    }
     for(size_t i = current_scope_depth(); i-- > 0;) {
         if(scoped_structure_tag_maps[i].find(struct_type->tag) != scoped_structure_tag_maps[i].end()) {
             struct_type->tag = scoped_structure_tag_maps[i][struct_type->tag];
@@ -2616,6 +2621,7 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
     else {
         scoped_structure_tag_maps.back()[node->tag] = resolve_structure_tag(node->tag);
         node->tag = scoped_structure_tag_maps.back()[node->tag];
+        structure_definition_set.insert(node->tag);
     }
     if(!node->members.empty()) {
         resolve_members_structure_declaration(node);

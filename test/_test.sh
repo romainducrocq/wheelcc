@@ -9,7 +9,7 @@ function stage () {
 }
 
 function invalid () {
-    wheelcc --$(stage) ${1} > /dev/null 2>&1
+    wheelcc --$(stage) ${1} #> /dev/null 2>&1
     RET=${?}
     if [ ${RET} -ne 0 ]
     then

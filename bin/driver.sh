@@ -239,6 +239,7 @@ function parse_args () {
 }
 
 function preprocess () {
+    PRE_CODE=1
     if [ ${PRE_CODE} -eq 1 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess -> ${FILE}.i"
