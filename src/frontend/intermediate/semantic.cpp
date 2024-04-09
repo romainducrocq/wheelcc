@@ -1270,7 +1270,7 @@ static void push_zero_init_static_init(TLong&& byte) {
 static void checktype_initializer_static_init(CInitializer* node, Type* static_init_type);
 
 static void checktype_no_initializer_static_init(Type* static_init_type, TLong size) {
-    TLong byte = get_type_scale(static_init_type) * size;
+    TLong byte = static_init_type == nullptr ? size : get_type_scale(static_init_type) * size;
     push_zero_init_static_init(std::move(byte));
 }
 
@@ -1712,10 +1712,35 @@ static void checktype_array_compound_init_initializer_static_init(CCompoundInit*
     }
 }
 
+static void checktype_structure_compound_init_initializer_static_init(CCompoundInit* node, Structure* struct_type) {
+    checktype_bound_structure_compound_init_initializer(node, struct_type);
+
+    TLong size = 0l;
+    member_iterator member = struct_typedef_table[struct_type->tag]->members.begin();
+    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
+        if(member->second->offset != size) {
+            checktype_no_initializer_static_init(nullptr, member->second->offset - size);
+            size = member->second->offset;
+        }
+        checktype_initializer_static_init(node->initializers[initializer].get(),
+                                          member->second->member_type.get());
+        size += get_type_scale(member->second->member_type.get());
+        member++;
+    }
+    if(struct_typedef_table[struct_type->tag]->size != size) {
+        checktype_no_initializer_static_init(nullptr,
+                                             struct_typedef_table[struct_type->tag]->size - size);
+    }
+}
+
 static void checktype_compound_init_initializer_static_init(CCompoundInit* node, Type* static_init_type) {
     switch(static_init_type->type()) {
         case AST_T::Array_t:
             checktype_array_compound_init_initializer_static_init(node, static_cast<Array*>(static_init_type));
+            break;
+        case AST_T::Structure_t:
+            checktype_structure_compound_init_initializer_static_init(node,
+                                                                    static_cast<Structure*>(static_init_type));
             break;
         default:
             raise_runtime_error("Compound initializer can not be initialized with scalar type");
