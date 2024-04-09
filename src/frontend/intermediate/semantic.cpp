@@ -33,7 +33,7 @@ static bool is_array_same_type(Array* arr_type_1, Array* arr_type_2) {
 }
 
 static bool is_structure_same_type(Structure* struct_type_1, Structure* struct_type_2) {
-    return struct_type_1->tag.compare(struct_type_2->tag);
+    return struct_type_1->tag.compare(struct_type_2->tag) == 0;
 }
 
 static bool is_same_type(Type* type_1, Type* type_2) {
@@ -1923,7 +1923,7 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for(size_t member = 0; member < node->members.size(); member++) {
         for(size_t member_other = member + 1; member_other < node->members.size(); member_other++) {
-            if(node->members[member]->member_name.compare(node->members[member_other]->member_name)) {
+            if(node->members[member]->member_name.compare(node->members[member_other]->member_name) == 0) {
                 raise_runtime_error("Structure member was already declared in this scope");
             }
         }
