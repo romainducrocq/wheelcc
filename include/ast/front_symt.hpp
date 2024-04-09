@@ -6,7 +6,6 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -287,15 +286,17 @@ struct StructMember : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// struct_typedef(int, int, struct_member*)
+// struct_typedef(int, int, identifier*, struct_member*)
 struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef() = default;
-    StructTypedef(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members);
+    StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
+                  std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members);
 
     TInt alignment;
     TLong size;
-    std::map<TIdentifier, std::unique_ptr<StructMember>> members;
+    std::vector<TIdentifier> member_names;
+    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
 };
 
 /*
@@ -308,7 +309,5 @@ extern std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
 extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
-
-typedef std::map<TIdentifier, std::unique_ptr<StructMember>>::iterator member_iterator;
 
 #endif

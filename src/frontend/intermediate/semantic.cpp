@@ -11,7 +11,6 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1105,6 +1104,7 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
     return std::make_unique<CCompoundInit>(std::move(zero_initializers));
 }
 
+// TODO
 static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
     for(auto& member : struct_typedef_table[struct_type->tag]->members) {
@@ -1151,6 +1151,7 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
     node->init_type = init_type;
 }
 
+// TODO
 static void checktype_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
                                                           std::shared_ptr<Type>& init_type, member_iterator& member) {
     while(node->initializers.size() < struct_typedef_table[struct_type->tag]->members.size()) {
@@ -1715,6 +1716,7 @@ static void checktype_array_compound_init_initializer_static_init(CCompoundInit*
     }
 }
 
+// TODO
 static void checktype_structure_compound_init_initializer_static_init(CCompoundInit* node, Structure* struct_type) {
     checktype_bound_structure_compound_init_initializer(node, struct_type);
 
@@ -1947,15 +1949,19 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     }
     TInt alignment = 0;
     TLong size = 0l;
-    std::map<TIdentifier, std::unique_ptr<StructMember>> members;
+    std::vector<TIdentifier> member_names;
+    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
     for(size_t member = 0; member < node->members.size(); member++) {
+        {
+            TIdentifier name = node->members[member]->member_name;
+            member_names.push_back(std::move(name));
+        }
         TInt member_alignment = get_type_alignment(node->members[member]->member_type.get());
         {
             TLong offset = size % member_alignment;
             offset = offset == 0l ? size : size + member_alignment - offset;
             std::shared_ptr<Type> member_type = node->members[member]->member_type;
-            members[node->members[member]->member_name] = std::make_unique<StructMember>(std::move(offset),
-                                                                                         std::move(member_type));
+            members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
         }
         if(alignment < member_alignment) {
             alignment = member_alignment;
@@ -1969,7 +1975,7 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
         }
     }
     struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(std::move(alignment), std::move(size),
-                                                                      std::move(members));
+                                                                      std::move(member_names), std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2488,6 +2494,7 @@ static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* 
     checktype_array_compound_init_initializer(node, arr_type, init_type);
 }
 
+// TODO
 static void resolve_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
                                                         std::shared_ptr<Type>& init_type) {
     checktype_bound_structure_compound_init_initializer(node, struct_type);

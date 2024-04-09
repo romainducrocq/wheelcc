@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include <map>
 
 AST_T Type::type() { return AST_T::Type_t; }
 AST_T Char::type() { return AST_T::Char_t; }
@@ -106,8 +105,9 @@ Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> att
 StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type)
     : offset(offset), member_type(std::move(member_type)) {}
 
-StructTypedef::StructTypedef(TInt alignment, TLong size, std::map<TIdentifier, std::unique_ptr<StructMember>> members)
-    : alignment(alignment), size(size), members(std::move(members)) {}
+StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
+                             std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members)
+    : alignment(alignment), size(size), member_names(std::move(member_names)), members(std::move(members)) {}
 
 std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
 
