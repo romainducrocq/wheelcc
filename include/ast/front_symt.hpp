@@ -308,9 +308,9 @@ extern std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_cons
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
-extern std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
+extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;
 
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
-    struct_typedef_table[(X)]->members[struct_typedef_table[(X)]->member_names[(Y)]]
+    (*struct_typedef_table)[(X)]->members[(*struct_typedef_table)[(X)]->member_names[(Y)]]
 
 #endif

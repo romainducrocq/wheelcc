@@ -149,7 +149,7 @@ static bool is_type_scalar(Type* type) {
 }
 
 static bool is_struct_type_complete(Structure* struct_type) {
-    return struct_typedef_table.find(struct_type->tag) != struct_typedef_table.end();
+    return struct_typedef_table->find(struct_type->tag) != struct_typedef_table->end();
 }
 
 static bool is_type_complete(Type* type) {
@@ -258,10 +258,10 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
 }
 
 static TLong get_structure_aggregate_type_scale(Structure* struct_type) {
-    if(struct_typedef_table.find(struct_type->tag) == struct_typedef_table.end()) {
+    if(struct_typedef_table->find(struct_type->tag) == struct_typedef_table->end()) {
         raise_runtime_error("Structure type " + em(struct_type->tag) + "was not declared in this scope");
     }
-    return struct_typedef_table[struct_type->tag]->size;
+    return (*struct_typedef_table)[struct_type->tag]->size;
 }
 
 static TLong get_type_scale(Type* type) {
@@ -282,10 +282,10 @@ TInt get_array_aggregate_type_alignment(Array* arr_type) {
 }
 
 TInt get_structure_aggregate_type_alignment(Structure* struct_type) {
-    if(struct_typedef_table.find(struct_type->tag) == struct_typedef_table.end()) {
+    if(struct_typedef_table->find(struct_type->tag) == struct_typedef_table->end()) {
         raise_runtime_error("Structure type " + em(struct_type->tag) + "was not declared in this scope");
     }
-    return struct_typedef_table[struct_type->tag]->alignment;
+    return (*struct_typedef_table)[struct_type->tag]->alignment;
 }
 
 TInt get_type_alignment(Type* type) {
@@ -919,11 +919,11 @@ static void checktype_dot_expression(CDot* node) {
         raise_runtime_error("Can not access member on expression with non-structure type");
     }
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
-    if(struct_typedef_table[struct_type->tag]->members.find(node->member) ==
-                                                                struct_typedef_table[struct_type->tag]->members.end()) {
+    if((*struct_typedef_table)[struct_type->tag]->members.find(node->member) ==
+                                                             (*struct_typedef_table)[struct_type->tag]->members.end()) {
         raise_runtime_error("Structure does not have a member named " + em(node->member));
     }
-    node->exp_type = struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
+    node->exp_type = (*struct_typedef_table)[struct_type->tag]->members[node->member]->member_type;
 }
 
 static void checktype_arrow_expression(CArrow* node) {
@@ -935,11 +935,11 @@ static void checktype_arrow_expression(CArrow* node) {
         raise_runtime_error("Can not access member on expression with non-pointer to structure type");
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
-    if(struct_typedef_table[struct_type->tag]->members.find(node->member) ==
-       struct_typedef_table[struct_type->tag]->members.end()) {
+    if((*struct_typedef_table)[struct_type->tag]->members.find(node->member) ==
+       (*struct_typedef_table)[struct_type->tag]->members.end()) {
         raise_runtime_error("Structure does not have a member named " + em(node->member));
     }
-    node->exp_type = struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
+    node->exp_type = (*struct_typedef_table)[struct_type->tag]->members[node->member]->member_type;
 }
 
 static std::unique_ptr<CExp> checktype_scalar_typed_expression(std::unique_ptr<CExp>&& node) {
@@ -1106,8 +1106,8 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
 
 static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
-    for(const auto& member_name: struct_typedef_table[struct_type->tag]->member_names) {
-        auto& member = struct_typedef_table[struct_type->tag]->members[member_name];
+    for(const auto& member_name: (*struct_typedef_table)[struct_type->tag]->member_names) {
+        auto& member = (*struct_typedef_table)[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member->member_type.get());
         zero_initializers.push_back(std::move(initializer));
     }
@@ -1134,9 +1134,9 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 }
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
-    if(node->initializers.size() > struct_typedef_table[struct_type->tag]->members.size()) {
+    if(node->initializers.size() > (*struct_typedef_table)[struct_type->tag]->members.size()) {
         raise_runtime_error("Structure with " +
-                            em(std::to_string(struct_typedef_table[struct_type->tag]->members.size())) +
+                            em(std::to_string((*struct_typedef_table)[struct_type->tag]->members.size())) +
                             " members was initialized with " + em(std::to_string(node->initializers.size())) +
                             " initializers");
     }
@@ -1154,7 +1154,7 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
 static void checktype_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
                                                           std::shared_ptr<Type>& init_type) {
     for(size_t initializer = node->initializers.size();
-        initializer < struct_typedef_table[struct_type->tag]->members.size(); initializer++) {
+        initializer < (*struct_typedef_table)[struct_type->tag]->members.size(); initializer++) {
         auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, initializer);
         std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(member->member_type.get());
         node->initializers.push_back(std::move(zero_initializer));
@@ -1730,9 +1730,9 @@ static void checktype_structure_compound_init_initializer_static_init(CCompoundI
                                           member->member_type.get());
         size += get_type_scale(member->member_type.get());
     }
-    if(struct_typedef_table[struct_type->tag]->size != size) {
+    if((*struct_typedef_table)[struct_type->tag]->size != size) {
         checktype_no_initializer_static_init(nullptr,
-                                             struct_typedef_table[struct_type->tag]->size - size);
+                                             (*struct_typedef_table)[struct_type->tag]->size - size);
     }
 }
 
@@ -1942,7 +1942,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 }
 
 static void checktype_structure_declaration(CStructDeclaration* node) {
-    if(struct_typedef_table.find(node->tag) != struct_typedef_table.end()) {
+    if(struct_typedef_table->find(node->tag) != struct_typedef_table->end()) {
         raise_runtime_error("Structure type " + em(node->tag) + " was already declared in this scope");
     }
     TInt alignment = 0;
@@ -1972,8 +1972,8 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
             size += alignment - offset;
         }
     }
-    struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(std::move(alignment), std::move(size),
-                                                                      std::move(member_names), std::move(members));
+    (*struct_typedef_table)[node->tag] = std::make_unique<StructTypedef>(std::move(alignment), std::move(size),
+                                                                         std::move(member_names), std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2670,7 +2670,10 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
-    static_constant_hash_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+    {
+        static_constant_hash_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+        struct_typedef_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>>();
+    }
 
     {
         external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();

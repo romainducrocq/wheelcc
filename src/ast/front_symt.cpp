@@ -113,4 +113,4 @@ std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_ha
 
 std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
-std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
+std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;

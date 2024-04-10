@@ -927,7 +927,7 @@ static void fix_program(AsmProgram* node) {
         fix_top_level(node->top_levels[top_level].get());
     }
     pseudo_stack_bytes_map.release();
-    struct_typedef_table.clear();
+    struct_typedef_table.release();
 }
 
 void fix_stack(AsmProgram* node) {
