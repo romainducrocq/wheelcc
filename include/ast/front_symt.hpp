@@ -306,7 +306,7 @@ struct Dummy : Ast {
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_hash_map;
 
-extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
+extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;
 

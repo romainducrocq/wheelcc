@@ -66,7 +66,7 @@ static std::shared_ptr<ByteArray> convert_array_aggregate_assembly_type(Array* a
 }
 
 std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
-    switch(symbol_table[name]->type_t->type()) {
+    switch((*symbol_table)[name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -81,7 +81,8 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
         case AST_T::Double_t:
             return std::make_shared<BackendDouble>();
         case AST_T::Array_t:
-            return convert_array_aggregate_assembly_type(static_cast<Array*>(symbol_table[name]->type_t.get()));
+            return convert_array_aggregate_assembly_type(
+                                                      static_cast<Array*>((*symbol_table)[name]->type_t.get()));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -110,7 +111,7 @@ static void convert_static_constant_top_level(AsmStaticConstant* node) {
             convert_double_static_constant();
             break;
         case AST_T::StringInit_t:
-            convert_string_static_constant(static_cast<Array*>(symbol_table[node->name]->type_t.get()));
+            convert_string_static_constant(static_cast<Array*>((*symbol_table)[node->name]->type_t.get()));
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -142,7 +143,7 @@ static void convert_obj_type(IdentifierAttr* node) {
 }
 
 static void convert_program(AsmProgram* node) {
-    for(const auto& symbol: symbol_table) {
+    for(const auto& symbol: *symbol_table) {
         p_symbol = &symbol.first;
         if(symbol.second->type_t->type() == AST_T::FunType_t) {
             convert_fun_type(static_cast<FunAttr*>(symbol.second->attrs.get()));
@@ -156,7 +157,7 @@ static void convert_program(AsmProgram* node) {
         convert_top_level(node->static_constant_top_levels[top_level].get());
     }
     p_symbol = nullptr;
-    symbol_table.clear();
+    symbol_table.release();
 }
 
 void convert_symbol_table(AsmProgram* node) {

@@ -111,6 +111,6 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier
 
 std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_hash_map;
 
-std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
+std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
 
 std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;

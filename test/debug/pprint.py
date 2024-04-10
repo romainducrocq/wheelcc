@@ -116,8 +116,8 @@ void pretty_print_ast(Ast* node, const std::string& name) {
 
 void pretty_print_symbol_table() {
     header_string("Symbol Table");
-    std::cout << "\nDict(" + std::to_string(symbol_table.size()) + "):";
-    for(const auto& symbol: symbol_table) {
+    std::cout << "\nDict(" + std::to_string(symbol_table->size()) + "):";
+    for(const auto& symbol: *symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
     }
@@ -127,7 +127,7 @@ void pretty_print_symbol_table() {
 void pretty_print_struct_typedef_table() {
     header_string("Structure Typedef Table");
     std::cout << "\nDict(" + std::to_string(struct_typedef_table->size()) + "):";
-    for(const auto& struct_typedef: (*struct_typedef_table)) {
+    for(const auto& struct_typedef: *struct_typedef_table) {
         field("[" + struct_typedef.first + "]", "", 2);
         print_ast(struct_typedef.second.get(), 2);
     }

@@ -400,10 +400,10 @@ static void checktype_string_expression(CString* node) {
 }
 
 static void checktype_var_expression(CVar* node) {
-    if(symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
+    if((*symbol_table)[node->name]->type_t->type() == AST_T::FunType_t) {
         raise_runtime_error("Function " + em(node->name) + " was used as a variable");
     }
-    node->exp_type = symbol_table[node->name]->type_t;
+    node->exp_type = (*symbol_table)[node->name]->type_t;
 }
 
 static void checktype_cast_expression(CCast* node) {
@@ -839,10 +839,10 @@ static void checktype_conditional_expression(CConditional* node) {
 }
 
 static void checktype_function_call_expression(CFunctionCall* node) {
-    if(symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
+    if((*symbol_table)[node->name]->type_t->type() != AST_T::FunType_t) {
         raise_runtime_error("Variable " + em(node->name) + " was used as a function");
     }
-    FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
+    FunType* fun_type = static_cast<FunType*>((*symbol_table)[node->name]->type_t.get());
     if(fun_type->param_types.size() != node->args.size()) {
         raise_runtime_error("Function " + em(node->name) + " has " +
                             em(std::to_string(fun_type->param_types.size())) +
@@ -978,7 +978,7 @@ static std::unique_ptr<CExp> checktype_typed_expression(std::unique_ptr<CExp>&& 
 }
 
 static void checktype_return_statement(CReturn* node) {
-    FunType* fun_type = static_cast<FunType*>(symbol_table[function_definition_name]->type_t.get());
+    FunType* fun_type = static_cast<FunType*>((*symbol_table)[function_definition_name]->type_t.get());
     if(fun_type->ret_type->type() == AST_T::Void_t) {
         if(node->exp) {
             raise_runtime_error("Void type function can not return a value");
@@ -1204,8 +1204,8 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
             }
             std::shared_ptr<Type> type_t = fun_type->param_types[param_type];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
-            symbol_table[node->params[param_type]] = std::make_unique<Symbol>(std::move(type_t),
-                                                                              std::move(param_attrs));
+            (*symbol_table)[node->params[param_type]] = std::make_unique<Symbol>(std::move(type_t),
+                                                                                 std::move(param_attrs));
         }
     }
 }
@@ -1219,10 +1219,10 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
-    if(symbol_table.find(node->name) != symbol_table.end()) {
+    if(symbol_table->find(node->name) != symbol_table->end()) {
 
-        FunType* fun_type = static_cast<FunType*>(symbol_table[node->name]->type_t.get());
-        if(!(symbol_table[node->name]->type_t->type() == AST_T::FunType_t &&
+        FunType* fun_type = static_cast<FunType*>((*symbol_table)[node->name]->type_t.get());
+        if(!((*symbol_table)[node->name]->type_t->type() == AST_T::FunType_t &&
              fun_type->param_types.size() == node->params.size() &&
              is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             raise_runtime_error("Function declaration " + em(node->name) +
@@ -1235,7 +1235,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
                                 " was already defined");
         }
 
-        FunAttr* fun_attrs = static_cast<FunAttr*>(symbol_table[node->name]->attrs.get());
+        FunAttr* fun_attrs = static_cast<FunAttr*>((*symbol_table)[node->name]->attrs.get());
         if(!is_global &&
            fun_attrs->is_global) {
             raise_runtime_error("Static function " + em(node->name) +
@@ -1252,7 +1252,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
 
     std::shared_ptr<Type> fun_type = node->fun_type;
     std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_defined), std::move(is_global));
-    symbol_table[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
+    (*symbol_table)[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
 }
 
 static std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
@@ -1655,8 +1655,8 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
-            symbol_table[static_constant_label] = std::make_unique<Symbol>(std::move(constant_type),
-                                                                           std::move(constant_attrs));
+            (*symbol_table)[static_constant_label] = std::make_unique<Symbol>(std::move(constant_type),
+                                                                              std::move(constant_attrs));
         }
     }
     push_static_init(std::make_shared<PointerInit>(std::move(static_constant_label)));
@@ -1808,13 +1808,13 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         }
     }
 
-    if(symbol_table.find(node->name) != symbol_table.end()) {
-        if(!is_same_type(symbol_table[node->name]->type_t.get(), node->var_type.get())) {
+    if(symbol_table->find(node->name) != symbol_table->end()) {
+        if(!is_same_type((*symbol_table)[node->name]->type_t.get(), node->var_type.get())) {
             raise_runtime_error("File scope variable " + em(node->name) +
                                 " was redeclared with conflicting type");
         }
 
-        StaticAttr* global_var_attrs = static_cast<StaticAttr*>(symbol_table[node->name]->attrs.get());
+        StaticAttr* global_var_attrs = static_cast<StaticAttr*>((*symbol_table)[node->name]->attrs.get());
         if(node->storage_class &&
            node->storage_class->type() == AST_T::CExtern_t) {
             is_global = global_var_attrs->is_global;
@@ -1837,8 +1837,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     std::shared_ptr<Type> global_var_type = node->var_type;
     std::unique_ptr<IdentifierAttr> global_var_attrs = std::make_unique<StaticAttr>(std::move(is_global),
                                                                                     std::move(initial_value));
-    symbol_table[node->name] = std::make_unique<Symbol>(std::move(global_var_type),
-                                                        std::move(global_var_attrs));
+    (*symbol_table)[node->name] = std::make_unique<Symbol>(std::move(global_var_type),
+                                                           std::move(global_var_attrs));
 }
 
 static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1846,8 +1846,8 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
         raise_runtime_error("Block scope variable " + em(node->name) +
                             " with external linkage was defined");
     }
-    else if(symbol_table.find(node->name) != symbol_table.end()) {
-        if(!is_same_type(symbol_table[node->name]->type_t.get(), node->var_type.get())) {
+    else if(symbol_table->find(node->name) != symbol_table->end()) {
+        if(!is_same_type((*symbol_table)[node->name]->type_t.get(), node->var_type.get())) {
             raise_runtime_error("Block scope variable " + em(node->name) +
                                 " was redeclared with conflicting type");
         }
@@ -1860,8 +1860,8 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
         std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
         local_var_attrs = std::make_unique<StaticAttr>(true, std::move(initial_value));
     }
-    symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
-                                                        std::move(local_var_attrs));
+    (*symbol_table)[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
+                                                           std::move(local_var_attrs));
 }
 
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1882,8 +1882,8 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
     std::shared_ptr<Type> local_var_type = node->var_type;
     std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false,
                                                                                    std::move(initial_value));
-    symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
-                                                        std::move(local_var_attrs));
+    (*symbol_table)[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
+                                                           std::move(local_var_attrs));
 }
 
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -1895,8 +1895,8 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 
     std::shared_ptr<Type> local_var_type = node->var_type;
     std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
-    symbol_table[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
-                                                        std::move(local_var_attrs));
+    (*symbol_table)[node->name] = std::make_unique<Symbol>(std::move(local_var_type),
+                                                           std::move(local_var_attrs));
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
@@ -2056,7 +2056,7 @@ static void exit_scope() {
 }
 
 static void resolve_label() {
-    for(const auto& target: (*goto_map)) {
+    for(const auto& target: *goto_map) {
         if(label_set->find(target.first) == label_set->end()) {
             raise_runtime_error("An error occurred in variable resolution, goto " + em(target.first) +
                                 " has no target label");
@@ -2469,7 +2469,7 @@ static void resolve_single_init_initializer(CSingleInit* node, std::shared_ptr<T
     if(node->exp->type() == AST_T::CString_t &&
        init_type->type() == AST_T::Array_t) {
         checktype_bound_array_single_init_string_initializer(static_cast<CString*>(node->exp.get()),
-                                                           static_cast<Array*>(init_type.get()));
+                                                             static_cast<Array*>(init_type.get()));
         checktype_array_single_init_string_initializer(node, init_type);
     }
     else {
@@ -2672,6 +2672,7 @@ static void resolve_declaration(CDeclaration* node) {
 static void resolve_identifiers(CProgram* node) {
     {
         static_constant_hash_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+        symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>();
         struct_typedef_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>>();
     }
 
