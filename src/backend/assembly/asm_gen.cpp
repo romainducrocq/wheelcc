@@ -715,12 +715,12 @@ static void generate_deallocate_stack_instructions(TLong byte) {
     push_instruction(deallocate_stack_bytes(byte));
 }
 
-static std::array<REGISTER_KIND, 6> ARG_REGISTERS = { REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx,
-                                                      REGISTER_KIND::Cx, REGISTER_KIND::R8, REGISTER_KIND::R9 };
+static std::unique_ptr<std::array<REGISTER_KIND, 6>> ARG_REGISTERS(new std::array<REGISTER_KIND, 6>({
+    REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx, REGISTER_KIND::Cx, REGISTER_KIND::R8, REGISTER_KIND::R9 }));
 
-static std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS = { REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2,
-                                                          REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5,
-                                                          REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7 };
+static std::unique_ptr<std::array<REGISTER_KIND, 8>> ARG_SSE_REGISTERS(new std::array<REGISTER_KIND, 8>({
+    REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2, REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4,
+    REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7 }));
 
 static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = generate_operand(node);
@@ -778,11 +778,11 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             }
 
             for(size_t i = 0; i < i_regs.size(); i++) {
-                generate_reg_arg_fun_call_instructions(node->args[i_regs[i]].get(), ARG_REGISTERS[i]);
+                generate_reg_arg_fun_call_instructions(node->args[i_regs[i]].get(), (*ARG_REGISTERS)[i]);
             }
             for(size_t i = 0; i < i_sse_regs.size(); i++) {
                 generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(),
-                                                       ARG_SSE_REGISTERS[i]);
+                                                       (*ARG_SSE_REGISTERS)[i]);
             }
             for(size_t i = i_stacks.size(); i-- > 0;) {
                 stack_padding += 8l;
@@ -1547,7 +1547,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
                 if(symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
                     if(param_sse_reg < 8) {
                         generate_reg_param_function_instructions(node->params[param],
-                                                                 ARG_SSE_REGISTERS[param_sse_reg]);
+                                                                 (*ARG_SSE_REGISTERS)[param_sse_reg]);
                         param_sse_reg += 1;
                     }
                     else {
@@ -1558,7 +1558,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
                 else {
                     if(param_reg < 6) {
                         generate_reg_param_function_instructions(node->params[param],
-                                                                 ARG_REGISTERS[param_reg]);
+                                                                 (*ARG_REGISTERS)[param_reg]);
                         param_reg += 1;
                     }
                     else {
@@ -1651,8 +1651,8 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
             top_levels.push_back(std::move(function_top_level));
         }
         p_static_constant_top_levels = nullptr;
-        ARG_REGISTERS.fill(static_cast<REGISTER_KIND>(0));
-        ARG_SSE_REGISTERS.fill(static_cast<REGISTER_KIND>(0));
+        ARG_REGISTERS.release();
+        ARG_SSE_REGISTERS.release();
         static_constant_hash_map.clear();
     }
 
