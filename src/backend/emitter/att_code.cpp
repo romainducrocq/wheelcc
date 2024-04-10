@@ -821,6 +821,7 @@ static void emit_program(AsmProgram* node) {
     for(size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
         emit_top_level(node->top_levels[top_level].get());
     }
+    backend_symbol_table.clear();
     emit(".section .note.GNU-stack,\"\",@progbits", 2);
 }
 

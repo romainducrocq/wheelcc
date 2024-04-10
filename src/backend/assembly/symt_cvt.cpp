@@ -156,6 +156,7 @@ static void convert_program(AsmProgram* node) {
         convert_top_level(node->static_constant_top_levels[top_level].get());
     }
     p_symbol = nullptr;
+    symbol_table.clear();
 }
 
 void convert_symbol_table(AsmProgram* node) {
