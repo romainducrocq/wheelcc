@@ -42,6 +42,7 @@ bool read_line(std::string& line) {
 
     if(getline(&buffer, &l, file_in) == -1) {
         line = "";
+        line_number = 0;
         return false;
     }
 
@@ -68,9 +69,13 @@ void write_line(std::string&& line) {
 
 void file_close_read() {
     fclose(file_in);
+    file_in = nullptr;
 }
 
 void file_close_write() {
     write_chunk(stream_buf, stream_buf.size());
+    stream_buf = "";
+
     fclose(file_out);
+    file_out = nullptr;
 }

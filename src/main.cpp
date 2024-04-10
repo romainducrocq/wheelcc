@@ -143,7 +143,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 #endif
 
-    return;
+    VERBOSE = false;
 }
 
 static std::vector<std::string> args;
@@ -186,6 +186,7 @@ int main(int argc, char **argv) {
     int opt_code;
     int opt_s_code;
     arg_parse(filename, opt_code, opt_s_code);
+    args.clear();
 
     do_compile(filename, opt_code, opt_s_code);
 
