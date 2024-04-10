@@ -265,7 +265,7 @@ function compile () {
 }
 
 function link () {
-    if [ ${OPT_CODE} -lt 200 ]; then
+    if [ ${OPT_CODE} -le 127 ]; then
         if [ ${LINK_CODE} -eq 0 ]; then
             FILES_OUT="${FILES}.${EXT_OUT}"
             if [ ${FILE_2} -eq 1 ]; then

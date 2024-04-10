@@ -70,7 +70,7 @@ static void debug_asm_code() {
 static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) {
     if(opt_code > 0
 #ifdef __NDEBUG__
-       && opt_code < 200
+       && opt_code <= 127
 #endif
     ) {
         VERBOSE = true;

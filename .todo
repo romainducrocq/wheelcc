@@ -35,10 +35,7 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
-- use bitmask for cmd line options
 - replace *type_1 with *type
-- add const where possible ?
-- (? maybe not as bash is a requirement for the driver anyway) error message: get line with c fopen or c++ stream instead of calling bash cmd
 
 - add limits of compiler in readme:
     - no memory overflow check, max memory allocation is (2^63)-1 bits (function stack, aggregate type)
@@ -48,6 +45,10 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 When Types OK (after c18):
 - add / clean error msgs in driver
 - clean error msgs in parser + semantic analysis / add line
+- add const where possible ?
+
+Optimization:
+- use bitmask for cmd line params
 
 ## Grammar ideas
 
