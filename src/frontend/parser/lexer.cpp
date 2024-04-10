@@ -3,13 +3,14 @@
 #include "util/fileio.hpp"
 
 #include <string>
+#include <memory>
 #include <array>
 #include <vector>
 #include <boost/regex.hpp>
 
 constexpr size_t NUM_TOKEN = TOKEN_KIND::error + 1;
 
-static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
+static std::unique_ptr<std::array<std::string, NUM_TOKEN>> TOKEN_REGEX(new std::array<std::string, NUM_TOKEN>({
     R"(<<=)", // assignment_bitshiftleft
     R"(>>=)", // assignment_bitshiftright
 
@@ -95,7 +96,7 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
 
     R"([ \n\r\t\f\v])", // skip
     R"(.)" // error
-};
+}));
 
 static std::vector<Token> tokenize() {
     std::string regexp_string = "";
@@ -103,10 +104,10 @@ static std::vector<Token> tokenize() {
     {
         for(size_t i = 0; i < NUM_TOKEN; i++) {
             groups[i] = std::to_string(i);
-            regexp_string += "(?<" + groups[i] + ">" + TOKEN_REGEX[i] + ")|";
+            regexp_string += "(?<" + groups[i] + ">" + (*TOKEN_REGEX)[i] + ")|";
         }
         regexp_string.pop_back();
-        std::fill(std::begin(TOKEN_REGEX), std::end(TOKEN_REGEX), 0);
+        TOKEN_REGEX.release();
     }
 
     const boost::regex token_pattern(regexp_string);
