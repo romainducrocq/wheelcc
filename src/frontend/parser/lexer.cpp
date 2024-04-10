@@ -165,8 +165,12 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
     file_close_read();
 }
 
+//#define DTOR \
+//    std::fill(std::begin(TOKEN_REGEX), std::end(TOKEN_REGEX), 0);
+
 std::vector<Token> lexing(const std::string& filename) {
     std::vector<Token> tokens;
     tokenize(filename, tokens);
+//    DTOR
     return tokens;
 }
