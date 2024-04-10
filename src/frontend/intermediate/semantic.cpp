@@ -1104,11 +1104,11 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
     return std::make_unique<CCompoundInit>(std::move(zero_initializers));
 }
 
-// TODO
 static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
-    for(auto& member : struct_typedef_table[struct_type->tag]->members) {
-        std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member.second->member_type.get());
+    for(const auto& member_name: struct_typedef_table[struct_type->tag]->member_names) {
+        auto& member = struct_typedef_table[struct_type->tag]->members[member_name];
+        std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member->member_type.get());
         zero_initializers.push_back(std::move(initializer));
     }
     return std::make_unique<CCompoundInit>(std::move(zero_initializers));
@@ -1151,14 +1151,14 @@ static void checktype_array_compound_init_initializer(CCompoundInit* node, Array
     node->init_type = init_type;
 }
 
-// TODO
 static void checktype_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
-                                                          std::shared_ptr<Type>& init_type, member_iterator& member) {
-    while(node->initializers.size() < struct_typedef_table[struct_type->tag]->members.size()) {
-        std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(
-                                                                             member->second->member_type.get());
+                                                          std::shared_ptr<Type>& init_type) {
+    for(size_t initializer = node->initializers.size();
+        initializer < struct_typedef_table[struct_type->tag]->members.size(); initializer++) {
+        auto& member = get_struct_typedef_member(struct_type->tag, initializer);
+        std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(member->member_type.get());
         node->initializers.push_back(std::move(zero_initializer));
-        member++;
+
     }
     node->init_type = init_type;
 }
@@ -1716,21 +1716,19 @@ static void checktype_array_compound_init_initializer_static_init(CCompoundInit*
     }
 }
 
-// TODO
 static void checktype_structure_compound_init_initializer_static_init(CCompoundInit* node, Structure* struct_type) {
     checktype_bound_structure_compound_init_initializer(node, struct_type);
 
     TLong size = 0l;
-    member_iterator member = struct_typedef_table[struct_type->tag]->members.begin();
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        if(member->second->offset != size) {
-            checktype_no_initializer_static_init(nullptr, member->second->offset - size);
-            size = member->second->offset;
+        auto& member = get_struct_typedef_member(struct_type->tag, initializer);
+        if(member->offset != size) {
+            checktype_no_initializer_static_init(nullptr, member->offset - size);
+            size = member->offset;
         }
         checktype_initializer_static_init(node->initializers[initializer].get(),
-                                          member->second->member_type.get());
-        size += get_type_scale(member->second->member_type.get());
-        member++;
+                                          member->member_type.get());
+        size += get_type_scale(member->member_type.get());
     }
     if(struct_typedef_table[struct_type->tag]->size != size) {
         checktype_no_initializer_static_init(nullptr,
@@ -2494,17 +2492,15 @@ static void resolve_array_compound_init_initializer(CCompoundInit* node, Array* 
     checktype_array_compound_init_initializer(node, arr_type, init_type);
 }
 
-// TODO
 static void resolve_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type,
                                                         std::shared_ptr<Type>& init_type) {
     checktype_bound_structure_compound_init_initializer(node, struct_type);
 
-    member_iterator member = struct_typedef_table[struct_type->tag]->members.begin();
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        resolve_initializer(node->initializers[initializer].get(), member->second->member_type);
-        member++;
+        auto& member = get_struct_typedef_member(struct_type->tag, initializer);
+        resolve_initializer(node->initializers[initializer].get(), member->member_type);
     }
-    checktype_structure_compound_init_initializer(node, struct_type, init_type, member);
+    checktype_structure_compound_init_initializer(node, struct_type, init_type);
 }
 
 static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_ptr<Type>& init_type) {

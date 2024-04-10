@@ -310,4 +310,8 @@ extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
 
+inline std::unique_ptr<StructMember>& get_struct_typedef_member(const TIdentifier& tag, size_t member) {
+    return struct_typedef_table[tag]->members[struct_typedef_table[tag]->member_names[member]];
+}
+
 #endif
