@@ -23,4 +23,4 @@ BackendObj::BackendObj(bool is_static, bool is_constant, std::shared_ptr<Assembl
 BackendFun::BackendFun(bool is_defined)
     : is_defined(is_defined) {}
 
-std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
+std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>> backend_symbol_table;

@@ -136,8 +136,8 @@ void pretty_print_struct_typedef_table() {
 
 void pretty_print_backend_symbol_table() {
     header_string("Backend Symbol Table");
-    std::cout << "\nDict(" + std::to_string(backend_symbol_table.size()) + "):";
-    for(const auto& symbol: backend_symbol_table) {
+    std::cout << "\nDict(" + std::to_string(backend_symbol_table->size()) + "):";
+    for(const auto& symbol: *backend_symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
     }

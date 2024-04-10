@@ -73,6 +73,6 @@ struct Dummy : Ast {
 };
 */
 
-extern std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
+extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>> backend_symbol_table;
 
 #endif

@@ -91,7 +91,7 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
 static const TIdentifier* p_symbol;
 
 static void add_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
-    backend_symbol_table[*p_symbol] = std::move(node);
+    (*backend_symbol_table)[*p_symbol] = std::move(node);
 }
 
 static void convert_double_static_constant() {
@@ -143,6 +143,7 @@ static void convert_obj_type(IdentifierAttr* node) {
 }
 
 static void convert_program(AsmProgram* node) {
+    backend_symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>>();
     for(const auto& symbol: *symbol_table) {
         p_symbol = &symbol.first;
         if(symbol.second->type_t->type() == AST_T::FunType_t) {

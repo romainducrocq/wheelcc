@@ -317,9 +317,9 @@ static std::string emit_memory_operand(AsmMemory* node) {
 
 static std::string emit_data_operand(AsmData* node) {
     std::string value = emit_identifier(node->name);
-    if(backend_symbol_table.find(value) != backend_symbol_table.end() &&
-       backend_symbol_table[value]->type() == AST_T::BackendObj_t &&
-       static_cast<BackendObj*>(backend_symbol_table[value].get())->is_constant) {
+    if(backend_symbol_table->find(value) != backend_symbol_table->end() &&
+       (*backend_symbol_table)[value]->type() == AST_T::BackendObj_t &&
+       static_cast<BackendObj*>((*backend_symbol_table)[value].get())->is_constant) {
         value = ".L" + value;
     }
     return value + "(%rip)";
@@ -821,7 +821,7 @@ static void emit_program(AsmProgram* node) {
     for(size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
         emit_top_level(node->top_levels[top_level].get());
     }
-    backend_symbol_table.clear();
+    backend_symbol_table.release();
     emit(".section .note.GNU-stack,\"\",@progbits", 2);
 }
 
