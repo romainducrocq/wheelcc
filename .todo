@@ -36,6 +36,10 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 ## NOTES
 
 - clean all static containers to not have them during the whole program
+- memory management : use unique_ptr for all static containers
+    + how to initialize unique ptr of std arrays
+    + pass vector of tokens around in a unique ptr
+    + initialize global containers at correct time
 - replace *type_1 with *type
 - (? maybe not as bash is a requirement for the driver anyway) error message: get line with c fopen or c++ stream instead of calling bash cmd
 

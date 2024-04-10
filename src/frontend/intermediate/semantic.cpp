@@ -2670,14 +2670,16 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
-    external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
-    scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
-    scoped_structure_tag_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
-    goto_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
-    label_set = std::make_unique<std::unordered_set<TIdentifier>>();
-    loop_labels = std::make_unique<std::vector<TIdentifier>>();
-    function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
-    structure_definition_set = std::unique_ptr<std::unordered_set<TIdentifier>>();
+    {
+        external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
+        scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
+        scoped_structure_tag_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
+        goto_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+        label_set = std::make_unique<std::unordered_set<TIdentifier>>();
+        loop_labels = std::make_unique<std::vector<TIdentifier>>();
+        function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
+        structure_definition_set = std::unique_ptr<std::unordered_set<TIdentifier>>();
+    }
 
     enter_scope();
     for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
@@ -2685,15 +2687,17 @@ static void resolve_identifiers(CProgram* node) {
         resolve_label();
     }
 
-    function_definition_name = "";
-    external_linkage_scope_map.release();
-    scoped_identifier_maps.release();
-    scoped_structure_tag_maps.release();
-    goto_map.release();
-    label_set.release();
-    loop_labels.release();
-    function_definition_set.release();
-    structure_definition_set.release();
+    {
+        function_definition_name = "";
+        external_linkage_scope_map.release();
+        scoped_identifier_maps.release();
+        scoped_structure_tag_maps.release();
+        goto_map.release();
+        label_set.release();
+        loop_labels.release();
+        function_definition_set.release();
+        structure_definition_set.release();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
