@@ -1632,12 +1632,12 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
     {
         TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
         TIdentifier static_constant_hash = std::to_string(std::hash<std::string>{}(string_constant));
-        if(static_constant_hash_map.find(static_constant_hash) != static_constant_hash_map.end()) {
-            static_constant_label = static_constant_hash_map[static_constant_hash];
+        if(static_constant_hash_map->find(static_constant_hash) != static_constant_hash_map->end()) {
+            static_constant_label = (*static_constant_hash_map)[static_constant_hash];
         }
         else {
             static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
-            static_constant_hash_map[static_constant_hash] = static_constant_label;
+            (*static_constant_hash_map)[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
@@ -2670,6 +2670,8 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
+    static_constant_hash_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+
     {
         external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
         scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();

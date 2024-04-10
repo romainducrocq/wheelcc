@@ -304,7 +304,7 @@ struct Dummy : Ast {
 };
 */
 
-extern std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
+extern std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_hash_map;
 
 extern std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 

@@ -109,7 +109,7 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier
                              std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members)
     : alignment(alignment), size(size), member_names(std::move(member_names)), members(std::move(members)) {}
 
-std::unordered_map<TIdentifier, TIdentifier> static_constant_hash_map;
+std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_hash_map;
 
 std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 
