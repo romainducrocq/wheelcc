@@ -87,7 +87,7 @@ Usage: wheelcc [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
     --codeemit   print  emission  stage and exit
 
 [Pre]:
-    -E           preprocess with gcc, then compile
+    -E           do not preprocess, then compile
 
 [Link]:
     -S           compile, but do not assemble and link

@@ -29,7 +29,7 @@ function usage () {
     echo "    --codeemit   print  emission  stage and exit"
     echo ""
     echo "[Pre]:"
-    echo "    -E           preprocess with gcc, then compile"
+    echo "    -E           do not preprocess, then compile"
     echo ""
     echo "[Link]:"
     echo "    -S           compile, but do not assemble and link"
@@ -239,14 +239,15 @@ function parse_args () {
 }
 
 function preprocess () {
-    PRE_CODE=1
-    if [ ${PRE_CODE} -eq 1 ]; then
+    if [ ${PRE_CODE} -eq 0 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess -> ${FILE}.i"
             gcc -E -P ${FILE}.c -o ${FILE}.i
             if [ ${?} -ne 0 ]; then return 1; fi
         done
         EXT_IN="i"
+    elif [ ${PRE_CODE} -eq 1 ]; then
+        :
     fi
     return 0;
 }
