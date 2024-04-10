@@ -14,6 +14,7 @@
 #include "backend/emitter/att_code.hpp"
 
 #include <string>
+#include <memory>
 #include <vector>
 #include <iostream>
 
@@ -146,12 +147,12 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     VERBOSE = false;
 }
 
-static std::vector<std::string> args;
+static std::unique_ptr<std::vector<std::string>> args;
 
 static void shift_args(std::string& arg) {
-    if(!args.empty()) {
-        arg = std::move(args.back());
-        args.pop_back();
+    if(!args->empty()) {
+        arg = std::move(args->back());
+        args->pop_back();
         return;
     }
     arg = "";
@@ -178,15 +179,18 @@ static void arg_parse(std::string& filename, int& opt_code, int& opt_s_code) {
 
 int main(int argc, char **argv) {
 
-    for(size_t i = static_cast<size_t>(argc); i-- > 0 ;){
-        args.push_back(argv[i]);
-    }
-
     std::string filename;
     int opt_code;
     int opt_s_code;
-    arg_parse(filename, opt_code, opt_s_code);
-    args.clear();
+    {
+        args = std::make_unique<std::vector<std::string>>();
+        for(size_t i = static_cast<size_t>(argc); i-- > 0 ;){
+            args->push_back(argv[i]);
+        }
+
+        arg_parse(filename, opt_code, opt_s_code);
+        args.release();
+    }
 
     do_compile(filename, opt_code, opt_s_code);
 
