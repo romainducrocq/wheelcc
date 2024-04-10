@@ -2681,7 +2681,7 @@ static void resolve_identifiers(CProgram* node) {
         label_set = std::make_unique<std::unordered_set<TIdentifier>>();
         loop_labels = std::make_unique<std::vector<TIdentifier>>();
         function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
-        structure_definition_set = std::unique_ptr<std::unordered_set<TIdentifier>>();
+        structure_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
     }
 
     enter_scope();
