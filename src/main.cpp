@@ -178,6 +178,7 @@ static void arg_parse(std::string& filename, int& opt_code, int& opt_s_code) {
 int main(int argc, char **argv) {
 
     std::string filename;
+    // TODO change to uint32_t bitmask
     int opt_code;
     int opt_s_code;
     {

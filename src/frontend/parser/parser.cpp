@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <unordered_map>
 
-// TODO refactor in a function
+// TODO refactor in a function in file errors.cpp
 static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
     {TOKEN_KIND::assignment_bitshiftleft, "<<="},
     {TOKEN_KIND::assignment_bitshiftright, ">>="},
