@@ -1651,6 +1651,8 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
             top_levels.push_back(std::move(function_top_level));
         }
         p_static_constant_top_levels = nullptr;
+        ARG_REGISTERS.fill(static_cast<REGISTER_KIND>(0));
+        ARG_SSE_REGISTERS.fill(static_cast<REGISTER_KIND>(0));
         static_constant_hash_map.clear();
     }
 

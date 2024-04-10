@@ -2677,6 +2677,7 @@ static void resolve_identifiers(CProgram* node) {
         resolve_label();
     }
 
+    function_definition_name = "";
     external_linkage_scope_map.clear();
     scoped_identifier_maps.clear();
     scoped_structure_tag_maps.clear();
