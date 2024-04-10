@@ -77,11 +77,11 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lexing(filename);
+    std::unique_ptr<std::vector<Token>> tokens = lexing(filename);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 255) {
-        debug_tokens(tokens);
+        debug_tokens(*tokens);
         return;
     }
 #endif
@@ -126,8 +126,6 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
 #ifndef __NDEBUG__
     if(opt_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
-        debug_symbol_table();
-        debug_struct_typedef_table();
         debug_backend_symbol_table();
         return;
     }

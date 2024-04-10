@@ -168,9 +168,9 @@ static std::vector<Token> tokenize() {
     return tokens;
 }
 
-std::vector<Token> lexing(const std::string& filename) {
+std::unique_ptr<std::vector<Token>> lexing(const std::string& filename) {
     file_open_read(filename);
     std::vector<Token> tokens = tokenize();
     file_close_read();
-    return tokens;
+    return std::make_unique<std::vector<Token>>(std::move(tokens));
 }

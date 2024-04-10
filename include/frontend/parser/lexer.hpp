@@ -2,6 +2,7 @@
 #define _FRONTEND_PARSER_LEXER_HPP
 
 #include <string>
+#include <memory>
 #include <vector>
 
 enum TOKEN_KIND {
@@ -98,6 +99,6 @@ struct Token {
     size_t line;
 };
 
-std::vector<Token> lexing(const std::string& filename);
+std::unique_ptr<std::vector<Token>> lexing(const std::string& filename);
 
 #endif

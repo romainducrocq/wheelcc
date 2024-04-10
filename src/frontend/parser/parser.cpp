@@ -1605,17 +1605,17 @@ static std::unique_ptr<CProgram> parse_program() {
     return std::make_unique<CProgram>(std::move(declarations));
 }
 
-std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
-    p_tokens = &tokens;
+std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens) {
+    p_tokens = tokens.get();
     std::unique_ptr<CProgram> c_ast = parse_program();
     p_tokens = nullptr;
-    if(pop_index != tokens.size()) {
+    if(pop_index != tokens->size()) {
         RAISE_INTERNAL_ERROR;
     }
     pop_index = 0;
     next_token = nullptr;
     peek_token = nullptr;
-    tokens.clear();
+    tokens.release();
     if(!c_ast) {
         RAISE_INTERNAL_ERROR;
     }
