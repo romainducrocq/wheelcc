@@ -74,5 +74,9 @@ struct Dummy : Ast {
 */
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>> backend_symbol_table;
+#define INIT_BACKEND_SYMBOL_TABLE \
+    backend_symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>>()
+#define FREE_BACKEND_SYMBOL_TABLE \
+    backend_symbol_table.release()
 
 #endif

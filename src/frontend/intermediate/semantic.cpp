@@ -2670,12 +2670,9 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
-    {
-        static_constant_hash_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
-        symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>();
-        struct_typedef_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>>();
-    }
-
+    INIT_STATIC_CONSTANT_HASH_MAP;
+    INIT_SYMBOL_TABLE;
+    INIT_STRUCT_TYPEDEF_TABLE;
     {
         external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
         scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
@@ -2690,7 +2687,6 @@ static void resolve_identifiers(CProgram* node) {
     enter_scope();
     for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
         resolve_declaration(node->declarations[declaration].get());
-        resolve_label();
     }
 
     {

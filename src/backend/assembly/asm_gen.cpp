@@ -1652,7 +1652,7 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
         p_static_constant_top_levels = nullptr;
         ARG_REGISTERS.release();
         ARG_SSE_REGISTERS.release();
-        static_constant_hash_map.release();
+        FREE_STATIC_CONSTANT_HASH_MAP;
     }
 
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
