@@ -97,17 +97,20 @@ static std::array<std::string, NUM_TOKEN> TOKEN_REGEX = {
     R"(.)" // error
 };
 
-static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
-    file_open_read(filename);
-
-    std::string groups[NUM_TOKEN];
+static std::vector<Token> tokenize() {
     std::string regexp_string = "";
-    for(size_t i = 0; i < NUM_TOKEN; i++) {
-        groups[i] = std::to_string(i);
-        regexp_string += "(?<" + groups[i] + ">" + TOKEN_REGEX[i] + ")|";
+    std::string groups[NUM_TOKEN];
+    {
+        for(size_t i = 0; i < NUM_TOKEN; i++) {
+            groups[i] = std::to_string(i);
+            regexp_string += "(?<" + groups[i] + ">" + TOKEN_REGEX[i] + ")|";
+        }
+        regexp_string.pop_back();
+        std::fill(std::begin(TOKEN_REGEX), std::end(TOKEN_REGEX), 0);
     }
-    regexp_string.pop_back();
+
     const boost::regex token_pattern(regexp_string);
+    std::vector<Token> tokens;
 
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
@@ -161,16 +164,12 @@ static void tokenize(const std::string& filename, std::vector<Token>& tokens) {
             tokens.emplace_back(std::move(token));
         }
     }
-
-    file_close_read();
+    return tokens;
 }
 
-//#define DTOR \
-//    std::fill(std::begin(TOKEN_REGEX), std::end(TOKEN_REGEX), 0);
-
 std::vector<Token> lexing(const std::string& filename) {
-    std::vector<Token> tokens;
-    tokenize(filename, tokens);
-//    DTOR
+    file_open_read(filename);
+    std::vector<Token> tokens = tokenize();
+    file_close_read();
     return tokens;
 }

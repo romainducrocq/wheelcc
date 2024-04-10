@@ -17,8 +17,6 @@
 #include <vector>
 #include <unordered_map>
 
-static std::unordered_map<TIdentifier, TIdentifier> static_const_label_map;
-
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(true, false, std::move(value));

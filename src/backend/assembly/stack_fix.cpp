@@ -925,6 +925,7 @@ static void fix_program(AsmProgram* node) {
     for(size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
         fix_top_level(node->top_levels[top_level].get());
     }
+    pseudo_stack_bytes_map.clear();
 }
 
 void fix_stack(AsmProgram* node) {
