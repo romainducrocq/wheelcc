@@ -18,9 +18,9 @@
 
 static TIdentifier function_definition_name;
 
-static std::unordered_set<TIdentifier> function_definition_set;
+static std::unique_ptr<std::unordered_set<TIdentifier>> function_definition_set;
 
-static std::unordered_set<TIdentifier> structure_definition_set;
+static std::unique_ptr<std::unordered_set<TIdentifier>> structure_definition_set;
 
 static bool is_same_type(Type* type_1, Type* type_2);
 
@@ -1215,7 +1215,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         raise_runtime_error("Function declaration can not have void type");
     }
 
-    bool is_defined = function_definition_set.find(node->name) != function_definition_set.end();
+    bool is_defined = function_definition_set->find(node->name) != function_definition_set->end();
     bool is_global = !(node->storage_class && 
                        node->storage_class->type() == AST_T::CStatic_t);
 
@@ -1245,7 +1245,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     }
 
     if(node->body) {
-        function_definition_set.insert(node->name);
+        function_definition_set->insert(node->name);
         is_defined = true;
         function_definition_name = node->name;
     }
@@ -1980,59 +1980,59 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
 
 // Loop labeling
 
-static std::vector<TIdentifier> loop_labels;
+static std::unique_ptr<std::vector<TIdentifier>> loop_labels;
 
 static void annotate_while_loop(CWhile* node) {
     node->target = represent_label_identifier(LABEL_KIND::Lwhile);
-    loop_labels.push_back(node->target);
+    loop_labels->push_back(node->target);
 }
 
 static void annotate_do_while_loop(CDoWhile* node) {
     node->target = represent_label_identifier(LABEL_KIND::Ldo_while);
-    loop_labels.push_back(node->target);
+    loop_labels->push_back(node->target);
 }
 
 static void annotate_for_loop(CFor* node) {
     node->target = represent_label_identifier(LABEL_KIND::Lfor);
-    loop_labels.push_back(node->target);
+    loop_labels->push_back(node->target);
 }
 
 static void annotate_break_loop(CBreak* node) {
-    if(loop_labels.empty()) {
+    if(loop_labels->empty()) {
         raise_runtime_error("An error occurred in loop annotation, " + em("break") +
                             "is outside of loop");
     }
-    node->target = loop_labels.back();
+    node->target = loop_labels->back();
 }
 
 static void annotate_continue_loop(CContinue* node) {
-    if(loop_labels.empty()) {
+    if(loop_labels->empty()) {
         raise_runtime_error("An error occurred in loop annotation, " + em("continue") +
                             "is outside of loop");
     }
-    node->target = loop_labels.back();
+    node->target = loop_labels->back();
 }
 
 static void deannotate_loop() {
-    loop_labels.pop_back();
+    loop_labels->pop_back();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Identifier resolution
 
-static std::unordered_map<TIdentifier, size_t> external_linkage_scope_map;
+static std::unique_ptr<std::unordered_map<TIdentifier, size_t>> external_linkage_scope_map;
 
-static std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
+static std::unique_ptr<std::vector<std::unordered_map<TIdentifier, TIdentifier>>> scoped_identifier_maps;
 
-static std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_structure_tag_maps;
+static std::unique_ptr<std::vector<std::unordered_map<TIdentifier, TIdentifier>>> scoped_structure_tag_maps;
 
-static std::unordered_map<TIdentifier, TIdentifier> goto_map;
+static std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> goto_map;
 
-static std::unordered_set<TIdentifier> label_set;
+static std::unique_ptr<std::unordered_set<TIdentifier>> label_set;
 
 static size_t current_scope_depth() {
-    return scoped_identifier_maps.size();
+    return scoped_identifier_maps->size();
 }
 
 static bool is_file_scope() {
@@ -2040,24 +2040,24 @@ static bool is_file_scope() {
 }
 
 static void enter_scope() {
-    scoped_identifier_maps.emplace_back();
-    scoped_structure_tag_maps.emplace_back();
+    scoped_identifier_maps->emplace_back();
+    scoped_structure_tag_maps->emplace_back();
 }
 
 static void exit_scope() {
-    for(const auto& identifier: scoped_identifier_maps.back()) {
-        if(external_linkage_scope_map.find(identifier.first) != external_linkage_scope_map.end() &&
-           external_linkage_scope_map[identifier.first] == current_scope_depth()) {
-            external_linkage_scope_map.erase(identifier.first);
+    for(const auto& identifier: scoped_identifier_maps->back()) {
+        if(external_linkage_scope_map->find(identifier.first) != external_linkage_scope_map->end() &&
+           (*external_linkage_scope_map)[identifier.first] == current_scope_depth()) {
+            external_linkage_scope_map->erase(identifier.first);
         }
     }
-    scoped_identifier_maps.pop_back();
-    scoped_structure_tag_maps.pop_back();
+    scoped_identifier_maps->pop_back();
+    scoped_structure_tag_maps->pop_back();
 }
 
 static void resolve_label() {
-    for(const auto& target: goto_map) {
-        if(label_set.find(target.first) == label_set.end()) {
+    for(const auto& target: (*goto_map)) {
+        if(label_set->find(target.first) == label_set->end()) {
             raise_runtime_error("An error occurred in variable resolution, goto " + em(target.first) +
                                 " has no target label");
         }
@@ -2073,12 +2073,12 @@ static void resolve_array_struct_type(Array* arr_type) {
 }
 
 static void resolve_structure_struct_type(Structure* struct_type) {
-    if(structure_definition_set.find(struct_type->tag) != structure_definition_set.end()) {
+    if(structure_definition_set->find(struct_type->tag) != structure_definition_set->end()) {
         return;
     }
     for(size_t i = current_scope_depth(); i-- > 0;) {
-        if(scoped_structure_tag_maps[i].find(struct_type->tag) != scoped_structure_tag_maps[i].end()) {
-            struct_type->tag = scoped_structure_tag_maps[i][struct_type->tag];
+        if((*scoped_structure_tag_maps)[i].find(struct_type->tag) != (*scoped_structure_tag_maps)[i].end()) {
+            struct_type->tag = (*scoped_structure_tag_maps)[i][struct_type->tag];
             return;
         }
     }
@@ -2116,8 +2116,8 @@ static void resolve_string_expression(CString* node) {
 
 static void resolve_var_expression(CVar* node) {
     for(size_t i = current_scope_depth(); i-- > 0;) {
-        if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
-            node->name = scoped_identifier_maps[i][node->name];
+        if((*scoped_identifier_maps)[i].find(node->name) != (*scoped_identifier_maps)[i].end()) {
+            node->name = (*scoped_identifier_maps)[i][node->name];
             goto Lelse;
         }
     }
@@ -2160,8 +2160,8 @@ static void resolve_conditional_expression(CConditional* node) {
 
 static void resolve_function_call_expression(CFunctionCall* node) {
     for(size_t i = current_scope_depth(); i-- > 0;) {
-        if(scoped_identifier_maps[i].find(node->name) != scoped_identifier_maps[i].end()) {
-            node->name = scoped_identifier_maps[i][node->name];
+        if((*scoped_identifier_maps)[i].find(node->name) != (*scoped_identifier_maps)[i].end()) {
+            node->name = (*scoped_identifier_maps)[i][node->name];
             goto Lelse;
         }
     }
@@ -2323,27 +2323,27 @@ static void resolve_if_statement(CIf* node) {
 }
 
 static void resolve_goto_statement(CGoto* node) {
-    if(goto_map.find(node->target) != goto_map.end()) {
-        node->target = goto_map[node->target];
+    if(goto_map->find(node->target) != goto_map->end()) {
+        node->target = (*goto_map)[node->target];
     }
     else {
-        goto_map[node->target] = resolve_label_identifier(node->target);
-        node->target = goto_map[node->target];
+        (*goto_map)[node->target] = resolve_label_identifier(node->target);
+        node->target = (*goto_map)[node->target];
     }
 }
 
 static void resolve_label_statement(CLabel* node) {
-    if(label_set.find(node->target) != label_set.end()) {
+    if(label_set->find(node->target) != label_set->end()) {
         raise_runtime_error("Label " + em(node->target) + " was already declared in this scope");
     }
-    label_set.insert(node->target);
+    label_set->insert(node->target);
 
-    if(goto_map.find(node->target) != goto_map.end()) {
-        node->target = goto_map[node->target];
+    if(goto_map->find(node->target) != goto_map->end()) {
+        node->target = (*goto_map)[node->target];
     }
     else {
-        goto_map[node->target] = resolve_label_identifier(node->target);
-        node->target = goto_map[node->target];
+        (*goto_map)[node->target] = resolve_label_identifier(node->target);
+        node->target = (*goto_map)[node->target];
     }
     resolve_statement(node->jump_to.get());
 }
@@ -2528,11 +2528,11 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 
 static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for(size_t param = 0; param < node->params.size(); param++) {
-        if(scoped_identifier_maps.back().find(node->params[param]) != scoped_identifier_maps.back().end()) {
+        if(scoped_identifier_maps->back().find(node->params[param]) != scoped_identifier_maps->back().end()) {
             raise_runtime_error("Variable " + node->params[param] + " was already declared in this scope");
         }
-        scoped_identifier_maps.back()[node->params[param]] = resolve_variable_identifier(node->params[param]);
-        node->params[param] = scoped_identifier_maps.back()[node->params[param]];
+        scoped_identifier_maps->back()[node->params[param]] = resolve_variable_identifier(node->params[param]);
+        node->params[param] = scoped_identifier_maps->back()[node->params[param]];
     }
     checktype_params_function_declaration(node);
 }
@@ -2550,14 +2550,14 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
         }
     }
 
-    if(external_linkage_scope_map.find(node->name) == external_linkage_scope_map.end()) {
-        if(scoped_identifier_maps.back().find(node->name) != scoped_identifier_maps.back().end()) {
+    if(external_linkage_scope_map->find(node->name) == external_linkage_scope_map->end()) {
+        if(scoped_identifier_maps->back().find(node->name) != scoped_identifier_maps->back().end()) {
             raise_runtime_error("Function " + em(node->name) + " was already declared in this scope");
         }
-        external_linkage_scope_map[node->name] = current_scope_depth();
+        (*external_linkage_scope_map)[node->name] = current_scope_depth();
     }
 
-    scoped_identifier_maps.back()[node->name] = node->name;
+    scoped_identifier_maps->back()[node->name] = node->name;
     checktype_return_function_declaration(node);
 
     enter_scope();
@@ -2573,11 +2573,11 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
 }
 
 static void resolve_file_scope_variable_declaration(CVariableDeclaration* node) {
-    if(external_linkage_scope_map.find(node->name) == external_linkage_scope_map.end()) {
-        external_linkage_scope_map[node->name] = current_scope_depth();
+    if(external_linkage_scope_map->find(node->name) == external_linkage_scope_map->end()) {
+        (*external_linkage_scope_map)[node->name] = current_scope_depth();
     }
 
-    scoped_identifier_maps.back()[node->name] = node->name;
+    scoped_identifier_maps->back()[node->name] = node->name;
     if(is_file_scope()) {
         checktype_file_scope_variable_declaration(node);
     }
@@ -2587,8 +2587,8 @@ static void resolve_file_scope_variable_declaration(CVariableDeclaration* node) 
 }
 
 static void resolve_block_scope_variable_declaration(CVariableDeclaration* node) {
-    if(scoped_identifier_maps.back().find(node->name) != scoped_identifier_maps.back().end() &&
-       !(external_linkage_scope_map.find(node->name) != external_linkage_scope_map.end() &&
+    if(scoped_identifier_maps->back().find(node->name) != scoped_identifier_maps->back().end() &&
+       !(external_linkage_scope_map->find(node->name) != external_linkage_scope_map->end() &&
          (node->storage_class && 
           node->storage_class->type() == AST_T::CExtern_t))) {
        raise_runtime_error("Variable " + em(node->name) + " was already declared in this scope");
@@ -2599,8 +2599,8 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
         return;
     }
 
-    scoped_identifier_maps.back()[node->name] = resolve_variable_identifier(node->name);
-    node->name = scoped_identifier_maps.back()[node->name];
+    scoped_identifier_maps->back()[node->name] = resolve_variable_identifier(node->name);
+    node->name = scoped_identifier_maps->back()[node->name];
     checktype_block_scope_variable_declaration(node);
 
     if(node->init &&
@@ -2614,13 +2614,13 @@ static void resolve_members_structure_declaration(CStructDeclaration* node) {
 }
 
 static void resolve_structure_declaration(CStructDeclaration* node) {
-    if(scoped_structure_tag_maps.back().find(node->tag) != scoped_structure_tag_maps.back().end()) {
-        node->tag = scoped_structure_tag_maps.back()[node->tag];
+    if(scoped_structure_tag_maps->back().find(node->tag) != scoped_structure_tag_maps->back().end()) {
+        node->tag = scoped_structure_tag_maps->back()[node->tag];
     }
     else {
-        scoped_structure_tag_maps.back()[node->tag] = resolve_structure_tag(node->tag);
-        node->tag = scoped_structure_tag_maps.back()[node->tag];
-        structure_definition_set.insert(node->tag);
+        scoped_structure_tag_maps->back()[node->tag] = resolve_structure_tag(node->tag);
+        node->tag = scoped_structure_tag_maps->back()[node->tag];
+        structure_definition_set->insert(node->tag);
     }
     if(!node->members.empty()) {
         resolve_members_structure_declaration(node);
@@ -2630,9 +2630,9 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
 
 static void resolve_fun_decl_declaration(CFunDecl* node) {
     if(is_file_scope()) {
-        goto_map.clear();
-        label_set.clear();
-        loop_labels.clear();
+        goto_map->clear();
+        label_set->clear();
+        loop_labels->clear();
     }
     resolve_function_declaration(node->function_decl.get());
     if(is_file_scope()) {
@@ -2670,22 +2670,30 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
-    enter_scope();
+    external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
+    scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
+    scoped_structure_tag_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
+    goto_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+    label_set = std::make_unique<std::unordered_set<TIdentifier>>();
+    loop_labels = std::make_unique<std::vector<TIdentifier>>();
+    function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
+    structure_definition_set = std::unique_ptr<std::unordered_set<TIdentifier>>();
 
+    enter_scope();
     for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
         resolve_declaration(node->declarations[declaration].get());
         resolve_label();
     }
 
     function_definition_name = "";
-    external_linkage_scope_map.clear();
-    scoped_identifier_maps.clear();
-    scoped_structure_tag_maps.clear();
-    goto_map.clear();
-    label_set.clear();
-    loop_labels.clear();
-    function_definition_set.clear();
-    structure_definition_set.clear();
+    external_linkage_scope_map.release();
+    scoped_identifier_maps.release();
+    scoped_structure_tag_maps.release();
+    goto_map.release();
+    label_set.release();
+    loop_labels.release();
+    function_definition_set.release();
+    structure_definition_set.release();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
