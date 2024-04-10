@@ -2017,10 +2017,6 @@ static void deannotate_loop() {
     loop_labels.pop_back();
 }
 
-static void clear_annotate_loops() {
-    loop_labels.clear();
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Identifier resolution
@@ -2632,15 +2628,11 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
     }
 }
 
-static void clear_resolve_labels() {
-    goto_map.clear();
-    label_set.clear();
-}
-
 static void resolve_fun_decl_declaration(CFunDecl* node) {
     if(is_file_scope()) {
-        clear_resolve_labels();
-        clear_annotate_loops();
+        goto_map.clear();
+        label_set.clear();
+        loop_labels.clear();
     }
     resolve_function_declaration(node->function_decl.get());
     if(is_file_scope()) {
@@ -2684,6 +2676,15 @@ static void resolve_identifiers(CProgram* node) {
         resolve_declaration(node->declarations[declaration].get());
         resolve_label();
     }
+
+    external_linkage_scope_map.clear();
+    scoped_identifier_maps.clear();
+    scoped_structure_tag_maps.clear();
+    goto_map.clear();
+    label_set.clear();
+    loop_labels.clear();
+    function_definition_set.clear();
+    structure_definition_set.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
