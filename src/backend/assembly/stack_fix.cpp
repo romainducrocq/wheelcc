@@ -11,7 +11,7 @@
 
 static TLong stack_bytes;
 
-static std::unordered_map<TIdentifier, TLong> pseudo_stack_bytes_map;
+static std::unique_ptr<std::unordered_map<TIdentifier, TLong>> pseudo_stack_bytes_map;
 
 static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     TIdentifier name = node->name;
@@ -24,12 +24,12 @@ static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* n
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
-    TLong value = -1 * pseudo_stack_bytes_map[node->name];
+    TLong value = -1 * (*pseudo_stack_bytes_map)[node->name];
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMem* node) {
-    TLong value = -1 * (pseudo_stack_bytes_map[node->name] - node->offset);
+    TLong value = -1 * ((*pseudo_stack_bytes_map)[node->name] - node->offset);
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
@@ -75,7 +75,7 @@ static void allocate_offset_pseudo_mem_register(AssemblyType* assembly_type) {
 }
 
 static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* node) {
-    if(pseudo_stack_bytes_map.find(node->name) == pseudo_stack_bytes_map.end()) {
+    if(pseudo_stack_bytes_map->find(node->name) == pseudo_stack_bytes_map->end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(backend_symbol_table[node->name].get());
         if(backend_obj->is_static) {
@@ -83,7 +83,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         }
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
-            pseudo_stack_bytes_map[node->name] = stack_bytes;
+            (*pseudo_stack_bytes_map)[node->name] = stack_bytes;
         }
     }
 
@@ -91,7 +91,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
 }
 
 static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudoMem* node) {
-    if(pseudo_stack_bytes_map.find(node->name) == pseudo_stack_bytes_map.end()) {
+    if(pseudo_stack_bytes_map->find(node->name) == pseudo_stack_bytes_map->end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(backend_symbol_table[node->name].get());
         if(backend_obj->is_static) {
@@ -99,7 +99,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         }
         else {
             allocate_offset_pseudo_mem_register(backend_obj->assembly_type.get());
-            pseudo_stack_bytes_map[node->name] = stack_bytes;
+            (*pseudo_stack_bytes_map)[node->name] = stack_bytes;
         }
     }
 
@@ -898,7 +898,7 @@ static void fix_function_top_level(AsmFunction* node) {
     p_fix_instructions->emplace_back();
 
     stack_bytes = 0l;
-    pseudo_stack_bytes_map.clear();
+    pseudo_stack_bytes_map->clear();
     for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
         push_fix_instruction(std::move(instructions[instruction]));
 
@@ -922,10 +922,11 @@ static void fix_top_level(AsmTopLevel* node) {
 }
 
 static void fix_program(AsmProgram* node) {
+    pseudo_stack_bytes_map = std::make_unique<std::unordered_map<TIdentifier, TLong>>();
     for(size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
         fix_top_level(node->top_levels[top_level].get());
     }
-    pseudo_stack_bytes_map.clear();
+    pseudo_stack_bytes_map.release();
     struct_typedef_table.clear();
 }
 
