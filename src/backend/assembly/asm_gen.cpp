@@ -15,7 +15,6 @@
 #include <memory>
 #include <array>
 #include <vector>
-#include <unordered_map>
 
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
     TIdentifier value = std::to_string(node->value);

@@ -1612,9 +1612,9 @@ std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
     if(pop_index != tokens.size()) {
         RAISE_INTERNAL_ERROR;
     }
+    pop_index = 0;
     next_token = nullptr;
     peek_token = nullptr;
-    pop_index = 0;
     tokens.clear();
     if(!c_ast) {
         RAISE_INTERNAL_ERROR;
