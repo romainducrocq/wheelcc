@@ -7,6 +7,9 @@
 static size_t line_number = 0;
 static std::string stream_buf = "";
 
+static size_t l = 0;
+static char* buffer = nullptr;
+
 static FILE* file_in = nullptr;
 static FILE* file_out = nullptr;
 
@@ -34,15 +37,13 @@ void file_open_write(const std::string& filename) {
     stream_buf = "";
 }
 
-// https://stackoverflow.com/questions/64390291/c-getline-memory-leak-different-behaviours
-
 bool read_line(std::string& line) {
-    size_t l = 0;
-    char* buffer = nullptr;
-
     if(getline(&buffer, &l, file_in) == -1) {
+        l = 0;
         line = "";
         line_number = 0;
+        free(buffer);
+        buffer = nullptr;
         return false;
     }
 
