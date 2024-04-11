@@ -16,12 +16,12 @@
 #include <iostream>
 
 static void header_string(const std::string& header) {
-    std::cout << "+\n+\n@@ " + header + " @@";
+    std::cout << "+\n+\n@@ " << header << " @@";
 }
 
 void pretty_print_tokens(const std::vector<Token>& tokens) {
     header_string("Tokens");
-    std::cout << "\nList[" + std::to_string(tokens.size()) + "]:";
+    std::cout << "\nList[" << std::to_string(tokens.size()) << "]:";
     for(const auto& token: tokens) {
         std::cout << "\n  ";
         if(token.token.compare(get_token_kind_hr(token.token_kind)) == 0) {
@@ -1660,7 +1660,7 @@ void pretty_print_ast(Ast* node, const std::string& name) {
 
 void pretty_print_symbol_table() {
     header_string("Symbol Table");
-    std::cout << "\nDict(" + std::to_string(symbol_table->size()) + "):";
+    std::cout << "\nDict(" << std::to_string(symbol_table->size()) << "):";
     for(const auto& symbol: *symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
@@ -1670,7 +1670,7 @@ void pretty_print_symbol_table() {
 
 void pretty_print_static_constant_table() {
     header_string("Static Constant Table");
-    std::cout << "\nDict(" + std::to_string(static_constant_table->size()) + "):";
+    std::cout << "\nDict(" << std::to_string(static_constant_table->size()) << "):";
     for(const auto& static_constant: *static_constant_table) {
         field("[" + static_constant.first + "]", "", 2);
         if(symbol_table->find(static_constant.second) != symbol_table->end() &&
@@ -1741,7 +1741,7 @@ void pretty_print_static_constant_table() {
 
 void pretty_print_struct_typedef_table() {
     header_string("Structure Typedef Table");
-    std::cout << "\nDict(" + std::to_string(struct_typedef_table->size()) + "):";
+    std::cout << "\nDict(" << std::to_string(struct_typedef_table->size()) << "):";
     for(const auto& struct_typedef: *struct_typedef_table) {
         field("[" + struct_typedef.first + "]", "", 2);
         print_ast(struct_typedef.second.get(), 2);
@@ -1751,7 +1751,7 @@ void pretty_print_struct_typedef_table() {
 
 void pretty_print_backend_symbol_table() {
     header_string("Backend Symbol Table");
-    std::cout << "\nDict(" + std::to_string(backend_symbol_table->size()) + "):";
+    std::cout << "\nDict(" << std::to_string(backend_symbol_table->size()) << "):";
     for(const auto& symbol: *backend_symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
