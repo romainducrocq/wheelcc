@@ -1584,7 +1584,7 @@ std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens) {
     pop_index = 0;
     next_token = nullptr;
     peek_token = nullptr;
-    tokens.release();
+    tokens.reset();
     if(!c_ast) {
         RAISE_INTERNAL_ERROR;
     }

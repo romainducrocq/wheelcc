@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
         }
 
         arg_parse(filename, opt_code, opt_s_code);
-        args.release();
+        args.reset();
     }
 
     do_compile(filename, opt_code, opt_s_code);

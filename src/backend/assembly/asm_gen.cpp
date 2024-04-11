@@ -1659,8 +1659,8 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
 
 std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_ast) {
     std::unique_ptr<AsmProgram> asm_ast = generate_program(tac_ast.get());
-    ARG_REGISTERS.release();
-    ARG_SSE_REGISTERS.release();
+    ARG_REGISTERS.reset();
+    ARG_SSE_REGISTERS.reset();
     tac_ast.reset();
     if(!asm_ast) {
         RAISE_INTERNAL_ERROR;

@@ -77,6 +77,6 @@ extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<BackendSy
 #define INIT_BACKEND_SYMBOL_TABLE \
     backend_symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>>()
 #define FREE_BACKEND_SYMBOL_TABLE \
-    backend_symbol_table.release()
+    backend_symbol_table.reset()
 
 #endif

@@ -933,5 +933,5 @@ void fix_stack(AsmProgram* node) {
     fix_program(node);
 
     stack_bytes = 0l;
-    pseudo_stack_bytes_map.release();
+    pseudo_stack_bytes_map.reset();
 }

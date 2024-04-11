@@ -171,7 +171,7 @@ static std::vector<Token> tokenize() {
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename) {
     file_open_read(filename);
     std::vector<Token> tokens = tokenize();
-    TOKEN_REGEXPS.release();
+    TOKEN_REGEXPS.reset();
     file_close_read();
     return std::make_unique<std::vector<Token>>(std::move(tokens));
 }

@@ -308,19 +308,19 @@ extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>
 #define INIT_SYMBOL_TABLE \
     symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>()
 #define FREE_SYMBOL_TABLE \
-    symbol_table.release()
+    symbol_table.reset()
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_table;
 #define INIT_STATIC_CONSTANT_TABLE \
     static_constant_table = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>()
 #define FREE_STATIC_CONSTANT_TABLE \
-    static_constant_table.release()
+    static_constant_table.reset()
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;
 #define INIT_STRUCT_TYPEDEF_TABLE \
     struct_typedef_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>>()
 #define FREE_STRUCT_TYPEDEF_TABLE \
-    struct_typedef_table.release()
+    struct_typedef_table.reset()
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
     (*struct_typedef_table)[(X)]->members[(*struct_typedef_table)[(X)]->member_names[(Y)]]
 

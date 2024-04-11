@@ -2693,12 +2693,12 @@ void analyze_semantic(CProgram* node) {
     resolve_identifiers(node);
 
     function_definition_name = "";
-    external_linkage_scope_map.release();
-    scoped_identifier_maps.release();
-    scoped_structure_tag_maps.release();
-    goto_map.release();
-    label_set.release();
-    loop_labels.release();
-    function_definition_set.release();
-    structure_definition_set.release();
+    external_linkage_scope_map.reset();
+    scoped_identifier_maps.reset();
+    scoped_structure_tag_maps.reset();
+    goto_map.reset();
+    label_set.reset();
+    loop_labels.reset();
+    function_definition_set.reset();
+    structure_definition_set.reset();
 }
