@@ -67,6 +67,7 @@ if __name__ == "__main__":
 #include "ast/front_ast.hpp"
 #include "ast/interm_ast.hpp"
 #include "ast/back_ast.hpp"
+#include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
 #include <cstring>
@@ -79,9 +80,14 @@ static void header_string(const std::string& header) {
 
 void pretty_print_tokens(const std::vector<Token>& tokens) {
     header_string("Tokens");
-    for(size_t token = 0; token < tokens.size(); token++) {
-        std::cout << "\n" + std::to_string(token) + ": (\"" + tokens[token].token + "\", " +
-                     std::to_string(tokens[token].token_kind) + ")";
+    std::cout << "\nList[" + std::to_string(tokens.size()) + "]:";
+    for(const auto& token: tokens) {
+        std::cout << "\n  ";
+        if(token.token.compare(get_token_kind_hr(token.token_kind)) == 0) {
+            std::cout << token.token;
+            continue;
+        }
+        std::cout << get_token_kind_hr(token.token_kind) << "(" << token.token << ")";
     }
     std::cout << std::endl;
 }
@@ -136,7 +142,7 @@ void pretty_print_static_constant_table() {
             ConstantAttr* const_attr = static_cast<ConstantAttr*>((*symbol_table)[static_constant.second]->attrs.get());
             if(const_attr->static_init->type() == AST_T::StringInit_t) {
                 std::cout << "\n    string: \"";
-                for(TChar byte : static_cast<StringInit*>(const_attr->static_init.get())->literal.get()->value) {
+                for(const TChar& byte : static_cast<StringInit*>(const_attr->static_init.get())->literal.get()->value) {
                     switch(byte) {
                         case 39:
                             std::cout << "\\'";
