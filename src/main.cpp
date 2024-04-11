@@ -1,7 +1,7 @@
-#include "util/error.hpp"
 #ifndef __NDEBUG__
 #include "util/pprint.hpp"
 #endif
+#include "util/throw.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"

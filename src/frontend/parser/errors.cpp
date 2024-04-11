@@ -1,5 +1,5 @@
 #include "frontend/parser/errors.hpp"
-#include "util/error.hpp"
+#include "util/throw.hpp"
 #include "frontend/parser/lexer.hpp"
 
 #include <string>

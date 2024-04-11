@@ -1,5 +1,5 @@
 #include "frontend/intermediate/names.hpp"
-#include "util/error.hpp"
+#include "util/throw.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 

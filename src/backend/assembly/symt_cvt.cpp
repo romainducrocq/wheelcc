@@ -1,5 +1,5 @@
 #include "backend/assembly/symt_cvt.hpp"
-#include "util/error.hpp"
+#include "util/throw.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/back_symt.hpp"

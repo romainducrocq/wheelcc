@@ -1,4 +1,4 @@
-#include "util/error.hpp"
+#include "util/throw.hpp"
 
 #include <array>
 #include <cstdio>

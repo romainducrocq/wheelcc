@@ -1,5 +1,5 @@
 #include "util/fileio.hpp"
-#include "util/error.hpp"
+#include "util/throw.hpp"
 
 #include <stdio.h>
 #include <string>

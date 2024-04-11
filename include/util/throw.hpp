@@ -1,5 +1,5 @@
-#ifndef _UTIL_ERROR_HPP
-#define _UTIL_ERROR_HPP
+#ifndef _UTIL_THROW_HPP
+#define _UTIL_THROW_HPP
 
 #include <string>
 

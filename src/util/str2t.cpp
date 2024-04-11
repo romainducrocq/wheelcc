@@ -1,5 +1,5 @@
 #include "util/str2t.hpp"
-#include "util/error.hpp"
+#include "util/throw.hpp"
 
 #include <iomanip>
 #include <inttypes.h>

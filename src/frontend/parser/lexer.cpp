@@ -1,6 +1,6 @@
 #include "frontend/parser/lexer.hpp"
-#include "util/error.hpp"
 #include "util/fileio.hpp"
+#include "util/throw.hpp"
 
 #include <string>
 #include <memory>

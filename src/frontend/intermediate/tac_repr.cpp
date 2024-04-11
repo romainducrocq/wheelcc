@@ -1,6 +1,6 @@
 #include "frontend/intermediate/tac_repr.hpp"
-#include "util/error.hpp"
 #include "util/str2t.hpp"
+#include "util/throw.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"

@@ -1,6 +1,6 @@
 #include "backend/assembly/asm_gen.hpp"
-#include "util/error.hpp"
 #include "util/str2t.hpp"
+#include "util/throw.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/back_symt.hpp"
