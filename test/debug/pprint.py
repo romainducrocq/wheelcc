@@ -60,6 +60,7 @@ if __name__ == "__main__":
     print(R"""#include "util/pprint.hpp"
 #ifndef __NDEBUG__
 #include "util/error.hpp"
+#include "util/str2t.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/back_symt.hpp"
@@ -68,6 +69,7 @@ if __name__ == "__main__":
 #include "ast/back_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 
+#include <cstring>
 #include <vector>
 #include <iostream>
 
@@ -120,6 +122,76 @@ void pretty_print_symbol_table() {
     for(const auto& symbol: *symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
+    }
+    std::cout << std::endl;
+}
+
+void pretty_print_static_constant_table() {
+    header_string("Static Constant Table");
+    std::cout << "\nDict(" + std::to_string(static_constant_table->size()) + "):";
+    for(const auto& static_constant: *static_constant_table) {
+        field("[" + static_constant.first + "]", "", 2);
+        if(symbol_table->find(static_constant.second) != symbol_table->end() &&
+           (*symbol_table)[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
+            ConstantAttr* const_attr = static_cast<ConstantAttr*>((*symbol_table)[static_constant.second]->attrs.get());
+            if(const_attr->static_init->type() == AST_T::StringInit_t) {
+                std::cout << "\n    string: \"";
+                for(TChar byte : static_cast<StringInit*>(const_attr->static_init.get())->literal.get()->value) {
+                    switch(byte) {
+                        case 39:
+                            std::cout << "\\'";
+                            break;
+                        case 34:
+                            std::cout << "\\\"";
+                            break;
+                        case 63:
+                            std::cout << "\\?";
+                            break;
+                        case 92:
+                            std::cout << "\\\\";
+                            break;
+                        case 7:
+                            std::cout << "\\a";
+                            break;
+                        case 8:
+                            std::cout << "\\b";
+                            break;
+                        case 12:
+                            std::cout << "\\f";
+                            break;
+                        case 10:
+                            std::cout << "\\n";
+                            break;
+                        case 13:
+                            std::cout << "\\r";
+                            break;
+                        case 9:
+                            std::cout << "\\t";
+                            break;
+                        case 11:
+                            std::cout << "\\v";
+                            break;
+                        default:
+                            std::cout << byte;
+                            break;
+                    }
+                }
+                std::cout << "\"";
+            }
+        }
+        else if(backend_symbol_table->find(static_constant.second) != backend_symbol_table->end() &&
+                (*backend_symbol_table)[static_constant.second]->type() == AST_T::BackendObj_t){
+            BackendObj* backend_obj = static_cast<BackendObj*>((*backend_symbol_table)[static_constant.second].get());
+            if(backend_obj->is_constant &&
+               backend_obj->assembly_type->type() == AST_T::BackendDouble_t) {
+                double decimal;
+                uint64_t binary = string_to_uint64(static_constant.first);
+                std::memcpy(&decimal, &binary, sizeof(double));
+                std::cout << "\n    double: " << std::to_string(decimal);
+            }
+        } else {
+            RAISE_INTERNAL_ERROR;
+        }
     }
     std::cout << std::endl;
 }
