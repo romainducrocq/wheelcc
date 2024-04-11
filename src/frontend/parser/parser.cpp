@@ -21,7 +21,7 @@ static size_t pop_index = 0;
 
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) {
-        raise_runtime_error_at_line("Expected token kind " + em(get_token_human_readable(expected_token)) +
+        raise_runtime_error_at_line("Expected token kind " + em(get_token_kind_hr(expected_token)) +
                                     " but found token " + em(next_token_is.token), next_token_is.line);
     }
 }
@@ -1180,7 +1180,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
     }
     std::string type_token_kinds_string = "";
     for(const auto& type_token_kind: type_token_kinds) {
-        type_token_kinds_string +=  get_token_human_readable(type_token_kind) + ",";
+        type_token_kinds_string +=  get_token_kind_hr(type_token_kind) + ",";
     }
     raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)") +
                                 " but found token kinds " + em("(" + type_token_kinds_string + ")"),
