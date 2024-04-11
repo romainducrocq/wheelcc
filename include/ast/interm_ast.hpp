@@ -184,6 +184,7 @@ struct TacDereferencedPointer : TacExpResult {
 //             | Store(val, val)
 //             | AddPtr(int, val, val, val)
 //             | CopyToOffset(identifier, int, val)
+//             | CopyFromOffset(identifier, int, val)
 //             | Jump(identifier)
 //             | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier)
@@ -355,6 +356,16 @@ struct TacCopyToOffset : TacInstruction {
     TIdentifier dst_name;
     TLong offset;
     std::shared_ptr<TacValue> src;
+};
+
+struct TacCopyFromOffset : TacInstruction {
+    AST_T type() override;
+    TacCopyFromOffset() = default;
+    TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue> dst);
+
+    TIdentifier src_name;
+    TLong offset;
+    std::shared_ptr<TacValue> dst;
 };
 
 struct TacJump : TacInstruction {

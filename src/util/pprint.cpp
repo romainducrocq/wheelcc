@@ -1133,6 +1133,14 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->src.get(), t);
             break;
         }
+        case AST_T::TacCopyFromOffset_t: {
+            field("TacCopyFromOffset", "", ++t);
+            TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
+            field("TIdentifier", p_node->src_name, t+1);
+            field("TLong", std::to_string(p_node->offset), t+1);
+            print_ast(p_node->dst.get(), t);
+            break;
+        }
         case AST_T::TacJump_t: {
             field("TacJump", "", ++t);
             TacJump* p_node = static_cast<TacJump*>(node);

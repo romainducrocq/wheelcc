@@ -50,6 +50,7 @@ AST_T TacLoad::type() { return AST_T::TacLoad_t; }
 AST_T TacStore::type() { return AST_T::TacStore_t; }
 AST_T TacAddPtr::type() { return AST_T::TacAddPtr_t; }
 AST_T TacCopyToOffset::type() { return AST_T::TacCopyToOffset_t; }
+AST_T TacCopyFromOffset::type() { return AST_T::TacCopyFromOffset_t; }
 AST_T TacJump::type() { return AST_T::TacJump_t; }
 AST_T TacJumpIfZero::type() { return AST_T::TacJumpIfZero_t; }
 AST_T TacJumpIfNotZero::type() { return AST_T::TacJumpIfNotZero_t; }
@@ -127,6 +128,9 @@ TacAddPtr::TacAddPtr(TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared
 
 TacCopyToOffset::TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src)
     : dst_name(std::move(dst_name)), offset(offset), src(std::move(src)) {}
+
+TacCopyFromOffset::TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue> dst)
+    : src_name(std::move(src_name)), offset(offset), dst(std::move(dst)) {}
 
 TacJump::TacJump(TIdentifier target)
     : target(std::move(target)) {}

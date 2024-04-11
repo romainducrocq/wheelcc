@@ -1054,8 +1054,9 @@ static void represent_declaration_instructions(CDeclaration* node) {
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val?) | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
-//             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val) | Jump(identifier)
-//             | JumpIfZero(val, identifier) | JumpIfNotZero(val, identifier) | Label(identifier)
+//             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
+//             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
+//             | JumpIfNotZero(val, identifier) | Label(identifier)
 static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for(size_t block_item = 0; block_item < list_node.size(); block_item++) {
         switch(list_node[block_item]->type()) {
