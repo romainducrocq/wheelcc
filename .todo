@@ -35,11 +35,8 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
-- see if iterate other_member can be replaced by lookup in struct_typedef_table ?
-- move precedence to parser
 - create file parser/errors.cpp for error management with token_human_readable
-- replace *type_1 with *type
-
+- pretty print tokens with token_human_readable
 
 - add limits of compiler in readme:
     - no memory overflow check, max memory allocation is (2^63)-1 bits (function stack, aggregate type)
