@@ -1652,8 +1652,6 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
             top_levels.push_back(std::move(function_top_level));
         }
         p_static_constant_top_levels = nullptr;
-        ARG_REGISTERS.release();
-        ARG_SSE_REGISTERS.release();
     }
 
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
@@ -1661,6 +1659,8 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
 
 std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_ast) {
     std::unique_ptr<AsmProgram> asm_ast = generate_program(tac_ast.get());
+    ARG_REGISTERS.release();
+    ARG_SSE_REGISTERS.release();
     tac_ast.reset();
     if(!asm_ast) {
         RAISE_INTERNAL_ERROR;

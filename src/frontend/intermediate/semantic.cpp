@@ -2670,6 +2670,17 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
+    enter_scope();
+    for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
+        resolve_declaration(node->declarations[declaration].get());
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Semantic analysis
+
+void analyze_semantic(CProgram* node) {
     external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
     scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
     scoped_structure_tag_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
@@ -2679,10 +2690,7 @@ static void resolve_identifiers(CProgram* node) {
     function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
     structure_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
 
-    enter_scope();
-    for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
-        resolve_declaration(node->declarations[declaration].get());
-    }
+    resolve_identifiers(node);
 
     function_definition_name = "";
     external_linkage_scope_map.release();
@@ -2693,12 +2701,4 @@ static void resolve_identifiers(CProgram* node) {
     loop_labels.release();
     function_definition_set.release();
     structure_definition_set.release();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Semantic analysis
-
-void analyze_semantic(CProgram* node) {
-    resolve_identifiers(node);
 }

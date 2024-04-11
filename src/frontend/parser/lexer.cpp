@@ -108,7 +108,6 @@ static std::vector<Token> tokenize() {
             regexp_string += "(?<" + groups[i] + ">" + (*TOKEN_REGEXPS)[i] + ")|";
         }
         regexp_string.pop_back();
-        TOKEN_REGEXPS.release();
     }
 
     const boost::regex token_pattern(regexp_string);
@@ -172,6 +171,7 @@ static std::vector<Token> tokenize() {
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename) {
     file_open_read(filename);
     std::vector<Token> tokens = tokenize();
+    TOKEN_REGEXPS.release();
     file_close_read();
     return std::make_unique<std::vector<Token>>(std::move(tokens));
 }
