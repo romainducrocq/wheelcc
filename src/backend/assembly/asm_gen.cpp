@@ -714,10 +714,12 @@ static void generate_deallocate_stack_instructions(TLong byte) {
     push_instruction(deallocate_stack_bytes(byte));
 }
 
-static std::unique_ptr<std::array<REGISTER_KIND, 6>> ARG_REGISTERS(new std::array<REGISTER_KIND, 6>({
+#define ARG_REGISTERS_T std::array<REGISTER_KIND, 6>
+static std::unique_ptr<ARG_REGISTERS_T> ARG_REGISTERS(new ARG_REGISTERS_T({
     REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx, REGISTER_KIND::Cx, REGISTER_KIND::R8, REGISTER_KIND::R9 }));
 
-static std::unique_ptr<std::array<REGISTER_KIND, 8>> ARG_SSE_REGISTERS(new std::array<REGISTER_KIND, 8>({
+#define ARG_SSE_REGISTERS_T std::array<REGISTER_KIND, 8>
+static std::unique_ptr<ARG_SSE_REGISTERS_T> ARG_SSE_REGISTERS(new ARG_SSE_REGISTERS_T({
     REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2, REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4,
     REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7 }));
 

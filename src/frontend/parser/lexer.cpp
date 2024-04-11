@@ -10,7 +10,8 @@
 
 constexpr size_t NUM_TOKEN = TOKEN_KIND::error + 1;
 
-static std::unique_ptr<std::array<std::string, NUM_TOKEN>> TOKEN_REGEX(new std::array<std::string, NUM_TOKEN>({
+#define TOKEN_REGEXPS_T std::array<std::string, NUM_TOKEN>
+static std::unique_ptr<TOKEN_REGEXPS_T> TOKEN_REGEXPS(new TOKEN_REGEXPS_T({
     R"(<<=)", // assignment_bitshiftleft
     R"(>>=)", // assignment_bitshiftright
 
@@ -104,10 +105,10 @@ static std::vector<Token> tokenize() {
     {
         for(size_t i = 0; i < NUM_TOKEN; i++) {
             groups[i] = std::to_string(i);
-            regexp_string += "(?<" + groups[i] + ">" + (*TOKEN_REGEX)[i] + ")|";
+            regexp_string += "(?<" + groups[i] + ">" + (*TOKEN_REGEXPS)[i] + ")|";
         }
         regexp_string.pop_back();
-        TOKEN_REGEX.release();
+        TOKEN_REGEXPS.release();
     }
 
     const boost::regex token_pattern(regexp_string);
