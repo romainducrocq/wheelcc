@@ -35,8 +35,6 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
-- pretty print tokens with token_human_readable
-
 - add limits of compiler in readme:
     - no memory overflow check, max memory allocation is (2^63)-1 bits (function stack, aggregate type)
     - same for memory addresses / pointer values
