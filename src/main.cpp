@@ -3,8 +3,10 @@
 #include "util/pprint.hpp"
 #endif
 #include "ast/ast.hpp"
+#include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
 #include "ast/interm_ast.hpp"
+#include "ast/back_symt.hpp"
 #include "ast/back_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
@@ -96,6 +98,10 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 #endif
 
+    INIT_SYMBOL_TABLE;
+    INIT_STATIC_CONSTANT_TABLE;
+    INIT_STRUCT_TYPEDEF_TABLE;
+
     verbose("-- Semantic analysis ... ", false);
     analyze_semantic(c_ast.get());
     verbose("OK", true);
@@ -120,16 +126,24 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     }
 #endif
 
+    INIT_BACKEND_SYMBOL_TABLE;
+
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if(opt_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
+        debug_symbol_table();
+        debug_struct_typedef_table();
         debug_backend_symbol_table();
         return;
     }
 #endif
+
+    FREE_SYMBOL_TABLE;
+    FREE_STATIC_CONSTANT_TABLE;
+    FREE_STRUCT_TYPEDEF_TABLE;
 
     verbose("-- Code emission ... ", false);
     filename = filename.substr(0, filename.size()-2) + ".s";
@@ -141,6 +155,8 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
         return;
     }
 #endif
+
+    FREE_BACKEND_SYMBOL_TABLE;
 
     VERBOSE = false;
 }

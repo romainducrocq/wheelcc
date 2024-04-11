@@ -928,7 +928,6 @@ static void fix_program(AsmProgram* node) {
     }
     stack_bytes = 0l;
     pseudo_stack_bytes_map.release();
-    FREE_STRUCT_TYPEDEF_TABLE;
 }
 
 void fix_stack(AsmProgram* node) {

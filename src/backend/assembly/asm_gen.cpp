@@ -60,12 +60,12 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
     TIdentifier static_constant_label;
     {
         TIdentifier static_constant_hash = std::to_string(binary);
-        if(static_constant_hash_map->find(static_constant_hash) != static_constant_hash_map->end()) {
-            static_constant_label = (*static_constant_hash_map)[static_constant_hash];
+        if(static_constant_table->find(static_constant_hash) != static_constant_table->end()) {
+            static_constant_label = (*static_constant_table)[static_constant_hash];
         }
         else {
             static_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
-            (*static_constant_hash_map)[static_constant_hash] = static_constant_label;
+            (*static_constant_table)[static_constant_hash] = static_constant_label;
             generate_double_static_constant_top_level(static_constant_label, value, binary, byte);
         }
     }
@@ -1654,7 +1654,6 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
         p_static_constant_top_levels = nullptr;
         ARG_REGISTERS.release();
         ARG_SSE_REGISTERS.release();
-        FREE_STATIC_CONSTANT_HASH_MAP;
     }
 
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));

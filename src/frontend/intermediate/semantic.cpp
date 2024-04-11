@@ -1632,12 +1632,12 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
     {
         TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
         TIdentifier static_constant_hash = std::to_string(std::hash<std::string>{}(string_constant));
-        if(static_constant_hash_map->find(static_constant_hash) != static_constant_hash_map->end()) {
-            static_constant_label = (*static_constant_hash_map)[static_constant_hash];
+        if(static_constant_table->find(static_constant_hash) != static_constant_table->end()) {
+            static_constant_label = (*static_constant_table)[static_constant_hash];
         }
         else {
             static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
-            (*static_constant_hash_map)[static_constant_hash] = static_constant_label;
+            (*static_constant_table)[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
@@ -1925,8 +1925,8 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 
 static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for(size_t member = 0; member < node->members.size(); member++) {
-        for(size_t member_other = member + 1; member_other < node->members.size(); member_other++) {
-            if(node->members[member]->member_name.compare(node->members[member_other]->member_name) == 0) {
+        for(size_t next_member = member + 1; next_member < node->members.size(); next_member++) {
+            if(node->members[member]->member_name.compare(node->members[next_member]->member_name) == 0) {
                 raise_runtime_error("Structure member was already declared in this scope");
             }
         }
@@ -2670,36 +2670,29 @@ static void resolve_declaration(CDeclaration* node) {
 }
 
 static void resolve_identifiers(CProgram* node) {
-    INIT_STATIC_CONSTANT_HASH_MAP;
-    INIT_SYMBOL_TABLE;
-    INIT_STRUCT_TYPEDEF_TABLE;
-    {
-        external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
-        scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
-        scoped_structure_tag_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
-        goto_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
-        label_set = std::make_unique<std::unordered_set<TIdentifier>>();
-        loop_labels = std::make_unique<std::vector<TIdentifier>>();
-        function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
-        structure_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
-    }
+    external_linkage_scope_map = std::make_unique<std::unordered_map<TIdentifier, size_t>>();
+    scoped_identifier_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
+    scoped_structure_tag_maps = std::make_unique<std::vector<std::unordered_map<TIdentifier, TIdentifier>>>();
+    goto_map = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>();
+    label_set = std::make_unique<std::unordered_set<TIdentifier>>();
+    loop_labels = std::make_unique<std::vector<TIdentifier>>();
+    function_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
+    structure_definition_set = std::make_unique<std::unordered_set<TIdentifier>>();
 
     enter_scope();
     for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
         resolve_declaration(node->declarations[declaration].get());
     }
 
-    {
-        function_definition_name = "";
-        external_linkage_scope_map.release();
-        scoped_identifier_maps.release();
-        scoped_structure_tag_maps.release();
-        goto_map.release();
-        label_set.release();
-        loop_labels.release();
-        function_definition_set.release();
-        structure_definition_set.release();
-    }
+    function_definition_name = "";
+    external_linkage_scope_map.release();
+    scoped_identifier_maps.release();
+    scoped_structure_tag_maps.release();
+    goto_map.release();
+    label_set.release();
+    loop_labels.release();
+    function_definition_set.release();
+    structure_definition_set.release();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

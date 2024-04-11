@@ -124,12 +124,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_string_instructions(CS
     {
         TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
         TIdentifier static_constant_hash = std::to_string(std::hash<std::string>{}(string_constant));
-        if(static_constant_hash_map->find(static_constant_hash) != static_constant_hash_map->end()) {
-            static_constant_label = (*static_constant_hash_map)[static_constant_hash];
+        if(static_constant_table->find(static_constant_hash) != static_constant_table->end()) {
+            static_constant_label = (*static_constant_table)[static_constant_hash];
         }
         else {
             static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
-            (*static_constant_hash_map)[static_constant_hash] = static_constant_label;
+            (*static_constant_table)[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
