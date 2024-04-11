@@ -177,6 +177,7 @@ void pretty_print_static_constant_table() {
                     }
                 }
                 std::cout << "\"";
+                continue;
             }
         }
         else if(backend_symbol_table->find(static_constant.second) != backend_symbol_table->end() &&
@@ -188,10 +189,10 @@ void pretty_print_static_constant_table() {
                 uint64_t binary = string_to_uint64(static_constant.first);
                 std::memcpy(&decimal, &binary, sizeof(double));
                 std::cout << "\n    double: " << std::to_string(decimal);
+                continue;
             }
-        } else {
-            RAISE_INTERNAL_ERROR;
         }
+        RAISE_INTERNAL_ERROR;
     }
     std::cout << std::endl;
 }
