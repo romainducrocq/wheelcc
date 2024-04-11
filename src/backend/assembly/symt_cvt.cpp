@@ -7,8 +7,8 @@
 
 #include <memory>
 
-TInt generate_scalar_type_alignment(Type* type_1) {
-    switch(type_1->type()) {
+TInt generate_scalar_type_alignment(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -26,7 +26,7 @@ TInt generate_scalar_type_alignment(Type* type_1) {
     }
 }
 
-TInt generate_type_alignment(Type* type_1);
+TInt generate_type_alignment(Type* type);
 
 static TInt generate_array_aggregate_type_alignment(Array* arr_type, TLong& size) {
     size = arr_type->size;
@@ -50,12 +50,12 @@ static TInt generate_array_aggregate_type_alignment(Array* arr_type) {
     return generate_array_aggregate_type_alignment(arr_type, size);
 }
 
-TInt generate_type_alignment(Type* type_1) {
-    switch(type_1->type()) {
+TInt generate_type_alignment(Type* type) {
+    switch(type->type()) {
         case AST_T::Array_t:
-            return generate_array_aggregate_type_alignment(static_cast<Array*>(type_1));
+            return generate_array_aggregate_type_alignment(static_cast<Array*>(type));
         default:
-            return generate_scalar_type_alignment(type_1);
+            return generate_scalar_type_alignment(type);
     }
 }
 

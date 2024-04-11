@@ -35,6 +35,8 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
+- see if iterate other_member can be replaced by lookup in struct_typedef_table ?
+- #define static array types in unique ptr ?
 - move precedence to parser
 - create file parser/errors.cpp for error management with token_human_readable
 - replace *type_1 with *type

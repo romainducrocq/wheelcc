@@ -160,8 +160,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_var_instructions(CVar*
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
-static bool is_type_signed(Type* type_1) {
-    switch(type_1->type()) {
+static bool is_type_signed(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::Int_t:
@@ -173,8 +173,8 @@ static bool is_type_signed(Type* type_1) {
     }
 }
 
-static TInt get_scalar_type_size(Type* type_1) {
-    switch(type_1->type()) {
+static TInt get_scalar_type_size(Type* type) {
+    switch(type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -192,7 +192,7 @@ static TInt get_scalar_type_size(Type* type_1) {
     }
 }
 
-static TLong get_type_scale(Type* type_1);
+static TLong get_type_scale(Type* type);
 
 static TLong get_array_aggregate_type_scale(Array* arr_type) {
     TLong size = arr_type->size;
@@ -203,12 +203,12 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
     return get_type_scale(arr_type->elem_type.get()) * size;
 }
 
-static TLong get_type_scale(Type* type_1) {
-    switch(type_1->type()) {
+static TLong get_type_scale(Type* type) {
+    switch(type->type()) {
         case AST_T::Array_t:
-            return get_array_aggregate_type_scale(static_cast<Array *>(type_1));
+            return get_array_aggregate_type_scale(static_cast<Array *>(type));
         default:
-            return get_scalar_type_size(type_1);
+            return get_scalar_type_size(type);
     }
 }
 
