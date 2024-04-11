@@ -52,7 +52,7 @@ static void debug_symbol_table() {
 
 static void debug_static_constant_table() {
     if(VERBOSE) {
-        ; // TODO
+        pretty_print_static_constant_table();
     }
 }
 
