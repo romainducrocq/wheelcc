@@ -181,6 +181,7 @@ enum AST_T {
     TacExpResult_t,
     TacPlainOperand_t,
     TacDereferencedPointer_t,
+    TacSubObject_t,
     TacInstruction_t,
     TacReturn_t,
     TacSignExtend_t,

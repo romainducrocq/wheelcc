@@ -142,6 +142,7 @@ struct TacVariable : TacValue {
 
 // exp_result = PlainOperand(val)
 //            | DereferencedPointer(val)
+//            | SubObject(identifier, int)
 struct TacExpResult : Ast {
     AST_T type() override;
 };
@@ -160,6 +161,15 @@ struct TacDereferencedPointer : TacExpResult {
     TacDereferencedPointer(std::shared_ptr<TacValue> val);
 
     std::shared_ptr<TacValue> val;
+};
+
+struct TacSubObject : TacExpResult {
+    AST_T type() override;
+    TacSubObject() = default;
+    TacSubObject(TIdentifier base_name, TLong offset);
+
+    TIdentifier base_name;
+    TLong offset;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1001,6 +1001,13 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->val.get(), t);
             break;
         }
+        case AST_T::TacSubObject_t: {
+            field("TacSubObject", "", ++t);
+            TacSubObject* p_node = static_cast<TacSubObject*>(node);
+            field("TIdentifier", p_node->base_name, t+1);
+            field("TLong", std::to_string(p_node->offset), t+1);
+            break;
+        }
         case AST_T::TacInstruction_t: {
             field("TacInstruction", "", ++t);
             break;

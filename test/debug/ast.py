@@ -192,6 +192,7 @@ ast = [
     ["TacExpResult", [], []],
     ["TacPlainOperand", [], ["val"]],
     ["TacDereferencedPointer", [], ["val"]],
+    ["TacSubObject", [(TIdentifier, "base_name"), (TLong, "offset")], []],
     ["TacInstruction", [], []],
     ["TacReturn", [], ["val"]],
     ["TacSignExtend", [], ["src", "dst"]],

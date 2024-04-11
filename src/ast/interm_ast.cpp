@@ -32,6 +32,7 @@ AST_T TacVariable::type() { return AST_T::TacVariable_t; }
 AST_T TacExpResult::type() { return AST_T::TacExpResult_t; }
 AST_T TacPlainOperand::type() { return AST_T::TacPlainOperand_t; }
 AST_T TacDereferencedPointer::type() { return AST_T::TacDereferencedPointer_t; }
+AST_T TacSubObject::type() { return AST_T::TacSubObject_t; }
 AST_T TacInstruction::type() { return AST_T::TacInstruction_t; }
 AST_T TacReturn::type() { return AST_T::TacReturn_t; }
 AST_T TacSignExtend::type() { return AST_T::TacSignExtend_t; }
@@ -72,6 +73,9 @@ TacPlainOperand::TacPlainOperand(std::shared_ptr<TacValue> val)
 
 TacDereferencedPointer::TacDereferencedPointer(std::shared_ptr<TacValue> val)
     : val(std::move(val)) {}
+
+TacSubObject::TacSubObject(TIdentifier base_name, TLong offset)
+    : base_name(std::move(base_name)), offset(offset) {}
 
 TacReturn::TacReturn(std::shared_ptr<TacValue> val)
     : val(std::move(val)) {}
