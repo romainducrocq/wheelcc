@@ -4,6 +4,7 @@
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
+#include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
 #include <inttypes.h>
@@ -13,86 +14,6 @@
 #include <algorithm>
 #include <unordered_map>
 
-// TODO refactor in a function in file errors.cpp
-static std::unordered_map<TOKEN_KIND, std::string> TOKEN_HUMAN_READABLE = {
-    {TOKEN_KIND::assignment_bitshiftleft, "<<="},
-    {TOKEN_KIND::assignment_bitshiftright, ">>="},
-
-    {TOKEN_KIND::unop_decrement, "--"},
-    {TOKEN_KIND::binop_bitshiftleft, "<<"},
-    {TOKEN_KIND::binop_bitshiftright, ">>"},
-    {TOKEN_KIND::binop_and, "&&"},
-    {TOKEN_KIND::binop_or, "||"},
-    {TOKEN_KIND::binop_equalto, "=="},
-    {TOKEN_KIND::binop_notequal, "!="},
-    {TOKEN_KIND::binop_lessthanorequal, "<="},
-    {TOKEN_KIND::binop_greaterthanorequal, ">="},
-    {TOKEN_KIND::assignment_plus, "+="},
-    {TOKEN_KIND::assignment_difference, "-="},
-    {TOKEN_KIND::assignment_product, "*="},
-    {TOKEN_KIND::assignment_quotient, "/="},
-    {TOKEN_KIND::assignment_remainder, "%="},
-    {TOKEN_KIND::assignment_bitand, "&="},
-    {TOKEN_KIND::assignment_bitor, "|="},
-    {TOKEN_KIND::assignment_bitxor, "^="},
-    {TOKEN_KIND::structop_pointer, "->"},
-
-    {TOKEN_KIND::parenthesis_open, "("},
-    {TOKEN_KIND::parenthesis_close, ")"},
-    {TOKEN_KIND::brace_open, "{"},
-    {TOKEN_KIND::brace_close, "}"},
-    {TOKEN_KIND::brackets_open, "["},
-    {TOKEN_KIND::brackets_close, "]"},
-    {TOKEN_KIND::semicolon, ";"},
-    {TOKEN_KIND::unop_complement, "~"},
-    {TOKEN_KIND::unop_negation, "-"},
-    {TOKEN_KIND::unop_not, "!"},
-    {TOKEN_KIND::binop_addition, "+"},
-    {TOKEN_KIND::binop_multiplication, "*"},
-    {TOKEN_KIND::binop_division, "/"},
-    {TOKEN_KIND::binop_remainder, "%"},
-    {TOKEN_KIND::binop_bitand, "&"},
-    {TOKEN_KIND::binop_bitor, "|"},
-    {TOKEN_KIND::binop_bitxor, "^"},
-    {TOKEN_KIND::binop_lessthan, "<"},
-    {TOKEN_KIND::binop_greaterthan, ">"},
-    {TOKEN_KIND::assignment_simple, "="},
-    {TOKEN_KIND::ternary_if, "?"},
-    {TOKEN_KIND::ternary_else, ":"},
-    {TOKEN_KIND::separator_comma, ","},
-    {TOKEN_KIND::structop_member, "."},
-
-    {TOKEN_KIND::key_char, "char"},
-    {TOKEN_KIND::key_int, "int"},
-    {TOKEN_KIND::key_long, "long"},
-    {TOKEN_KIND::key_double, "double"},
-    {TOKEN_KIND::key_signed, "signed"},
-    {TOKEN_KIND::key_unsigned, "unsigned"},
-    {TOKEN_KIND::key_void, "void"},
-    {TOKEN_KIND::key_struct, "struct"},
-    {TOKEN_KIND::key_sizeof, "sizeof"},
-    {TOKEN_KIND::key_return, "return"},
-    {TOKEN_KIND::key_if, "if"},
-    {TOKEN_KIND::key_else, "else"},
-    {TOKEN_KIND::key_goto, "goto"},
-    {TOKEN_KIND::key_do, "do"},
-    {TOKEN_KIND::key_while, "while"},
-    {TOKEN_KIND::key_for, "for"},
-    {TOKEN_KIND::key_break, "break"},
-    {TOKEN_KIND::key_continue, "continue"},
-    {TOKEN_KIND::key_static, "static"},
-    {TOKEN_KIND::key_extern, "extern"},
-    
-    {TOKEN_KIND::identifier, "identifier"},
-    {TOKEN_KIND::string_literal, "string literal"},
-    {TOKEN_KIND::char_constant, "const char8"},
-    {TOKEN_KIND::float_constant, "const float64"},
-    {TOKEN_KIND::unsigned_long_constant, "const uint64"},
-    {TOKEN_KIND::unsigned_constant, "const uint32"},
-    {TOKEN_KIND::long_constant, "const int64"},
-    {TOKEN_KIND::constant, "const int32"}
-};
-
 static std::vector<Token>* p_tokens;
 static Token* next_token;
 static Token* peek_token;
@@ -100,7 +21,7 @@ static size_t pop_index = 0;
 
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) {
-        raise_runtime_error_at_line("Expected token kind " + em(TOKEN_HUMAN_READABLE[expected_token]) +
+        raise_runtime_error_at_line("Expected token kind " + em(get_token_human_readable(expected_token)) +
                                     " but found token " + em(next_token_is.token), next_token_is.line);
     }
 }
@@ -1259,7 +1180,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
     }
     std::string type_token_kinds_string = "";
     for(const auto& type_token_kind: type_token_kinds) {
-        type_token_kinds_string +=  TOKEN_HUMAN_READABLE[type_token_kind] + ",";
+        type_token_kinds_string +=  get_token_human_readable(type_token_kind) + ",";
     }
     raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)") +
                                 " but found token kinds " + em("(" + type_token_kinds_string + ")"),

@@ -35,7 +35,6 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
-- create file parser/errors.cpp for error management with token_human_readable
 - pretty print tokens with token_human_readable
 
 - add limits of compiler in readme:
