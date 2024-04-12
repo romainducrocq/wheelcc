@@ -1,7 +1,6 @@
 #include "ast/front_symt.hpp"
 #include "ast/ast.hpp"
 
-#include <inttypes.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
