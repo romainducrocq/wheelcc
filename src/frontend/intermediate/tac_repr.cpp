@@ -11,6 +11,8 @@
 #include <memory>
 #include <vector>
 
+static std::unique_ptr<TacReprContext> context;
+
 // unary_operator = Complement | Negate | Not
 static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
     switch(node->type()) {
@@ -105,10 +107,8 @@ static std::shared_ptr<TacValue> represent_value(CExp* node) {
     }
 }
 
-static std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
-
 static void push_instruction(std::unique_ptr<TacInstruction>&& instruction) {
-    p_instructions->push_back(std::move(instruction));
+    context->p_instructions->push_back(std::move(instruction));
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node);
@@ -1094,23 +1094,21 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
 
     std::vector<std::unique_ptr<TacInstruction>> body;
     {
-        p_instructions = &body;
+        context->p_instructions = &body;
         represent_block(node->body.get());
         {
             std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
             std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
             push_instruction(std::make_unique<TacReturn>(std::move(val)));
         }
-        p_instructions = nullptr;
+        context->p_instructions = nullptr;
     }
 
     return std::make_unique<TacFunction>(std::move(name), std::move(is_global), std::move(params), std::move(body));
 }
 
-static std::vector<std::unique_ptr<TacTopLevel>>* p_top_levels;
-
 static void push_top_level(std::unique_ptr<TacTopLevel>&& top_level) {
-    p_top_levels->push_back(std::move(top_level));
+    context->p_top_levels->push_back(std::move(top_level));
 }
 
 static void represent_fun_decl_top_level(CFunDecl* node) {
@@ -1176,10 +1174,8 @@ static void represent_static_variable_top_level(Symbol* node, const TIdentifier&
                                                                std::move(static_init_type), std::move(static_inits)));
 }
 
-static std::vector<std::unique_ptr<TacTopLevel>>* p_static_constant_top_levels;
-
 static void push_static_constant_top_levels(std::unique_ptr<TacTopLevel>&& static_constant_top_levels) {
-    p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
+    context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
 static void represent_static_constant_top_level(Symbol* node, const TIdentifier& symbol) {
@@ -1210,23 +1206,23 @@ static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) 
 static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
     {
-        p_top_levels = &function_top_levels;
+        context->p_top_levels = &function_top_levels;
         for(size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
             represent_declaration_top_level(node->declarations[declaration].get());
         }
-        p_top_levels = nullptr;
+        context->p_top_levels = nullptr;
     }
 
     std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
     std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels;
     {
-        p_top_levels = &static_variable_top_levels;
-        p_static_constant_top_levels = &static_constant_top_levels;
+        context->p_top_levels = &static_variable_top_levels;
+        context->p_static_constant_top_levels = &static_constant_top_levels;
         for(const auto& symbol: *symbol_table) {
             represent_symbol_top_level(symbol.second.get(), symbol.first);
         }
-        p_top_levels = nullptr;
-        p_static_constant_top_levels = nullptr;
+        context->p_top_levels = nullptr;
+        context->p_static_constant_top_levels = nullptr;
     }
 
     return std::make_unique<TacProgram>(std::move(static_constant_top_levels), std::move(static_variable_top_levels),
@@ -1234,7 +1230,10 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
 }
 
 std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast) {
+    context = std::make_unique<TacReprContext>();
     std::unique_ptr<TacProgram> tac_ast = represent_program(c_ast.get());
+    context.reset();
+    
     c_ast.reset();
     if(!tac_ast) {
         RAISE_INTERNAL_ERROR;
