@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function fmt () {
+function parse () {
     cat ../../include/ast/${1}.hpp \
         | grep --invert-match ")" \
         | grep --invert-match "(" \
@@ -79,19 +79,19 @@ function fmt () {
     rm tmp2
 }
 
-function data_fmt () {
+function data () {
     echo "ast = ["
-    fmt ast
-    fmt front_symt
-    fmt back_symt
-    fmt front_ast
-    fmt interm_ast
-    fmt back_ast
+    parse ast
+    parse front_symt
+    parse back_symt
+    parse front_ast
+    parse interm_ast
+    parse back_ast
     echo "]"
     echo ""
 }
 
-function header () {
+function head () {
     echo "#!/bin/python3"
     echo ""
     echo "class TIdentifier: name = \"TIdentifier\""
@@ -110,11 +110,11 @@ function header () {
 }
 
 if [[ "${1}" == "--assert" ]]; then
-    pfmt \
+    data \
         | grep -P "(?=.*    \[\")(?=.*\", \[\], \[\")(?=.*\"\], \[\()(?=.*\)\], \[\]\])"
 else
-    header > ast.py
-    data_fmt >> ast.py
+    head > ast.py
+    data >> ast.py
 fi
 
 exit 0
