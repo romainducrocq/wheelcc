@@ -6,6 +6,10 @@
 #include <memory>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Backend abstract syntax tree
+
 AST_T AsmReg::type() { return AST_T::AsmReg_t; }
 AST_T AsmAx::type() { return AST_T::AsmAx_t; }
 AST_T AsmCx::type() { return AST_T::AsmCx_t; }

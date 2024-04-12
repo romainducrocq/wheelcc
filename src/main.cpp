@@ -23,6 +23,10 @@
 
 static std::unique_ptr<MainContext> context;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Main
+
 static void verbose(const std::string& out, bool end) {
     if(context->VERBOSE) {
         std::cout << out;
@@ -197,6 +201,8 @@ static void arg_parse() {
     context->opt_s_code = 0; // TODO
     context->args.clear();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char **argv) {
     context = std::make_unique<MainContext>();

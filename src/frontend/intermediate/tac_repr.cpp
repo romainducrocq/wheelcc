@@ -13,6 +13,10 @@
 
 static std::unique_ptr<TacReprContext> context;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Three address code representation
+
 // unary_operator = Complement | Negate | Not
 static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
     switch(node->type()) {
@@ -1229,6 +1233,8 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     return std::make_unique<TacProgram>(std::move(static_constant_top_levels), std::move(static_variable_top_levels),
                                         std::move(function_top_levels));
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast) {
     context = std::make_unique<TacReprContext>();

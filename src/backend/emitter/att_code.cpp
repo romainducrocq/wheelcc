@@ -9,6 +9,10 @@
 #include <memory>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// At&t code emission
+
 // identifier -> $ identifier
 static const std::string& emit_identifier(const TIdentifier& identifier) {
     return identifier;
@@ -823,6 +827,8 @@ static void emit_program(AsmProgram* node) {
     }
     emit(".section .note.GNU-stack,\"\",@progbits", 2);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
     file_open_write(filename);

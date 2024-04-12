@@ -5,6 +5,10 @@
 #include <string>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// String to type
+
 intmax_t string_to_intmax(const std::string& s_int, size_t line);
 int32_t intmax_to_int32(intmax_t intmax);
 int64_t intmax_to_int64(intmax_t intmax);

@@ -5,6 +5,10 @@
 #include <vector>
 #include <unordered_map>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Frontend symbol table
+
 AST_T Type::type() { return AST_T::Type_t; }
 AST_T Char::type() { return AST_T::Char_t; }
 AST_T SChar::type() { return AST_T::SChar_t; }

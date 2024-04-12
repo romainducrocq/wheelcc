@@ -19,6 +19,10 @@ static std::unique_ptr<ParserContext> context;
 ParserContext::ParserContext(std::vector<Token>* p_tokens)
     : p_tokens(p_tokens), pop_index(0) {}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Parser
+
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) {
         raise_runtime_error_at_line("Expected token kind " + em(get_token_kind_hr(expected_token)) +
@@ -1578,6 +1582,8 @@ static std::unique_ptr<CProgram> parse_program() {
     }
     return std::make_unique<CProgram>(std::move(declarations));
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens) {
     context = std::make_unique<ParserContext>(tokens.get());

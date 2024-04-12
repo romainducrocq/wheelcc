@@ -6,6 +6,10 @@
 
 #include <string>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Names
+
 TIdentifier resolve_label_identifier(const TIdentifier& label) {
     TIdentifier name = label + "." + std::to_string(frontend->label_counter);
     frontend->label_counter += 1;

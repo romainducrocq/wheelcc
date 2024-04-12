@@ -15,6 +15,10 @@
 #include <vector>
 #include <iostream>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Pretty print
+
 static void header_string(const std::string& header) {
     std::cout << "+\n+\n@@ " << header << " @@";
 }

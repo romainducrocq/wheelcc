@@ -7,6 +7,10 @@
 #include <memory>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Three address code representation
+
 struct TacReprContext {
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     std::vector<std::unique_ptr<TacTopLevel>>* p_top_levels;

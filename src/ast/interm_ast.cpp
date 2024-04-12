@@ -5,6 +5,10 @@
 #include <memory>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Intermediate abstract syntax tree
+
 AST_T TacUnaryOp::type() { return AST_T::TacUnaryOp_t; }
 AST_T TacComplement::type() { return AST_T::TacComplement_t; }
 AST_T TacNegate::type() { return AST_T::TacNegate_t; }

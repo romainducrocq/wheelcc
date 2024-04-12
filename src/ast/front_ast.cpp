@@ -5,6 +5,10 @@
 #include <memory>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Frontend abstract syntax tree
+
 AST_T CUnaryOp::type() { return AST_T::CUnaryOp_t; }
 AST_T CComplement::type() { return AST_T::CComplement_t; }
 AST_T CNegate::type() { return AST_T::CNegate_t; }

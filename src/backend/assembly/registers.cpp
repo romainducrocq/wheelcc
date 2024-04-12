@@ -5,6 +5,10 @@
 
 #include <memory>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Registers
+
 // reg = AX | CX | DX | DI | SI | R8 | R9 | R10 | R11 | SP | XMM0 | XMM1 | XMM2 | XMM3 | XMM4 | XMM5 | XMM6 | XMM7
 //     | XMM14 | XMM15
 static std::unique_ptr<AsmReg> generate_reg(REGISTER_KIND register_kind) {

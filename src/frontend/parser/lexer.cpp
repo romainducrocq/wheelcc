@@ -98,6 +98,10 @@ LexerContext::LexerContext()
         R"(.)" // error
     }) {}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Lexer
+
 static std::vector<Token> tokenize() {
     std::string regexp_string = "";
     std::string groups[TOKEN_KIND_SIZE];
@@ -163,6 +167,8 @@ static std::vector<Token> tokenize() {
     }
     return tokens;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename) {
     file_open_read(filename);

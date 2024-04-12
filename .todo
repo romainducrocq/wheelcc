@@ -48,7 +48,6 @@ When Types OK (after c18):
 - add const where possible ?
     - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
 - replace for loops with const auto& range where possible
-- go through comments, add file header top comments ?
 
 Optimization:
 - use bitmask for cmd line params

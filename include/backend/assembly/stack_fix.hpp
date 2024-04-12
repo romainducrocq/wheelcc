@@ -8,13 +8,22 @@
 #include <vector>
 #include <unordered_map>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Stack fix
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Pseudo register replacement
+// Instruction fix up
+
 struct StackFixContext {
     StackFixContext();
 
-    // Pseudo-register replacement
+    // Pseudo register replacement
     TLong stack_bytes;
     std::unordered_map<TIdentifier, TLong> pseudo_stack_bytes_map;
-    // Instruction fix-up
+    // Instruction fix up
     std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
 };
 

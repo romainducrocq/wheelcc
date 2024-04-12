@@ -15,7 +15,11 @@ StackFixContext::StackFixContext()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Pseudo-register replacement
+// Stack fix
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Pseudo register replacement
 
 static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     TIdentifier name = node->name;
@@ -407,7 +411,7 @@ static void replace_pseudo_registers(AsmInstruction* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Instruction fix-up
+// Instruction fix up
 
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
@@ -935,6 +939,8 @@ static void fix_program(AsmProgram* node) {
         fix_top_level(node->top_levels[top_level].get());
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void fix_stack(AsmProgram* node) {
     context = std::make_unique<StackFixContext>();

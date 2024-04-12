@@ -9,6 +9,10 @@
 #include <sstream>
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// String to type
+
 intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
     buffer.push_back('\0');

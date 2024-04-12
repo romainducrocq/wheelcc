@@ -7,6 +7,10 @@
 
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Pretty print
+
 void pretty_print_tokens(const std::vector<Token>& tokens);
 void pretty_print_ast(Ast* node, const std::string& name);
 void pretty_print_symbol_table();

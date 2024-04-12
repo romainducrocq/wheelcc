@@ -9,6 +9,10 @@
 
 static std::unique_ptr<SymtCvtContext> context;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Symbol table conversion
+
 TInt generate_scalar_type_alignment(Type* type) {
     switch(type->type()) {
         case AST_T::Char_t:
@@ -158,6 +162,8 @@ static void convert_program(AsmProgram* node) {
     }
     context->p_symbol = nullptr;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void convert_symbol_table(AsmProgram* node) {
     context = std::make_unique<SymtCvtContext>();

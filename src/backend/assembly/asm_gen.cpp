@@ -25,6 +25,10 @@ AsmGenContext::AsmGenContext()
         REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7
     }) {}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Assembly generation
+
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(true, false, std::move(value));
@@ -1653,6 +1657,8 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
 
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_ast) {
     context = std::make_unique<AsmGenContext>();
