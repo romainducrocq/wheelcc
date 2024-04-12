@@ -5,10 +5,6 @@
 #include <stdio.h>
 #include <string>
 
-size_t get_line_number() {
-    return util->line_number;
-}
-
 void file_open_read(const std::string& filename) {
     util->file_in = nullptr;
 
@@ -19,7 +15,6 @@ void file_open_read(const std::string& filename) {
 
     util->l = 0;
     util->buffer = nullptr;
-    util->line_number = 0;
     util->filename_in = filename;
 }
 
@@ -37,14 +32,12 @@ bool read_line(std::string& line) {
     if(getline(&util->buffer, &util->l, util->file_in) == -1) {
         util->l = 0;
         line = "";
-        util->line_number = 0;
         free(util->buffer);
         util->buffer = nullptr;
         return false;
     }
 
     line = util->buffer;
-    util->line_number++;
     return true;
 }
 

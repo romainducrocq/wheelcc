@@ -113,7 +113,7 @@ static std::vector<Token> tokenize() {
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
     bool is_comment = false;
-    while(read_line(line)) {
+    for(size_t line_number = 0; read_line(line); line_number++) {
 
         boost::sregex_iterator it_end;
         for(boost::sregex_iterator it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
@@ -138,8 +138,7 @@ static std::vector<Token> tokenize() {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
                         raise_runtime_error_at_line("Found invalid token " +
-                                                    em(match.get_last_closed_paren()),
-                                                    get_line_number());
+                                                    em(match.get_last_closed_paren()), line_number);
                     case TOKEN_KIND::skip:
                         goto Lcontinue;
                     case TOKEN_KIND::comment_multilinestart: {
@@ -158,7 +157,7 @@ static std::vector<Token> tokenize() {
             }
 
             Token token = { match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group),
-                            get_line_number() };
+                            line_number };
             tokens.emplace_back(std::move(token));
         }
     }

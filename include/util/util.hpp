@@ -6,14 +6,12 @@
 #include <memory>
 
 struct UtilContext {
-    std::string filename_in;
-    // fileio
-    size_t line_number;
-    std::string stream_buf;
     size_t l;
     char* buffer;
     FILE* file_in;
     FILE* file_out;
+    std::string stream_buf;
+    std::string filename_in;
 };
 
 extern std::unique_ptr<UtilContext> util;
