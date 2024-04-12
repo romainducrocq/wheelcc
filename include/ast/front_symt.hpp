@@ -315,7 +315,7 @@ struct FrontEndContext {
     // Frontend symbol table
 //    std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
     std::unordered_map<TIdentifier, TIdentifier> static_constant_table;
-//    std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
+    std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
 };
 
 extern std::unique_ptr<FrontEndContext> frontend;
@@ -324,18 +324,13 @@ extern std::unique_ptr<FrontEndContext> frontend;
 #define FREE_FRONT_END_CONTEXT \
     frontend.reset()
 
+#define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
+    frontend->struct_typedef_table[(X)]->members[frontend->struct_typedef_table[(X)]->member_names[(Y)]]
+
 extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
 #define INIT_SYMBOL_TABLE \
     symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>()
 #define FREE_SYMBOL_TABLE \
     symbol_table.reset()
-
-extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;
-#define INIT_STRUCT_TYPEDEF_TABLE \
-    struct_typedef_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>>()
-#define FREE_STRUCT_TYPEDEF_TABLE \
-    struct_typedef_table.reset()
-#define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
-    (*struct_typedef_table)[(X)]->members[(*struct_typedef_table)[(X)]->member_names[(Y)]]
 
 #endif

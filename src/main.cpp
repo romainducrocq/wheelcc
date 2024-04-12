@@ -110,7 +110,6 @@ static void compile() {
     INIT_FRONT_END_CONTEXT;
 
     INIT_SYMBOL_TABLE;
-    INIT_STRUCT_TYPEDEF_TABLE;
 
     verbose("-- Semantic analysis ... ", false);
     analyze_semantic(c_ast.get());
@@ -157,7 +156,6 @@ static void compile() {
     FREE_FRONT_END_CONTEXT;
 
     FREE_SYMBOL_TABLE;
-    FREE_STRUCT_TYPEDEF_TABLE;
 
     verbose("-- Code emission ... ", false);
     context->filename = context->filename.substr(0, context->filename.size()-2) + ".s";

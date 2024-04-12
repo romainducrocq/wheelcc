@@ -118,5 +118,3 @@ FrontEndContext::FrontEndContext()
     : label_counter(0), variable_counter(0), structure_counter(0) {}
 
 std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
-
-std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;

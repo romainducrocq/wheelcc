@@ -1756,8 +1756,8 @@ void pretty_print_static_constant_table() {
 
 void pretty_print_struct_typedef_table() {
     header_string("Structure Typedef Table");
-    std::cout << "\nDict(" << std::to_string(struct_typedef_table->size()) << "):";
-    for(const auto& struct_typedef: *struct_typedef_table) {
+    std::cout << "\nDict(" << std::to_string(frontend->struct_typedef_table.size()) << "):";
+    for(const auto& struct_typedef: frontend->struct_typedef_table) {
         field("[" + struct_typedef.first + "]", "", 2);
         print_ast(struct_typedef.second.get(), 2);
     }
