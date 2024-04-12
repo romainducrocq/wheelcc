@@ -117,7 +117,7 @@ static std::shared_ptr<AsmPseudoMem> generate_pseudo_mem_operand(TacVariable* no
 }
 
 static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) {
-    switch((*symbol_table)[node->name]->type_t->type()) {
+    switch(frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Array_t:
             return generate_pseudo_mem_operand(node);
         default:
@@ -228,7 +228,7 @@ static bool is_constant_value_signed(TacConstant* node) {
 }
 
 static bool is_variable_value_signed(TacVariable* node) {
-    switch((*symbol_table)[node->name]->type_t->type()) {
+    switch(frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::Int_t:
@@ -262,7 +262,7 @@ static bool is_constant_value_8_bits(TacConstant* node) {
 }
 
 static bool is_variable_value_8_bits(TacVariable* node) {
-    switch((*symbol_table)[node->name]->type_t->type()) {
+    switch(frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -294,7 +294,7 @@ static bool is_constant_value_32_bits(TacConstant* node) {
 }
 
 static bool is_variable_value_32_bits(TacVariable* node) {
-    switch((*symbol_table)[node->name]->type_t->type()) {
+    switch(frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
             return true;
@@ -319,7 +319,7 @@ static bool is_constant_value_double(TacConstant* node) {
 }
 
 static bool is_variable_value_double(TacVariable* node) {
-    return (*symbol_table)[node->name]->type_t->type() == AST_T::Double_t;
+    return frontend->symbol_table[node->name]->type_t->type() == AST_T::Double_t;
 }
 
 static bool is_value_double(TacValue* node) {
@@ -1170,8 +1170,8 @@ static void generate_get_address_instructions(TacGetAddress* node) {
     {
         if(node->src->type() == AST_T::TacVariable_t) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
-            if(symbol_table->find(name) != symbol_table->end() &&
-               (*symbol_table)[name]->attrs->type() == AST_T::ConstantAttr_t) {
+            if(frontend->symbol_table.find(name) != frontend->symbol_table.end() &&
+               frontend->symbol_table[name]->attrs->type() == AST_T::ConstantAttr_t) {
                 src = std::make_shared<AsmData>(std::move(name));
                 goto Lpass;
             }
@@ -1544,7 +1544,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
             size_t param_sse_reg = 0;
             TLong param_stack = 0l;
             for(size_t param = 0; param < node->params.size(); param++) {
-                if((*symbol_table)[node->params[param]]->type_t->type() == AST_T::Double_t) {
+                if(frontend->symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
                     if(param_sse_reg < 8) {
                         generate_reg_param_function_instructions(node->params[param],
                                                                  context->ARG_SSE_REGISTERS[param_sse_reg]);

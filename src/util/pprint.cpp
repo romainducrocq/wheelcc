@@ -1675,8 +1675,8 @@ void pretty_print_ast(Ast* node, const std::string& name) {
 
 void pretty_print_symbol_table() {
     header_string("Symbol Table");
-    std::cout << "\nDict(" << std::to_string(symbol_table->size()) << "):";
-    for(const auto& symbol: *symbol_table) {
+    std::cout << "\nDict(" << std::to_string(frontend->symbol_table.size()) << "):";
+    for(const auto& symbol: frontend->symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
     }
@@ -1688,9 +1688,10 @@ void pretty_print_static_constant_table() {
     std::cout << "\nDict(" << std::to_string(frontend->static_constant_table.size()) << "):";
     for(const auto& static_constant: frontend->static_constant_table) {
         field("[" + static_constant.first + "]", "", 2);
-        if(symbol_table->find(static_constant.second) != symbol_table->end() &&
-           (*symbol_table)[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
-            ConstantAttr* const_attr = static_cast<ConstantAttr*>((*symbol_table)[static_constant.second]->attrs.get());
+        if(frontend->symbol_table.find(static_constant.second) != frontend->symbol_table.end() &&
+           frontend->symbol_table[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
+            ConstantAttr* const_attr =
+                                 static_cast<ConstantAttr*>(frontend->symbol_table[static_constant.second]->attrs.get());
             if(const_attr->static_init->type() == AST_T::StringInit_t) {
                 std::cout << "\n    string: \"";
                 for(const TChar& byte : static_cast<StringInit*>(const_attr->static_init.get())->literal.get()->value) {

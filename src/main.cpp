@@ -109,8 +109,6 @@ static void compile() {
 
     INIT_FRONT_END_CONTEXT;
 
-    INIT_SYMBOL_TABLE;
-
     verbose("-- Semantic analysis ... ", false);
     analyze_semantic(c_ast.get());
     verbose("OK", true);
@@ -155,8 +153,6 @@ static void compile() {
 
     FREE_FRONT_END_CONTEXT;
 
-    FREE_SYMBOL_TABLE;
-
     verbose("-- Code emission ... ", false);
     context->filename = context->filename.substr(0, context->filename.size()-2) + ".s";
     code_emission(std::move(asm_ast), std::move(context->filename));
@@ -169,6 +165,7 @@ static void compile() {
 #endif
 
     FREE_BACKEND_SYMBOL_TABLE;
+
     FREE_UTIL_CONTEXT;
 }
 
