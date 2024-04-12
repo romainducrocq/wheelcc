@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <array>
 #include <vector>
 
 enum TOKEN_KIND {
@@ -92,11 +93,18 @@ enum TOKEN_KIND {
     skip,
     error
 };
+constexpr size_t TOKEN_KIND_SIZE = TOKEN_KIND::error + 1;
 
 struct Token {
     std::string token;
     TOKEN_KIND token_kind;
     size_t line;
+};
+
+struct LexerContext {
+    LexerContext();
+
+    std::array<std::string, TOKEN_KIND_SIZE> TOKEN_REGEXPS;
 };
 
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename);

@@ -17,6 +17,15 @@ struct Declarator {
     std::vector<TIdentifier> params;
 };
 
+struct ParserContext {
+    ParserContext(std::vector<Token>* p_tokens);
+
+    std::vector<Token>* p_tokens;
+    Token* next_token;
+    Token* peek_token;
+    size_t pop_index;
+};
+
 std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens);
 
 #endif

@@ -14,10 +14,10 @@
 #include <algorithm>
 #include <unordered_map>
 
-static std::vector<Token>* p_tokens;
-static Token* next_token;
-static Token* peek_token;
-static size_t pop_index = 0;
+static std::unique_ptr<ParserContext> context;
+
+ParserContext::ParserContext(std::vector<Token>* p_tokens)
+    : p_tokens(p_tokens), pop_index(0) {}
 
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if(next_token_is.token_kind != expected_token) {
@@ -27,59 +27,59 @@ static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token
 }
 
 static const Token& pop_next() {
-    if(pop_index >= p_tokens->size()) {
+    if(context->pop_index >= context->p_tokens->size()) {
         raise_runtime_error_at_line("All Tokens were consumed before end of program",
-                                    p_tokens->back().line);
+                                    context->p_tokens->back().line);
     }
 
-    next_token = &(*p_tokens)[pop_index];
-    pop_index++;
-    return *next_token;
+    context->next_token = &(*context->p_tokens)[context->pop_index];
+    context->pop_index++;
+    return *context->next_token;
 }
 
 static const Token& pop_next_i(size_t i) {
     if(i == 0) {
         return pop_next();
     }
-    if(pop_index + i >= p_tokens->size()) {
+    if(context->pop_index + i >= context->p_tokens->size()) {
         raise_runtime_error_at_line("All Tokens were consumed before end of program",
-                                    p_tokens->back().line);
+                                    context->p_tokens->back().line);
     }
 
     if(i == 1) {
-        std::swap((*p_tokens)[pop_index], (*p_tokens)[pop_index+1]);
+        std::swap((*context->p_tokens)[context->pop_index], (*context->p_tokens)[context->pop_index+1]);
     }
     else {
-        Token swap_token_i = std::move((*p_tokens)[pop_index+i]);
-        for(size_t j = pop_index + i; j-- > pop_index;) {
-            (*p_tokens)[j+1] = std::move((*p_tokens)[j]);
+        Token swap_token_i = std::move((*context->p_tokens)[context->pop_index+i]);
+        for(size_t j = context->pop_index + i; j-- > context->pop_index;) {
+            (*context->p_tokens)[j+1] = std::move((*context->p_tokens)[j]);
         }
-        (*p_tokens)[pop_index] = std::move(swap_token_i);
+        (*context->p_tokens)[context->pop_index] = std::move(swap_token_i);
     }
     pop_next();
-    return (*p_tokens)[pop_index-1];
+    return (*context->p_tokens)[context->pop_index-1];
 }
 
 static const Token& peek_next() {
-    if(pop_index >= p_tokens->size()) {
+    if(context->pop_index >= context->p_tokens->size()) {
         raise_runtime_error_at_line("All Tokens were consumed before end of program",
-                                    p_tokens->back().line);
+                                    context->p_tokens->back().line);
     }
 
-    peek_token = &(*p_tokens)[pop_index];
-    return *peek_token;
+    context->peek_token = &(*context->p_tokens)[context->pop_index];
+    return *context->peek_token;
 }
 
 static const Token& peek_next_i(size_t i) {
     if(i == 0) {
         return peek_next();
     }
-    if(pop_index + i >= p_tokens->size()) {
+    if(context->pop_index + i >= context->p_tokens->size()) {
         raise_runtime_error_at_line("All Tokens were consumed before end of program",
-                                    p_tokens->back().line);
+                                    context->p_tokens->back().line);
     }
 
-    return (*p_tokens)[pop_index + i];
+    return (*context->p_tokens)[context->pop_index + i];
 }
 
 // <identifier> ::= ? An identifier token ?
@@ -92,10 +92,10 @@ static void parse_identifier(TIdentifier& identifier, size_t i) {
 static std::shared_ptr<CStringLiteral> parse_string_literal() {
     std::vector<TChar> value;
     {
-        string_to_string_literal(next_token->token, value);
+        string_to_string_literal(context->next_token->token, value);
         while(peek_next().token_kind == TOKEN_KIND::string_literal) {
             pop_next();
-            string_to_string_literal(next_token->token, value);
+            string_to_string_literal(context->next_token->token, value);
         }
     }
     return std::make_shared<CStringLiteral>(std::move(value));
@@ -109,7 +109,7 @@ static std::shared_ptr<CConstInt> parse_int_constant(intmax_t intmax) {
 
 // <char> ::= ? A char token ?
 static std::shared_ptr<CConstInt> parse_char_constant() {
-    TInt value = string_to_char_ascii(next_token->token);
+    TInt value = string_to_char_ascii(context->next_token->token);
     return std::make_shared<CConstInt>(std::move(value));
 }
 
@@ -121,7 +121,7 @@ static std::shared_ptr<CConstLong> parse_long_constant(intmax_t intmax) {
 
 // <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_double_constant() {
-    TDouble value = string_to_double(next_token->token, next_token->line);
+    TDouble value = string_to_double(context->next_token->token, context->next_token->line);
     return std::make_shared<CConstDouble>(std::move(value));
 }
 
@@ -142,7 +142,7 @@ static std::shared_ptr<CConstULong> parse_ulong_constant(uintmax_t uintmax) {
 static std::shared_ptr<CConst> parse_constant() {
     switch(pop_next().token_kind) {
         case TOKEN_KIND::long_constant:
-            next_token->token.pop_back();
+            context->next_token->token.pop_back();
             break;
         case TOKEN_KIND::char_constant:
             return parse_char_constant();
@@ -152,12 +152,13 @@ static std::shared_ptr<CConst> parse_constant() {
             break;
     }
 
-    intmax_t value = string_to_intmax(next_token->token, next_token->line);
+    intmax_t value = string_to_intmax(context->next_token->token, context->next_token->line);
     if(value > 9223372036854775807ll) {
-        raise_runtime_error_at_line("Constant " + em(next_token->token) +
-                                    " is too large to be represent as an int or a long", next_token->line);
+        raise_runtime_error_at_line("Constant " + em(context->next_token->token) +
+                                    " is too large to be represent as an int or a long",
+                                    context->next_token->line);
     }
-    if(next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
+    if(context->next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
         return parse_int_constant(std::move(value));
     }
     return parse_long_constant(std::move(value));
@@ -167,17 +168,17 @@ static std::shared_ptr<CConst> parse_constant() {
 // (unsigned) const = ConstUInt(uint) | ConstULong(ulong) | ConstUChar(int)
 static std::shared_ptr<CConst> parse_unsigned_constant() {
     if(pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
-        next_token->token.pop_back();
+        context->next_token->token.pop_back();
     }
-    next_token->token.pop_back();
+    context->next_token->token.pop_back();
 
-    uintmax_t value = string_to_uintmax(next_token->token, next_token->line);
+    uintmax_t value = string_to_uintmax(context->next_token->token, context->next_token->line);
     if(value > 18446744073709551615ull) {
-        raise_runtime_error_at_line("Constant " + em(next_token->token) +
+        raise_runtime_error_at_line("Constant " + em(context->next_token->token) +
                                     " is too large to be represented as an unsigned int or a unsigned long",
-                                    next_token->line);
+                                    context->next_token->line);
     }
-    if(next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
+    if(context->next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
         return parse_uint_constant(std::move(value));
     }
     return parse_ulong_constant(std::move(value));
@@ -198,7 +199,7 @@ static TLong parse_array_size_t() {
             break;
         default:
             raise_runtime_error_at_line("Size of array declarator suffix must be a constant integer",
-                                        peek_token->line);
+                                        context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
     switch(size->type()) {
@@ -227,7 +228,8 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
             return std::make_unique<CNot>();
         default:
             raise_runtime_error_at_line("Expected token type " + em("unary operator") +
-                                        " but found token " + em(next_token->token), next_token->line);
+                                        " but found token " + em(context->next_token->token),
+                                        context->next_token->line);
     }
 }
 
@@ -285,7 +287,8 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
             return std::make_unique<CGreaterOrEqual>();
         default:
             raise_runtime_error_at_line("Expected token type " + em("binary operator") +
-                                        " but found token " + em(next_token->token), next_token->line);
+                                        " but found token " + em(context->next_token->token),
+                                        context->next_token->line);
     }
 }
 
@@ -379,8 +382,8 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
             return parse_array_direct_abstract_declarator();
         default:
             raise_runtime_error_at_line("Expected token type " + em("abstract declarator") +
-                                        " but found token " + em(peek_token->token),
-                                        peek_token->line);
+                                        " but found token " + em(context->peek_token->token),
+                                        context->peek_token->line);
     }
 }
 
@@ -510,7 +513,8 @@ static std::unique_ptr<CExp> parse_pointer_unary_factor() {
             return parse_addrof_factor();
         default:
             raise_runtime_error_at_line("Expected token type " + em("unary operator") +
-                                        " but found token " + em(next_token->token), next_token->line);
+                                        " but found token " + em(context->next_token->token),
+                                        context->next_token->line);
     }
 }
 
@@ -579,7 +583,8 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
             break;
     }
     raise_runtime_error_at_line("Expected token type " + em("factor") +
-                                " but found token " + em(peek_token->token), peek_token->line);
+                                " but found token " + em(context->peek_token->token),
+                                context->peek_token->line);
 }
 
 // <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
@@ -748,7 +753,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
         if(precedence < min_precedence) {
             break;
         }
-        switch(peek_token->token_kind) {
+        switch(context->peek_token->token_kind) {
             case TOKEN_KIND::binop_addition:
             case TOKEN_KIND::unop_negation:
             case TOKEN_KIND::binop_multiplication:
@@ -789,8 +794,8 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 break;
             default:
                 raise_runtime_error_at_line("Expected token type " + em("expression") +
-                                            " but found token " + em(peek_token->token),
-                                            peek_token->line);
+                                            " but found token " + em(context->peek_token->token),
+                                            context->peek_token->line);
         }
     }
     return exp_left;
@@ -920,7 +925,7 @@ static std::unique_ptr<CNull> parse_null_statement() {
 //           | DoWhile(statement, exp, identifier) | For(for_init, exp?, exp?, statement, identifier)
 //           | Break(identifier) | Continue(identifier) | Null
 static std::unique_ptr<CStatement> parse_statement() {
-    switch(peek_token->token_kind) {
+    switch(context->peek_token->token_kind) {
         case TOKEN_KIND::key_return:
             return parse_return_statement();
         case TOKEN_KIND::key_if:
@@ -962,7 +967,7 @@ static std::unique_ptr<CInitDecl> parse_decl_for_init() {
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
     if(declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line("Declaration in for loop initialization must be a variable type",
-                                    next_token->line);
+                                    context->next_token->line);
     }
     std::unique_ptr<CVariableDeclaration> init = parse_variable_declaration(std::move(storage_class),
                                                                             std::move(declarator));
@@ -1013,7 +1018,7 @@ static std::unique_ptr<CD> parse_d_block_item() {
 // <block-item> ::= <statement> | <declaration>
 // block_item = S(statement) | D(declaration)
 static std::unique_ptr<CBlockItem> parse_block_item() {
-    switch(peek_token->token_kind) {
+    switch(context->peek_token->token_kind) {
         case TOKEN_KIND::key_char:
         case TOKEN_KIND::key_int:
         case TOKEN_KIND::key_long:
@@ -1197,8 +1202,8 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
             return std::make_unique<CExtern>();
         default:
             raise_runtime_error_at_line("Expected token type " + em("storage class") +
-                                        " but found token " + em(next_token->token),
-                                        next_token->line);
+                                        " but found token " + em(context->next_token->token),
+                                        context->next_token->line);
     }
 }
 
@@ -1263,7 +1268,7 @@ static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<T
                                          Declarator& declarator) {
     if(node->declarator->type() != AST_T::CIdent_t) {
         raise_runtime_error_at_line("Additional type derivations can not be applied to function types",
-                                    next_token->line);
+                                    context->next_token->line);
     }
 
     std::vector<TIdentifier> params;
@@ -1274,7 +1279,7 @@ static void parse_process_fun_declarator(CFunDeclarator* node, std::shared_ptr<T
                                  node->param_list[param]->param_type, param_declarator);
         if(param_declarator.derived_type->type() == AST_T::FunType_t) {
             raise_runtime_error_at_line("Function pointer parameters can not be applied in type derivations",
-                                        next_token->line);
+                                        context->next_token->line);
         }
         params.push_back(std::move(param_declarator.name));
         param_types.push_back(std::move(param_declarator.derived_type));
@@ -1328,8 +1333,8 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
             return parse_declarator_simple_declarator();
         default:
             raise_runtime_error_at_line("Expected token type " + em("declarator") +
-                                        " but found token " + em(peek_token->token),
-                                        peek_token->line);
+                                        " but found token " + em(context->peek_token->token),
+                                        context->peek_token->line);
     }
 }
 
@@ -1385,8 +1390,8 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         }
         default:
             raise_runtime_error_at_line("Expected token type " + em("type specifier") +
-                                        " but found token " + em(peek_token->token),
-                                        peek_token->line);
+                                        " but found token " + em(context->peek_token->token),
+                                        context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     return param_list;
@@ -1477,11 +1482,11 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
     Declarator declarator;
     if(parse_declarator_declaration(declarator)) {
         raise_runtime_error_at_line("Structure member declaration can not have a storage class specifier",
-                                    next_token->line);
+                                    context->next_token->line);
     }
     else if(declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line("Structure member declaration can not be of function type",
-                                    next_token->line);
+                                    context->next_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CMemberDeclaration>(std::move(declarator.name),
@@ -1503,7 +1508,7 @@ static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
         pop_next();
         pop_next();
     }
-    expect_next_is(*next_token, TOKEN_KIND::semicolon);
+    expect_next_is(*context->next_token, TOKEN_KIND::semicolon);
     return std::make_unique<CStructDeclaration>(std::move(tag), std::move(members));
 }
 
@@ -1567,7 +1572,7 @@ static std::unique_ptr<CDeclaration> parse_declaration() {
 // AST = Program(declaration*)
 static std::unique_ptr<CProgram> parse_program() {
     std::vector<std::unique_ptr<CDeclaration>> declarations;
-    while(pop_index < p_tokens->size()) {
+    while(context->pop_index < context->p_tokens->size()) {
         std::unique_ptr<CDeclaration> declaration = parse_declaration();
         declarations.push_back(std::move(declaration));
     }
@@ -1575,15 +1580,13 @@ static std::unique_ptr<CProgram> parse_program() {
 }
 
 std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens) {
-    p_tokens = tokens.get();
+    context = std::make_unique<ParserContext>(tokens.get());
     std::unique_ptr<CProgram> c_ast = parse_program();
-    p_tokens = nullptr;
-    if(pop_index != tokens->size()) {
+    if(context->pop_index != tokens->size()) {
         RAISE_INTERNAL_ERROR;
     }
-    pop_index = 0;
-    next_token = nullptr;
-    peek_token = nullptr;
+    context.reset();
+
     tokens.reset();
     if(!c_ast) {
         RAISE_INTERNAL_ERROR;
