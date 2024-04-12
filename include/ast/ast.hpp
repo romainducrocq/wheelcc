@@ -10,7 +10,7 @@
 // Abstract syntax tree
 
 enum AST_T {
-    // Symbol table
+    // Frontend symbol table
     Type_t,
     Char_t,
     SChar_t,
@@ -49,7 +49,7 @@ enum AST_T {
     StructMember_t,
     StructTypedef_t,
 
-    // Backend st
+    // Backend symbol table
     AssemblyType_t,
     Byte_t,
     LongWord_t,
@@ -60,7 +60,7 @@ enum AST_T {
     BackendObj_t,
     BackendFun_t,
 
-    // C ast
+    // Frontend abstract syntax tree
     CConst_t,
     CConstInt_t,
     CConstLong_t,
@@ -157,7 +157,7 @@ enum AST_T {
     CStructDecl_t,
     CProgram_t,
 
-    // TAC ast
+    // Intermediate abstract syntax tree
     TacUnaryOp_t,
     TacComplement_t,
     TacNegate_t,
@@ -215,7 +215,7 @@ enum AST_T {
     TacStaticConstant_t,
     TacProgram_t,
 
-    // ASM AST
+    // Backend abstract syntax tree
     AsmReg_t,
     AsmAx_t,
     AsmCx_t,

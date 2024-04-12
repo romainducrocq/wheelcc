@@ -22,7 +22,7 @@ struct MainContext {
 };
 
 struct UtilContext {
-    // FIle IO
+    // FIle io
     size_t l;
     char* buffer;
     FILE* file_in;
