@@ -50,9 +50,7 @@ static bool is_same_type(Type* type_1, Type* type_2) {
                 return true;
         }
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {

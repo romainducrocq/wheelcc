@@ -1,6 +1,7 @@
 #ifndef _FRONTEND_PARSER_PARSER_HPP
 #define _FRONTEND_PARSER_PARSER_HPP
 
+#include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 #include "frontend/parser/lexer.hpp"
 
