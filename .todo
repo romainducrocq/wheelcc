@@ -45,8 +45,8 @@ When Types OK (after c18):
 - clean error msgs in parser + semantic analysis / add line
 - add const where possible ?
     - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
-- replace for loops with const auto& range where possible
-- make better test script ?
+- replace for loops with const auto& range where possible ?
+- add better memcheck script ?
 
 Optimization:
 - use bitmask for cmd line params
