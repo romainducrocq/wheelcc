@@ -5,6 +5,18 @@
 #include "ast/back_ast.hpp"
 
 #include <memory>
+#include <vector>
+#include <unordered_map>
+
+struct StackFixContext {
+    StackFixContext();
+
+    // Pseudo-register replacement
+    TLong stack_bytes;
+    std::unordered_map<TIdentifier, TLong> pseudo_stack_bytes_map;
+    // Instruction fix-up
+    std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
+};
 
 std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte);

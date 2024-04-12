@@ -7,11 +7,15 @@
 
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
-static TLong stack_bytes;
+static std::unique_ptr<StackFixContext> context;
 
-static std::unique_ptr<std::unordered_map<TIdentifier, TLong>> pseudo_stack_bytes_map;
+StackFixContext::StackFixContext()
+    : stack_bytes(0l) {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Pseudo-register replacement
 
 static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     TIdentifier name = node->name;
@@ -24,24 +28,24 @@ static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* n
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
-    TLong value = -1 * (*pseudo_stack_bytes_map)[node->name];
+    TLong value = -1 * context->pseudo_stack_bytes_map[node->name];
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMem* node) {
-    TLong value = -1 * ((*pseudo_stack_bytes_map)[node->name] - node->offset);
+    TLong value = -1 * (context->pseudo_stack_bytes_map[node->name] - node->offset);
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
 static void align_offset_stack_bytes(TInt alignment) {
-    TLong offset = stack_bytes % alignment;
+    TLong offset = context->stack_bytes % alignment;
     if(offset != 0l) {
-        stack_bytes += alignment - offset;
+        context->stack_bytes += alignment - offset;
     }
 }
 
 static void align_offset_pseudo_register(TLong size, TInt alignment) {
-    stack_bytes += size;
+    context->stack_bytes += size;
     align_offset_stack_bytes(alignment);
 }
 
@@ -75,7 +79,7 @@ static void allocate_offset_pseudo_mem_register(AssemblyType* assembly_type) {
 }
 
 static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* node) {
-    if(pseudo_stack_bytes_map->find(node->name) == pseudo_stack_bytes_map->end()) {
+    if(context->pseudo_stack_bytes_map.find(node->name) == context->pseudo_stack_bytes_map.end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>((*backend_symbol_table)[node->name].get());
         if(backend_obj->is_static) {
@@ -83,7 +87,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
         }
         else {
             allocate_offset_pseudo_register(backend_obj->assembly_type.get());
-            (*pseudo_stack_bytes_map)[node->name] = stack_bytes;
+            context->pseudo_stack_bytes_map[node->name] = context->stack_bytes;
         }
     }
 
@@ -91,7 +95,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
 }
 
 static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudoMem* node) {
-    if(pseudo_stack_bytes_map->find(node->name) == pseudo_stack_bytes_map->end()) {
+    if(context->pseudo_stack_bytes_map.find(node->name) == context->pseudo_stack_bytes_map.end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>((*backend_symbol_table)[node->name].get());
         if(backend_obj->is_static) {
@@ -99,7 +103,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudo
         }
         else {
             allocate_offset_pseudo_mem_register(backend_obj->assembly_type.get());
-            (*pseudo_stack_bytes_map)[node->name] = stack_bytes;
+            context->pseudo_stack_bytes_map[node->name] = context->stack_bytes;
         }
     }
 
@@ -401,6 +405,10 @@ static void replace_pseudo_registers(AsmInstruction* node) {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Instruction fix-up
+
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte) {
     std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
@@ -429,20 +437,19 @@ std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-static std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
-
 static void push_fix_instruction(std::unique_ptr<AsmInstruction>&& fix_instruction) {
-    p_fix_instructions->push_back(std::move(fix_instruction));
+    context->p_fix_instructions->push_back(std::move(fix_instruction));
 }
 
 static void swap_fix_instruction_back() {
-    std::swap((*p_fix_instructions)[p_fix_instructions->size()-2], p_fix_instructions->back());
+    std::swap((*context->p_fix_instructions)[context->p_fix_instructions->size()-2],
+              context->p_fix_instructions->back());
 }
 
 static void fix_allocate_stack_bytes() {
-    if(stack_bytes > 0l) {
+    if(context->stack_bytes > 0l) {
         align_offset_stack_bytes(16);
-        (*p_fix_instructions)[0] = allocate_stack_bytes(stack_bytes);
+        (*context->p_fix_instructions)[0] = allocate_stack_bytes(context->stack_bytes);
     }
 }
 
@@ -554,7 +561,8 @@ static void fix_mov_zero_extend_from_any_to_any_instruction(AsmMovZeroExtend* no
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<LongWord>();
-    p_fix_instructions->back() = std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst));
+    context->p_fix_instructions->back() = std::make_unique<AsmMov>(std::move(assembly_type),
+                                                                   std::move(src), std::move(dst));
 }
 
 static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov* node) {
@@ -562,7 +570,8 @@ static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov* node) {
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type),
+                                                              std::move(src), std::move(dst)));
 }
 
 static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
@@ -576,7 +585,7 @@ static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
     }
     else {
         fix_mov_zero_extend_from_any_to_any_instruction(node);
-        AsmMov* node_2 = static_cast<AsmMov*>(p_fix_instructions->back().get());
+        AsmMov* node_2 = static_cast<AsmMov*>(context->p_fix_instructions->back().get());
         if(is_type_addr(node_2->dst.get())) {
             fix_mov_zero_extend_from_any_to_addr_instruction(node_2);
         }
@@ -894,19 +903,19 @@ static void fix_function_top_level(AsmFunction* node) {
     std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
 
     node->instructions.clear();
-    p_fix_instructions = &node->instructions;
-    p_fix_instructions->emplace_back();
+    context->p_fix_instructions = &node->instructions;
+    context->p_fix_instructions->emplace_back();
 
-    stack_bytes = 0l;
-    pseudo_stack_bytes_map->clear();
+    context->stack_bytes = 0l;
+    context->pseudo_stack_bytes_map.clear();
     for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
         push_fix_instruction(std::move(instructions[instruction]));
 
-        replace_pseudo_registers(p_fix_instructions->back().get());
-        fix_instruction(p_fix_instructions->back().get());
+        replace_pseudo_registers(context->p_fix_instructions->back().get());
+        fix_instruction(context->p_fix_instructions->back().get());
     }
     fix_allocate_stack_bytes();
-    p_fix_instructions = nullptr;
+    context->p_fix_instructions = nullptr;
 }
 
 static void fix_top_level(AsmTopLevel* node) {
@@ -928,10 +937,7 @@ static void fix_program(AsmProgram* node) {
 }
 
 void fix_stack(AsmProgram* node) {
-    pseudo_stack_bytes_map = std::make_unique<std::unordered_map<TIdentifier, TLong>>();
-
+    context = std::make_unique<StackFixContext>();
     fix_program(node);
-
-    stack_bytes = 0l;
-    pseudo_stack_bytes_map.reset();
+    context.reset();
 }
