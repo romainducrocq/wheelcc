@@ -8,7 +8,11 @@
 
 #include <memory>
 
-TInt generate_type_alignment(Type* type_1);
+struct SymtCvtContext {
+    const TIdentifier* p_symbol;
+};
+
+TInt generate_type_alignment(Type* type);
 std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name);
 void convert_symbol_table(AsmProgram* node);
 

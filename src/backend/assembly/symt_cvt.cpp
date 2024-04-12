@@ -7,6 +7,8 @@
 
 #include <memory>
 
+static std::unique_ptr<SymtCvtContext> context;
+
 TInt generate_scalar_type_alignment(Type* type) {
     switch(type->type()) {
         case AST_T::Char_t:
@@ -88,10 +90,8 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
     }
 }
 
-static const TIdentifier* p_symbol;
-
 static void add_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
-    (*backend_symbol_table)[*p_symbol] = std::move(node);
+    (*backend_symbol_table)[*context->p_symbol] = std::move(node);
 }
 
 static void convert_double_static_constant() {
@@ -105,7 +105,7 @@ static void convert_string_static_constant(Array* arr_type) {
 }
 
 static void convert_static_constant_top_level(AsmStaticConstant* node) {
-    p_symbol = &node->name;
+    context->p_symbol = &node->name;
     switch(node->static_init->type()) {
         case AST_T::DoubleInit_t:
             convert_double_static_constant();
@@ -135,7 +135,7 @@ static void convert_fun_type(FunAttr* node) {
 
 static void convert_obj_type(IdentifierAttr* node) {
     if(node->type() != AST_T::ConstantAttr_t) {
-        std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*p_symbol);
+        std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*context->p_symbol);
         bool is_static = node->type() == AST_T::StaticAttr_t;
         add_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false,
                                                               std::move(assembly_type)));
@@ -144,7 +144,7 @@ static void convert_obj_type(IdentifierAttr* node) {
 
 static void convert_program(AsmProgram* node) {
     for(const auto& symbol: *symbol_table) {
-        p_symbol = &symbol.first;
+        context->p_symbol = &symbol.first;
         if(symbol.second->type_t->type() == AST_T::FunType_t) {
             convert_fun_type(static_cast<FunAttr*>(symbol.second->attrs.get()));
         }
@@ -156,9 +156,11 @@ static void convert_program(AsmProgram* node) {
     for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
         convert_top_level(node->static_constant_top_levels[top_level].get());
     }
+    context->p_symbol = nullptr;
 }
 
 void convert_symbol_table(AsmProgram* node) {
+    context = std::make_unique<SymtCvtContext>();
     convert_program(node);
-    p_symbol = nullptr;
+    context.reset();
 }
