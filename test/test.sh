@@ -76,7 +76,7 @@ function print_single () {
     fi
 }
 
-print_client () {
+function print_client () {
     echo -e -n "${TOTAL} ${RES} ${FILE}.c${NC}"
     if [ ${RET_PASS} -ne 0 ]; then
         PRINT="${COMP_4}: ${RET_THIS}"
