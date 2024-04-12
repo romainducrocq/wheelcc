@@ -79,7 +79,7 @@ function fmt () {
     rm tmp2
 }
 
-function pfmt () {
+function data_fmt () {
     echo "ast = ["
     fmt ast
     fmt front_symt
@@ -114,7 +114,7 @@ if [[ "${1}" == "--assert" ]]; then
         | grep -P "(?=.*    \[\")(?=.*\", \[\], \[\")(?=.*\"\], \[\()(?=.*\)\], \[\]\])"
 else
     header > ast.py
-    pfmt >> ast.py
+    data_fmt >> ast.py
 fi
 
 exit 0
