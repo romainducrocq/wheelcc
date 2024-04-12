@@ -21,10 +21,10 @@
 #include <vector>
 #include <iostream>
 
-static bool VERBOSE = false;
+static std::unique_ptr<MainContext> context;
 
 static void verbose(const std::string& out, bool end) {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         std::cout << out;
         if(end) {
             std::cout << std::endl;
@@ -34,64 +34,64 @@ static void verbose(const std::string& out, bool end) {
 
 #ifndef __NDEBUG__
 static void debug_tokens(const std::vector<Token>& tokens) {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_tokens(tokens);
     }
 }
 
 static void debug_ast(Ast* node, const std::string& name) {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_ast(node, name);
     }
 }
 
 static void debug_symbol_table() {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_symbol_table();
     }
 }
 
 static void debug_static_constant_table() {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_static_constant_table();
     }
 }
 
 static void debug_struct_typedef_table() {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_struct_typedef_table();
     }
 }
 
 static void debug_backend_symbol_table() {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_backend_symbol_table();
     }
 }
 
 static void debug_asm_code() {
-    if(VERBOSE) {
+    if(context->VERBOSE) {
         pretty_print_asm_code();
     }
 }
 #endif
 
-static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) {
-    if(opt_code > 0
+static void compile() {
+    if(context->opt_code > 0
 #ifdef __NDEBUG__
-       && opt_code <= 127
+       && context->opt_code <= 127
 #endif
     ) {
-        VERBOSE = true;
+        context->VERBOSE = true;
     }
 
     util = std::make_unique<UtilContext>();
 
     verbose("-- Lexing ... ", false);
-    std::unique_ptr<std::vector<Token>> tokens = lexing(filename);
+    std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename);
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if(opt_code == 255) {
+    if(context->opt_code == 255) {
         debug_tokens(*tokens);
         return;
     }
@@ -101,7 +101,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if(opt_code == 254) {
+    if(context->opt_code == 254) {
         debug_ast(c_ast.get(), "C AST");
         return;
     }
@@ -115,7 +115,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     analyze_semantic(c_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if(opt_code == 253) {
+    if(context->opt_code == 253) {
         debug_ast(c_ast.get(), "C AST");
         debug_symbol_table();
         debug_static_constant_table();
@@ -128,7 +128,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if(opt_code == 252) {
+    if(context->opt_code == 252) {
         debug_ast(tac_ast.get(), "TAC AST");
         debug_symbol_table();
         debug_static_constant_table();
@@ -143,7 +143,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if(opt_code == 251) {
+    if(context->opt_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
         debug_symbol_table();
         debug_static_constant_table();
@@ -158,11 +158,11 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     FREE_STRUCT_TYPEDEF_TABLE;
 
     verbose("-- Code emission ... ", false);
-    filename = filename.substr(0, filename.size()-2) + ".s";
-    code_emission(std::move(asm_ast), std::move(filename));
+    context->filename = context->filename.substr(0, context->filename.size()-2) + ".s";
+    code_emission(std::move(asm_ast), std::move(context->filename));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if(opt_code == 250) {
+    if(context->opt_code == 250) {
         debug_asm_code();
         return;
     }
@@ -170,21 +170,18 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
 
     FREE_BACKEND_SYMBOL_TABLE;
     util.reset();
-    VERBOSE = false;
 }
 
-static std::unique_ptr<std::vector<std::string>> args;
-
 static void shift_args(std::string& arg) {
-    if(!args->empty()) {
-        arg = std::move(args->back());
-        args->pop_back();
+    if(!context->args.empty()) {
+        arg = std::move(context->args.back());
+        context->args.pop_back();
         return;
     }
     arg = "";
 }
 
-static void arg_parse(std::string& filename, int& opt_code, int& opt_s_code) {
+static void arg_parse() {
     std::string arg;
     shift_args(arg);
 
@@ -192,34 +189,27 @@ static void arg_parse(std::string& filename, int& opt_code, int& opt_s_code) {
     if(arg.empty()) {
         raise_runtime_error("No option code passed in " + em("args[0]"));
     }
-    opt_code = std::stoi(arg);
+    context->opt_code = std::stoi(arg);
 
     shift_args(arg);
     if(arg.empty()) {
         raise_runtime_error("No file name passed in " + em("args[1]"));
     }
-    filename = std::move(arg);
+    context->filename = std::move(arg);
 
-    opt_s_code = 0;
+    context->opt_s_code = 0; // TODO
+    context->args.clear();
 }
 
 int main(int argc, char **argv) {
-
-    std::string filename;
-    // TODO change to uint32_t bitmask
-    int opt_code;
-    int opt_s_code;
-    {
-        args = std::make_unique<std::vector<std::string>>();
-        for(size_t i = static_cast<size_t>(argc); i-- > 0 ;){
-            args->push_back(argv[i]);
-        }
-
-        arg_parse(filename, opt_code, opt_s_code);
-        args.reset();
+    context = std::make_unique<MainContext>();
+    for(size_t i = static_cast<size_t>(argc); i-- > 0 ;){
+        context->args.push_back(argv[i]);
     }
+    arg_parse();
 
-    do_compile(filename, opt_code, opt_s_code);
+    compile();
+    context.reset();
 
     return 0;
 }

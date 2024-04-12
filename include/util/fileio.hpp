@@ -3,7 +3,6 @@
 
 #include <string>
 
-size_t get_line_number();
 void file_open_read(const std::string& filename);
 void file_open_write(const std::string& filename);
 bool read_line(std::string& line);
