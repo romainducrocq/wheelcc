@@ -1623,12 +1623,12 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
     {
         TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
         TIdentifier static_constant_hash = std::to_string(std::hash<std::string>{}(string_constant));
-        if(static_constant_table->find(static_constant_hash) != static_constant_table->end()) {
-            static_constant_label = (*static_constant_table)[static_constant_hash];
+        if(frontend->static_constant_table.find(static_constant_hash) != frontend->static_constant_table.end()) {
+            static_constant_label = frontend->static_constant_table[static_constant_hash];
         }
         else {
             static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
-            (*static_constant_table)[static_constant_hash] = static_constant_label;
+            frontend->static_constant_table[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;

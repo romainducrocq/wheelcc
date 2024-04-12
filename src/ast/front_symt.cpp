@@ -110,13 +110,13 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier
                              std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members)
     : alignment(alignment), size(size), member_names(std::move(member_names)), members(std::move(members)) {}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 std::unique_ptr<FrontEndContext> frontend;
 
 FrontEndContext::FrontEndContext()
     : label_counter(0), variable_counter(0), structure_counter(0) {}
 
 std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
-
-std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_table;
 
 std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;

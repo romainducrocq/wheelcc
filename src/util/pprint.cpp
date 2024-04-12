@@ -1685,8 +1685,8 @@ void pretty_print_symbol_table() {
 
 void pretty_print_static_constant_table() {
     header_string("Static Constant Table");
-    std::cout << "\nDict(" << std::to_string(static_constant_table->size()) << "):";
-    for(const auto& static_constant: *static_constant_table) {
+    std::cout << "\nDict(" << std::to_string(frontend->static_constant_table.size()) << "):";
+    for(const auto& static_constant: frontend->static_constant_table) {
         field("[" + static_constant.first + "]", "", 2);
         if(symbol_table->find(static_constant.second) != symbol_table->end() &&
            (*symbol_table)[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {

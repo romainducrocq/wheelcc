@@ -313,6 +313,9 @@ struct FrontEndContext {
     uint32_t variable_counter;
     uint32_t structure_counter;
     // Frontend symbol table
+//    std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
+    std::unordered_map<TIdentifier, TIdentifier> static_constant_table;
+//    std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
 };
 
 extern std::unique_ptr<FrontEndContext> frontend;
@@ -326,12 +329,6 @@ extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>
     symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>>()
 #define FREE_SYMBOL_TABLE \
     symbol_table.reset()
-
-extern std::unique_ptr<std::unordered_map<TIdentifier, TIdentifier>> static_constant_table;
-#define INIT_STATIC_CONSTANT_TABLE \
-    static_constant_table = std::make_unique<std::unordered_map<TIdentifier, TIdentifier>>()
-#define FREE_STATIC_CONSTANT_TABLE \
-    static_constant_table.reset()
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>>> struct_typedef_table;
 #define INIT_STRUCT_TYPEDEF_TABLE \
