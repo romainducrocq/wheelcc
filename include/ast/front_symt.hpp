@@ -3,6 +3,7 @@
 
 #include "ast/ast.hpp"
 
+#include <inttypes.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -303,6 +304,22 @@ struct StructTypedef : Ast {
 struct Dummy : Ast {
 };
 */
+
+struct FrontEndContext {
+    FrontEndContext();
+
+    // Names
+    uint32_t label_counter;
+    uint32_t variable_counter;
+    uint32_t structure_counter;
+    // Frontend symbol table
+};
+
+extern std::unique_ptr<FrontEndContext> frontend;
+#define INIT_FRONT_END_CONTEXT \
+    frontend = std::make_unique<FrontEndContext>()
+#define FREE_FRONT_END_CONTEXT \
+    frontend.reset()
 
 extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
 #define INIT_SYMBOL_TABLE \

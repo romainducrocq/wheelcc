@@ -1,6 +1,7 @@
 #include "ast/front_symt.hpp"
 #include "ast/ast.hpp"
 
+#include <inttypes.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -108,6 +109,11 @@ StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type)
 StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
                              std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members)
     : alignment(alignment), size(size), member_names(std::move(member_names)), members(std::move(members)) {}
+
+std::unique_ptr<FrontEndContext> frontend;
+
+FrontEndContext::FrontEndContext()
+    : label_counter(0), variable_counter(0), structure_counter(0) {}
 
 std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<Symbol>>> symbol_table;
 

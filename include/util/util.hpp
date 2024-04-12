@@ -18,6 +18,7 @@ struct MainContext {
 };
 
 struct UtilContext {
+    // FIle IO
     size_t l;
     char* buffer;
     FILE* file_in;
@@ -27,5 +28,9 @@ struct UtilContext {
 };
 
 extern std::unique_ptr<UtilContext> util;
+#define INIT_UTIL_CONTEXT \
+    util = std::make_unique<UtilContext>()
+#define FREE_UTIL_CONTEXT \
+    util.reset()
 
 #endif

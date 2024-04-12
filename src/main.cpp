@@ -85,7 +85,7 @@ static void compile() {
         context->VERBOSE = true;
     }
 
-    util = std::make_unique<UtilContext>();
+    INIT_UTIL_CONTEXT;
 
     verbose("-- Lexing ... ", false);
     std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename);
@@ -106,6 +106,8 @@ static void compile() {
         return;
     }
 #endif
+
+    INIT_FRONT_END_CONTEXT;
 
     INIT_SYMBOL_TABLE;
     INIT_STATIC_CONSTANT_TABLE;
@@ -153,6 +155,8 @@ static void compile() {
     }
 #endif
 
+    FREE_FRONT_END_CONTEXT;
+
     FREE_SYMBOL_TABLE;
     FREE_STATIC_CONSTANT_TABLE;
     FREE_STRUCT_TYPEDEF_TABLE;
@@ -169,7 +173,7 @@ static void compile() {
 #endif
 
     FREE_BACKEND_SYMBOL_TABLE;
-    util.reset();
+    FREE_UTIL_CONTEXT;
 }
 
 static void shift_args(std::string& arg) {

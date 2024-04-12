@@ -1,30 +1,26 @@
 #include "frontend/intermediate/names.hpp"
 #include "util/throw.hpp"
 #include "ast/ast.hpp"
+#include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
 
-#include <inttypes.h>
 #include <string>
 
-static int32_t label_counter = 0;
-static int32_t variable_counter = 0;
-static int32_t structure_counter = 0;
-
 TIdentifier resolve_label_identifier(const TIdentifier& label) {
-    TIdentifier name = label + "." + std::to_string(label_counter);
-    label_counter += 1;
+    TIdentifier name = label + "." + std::to_string(frontend->label_counter);
+    frontend->label_counter += 1;
     return name;
 }
 
 TIdentifier resolve_variable_identifier(const TIdentifier& variable) {
-    TIdentifier name = variable + "." + std::to_string(variable_counter);
-    variable_counter += 1;
+    TIdentifier name = variable + "." + std::to_string(frontend->variable_counter);
+    frontend->variable_counter += 1;
     return name;
 }
 
 TIdentifier resolve_structure_tag(const TIdentifier& structure) {
-    TIdentifier name = structure + "." + std::to_string(structure_counter);
-    structure_counter += 1;
+    TIdentifier name = structure + "." + std::to_string(frontend->structure_counter);
+    frontend->structure_counter += 1;
     return name;
 }
 
@@ -115,8 +111,8 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
             RAISE_INTERNAL_ERROR;
     }
 
-    name += "." + std::to_string(label_counter);
-    label_counter += 1;
+    name += "." + std::to_string(frontend->label_counter);
+    frontend->label_counter += 1;
     return name;
 }
 
@@ -175,7 +171,7 @@ TIdentifier represent_variable_identifier(CExp* node) {
             RAISE_INTERNAL_ERROR;
     }
 
-    name += "." + std::to_string(variable_counter);
-    variable_counter += 1;
+    name += "." + std::to_string(frontend->variable_counter);
+    frontend->variable_counter += 1;
     return name;
 }
