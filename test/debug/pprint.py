@@ -74,6 +74,10 @@ if __name__ == "__main__":
 #include <vector>
 #include <iostream>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Pretty print
+
 static void header_string(const std::string& header) {
     std::cout << "+\n+\n@@ " << header << " @@";
 }
@@ -124,8 +128,8 @@ void pretty_print_ast(Ast* node, const std::string& name) {
 
 void pretty_print_symbol_table() {
     header_string("Symbol Table");
-    std::cout << "\nDict(" << std::to_string(symbol_table->size()) << "):";
-    for(const auto& symbol: *symbol_table) {
+    std::cout << "\nDict(" << std::to_string(frontend->symbol_table.size()) << "):";
+    for(const auto& symbol: frontend->symbol_table) {
         field("[" + symbol.first + "]", "", 2);
         print_ast(symbol.second.get(), 2);
     }
@@ -134,15 +138,15 @@ void pretty_print_symbol_table() {
 
 void pretty_print_static_constant_table() {
     header_string("Static Constant Table");
-    std::cout << "\nDict(" << std::to_string(static_constant_table->size()) << "):";
-    for(const auto& static_constant: *static_constant_table) {
+    std::cout << "\nDict(" << std::to_string(frontend->static_constant_table.size()) << "):";
+    for(const auto& static_constant: frontend->static_constant_table) {
         field("[" + static_constant.first + "]", "", 2);
-        if(symbol_table->find(static_constant.second) != symbol_table->end() &&
-           (*symbol_table)[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
-            ConstantAttr* const_attr = static_cast<ConstantAttr*>((*symbol_table)[static_constant.second]->attrs.get());
-            if(const_attr->static_init->type() == AST_T::StringInit_t) {
+        if(frontend->symbol_table.find(static_constant.second) != frontend->symbol_table.end() &&
+           frontend->symbol_table[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
+            ConstantAttr* attr = static_cast<ConstantAttr*>(frontend->symbol_table[static_constant.second]->attrs.get());
+            if(attr->static_init->type() == AST_T::StringInit_t) {
                 std::cout << "\n    string: \"";
-                for(const TChar& byte : static_cast<StringInit*>(const_attr->static_init.get())->literal.get()->value) {
+                for(const TChar& byte : static_cast<StringInit*>(attr->static_init.get())->literal.get()->value) {
                     switch(byte) {
                         case 39:
                             std::cout << "\\'";
@@ -186,11 +190,11 @@ void pretty_print_static_constant_table() {
                 continue;
             }
         }
-        else if(backend_symbol_table->find(static_constant.second) != backend_symbol_table->end() &&
-                (*backend_symbol_table)[static_constant.second]->type() == AST_T::BackendObj_t){
-            BackendObj* backend_obj = static_cast<BackendObj*>((*backend_symbol_table)[static_constant.second].get());
-            if(backend_obj->is_constant &&
-               backend_obj->assembly_type->type() == AST_T::BackendDouble_t) {
+        else if(backend->backend_symbol_table.find(static_constant.second) != backend->backend_symbol_table.end() &&
+                backend->backend_symbol_table[static_constant.second]->type() == AST_T::BackendObj_t){
+            BackendObj* obj = static_cast<BackendObj*>(backend->backend_symbol_table[static_constant.second].get());
+            if(obj->is_constant &&
+               obj->assembly_type->type() == AST_T::BackendDouble_t) {
                 double decimal;
                 uint64_t binary = string_to_uint64(static_constant.first);
                 std::memcpy(&decimal, &binary, sizeof(double));
@@ -205,8 +209,8 @@ void pretty_print_static_constant_table() {
 
 void pretty_print_struct_typedef_table() {
     header_string("Structure Typedef Table");
-    std::cout << "\nDict(" << std::to_string(struct_typedef_table->size()) << "):";
-    for(const auto& struct_typedef: *struct_typedef_table) {
+    std::cout << "\nDict(" << std::to_string(frontend->struct_typedef_table.size()) << "):";
+    for(const auto& struct_typedef: frontend->struct_typedef_table) {
         field("[" + struct_typedef.first + "]", "", 2);
         print_ast(struct_typedef.second.get(), 2);
     }
@@ -215,10 +219,10 @@ void pretty_print_struct_typedef_table() {
 
 void pretty_print_backend_symbol_table() {
     header_string("Backend Symbol Table");
-    std::cout << "\nDict(" << std::to_string(backend_symbol_table->size()) << "):";
-    for(const auto& symbol: *backend_symbol_table) {
-        field("[" + symbol.first + "]", "", 2);
-        print_ast(symbol.second.get(), 2);
+    std::cout << "\nDict(" << std::to_string(backend->backend_symbol_table.size()) << "):";
+    for(const auto& backend_symbol: backend->backend_symbol_table) {
+        field("[" + backend_symbol.first + "]", "", 2);
+        print_ast(backend_symbol.second.get(), 2);
     }
     std::cout << std::endl;
 }
