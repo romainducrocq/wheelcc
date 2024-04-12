@@ -317,9 +317,9 @@ static std::string emit_memory_operand(AsmMemory* node) {
 
 static std::string emit_data_operand(AsmData* node) {
     std::string value = emit_identifier(node->name);
-    if(backend_symbol_table->find(value) != backend_symbol_table->end() &&
-       (*backend_symbol_table)[value]->type() == AST_T::BackendObj_t &&
-       static_cast<BackendObj*>((*backend_symbol_table)[value].get())->is_constant) {
+    if(backend->backend_symbol_table.find(value) != backend->backend_symbol_table.end() &&
+       backend->backend_symbol_table[value]->type() == AST_T::BackendObj_t &&
+       static_cast<BackendObj*>(backend->backend_symbol_table[value].get())->is_constant) {
         value = ".L" + value;
     }
     return value + "(%rip)";

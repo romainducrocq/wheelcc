@@ -73,10 +73,17 @@ struct Dummy : Ast {
 };
 */
 
-extern std::unique_ptr<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>> backend_symbol_table;
-#define INIT_BACKEND_SYMBOL_TABLE \
-    backend_symbol_table = std::make_unique<std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>>>()
-#define FREE_BACKEND_SYMBOL_TABLE \
-    backend_symbol_table.reset()
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct BackEndContext {
+    // Backend symbol table
+    std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
+};
+
+extern std::unique_ptr<BackEndContext> backend;
+#define INIT_BACK_END_CONTEXT \
+    backend = std::make_unique<BackEndContext>()
+#define FREE_BACK_END_CONTEXT \
+    backend.reset()
 
 #endif

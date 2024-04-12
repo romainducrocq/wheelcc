@@ -90,18 +90,18 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
     }
 }
 
-static void add_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
-    (*backend_symbol_table)[*context->p_symbol] = std::move(node);
+static void convert_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
+    backend->backend_symbol_table[*context->p_symbol] = std::move(node);
 }
 
 static void convert_double_static_constant() {
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
-    add_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
+    convert_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
 }
 
 static void convert_string_static_constant(Array* arr_type) {
     std::shared_ptr<AssemblyType> assembly_type = convert_array_aggregate_assembly_type(arr_type);
-    add_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
+    convert_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
 }
 
 static void convert_static_constant_top_level(AsmStaticConstant* node) {
@@ -130,15 +130,15 @@ static void convert_top_level(AsmTopLevel* node) {
 
 static void convert_fun_type(FunAttr* node) {
     bool is_defined = node->is_defined;
-    add_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
+    convert_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
 }
 
 static void convert_obj_type(IdentifierAttr* node) {
     if(node->type() != AST_T::ConstantAttr_t) {
         std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*context->p_symbol);
         bool is_static = node->type() == AST_T::StaticAttr_t;
-        add_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false,
-                                                              std::move(assembly_type)));
+        convert_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false,
+                                                                  std::move(assembly_type)));
     }
 }
 

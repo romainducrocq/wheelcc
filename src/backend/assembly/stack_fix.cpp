@@ -81,7 +81,7 @@ static void allocate_offset_pseudo_mem_register(AssemblyType* assembly_type) {
 static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* node) {
     if(context->pseudo_stack_bytes_map.find(node->name) == context->pseudo_stack_bytes_map.end()) {
 
-        BackendObj* backend_obj = static_cast<BackendObj*>((*backend_symbol_table)[node->name].get());
+        BackendObj* backend_obj = static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get());
         if(backend_obj->is_static) {
             return replace_pseudo_register_data(node);
         }
@@ -97,7 +97,7 @@ static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* no
 static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudoMem* node) {
     if(context->pseudo_stack_bytes_map.find(node->name) == context->pseudo_stack_bytes_map.end()) {
 
-        BackendObj* backend_obj = static_cast<BackendObj*>((*backend_symbol_table)[node->name].get());
+        BackendObj* backend_obj = static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get());
         if(backend_obj->is_static) {
             return replace_pseudo_mem_register_data(node);
         }

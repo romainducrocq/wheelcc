@@ -135,7 +135,7 @@ static void compile() {
     }
 #endif
 
-    INIT_BACKEND_SYMBOL_TABLE;
+    INIT_BACK_END_CONTEXT;
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
@@ -164,7 +164,7 @@ static void compile() {
     }
 #endif
 
-    FREE_BACKEND_SYMBOL_TABLE;
+    FREE_BACK_END_CONTEXT;
 
     FREE_UTIL_CONTEXT;
 }
