@@ -5,6 +5,7 @@
 #include "ast/back_ast.hpp"
 #include "backend/assembly/registers.hpp"
 
+#include <string>
 #include <memory>
 #include <vector>
 
