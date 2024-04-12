@@ -35,8 +35,6 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 
 ## NOTES
 
-- test memory leaks
-- fix python pprint
 - add limits of compiler in readme:
     - no memory overflow check, max memory allocation is (2^63)-1 bits (function stack, aggregate type)
     - same for memory addresses / pointer values
@@ -48,6 +46,7 @@ When Types OK (after c18):
 - add const where possible ?
     - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
 - replace for loops with const auto& range where possible
+- make better test script ?
 
 Optimization:
 - use bitmask for cmd line params

@@ -66,7 +66,8 @@ cat tmp \
     | sed "s/nstr_uction/nstruction/g" \
     | sed "s/str_ucture/structure/g" \
     | sed "s/str_uct_decl/struct_decl/g" \
-    | grep --invert-match "Ast {  using(" > tmp2
+    | grep --invert-match "Ast {  using(" \
+    | grep --invert-match "\"Dummy\"" > tmp2
 rm tmp
 
 echo ""
