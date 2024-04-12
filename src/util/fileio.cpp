@@ -1,66 +1,62 @@
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
+#include "util/util.hpp"
 
 #include <stdio.h>
 #include <string>
 
-static size_t line_number = 0;
-static std::string stream_buf = "";
-
-static size_t l = 0;
-static char* buffer = nullptr;
-
-static FILE* file_in = nullptr;
-static FILE* file_out = nullptr;
-
 size_t get_line_number() {
-    return line_number;
+    return util->line_number;
 }
 
 void file_open_read(const std::string& filename) {
-    file_in = nullptr;
+    util->file_in = nullptr;
 
-    file_in = fopen(filename.c_str(), "rb");
-    if(file_in == nullptr) {
+    util->file_in = fopen(filename.c_str(), "rb");
+    if(util->file_in == nullptr) {
         raise_runtime_error("File " + em(filename) + " does not exist");
     }
-    set_filename(filename);
+
+    util->l = 0;
+    util->buffer = nullptr;
+    util->line_number = 0;
+    util->filename_in = filename;
 }
 
 void file_open_write(const std::string& filename) {
-    file_out = nullptr;
+    util->file_out = nullptr;
 
-    file_out = fopen(filename.c_str(), "wb");
-    if(file_out == nullptr) {
+    util->file_out = fopen(filename.c_str(), "wb");
+    if(util->file_out == nullptr) {
         raise_runtime_error("File " + em(filename) + " was not created");
     }
-    stream_buf = "";
+    util->stream_buf = "";
 }
 
 bool read_line(std::string& line) {
-    if(getline(&buffer, &l, file_in) == -1) {
-        l = 0;
+    if(getline(&util->buffer, &util->l, util->file_in) == -1) {
+        util->l = 0;
         line = "";
-        line_number = 0;
-        free(buffer);
-        buffer = nullptr;
+        util->line_number = 0;
+        free(util->buffer);
+        util->buffer = nullptr;
         return false;
     }
 
-    line = buffer;
-    line_number++;
+    line = util->buffer;
+    util->line_number++;
     return true;
 }
 
 static void write_chunk(const std::string& chunk_fp, size_t chunk_l) {
-    fwrite(chunk_fp.c_str(), sizeof(char), chunk_l, file_out);
+    fwrite(chunk_fp.c_str(), sizeof(char), chunk_l, util->file_out);
 }
 
 static void write_file(std::string&& stream, size_t chunk_size) {
-    stream_buf += stream;
-    while(stream_buf.size() >= chunk_size) {
-        write_chunk(stream_buf.substr(0, chunk_size), chunk_size);
-        stream_buf = stream_buf.substr(chunk_size, stream_buf.size() - chunk_size);
+    util->stream_buf += stream;
+    while(util->stream_buf.size() >= chunk_size) {
+        write_chunk(util->stream_buf.substr(0, chunk_size), chunk_size);
+        util->stream_buf = util->stream_buf.substr(chunk_size, util->stream_buf.size() - chunk_size);
     }
 }
 
@@ -69,14 +65,14 @@ void write_line(std::string&& line) {
 }
 
 void file_close_read() {
-    fclose(file_in);
-    file_in = nullptr;
+    fclose(util->file_in);
+    util->file_in = nullptr;
 }
 
 void file_close_write() {
-    write_chunk(stream_buf, stream_buf.size());
-    stream_buf = "";
+    write_chunk(util->stream_buf, util->stream_buf.size());
+    util->stream_buf = "";
 
-    fclose(file_out);
-    file_out = nullptr;
+    fclose(util->file_out);
+    util->file_out = nullptr;
 }

@@ -2,6 +2,7 @@
 #include "util/pprint.hpp"
 #endif
 #include "util/throw.hpp"
+#include "util/util.hpp"
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/front_ast.hpp"
@@ -83,6 +84,8 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
     ) {
         VERBOSE = true;
     }
+
+    util = std::make_unique<UtilContext>();
 
     verbose("-- Lexing ... ", false);
     std::unique_ptr<std::vector<Token>> tokens = lexing(filename);
@@ -166,6 +169,7 @@ static void do_compile(std::string& filename, int opt_code, int /*opt_s_code*/) 
 #endif
 
     FREE_BACKEND_SYMBOL_TABLE;
+    util.reset();
     VERBOSE = false;
 }
 
