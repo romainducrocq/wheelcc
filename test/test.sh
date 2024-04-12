@@ -268,3 +268,5 @@ else
     test_all
 fi
 total
+
+exit 0

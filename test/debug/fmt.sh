@@ -116,3 +116,5 @@ else
     header > ast.py
     pfmt >> ast.py
 fi
+
+exit 0

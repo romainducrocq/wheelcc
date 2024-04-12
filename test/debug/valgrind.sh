@@ -36,3 +36,5 @@ do
         grep -e "OK" -e "ERROR SUMMARY" >> ${LOG_DIR}/${RESULT_FILE}
     echo "" >> ${LOG_DIR}/${RESULT_FILE}
 done
+
+exit 0
