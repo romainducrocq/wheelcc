@@ -62,6 +62,7 @@ cd bin/
 ```
 cd test/
 ./test.sh
+./valgrind.sh
 ```
 
 ### Run
