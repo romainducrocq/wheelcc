@@ -22,13 +22,13 @@ struct MainContext {
 };
 
 struct UtilContext {
-    // FIle io
+    std::string filename;
+    // File io
     size_t l;
     char* buffer;
     FILE* file_in;
     FILE* file_out;
     std::string stream_buf;
-    std::string filename_in;
 };
 
 extern std::unique_ptr<UtilContext> util;

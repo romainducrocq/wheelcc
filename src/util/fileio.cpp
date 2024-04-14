@@ -19,7 +19,7 @@ void file_open_read(const std::string& filename) {
 
     util->l = 0;
     util->buffer = nullptr;
-    util->filename_in = filename;
+    util->filename = filename;
 }
 
 void file_open_write(const std::string& filename) {
