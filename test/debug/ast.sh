@@ -27,34 +27,34 @@ function parse () {
         | grep --invert-match -P "^(?=.*struct)(?=.*;)" \
         | tr ";" "\"" \
         | sed "s/struct\s*/[\"/g" \
-        | sed "s/\s*:.*{\s*/\", [/g" > tmp
+        | sed "s/\s*:.*{\s*/\", [/g" > ast.out.1
 
-    echo -n "" > tmp2
+    echo -n "" > ast.out.2
     while read l ;
     do
         if [[ "${l}" == "["* ]]; then
-            echo ${l} >> tmp2
+            echo ${l} >> ast.out.2
         elif [[ "${l}" == "("* ]]; then
-            echo ${l}")," >> tmp2
+            echo ${l}")," >> ast.out.2
         else
-            echo ${l}"," >> tmp2
+            echo ${l}"," >> ast.out.2
         fi
-    done < tmp
-    rm tmp
+    done < ast.out.1
+    rm ast.out.1
 
     line=""
-    echo -n "" > tmp
+    echo -n "" > ast.out.1
     while read l;
     do
         if [[ "${l}" == "["* ]]; then
-            echo "${line}]]," >> tmp
+            echo "${line}]]," >> ast.out.1
             line="${l} "
         else
             line="${line} ${l}"
         fi
-    done < tmp2
+    done < ast.out.2
 
-    cat tmp \
+    cat ast.out.1 \
         | sed "s/\[  /\[/g" \
         | sed "s/\[ \]/\[\]/g" \
         | sed "s/,\]/\]/g" \
@@ -67,16 +67,16 @@ function parse () {
         | sed "s/str_ucture/structure/g" \
         | sed "s/str_uct_decl/struct_decl/g" \
         | grep --invert-match "Ast {  using(" \
-        | grep --invert-match "\"Dummy\"" > tmp2
-    rm tmp
+        | grep --invert-match "\"Dummy\"" > ast.out.2
+    rm ast.out.1
 
     echo ""
     echo "    # /include/ast/${1}.hpp"
     while read l;
     do
         echo "    ${l}"
-    done < <(tail -n +2 tmp2)
-    rm tmp2
+    done < <(tail -n +2 ast.out.2)
+    rm ast.out.2
 }
 
 function data () {
