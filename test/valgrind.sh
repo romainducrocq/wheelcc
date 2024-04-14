@@ -41,7 +41,6 @@ function print_memory () {
 
 function check_memory () {
     if ! ( ./${PACKAGE_NAME} 0 ${TEST_DIR}/${FILE}.i || false ) > /dev/null 2>&1; then
-        cd ${TEST_DIR}
         return
     fi
 
