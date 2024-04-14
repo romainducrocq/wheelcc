@@ -7,27 +7,10 @@ LIGHT_GREEN='\033[1;32m'
 NC='\033[0m'
 
 TEST_DIR="tests/"
-
-TEST_DIRS=(
-"1_int_constants"
-"2_unary_operators"
-"3_binary_operators"
-"4_logical_and_relational_operators"
-"5_local_variables"
-"6_statements_and_conditional_expressions"
-"7_compound_statements"
-"8_loops"
-"9_functions"
-"10_file-scope_variables_and_storage-class_specifiers"
-"11_long_integers"
-"12_unsigned_integers"
-"13_floating-point_numbers"
-"14_pointers"
-"15_arrays_and_pointer_arithmetic"
-"16_characters_and_strings"
-"17_supporting_dynamic_memory_allocation"
-"18_structures"
-)
+TEST_SRCS=()
+for i in $(seq 1 17); do
+    TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
+done
 
 function file () {
     FILE=${1%.*}
@@ -46,12 +29,12 @@ function total () {
     echo -e "${RES}"
 }
 
-function print_check () {
-    echo " - check ${1} -> ${2}"
-}
-
 function indent () {
     echo -n "$(echo "${TOTAL} [ ] ${FILE}.c" | sed -r 's/./ /g')"
+}
+
+function print_check () {
+    echo " - check ${1} -> ${2}"
 }
 
 function print_fail () {
@@ -243,18 +226,18 @@ function check_test () {
     check_single
 }
 
-function test_dir () {
-    DIR=${1}
-    for FILE in $(find ${DIR} -name "*.c" -type f | sort --uniq)
+function test_src () {
+    SRC=${1}
+    for FILE in $(find ${SRC} -name "*.c" -type f | sort --uniq)
     do
         check_test ${FILE}
     done
 }
 
 function test_all () {
-    for DIR in ${TEST_DIRS[@]}
+    for SRC in ${TEST_SRCS[@]}
     do
-        test_dir ${DIR}
+        test_src ${SRC}
     done
 }
 
@@ -263,7 +246,7 @@ PASS=0
 TOTAL=0
 cd ${TEST_DIR}
 if [ ! -z "${1}" ]; then
-    test_dir ${TEST_DIRS["$((${1} - 1))"]}
+    test_src ${TEST_SRCS["$((${1} - 1))"]}
 else
     test_all
 fi
