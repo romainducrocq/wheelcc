@@ -92,8 +92,6 @@ function test_all () {
 
 dpkg -s valgrind | grep Status | grep -q "install ok installed"
 if [ ${?} -ne 0 ]; then
-    sudo apt-get update
-    sudo apt-get -y upgrade
     sudo apt-get install -y valgrind
 fi
 
