@@ -631,6 +631,67 @@ static std::unique_ptr<TacExpResult> represent_exp_result_sizeoft_instructions(C
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
+static std::unique_ptr<TacExpResult> represent_exp_result_plain_operand_dot_instructions(TacPlainOperand* res,
+                                                                                         TLong member_offset) {
+    if(res->val->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    TIdentifier base_name = static_cast<TacVariable*>(res->val.get())->name;
+    TLong offset = member_offset;
+    return std::make_unique<TacSubObject>(std::move(base_name), std::move(offset));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_dereference_pointer_dot_instructions(
+                                                                                            TacDereferencedPointer* res,
+                                                                                            CDot* node,
+                                                                                            TLong member_offset) {
+    std::shared_ptr<TacValue> src_ptr = res->val;
+    std::shared_ptr<TacValue> index;
+    {
+        TLong offset = member_offset;
+        std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(std::move(offset));
+        index = std::make_shared<TacConstant>(std::move(constant));
+    }
+    std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
+    push_instruction(std::make_unique<TacAddPtr>(1l, std::move(src_ptr), std::move(index), dst));
+    return std::make_unique<TacDereferencedPointer>(std::move(dst));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_sub_object_dot_instructions(TacSubObject* res,
+                                                                                      TLong member_offset) {
+    TIdentifier base_name = res->base_name;
+    TLong offset = res->offset + member_offset;
+    return std::make_unique<TacSubObject>(std::move(base_name), std::move(offset));
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_dot_instructions(CDot* node) {
+    if(node->structure->exp_type->type() != AST_T::Structure_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    TLong member_offset = frontend->struct_typedef_table[static_cast<Structure*>(node->structure->exp_type.get())->tag]
+                                                                                         ->members[node->member]->offset;
+    std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node->structure.get());
+    switch(res->type()) {
+        case AST_T::TacPlainOperand_t:
+            return represent_exp_result_plain_operand_dot_instructions(static_cast<TacPlainOperand*>(res.get()),
+                                                                       member_offset);
+        case AST_T::TacDereferencedPointer_t:
+            return represent_exp_result_dereference_pointer_dot_instructions(
+                                                                    static_cast<TacDereferencedPointer*>(res.get()),
+                                                                     node, member_offset);
+        case AST_T::TacSubObject_t:
+            return represent_exp_result_sub_object_dot_instructions(static_cast<TacSubObject*>(res.get()),
+                                                                    member_offset);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static std::unique_ptr<TacExpResult> represent_exp_result_arrow_instructions(CArrow* node) {
+    return nullptr; // TODO
+}
+
+// TODO replace all std::unique_ptr<TacExpResult> function return types with correct polymorphic type
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
     switch(node->type()) {
         case AST_T::CConstant_t:
@@ -661,6 +722,10 @@ static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* nod
             return represent_exp_result_sizeof_instructions(static_cast<CSizeOf*>(node));
         case AST_T::CSizeOfT_t:
             return represent_exp_result_sizeoft_instructions(static_cast<CSizeOfT*>(node));
+        case AST_T::CDot_t:
+            return represent_exp_result_dot_instructions(static_cast<CDot*>(node));
+        case AST_T::CArrow_t:
+            return represent_exp_result_arrow_instructions(static_cast<CArrow*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
