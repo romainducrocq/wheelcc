@@ -171,6 +171,14 @@ TIdentifier represent_variable_identifier(CExp* node) {
             name = "subscr";
             break;
         }
+        case AST_T::CDot_t: {
+            name = "smem";
+            break;
+        }
+        case AST_T::CArrow_t: {
+            name = "sptr";
+            break;
+        }
         default:
             RAISE_INTERNAL_ERROR;
     }

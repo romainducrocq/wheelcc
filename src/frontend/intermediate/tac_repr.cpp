@@ -208,10 +208,16 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
     return get_type_scale(arr_type->elem_type.get()) * size;
 }
 
+static TLong get_structure_aggregate_type_scale(Structure* struct_type) {
+    return frontend->struct_typedef_table[struct_type->tag]->size;
+}
+
 static TLong get_type_scale(Type* type) {
     switch(type->type()) {
         case AST_T::Array_t:
-            return get_array_aggregate_type_scale(static_cast<Array *>(type));
+            return get_array_aggregate_type_scale(static_cast<Array*>(type));
+        case AST_T::Structure_t:
+            return get_structure_aggregate_type_scale(static_cast<Structure*>(type));
         default:
             return get_scalar_type_size(type);
     }
@@ -1125,7 +1131,6 @@ static void represent_scalar_compound_init_instructions(CSingleInit* node, Type*
         push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset),
                                                                     std::move(src)));
     }
-    size += get_type_scale(init_type);
 }
 
 static void represent_array_compound_init_instructions(CCompoundInit* node, Array* arr_type, const TIdentifier& symbol,
@@ -1133,7 +1138,21 @@ static void represent_array_compound_init_instructions(CCompoundInit* node, Arra
     for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
         represent_compound_init_instructions(node->initializers[initializer].get(),
                                              arr_type->elem_type.get(), symbol, size);
+        if(node->initializers[initializer]->type() == AST_T::CSingleInit_t) {
+            size += get_type_scale(arr_type->elem_type.get());
+        }
     }
+}
+
+static void represent_structure_compound_init_instructions(CCompoundInit* node, Structure* struct_type,
+                                                           const TIdentifier& symbol, TLong& size) {
+    for(size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
+        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, initializer);
+        TLong offset = size + member->offset;
+        represent_compound_init_instructions(node->initializers[initializer].get(),
+                                             member->member_type.get(), symbol, offset);
+    }
+    size += get_type_scale(struct_type);
 }
 
 static void represent_aggregate_compound_init_instructions(CCompoundInit* node, Type* init_type,
@@ -1141,6 +1160,10 @@ static void represent_aggregate_compound_init_instructions(CCompoundInit* node, 
     switch(init_type->type()) {
         case AST_T::Array_t:
             represent_array_compound_init_instructions(node,static_cast<Array*>(init_type), symbol, size);
+            break;
+        case AST_T::Structure_t:
+            represent_structure_compound_init_instructions(node,static_cast<Structure*>(init_type), symbol,
+                                                           size);
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -1194,6 +1217,7 @@ static void represent_declaration_var_decl_instructions(CVarDecl* node) {
 static void represent_declaration_instructions(CDeclaration* node) {
     switch(node->type()) {
         case AST_T::CFunDecl_t:
+        case AST_T::CStructDecl_t:
             break;
         case AST_T::CVarDecl_t:
             represent_declaration_var_decl_instructions(static_cast<CVarDecl*>(node));
@@ -1277,6 +1301,7 @@ static void represent_declaration_top_level(CDeclaration* node) {
             represent_fun_decl_top_level(static_cast<CFunDecl*>(node));
             break;
         case AST_T::CVarDecl_t:
+        case AST_T::CStructDecl_t:
             break;
         default:
             RAISE_INTERNAL_ERROR;
