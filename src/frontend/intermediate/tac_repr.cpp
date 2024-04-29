@@ -736,23 +736,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_dot_instructions(CDot*
     return res;
 }
 
-static void represent_exp_result_dereference_pointer_arrow_instructions(TacDereferencedPointer* res, CArrow* node,
-                                                                        TLong member_offset) {
-    if(member_offset > 0l) {
-        std::shared_ptr<TacValue> src_ptr = std::move(res->val);
-        std::shared_ptr<TacValue> index;
-        {
-            TLong offset = member_offset;
-            std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(std::move(offset));
-            index = std::make_shared<TacConstant>(std::move(constant));
-        }
-        std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
-        push_instruction(std::make_unique<TacAddPtr>(1l, std::move(src_ptr), std::move(index), dst));
-        res->val = std::move(dst);
-    }
-}
-
-static std::unique_ptr<TacExpResult> represent_exp_result_arrow_instructions(CArrow* node) {
+static std::unique_ptr<TacDereferencedPointer> represent_exp_result_arrow_instructions(CArrow* node) {
     if(node->pointer->exp_type->type() != AST_T::Pointer_t) {
          RAISE_INTERNAL_ERROR;
     }
@@ -762,13 +746,19 @@ static std::unique_ptr<TacExpResult> represent_exp_result_arrow_instructions(CAr
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     TLong member_offset = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->offset;
-    std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node->pointer.get());
-    if(ptr_type->ref_type->type() != AST_T::TacDereferencedPointer_t) {
-        RAISE_INTERNAL_ERROR;
+    std::shared_ptr<TacValue> val = represent_exp_instructions(node->pointer.get());
+    if(member_offset > 0l) {
+        std::shared_ptr<TacValue> index;
+        {
+            TLong offset = member_offset;
+            std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(std::move(offset));
+            index = std::make_shared<TacConstant>(std::move(constant));
+        }
+        std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
+        push_instruction(std::make_unique<TacAddPtr>(1l, std::move(val), std::move(index), dst));
+        val = std::move(dst);
     }
-    represent_exp_result_dereference_pointer_arrow_instructions(static_cast<TacDereferencedPointer*>(res.get()),
-                                                                node, member_offset);
-    return res;
+    return std::make_unique<TacDereferencedPointer>(std::move(val));
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_instructions(CExp* node) {
