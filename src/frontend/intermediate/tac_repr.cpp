@@ -466,6 +466,14 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_dereference_pointer
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
+static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignment_instructions(TacSubObject* res,
+                                                                                        std::shared_ptr<TacValue> src) {
+    TIdentifier dst_name = std::move(res->base_name);
+    TLong offset = std::move(res->offset);
+    push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), src));
+    return std::make_unique<TacPlainOperand>(std::move(src));;
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
     std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
     std::unique_ptr<TacExpResult> res;
@@ -492,6 +500,11 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             res = represent_exp_result_dereference_pointer_assignment_instructions(
                                                                     static_cast<TacDereferencedPointer*>(res.get()),
                                                                     std::move(src));
+            break;
+        }
+        case AST_T::TacSubObject_t: {
+            res = represent_exp_result_sub_object_assignment_instructions(static_cast<TacSubObject*>(res.get()),
+                                                                          std::move(src));
             break;
         }
         default:
@@ -580,6 +593,26 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_dereference_pointer
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
+static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_addrof_instructions(TacSubObject* res,
+                                                                                            CAddrOf* node) {
+    std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
+    {
+        TIdentifier name = std::move(res->base_name);
+        std::shared_ptr<TacValue> src = std::make_shared<TacVariable>(std::move(name));
+        push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
+    }
+    {
+        std::shared_ptr<TacValue> index;
+        {
+            TLong offset = std::move(res->offset);
+            std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(std::move(offset));
+            index = std::make_shared<TacConstant>(std::move(constant));
+        }
+        push_instruction(std::make_unique<TacAddPtr>(1l, dst, std::move(index), dst));
+    }
+    return std::make_unique<TacPlainOperand>(std::move(dst));
+}
+
 static std::unique_ptr<TacExpResult> represent_exp_result_addrof_instructions(CAddrOf* node) {
     std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node->exp.get());
     switch(res->type()) {
@@ -589,6 +622,10 @@ static std::unique_ptr<TacExpResult> represent_exp_result_addrof_instructions(CA
         case AST_T::TacDereferencedPointer_t: {
             res = represent_exp_result_dereference_pointer_addrof_instructions(
                                                                    static_cast<TacDereferencedPointer*>(res.get()));
+            break;
+        }
+        case AST_T::TacSubObject_t: {
+            res = represent_exp_result_sub_object_addrof_instructions(static_cast<TacSubObject*>(res.get()), node);
             break;
         }
         default:
@@ -747,7 +784,15 @@ static std::shared_ptr<TacValue> represent_exp_dereferenced_pointer_instructions
     return dst;
 }
 
-// exp_result = PlainOperand(val) | DereferencedPointer(val)
+static std::shared_ptr<TacValue> represent_exp_sub_object_instructions(TacSubObject* res, CExp* node) {
+    TIdentifier src_name = std::move(res->base_name);
+    TLong offset = std::move(res->offset);
+    std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
+    push_instruction(std::make_unique<TacCopyFromOffset>(std::move(src_name), std::move(offset), dst));
+    return dst;
+}
+
+// exp_result = PlainOperand(val) | DereferencedPointer(val) | SubObject(val)
 static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
     std::unique_ptr<TacExpResult> res = represent_exp_result_instructions(node);
     switch(res->type()) {
@@ -756,6 +801,8 @@ static std::shared_ptr<TacValue> represent_exp_instructions(CExp* node) {
         case AST_T::TacDereferencedPointer_t:
             return represent_exp_dereferenced_pointer_instructions(static_cast<TacDereferencedPointer*>(res.get()),
                                                                    node);
+        case AST_T::TacSubObject_t:
+            return represent_exp_sub_object_instructions(static_cast<TacSubObject*>(res.get()), node);
         default:
             RAISE_INTERNAL_ERROR;
     }
