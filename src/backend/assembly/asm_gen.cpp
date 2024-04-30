@@ -82,7 +82,7 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
             generate_double_static_constant_top_level(static_constant_label, value, binary, byte);
         }
     }
-    return std::make_shared<AsmData>(std::move(static_constant_label), 0l /*TODO*/);
+    return std::make_shared<AsmData>(std::move(static_constant_label), 0l);
 }
 
 static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* node) {
