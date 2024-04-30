@@ -82,7 +82,7 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
             generate_double_static_constant_top_level(static_constant_label, value, binary, byte);
         }
     }
-    return std::make_shared<AsmData>(std::move(static_constant_label));
+    return std::make_shared<AsmData>(std::move(static_constant_label), 0l /*TODO*/);
 }
 
 static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* node) {
@@ -129,7 +129,7 @@ static std::shared_ptr<AsmOperand> generate_variable_operand(TacVariable* node) 
     }
 }
 
-// operand = Imm(int, bool, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier)
+// operand = Imm(int, bool, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier, int)
 //         | PseudoMem(identifier, int) | Indexed(int, reg, reg)
 static std::shared_ptr<AsmOperand> generate_operand(TacValue* node) {
     switch(node->type()) {
@@ -1177,7 +1177,7 @@ static void generate_get_address_instructions(TacGetAddress* node) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
             if(frontend->symbol_table.find(name) != frontend->symbol_table.end() &&
                frontend->symbol_table[name]->attrs->type() == AST_T::ConstantAttr_t) {
-                src = std::make_shared<AsmData>(std::move(name));
+                src = std::make_shared<AsmData>(std::move(name), 0l /*TODO*/);
                 goto Lpass;
             }
         }

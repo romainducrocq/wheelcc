@@ -106,8 +106,8 @@ AsmPseudo::AsmPseudo(TIdentifier name)
 AsmMemory::AsmMemory(TLong value, std::unique_ptr<AsmReg> reg)
     : value(value), reg(std::move(reg)) {}
 
-AsmData::AsmData(TIdentifier name)
-    : name(std::move(name)) {}
+AsmData::AsmData(TIdentifier name, TLong offset)
+    : name(std::move(name)), offset(offset) {}
 
 AsmPseudoMem::AsmPseudoMem(TIdentifier name, TLong offset)
     : name(std::move(name)), offset(offset) {}

@@ -24,12 +24,12 @@ StackFixContext::StackFixContext()
 
 static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
     TIdentifier name = node->name;
-    return std::make_shared<AsmData>(std::move(name));
+    return std::make_shared<AsmData>(std::move(name), 0l /*TODO*/);
 }
 
 static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* node) {
     TIdentifier name = node->name;
-    return std::make_shared<AsmData>(std::move(name));
+    return std::make_shared<AsmData>(std::move(name), 0l /*TODO*/);
 }
 
 static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {

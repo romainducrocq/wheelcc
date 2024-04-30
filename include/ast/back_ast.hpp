@@ -190,7 +190,7 @@ struct AsmP : AsmCondCode {
 //         | Reg(reg)
 //         | Pseudo(identifier)
 //         | Memory(int, reg)
-//         | Data(identifier)
+//         | Data(identifier, int)
 //         | PseudoMem(identifier, int)
 //         | Indexed(int, reg, reg)
 struct AsmOperand : Ast {
@@ -235,9 +235,10 @@ struct AsmMemory : AsmOperand {
 struct AsmData : AsmOperand {
     AST_T type() override;
     AsmData() = default;
-    AsmData(TIdentifier name);
+    AsmData(TIdentifier name, TLong offset);
 
     TIdentifier name;
+    TLong offset;
 };
 
 struct AsmPseudoMem : AsmOperand {
