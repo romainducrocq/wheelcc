@@ -194,7 +194,8 @@ static std::unique_ptr<AsmUnaryOp> generate_unary_op(TacUnaryOp* node) {
     }
 }
 
-// binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight
+// binary_operator = Add | Sub | Mult | DivDouble | Shl | ShrTwoOp | BitAnd | BitOr | BitXor | BitShiftLeft
+//                 | BitShiftRight
 static std::unique_ptr<AsmBinaryOp> generate_binary_op(TacBinaryOp* node) {
     switch(node->type()) {
         case AST_T::TacAdd_t:

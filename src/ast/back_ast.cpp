@@ -57,6 +57,8 @@ AST_T AsmAdd::type() { return AST_T::AsmAdd_t; }
 AST_T AsmSub::type() { return AST_T::AsmSub_t; }
 AST_T AsmMult::type() { return AST_T::AsmMult_t; }
 AST_T AsmDivDouble::type() { return AST_T::AsmDivDouble_t; }
+AST_T AsmShl::type() { return AST_T::AsmShl_t; }
+AST_T AsmShrTwoOp::type() { return AST_T::AsmShrTwoOp_t; }
 AST_T AsmBitAnd::type() { return AST_T::AsmBitAnd_t; }
 AST_T AsmBitOr::type() { return AST_T::AsmBitOr_t; }
 AST_T AsmBitXor::type() { return AST_T::AsmBitXor_t; }
