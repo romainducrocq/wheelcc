@@ -1405,6 +1405,7 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmData", "", ++t);
             AsmData* p_node = static_cast<AsmData*>(node);
             field("TIdentifier", p_node->name, t+1);
+            field("TLong", std::to_string(p_node->offset), t+1);
             break;
         }
         case AST_T::AsmPseudoMem_t: {
@@ -1440,6 +1441,14 @@ static void print_ast(Ast* node, size_t t) {
         }
         case AST_T::AsmDivDouble_t: {
             field("AsmDivDouble", "", ++t);
+            break;
+        }
+        case AST_T::AsmShl_t: {
+            field("AsmShl", "", ++t);
+            break;
+        }
+        case AST_T::AsmShrTwoOp_t: {
+            field("AsmShrTwoOp", "", ++t);
             break;
         }
         case AST_T::AsmBitAnd_t: {

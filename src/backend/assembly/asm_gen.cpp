@@ -1423,7 +1423,7 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
         std::shared_ptr<AsmOperand> src = generate_operand(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
         push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src),
-                                                  std::move(dst)));
+                                                            std::move(dst)));
     }
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->index.get());
@@ -1885,8 +1885,8 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
     std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
     {
         for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
-            std::unique_ptr<AsmTopLevel> static_constant_top_level =
-                    generate_top_level(node->static_constant_top_levels[top_level].get());
+            std::unique_ptr<AsmTopLevel> static_constant_top_level = generate_top_level(
+                                                                node->static_constant_top_levels[top_level].get());
             static_constant_top_levels.push_back(std::move(static_constant_top_level));
         }
     }
@@ -1895,13 +1895,13 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
     {
         context->p_static_constant_top_levels = &static_constant_top_levels;
         for(size_t top_level = 0; top_level < node->static_variable_top_levels.size(); top_level++) {
-            std::unique_ptr<AsmTopLevel> static_variable_top_level =
-                    generate_top_level(node->static_variable_top_levels[top_level].get());
+            std::unique_ptr<AsmTopLevel> static_variable_top_level = generate_top_level(
+                                                                node->static_variable_top_levels[top_level].get());
             top_levels.push_back(std::move(static_variable_top_level));
         }
         for(size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {
-            std::unique_ptr<AsmTopLevel> function_top_level =
-                    generate_top_level(node->function_top_levels[top_level].get());
+            std::unique_ptr<AsmTopLevel> function_top_level = generate_top_level(
+                                                                       node->function_top_levels[top_level].get());
             top_levels.push_back(std::move(function_top_level));
         }
         context->p_static_constant_top_levels = nullptr;
