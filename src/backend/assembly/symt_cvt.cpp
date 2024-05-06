@@ -56,10 +56,16 @@ static TInt generate_array_aggregate_type_alignment(Array* arr_type) {
     return generate_array_aggregate_type_alignment(arr_type, size);
 }
 
+static TInt generate_structure_aggregate_type_alignment(Structure* struct_type){
+    return frontend->struct_typedef_table[struct_type->tag]->alignment; // TODO max(alignment, 16) ?
+}
+
 TInt generate_type_alignment(Type* type) {
     switch(type->type()) {
         case AST_T::Array_t:
             return generate_array_aggregate_type_alignment(static_cast<Array*>(type));
+        case AST_T::Structure_t:
+            return generate_structure_aggregate_type_alignment(static_cast<Structure*>(type));
         default:
             return generate_scalar_type_alignment(type);
     }
@@ -68,6 +74,20 @@ TInt generate_type_alignment(Type* type) {
 static std::shared_ptr<ByteArray> convert_array_aggregate_assembly_type(Array* arr_type) {
     TLong size;
     TInt alignment = generate_array_aggregate_type_alignment(arr_type, size);
+    return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
+}
+
+static std::shared_ptr<ByteArray> convert_structure_aggregate_assembly_type(Structure* struct_type) {
+    TLong size;
+    TInt alignment;
+    if(frontend->struct_typedef_table.find(struct_type->tag) != frontend->struct_typedef_table.end()) {
+        size = frontend->struct_typedef_table[struct_type->tag]->size;
+        alignment = frontend->struct_typedef_table[struct_type->tag]->alignment;
+    }
+    else {
+        size = -1l;
+        alignment = -1;
+    }
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
@@ -89,6 +109,9 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
         case AST_T::Array_t:
             return convert_array_aggregate_assembly_type(
                                                 static_cast<Array*>(frontend->symbol_table[name]->type_t.get()));
+        case AST_T::Structure_t:
+            return convert_structure_aggregate_assembly_type(
+                                          static_cast<Structure*>(frontend->symbol_table[name]->type_t.get()));
         default:
             RAISE_INTERNAL_ERROR;
     }
