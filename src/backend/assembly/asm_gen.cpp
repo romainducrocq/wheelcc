@@ -1179,7 +1179,33 @@ static void generate_binary_instructions(TacBinary* node) {
 }
 
 static void generate_copy_structure_instructions(TacCopy* node) {
-    // TODO
+    TIdentifier src_name = static_cast<TacVariable*>(node->src.get())->name;
+    TIdentifier dst_name = static_cast<TacVariable*>(node->dst.get())->name;
+    Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[src_name]->type_t.get());
+    TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+    TLong offset = 0l;
+    while(size > 0l) {
+        std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
+        std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
+        std::shared_ptr<AssemblyType> assembly_type_src;
+        if(size >= 8l) {
+            assembly_type_src = std::make_shared<QuadWord>();
+            size -= 8l;
+            offset += 8l;
+        }
+        else if(size >= 4l) {
+            assembly_type_src = std::make_shared<LongWord>();
+            size -= 4l;
+            offset += 4l;
+        }
+        else {
+            assembly_type_src = std::make_shared<Byte>();
+            size -= 1l;
+            offset += 1l;
+        }
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
 }
 
 static void generate_copy_scalar_instructions(TacCopy* node) {
