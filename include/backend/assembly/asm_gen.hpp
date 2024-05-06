@@ -13,6 +13,12 @@
 
 // Assembly generation
 
+enum TYPE_CLASS {
+    INTEGER,
+    SSE,
+    MEMORY
+};
+
 struct AsmGenContext {
     AsmGenContext();
 
