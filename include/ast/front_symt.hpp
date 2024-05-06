@@ -332,5 +332,7 @@ extern std::unique_ptr<FrontEndContext> frontend;
 
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
     frontend->struct_typedef_table[(X)]->members[frontend->struct_typedef_table[(X)]->member_names[(Y)]]
+#define GET_STRUCT_TYPEDEF_MEMBER_BACK(X) \
+    frontend->struct_typedef_table[(X)]->members[frontend->struct_typedef_table[(X)]->member_names.back()]
 
 #endif

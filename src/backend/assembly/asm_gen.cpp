@@ -745,7 +745,7 @@ static void generate_deallocate_stack_instructions(TLong byte) {
 
 static void generate_structure_type_classes(Structure* struct_type) {
      if(context->struct_type_classes_map.find(struct_type->tag) == context->struct_type_classes_map.end()) {
-         std::vector <STRUCT_TYPE_CLASS> struct_type_classes;
+         std::vector<STRUCT_TYPE_CLASS> struct_type_classes;
          TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
          if(size > 16l) {
              while(size > 0l) {
@@ -754,9 +754,46 @@ static void generate_structure_type_classes(Structure* struct_type) {
              }
          }
          else {
-            // TODO
-             //        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0);
-
+             Type* type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
+             while(true) {
+                 switch(type->type()) {
+                     case AST_T::Array_t: {
+                         type = static_cast<Array*>(type)->elem_type.get();
+                         break;
+                     }
+                     case AST_T::Structure_t: {
+                         struct_type = static_cast<Structure*>(type);
+                         type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
+                         break;
+                     }
+                     default:
+                         goto Lbreak_1;
+                 }
+             }
+             Lbreak_1:
+             struct_type_classes.push_back(type->type() == AST_T::Double_t ? STRUCT_TYPE_CLASS::SSE :
+                                                                             STRUCT_TYPE_CLASS::INTEGER);
+             if(size > 8l) {
+                 type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
+                 while(true) {
+                     switch(type->type()) {
+                         case AST_T::Array_t: {
+                             type = static_cast<Array*>(type)->elem_type.get();
+                             break;
+                         }
+                         case AST_T::Structure_t: {
+                             struct_type = static_cast<Structure*>(type);
+                             type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
+                             break;
+                         }
+                         default:
+                             goto Lbreak_2;
+                     }
+                 }
+                 Lbreak_2:
+                 struct_type_classes.push_back(type->type() == AST_T::Double_t ? STRUCT_TYPE_CLASS::SSE :
+                                                                                 STRUCT_TYPE_CLASS::INTEGER);
+             }
          }
          context->struct_type_classes_map[struct_type->tag] = std::move(struct_type_classes);
      }
