@@ -1232,7 +1232,7 @@ static void generate_get_address_instructions(TacGetAddress* node) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
             if(frontend->symbol_table.find(name) != frontend->symbol_table.end() &&
                frontend->symbol_table[name]->attrs->type() == AST_T::ConstantAttr_t) {
-                src = std::make_shared<AsmData>(std::move(name), 0l /*TODO*/);
+                src = std::make_shared<AsmData>(std::move(name), 0l);
                 goto Lpass;
             }
         }
@@ -1259,23 +1259,23 @@ static void generate_load_structure_instructions(TacLoad* node) {
         while(size > 0l) {
             std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Ax, offset);
             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
-            std::shared_ptr<AssemblyType> assembly_type_src;
+            std::shared_ptr<AssemblyType> assembly_type_dst;
             if(size >= 8l) {
-                assembly_type_src = std::make_shared<QuadWord>();
+                assembly_type_dst = std::make_shared<QuadWord>();
                 size -= 8l;
                 offset += 8l;
             }
             else if(size >= 4l) {
-                assembly_type_src = std::make_shared<LongWord>();
+                assembly_type_dst = std::make_shared<LongWord>();
                 size -= 4l;
                 offset += 4l;
             }
             else {
-                assembly_type_src = std::make_shared<Byte>();
+                assembly_type_dst = std::make_shared<Byte>();
                 size -= 1l;
                 offset += 1l;
             }
-            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
                                                                 std::move(dst)));
         }
     }
@@ -1323,23 +1323,23 @@ static void generate_store_structure_instructions(TacStore* node) {
         while(size > 0l) {
             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
             std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, offset);
-            std::shared_ptr<AssemblyType> assembly_type_src;
+            std::shared_ptr<AssemblyType> assembly_type_dst;
             if(size >= 8l) {
-                assembly_type_src = std::make_shared<QuadWord>();
+                assembly_type_dst = std::make_shared<QuadWord>();
                 size -= 8l;
                 offset += 8l;
             }
             else if(size >= 4l) {
-                assembly_type_src = std::make_shared<LongWord>();
+                assembly_type_dst = std::make_shared<LongWord>();
                 size -= 4l;
                 offset += 4l;
             }
             else {
-                assembly_type_src = std::make_shared<Byte>();
+                assembly_type_dst = std::make_shared<Byte>();
                 size -= 1l;
                 offset += 1l;
             }
-            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
                                                                 std::move(dst)));
         }
     }
@@ -1513,9 +1513,9 @@ static void generate_copy_to_offset_scalar_instructions(TacCopyToOffset* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst;
     {
-        TIdentifier name = node->dst_name;
-        TLong offset = node->offset;
-        dst = std::make_shared<AsmPseudoMem>(std::move(name), std::move(offset));
+        TIdentifier dst_name = node->dst_name;
+        TLong to_offset = node->offset;
+        dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
     }
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
@@ -1544,25 +1544,38 @@ static void generate_copy_from_offset_structure_instructions(TacCopyFromOffset* 
             src = std::make_shared<AsmPseudoMem>(std::move(src_name),std::move(from_offset));
         }
         std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
-        std::shared_ptr<AssemblyType> assembly_type_src;
+        std::shared_ptr<AssemblyType> assembly_type_dst;
         if(size >= 8l) {
-            assembly_type_src = std::make_shared<QuadWord>();
+            assembly_type_dst = std::make_shared<QuadWord>();
             size -= 8l;
             offset += 8l;
         }
         else if(size >= 4l) {
-            assembly_type_src = std::make_shared<LongWord>();
+            assembly_type_dst = std::make_shared<LongWord>();
             size -= 4l;
             offset += 4l;
         }
         else {
-            assembly_type_src = std::make_shared<Byte>();
+            assembly_type_dst = std::make_shared<Byte>();
             size -= 1l;
             offset += 1l;
         }
-        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
                                                             std::move(dst)));
     }
+}
+
+static void generate_copy_from_offset_scalar_instructions(TacCopyFromOffset* node) {
+    std::shared_ptr<AsmOperand> src;
+    {
+        TIdentifier src_name = node->src_name;
+        TLong from_offset = node->offset;
+        src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
+    }
+    std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
+    std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                        std::move(dst)));
 }
 
 static void generate_copy_from_offset_instructions(TacCopyFromOffset* node) {
@@ -1570,7 +1583,7 @@ static void generate_copy_from_offset_instructions(TacCopyFromOffset* node) {
         generate_copy_from_offset_structure_instructions(node);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        generate_copy_from_offset_scalar_instructions(node);
     }
 }
 
