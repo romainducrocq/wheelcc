@@ -1531,8 +1531,47 @@ static void generate_copy_to_offset_instructions(TacCopyToOffset* node) {
     }
 }
 
+static void generate_copy_from_offset_structure_instructions(TacCopyFromOffset* node) {
+    TIdentifier dst_name = static_cast<TacVariable*>(node->dst.get())->name;
+    Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[dst_name]->type_t.get());
+    TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+    TLong offset = 0l;
+    while(size > 0l) {
+        std::shared_ptr<AsmOperand> src;
+        {
+            TIdentifier src_name = node->src_name;
+            TLong from_offset = offset + node->offset;
+            src = std::make_shared<AsmPseudoMem>(std::move(src_name),std::move(from_offset));
+        }
+        std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
+        std::shared_ptr<AssemblyType> assembly_type_src;
+        if(size >= 8l) {
+            assembly_type_src = std::make_shared<QuadWord>();
+            size -= 8l;
+            offset += 8l;
+        }
+        else if(size >= 4l) {
+            assembly_type_src = std::make_shared<LongWord>();
+            size -= 4l;
+            offset += 4l;
+        }
+        else {
+            assembly_type_src = std::make_shared<Byte>();
+            size -= 1l;
+            offset += 1l;
+        }
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
+}
+
 static void generate_copy_from_offset_instructions(TacCopyFromOffset* node) {
-    // TODO
+    if(is_value_structure(node->dst.get())) {
+        generate_copy_from_offset_structure_instructions(node);
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
+    }
 }
 
 static void generate_jump_instructions(TacJump* node) {
