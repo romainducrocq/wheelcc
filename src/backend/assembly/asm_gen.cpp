@@ -409,9 +409,10 @@ static void generate_return_double_instructions(TacReturn* node) {
 
 static void generate_return_instructions(TacReturn* node) {
     if(node->val) {
-        if (is_value_double(node->val.get())) {
+        if(is_value_double(node->val.get())) {
             generate_return_double_instructions(node);
-        } else {
+        }
+        else {
             generate_return_integer_instructions(node);
         }
     }
@@ -740,6 +741,25 @@ static void generate_allocate_stack_instructions(TLong byte) {
 
 static void generate_deallocate_stack_instructions(TLong byte) {
     push_instruction(deallocate_stack_bytes(byte));
+}
+
+static void generate_structure_type_classes(Structure* struct_type) {
+     if(context->struct_type_classes_map.find(struct_type->tag) == context->struct_type_classes_map.end()) {
+         std::vector <STRUCT_TYPE_CLASS> struct_type_classes;
+         TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+         if(size > 16l) {
+             while(size > 0l) {
+                 struct_type_classes.push_back(STRUCT_TYPE_CLASS::MEMORY);
+                 size -= 8l;
+             }
+         }
+         else {
+            // TODO
+             //        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0);
+
+         }
+         context->struct_type_classes_map[struct_type->tag] = std::move(struct_type_classes);
+     }
 }
 
 static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {

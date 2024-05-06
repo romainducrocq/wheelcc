@@ -1047,11 +1047,13 @@ static void represent_array_single_init_string_instructions(CString* node, Array
                     TChar value = string_literal_bytes_to_int8(node->literal->value, byte_at);
                     constant = std::make_shared<CConstChar>(std::move(value));
                     byte_at += 1;
-                } else if(bytes_left < 8) {
+                }
+                else if(bytes_left < 8) {
                     TInt value = string_literal_bytes_to_int32(node->literal->value, byte_at);
                     constant = std::make_shared<CConstInt>(std::move(value));
                     byte_at += 4;
-                } else {
+                }
+                else {
                     TLong value = string_literal_bytes_to_int64(node->literal->value, byte_at);
                     constant = std::make_shared<CConstLong>(std::move(value));
                     byte_at += 8;
@@ -1074,10 +1076,12 @@ static void represent_array_single_init_string_instructions(CString* node, Array
                 if(bytes_left < 4) {
                     constant = std::make_shared<CConstChar>(0);
                     byte_at += 1;
-                } else if(bytes_left < 8) {
+                }
+                else if(bytes_left < 8) {
                     constant = std::make_shared<CConstInt>(0);
                     byte_at += 4;
-                } else {
+                }
+                else {
                     constant = std::make_shared<CConstLong>(0l);
                     byte_at += 8;
                 }

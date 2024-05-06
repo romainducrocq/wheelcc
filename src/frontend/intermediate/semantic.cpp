@@ -324,13 +324,15 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     if(type_size_1 == type_size_2) {
         if(is_type_signed(node_1->exp_type.get())) {
             return node_2->exp_type;
-        } else {
+        }
+        else {
             return node_1->exp_type;
         }
     }
     else if(type_size_1 > type_size_2) {
         return node_1->exp_type;
-    } else {
+    }
+    else {
         return node_2->exp_type;
     }
 }
@@ -1823,7 +1825,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             if(initial_value->type() == AST_T::Initial_t) {
                 raise_runtime_error("File scope variable " + em(node->name) +
                                     " was defined with conflicting linkage");
-            } else {
+            }
+            else {
                 initial_value = global_var_attrs->init;
             }
         }

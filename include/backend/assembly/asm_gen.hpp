@@ -8,12 +8,13 @@
 #include <memory>
 #include <array>
 #include <vector>
+#include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Assembly generation
 
-enum TYPE_CLASS {
+enum STRUCT_TYPE_CLASS {
     INTEGER,
     SSE,
     MEMORY
@@ -24,6 +25,7 @@ struct AsmGenContext {
 
     std::array<REGISTER_KIND, 6> ARG_REGISTERS;
     std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS;
+    std::unordered_map<TIdentifier, std::vector<STRUCT_TYPE_CLASS>> struct_type_classes_map;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
     std::vector<std::unique_ptr<AsmTopLevel>>* p_static_constant_top_levels;
 };
