@@ -339,6 +339,21 @@ static bool is_value_double(TacValue* node) {
     }
 }
 
+static bool is_variable_value_structure(TacVariable* node) {
+    return frontend->symbol_table[node->name]->type_t->type() == AST_T::Structure_t;
+}
+
+static bool is_value_structure(TacValue* node) {
+    switch(node->type()) {
+        case AST_T::TacVariable_t:
+            return is_variable_value_structure(static_cast<TacVariable*>(node));
+        case AST_T::TacConstant_t:
+            return false;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::shared_ptr<AssemblyType> generate_constant_assembly_type(TacConstant* node) {
     switch(node->constant->type()) {
         case AST_T::CConstChar_t:
@@ -1163,12 +1178,25 @@ static void generate_binary_instructions(TacBinary* node) {
     }
 }
 
-static void generate_copy_instructions(TacCopy* node) {
+static void generate_copy_structure_instructions(TacCopy* node) {
+    // TODO
+}
+
+static void generate_copy_scalar_instructions(TacCopy* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
                                                         std::move(dst)));
+}
+
+static void generate_copy_instructions(TacCopy* node) {
+    if(is_value_structure(node->src.get())) {
+        generate_copy_structure_instructions(node);
+    }
+    else {
+        generate_copy_scalar_instructions(node);
+    }
 }
 
 static void generate_get_address_instructions(TacGetAddress* node) {
@@ -1189,7 +1217,11 @@ static void generate_get_address_instructions(TacGetAddress* node) {
     push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
 }
 
-static void generate_load_instructions(TacLoad* node) {
+static void generate_load_structure_instructions(TacLoad* node) {
+    // TODO
+}
+
+static void generate_load_scalar_instructions(TacLoad* node) {
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
@@ -1206,7 +1238,20 @@ static void generate_load_instructions(TacLoad* node) {
     }
 }
 
-static void generate_store_instructions(TacStore* node) {
+static void generate_load_instructions(TacLoad* node) {
+    if(is_value_structure(node->dst.get())) {
+        generate_load_structure_instructions(node);
+    }
+    else {
+        generate_load_scalar_instructions(node);
+    }
+}
+
+static void generate_store_structure_instructions(TacStore* node) {
+    // TODO
+}
+
+static void generate_store_scalar_instructions(TacStore* node) {
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->dst_ptr.get());
         std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
@@ -1220,6 +1265,15 @@ static void generate_store_instructions(TacStore* node) {
         std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->src.get());
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
                                                             std::move(dst)));
+    }
+}
+
+static void generate_store_instructions(TacStore* node) {
+    if(is_value_structure(node->src.get())) {
+        generate_store_structure_instructions(node);
+    }
+    else {
+        generate_store_scalar_instructions(node);
     }
 }
 
@@ -1327,7 +1381,11 @@ static void generate_add_ptr_instructions(TacAddPtr* node) {
     }
 }
 
-static void generate_copy_to_offset_instructions(TacCopyToOffset* node) {
+static void generate_copy_to_offset_structure_instructions(TacCopyToOffset* node) {
+    // TODO
+}
+
+static void generate_copy_to_offset_scalar_instructions(TacCopyToOffset* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst;
     {
@@ -1338,6 +1396,19 @@ static void generate_copy_to_offset_instructions(TacCopyToOffset* node) {
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node->src.get());
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
                                                         std::move(dst)));
+}
+
+static void generate_copy_to_offset_instructions(TacCopyToOffset* node) {
+    if(is_value_structure(node->src.get())) {
+        generate_copy_to_offset_structure_instructions(node);
+    }
+    else {
+        generate_copy_to_offset_scalar_instructions(node);
+    }
+}
+
+static void generate_copy_from_offset_instructions(TacCopyFromOffset* node) {
+    // TODO
 }
 
 static void generate_jump_instructions(TacJump* node) {
@@ -1482,6 +1553,9 @@ static void generate_instructions(TacInstruction* node) {
             break;
         case AST_T::TacCopyToOffset_t:
             generate_copy_to_offset_instructions(static_cast<TacCopyToOffset*>(node));
+            break;
+        case AST_T::TacCopyFromOffset_t:
+            generate_copy_from_offset_instructions(static_cast<TacCopyFromOffset*>(node));
             break;
         case AST_T::TacJump_t:
             generate_jump_instructions(static_cast<TacJump*>(node));
