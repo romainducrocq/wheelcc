@@ -387,6 +387,21 @@ static std::shared_ptr<AssemblyType> generate_assembly_type(TacValue* node) {
     }
 }
 
+static std::shared_ptr<AssemblyType> generate_8byte_assembly_type(TLong offset, TLong size) {
+    size -= offset;
+    if(size >= 8l) {
+        return std::make_shared<QuadWord>();
+    }
+    switch(size) {
+        case 1l:
+            return std::make_shared<Byte>();
+        case 4l:
+            return std::make_shared<LongWord>();
+        default:
+            return std::make_shared<ByteArray>(std::move(size), 8);
+    }
+}
+
 static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
     context->p_instructions->push_back(std::move(instruction));
 }
@@ -1561,10 +1576,10 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
 
 static void generate_variable_index_add_ptr_instructions(TacAddPtr* node) {
     switch(node->scale) {
-        case 1:
-        case 2:
-        case 4:
-        case 8:
+        case 1l:
+        case 2l:
+        case 4l:
+        case 8l:
             generate_scalar_scale_variable_index_add_ptr_instructions(node);
             break;
         default:
