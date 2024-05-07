@@ -257,7 +257,7 @@ static bool is_value_signed(TacValue* node) {
     }
 }
 
-static bool is_constant_value_8_bits(TacConstant* node) {
+static bool is_constant_value_1byte(TacConstant* node) {
     switch(node->constant->type()) {
         case AST_T::CConstChar_t:
         case AST_T::CConstUChar_t:
@@ -267,7 +267,7 @@ static bool is_constant_value_8_bits(TacConstant* node) {
     }
 }
 
-static bool is_variable_value_8_bits(TacVariable* node) {
+static bool is_variable_value_1byte(TacVariable* node) {
     switch(frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
@@ -278,18 +278,18 @@ static bool is_variable_value_8_bits(TacVariable* node) {
     }
 }
 
-static bool is_value_8_bits(TacValue* node) {
+static bool is_value_1byte(TacValue* node) {
     switch(node->type()) {
         case AST_T::TacConstant_t:
-            return is_constant_value_8_bits(static_cast<TacConstant*>(node));
+            return is_constant_value_1byte(static_cast<TacConstant*>(node));
         case AST_T::TacVariable_t:
-            return is_variable_value_8_bits(static_cast<TacVariable*>(node));
+            return is_variable_value_1byte(static_cast<TacVariable*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-static bool is_constant_value_32_bits(TacConstant* node) {
+static bool is_constant_value_4byte(TacConstant* node) {
     switch(node->constant->type()) {
         case AST_T::CConstInt_t:
         case AST_T::CConstUInt_t:
@@ -299,7 +299,7 @@ static bool is_constant_value_32_bits(TacConstant* node) {
     }
 }
 
-static bool is_variable_value_32_bits(TacVariable* node) {
+static bool is_variable_value_4byte(TacVariable* node) {
     switch(frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Int_t:
         case AST_T::UInt_t:
@@ -309,12 +309,12 @@ static bool is_variable_value_32_bits(TacVariable* node) {
     }
 }
 
-static bool is_value_32_bits(TacValue* node) {
+static bool is_value_4byte(TacValue* node) {
     switch(node->type()) {
         case AST_T::TacConstant_t:
-            return is_constant_value_32_bits(static_cast<TacConstant*>(node));
+            return is_constant_value_4byte(static_cast<TacConstant*>(node));
         case AST_T::TacVariable_t:
-            return is_variable_value_32_bits(static_cast<TacVariable*>(node));
+            return is_variable_value_4byte(static_cast<TacVariable*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -466,7 +466,7 @@ static void generate_long_truncate_instructions(TacTruncate* node) {
 }
 
 static void generate_truncate_instructions(TacTruncate* node) {
-    if(is_value_8_bits(node->dst.get())) {
+    if(is_value_1byte(node->dst.get())) {
         generate_byte_truncate_instructions(node);
     }
     else {
@@ -509,7 +509,7 @@ static void generate_int_long_double_to_signed_instructions(TacDoubleToInt* node
 }
 
 static void generate_double_to_signed_instructions(TacDoubleToInt* node) {
-    if(is_value_8_bits(node->dst.get())) {
+    if(is_value_1byte(node->dst.get())) {
         generate_char_double_to_signed_instructions(node);
     }
     else {
@@ -596,10 +596,10 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
 }
 
 static void generate_double_to_unsigned_instructions(TacDoubleToUInt* node) {
-    if(is_value_8_bits(node->dst.get())) {
+    if(is_value_1byte(node->dst.get())) {
         generate_uchar_double_to_unsigned_instructions(node);
     }
-    else if(is_value_32_bits(node->dst.get())) {
+    else if(is_value_4byte(node->dst.get())) {
         generate_uint_double_to_unsigned_instructions(node);
     }
     else {
@@ -632,7 +632,7 @@ static void generate_int_long_signed_to_double_instructions(TacIntToDouble* node
 }
 
 static void generate_signed_to_double_instructions(TacIntToDouble* node) {
-    if(is_value_8_bits(node->src.get())) {
+    if(is_value_1byte(node->src.get())) {
         generate_char_signed_to_double_instructions(node);
     }
     else {
@@ -729,10 +729,10 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
 }
 
 static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
-    if(is_value_8_bits(node->src.get())) {
+    if(is_value_1byte(node->src.get())) {
         generate_uchar_unsigned_to_double_instructions(node);
     }
-    else if(is_value_32_bits(node->src.get())) {
+    else if(is_value_4byte(node->src.get())) {
         generate_uint_unsigned_to_double_instructions(node);
     }
     else {
@@ -869,32 +869,32 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
                 stack_padding += 8l;
             }
         }
-//                else {
-//                    bool is_return_on_stack = true;
-//                    TIdentifier name = static_cast<TacVariable*>(node->args[i].get())->name;
-//                    Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-//                    generate_structure_type_classes(struct_type);
-//                    if(context->struct_type_classes_map[struct_type->tag][0] != STRUCT_TYPE_CLASS::MEMORY) {
-//                        std::vector<size_t> i_8b_regs;
-//                        std::vector<size_t> i_8b_sse_regs;
-//                        for(size_t i_8b = 0; i_8b < context->struct_type_classes_map[struct_type->tag].size(); i_8b++) {
-//                            if(context->struct_type_classes_map[struct_type->tag][i_8b] == STRUCT_TYPE_CLASS::SSE) {
-//                                i_8b_sse_regs.push_back(i_8b);
-//                            }
-//                            else {
-//                                i_8b_regs.push_back(i_8b);
-//                            }
-//                        }
-//                        if(i_8b_sse_regs.size() + i_sse_regs.size() < 8 &&
-//                           i_8b_regs.size() + i_8b_regs.size() < i_regs_size) {
-//                            // do the stuff TODO
-//                            is_return_on_stack = false;
-//                        }
+        else {
+            bool is_return_on_stack = true;
+            TIdentifier name = static_cast<TacVariable*>(node->args[i].get())->name;
+            Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
+            generate_structure_type_classes(struct_type);
+            if(context->struct_type_classes_map[struct_type->tag][0] != STRUCT_TYPE_CLASS::MEMORY) {
+//                std::vector<size_t> i_reg_s;
+//                std::vector<size_t> i_sses;
+//                for(size_t i_8b = 0; i_8b < context->struct_type_classes_map[struct_type->tag].size(); i_8b++) {
+//                    if(context->struct_type_classes_map[struct_type->tag][i_8b] == STRUCT_TYPE_CLASS::SSE) {
+//                        i_8b_sse_regs.push_back(i_8b);
 //                    }
-//                    if(is_return_on_stack) {
-//                        // do the stuff TODO
+//                    else {
+//                        i_8b_regs.push_back(i_8b);
 //                    }
 //                }
+//                if(i_8b_sse_regs.size() + i_sse_regs.size() < 8 &&
+//                   i_8b_regs.size() + i_8b_regs.size() < i_regs_size) {
+//                    // do the stuff TODO
+//                    is_return_on_stack = false;
+//                }
+            }
+//            if(is_return_on_stack) {
+//                // do the stuff TODO
+//            }
+        }
     }
 
     // TODO move entire vector
