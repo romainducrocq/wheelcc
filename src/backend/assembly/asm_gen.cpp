@@ -878,17 +878,24 @@ static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& na
 
 static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return_memory) {
     TLong stack_padding = 0l;
-    size_t max_reg_size = is_return_memory ? 5 : 6;
+    size_t see_size = 0;
+    size_t reg_size = 0;
+    size_t max_reg_size = 6;
+    if(is_return_memory) {
+        reg_size++;
+        max_reg_size--;
+    }
     std::vector<std::unique_ptr<AsmInstruction>> reg_instructions;
     std::vector<std::unique_ptr<AsmInstruction>> sse_instructions;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions = context->p_instructions;
     for(size_t arg = 0; arg < node->args.size(); arg++) {
         if(is_value_double(node->args[arg].get())) {
-            if(sse_instructions.size() < 8) {
+            if(see_size < 8) {
                 context->p_instructions = &sse_instructions;
                 generate_reg_arg_fun_call_instructions(node->args[arg].get(),
-                                                       context->ARG_SSE_REGISTERS[sse_instructions.size()]);
+                                                       context->ARG_SSE_REGISTERS[see_size]);
+                see_size++;
             }
             else {
                 context->p_instructions = &stack_instructions;
@@ -897,10 +904,11 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
             }
         }
         else if(!is_value_structure(node->args[arg].get())) {
-            if(reg_instructions.size() < max_reg_size) {
+            if(reg_size < max_reg_size) {
                 context->p_instructions = &reg_instructions;
                 generate_reg_arg_fun_call_instructions(node->args[arg].get(),
-                                                       context->ARG_REGISTERS[reg_instructions.size()]);
+                                                       context->ARG_REGISTERS[reg_size]);
+                reg_size++;
             }
             else {
                 context->p_instructions = &stack_instructions;
@@ -914,8 +922,8 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             generate_structure_type_classes(struct_type);
             if(context->struct_8byte_classes_map[struct_type->tag][0] != STRUCT_8BYTE_CLASS::MEMORY) {
-                size_t struct_reg_size = 0;
                 size_t struct_see_size = 0;
+                size_t struct_reg_size = 0;
                 for(size_t struct_8byte_class = 0;
                     struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
                     struct_8byte_class++) {
@@ -927,8 +935,8 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
                         struct_reg_size++;
                     }
                 }
-                if(struct_see_size + sse_instructions.size() < 8 &&
-                   struct_reg_size + reg_instructions.size() < max_reg_size) {
+                if(struct_see_size + see_size < 8 &&
+                   struct_reg_size + reg_size < max_reg_size) {
                     is_pass_register = true;
                 }
             }
@@ -941,12 +949,14 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
                                                                                               STRUCT_8BYTE_CLASS::SSE) {
                         context->p_instructions = &sse_instructions;
                         generate_8byte_reg_arg_fun_call_instructions(name, offset, nullptr,
-                                                          context->ARG_SSE_REGISTERS[sse_instructions.size()]);
+                                                                     context->ARG_SSE_REGISTERS[see_size]);
+                        see_size++;
                     }
                     else {
                         context->p_instructions = &reg_instructions;
                         generate_8byte_reg_arg_fun_call_instructions(name, offset, struct_type,
-                                                              context->ARG_REGISTERS[reg_instructions.size()]);
+                                                                     context->ARG_REGISTERS[reg_size]);
+                        reg_size++;
                     }
                     offset += 8l;
                 }
@@ -964,14 +974,13 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
     }
     context->p_instructions = p_instructions;
 
-    // TODO move entire vector
-    for(size_t reg_instruction = 0; reg_instruction < reg_instructions.size(); reg_instruction++) {
-        push_instruction(std::move(reg_instructions[reg_instruction]));
-    }
-    // TODO move entire vector
-    for(size_t sse_instruction = 0; sse_instruction < sse_instructions.size(); sse_instruction++) {
-        push_instruction(std::move(sse_instructions[sse_instruction]));
-    }
+    context->p_instructions->insert(context->p_instructions->end(),
+                                    std::make_move_iterator(reg_instructions.begin()),
+                                    std::make_move_iterator(reg_instructions.end()));
+    context->p_instructions->insert(context->p_instructions->end(),
+                                    std::make_move_iterator(sse_instructions.begin()),
+                                    std::make_move_iterator(sse_instructions.end()));
+    context->p_instructions->reserve(context->p_instructions->size() + stack_instructions.size());
     for(size_t stack_instruction = stack_instructions.size(); stack_instruction-- > 0;) {
         push_instruction(std::move(stack_instructions[stack_instruction]));
     }
@@ -986,8 +995,8 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             generate_allocate_stack_instructions(stack_padding);
         }
 
-        bool is_return_on_memory = false;
-        stack_padding += generate_arg_fun_call_instructions(node, is_return_on_memory);
+        bool is_return_memory = false;
+        stack_padding += generate_arg_fun_call_instructions(node, is_return_memory);
 
         {
             TIdentifier name = node->name;
