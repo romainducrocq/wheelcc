@@ -391,6 +391,11 @@ static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
     context->p_instructions->push_back(std::move(instruction));
 }
 
+static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction,
+                             std::vector<std::unique_ptr<AsmInstruction>>& _instructions) {
+    _instructions.push_back(std::move(instruction));
+}
+
 static void generate_return_integer_instructions(TacReturn* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
@@ -799,14 +804,17 @@ static void generate_structure_type_classes(Structure* struct_type) {
      }
 }
 
-static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {
+static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register,
+                                                   std::vector<std::unique_ptr<AsmInstruction>>& _instructions) {
     std::shared_ptr<AsmOperand> src = generate_operand(node);
     std::shared_ptr<AsmOperand> dst = generate_register(arg_register);
     std::shared_ptr<AssemblyType> assembly_type = generate_assembly_type(node);
-    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)),
+                     _instructions);
 }
 
-static void generate_stack_arg_fun_call_instructions(TacValue* node) {
+static void generate_stack_arg_fun_call_instructions(TacValue* node,
+                                                     std::vector<std::unique_ptr<AsmInstruction>>& _instructions) {
     std::shared_ptr<AsmOperand> src = generate_operand(node);
     std::shared_ptr<AssemblyType> assembly_type = generate_assembly_type(node);
 
@@ -814,13 +822,93 @@ static void generate_stack_arg_fun_call_instructions(TacValue* node) {
        src->type() == AST_T::AsmImm_t ||
        assembly_type->type() == AST_T::QuadWord_t ||
        assembly_type->type() == AST_T::BackendDouble_t) {
-        push_instruction(std::make_unique<AsmPush>(std::move(src)));
+        push_instruction(std::make_unique<AsmPush>(std::move(src)), _instructions);
         return;
     }
 
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
-    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), dst));
-    push_instruction(std::make_unique<AsmPush>(std::move(dst)));
+    push_instruction(std::make_unique<AsmPush>(dst), _instructions);
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)),
+                     _instructions);
+}
+
+static void generate_8byte_reg_arg_fun_call_instructions() {
+    // TODO
+}
+
+static void generate_8byte_stack_arg_fun_call_instructions() {
+    // TODO
+}
+
+static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return_on_memory) {
+    TLong stack_padding = 0l;
+    size_t regs_size = is_return_on_memory ? 5 : 6;
+    std::vector<std::unique_ptr<AsmInstruction>> reg_instructions;
+    std::vector<std::unique_ptr<AsmInstruction>> sse_instructions;
+    std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
+    for(size_t i = 0; i < node->args.size(); i++) {
+        if(is_value_double(node->args[i].get())) {
+            if(sse_instructions.size() < 8) {
+                generate_reg_arg_fun_call_instructions(node->args[i].get(),
+                                                       context->ARG_SSE_REGISTERS[sse_instructions.size()],
+                                                       sse_instructions);
+            }
+            else {
+                generate_stack_arg_fun_call_instructions(node->args[i].get(), stack_instructions);
+                stack_padding += 8l;
+            }
+        }
+        else if(!is_value_structure(node->args[i].get())) {
+            if(reg_instructions.size() < regs_size) {
+                generate_reg_arg_fun_call_instructions(node->args[i].get(),
+                                                       context->ARG_REGISTERS[reg_instructions.size()],
+                                                       reg_instructions);
+            }
+            else {
+                generate_stack_arg_fun_call_instructions(node->args[i].get(), stack_instructions);
+                stack_padding += 8l;
+            }
+        }
+//                else {
+//                    bool is_return_on_stack = true;
+//                    TIdentifier name = static_cast<TacVariable*>(node->args[i].get())->name;
+//                    Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
+//                    generate_structure_type_classes(struct_type);
+//                    if(context->struct_type_classes_map[struct_type->tag][0] != STRUCT_TYPE_CLASS::MEMORY) {
+//                        std::vector<size_t> i_8b_regs;
+//                        std::vector<size_t> i_8b_sse_regs;
+//                        for(size_t i_8b = 0; i_8b < context->struct_type_classes_map[struct_type->tag].size(); i_8b++) {
+//                            if(context->struct_type_classes_map[struct_type->tag][i_8b] == STRUCT_TYPE_CLASS::SSE) {
+//                                i_8b_sse_regs.push_back(i_8b);
+//                            }
+//                            else {
+//                                i_8b_regs.push_back(i_8b);
+//                            }
+//                        }
+//                        if(i_8b_sse_regs.size() + i_sse_regs.size() < 8 &&
+//                           i_8b_regs.size() + i_8b_regs.size() < i_regs_size) {
+//                            // do the stuff TODO
+//                            is_return_on_stack = false;
+//                        }
+//                    }
+//                    if(is_return_on_stack) {
+//                        // do the stuff TODO
+//                    }
+//                }
+    }
+
+    // TODO move entire vector
+    for(size_t i = 0; i < reg_instructions.size(); i++) {
+        push_instruction(std::move(reg_instructions[i]));
+    }
+    // TODO move entire vector
+    for(size_t i = 0; i < sse_instructions.size(); i++) {
+        push_instruction(std::move(sse_instructions[i]));
+    }
+    for(size_t i = stack_instructions.size(); i-- > 0;) {
+        push_instruction(std::move(stack_instructions[i]));
+    }
+    return stack_padding;
 }
 
 static void generate_fun_call_instructions(TacFunCall* node) {
@@ -831,42 +919,8 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             generate_allocate_stack_instructions(stack_padding);
         }
 
-        {
-            std::vector<size_t> i_regs;
-            std::vector<size_t> i_sse_regs;
-            std::vector<size_t> i_stacks;
-            for(size_t i = 0; i < node->args.size(); i++) {
-                if(is_value_double(node->args[i].get())) {
-                    if(i_sse_regs.size() < 8) {
-                        i_sse_regs.push_back(i);
-                    }
-                    else {
-                        i_stacks.push_back(i);
-                    }
-                }
-                else {
-                    if(i_regs.size() < 6) {
-                        i_regs.push_back(i);
-                    }
-                    else {
-                        i_stacks.push_back(i);
-                    }
-                }
-            }
-
-            for(size_t i = 0; i < i_regs.size(); i++) {
-                generate_reg_arg_fun_call_instructions(node->args[i_regs[i]].get(),
-                                                       context->ARG_REGISTERS[i]);
-            }
-            for(size_t i = 0; i < i_sse_regs.size(); i++) {
-                generate_reg_arg_fun_call_instructions(node->args[i_sse_regs[i]].get(),
-                                                       context->ARG_SSE_REGISTERS[i]);
-            }
-            for(size_t i = i_stacks.size(); i-- > 0;) {
-                stack_padding += 8l;
-                generate_stack_arg_fun_call_instructions(node->args[i_stacks[i]].get());
-            }
-        }
+        bool is_return_on_memory = false;
+        stack_padding += generate_arg_fun_call_instructions(node, is_return_on_memory);
 
         {
             TIdentifier name = node->name;
@@ -1854,14 +1908,14 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
 
         {
             size_t param_reg = 0;
-            size_t param_sse_reg = 0;
+            size_t param_sse = 0;
             TLong param_stack = 0l;
             for(size_t param = 0; param < node->params.size(); param++) {
                 if(frontend->symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
-                    if(param_sse_reg < 8) {
+                    if(param_sse < 8) {
                         generate_reg_param_function_instructions(node->params[param],
-                                                                 context->ARG_SSE_REGISTERS[param_sse_reg]);
-                        param_sse_reg += 1;
+                                                                 context->ARG_SSE_REGISTERS[param_sse]);
+                        param_sse += 1;
                     }
                     else {
                         generate_stack_param_function_instructions(node->params[param], param_stack);
