@@ -876,9 +876,8 @@ static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& na
                                                         std::move(dst)));
 }
 
-static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return_memory) {
-    TLong stack_padding = 0l;
-    size_t see_size = 0;
+static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_padding, bool is_return_memory) {
+    size_t see_size = 0; // TODO if sse_instructions always is size == 1, then not needed
     size_t reg_size = 0;
     size_t max_reg_size = 6;
     if(is_return_memory) {
@@ -984,10 +983,10 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
     for(size_t stack_instruction = stack_instructions.size(); stack_instruction-- > 0;) {
         push_instruction(std::move(stack_instructions[stack_instruction]));
     }
-    return stack_padding;
 }
 
 static void generate_fun_call_instructions(TacFunCall* node) {
+    bool is_return_memory = false;
     {
         TLong stack_padding = 0l;
         if(node->args.size() % 2 == 1) {
@@ -995,8 +994,21 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             generate_allocate_stack_instructions(stack_padding);
         }
 
-        bool is_return_memory = false;
-        stack_padding += generate_arg_fun_call_instructions(node, is_return_memory);
+        if(node->dst &&
+           is_value_structure(node->dst.get())) {
+            TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
+            Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
+            generate_structure_type_classes(struct_type);
+            if(context->struct_8byte_classes_map[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
+                is_return_memory = true;
+                {
+                    std::shared_ptr<AsmOperand> src = generate_operand(node->dst.get());
+                    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Di);
+                    push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
+                }
+            }
+        }
+        generate_arg_fun_call_instructions(node, stack_padding, is_return_memory);
 
         {
             TIdentifier name = node->name;
