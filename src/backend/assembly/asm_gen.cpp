@@ -1094,6 +1094,8 @@ static void generate_8byte_return_fun_call_instructions(const TIdentifier& name,
                                                                     std::make_shared<BackendDouble>();
     if(assembly_type_dst->type() == AST_T::ByteArray_t) {
         // TODO
+        // operand = PseudoMem(<name of retval>, offset
+        // ...
         // if t is ByteArray(size, alignment):
         //     copy_bytes_from_reg(r, op, size)
     }
