@@ -863,32 +863,89 @@ static void generate_8byte_reg_arg_fun_call_instructions(const TIdentifier& name
     }
 }
 
+static void generate_quadword_8byte_stack_arg_fun_call_instructions(const TIdentifier& name, TLong offset) {
+    TIdentifier src_name = name;
+    TLong from_offset = offset;
+    std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(std::move(src_name),
+                                                                     std::move(from_offset));
+    push_instruction(std::make_unique<AsmPush>(std::move(src)));
+}
+
+static void generate_longword_8byte_stack_arg_fun_call_instructions(const TIdentifier& name, TLong offset,
+                                                                    std::shared_ptr<AssemblyType>&& assembly_type) {
+    TIdentifier src_name = name;
+    TLong from_offset = offset;
+    std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(std::move(src_name),
+                                                                     std::move(from_offset));
+    std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+    std::shared_ptr<AssemblyType> assembly_type_src = std::move(assembly_type);
+    push_instruction(std::make_unique<AsmPush>(dst));
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                        std::move(dst)));
+}
+
+static void generate_bytearray_8byte_stack_arg_fun_call_instructions(const TIdentifier& name, Structure* struct_type) {
+    {
+        TLong offset = 0l;
+        TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+        std::vector<std::unique_ptr<AsmInstruction>> byte_instructions;
+        while(size > 0l) {
+            std::unique_ptr<AsmInstruction> byte_instruction;
+            {
+                std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
+                std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Sp,offset);
+                std::shared_ptr<AssemblyType> assembly_type_src;
+                // TODO byte array can't be > 8 bytes here, as it is 8byte_type ?
+//                if(size >= 8l) {
+//                    assembly_type_src = std::make_shared<QuadWord>();
+//                    size -= 8l;
+//                    offset += 8l;
+//                }
+//                else
+                if(size >= 4l) {
+                    assembly_type_src = std::make_shared<LongWord>();
+                    size -= 4l;
+                    offset += 4l;
+                }
+                else {
+                    assembly_type_src = std::make_shared<Byte>();
+                    size -= 1l;
+                    offset += 1l;
+                }
+                byte_instruction = std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst));
+            }
+            byte_instructions.push_back(std::move(byte_instruction));
+        }
+        context->p_instructions->reserve(context->p_instructions->size() + byte_instructions.size());
+        for(size_t byte_instruction = byte_instructions.size(); byte_instruction-- > 0;) {
+            push_instruction(std::move(byte_instructions[byte_instruction]));
+        }
+    }
+    {
+        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
+        std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(true, false, "8");
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
+        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+        push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
+                                                               std::move(assembly_type_src), std::move(src),
+                                                               std::move(dst)));
+    }
+}
+
 static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& name, TLong offset,
                                                            Structure* struct_type) {
-    std::shared_ptr<AsmOperand> src;
-    {
-        TIdentifier src_name = name;
-        TLong from_offset = offset;
-        src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
-    }
-    std::shared_ptr<AssemblyType> assembly_type_src = generate_8byte_assembly_type(struct_type, offset);
-    switch(assembly_type_src->type()) {
+    std::shared_ptr<AssemblyType> assembly_type = generate_8byte_assembly_type(struct_type, offset);
+    switch(assembly_type->type()) {
         case AST_T::QuadWord_t:
-            push_instruction(std::make_unique<AsmPush>(std::move(src)));
+            generate_quadword_8byte_stack_arg_fun_call_instructions(name, offset);
             break;
-        case AST_T::ByteArray_t: {
-            // TODO - in reverse order!
-            // if assembly_type is ByteArray(size, alignment):
-            //     emit(Binary(Sub, Quadword, Imm(8), Reg(SP)))
-            //     copy_bytes(from=assembly_arg, to=Memory(SP, 0), count=size)
+        case AST_T::ByteArray_t:
+            generate_bytearray_8byte_stack_arg_fun_call_instructions(name, struct_type);
             break;
-        }
-        default: {
-            std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
-            push_instruction(std::make_unique<AsmPush>(dst));
-            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src),
-                                                                std::move(src), std::move(dst)));
-        }
+        default:
+            generate_longword_8byte_stack_arg_fun_call_instructions(name, offset, std::move(assembly_type));
+            break;
     }
 }
 
