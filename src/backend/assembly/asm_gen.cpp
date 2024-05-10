@@ -827,7 +827,6 @@ static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND
 static void generate_stack_arg_fun_call_instructions(TacValue* node) {
     std::shared_ptr<AsmOperand> src = generate_operand(node);
     std::shared_ptr<AssemblyType> assembly_type_src = generate_assembly_type(node);
-
     if(src->type() == AST_T::AsmRegister_t ||
        src->type() == AST_T::AsmImm_t ||
        assembly_type_src->type() == AST_T::QuadWord_t ||
@@ -873,7 +872,6 @@ static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& na
         src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
     }
     std::shared_ptr<AssemblyType> assembly_type_src = generate_8byte_assembly_type(struct_type, offset);
-
     switch(assembly_type_src->type()) {
         case AST_T::QuadWord_t:
             push_instruction(std::make_unique<AsmPush>(std::move(src)));
@@ -894,13 +892,7 @@ static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& na
     }
 }
 
-static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_padding, bool is_return_memory) {
-    size_t reg_size = 0;
-    size_t max_reg_size = 6;
-    if(is_return_memory) {
-        reg_size++;
-        max_reg_size--;
-    }
+static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_padding, size_t reg_size) {
     std::vector<std::unique_ptr<AsmInstruction>> reg_instructions;
     std::vector<std::unique_ptr<AsmInstruction>> sse_instructions;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
@@ -919,7 +911,7 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             }
         }
         else if(!is_value_structure(node->args[arg].get())) {
-            if(reg_size < max_reg_size) {
+            if(reg_size < 6) {
                 context->p_instructions = &reg_instructions;
                 generate_reg_arg_fun_call_instructions(node->args[arg].get(),
                                                        context->ARG_REGISTERS[reg_size]);
@@ -932,13 +924,14 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             }
         }
         else {
-            bool is_pass_register = false;
+            size_t struct_reg_size = 6;
+            size_t struct_sse_size = 8;
             TIdentifier name = static_cast<TacVariable*>(node->args[arg].get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             generate_structure_type_classes(struct_type);
             if(context->struct_8byte_classes_map[struct_type->tag][0] != STRUCT_8BYTE_CLASS::MEMORY) {
-                size_t struct_reg_size = 0;
-                size_t struct_sse_size = 0;
+                struct_reg_size = 0;
+                struct_sse_size = 0;
                 for(size_t struct_8byte_class = 0;
                     struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
                     struct_8byte_class++) {
@@ -950,12 +943,9 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                         struct_reg_size++;
                     }
                 }
-                if(struct_reg_size + reg_size < max_reg_size &&
-                   struct_sse_size + sse_instructions.size() < 8) {
-                    is_pass_register = true;
-                }
             }
-            if(is_pass_register) {
+            if(struct_reg_size + reg_size < 6 &&
+               struct_sse_size + sse_instructions.size() < 8) {
                 TLong offset = 0l;
                 for(size_t struct_8byte_class = 0;
                     struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
@@ -1000,6 +990,36 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
     }
 }
 
+static void generate_return_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {
+    std::shared_ptr<AsmOperand> src = generate_register(arg_register);
+    std::shared_ptr<AsmOperand> dst = generate_operand(node);
+    std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node);
+    push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                        std::move(dst)));
+}
+
+static void generate_8byte_return_fun_call_instructions(const TIdentifier& name, TLong offset, Structure* struct_type,
+                                                        REGISTER_KIND arg_register) {
+    std::shared_ptr<AsmOperand> src = generate_register(arg_register);
+    std::shared_ptr<AsmOperand> dst;
+    {
+        TIdentifier dst_name = name;
+        TLong to_offset = offset;
+        dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
+    }
+    std::shared_ptr<AssemblyType> assembly_type_dst = struct_type ? generate_8byte_assembly_type(struct_type, offset) :
+                                                                    std::make_shared<BackendDouble>();
+    if(assembly_type_dst->type() == AST_T::ByteArray_t) {
+        // TODO
+        // if t is ByteArray(size, alignment):
+        //     copy_bytes_from_reg(r, op, size)
+    }
+    else {
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                            std::move(dst)));
+    }
+}
+
 static void generate_fun_call_instructions(TacFunCall* node) {
     bool is_return_memory = false;
     {
@@ -1009,6 +1029,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             generate_allocate_stack_instructions(stack_padding);
         }
 
+        size_t reg_size = 0;
         if(node->dst &&
            is_value_structure(node->dst.get())) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
@@ -1021,9 +1042,10 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Di);
                     push_instruction(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
                 }
+                reg_size++;
             }
         }
-        generate_arg_fun_call_instructions(node, stack_padding, is_return_memory);
+        generate_arg_fun_call_instructions(node, stack_padding, reg_size);
 
         {
             TIdentifier name = node->name;
@@ -1035,18 +1057,57 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         }
     }
 
-    if(node->dst) {
-        std::shared_ptr<AsmOperand> src;
+    if(node->dst &&
+       !is_return_memory) {
         if(is_value_double(node->dst.get())) {
-            src = generate_register(REGISTER_KIND::Xmm0);
+            generate_return_fun_call_instructions(node->dst.get(), REGISTER_KIND::Xmm0);
+        }
+        else if(!is_value_structure(node->dst.get())) {
+            generate_return_fun_call_instructions(node->dst.get(), REGISTER_KIND::Ax);
         }
         else {
-            src = generate_register(REGISTER_KIND::Ax);
+            bool sse_size = false;
+            TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
+            Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
+            switch(context->struct_8byte_classes_map[struct_type->tag][0]) {
+                case STRUCT_8BYTE_CLASS::INTEGER:
+                    generate_8byte_return_fun_call_instructions(name, 0l, struct_type,
+                                                                REGISTER_KIND::Ax);
+                    break;
+                case STRUCT_8BYTE_CLASS::SSE: {
+                    generate_8byte_return_fun_call_instructions(name, 0l, nullptr,
+                                                                REGISTER_KIND::Xmm0);
+                    sse_size = true;
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+            if(context->struct_8byte_classes_map[struct_type->tag].size() == 2) {
+                switch(context->struct_8byte_classes_map[struct_type->tag][1]) {
+                    case STRUCT_8BYTE_CLASS::INTEGER: {
+                        if(sse_size) {
+                            std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
+                            context->p_instructions->pop_back();
+                            generate_8byte_return_fun_call_instructions(name, 8l, struct_type,
+                                                                        REGISTER_KIND::Di);
+                            push_instruction(std::move(sse_instruction));
+                        }
+                        else {
+                            generate_8byte_return_fun_call_instructions(name, 8l, struct_type,
+                                                                        REGISTER_KIND::Di);
+                        }
+                        break;
+                    }
+                    case STRUCT_8BYTE_CLASS::SSE:
+                        generate_8byte_return_fun_call_instructions(name, 8l, nullptr,
+                                                                    REGISTER_KIND::Xmm1);
+                        break;
+                    default:
+                        RAISE_INTERNAL_ERROR;
+                }
+            }
         }
-        std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
-        std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
-        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
-                                                            std::move(dst)));
     }
 }
 
