@@ -885,10 +885,10 @@ static void generate_byte_longword_8byte_stack_arg_fun_call_instructions(const T
 }
 
 static void generate_bytearray_8byte_stack_arg_fun_call_instructions(const TIdentifier& name, TLong offset,
-                                                                     Structure* struct_type) {
+                                                                     ByteArray* bytearray_type) {
     {
         TLong to_offset = 0l;
-        TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+        TLong size = bytearray_type->size;
         std::vector<std::unique_ptr<AsmInstruction>> byte_instructions;
         while(size > 0l) {
             std::unique_ptr<AsmInstruction> byte_instruction;
@@ -937,7 +937,8 @@ static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& na
             generate_quadword_8byte_stack_arg_fun_call_instructions(name, offset);
             break;
         case AST_T::ByteArray_t:
-            generate_bytearray_8byte_stack_arg_fun_call_instructions(name, offset, struct_type);
+            generate_bytearray_8byte_stack_arg_fun_call_instructions(name, offset,
+                                                              static_cast<ByteArray*>(assembly_type.get()));
             break;
         default:
             generate_byte_longword_8byte_stack_arg_fun_call_instructions(name, offset, std::move(assembly_type));
