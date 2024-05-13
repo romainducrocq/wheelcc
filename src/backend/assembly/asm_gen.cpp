@@ -403,12 +403,12 @@ static std::shared_ptr<AssemblyType> generate_8byte_assembly_type(Structure* str
 }
 
 static void generate_structure_type_classes(Structure* struct_type) {
-    if(context->struct_8byte_classes_map.find(struct_type->tag) == context->struct_8byte_classes_map.end()) {
-        std::vector<STRUCT_8BYTE_CLASS> struct_8byte_classes;
+    if(context->struct_8b_cls_map.find(struct_type->tag) == context->struct_8b_cls_map.end()) {
+        std::vector<STRUCT_8B_CLS> struct_8b_cls;
         if(frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
             TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
             while(size > 0l) {
-                struct_8byte_classes.push_back(STRUCT_8BYTE_CLASS::MEMORY);
+                struct_8b_cls.push_back(STRUCT_8B_CLS::MEMORY);
                 size -= 8l;
             }
         }
@@ -430,8 +430,8 @@ static void generate_structure_type_classes(Structure* struct_type) {
                 }
             }
             Lbreak_1:
-            struct_8byte_classes.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8BYTE_CLASS::SSE :
-                                                                                    STRUCT_8BYTE_CLASS::INTEGER);
+            struct_8b_cls.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8B_CLS::SSE :
+                                                                             STRUCT_8B_CLS::INTEGER);
             if(frontend->struct_typedef_table[struct_type->tag]->size > 8l) {
                 member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
                 while(true) {
@@ -450,11 +450,11 @@ static void generate_structure_type_classes(Structure* struct_type) {
                     }
                 }
                 Lbreak_2:
-                struct_8byte_classes.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8BYTE_CLASS::SSE :
-                                                                                        STRUCT_8BYTE_CLASS::INTEGER);
+                struct_8b_cls.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8B_CLS::SSE :
+                                                                                 STRUCT_8B_CLS::INTEGER);
             }
         }
-        context->struct_8byte_classes_map[struct_type->tag] = std::move(struct_8byte_classes);
+        context->struct_8b_cls_map[struct_type->tag] = std::move(struct_8b_cls);
     }
 }
 
@@ -533,7 +533,7 @@ static void generate_return_structure_instructions(TacReturn* node) {
     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
     Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
     generate_structure_type_classes(struct_type);
-    if(context->struct_8byte_classes_map[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
+    if(context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
         {
             std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, -8l);
             std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
@@ -570,11 +570,11 @@ static void generate_return_structure_instructions(TacReturn* node) {
     }
     else {
         bool sse_size = false;
-        switch(context->struct_8byte_classes_map[struct_type->tag][0]) {
-            case STRUCT_8BYTE_CLASS::INTEGER:
+        switch(context->struct_8b_cls_map[struct_type->tag][0]) {
+            case STRUCT_8B_CLS::INTEGER:
                 generate_8byte_return_instructions(name, 0l, struct_type, REGISTER_KIND::Ax);
                 break;
-            case STRUCT_8BYTE_CLASS::SSE: {
+            case STRUCT_8B_CLS::SSE: {
                 generate_8byte_return_instructions(name, 0l, nullptr, REGISTER_KIND::Xmm0);
                 sse_size = true;
                 break;
@@ -582,9 +582,9 @@ static void generate_return_structure_instructions(TacReturn* node) {
             default:
                 RAISE_INTERNAL_ERROR;
         }
-        if(context->struct_8byte_classes_map[struct_type->tag].size() == 2) {
-            switch(context->struct_8byte_classes_map[struct_type->tag][1]) {
-                case STRUCT_8BYTE_CLASS::INTEGER: {
+        if(context->struct_8b_cls_map[struct_type->tag].size() == 2) {
+            switch(context->struct_8b_cls_map[struct_type->tag][1]) {
+                case STRUCT_8B_CLS::INTEGER: {
                     if(sse_size) {
                         std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
                         context->p_instructions->pop_back();
@@ -596,7 +596,7 @@ static void generate_return_structure_instructions(TacReturn* node) {
                     }
                     break;
                 }
-                case STRUCT_8BYTE_CLASS::SSE:
+                case STRUCT_8B_CLS::SSE:
                     generate_8byte_return_instructions(name, 8l, nullptr, REGISTER_KIND::Xmm1);
                     break;
                 default:
@@ -1147,14 +1147,12 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             TIdentifier name = static_cast<TacVariable*>(node->args[arg].get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             generate_structure_type_classes(struct_type);
-            if(context->struct_8byte_classes_map[struct_type->tag][0] != STRUCT_8BYTE_CLASS::MEMORY) {
+            if(context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for(size_t struct_8byte_class = 0;
-                    struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
-                    struct_8byte_class++) {
-                    if(context->struct_8byte_classes_map[struct_type->tag][struct_8byte_class]
-                                                                                           == STRUCT_8BYTE_CLASS::SSE) {
+                for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
+                    struct_8b_cls++) {
+                    if(context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
                         struct_sse_size++;
                     }
                     else {
@@ -1165,11 +1163,9 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             if(struct_reg_size + reg_size < 6 &&
                struct_sse_size + sse_instructions.size() < 8) {
                 TLong offset = 0l;
-                for(size_t struct_8byte_class = 0;
-                    struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
-                    struct_8byte_class++) {
-                    if(context->struct_8byte_classes_map[struct_type->tag][struct_8byte_class] ==
-                                                                                              STRUCT_8BYTE_CLASS::SSE) {
+                for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
+                    struct_8b_cls++) {
+                    if(context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
                         context->p_instructions = &sse_instructions;
                         generate_8byte_reg_arg_fun_call_instructions(name, offset, nullptr,
                                                          context->ARG_SSE_REGISTERS[sse_instructions.size()]);
@@ -1186,7 +1182,7 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             else {
                 TLong offset = 0l;
                 context->p_instructions = &stack_instructions;
-                for(size_t throwaway = 0; throwaway < context->struct_8byte_classes_map[struct_type->tag].size();
+                for(size_t throwaway = 0; throwaway < context->struct_8b_cls_map[struct_type->tag].size();
                     throwaway++) {
                     generate_8byte_stack_arg_fun_call_instructions(name, offset, struct_type);
                     offset += 8l;
@@ -1282,7 +1278,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             generate_structure_type_classes(struct_type);
-            if(context->struct_8byte_classes_map[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
+            if(context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
                 is_return_memory = true;
                 {
                     std::shared_ptr<AsmOperand> src = generate_operand(node->dst.get());
@@ -1315,12 +1311,12 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             bool sse_size = false;
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-            switch(context->struct_8byte_classes_map[struct_type->tag][0]) {
-                case STRUCT_8BYTE_CLASS::INTEGER:
+            switch(context->struct_8b_cls_map[struct_type->tag][0]) {
+                case STRUCT_8B_CLS::INTEGER:
                     generate_8byte_return_fun_call_instructions(name, 0l, struct_type,
                                                                 REGISTER_KIND::Ax);
                     break;
-                case STRUCT_8BYTE_CLASS::SSE: {
+                case STRUCT_8B_CLS::SSE: {
                     generate_8byte_return_fun_call_instructions(name, 0l, nullptr,
                                                                 REGISTER_KIND::Xmm0);
                     sse_size = true;
@@ -1329,9 +1325,9 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            if(context->struct_8byte_classes_map[struct_type->tag].size() == 2) {
-                switch(context->struct_8byte_classes_map[struct_type->tag][1]) {
-                    case STRUCT_8BYTE_CLASS::INTEGER: {
+            if(context->struct_8b_cls_map[struct_type->tag].size() == 2) {
+                switch(context->struct_8b_cls_map[struct_type->tag][1]) {
+                    case STRUCT_8B_CLS::INTEGER: {
                         if(sse_size) {
                             std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
                             context->p_instructions->pop_back();
@@ -1345,7 +1341,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                         }
                         break;
                     }
-                    case STRUCT_8BYTE_CLASS::SSE:
+                    case STRUCT_8B_CLS::SSE:
                         generate_8byte_return_fun_call_instructions(name, 8l, nullptr,
                                                                     REGISTER_KIND::Xmm1);
                         break;
@@ -2430,14 +2426,12 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             size_t struct_sse_size = 8;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[node->params[param]]->type_t.get());
             generate_structure_type_classes(struct_type);
-            if(context->struct_8byte_classes_map[struct_type->tag][0] != STRUCT_8BYTE_CLASS::MEMORY) {
+            if(context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for(size_t struct_8byte_class = 0;
-                    struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
-                    struct_8byte_class++) {
-                    if(context->struct_8byte_classes_map[struct_type->tag][struct_8byte_class]
-                                                                                           == STRUCT_8BYTE_CLASS::SSE) {
+                for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
+                    struct_8b_cls++) {
+                    if(context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
                         struct_sse_size++;
                     }
                     else {
@@ -2448,11 +2442,9 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             if(struct_reg_size + reg_size < 6 &&
                struct_sse_size + sse_size < 8) {
                 TLong offset = 0l;
-                for(size_t struct_8byte_class = 0;
-                    struct_8byte_class < context->struct_8byte_classes_map[struct_type->tag].size();
-                    struct_8byte_class++) {
-                    if(context->struct_8byte_classes_map[struct_type->tag][struct_8byte_class] ==
-                                                                                              STRUCT_8BYTE_CLASS::SSE) {
+                for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
+                    struct_8b_cls++) {
+                    if(context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_param_function_instructions(node->params[param], offset,
                                                                        nullptr,
                                                                        context->ARG_SSE_REGISTERS[sse_size]);
@@ -2468,7 +2460,7 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             }
             else {
                 TLong offset = 0l;
-                for(size_t throwaway = 0; throwaway < context->struct_8byte_classes_map[struct_type->tag].size();
+                for(size_t throwaway = 0; throwaway < context->struct_8b_cls_map[struct_type->tag].size();
                     throwaway++) {
                     generate_8byte_stack_param_function_instructions(node->params[param], stack_bytes, offset,
                                                                      struct_type);
@@ -2493,7 +2485,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
                                                                                                    AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[node->name]->type_t.get());
             generate_structure_type_classes(struct_type); // TODO only here because definition is always before fun call ?
-            if(context->struct_8byte_classes_map[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
+            if(context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
                 is_return_memory = true;
                 {
                     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::Di);
