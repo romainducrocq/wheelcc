@@ -2360,12 +2360,12 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
         if(static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get())->ret_type->type() ==
                                                                                                    AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[node->name]->type_t.get());
-            generate_structure_type_classes(struct_type); // TODO only here because definition is always before declaration ?
+            generate_structure_type_classes(struct_type); // TODO only here because definition is always before fun call ?
             if(context->struct_8byte_classes_map[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
                 is_return_memory = true;
                 {
                     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::Di);
-                    std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Bp, 8l);
+                    std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Bp, -8l);
                     std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<QuadWord>();
                     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst),
                                                                         std::move(src), std::move(dst)));
