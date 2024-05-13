@@ -23,8 +23,8 @@ ByteArray::ByteArray(TLong size, TInt alignment)
 BackendObj::BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type)
     : is_static(is_static), is_constant(is_constant), assembly_type(std::move(assembly_type)) {}
 
-BackendFun::BackendFun(bool is_defined, bool is_return_memory)
-    : is_defined(is_defined), is_return_memory(is_return_memory) {}
+BackendFun::BackendFun(bool is_defined)
+    : is_defined(is_defined) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -74,7 +74,7 @@ ast = [
     ["ByteArray", [(TLong, "size"), (TInt, "alignment")], []],
     ["BackendSymbol", [], []],
     ["BackendObj", [(Bool, "is_static"), (Bool, "is_constant")], ["assembly_type"]],
-    ["BackendFun", [(Bool, "is_defined"), (Bool, "is_return_memory")], []],
+    ["BackendFun", [(Bool, "is_defined")], []],
 
     # /include/ast/front_ast.hpp
     ["CUnaryOp", [], []],
@@ -302,7 +302,7 @@ ast = [
     ["AsmCall", [(TIdentifier, "name")], []],
     ["AsmRet", [], []],
     ["AsmTopLevel", [], []],
-    ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_global")], ["[instructions"]],
+    ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_global"), (Bool, "is_return_memory")], ["[instructions"]],
     ["AsmStaticVariable", [(TIdentifier, "name"), (TInt, "alignment"), (Bool, "is_global")], ["[static_inits"]],
     ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["static_init"]],
     ["AsmProgram", [], ["[static_constant_top_levels", "[top_levels"]],

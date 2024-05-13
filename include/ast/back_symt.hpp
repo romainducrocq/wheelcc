@@ -4,7 +4,6 @@
 #include "ast/ast.hpp"
 
 #include <memory>
-#include <vector>
 #include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ struct ByteArray : AssemblyType {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // symbol = Obj(assembly_type, bool, bool)
-//        | Fun(bool, bool)
+//        | Fun(bool)
 struct BackendSymbol : Ast {
     AST_T type() override;
 };
@@ -68,10 +67,9 @@ struct BackendObj: BackendSymbol {
 struct BackendFun: BackendSymbol {
     AST_T type() override;
     BackendFun() = default;
-    BackendFun(bool is_defined, bool is_return_memory);
+    BackendFun(bool is_defined);
 
     bool is_defined;
-    bool is_return_memory;
 };
 
 /*
@@ -81,16 +79,9 @@ struct Dummy : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-enum STRUCT_8BYTE_CLASS {
-    INTEGER,
-    SSE,
-    MEMORY
-};
-
 struct BackEndContext {
     // Backend symbol table
     std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
-    std::unordered_map<TIdentifier, std::vector<STRUCT_8BYTE_CLASS>> struct_8byte_classes_table;
 };
 
 extern std::unique_ptr<BackEndContext> backend;
