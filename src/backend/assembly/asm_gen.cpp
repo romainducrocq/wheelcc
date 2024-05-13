@@ -422,7 +422,7 @@ static void generate_structure_type_classes(Structure* struct_type) {
                     }
                     case AST_T::Structure_t: {
                         member_type = GET_STRUCT_TYPEDEF_MEMBER(static_cast<Structure*>(member_type)->tag, 0)
-                                ->member_type.get();
+                                                                                                    ->member_type.get();
                         break;
                     }
                     default:
@@ -442,7 +442,7 @@ static void generate_structure_type_classes(Structure* struct_type) {
                         }
                         case AST_T::Structure_t: {
                             member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(static_cast<Structure*>(member_type)->tag)
-                                    ->member_type.get();
+                                                                                                    ->member_type.get();
                             break;
                         }
                         default:

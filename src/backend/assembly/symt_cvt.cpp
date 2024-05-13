@@ -157,7 +157,14 @@ static void convert_top_level(AsmTopLevel* node) {
 
 static void convert_fun_type(FunAttr* node) {
     bool is_defined = node->is_defined;
-    bool is_return_memory = false; // TODO
+    bool is_return_memory = false;
+    if(static_cast<FunType*>(frontend->symbol_table[*context->p_symbol]->type_t.get())->ret_type->type() ==
+                                                                                                   AST_T::Structure_t) {
+        Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[*context->p_symbol]->type_t.get());
+        if(backend->struct_8byte_classes_table[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
+            is_return_memory = true;
+        }
+    }
     convert_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined), std::move(is_return_memory)));
 }
 
