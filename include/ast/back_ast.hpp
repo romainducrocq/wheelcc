@@ -549,7 +549,7 @@ struct AsmRet : AsmInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// top_level = Function(identifier, bool, instruction*)
+// top_level = Function(identifier, bool, bool, instruction*)
 //           | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 struct AsmTopLevel : Ast {
@@ -559,10 +559,12 @@ struct AsmTopLevel : Ast {
 struct AsmFunction : AsmTopLevel {
     AST_T type() override;
     AsmFunction() = default;
-    AsmFunction(TIdentifier name, bool is_global, std::vector<std::unique_ptr<AsmInstruction>> instructions);
+    AsmFunction(TIdentifier name, bool is_global, bool is_return_memory,
+                std::vector<std::unique_ptr<AsmInstruction>> instructions);
 
     TIdentifier name;
     bool is_global;
+    bool is_return_memory;
     std::vector<std::unique_ptr<AsmInstruction>> instructions;
 };
 

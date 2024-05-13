@@ -181,8 +181,10 @@ AsmPush::AsmPush(std::shared_ptr<AsmOperand> src)
 AsmCall::AsmCall(TIdentifier name)
     : name(std::move(name)) {}
 
-AsmFunction::AsmFunction(TIdentifier name, bool is_global, std::vector<std::unique_ptr<AsmInstruction>> instructions)
-    : name(std::move(name)), is_global(is_global), instructions(std::move(instructions)) {}
+AsmFunction::AsmFunction(TIdentifier name, bool is_global, bool is_return_memory,
+                         std::vector<std::unique_ptr<AsmInstruction>> instructions)
+    : name(std::move(name)), is_global(is_global), is_return_memory(is_return_memory),
+      instructions(std::move(instructions)) {}
 
 AsmStaticVariable::AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global,
                                      std::vector<std::shared_ptr<StaticInit>> static_inits)

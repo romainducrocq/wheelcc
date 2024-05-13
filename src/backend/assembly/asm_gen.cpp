@@ -2483,12 +2483,12 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
 static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* node) {
     TIdentifier name = node->name;
     bool is_global = node->is_global;
+    bool is_return_memory = false;
 
     std::vector<std::unique_ptr<AsmInstruction>> body;
     {
         context->p_instructions = &body;
 
-        bool is_return_memory = false;
         if(static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get())->ret_type->type() ==
                                                                                                    AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[node->name]->type_t.get());
@@ -2510,7 +2510,8 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
         context->p_instructions = nullptr;
     }
 
-    return std::make_unique<AsmFunction>(std::move(name), std::move(is_global), std::move(body));
+    return std::make_unique<AsmFunction>(std::move(name), std::move(is_global), std::move(is_return_memory),
+                                         std::move(body));
 }
 
 static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(TacStaticVariable* node) {
@@ -2546,7 +2547,7 @@ static std::unique_ptr<AsmStaticConstant> generate_static_constant_top_level(Tac
     return std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init));
 }
 
-// top_level = Function(identifier, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
+// top_level = Function(identifier, bool, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
     switch(node->type()) {
