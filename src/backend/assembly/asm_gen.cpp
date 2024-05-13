@@ -2177,7 +2177,7 @@ static void generate_stack_param_function_instructions(const TIdentifier& name, 
                                                         std::move(dst)));
 }
 
-// TODO see if same as generate_8byte_return_fun_call_instructions ?
+// TODO see if same as generate_8byte_return_fun_call_instructions ? -> i think so
 static void generate_8byte_reg_param_function_instructions(const TIdentifier& name, TLong offset, Structure* struct_type,
                                                            REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = generate_register(arg_register);
@@ -2230,9 +2230,40 @@ static void generate_8byte_reg_param_function_instructions(const TIdentifier& na
     }
 }
 
-static void generate_8byte_stack_param_function_instructions(const TIdentifier& name, TLong offset,
+static void generate_8byte_stack_param_function_instructions(const TIdentifier& name, TLong stack_bytes, TLong offset,
                                                              Structure* struct_type) {
-    // TODO
+    std::shared_ptr<AssemblyType> assembly_type_dst = generate_8byte_assembly_type(struct_type, offset);
+    if(assembly_type_dst->type() == AST_T::ByteArray_t) {
+        TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size;
+        while (size > 0l) {
+            std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, stack_bytes);
+            std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
+            if (size >= 4l) {
+                assembly_type_dst = std::make_shared<LongWord>();
+                size -= 4l;
+                offset += 4l;
+                stack_bytes += 4l;
+            } else {
+                assembly_type_dst = std::make_shared<Byte>();
+                size--;
+                offset++;
+                stack_bytes++;
+            }
+            push_instruction(std::make_unique<AsmMov>(assembly_type_dst, std::move(src),
+                                                                std::move(dst)));
+        }
+    }
+    else {
+        std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, stack_bytes);
+        std::shared_ptr<AsmOperand> dst;
+        {
+            TIdentifier dst_name = name;
+            TLong to_offset = offset;
+            dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
+        }
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src),
+                                                            std::move(dst)));
+    }
 }
 
 static void generate_param_function_top_level(TacFunction* node, bool is_return_memory) {
@@ -2307,7 +2338,8 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
                 TLong offset = 0l;
                 for(size_t throwaway = 0; throwaway < context->struct_8byte_classes_map[struct_type->tag].size();
                     throwaway++) {
-                    generate_8byte_stack_param_function_instructions(node->params[param], offset, struct_type);
+                    generate_8byte_stack_param_function_instructions(node->params[param], stack_bytes, offset,
+                                                                     struct_type);
                     stack_bytes += 8l;
                     offset += 8l;
                 }
