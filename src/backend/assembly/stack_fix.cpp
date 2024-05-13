@@ -954,7 +954,7 @@ static void fix_function_top_level(AsmFunction* node) {
     context->p_fix_instructions = &node->instructions;
     context->p_fix_instructions->emplace_back();
 
-    context->stack_bytes = 0l;
+    context->stack_bytes = node->is_return_memory ? 8l : 0l;
     context->pseudo_stack_bytes_map.clear();
     for(size_t instruction = 0; instruction < instructions.size(); instruction++) {
         push_fix_instruction(std::move(instructions[instruction]));
