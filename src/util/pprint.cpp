@@ -367,6 +367,7 @@ static void print_ast(Ast* node, size_t t) {
             field("BackendFun", "", ++t);
             BackendFun* p_node = static_cast<BackendFun*>(node);
             field("Bool", std::to_string(p_node->is_defined), t+1);
+            field("Bool", std::to_string(p_node->is_return_memory), t+1);
             break;
         }
         case AST_T::CUnaryOp_t: {

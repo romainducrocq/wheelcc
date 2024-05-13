@@ -49,7 +49,7 @@ struct ByteArray : AssemblyType {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // symbol = Obj(assembly_type, bool, bool)
-//        | Fun(bool)
+//        | Fun(bool, bool)
 struct BackendSymbol : Ast {
     AST_T type() override;
 };
@@ -67,9 +67,10 @@ struct BackendObj: BackendSymbol {
 struct BackendFun: BackendSymbol {
     AST_T type() override;
     BackendFun() = default;
-    BackendFun(bool is_defined);
+    BackendFun(bool is_defined, bool is_return_memory);
 
     bool is_defined;
+    bool is_return_memory;
 };
 
 /*

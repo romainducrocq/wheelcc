@@ -74,7 +74,7 @@ ast = [
     ["ByteArray", [(TLong, "size"), (TInt, "alignment")], []],
     ["BackendSymbol", [], []],
     ["BackendObj", [(Bool, "is_static"), (Bool, "is_constant")], ["assembly_type"]],
-    ["BackendFun", [(Bool, "is_defined")], []],
+    ["BackendFun", [(Bool, "is_defined"), (Bool, "is_return_memory")], []],
 
     # /include/ast/front_ast.hpp
     ["CUnaryOp", [], []],

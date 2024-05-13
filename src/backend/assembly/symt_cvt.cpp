@@ -157,7 +157,8 @@ static void convert_top_level(AsmTopLevel* node) {
 
 static void convert_fun_type(FunAttr* node) {
     bool is_defined = node->is_defined;
-    convert_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
+    bool is_return_memory = false; // TODO
+    convert_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined), std::move(is_return_memory)));
 }
 
 static void convert_obj_type(IdentifierAttr* node) {
