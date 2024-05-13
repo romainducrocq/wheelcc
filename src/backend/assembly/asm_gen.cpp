@@ -402,6 +402,62 @@ static std::shared_ptr<AssemblyType> generate_8byte_assembly_type(Structure* str
     }
 }
 
+static void generate_structure_type_classes(Structure* struct_type) {
+    if(context->struct_8byte_classes_map.find(struct_type->tag) == context->struct_8byte_classes_map.end()) {
+        std::vector<STRUCT_8BYTE_CLASS> struct_8byte_classes;
+        if(frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
+            TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+            while(size > 0l) {
+                struct_8byte_classes.push_back(STRUCT_8BYTE_CLASS::MEMORY);
+                size -= 8l;
+            }
+        }
+        else {
+            Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
+            while(true) {
+                switch(member_type->type()) {
+                    case AST_T::Array_t: {
+                        member_type = static_cast<Array*>(member_type)->elem_type.get();
+                        break;
+                    }
+                    case AST_T::Structure_t: {
+                        member_type = GET_STRUCT_TYPEDEF_MEMBER(static_cast<Structure*>(member_type)->tag, 0)
+                                ->member_type.get();
+                        break;
+                    }
+                    default:
+                        goto Lbreak_1;
+                }
+            }
+            Lbreak_1:
+            struct_8byte_classes.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8BYTE_CLASS::SSE :
+                                                                                    STRUCT_8BYTE_CLASS::INTEGER);
+            if(frontend->struct_typedef_table[struct_type->tag]->size > 8l) {
+                member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
+                while(true) {
+                    switch(member_type->type()) {
+                        case AST_T::Array_t: {
+                            member_type = static_cast<Array*>(member_type)->elem_type.get();
+                            break;
+                        }
+                        case AST_T::Structure_t: {
+                            member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(static_cast<Structure*>(member_type)->tag)
+                                    ->member_type.get();
+                            break;
+                        }
+                        default:
+                            goto Lbreak_2;
+                    }
+                }
+                Lbreak_2:
+                struct_8byte_classes.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8BYTE_CLASS::SSE :
+                                                                                        STRUCT_8BYTE_CLASS::INTEGER);
+            }
+        }
+        context->struct_8byte_classes_map[struct_type->tag] = std::move(struct_8byte_classes);
+    }
+}
+
 static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
     context->p_instructions->push_back(std::move(instruction));
 }
@@ -422,13 +478,60 @@ static void generate_return_double_instructions(TacReturn* node) {
                                                         std::move(dst)));
 }
 
+static void generate_return_structure_instructions(TacReturn* node) {
+    TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
+    Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
+    generate_structure_type_classes(struct_type);
+    if(context->struct_8byte_classes_map[struct_type->tag][0] == STRUCT_8BYTE_CLASS::MEMORY) {
+        {
+            std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, -8l);
+            std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
+            std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src),
+                                                                std::move(src), std::move(dst)));
+        }
+        {
+            TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
+            TLong offset = 0l;
+            while(size > 0l) {
+                std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
+                std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0l);
+                std::shared_ptr<AssemblyType> assembly_type_src;
+                if(size >= 8l) {
+                    assembly_type_src = std::make_shared<QuadWord>();
+                    size -= 8l;
+                    offset += 8l;
+                }
+                else if(size >= 4l) {
+                    assembly_type_src = std::make_shared<LongWord>();
+                    size -= 4l;
+                    offset += 4l;
+                }
+                else {
+                    assembly_type_src = std::make_shared<Byte>();
+                    size--;
+                    offset++;
+                }
+                push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src),
+                                                                    std::move(src), std::move(dst)));
+            }
+        }
+    }
+    else {
+        // TODO
+    }
+}
+
 static void generate_return_instructions(TacReturn* node) {
     if(node->val) {
         if(is_value_double(node->val.get())) {
             generate_return_double_instructions(node);
         }
-        else {
+        else if(!is_value_structure(node->val.get())) {
             generate_return_integer_instructions(node);
+        }
+        else {
+            generate_return_structure_instructions(node);
         }
     }
     push_instruction(std::make_unique<AsmRet>());
@@ -758,62 +861,6 @@ static void generate_allocate_stack_instructions(TLong byte) {
 
 static void generate_deallocate_stack_instructions(TLong byte) {
     push_instruction(deallocate_stack_bytes(byte));
-}
-
-static void generate_structure_type_classes(Structure* struct_type) {
-     if(context->struct_8byte_classes_map.find(struct_type->tag) == context->struct_8byte_classes_map.end()) {
-         std::vector<STRUCT_8BYTE_CLASS> struct_8byte_classes;
-         if(frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
-             TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
-             while(size > 0l) {
-                 struct_8byte_classes.push_back(STRUCT_8BYTE_CLASS::MEMORY);
-                 size -= 8l;
-             }
-         }
-         else {
-             Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
-             while(true) {
-                 switch(member_type->type()) {
-                     case AST_T::Array_t: {
-                         member_type = static_cast<Array*>(member_type)->elem_type.get();
-                         break;
-                     }
-                     case AST_T::Structure_t: {
-                         member_type = GET_STRUCT_TYPEDEF_MEMBER(static_cast<Structure*>(member_type)->tag, 0)
-                                                                                                     ->member_type.get();
-                         break;
-                     }
-                     default:
-                         goto Lbreak_1;
-                 }
-             }
-             Lbreak_1:
-             struct_8byte_classes.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8BYTE_CLASS::SSE :
-                                                                                     STRUCT_8BYTE_CLASS::INTEGER);
-             if(frontend->struct_typedef_table[struct_type->tag]->size > 8l) {
-                 member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
-                 while(true) {
-                     switch(member_type->type()) {
-                         case AST_T::Array_t: {
-                             member_type = static_cast<Array*>(member_type)->elem_type.get();
-                             break;
-                         }
-                         case AST_T::Structure_t: {
-                             member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(static_cast<Structure*>(member_type)->tag)
-                                                                                                     ->member_type.get();
-                             break;
-                         }
-                         default:
-                             goto Lbreak_2;
-                     }
-                 }
-                 Lbreak_2:
-                 struct_8byte_classes.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8BYTE_CLASS::SSE :
-                                                                                         STRUCT_8BYTE_CLASS::INTEGER);
-             }
-         }
-         context->struct_8byte_classes_map[struct_type->tag] = std::move(struct_8byte_classes);
-     }
 }
 
 static void generate_reg_arg_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {
@@ -2235,15 +2282,16 @@ static void generate_8byte_stack_param_function_instructions(const TIdentifier& 
     std::shared_ptr<AssemblyType> assembly_type_dst = generate_8byte_assembly_type(struct_type, offset);
     if(assembly_type_dst->type() == AST_T::ByteArray_t) {
         TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size;
-        while (size > 0l) {
+        while(size > 0l) {
             std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, stack_bytes);
             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
-            if (size >= 4l) {
+            if(size >= 4l) {
                 assembly_type_dst = std::make_shared<LongWord>();
                 size -= 4l;
                 offset += 4l;
                 stack_bytes += 4l;
-            } else {
+            }
+            else {
                 assembly_type_dst = std::make_shared<Byte>();
                 size--;
                 offset++;
