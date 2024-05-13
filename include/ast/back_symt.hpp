@@ -4,6 +4,7 @@
 #include "ast/ast.hpp"
 
 #include <memory>
+#include <vector>
 #include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,9 +81,16 @@ struct Dummy : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+enum STRUCT_8BYTE_CLASS {
+    INTEGER,
+    SSE,
+    MEMORY
+};
+
 struct BackEndContext {
     // Backend symbol table
     std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
+    std::unordered_map<TIdentifier, std::vector<STRUCT_8BYTE_CLASS>> struct_8byte_classes_table;
 };
 
 extern std::unique_ptr<BackEndContext> backend;
