@@ -478,6 +478,57 @@ static void generate_return_double_instructions(TacReturn* node) {
                                                         std::move(dst)));
 }
 
+// TODO see if same as generate_8byte_reg_arg_fun_call_instructions
+static void generate_8byte_return_instructions(const TIdentifier& name, TLong offset, Structure* struct_type,
+                                                REGISTER_KIND arg_register) {
+    std::shared_ptr<AsmOperand> dst = generate_register(arg_register);
+    std::shared_ptr<AssemblyType> assembly_type_src = struct_type ? generate_8byte_assembly_type(struct_type, offset) :
+                                                                    std::make_shared<BackendDouble>();
+    if(assembly_type_src->type() == AST_T::ByteArray_t) {
+        offset += static_cast<ByteArray*>(assembly_type_src.get())->size - 1l;
+        assembly_type_src = std::make_shared<Byte>();
+        std::shared_ptr<AsmOperand> src_shl = std::make_shared<AsmImm>(true, false, "8");
+        std::shared_ptr<AssemblyType> assembly_type_shl = std::make_shared<QuadWord>();
+        while(offset > 1l) {
+            {
+                std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
+                push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
+            }
+            {
+                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShl>();
+                push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
+                                                                      assembly_type_shl,src_shl, dst));
+            }
+            offset--;
+        }
+        {
+            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, 1l);
+            push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
+        }
+        {
+            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShl>();
+            push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
+                                                                  std::move(assembly_type_shl),
+                                                                  std::move(src_shl), dst));
+        }
+        {
+            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, 0l);
+            push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                                std::move(dst)));
+        }
+    }
+    else {
+        std::shared_ptr<AsmOperand> src;
+        {
+            TIdentifier src_name = name;
+            TLong from_offset = offset;
+            src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
+        }
+        push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
+                                                            std::move(dst)));
+    }
+}
+
 static void generate_return_structure_instructions(TacReturn* node) {
     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
     Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
@@ -518,7 +569,40 @@ static void generate_return_structure_instructions(TacReturn* node) {
         }
     }
     else {
-        // TODO
+        bool sse_size = false;
+        switch(context->struct_8byte_classes_map[struct_type->tag][0]) {
+            case STRUCT_8BYTE_CLASS::INTEGER:
+                generate_8byte_return_instructions(name, 0l, struct_type, REGISTER_KIND::Ax);
+                break;
+            case STRUCT_8BYTE_CLASS::SSE: {
+                generate_8byte_return_instructions(name, 0l, nullptr, REGISTER_KIND::Xmm0);
+                sse_size = true;
+                break;
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
+        if(context->struct_8byte_classes_map[struct_type->tag].size() == 2) {
+            switch(context->struct_8byte_classes_map[struct_type->tag][1]) {
+                case STRUCT_8BYTE_CLASS::INTEGER: {
+                    if(sse_size) {
+                        std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
+                        context->p_instructions->pop_back();
+                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Di);
+                        push_instruction(std::move(sse_instruction));
+                    }
+                    else {
+                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Di);
+                    }
+                    break;
+                }
+                case STRUCT_8BYTE_CLASS::SSE:
+                    generate_8byte_return_instructions(name, 8l, nullptr, REGISTER_KIND::Xmm1);
+                    break;
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
+        }
     }
 }
 
