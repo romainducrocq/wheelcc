@@ -43,7 +43,13 @@ static TInt generate_array_aggregate_type_alignment(Array* arr_type, TLong& size
     TInt alignment;
     {
         alignment = generate_type_alignment(arr_type->elem_type.get());
-        size *= alignment;
+        if(arr_type->elem_type->type() == AST_T::Structure_t) {
+            Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
+            size *= frontend->struct_typedef_table[struct_type->tag]->size;
+        }
+        else {
+            size *= alignment;
+        }
         if(size >= 16l) {
             alignment = 16;
         }
