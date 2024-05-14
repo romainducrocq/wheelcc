@@ -710,7 +710,7 @@ static void emit_function_top_level(AsmFunction* node) {
 // ZeroInit(n)                         -> .zero <n>
 // StringInit(s, b) if null terminated -> .asciz "<s>"
 //                                else -> .ascii "<s>"
-// PointerInit(label)                  -> .quad <label>
+// PointerInit(label)                  -> .quad .L<label>
 static void emit_init_static_variable_top_level(StaticInit* node) {
     switch(node->type()) {
         case AST_T::CharInit_t: {
@@ -762,7 +762,7 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
         }
         case AST_T::PointerInit_t: {
             std::string name = emit_identifier(static_cast<PointerInit*>(node)->name);
-            emit(".quad " + name, 2);
+            emit(".quad .L" + name, 2);
             break;
         }
         default:
