@@ -311,12 +311,14 @@ static std::string emit_register_operand(AsmRegister* node, TInt byte) {
 }
 
 static std::string emit_memory_operand(AsmMemory* node) {
-    std::string value = "";
-    if(node->value != 0l) {
-        value = emit_long(node->value);
-    }
     std::string reg = emit_register_8byte(node->reg.get());
-    return value + "(%" + reg + ")";
+    if(node->value != 0l) {
+        std::string value = emit_long(node->value);
+        return value + "(%" + reg + ")";
+    }
+    else {
+        return "(%" + reg + ")";
+    }
 }
 
 static std::string emit_data_operand(AsmData* node) {
@@ -326,7 +328,13 @@ static std::string emit_data_operand(AsmData* node) {
        static_cast<BackendObj*>(backend->backend_symbol_table[value].get())->is_constant) {
         value = ".L" + value;
     }
-    return value + "(%rip)";
+    if(node->offset != 0l) {
+        std::string offset = emit_long(node->offset);
+        return value + "+" + offset + "(%rip)";
+    }
+    else {
+        return value + "(%rip)";
+    }
 }
 
 static std::string emit_indexed_operand(AsmIndexed* node) {
@@ -339,7 +347,7 @@ static std::string emit_indexed_operand(AsmIndexed* node) {
 // Imm(int)                 -> $ $<int>
 // Register(reg)            -> $ %reg
 // Memory(int, reg)         -> $ <int>(<reg>)
-// Data(identifier)         -> $ <identifier>(%rip)
+// Data(identifier, int)    -> $ <identifier>+<int>(%rip)
 // Indexed(reg1, reg2, int) -> $ (<reg1>, <reg2>, <int>)
 static std::string emit_operand(AsmOperand* node, TInt byte) {
     switch(node->type()) {
@@ -379,6 +387,8 @@ static std::string emit_unary_op(AsmUnaryOp* node) {
 // Mult<i>       -> $ imul
 // Mult<d>       -> $ mul
 // DivDouble     -> $ div
+// Shl           -> $ shl // TODO can be replaced by BitShiftLeft ? // maybe no because they represent something different
+// ShrTwoOp      -> $ shr // TODO can be replaced by BitShitRight ?
 // BitAnd        -> $ and
 // BitOr         -> $ or
 // BitXor        -> $ xor
@@ -394,6 +404,10 @@ static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
             return c ? "mul" : "imul";
         case AST_T::AsmDivDouble_t:
             return "div";
+        case AST_T::AsmShl_t:
+            return "shl";
+        case AST_T::AsmShrTwoOp_t:
+            return "shr";
         case AST_T::AsmBitAnd_t:
             return "and";
         case AST_T::AsmBitOr_t:
@@ -671,12 +685,12 @@ static void emit_global_directive_top_level(const std::string& name, bool is_glo
     }
 }
 
-// Function(name, global, instructions) -> $     <global-directive>
-//                                         $     .text
-//                                         $ <name>:
-//                                         $     pushq %rbp
-//                                         $     movq %rsp, %rbp
-//                                         $     <instructions>
+// Function(name, global, return_memory, instructions) -> $     <global-directive>
+//                                                        $     .text
+//                                                        $ <name>:
+//                                                        $     pushq %rbp
+//                                                        $     movq %rsp, %rbp
+//                                                        $     <instructions>
 static void emit_function_top_level(AsmFunction* node) {
     std::string name = emit_identifier(node->name);
     emit_global_directive_top_level(name, node->is_global);
@@ -796,9 +810,9 @@ static void emit_static_constant_top_level(AsmStaticConstant* node) {
     emit_init_static_variable_top_level(node->static_init.get());
 }
 
-// Function(name, global, instructions)       -> $ <function-top-level-directives>
-// StaticVariable(name, global, align, init*) -> $ <static-variable-top-level-directives>
-// StaticConstant(name, align, init)          -> $ <static-constant-top-level-directives>
+// Function(name, global, return_memory, instructions) -> $ <function-top-level-directives>
+// StaticVariable(name, global, align, init*)          -> $ <static-variable-top-level-directives>
+// StaticConstant(name, align, init)                   -> $ <static-constant-top-level-directives>
 static void emit_top_level(AsmTopLevel* node) {
     emit("", 0);
     switch(node->type()) {
