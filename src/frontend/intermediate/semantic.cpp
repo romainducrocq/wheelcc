@@ -1955,7 +1955,10 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
         TInt member_alignment = get_type_alignment(node->members[member]->member_type.get());
         {
             TLong offset = size % member_alignment;
-            offset = offset == 0l ? size : size + member_alignment - offset;
+            if(offset != 0l) {
+                size += member_alignment - offset;
+            }
+            offset = size;
             std::shared_ptr<Type> member_type = node->members[member]->member_type;
             members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
         }
