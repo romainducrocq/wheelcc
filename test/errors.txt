@@ -1,7 +1,3 @@
-FAIL: test_valid/no_structure_parameters/libraries/initializers/nested_auto_struct_initializers (test_framework.basic.TestChapter18)
-FAIL: test_valid/no_structure_parameters/libraries/initializers/nested_auto_struct_initializers_client (test_framework.basic.TestChapter18)
-FAIL: test_valid/parameters/libraries/classify_params (test_framework.basic.TestChapter18)
-FAIL: test_valid/parameters/libraries/classify_params_client (test_framework.basic.TestChapter18)
 FAIL: test_valid/parameters/libraries/param_calling_conventions (test_framework.basic.TestChapter18)
 FAIL: test_valid/parameters/libraries/param_calling_conventions_client (test_framework.basic.TestChapter18)
 FAIL: test_valid/parameters/libraries/struct_sizes (test_framework.basic.TestChapter18)
@@ -17,3 +13,4 @@ FAIL: test_valid/params_and_returns/libraries/retval_struct_sizes_client (test_f
 FAIL: test_valid/params_and_returns/return_big_struct_on_page_boundary (test_framework.basic.TestChapter18)
 FAIL: test_valid/params_and_returns/return_struct_on_page_boundary (test_framework.basic.TestChapter18)
 FAIL: test_valid/params_and_returns/stack_clobber (test_framework.basic.TestChapter18)
+FAILED (failures=15)
