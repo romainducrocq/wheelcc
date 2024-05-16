@@ -2311,8 +2311,7 @@ static void generate_8byte_reg_param_function_instructions(const TIdentifier& na
     std::shared_ptr<AssemblyType> assembly_type_dst = struct_type ? generate_8byte_assembly_type(struct_type, offset) :
                                                                     std::make_shared<BackendDouble>();
     if(assembly_type_dst->type() == AST_T::ByteArray_t) {
-        TLong size = offset - 2l;
-        offset = static_cast<ByteArray*>(assembly_type_dst.get())->size;
+        TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size + offset - 2l;
         assembly_type_dst = std::make_shared<Byte>();
         std::shared_ptr<AsmOperand> src_shr2op = std::make_shared<AsmImm>(true, false, "8");
         std::shared_ptr<AssemblyType> assembly_type_shr2op = std::make_shared<QuadWord>();
