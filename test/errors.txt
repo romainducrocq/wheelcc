@@ -9,6 +9,5 @@ FAIL: test_valid/params_and_returns/libraries/return_calling_conventions_client 
 FAIL: test_valid/params_and_returns/libraries/retval_struct_sizes (test_framework.basic.TestChapter18)
 FAIL: test_valid/params_and_returns/libraries/retval_struct_sizes_client (test_framework.basic.TestChapter18)
 FAIL: test_valid/params_and_returns/return_big_struct_on_page_boundary (test_framework.basic.TestChapter18)
-FAIL: test_valid/params_and_returns/return_struct_on_page_boundary (test_framework.basic.TestChapter18)
 FAIL: test_valid/params_and_returns/stack_clobber (test_framework.basic.TestChapter18)
-FAILED (failures=13)
+FAILED (failures=12)
