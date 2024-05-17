@@ -978,13 +978,12 @@ static void generate_8byte_reg_arg_fun_call_instructions(const TIdentifier& name
     std::shared_ptr<AssemblyType> assembly_type_src = struct_type ? generate_8byte_assembly_type(struct_type, offset) :
                                                                     std::make_shared<BackendDouble>();
     if(assembly_type_src->type() == AST_T::ByteArray_t) {
-        ByteArray* bytearray_type = static_cast<ByteArray*>(assembly_type_src.get());
-        TLong size = bytearray_type->size + offset - 3l;
-        offset += bytearray_type->size - 1l;
+        TLong size = offset + 2l;
+        offset += static_cast<ByteArray*>(assembly_type_src.get())->size - 1l;
         assembly_type_src = std::make_shared<Byte>();
         std::shared_ptr<AsmOperand> src_shl = std::make_shared<AsmImm>(true, false, "8");
         std::shared_ptr<AssemblyType> assembly_type_shl = std::make_shared<QuadWord>();
-        while(offset > size + 1l) {
+        while(offset >= size) {
             {
                 std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
                 push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
@@ -997,9 +996,10 @@ static void generate_8byte_reg_arg_fun_call_instructions(const TIdentifier& name
             offset--;
         }
         {
-            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, size + 1l);
+            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
             push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
         }
+        offset--;
         {
             std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShl>();
             push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
@@ -1007,7 +1007,7 @@ static void generate_8byte_reg_arg_fun_call_instructions(const TIdentifier& name
                                                                   std::move(src_shl), dst));
         }
         {
-            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, size);
+            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, std::move(offset));
             push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src),
                                                                 std::move(dst)));
         }
