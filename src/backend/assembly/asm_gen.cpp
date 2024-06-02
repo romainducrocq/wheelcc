@@ -1067,26 +1067,25 @@ static void generate_8byte_stack_arg_fun_call_instructions(const TIdentifier& na
 
 static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_padding, bool is_return_memory) {
     size_t reg_size = is_return_memory ? 1 : 0;
-    std::vector<std::unique_ptr<AsmInstruction>> reg_instructions;
-    std::vector<std::unique_ptr<AsmInstruction>> sse_instructions;
+    size_t sse_size = 0;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions = context->p_instructions;
     for(size_t arg = 0; arg < node->args.size(); arg++) {
         if(is_value_double(node->args[arg].get())) {
-            if(sse_instructions.size() < 8) {
-                context->p_instructions = &sse_instructions;
+            if(sse_size < 8) {
                 generate_reg_arg_fun_call_instructions(node->args[arg].get(),
-                                                       context->ARG_SSE_REGISTERS[sse_instructions.size()]);
+                                                       context->ARG_SSE_REGISTERS[sse_size]);
+                sse_size++;
             }
             else {
                 context->p_instructions = &stack_instructions;
                 generate_stack_arg_fun_call_instructions(node->args[arg].get());
+                context->p_instructions = p_instructions;
                 stack_padding += 8l;
             }
         }
         else if(!is_value_structure(node->args[arg].get())) {
             if(reg_size < 6) {
-                context->p_instructions = &reg_instructions;
                 generate_reg_arg_fun_call_instructions(node->args[arg].get(),
                                                        context->ARG_REGISTERS[reg_size]);
                 reg_size++;
@@ -1094,6 +1093,7 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             else {
                 context->p_instructions = &stack_instructions;
                 generate_stack_arg_fun_call_instructions(node->args[arg].get());
+                context->p_instructions = p_instructions;
                 stack_padding += 8l;
             }
         }
@@ -1117,17 +1117,16 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                 }
             }
             if(struct_reg_size + reg_size < 6 &&
-               struct_sse_size + sse_instructions.size() < 8) {
+               struct_sse_size + sse_size < 8) {
                 TLong offset = 0l;
                 for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
                     struct_8b_cls++) {
                     if(context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
-                        context->p_instructions = &sse_instructions;
                         generate_8byte_reg_arg_fun_call_instructions(name, offset, nullptr,
-                                                         context->ARG_SSE_REGISTERS[sse_instructions.size()]);
+                                                         context->ARG_SSE_REGISTERS[sse_size]);
+                        sse_size++;
                     }
                     else {
-                        context->p_instructions = &reg_instructions;
                         generate_8byte_reg_arg_fun_call_instructions(name, offset, struct_type,
                                                                      context->ARG_REGISTERS[reg_size]);
                         reg_size++;
@@ -1143,17 +1142,11 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                     generate_8byte_stack_arg_fun_call_instructions(name, offset, struct_type);
                     offset += 8l;
                 }
+                context->p_instructions = p_instructions;
             }
         }
     }
-    context->p_instructions = p_instructions;
 
-    context->p_instructions->insert(context->p_instructions->end(),
-                                    std::make_move_iterator(reg_instructions.begin()),
-                                    std::make_move_iterator(reg_instructions.end()));
-    context->p_instructions->insert(context->p_instructions->end(),
-                                    std::make_move_iterator(sse_instructions.begin()),
-                                    std::make_move_iterator(sse_instructions.end()));
     context->p_instructions->reserve(context->p_instructions->size() + stack_instructions.size());
     for(size_t stack_instruction = stack_instructions.size(); stack_instruction-- > 0;) {
         push_instruction(std::move(stack_instructions[stack_instruction]));
