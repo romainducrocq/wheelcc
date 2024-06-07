@@ -1098,8 +1098,8 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             }
         }
         else {
-            size_t struct_reg_size = 6;
-            size_t struct_sse_size = 8;
+            size_t struct_reg_size = 7;
+            size_t struct_sse_size = 9;
             TIdentifier name = static_cast<TacVariable*>(node->args[arg].get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             generate_structure_type_classes(struct_type);
@@ -1116,8 +1116,8 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                     }
                 }
             }
-            if(struct_reg_size + reg_size < 6 &&
-               struct_sse_size + sse_size < 8) {
+            if(struct_reg_size + reg_size <= 6 &&
+               struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
                 for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
                     struct_8b_cls++) {
@@ -2322,8 +2322,8 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             }
         }
         else {
-            size_t struct_reg_size = 6;
-            size_t struct_sse_size = 8;
+            size_t struct_reg_size = 7;
+            size_t struct_sse_size = 9;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[node->params[param]]->type_t.get());
             generate_structure_type_classes(struct_type);
             if(context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
@@ -2339,8 +2339,8 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
                     }
                 }
             }
-            if(struct_reg_size + reg_size < 6 &&
-               struct_sse_size + sse_size < 8) {
+            if(struct_reg_size + reg_size <= 6 &&
+               struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
                 for(size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
                     struct_8b_cls++) {
