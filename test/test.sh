@@ -8,7 +8,7 @@ NC='\033[0m'
 
 TEST_DIR="${PWD}/tests"
 TEST_SRCS=()
-for i in $(seq 1 17); do
+for i in $(seq 1 18); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
 done
 
