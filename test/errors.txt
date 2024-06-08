@@ -1,7 +1,0 @@
-FAIL: test_valid/params_and_returns/libraries/access_retval_members (test_framework.basic.TestChapter18)
-FAIL: test_valid/params_and_returns/libraries/access_retval_members_client (test_framework.basic.TestChapter18)
-FAIL: test_valid/params_and_returns/libraries/return_calling_conventions (test_framework.basic.TestChapter18)
-FAIL: test_valid/params_and_returns/libraries/return_calling_conventions_client (test_framework.basic.TestChapter18)
-FAIL: test_valid/params_and_returns/libraries/retval_struct_sizes (test_framework.basic.TestChapter18)
-FAIL: test_valid/params_and_returns/libraries/retval_struct_sizes_client (test_framework.basic.TestChapter18)
-FAILED (failures=6)
