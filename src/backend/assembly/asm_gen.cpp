@@ -589,20 +589,13 @@ static void generate_return_structure_instructions(TacReturn* node) {
         }
         if(context->struct_8b_cls_map[struct_type->tag].size() == 2) {
             switch(context->struct_8b_cls_map[struct_type->tag][1]) {
-                case STRUCT_8B_CLS::INTEGER: {
-                    if(reg_size) {
-                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Dx);
-                    }
-                    else {
-                        std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
-                        context->p_instructions->pop_back();
-                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Ax);
-                        push_instruction(std::move(sse_instruction));
-                    }
+                case STRUCT_8B_CLS::INTEGER:
+                    generate_8byte_return_instructions(name, 8l, struct_type, reg_size ? REGISTER_KIND::Dx : 
+                                                                                         REGISTER_KIND::Ax);
                     break;
-                }
                 case STRUCT_8B_CLS::SSE:
-                    generate_8byte_return_instructions(name, 8l, nullptr, reg_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Xmm1);
+                    generate_8byte_return_instructions(name, 8l, nullptr, reg_size ? REGISTER_KIND::Xmm0 : 
+                                                                                     REGISTER_KIND::Xmm1);
                     break;
                 default:
                     RAISE_INTERNAL_ERROR;
@@ -1279,23 +1272,15 @@ static void generate_fun_call_instructions(TacFunCall* node) {
             }
             if(context->struct_8b_cls_map[struct_type->tag].size() == 2) {
                 switch(context->struct_8b_cls_map[struct_type->tag][1]) {
-                    case STRUCT_8B_CLS::INTEGER: {
-                        if(reg_size) {
-                            generate_8byte_return_fun_call_instructions(name, 8l, struct_type,
-                                                                        REGISTER_KIND::Dx);
-                        }
-                        else {
-                            std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
-                            context->p_instructions->pop_back();
-                            generate_8byte_return_fun_call_instructions(name, 8l, struct_type,
-                                                                        REGISTER_KIND::Ax);
-                            push_instruction(std::move(sse_instruction));
-                        }
+                    case STRUCT_8B_CLS::INTEGER:
+                        generate_8byte_return_fun_call_instructions(name, 8l, struct_type, 
+                                                                    reg_size ? REGISTER_KIND::Dx : 
+                                                                               REGISTER_KIND::Ax);
                         break;
-                    }
                     case STRUCT_8B_CLS::SSE:
                         generate_8byte_return_fun_call_instructions(name, 8l, nullptr,
-                                                                    reg_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Xmm1);
+                                                                    reg_size ? REGISTER_KIND::Xmm0 : 
+                                                                               REGISTER_KIND::Xmm1);
                         break;
                     default:
                         RAISE_INTERNAL_ERROR;
