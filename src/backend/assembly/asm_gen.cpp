@@ -547,7 +547,11 @@ static void generate_return_structure_instructions(TacReturn* node) {
             TLong offset = 0l;
             while(size > 0l) {
                 std::shared_ptr<AsmOperand> src = generate_operand(node->val.get());
-                std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, 0l);
+                if(src->type() == AST_T::AsmPseudoMem_t) {
+                    AsmPseudoMem* p_src = static_cast<AsmPseudoMem*>(src.get());
+                    p_src->offset = offset;
+                }
+                std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Ax, offset);
                 std::shared_ptr<AssemblyType> assembly_type_src;
                 if(size >= 8l) {
                     assembly_type_src = std::make_shared<QuadWord>();
