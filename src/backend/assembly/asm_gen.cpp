@@ -593,11 +593,11 @@ static void generate_return_structure_instructions(TacReturn* node) {
                     if(sse_size) {
                         std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
                         context->p_instructions->pop_back();
-                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Di);
+                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Dx);
                         push_instruction(std::move(sse_instruction));
                     }
                     else {
-                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Di);
+                        generate_8byte_return_instructions(name, 8l, struct_type, REGISTER_KIND::Dx);
                     }
                     break;
                 }
@@ -1284,12 +1284,12 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                             std::unique_ptr<AsmInstruction> sse_instruction = std::move(context->p_instructions->back());
                             context->p_instructions->pop_back();
                             generate_8byte_return_fun_call_instructions(name, 8l, struct_type,
-                                                                        REGISTER_KIND::Di);
+                                                                        REGISTER_KIND::Dx);
                             push_instruction(std::move(sse_instruction));
                         }
                         else {
                             generate_8byte_return_fun_call_instructions(name, 8l, struct_type,
-                                                                        REGISTER_KIND::Di);
+                                                                        REGISTER_KIND::Dx);
                         }
                         break;
                     }
