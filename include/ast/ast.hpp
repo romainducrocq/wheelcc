@@ -263,8 +263,6 @@ enum AST_T {
     AsmSub_t,
     AsmMult_t,
     AsmDivDouble_t,
-    AsmShl_t,
-    AsmShrTwoOp_t,
     AsmBitAnd_t,
     AsmBitOr_t,
     AsmBitXor_t,

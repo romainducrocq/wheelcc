@@ -195,8 +195,7 @@ static std::unique_ptr<AsmUnaryOp> generate_unary_op(TacUnaryOp* node) {
     }
 }
 
-// binary_operator = Add | Sub | Mult | DivDouble | Shl | ShrTwoOp | BitAnd | BitOr | BitXor | BitShiftLeft
-//                 | BitShiftRight
+// binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight
 static std::unique_ptr<AsmBinaryOp> generate_binary_op(TacBinaryOp* node) {
     switch(node->type()) {
         case AST_T::TacAdd_t:
@@ -495,7 +494,7 @@ static void generate_8byte_return_instructions(const TIdentifier& name, TLong of
                 push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
             }
             {
-                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShl>();
+                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftLeft>();
                 push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
                                                                       assembly_type_shl,src_shl, dst));
             }
@@ -507,7 +506,7 @@ static void generate_8byte_return_instructions(const TIdentifier& name, TLong of
         }
         offset--;
         {
-            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShl>();
+            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftLeft>();
             push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
                                                                   std::move(assembly_type_shl),
                                                                   std::move(src_shl), dst));
@@ -1174,7 +1173,7 @@ std::shared_ptr<AsmOperand> src = generate_register(arg_register);
                 push_instruction(std::make_unique<AsmMov>(assembly_type_dst, src, std::move(dst)));
             }
             {
-                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShrTwoOp>();
+                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftRight>();
                 push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
                                                                       assembly_type_shr2op, src_shr2op,
                                                                       src));
@@ -1186,7 +1185,7 @@ std::shared_ptr<AsmOperand> src = generate_register(arg_register);
             push_instruction(std::make_unique<AsmMov>(assembly_type_dst, src, std::move(dst)));
         }
         {
-            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmShrTwoOp>();
+            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftRight>();
             push_instruction(std::make_unique<AsmBinary>(std::move(binary_op),
                                                                   std::move(assembly_type_shr2op),
                                                                   std::move(src_shr2op), src));
@@ -2373,7 +2372,7 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
         FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
         if(fun_type->ret_type->type() == AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(fun_type->ret_type.get());
-            generate_structure_type_classes(struct_type); // TODO only here because definition is always before fun call ?
+            generate_structure_type_classes(struct_type);
             if(context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
                 is_return_memory = true;
                 {

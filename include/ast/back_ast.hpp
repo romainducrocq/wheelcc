@@ -266,8 +266,6 @@ struct AsmIndexed : AsmOperand {
 //                 | Sub
 //                 | Mult
 //                 | DivDouble
-//                 | Shl
-//                 | ShrTwoOp
 //                 | BitAnd
 //                 | BitOr
 //                 | BitXor
@@ -290,14 +288,6 @@ struct AsmMult : AsmBinaryOp {
 };
 
 struct AsmDivDouble : AsmBinaryOp {
-    AST_T type() override;
-};
-
-struct AsmShl : AsmBinaryOp {
-    AST_T type() override;
-};
-
-struct AsmShrTwoOp : AsmBinaryOp {
     AST_T type() override;
 };
 

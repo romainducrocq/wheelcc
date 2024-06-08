@@ -1443,14 +1443,6 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmDivDouble", "", ++t);
             break;
         }
-        case AST_T::AsmShl_t: {
-            field("AsmShl", "", ++t);
-            break;
-        }
-        case AST_T::AsmShrTwoOp_t: {
-            field("AsmShrTwoOp", "", ++t);
-            break;
-        }
         case AST_T::AsmBitAnd_t: {
             field("AsmBitAnd", "", ++t);
             break;

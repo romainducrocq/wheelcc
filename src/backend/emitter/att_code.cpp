@@ -387,8 +387,6 @@ static std::string emit_unary_op(AsmUnaryOp* node) {
 // Mult<i>       -> $ imul
 // Mult<d>       -> $ mul
 // DivDouble     -> $ div
-// Shl           -> $ shl // TODO can be replaced by BitShiftLeft ? // maybe no because they represent something different
-// ShrTwoOp      -> $ shr // TODO can be replaced by BitShitRight ?
 // BitAnd        -> $ and
 // BitOr         -> $ or
 // BitXor        -> $ xor
@@ -404,10 +402,6 @@ static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
             return c ? "mul" : "imul";
         case AST_T::AsmDivDouble_t:
             return "div";
-        case AST_T::AsmShl_t:
-            return "shl";
-        case AST_T::AsmShrTwoOp_t:
-            return "shr";
         case AST_T::AsmBitAnd_t:
             return "and";
         case AST_T::AsmBitOr_t:

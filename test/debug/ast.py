@@ -270,8 +270,6 @@ ast = [
     ["AsmSub", [], []],
     ["AsmMult", [], []],
     ["AsmDivDouble", [], []],
-    ["AsmShl", [], []],
-    ["AsmShrTwoOp", [], []],
     ["AsmBitAnd", [], []],
     ["AsmBitOr", [], []],
     ["AsmBitXor", [], []],

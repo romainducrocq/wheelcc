@@ -63,7 +63,7 @@ static TInt generate_array_aggregate_type_alignment(Array* arr_type) {
 }
 
 static TInt generate_structure_aggregate_type_alignment(Structure* struct_type) {
-    return frontend->struct_typedef_table[struct_type->tag]->alignment; // TODO max(alignment, 16) ?
+    return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
 
 TInt generate_type_alignment(Type* type) {
