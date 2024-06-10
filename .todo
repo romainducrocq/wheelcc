@@ -36,6 +36,9 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
 ## NOTES
 
 - see why segfault in 2 invalid tests in 15/
+- replace fopen with open
+    - https://stackoverflow.com/questions/1658476/c-fopen-vs-open
+    - https://stackoverflow.com/questions/49011302/how-to-convert-from-fopen-to-open-function
 
 ---- Optimization
 
