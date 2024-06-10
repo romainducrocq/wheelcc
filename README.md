@@ -1,5 +1,5 @@
 # [C++] Wheel C Compiler
-> **WORK IN PROGRESS**
+> **THIS COMPILER IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE AT YOUR OWN RISK!**
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*  
 Yet another C Compiler for Computers. It's a bit rough on the edges tho (standard-compliant with a subset of C17).  
@@ -103,9 +103,9 @@ Usage: wheelcc [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
 FILES:           list of .c files to compile
 ```
 
-## System specs
+****
 
-- This compiler was developped and tested with:  
+This compiler was developped and tested with:  
 ```
 gcc      (Debian 10.2.1-6) 10.2.1 20210110
 g++      (Debian 10.2.1-6) 10.2.1 20210110
