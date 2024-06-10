@@ -3,11 +3,13 @@
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*  
 Yet another C Compiler for Computers. It's a bit rough on the edges tho (standard-compliant with a subset of C17).  
+<!---->
 
-****
-_Resources_:
-- Writing a C Compiler - Build a Real Programming Language from Scratch, Nora Sandler
-- Migrated from Cython implementation after "_Development_ `13. Floating-point numbers`"
+- Writing a C Compiler - Build a Real Programming Language from Scratch, Nora Sandler: https://norasandler.com/book/
+- An Incremental Approach to Compiler Construction, Abdulaziz Ghuloum : http://scheme2006.cs.uchicago.edu/11-ghuloum.pdf
+- C17 International Standard ISO/IEC 9899:2018 : https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf
+- System V-ABI for ELF x86-64 : https://gitlab.com/x86-psABIs/x86-64-ABI/
+- x86 and amd64 instruction reference : https://www.felixcloutier.com/x86/
 ****
 
 ## Development
@@ -34,7 +36,7 @@ _Resources_:
 - [x] 15\. Arrays and pointer arithmetic  
 - [x] 16\. Characters and strings  
 - [x] 17\. Supporting dynamic memory allocation  
-- [ ] 18\. Structures  
+- [x] 18\. Structures  
 
 ### Optimization
 
