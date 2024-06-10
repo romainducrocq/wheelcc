@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ROOT="${PWD}/.."
+TEST_SUITE="${ROOT}/../writing-a-c-compiler-tests"
 
 function test () {
     echo ""
@@ -10,7 +11,7 @@ function test () {
     if [ ${?} -ne 0 ]; then exit 1; fi
 }
 
-cd ${ROOT}/../writing-a-c-compiler-tests/
+cd ${TEST_SUITE}
 
 if [ ${#} -ne 0 ]; then
     test ${@}
