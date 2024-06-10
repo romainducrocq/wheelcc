@@ -1,15 +1,43 @@
 #!/bin/bash
 
-for i in $(seq 1 18)
-do
+PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+
+ROOT="${PWD}/.."
+NQCC2="${ROOT}/../nqcc2"
+
+function timer () {
     echo ""
-    echo "%%${i} ------------------------------------------------"
-    time for FILE in $(find tests/${i}_* -name "*.c" -type f)
+    echo "----------------------------------------------------------------------"
+    echo "--chapter ${1}"
+    echo "----------------------------------------------------------------------"
+    echo ""
+    echo "${PACKAGE_NAME}"
+    time for FILE in $(find tests/${1}_* -name "*.c" -type f)
     do
-        wheelcc ${FILE} > /dev/null 2>&1
+        ${PACKAGE_NAME} ${FILE} > /dev/null 2>&1
     done
-    time for FILE in $(find tests/${i}_* -name "*.c" -type f)
+    echo ""
+    echo "nqcc2"
+    time for FILE in $(find tests/${1}_* -name "*.c" -type f)
     do
-        ../../nqcc2/nqcc2/_build/default/bin/main.exe $(readlink -f ${FILE}) > /dev/null 2>&1
+        ${NQCC2}/_build/default/bin/main.exe $(readlink -f ${FILE}) > /dev/null 2>&1
     done
-done
+    for FILE in $(find tests/${1}_* -name "*.c" -type f)
+    do
+        FILE=${FILE%.*}
+        if [ -f ${FILE} ]; then
+             rm ${FILE}
+        fi
+    done
+}
+
+if [ ${#} -ne 0 ]; then
+    timer ${1}
+else
+    for i in $(seq 1 18); do
+        timer ${i}
+    done
+fi
+
+exit 0
+
