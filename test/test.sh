@@ -141,6 +141,35 @@ function check_single () {
     print_single
 }
 
+function check_data () {
+    gcc -pedantic-errors -c ${FILE}_data.s${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
+    gcc -pedantic-errors -c ${FILE}.c${LIBS} -o ${FILE}.o > /dev/null 2>&1
+    gcc -pedantic-errors ${FILE}.o ${FILE}_data.o${LIBS} -o ${FILE} > /dev/null 2>&1
+    OUT_GCC=$(${FILE})
+    RET_GCC=${?}
+    rm ${FILE}
+
+    if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
+
+    ${PACKAGE_NAME} -c${LIBS} ${FILE}.c > /dev/null 2>&1
+    RET_THIS=${?}
+
+    if [ ${RET_THIS} -eq 0 ]; then
+        gcc -pedantic-errors ${FILE}.o ${FILE}_data.s${LIBS} -o ${FILE} > /dev/null 2>&1
+        RET_THIS=${?}
+    fi
+
+    if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
+    if [ -f "${FILE}_data.o" ]; then rm ${FILE}_data.o; fi
+
+    check_pass 0
+    RET_PASS=${?}
+
+    COMP_1="gcc"
+    COMP_2="${PACKAGE_NAME}"
+    print_single
+}
+
 function compile_client () {
     ${PACKAGE_NAME} -c${LIBS} ${1} > /dev/null 2>&1
     RET_THIS=${?}
@@ -210,6 +239,11 @@ function check_test () {
     LIBS=""
     if [[ "${FILE}" == *"__+l"* ]]; then
         LIBS=" -"$(echo "${FILE}" | cut -d "+" -f2- | tr "+" "-" | tr "_" " ")
+    fi
+
+    if [ -f "${FILE}_data.s" ]; then
+        check_data
+        return
     fi
 
     if [ -f "${FILE}_client.c" ]; then
