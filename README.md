@@ -1,9 +1,9 @@
 # [C++] Wheel C Compiler
-> **THIS COMPILER IS A WORK IN PROGRESS!** 
-> **ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE AT YOUR OWN RISK!**
+> **THIS COMPILER IS A WORK IN PROGRESS!**  
+> **ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE AT YOUR OWN RISK!**  
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*  
-Yet another C Compiler for Computers. It's a bit rough on the edges tho (standard-compliant with a subset of C17).  
+Yet another C Compiler for Computers. It's a bit rough on the edges (standard-compliant with a large subset of C17).  
 <!---->
 
 - Writing a C Compiler - Build a Real Programming Language from Scratch : https://norasandler.com/book/
