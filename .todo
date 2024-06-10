@@ -4,7 +4,7 @@
 
 ### I/
 - [x] 1. Language features
-- 2. Types
+- [x] 2. Types
 - 3. Optimization
 ### II/
 - 4. Add backend for x86_64 intel
@@ -30,30 +30,36 @@
     - see cython prebuild
 - 8. Implement more standard library
 
-resources:
-https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_would_have_changed_about/
+## BACKLOG
 
-## NOTES
+---- Notes
 
-- see why segfault in 2 invalid tests in 15/
+- review 18_structures/ asm_gen.cpp
+
+---- Bug fixes
+
+- see why segfault in 2 invalid tests in 15
+
+---- Features
+
+- add / clean error msgs in driver
+- clean error msgs in parser + semantic analysis / add line
+
+---- Performance
+
+- replace for loops with const auto& range where possible
+- remove unnessecery copy + move on primitives
+- add const correctness
+    - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
+- profile with callgrind + kcachegrind
+
 - replace fopen with open
     - https://stackoverflow.com/questions/1658476/c-fopen-vs-open
     - https://stackoverflow.com/questions/49011302/how-to-convert-from-fopen-to-open-function
 
----- Optimization
+---- Part 3 Optimization
 
 - use bitmask for cmd line params
-
-## BACKLOG
-
----- Performance
-
-- add / clean error msgs in driver
-- clean error msgs in parser + semantic analysis / add line
-- add const where possible ?
-    - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
-- replace for loops with const auto& range where possible ?
-- profile with callgrind + kcachegrind
 
 ---- Readme
 
@@ -63,6 +69,8 @@ https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_wou
         -> overflow = undefined behavior
 
 ## Grammar ideas
+
+https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_would_have_changed_about/
 
 pub fn add:: x: uint32, y: uint32 -> uint32 = {
     if x eq 0: (
