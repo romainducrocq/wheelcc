@@ -75,22 +75,22 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^"util/'
+  - Regex:           '^"backend/emitter/'
     Priority:        7
     SortPriority:    0
-  - Regex:           '^"ast/'
+  - Regex:           '^"backend/assembly/'
     Priority:        6
     SortPriority:    0
-  - Regex:           '^"frontend/parser/'
+  - Regex:           '^"frontend/intermediate/'
     Priority:        5
     SortPriority:    0
-  - Regex:           '^"frontend/intermediate/'
+  - Regex:           '^"frontend/parser/'
     Priority:        4
     SortPriority:    0
-  - Regex:           '^"backend/assembly/'
+  - Regex:           '^"ast/'
     Priority:        3
     SortPriority:    0
-  - Regex:           '^"backend/emitter/'
+  - Regex:           '^"util/'
     Priority:        2
     SortPriority:    0
   - Regex:           '.*'
