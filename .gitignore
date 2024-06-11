@@ -22,3 +22,4 @@ perf.data
 /test/tmp/
 ast.out.*
 valgrind.out.*
+format.out.*

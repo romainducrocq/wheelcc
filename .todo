@@ -51,6 +51,8 @@
 - remove unnessecery copy + move on primitives
 - add const correctness
     - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
+- see if need to reserve vectors with estimate of previous vectior size ?
+- see if need to reserve strings with chunk size (4096) ?
 - profile with callgrind + kcachegrind
 
 - replace fopen with open
