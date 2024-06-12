@@ -31,7 +31,7 @@ function timer () {
     done
 }
 
-if [ ${#} -ne 0 ]; then
+if [ ! -z "${1}" ]; then
     timer ${1}
 else
     for i in $(seq 1 18); do
@@ -40,4 +40,3 @@ else
 fi
 
 exit 0
-
