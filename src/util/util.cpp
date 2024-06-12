@@ -1,11 +1,10 @@
-#include "util/util.hpp"
-
 #include <memory>
+
+#include "util/util.hpp"
 
 std::unique_ptr<UtilContext> util;
 
-MainContext::MainContext()
-    : VERBOSE(false) {}
+MainContext::MainContext() : VERBOSE(false) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

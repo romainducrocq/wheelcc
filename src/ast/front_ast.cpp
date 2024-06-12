@@ -1,9 +1,9 @@
-#include "ast/front_ast.hpp"
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "ast/ast.hpp"
+#include "ast/front_ast.hpp"
+#include "ast/front_symt.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,156 +96,133 @@ AST_T CVarDecl::type() { return AST_T::CVarDecl_t; }
 AST_T CStructDecl::type() { return AST_T::CStructDecl_t; }
 AST_T CProgram::type() { return AST_T::CProgram_t; }
 
-CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator)
-    : abstract_declarator(std::move(abstract_declarator)) {}
+CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator) :
+    abstract_declarator(std::move(abstract_declarator)) {}
 
-CAbstractArray::CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator)
-    : size(size), abstract_declarator(std::move(abstract_declarator)) {}
+CAbstractArray::CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator) :
+    size(size), abstract_declarator(std::move(abstract_declarator)) {}
 
-CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type)
-    : declarator(std::move(declarator)), param_type(std::move(param_type)) {}
+CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type) :
+    declarator(std::move(declarator)), param_type(std::move(param_type)) {}
 
-CIdent::CIdent(TIdentifier name)
-    : name(std::move(name)) {}
+CIdent::CIdent(TIdentifier name) : name(std::move(name)) {}
 
-CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator)
-    : declarator(std::move(declarator)) {}
+CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator) : declarator(std::move(declarator)) {}
 
-CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> declarator)
-    : size(size), declarator(std::move(declarator)) {}
+CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> declarator) :
+    size(size), declarator(std::move(declarator)) {}
 
-CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list,
-                               std::unique_ptr<CDeclarator> declarator)
-    : param_list(std::move(param_list)), declarator(std::move(declarator)) {}
+CFunDeclarator::CFunDeclarator(
+    std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> declarator) :
+    param_list(std::move(param_list)),
+    declarator(std::move(declarator)) {}
 
-CConstant::CConstant(std::shared_ptr<CConst> constant)
-    : constant(std::move(constant)) {}
+CConstant::CConstant(std::shared_ptr<CConst> constant) : constant(std::move(constant)) {}
 
-CString::CString(std::shared_ptr<CStringLiteral> literal)
-    : literal(std::move(literal)) {}
+CString::CString(std::shared_ptr<CStringLiteral> literal) : literal(std::move(literal)) {}
 
-CVar::CVar(TIdentifier name)
-    : name(std::move(name)) {}
+CVar::CVar(TIdentifier name) : name(std::move(name)) {}
 
-CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type)
-    : exp(std::move(exp)), target_type(std::move(target_type)) {}
+CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type) :
+    exp(std::move(exp)), target_type(std::move(target_type)) {}
 
-CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp)
-    : unary_op(std::move(unary_op)), exp(std::move(exp)) {}
+CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp) :
+    unary_op(std::move(unary_op)), exp(std::move(exp)) {}
 
-CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left,
-                 std::unique_ptr<CExp> exp_right)
-    : binary_op(std::move(binary_op)), exp_left(std::move(exp_left)),
-      exp_right(std::move(exp_right)) {}
+CBinary::CBinary(
+    std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right) :
+    binary_op(std::move(binary_op)),
+    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
-CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right)
-    : exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right) :
+    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
-CConditional::CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle,
-                           std::unique_ptr<CExp> exp_right)
-    : condition(std::move(condition)), exp_middle(std::move(exp_middle)),
-      exp_right(std::move(exp_right)) {}
+CConditional::CConditional(
+    std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right) :
+    condition(std::move(condition)),
+    exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
 
-CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args)
-    : name(std::move(name)), args(std::move(args)) {}
+CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args) :
+    name(std::move(name)), args(std::move(args)) {}
 
-CDereference::CDereference(std::unique_ptr<CExp> exp)
-    : exp(std::move(exp)) {}
+CDereference::CDereference(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
-CAddrOf::CAddrOf(std::unique_ptr<CExp> exp)
-    : exp(std::move(exp)) {}
+CAddrOf::CAddrOf(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
-CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp)
-    : primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)) {}
+CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp) :
+    primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)) {}
 
-CSizeOf::CSizeOf(std::unique_ptr<CExp> exp)
-    : exp(std::move(exp)) {}
+CSizeOf::CSizeOf(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
-CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type)
-    : target_type(std::move(target_type)) {}
+CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type) : target_type(std::move(target_type)) {}
 
-CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure)
-    : member(std::move(member)), structure(std::move(structure)) {}
+CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure) :
+    member(std::move(member)), structure(std::move(structure)) {}
 
-CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer)
-    : member(std::move(member)), pointer(std::move(pointer)) {}
+CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer) :
+    member(std::move(member)), pointer(std::move(pointer)) {}
 
-CReturn::CReturn(std::unique_ptr<CExp> exp)
-    : exp(std::move(exp)) {}
+CReturn::CReturn(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
-CExpression::CExpression(std::unique_ptr<CExp> exp)
-    : exp(std::move(exp)) {}
+CExpression::CExpression(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
-CIf::CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then, std::unique_ptr<CStatement> else_fi)
-    : condition(std::move(condition)), then(std::move(then)), else_fi(std::move(else_fi)) {}
+CIf::CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then, std::unique_ptr<CStatement> else_fi) :
+    condition(std::move(condition)), then(std::move(then)), else_fi(std::move(else_fi)) {}
 
-CGoto::CGoto(TIdentifier target)
-    : target(std::move(target)) {}
+CGoto::CGoto(TIdentifier target) : target(std::move(target)) {}
 
-CLabel::CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to)
-    : target(std::move(target)), jump_to(std::move(jump_to)) {}
+CLabel::CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to) :
+    target(std::move(target)), jump_to(std::move(jump_to)) {}
 
-CCompound::CCompound(std::unique_ptr<CBlock> block)
-    : block(std::move(block)) {}
+CCompound::CCompound(std::unique_ptr<CBlock> block) : block(std::move(block)) {}
 
-CWhile::CWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body)
-    : condition(std::move(condition)), body(std::move(body)) {}
+CWhile::CWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body) :
+    condition(std::move(condition)), body(std::move(body)) {}
 
-CDoWhile::CDoWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body)
-    : condition(std::move(condition)), body(std::move(body)) {}
+CDoWhile::CDoWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body) :
+    condition(std::move(condition)), body(std::move(body)) {}
 
 CFor::CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std::unique_ptr<CExp> post,
-           std::unique_ptr<CStatement> body)
-    : init(std::move(init)), condition(std::move(condition)), post(std::move(post)),
-      body(std::move(body)) {}
+    std::unique_ptr<CStatement> body) :
+    init(std::move(init)),
+    condition(std::move(condition)), post(std::move(post)), body(std::move(body)) {}
 
-CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init)
-    : init(std::move(init)) {}
+CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init) : init(std::move(init)) {}
 
-CInitExp::CInitExp(std::unique_ptr<CExp> init)
-    : init(std::move(init)) {}
+CInitExp::CInitExp(std::unique_ptr<CExp> init) : init(std::move(init)) {}
 
-CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items)
-    : block_items(std::move(block_items)) {}
+CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items) : block_items(std::move(block_items)) {}
 
-CS::CS(std::unique_ptr<CStatement> statement)
-    : statement(std::move(statement)) {}
+CS::CS(std::unique_ptr<CStatement> statement) : statement(std::move(statement)) {}
 
-CD::CD(std::unique_ptr<CDeclaration> declaration)
-    : declaration(std::move(declaration)) {}
+CD::CD(std::unique_ptr<CDeclaration> declaration) : declaration(std::move(declaration)) {}
 
-CSingleInit::CSingleInit(std::unique_ptr<CExp> exp)
-    : exp(std::move(exp)) {}
+CSingleInit::CSingleInit(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
-CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers)
-    : initializers(std::move(initializers)) {}
+CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers) :
+    initializers(std::move(initializers)) {}
 
-CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type)
-    : member_name(std::move(member_name)), member_type(std::move(member_type)) {}
+CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type) :
+    member_name(std::move(member_name)), member_type(std::move(member_type)) {}
 
-CStructDeclaration::CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members)
-    : tag(std::move(tag)), members(std::move(members)) {}
+CStructDeclaration::CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members) :
+    tag(std::move(tag)), members(std::move(members)) {}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
-                                           std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
-                                           std::unique_ptr<CStorageClass> storage_class)
-    : name(std::move(name)), params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
-      storage_class(std::move(storage_class)) {}
+    std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class) :
+    name(std::move(name)),
+    params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
+    storage_class(std::move(storage_class)) {}
 
 CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer> init,
-                                           std::shared_ptr<Type> var_type,
-                                           std::unique_ptr<CStorageClass> storage_class)
-    :  name(std::move(name)), init(std::move(init)), var_type(std::move(var_type)),
-       storage_class(std::move(storage_class)) {}
+    std::shared_ptr<Type> var_type, std::unique_ptr<CStorageClass> storage_class) :
+    name(std::move(name)),
+    init(std::move(init)), var_type(std::move(var_type)), storage_class(std::move(storage_class)) {}
 
-CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl)
-    : function_decl(std::move(function_decl)) {}
+CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl) : function_decl(std::move(function_decl)) {}
 
-CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl)
-    : variable_decl(std::move(variable_decl)) {}
+CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl) : variable_decl(std::move(variable_decl)) {}
 
-CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl)
-    : struct_decl(std::move(struct_decl)) {}
+CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl) : struct_decl(std::move(struct_decl)) {}
 
-CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations)
-    : declarations(std::move(declarations)) {}
+CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations) : declarations(std::move(declarations)) {}

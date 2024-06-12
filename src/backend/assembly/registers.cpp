@@ -1,9 +1,10 @@
-#include "backend/assembly/registers.hpp"
+#include <memory>
 
 #include "util/throw.hpp"
+
 #include "ast/back_ast.hpp"
 
-#include <memory>
+#include "backend/assembly/registers.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -12,7 +13,7 @@
 // reg = AX | CX | DX | DI | SI | R8 | R9 | R10 | R11 | SP | XMM0 | XMM1 | XMM2 | XMM3 | XMM4 | XMM5 | XMM6 | XMM7
 //     | XMM14 | XMM15
 static std::unique_ptr<AsmReg> generate_reg(REGISTER_KIND register_kind) {
-    switch(register_kind) {
+    switch (register_kind) {
         case REGISTER_KIND::Ax:
             return std::make_unique<AsmAx>();
         case REGISTER_KIND::Cx:
@@ -70,8 +71,8 @@ std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TLong va
     return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
 }
 
-std::shared_ptr<AsmIndexed> generate_indexed(REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index,
-                                             TLong scale) {
+std::shared_ptr<AsmIndexed> generate_indexed(
+    REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index, TLong scale) {
     std::unique_ptr<AsmReg> reg_base = generate_reg(register_kind_base);
     std::unique_ptr<AsmReg> reg_index = generate_reg(register_kind_index);
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));

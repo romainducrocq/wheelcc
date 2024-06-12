@@ -1,7 +1,7 @@
-#include "ast/back_symt.hpp"
-#include "ast/ast.hpp"
-
 #include <memory>
+
+#include "ast/ast.hpp"
+#include "ast/back_symt.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,14 +17,12 @@ AST_T BackendSymbol::type() { return AST_T::BackendSymbol_t; }
 AST_T BackendObj::type() { return AST_T::BackendObj_t; }
 AST_T BackendFun::type() { return AST_T::BackendFun_t; }
 
-ByteArray::ByteArray(TLong size, TInt alignment)
-    : size(size), alignment(alignment) {}
+ByteArray::ByteArray(TLong size, TInt alignment) : size(size), alignment(alignment) {}
 
-BackendObj::BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type)
-    : is_static(is_static), is_constant(is_constant), assembly_type(std::move(assembly_type)) {}
+BackendObj::BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type) :
+    is_static(is_static), is_constant(is_constant), assembly_type(std::move(assembly_type)) {}
 
-BackendFun::BackendFun(bool is_defined)
-    : is_defined(is_defined) {}
+BackendFun::BackendFun(bool is_defined) : is_defined(is_defined) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

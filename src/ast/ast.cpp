@@ -1,6 +1,6 @@
-#include "ast/ast.hpp"
-
 #include <vector>
+
+#include "ast/ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,26 +18,18 @@ AST_T CConstChar::type() { return AST_T::CConstChar_t; }
 AST_T CConstUChar::type() { return AST_T::CConstUChar_t; }
 AST_T CStringLiteral::type() { return AST_T::CStringLiteral_t; }
 
-CConstInt::CConstInt(TInt value)
-    : value(value) {}
+CConstInt::CConstInt(TInt value) : value(value) {}
 
-CConstLong::CConstLong(TLong value)
-    : value(value) {}
+CConstLong::CConstLong(TLong value) : value(value) {}
 
-CConstUInt::CConstUInt(TUInt value)
-    : value(value) {}
+CConstUInt::CConstUInt(TUInt value) : value(value) {}
 
-CConstULong::CConstULong(TULong value)
-    : value(value) {}
+CConstULong::CConstULong(TULong value) : value(value) {}
 
-CConstDouble::CConstDouble(TDouble value)
-    : value(value) {}
+CConstDouble::CConstDouble(TDouble value) : value(value) {}
 
-CConstChar::CConstChar(TChar value)
-    : value(value) {}
+CConstChar::CConstChar(TChar value) : value(value) {}
 
-CConstUChar::CConstUChar(TUChar value)
-    : value(value) {}
+CConstUChar::CConstUChar(TUChar value) : value(value) {}
 
-CStringLiteral::CStringLiteral(std::vector<TChar> value)
-    : value(std::move(value)) {}
+CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value)) {}

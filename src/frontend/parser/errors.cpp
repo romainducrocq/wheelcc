@@ -1,15 +1,16 @@
-#include "frontend/parser/errors.hpp"
-#include "util/throw.hpp"
-#include "frontend/parser/lexer.hpp"
-
 #include <string>
+
+#include "util/throw.hpp"
+
+#include "frontend/parser/errors.hpp"
+#include "frontend/parser/lexer.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Errors
 
 const std::string get_token_kind_hr(TOKEN_KIND token_kind) {
-    switch(token_kind) {
+    switch (token_kind) {
         case TOKEN_KIND::assignment_bitshiftleft:
             return "<<=";
         case TOKEN_KIND::assignment_bitshiftright:

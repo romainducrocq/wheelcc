@@ -1,12 +1,12 @@
 #ifndef _AST_FRONT_SYMT_HPP
 #define _AST_FRONT_SYMT_HPP
 
-#include "ast/ast.hpp"
-
 #include <inttypes.h>
 #include <memory>
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
+#include "ast/ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -296,7 +296,7 @@ struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef() = default;
     StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
-                  std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members);
+        std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members);
 
     TInt alignment;
     TLong size;
@@ -325,10 +325,8 @@ struct FrontEndContext {
 };
 
 extern std::unique_ptr<FrontEndContext> frontend;
-#define INIT_FRONT_END_CONTEXT \
-    frontend = std::make_unique<FrontEndContext>()
-#define FREE_FRONT_END_CONTEXT \
-    frontend.reset()
+#define INIT_FRONT_END_CONTEXT frontend = std::make_unique<FrontEndContext>()
+#define FREE_FRONT_END_CONTEXT frontend.reset()
 
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
     frontend->struct_typedef_table[(X)]->members[frontend->struct_typedef_table[(X)]->member_names[(Y)]]

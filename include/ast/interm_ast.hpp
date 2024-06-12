@@ -1,11 +1,11 @@
 #ifndef _AST_INTERM_AST_HPP
 #define _AST_INTERM_AST_HPP
 
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "ast/ast.hpp"
+#include "ast/front_symt.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -282,8 +282,7 @@ struct TacUIntToDouble : TacInstruction {
 struct TacFunCall : TacInstruction {
     AST_T type() override;
     TacFunCall() = default;
-    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args,
-               std::shared_ptr<TacValue> dst);
+    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args, std::shared_ptr<TacValue> dst);
 
     TIdentifier name;
     std::vector<std::shared_ptr<TacValue>> args;
@@ -294,8 +293,7 @@ struct TacFunCall : TacInstruction {
 struct TacUnary : TacInstruction {
     AST_T type() override;
     TacUnary() = default;
-    TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::shared_ptr<TacValue> src,
-             std::shared_ptr<TacValue> dst);
+    TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
 
     std::unique_ptr<TacUnaryOp> unary_op;
     std::shared_ptr<TacValue> src;
@@ -305,8 +303,8 @@ struct TacUnary : TacInstruction {
 struct TacBinary : TacInstruction {
     AST_T type() override;
     TacBinary() = default;
-    TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1,
-              std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst);
+    TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2,
+        std::shared_ptr<TacValue> dst);
 
     std::unique_ptr<TacBinaryOp> binary_op;
     std::shared_ptr<TacValue> src1;
@@ -353,8 +351,8 @@ struct TacStore : TacInstruction {
 struct TacAddPtr : TacInstruction {
     AST_T type() override;
     TacAddPtr() = default;
-    TacAddPtr(TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
-              std::shared_ptr<TacValue> dst);
+    TacAddPtr(
+        TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index, std::shared_ptr<TacValue> dst);
 
     TLong scale;
     std::shared_ptr<TacValue> src_ptr;
@@ -429,7 +427,7 @@ struct TacFunction : TacTopLevel {
     AST_T type() override;
     TacFunction() = default;
     TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
-                std::vector<std::unique_ptr<TacInstruction>> body);
+        std::vector<std::unique_ptr<TacInstruction>> body);
 
     TIdentifier name;
     bool is_global;
@@ -441,7 +439,7 @@ struct TacStaticVariable : TacTopLevel {
     AST_T type() override;
     TacStaticVariable() = default;
     TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
-                      std::vector<std::shared_ptr<StaticInit>> static_inits);
+        std::vector<std::shared_ptr<StaticInit>> static_inits);
 
     TIdentifier name;
     bool is_global;
@@ -452,8 +450,8 @@ struct TacStaticVariable : TacTopLevel {
 struct TacStaticConstant : TacTopLevel {
     AST_T type() override;
     TacStaticConstant() = default;
-    TacStaticConstant(TIdentifier name, std::shared_ptr<Type> static_init_type,
-                      std::shared_ptr<StaticInit> static_init);
+    TacStaticConstant(
+        TIdentifier name, std::shared_ptr<Type> static_init_type, std::shared_ptr<StaticInit> static_init);
 
     TIdentifier name;
     std::shared_ptr<Type> static_init_type;
@@ -467,8 +465,8 @@ struct TacProgram : Ast {
     AST_T type() override;
     TacProgram() = default;
     TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels,
-               std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
-               std::vector<std::unique_ptr<TacTopLevel>> function_top_levels);
+        std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels,
+        std::vector<std::unique_ptr<TacTopLevel>> function_top_levels);
 
     std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels;
     std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;

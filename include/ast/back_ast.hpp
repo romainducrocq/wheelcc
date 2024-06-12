@@ -1,12 +1,12 @@
 #ifndef _AST_BACK_AST_HPP
 #define _AST_BACK_AST_HPP
 
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
-#include "ast/back_symt.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "ast/ast.hpp"
+#include "ast/back_symt.hpp"
+#include "ast/front_symt.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -360,8 +360,8 @@ struct AsmInstruction : Ast {
 struct AsmMov : AsmInstruction {
     AST_T type() override;
     AsmMov() = default;
-    AsmMov(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
-           std::shared_ptr<AsmOperand> dst);
+    AsmMov(
+        std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AssemblyType> assembly_type;
     std::shared_ptr<AsmOperand> src;
@@ -372,7 +372,7 @@ struct AsmMovSx : AsmInstruction {
     AST_T type() override;
     AsmMovSx() = default;
     AsmMovSx(std::shared_ptr<AssemblyType> assembly_type_src, std::shared_ptr<AssemblyType> assembly_type_dst,
-             std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+        std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AssemblyType> assembly_type_src;
     std::shared_ptr<AssemblyType> assembly_type_dst;
@@ -384,7 +384,7 @@ struct AsmMovZeroExtend : AsmInstruction {
     AST_T type() override;
     AsmMovZeroExtend() = default;
     AsmMovZeroExtend(std::shared_ptr<AssemblyType> assembly_type_src, std::shared_ptr<AssemblyType> assembly_type_dst,
-                     std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+        std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AssemblyType> assembly_type_src;
     std::shared_ptr<AssemblyType> assembly_type_dst;
@@ -404,8 +404,8 @@ struct AsmLea : AsmInstruction {
 struct AsmCvttsd2si : AsmInstruction {
     AST_T type() override;
     AsmCvttsd2si() = default;
-    AsmCvttsd2si(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
-                 std::shared_ptr<AsmOperand> dst);
+    AsmCvttsd2si(
+        std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AssemblyType> assembly_type;
     std::shared_ptr<AsmOperand> src;
@@ -415,8 +415,8 @@ struct AsmCvttsd2si : AsmInstruction {
 struct AsmCvtsi2sd : AsmInstruction {
     AST_T type() override;
     AsmCvtsi2sd() = default;
-    AsmCvtsi2sd(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
-                std::shared_ptr<AsmOperand> dst);
+    AsmCvtsi2sd(
+        std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AssemblyType> assembly_type;
     std::shared_ptr<AsmOperand> src;
@@ -427,7 +427,7 @@ struct AsmUnary : AsmInstruction {
     AST_T type() override;
     AsmUnary() = default;
     AsmUnary(std::unique_ptr<AsmUnaryOp> unary_op, std::shared_ptr<AssemblyType> assembly_type,
-             std::shared_ptr<AsmOperand> dst);
+        std::shared_ptr<AsmOperand> dst);
 
     std::unique_ptr<AsmUnaryOp> unary_op;
     std::shared_ptr<AssemblyType> assembly_type;
@@ -438,7 +438,7 @@ struct AsmBinary : AsmInstruction {
     AST_T type() override;
     AsmBinary() = default;
     AsmBinary(std::unique_ptr<AsmBinaryOp> binary_op, std::shared_ptr<AssemblyType> assembly_type,
-              std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+        std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::unique_ptr<AsmBinaryOp> binary_op;
     std::shared_ptr<AssemblyType> assembly_type;
@@ -449,8 +449,8 @@ struct AsmBinary : AsmInstruction {
 struct AsmCmp : AsmInstruction {
     AST_T type() override;
     AsmCmp() = default;
-    AsmCmp(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src,
-           std::shared_ptr<AsmOperand> dst);
+    AsmCmp(
+        std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::shared_ptr<AssemblyType> assembly_type;
     std::shared_ptr<AsmOperand> src;
@@ -550,7 +550,7 @@ struct AsmFunction : AsmTopLevel {
     AST_T type() override;
     AsmFunction() = default;
     AsmFunction(TIdentifier name, bool is_global, bool is_return_memory,
-                std::vector<std::unique_ptr<AsmInstruction>> instructions);
+        std::vector<std::unique_ptr<AsmInstruction>> instructions);
 
     TIdentifier name;
     bool is_global;
@@ -561,8 +561,8 @@ struct AsmFunction : AsmTopLevel {
 struct AsmStaticVariable : AsmTopLevel {
     AST_T type() override;
     AsmStaticVariable() = default;
-    AsmStaticVariable(TIdentifier name, TInt alignment, bool is_global,
-                      std::vector<std::shared_ptr<StaticInit>> static_inits);
+    AsmStaticVariable(
+        TIdentifier name, TInt alignment, bool is_global, std::vector<std::shared_ptr<StaticInit>> static_inits);
 
     TIdentifier name;
     TInt alignment;
@@ -587,7 +587,7 @@ struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram() = default;
     AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
-               std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
+        std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
 
     std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;

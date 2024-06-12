@@ -1,9 +1,9 @@
 #ifndef _FRONTEND_PARSER_ERRORS_HPP
 #define _FRONTEND_PARSER_ERRORS_HPP
 
-#include "frontend/parser/lexer.hpp"
-
 #include <string>
+
+#include "frontend/parser/lexer.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

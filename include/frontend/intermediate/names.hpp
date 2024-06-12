@@ -8,7 +8,8 @@
 
 // Names
 
-enum LABEL_KIND {
+enum LABEL_KIND
+{
     Land_false,
     Land_true,
     Lcomisd_nan,

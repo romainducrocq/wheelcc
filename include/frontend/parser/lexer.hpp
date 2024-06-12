@@ -1,16 +1,17 @@
 #ifndef _FRONTEND_PARSER_LEXER_HPP
 #define _FRONTEND_PARSER_LEXER_HPP
 
-#include <string>
-#include <memory>
 #include <array>
+#include <memory>
+#include <string>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Lexer
 
-enum TOKEN_KIND {
+enum TOKEN_KIND
+{
     assignment_bitshiftleft,
     assignment_bitshiftright,
 

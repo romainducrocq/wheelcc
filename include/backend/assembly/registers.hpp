@@ -1,15 +1,16 @@
 #ifndef _BACKEND_ASSEMBLY_REGISTERS_HPP
 #define _BACKEND_ASSEMBLY_REGISTERS_HPP
 
-#include "ast/back_ast.hpp"
-
 #include <memory>
+
+#include "ast/back_ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Registers
 
-enum REGISTER_KIND {
+enum REGISTER_KIND
+{
     Ax,
     Cx,
     Dx,
@@ -35,7 +36,7 @@ enum REGISTER_KIND {
 
 std::shared_ptr<AsmRegister> generate_register(REGISTER_KIND register_kind);
 std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TLong value);
-std::shared_ptr<AsmIndexed> generate_indexed(REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index,
-                                             TLong scale);
+std::shared_ptr<AsmIndexed> generate_indexed(
+    REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index, TLong scale);
 
 #endif

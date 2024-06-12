@@ -1,11 +1,13 @@
-#include "backend/assembly/symt_cvt.hpp"
-#include "util/throw.hpp"
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
-#include "ast/back_symt.hpp"
-#include "ast/back_ast.hpp"
-
 #include <memory>
+
+#include "util/throw.hpp"
+
+#include "ast/ast.hpp"
+#include "ast/back_ast.hpp"
+#include "ast/back_symt.hpp"
+#include "ast/front_symt.hpp"
+
+#include "backend/assembly/symt_cvt.hpp"
 
 static std::unique_ptr<SymtCvtContext> context;
 
@@ -14,7 +16,7 @@ static std::unique_ptr<SymtCvtContext> context;
 // Symbol table conversion
 
 TInt generate_scalar_type_alignment(Type* type) {
-    switch(type->type()) {
+    switch (type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -36,21 +38,21 @@ TInt generate_type_alignment(Type* type);
 
 static TInt generate_array_aggregate_type_alignment(Array* arr_type, TLong& size) {
     size = arr_type->size;
-    while(arr_type->elem_type->type() == AST_T::Array_t) {
+    while (arr_type->elem_type->type() == AST_T::Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
         size *= arr_type->size;
     }
     TInt alignment;
     {
         alignment = generate_type_alignment(arr_type->elem_type.get());
-        if(arr_type->elem_type->type() == AST_T::Structure_t) {
+        if (arr_type->elem_type->type() == AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
             size *= frontend->struct_typedef_table[struct_type->tag]->size;
         }
         else {
             size *= alignment;
         }
-        if(size >= 16l) {
+        if (size >= 16l) {
             alignment = 16;
         }
     }
@@ -67,7 +69,7 @@ static TInt generate_structure_aggregate_type_alignment(Structure* struct_type) 
 }
 
 TInt generate_type_alignment(Type* type) {
-    switch(type->type()) {
+    switch (type->type()) {
         case AST_T::Array_t:
             return generate_array_aggregate_type_alignment(static_cast<Array*>(type));
         case AST_T::Structure_t:
@@ -86,7 +88,7 @@ static std::shared_ptr<ByteArray> convert_array_aggregate_assembly_type(Array* a
 static std::shared_ptr<ByteArray> convert_structure_aggregate_assembly_type(Structure* struct_type) {
     TLong size;
     TInt alignment;
-    if(frontend->struct_typedef_table.find(struct_type->tag) != frontend->struct_typedef_table.end()) {
+    if (frontend->struct_typedef_table.find(struct_type->tag) != frontend->struct_typedef_table.end()) {
         size = frontend->struct_typedef_table[struct_type->tag]->size;
         alignment = frontend->struct_typedef_table[struct_type->tag]->alignment;
     }
@@ -98,7 +100,7 @@ static std::shared_ptr<ByteArray> convert_structure_aggregate_assembly_type(Stru
 }
 
 std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
-    switch(frontend->symbol_table[name]->type_t->type()) {
+    switch (frontend->symbol_table[name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t:
@@ -114,10 +116,10 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
             return std::make_shared<BackendDouble>();
         case AST_T::Array_t:
             return convert_array_aggregate_assembly_type(
-                                                static_cast<Array*>(frontend->symbol_table[name]->type_t.get()));
+                static_cast<Array*>(frontend->symbol_table[name]->type_t.get()));
         case AST_T::Structure_t:
             return convert_structure_aggregate_assembly_type(
-                                          static_cast<Structure*>(frontend->symbol_table[name]->type_t.get()));
+                static_cast<Structure*>(frontend->symbol_table[name]->type_t.get()));
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -139,7 +141,7 @@ static void convert_string_static_constant(Array* arr_type) {
 
 static void convert_static_constant_top_level(AsmStaticConstant* node) {
     context->p_symbol = &node->name;
-    switch(node->static_init->type()) {
+    switch (node->static_init->type()) {
         case AST_T::DoubleInit_t:
             convert_double_static_constant();
             break;
@@ -152,7 +154,7 @@ static void convert_static_constant_top_level(AsmStaticConstant* node) {
 }
 
 static void convert_top_level(AsmTopLevel* node) {
-    switch(node->type()) {
+    switch (node->type()) {
         case AST_T::AsmStaticConstant_t:
             convert_static_constant_top_level(static_cast<AsmStaticConstant*>(node));
             break;
@@ -167,18 +169,17 @@ static void convert_fun_type(FunAttr* node) {
 }
 
 static void convert_obj_type(IdentifierAttr* node) {
-    if(node->type() != AST_T::ConstantAttr_t) {
+    if (node->type() != AST_T::ConstantAttr_t) {
         std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*context->p_symbol);
         bool is_static = node->type() == AST_T::StaticAttr_t;
-        convert_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false,
-                                                                  std::move(assembly_type)));
+        convert_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(assembly_type)));
     }
 }
 
 static void convert_program(AsmProgram* node) {
-    for(const auto& symbol: frontend->symbol_table) {
+    for (const auto& symbol : frontend->symbol_table) {
         context->p_symbol = &symbol.first;
-        if(symbol.second->type_t->type() == AST_T::FunType_t) {
+        if (symbol.second->type_t->type() == AST_T::FunType_t) {
             convert_fun_type(static_cast<FunAttr*>(symbol.second->attrs.get()));
         }
         else {
@@ -186,7 +187,7 @@ static void convert_program(AsmProgram* node) {
         }
     }
 
-    for(size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
+    for (size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
         convert_top_level(node->static_constant_top_levels[top_level].get());
     }
     context->p_symbol = nullptr;

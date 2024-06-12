@@ -1,9 +1,9 @@
-#include "ast/front_symt.hpp"
-#include "ast/ast.hpp"
-
 #include <memory>
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
+#include "ast/ast.hpp"
+#include "ast/front_symt.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,75 +47,58 @@ AST_T Symbol::type() { return AST_T::Symbol_t; }
 AST_T StructMember::type() { return AST_T::StructMember_t; }
 AST_T StructTypedef::type() { return AST_T::StructTypedef_t; }
 
-FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type)
-    : param_types(std::move(param_types)), ret_type(std::move(ret_type)) {}
+FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type) :
+    param_types(std::move(param_types)), ret_type(std::move(ret_type)) {}
 
-Pointer::Pointer(std::shared_ptr<Type> ref_type)
-    : ref_type(std::move(ref_type)) {}
+Pointer::Pointer(std::shared_ptr<Type> ref_type) : ref_type(std::move(ref_type)) {}
 
-Array::Array(TLong size, std::shared_ptr<Type> elem_type)
-    : size(size), elem_type(std::move(elem_type)) {}
+Array::Array(TLong size, std::shared_ptr<Type> elem_type) : size(size), elem_type(std::move(elem_type)) {}
 
-Structure::Structure(TIdentifier tag)
-    : tag(std::move(tag)) {}
+Structure::Structure(TIdentifier tag) : tag(std::move(tag)) {}
 
-IntInit::IntInit(TInt value)
-    : value(value) {}
+IntInit::IntInit(TInt value) : value(value) {}
 
-LongInit::LongInit(TLong value)
-    : value(value) {}
+LongInit::LongInit(TLong value) : value(value) {}
 
-UIntInit::UIntInit(TUInt value)
-    : value(value) {}
+UIntInit::UIntInit(TUInt value) : value(value) {}
 
-ULongInit::ULongInit(TULong value)
-    : value(value) {}
+ULongInit::ULongInit(TULong value) : value(value) {}
 
-CharInit::CharInit(TChar value)
-    : value(value) {}
+CharInit::CharInit(TChar value) : value(value) {}
 
-UCharInit::UCharInit(TUChar value)
-    : value(value) {}
+UCharInit::UCharInit(TUChar value) : value(value) {}
 
-DoubleInit::DoubleInit(TDouble value, TULong binary)
-    : value(value), binary(binary) {}
+DoubleInit::DoubleInit(TDouble value, TULong binary) : value(value), binary(binary) {}
 
-ZeroInit::ZeroInit(TLong byte)
-    : byte(byte) {}
+ZeroInit::ZeroInit(TLong byte) : byte(byte) {}
 
-StringInit::StringInit(bool is_null_terminated, TIdentifier string_constant,
-                       std::shared_ptr<CStringLiteral> literal)
-    : is_null_terminated(is_null_terminated), string_constant(std::move(string_constant)),
-      literal(std::move(literal)) {}
+StringInit::StringInit(bool is_null_terminated, TIdentifier string_constant, std::shared_ptr<CStringLiteral> literal) :
+    is_null_terminated(is_null_terminated), string_constant(std::move(string_constant)), literal(std::move(literal)) {}
 
-PointerInit::PointerInit(TIdentifier name)
-    : name(std::move(name)) {}
+PointerInit::PointerInit(TIdentifier name) : name(std::move(name)) {}
 
-Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits)
-    : static_inits(std::move(static_inits)) {}
+Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits) : static_inits(std::move(static_inits)) {}
 
-FunAttr::FunAttr(bool is_defined, bool is_global)
-    : is_defined(is_defined), is_global(is_global) {}
+FunAttr::FunAttr(bool is_defined, bool is_global) : is_defined(is_defined), is_global(is_global) {}
 
-StaticAttr::StaticAttr(bool is_global, std::shared_ptr<InitialValue> init)
-    : is_global(is_global), init(std::move(init)) {}
+StaticAttr::StaticAttr(bool is_global, std::shared_ptr<InitialValue> init) :
+    is_global(is_global), init(std::move(init)) {}
 
-ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init)
-    : static_init(std::move(static_init)) {}
+ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init) : static_init(std::move(static_init)) {}
 
-Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
-    : type_t(std::move(type_t)), attrs(std::move(attrs)) {}
+Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs) :
+    type_t(std::move(type_t)), attrs(std::move(attrs)) {}
 
-StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type)
-    : offset(offset), member_type(std::move(member_type)) {}
+StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type) :
+    offset(offset), member_type(std::move(member_type)) {}
 
 StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
-                             std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members)
-    : alignment(alignment), size(size), member_names(std::move(member_names)), members(std::move(members)) {}
+    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members) :
+    alignment(alignment),
+    size(size), member_names(std::move(member_names)), members(std::move(members)) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<FrontEndContext> frontend;
 
-FrontEndContext::FrontEndContext()
-    : label_counter(0), variable_counter(0), structure_counter(0) {}
+FrontEndContext::FrontEndContext() : label_counter(0), variable_counter(0), structure_counter(0) {}

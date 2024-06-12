@@ -1,10 +1,12 @@
-#include "frontend/intermediate/names.hpp"
-#include "util/throw.hpp"
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
-#include "ast/front_ast.hpp"
-
 #include <string>
+
+#include "util/throw.hpp"
+
+#include "ast/ast.hpp"
+#include "ast/front_ast.hpp"
+#include "ast/front_symt.hpp"
+
+#include "frontend/intermediate/names.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +32,7 @@ TIdentifier resolve_structure_tag(const TIdentifier& structure) {
 
 TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
     TIdentifier name;
-    switch(label_kind) {
+    switch (label_kind) {
         case LABEL_KIND::Land_false: {
             name = "and_false";
             break;
@@ -122,7 +124,7 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
 
 TIdentifier represent_variable_identifier(CExp* node) {
     TIdentifier name;
-    switch(node->type()) {
+    switch (node->type()) {
         case AST_T::CConstant_t: {
             name = "const";
             break;

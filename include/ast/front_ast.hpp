@@ -1,11 +1,11 @@
 #ifndef _AST_FRONT_AST_HPP
 #define _AST_FRONT_AST_HPP
 
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "ast/ast.hpp"
+#include "ast/front_symt.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -300,8 +300,7 @@ struct CUnary : CExp {
 struct CBinary : CExp {
     AST_T type() override;
     CBinary() = default;
-    CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left,
-            std::unique_ptr<CExp> exp_right);
+    CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right);
 
     std::unique_ptr<CBinaryOp> binary_op;
     std::unique_ptr<CExp> exp_left;
@@ -327,8 +326,7 @@ struct CAssignment : CExp {
 struct CConditional : CExp {
     AST_T type() override;
     CConditional() = default;
-    CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle,
-                 std::unique_ptr<CExp> exp_right);
+    CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right);
 
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> exp_middle;
@@ -468,8 +466,7 @@ struct CExpression : CStatement {
 struct CIf : CStatement {
     AST_T type() override;
     CIf() = default;
-    CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then,
-        std::unique_ptr<CStatement> else_fi);
+    CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then, std::unique_ptr<CStatement> else_fi);
 
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CStatement> then;
@@ -528,7 +525,7 @@ struct CFor : CStatement {
     AST_T type() override;
     CFor() = default;
     CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std::unique_ptr<CExp> post,
-         std::unique_ptr<CStatement> body);
+        std::unique_ptr<CStatement> body);
 
     TIdentifier target;
     std::unique_ptr<CForInit> init;
@@ -701,9 +698,8 @@ struct CStructDeclaration : Ast {
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
-    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
-                         std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type,
-                         std::unique_ptr<CStorageClass> storage_class);
+    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params, std::unique_ptr<CBlock> body,
+        std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class);
 
     TIdentifier name;
     std::vector<TIdentifier> params;
@@ -721,7 +717,7 @@ struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
     CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer> init, std::shared_ptr<Type> var_type,
-                         std::unique_ptr<CStorageClass> storage_class);
+        std::unique_ptr<CStorageClass> storage_class);
 
     TIdentifier name;
     // Optional

@@ -1,13 +1,13 @@
-#include "util/str2t.hpp"
-#include "util/throw.hpp"
-
-#include <iomanip>
-#include <inttypes.h>
 #include <cstring>
+#include <inttypes.h>
+#include <iomanip>
+#include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <sstream>
 #include <vector>
+
+#include "util/str2t.hpp"
+#include "util/throw.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,8 +20,8 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     errno = 0;
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
 
-    if(end_ptr == &buffer[0]) {
-        if(line > 0) {
+    if (end_ptr == &buffer[0]) {
+        if (line > 0) {
             raise_runtime_error_at_line("String " + em(s_int) + " is not an integer", line);
         }
         else {
@@ -32,13 +32,9 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     return intmax;
 }
 
-int32_t intmax_to_int32(intmax_t intmax) {
-    return static_cast<int32_t>(intmax);
-}
+int32_t intmax_to_int32(intmax_t intmax) { return static_cast<int32_t>(intmax); }
 
-int64_t intmax_to_int64(intmax_t intmax) {
-    return static_cast<int64_t>(intmax);
-}
+int64_t intmax_to_int64(intmax_t intmax) { return static_cast<int64_t>(intmax); }
 
 uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     std::vector<char> buffer(s_uint.begin(), s_uint.end());
@@ -47,10 +43,9 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     errno = 0;
     uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
 
-    if(end_ptr == &buffer[0]) {
-        if(line > 0) {
-            raise_runtime_error_at_line("String " + em(s_uint) + " is not an unsigned integer",
-                                        line);
+    if (end_ptr == &buffer[0]) {
+        if (line > 0) {
+            raise_runtime_error_at_line("String " + em(s_uint) + " is not an unsigned integer", line);
         }
         else {
             RAISE_INTERNAL_ERROR;
@@ -60,24 +55,18 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     return uintmax;
 }
 
-uint32_t uintmax_to_uint32(uintmax_t uintmax) {
-    return static_cast<uint32_t>(uintmax);
-}
+uint32_t uintmax_to_uint32(uintmax_t uintmax) { return static_cast<uint32_t>(uintmax); }
 
-uint64_t uintmax_to_uint64(uintmax_t uintmax) {
-    return static_cast<uint64_t>(uintmax);
-}
+uint64_t uintmax_to_uint64(uintmax_t uintmax) { return static_cast<uint64_t>(uintmax); }
 
-uint64_t string_to_uint64(const std::string& s_uint) {
-    return uintmax_to_uint64(string_to_uintmax(s_uint, 0));
-}
+uint64_t string_to_uint64(const std::string& s_uint) { return uintmax_to_uint64(string_to_uintmax(s_uint, 0)); }
 
 void string_to_string_literal(const std::string& s_string, std::vector<int8_t>& string_literal) {
-    for(size_t byte = 1; byte < s_string.size() - 1; byte++) {
+    for (size_t byte = 1; byte < s_string.size() - 1; byte++) {
         char c_char = static_cast<char>(s_string[byte]);
-        if(c_char == '\\') {
+        if (c_char == '\\') {
             c_char = static_cast<char>(s_string[++byte]);
-            switch(c_char) {
+            switch (c_char) {
                 case '\'':
                     string_literal.push_back(39);
                     break;
@@ -123,9 +112,9 @@ void string_to_string_literal(const std::string& s_string, std::vector<int8_t>& 
 
 int32_t string_to_char_ascii(const std::string& s_char) {
     char c_char = static_cast<char>(s_char[1]);
-    if(c_char == '\\') {
+    if (c_char == '\\') {
         c_char = static_cast<char>(s_char[2]);
-        switch(c_char) {
+        switch (c_char) {
             case '\'':
                 return 39;
             case '"':
@@ -164,16 +153,14 @@ static intmax_t hex_string_to_intmax(const std::string& s_hex) {
     errno = 0;
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 16);
 
-    if(end_ptr == &buffer[0]) {
+    if (end_ptr == &buffer[0]) {
         RAISE_INTERNAL_ERROR;
     }
 
     return intmax;
 }
 
-static int8_t hex_string_to_int8(const std::string& s_hex) {
-    return static_cast<int8_t>(hex_string_to_intmax(s_hex));
-}
+static int8_t hex_string_to_int8(const std::string& s_hex) { return static_cast<int8_t>(hex_string_to_intmax(s_hex)); }
 
 static int32_t hex_string_to_int32(const std::string& s_hex) {
     return static_cast<int32_t>(hex_string_to_intmax(s_hex));
@@ -183,17 +170,16 @@ static int64_t hex_string_to_int64(const std::string& s_hex) {
     return static_cast<int64_t>(hex_string_to_intmax(s_hex));
 }
 
-static std::string string_literal_byte_to_hex_string(int8_t val)
-{
+static std::string string_literal_byte_to_hex_string(int8_t val) {
     std::stringstream ss;
-    ss << std::setfill('0') << std::setw(sizeof(int8_t)*2) << std::hex << (val|0);
+    ss << std::setfill('0') << std::setw(sizeof(int8_t) * 2) << std::hex << (val | 0);
     return ss.str();
 }
 
 int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
-    for(size_t byte = byte_at + 1; byte-- > byte_at;) {
-        if(byte < string_literal.size()) {
+    for (size_t byte = byte_at + 1; byte-- > byte_at;) {
+        if (byte < string_literal.size()) {
             s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
         }
     }
@@ -202,8 +188,8 @@ int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, s
 
 int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
-    for(size_t byte = byte_at + 4; byte-- > byte_at;) {
-        if(byte < string_literal.size()) {
+    for (size_t byte = byte_at + 4; byte-- > byte_at;) {
+        if (byte < string_literal.size()) {
             s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
         }
     }
@@ -212,8 +198,8 @@ int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal,
 
 int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
-    for(size_t byte = byte_at + 8; byte-- > byte_at;) {
-        if(byte < string_literal.size()) {
+    for (size_t byte = byte_at + 8; byte-- > byte_at;) {
+        if (byte < string_literal.size()) {
             s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
         }
     }
@@ -222,8 +208,8 @@ int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal,
 
 std::string string_literal_to_string_constant(const std::vector<int8_t>& string_literal) {
     std::string string_constant = "";
-    for(const auto& byte: string_literal) {
-        switch(byte) {
+    for (const auto& byte : string_literal) {
+        switch (byte) {
             case 39:
                 string_constant += "\\047";
                 break;
@@ -272,9 +258,8 @@ double string_to_double(const std::string& s_double, size_t line) {
     errno = 0;
     double float64 = strtod(&buffer[0], &end_ptr);
 
-    if(end_ptr == &buffer[0]) {
-        raise_runtime_error_at_line("String " + em(s_double) + " is not a floating point number",
-                                    line);
+    if (end_ptr == &buffer[0]) {
+        raise_runtime_error_at_line("String " + em(s_double) + " is not a floating point number", line);
     }
 
     return float64;

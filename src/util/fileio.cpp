@@ -1,9 +1,9 @@
+#include <stdio.h>
+#include <string>
+
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 #include "util/util.hpp"
-
-#include <stdio.h>
-#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -13,7 +13,7 @@ void file_open_read(const std::string& filename) {
     util->file_in = nullptr;
 
     util->file_in = fopen(filename.c_str(), "rb");
-    if(util->file_in == nullptr) {
+    if (util->file_in == nullptr) {
         raise_runtime_error("File " + em(filename) + " does not exist");
     }
 
@@ -26,14 +26,14 @@ void file_open_write(const std::string& filename) {
     util->file_out = nullptr;
 
     util->file_out = fopen(filename.c_str(), "wb");
-    if(util->file_out == nullptr) {
+    if (util->file_out == nullptr) {
         raise_runtime_error("File " + em(filename) + " was not created");
     }
     util->stream_buf = "";
 }
 
 bool read_line(std::string& line) {
-    if(getline(&util->buffer, &util->l, util->file_in) == -1) {
+    if (getline(&util->buffer, &util->l, util->file_in) == -1) {
         util->l = 0;
         line = "";
         free(util->buffer);
@@ -51,15 +51,13 @@ static void write_chunk(const std::string& chunk_fp, size_t chunk_l) {
 
 static void write_file(std::string&& stream, size_t chunk_size) {
     util->stream_buf += stream;
-    while(util->stream_buf.size() >= chunk_size) {
+    while (util->stream_buf.size() >= chunk_size) {
         write_chunk(util->stream_buf.substr(0, chunk_size), chunk_size);
         util->stream_buf = util->stream_buf.substr(chunk_size, util->stream_buf.size() - chunk_size);
     }
 }
 
-void write_line(std::string&& line) {
-    write_file(line + "\n", 4096);
-}
+void write_line(std::string&& line) { write_file(line + "\n", 4096); }
 
 void file_close_read() {
     fclose(util->file_in);

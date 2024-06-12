@@ -1,20 +1,22 @@
 #ifndef _BACKEND_ASSEMBLY_ASM_GEN_HPP
 #define _BACKEND_ASSEMBLY_ASM_GEN_HPP
 
-#include "ast/interm_ast.hpp"
-#include "ast/back_ast.hpp"
-#include "backend/assembly/registers.hpp"
-
-#include <memory>
 #include <array>
-#include <vector>
+#include <memory>
 #include <unordered_map>
+#include <vector>
+
+#include "ast/back_ast.hpp"
+#include "ast/interm_ast.hpp"
+
+#include "backend/assembly/registers.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Assembly generation
 
-enum STRUCT_8B_CLS {
+enum STRUCT_8B_CLS
+{
     INTEGER,
     SSE,
     MEMORY

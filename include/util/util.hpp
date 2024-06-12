@@ -1,9 +1,9 @@
 #ifndef _UTIL_UTIL_HPP
 #define _UTIL_UTIL_HPP
 
+#include <memory>
 #include <stdio.h>
 #include <string>
-#include <memory>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,9 +32,7 @@ struct UtilContext {
 };
 
 extern std::unique_ptr<UtilContext> util;
-#define INIT_UTIL_CONTEXT \
-    util = std::make_unique<UtilContext>()
-#define FREE_UTIL_CONTEXT \
-    util.reset()
+#define INIT_UTIL_CONTEXT util = std::make_unique<UtilContext>()
+#define FREE_UTIL_CONTEXT util.reset()
 
 #endif

@@ -1,13 +1,13 @@
 #ifndef _FRONTEND_INTERMEDIATE_SEMANTIC_HPP
 #define _FRONTEND_INTERMEDIATE_SEMANTIC_HPP
 
-#include "ast/ast.hpp"
-#include "ast/front_ast.hpp"
-
 #include <memory>
-#include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
+
+#include "ast/ast.hpp"
+#include "ast/front_ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

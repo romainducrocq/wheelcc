@@ -1,10 +1,10 @@
 #ifndef _AST_BACK_SYMT_HPP
 #define _AST_BACK_SYMT_HPP
 
-#include "ast/ast.hpp"
-
 #include <memory>
 #include <unordered_map>
+
+#include "ast/ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +54,7 @@ struct BackendSymbol : Ast {
     AST_T type() override;
 };
 
-struct BackendObj: BackendSymbol {
+struct BackendObj : BackendSymbol {
     AST_T type() override;
     BackendObj() = default;
     BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type);
@@ -64,7 +64,7 @@ struct BackendObj: BackendSymbol {
     std::shared_ptr<AssemblyType> assembly_type;
 };
 
-struct BackendFun: BackendSymbol {
+struct BackendFun : BackendSymbol {
     AST_T type() override;
     BackendFun() = default;
     BackendFun(bool is_defined);
@@ -85,9 +85,7 @@ struct BackEndContext {
 };
 
 extern std::unique_ptr<BackEndContext> backend;
-#define INIT_BACK_END_CONTEXT \
-    backend = std::make_unique<BackEndContext>()
-#define FREE_BACK_END_CONTEXT \
-    backend.reset()
+#define INIT_BACK_END_CONTEXT backend = std::make_unique<BackEndContext>()
+#define FREE_BACK_END_CONTEXT backend.reset()
 
 #endif

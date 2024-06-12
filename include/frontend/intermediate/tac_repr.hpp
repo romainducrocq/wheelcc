@@ -1,11 +1,11 @@
 #ifndef _FRONTEND_INTERMEDIATE_TAC_REPR_HPP
 #define _FRONTEND_INTERMEDIATE_TAC_REPR_HPP
 
-#include "ast/front_ast.hpp"
-#include "ast/interm_ast.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "ast/front_ast.hpp"
+#include "ast/interm_ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
