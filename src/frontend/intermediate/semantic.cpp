@@ -633,16 +633,24 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
                             + em("non-integer type"));
     }
 
-    // Note: https://stackoverflow.com/a/70130146
-    // if the value of the right operand is negative or is greater than or equal
-    // to the width of the promoted left operand, the behavior is undefined
+    // Bitshift of negative left operand value is implementation-defined. It is now UB, following the C standard (not
+    // the gcc implementation). "If E1 has a signed type and non-negative value, and E1 × 2E2 is representable in the
+    // result type, then that is the resulting value; otherwise, the behavior is undefined."
 
-    // TODO
+    // TODO:
+    // - Follow gcc and use sign extension: sign extend left hand value when lh value is negative.
     // https://gcc.gnu.org/onlinedocs/gcc/Integers-implementation.html
-    // The integer promotions are performed on each of the operands. The type of
-    // the result is that of the promoted left operand. If the value of the right
-    // operand is negative or is greater than or equal to the width of the promoted
-    // left operand, the behavior is undefined.
+    // "Bitwise operators act on the representation of the value including both the sign and value bits, where the sign
+    // bit is considered immediately above the highest-value value bit. Signed ‘>>’ acts on negative numbers by sign
+    // extension."
+    //
+    // Failed tests:
+    //  - 3_binary_operators/valid/extra_credit/bitwise_shiftr_negative.c
+    //  - 10_file-scope_variables_and_storage-class_specifiers/valid/extra_credit/bitwise_ops_file_scope_vars.c (2)
+    //  - 11_long_integers/valid/extra_credit/bitshift.c (5, 6)
+    //  - 11_long_integers/valid/extra_credit/compound_bitshift.c (5)
+    //  - 12_unsigned_integers/valid/extra_credit/compound_bitshift.c (1)
+    //  - 16_characters_and_strings/valid/extra_credit/bitshift_chars.c (3, 4, 5)
 
     switch (node->exp_left->exp_type->type()) {
         case AST_T::Char_t:
@@ -782,6 +790,19 @@ static void checktype_assignment_expression(CAssignment* node) {
         if (node->exp_right->type() != AST_T::CBinary_t) {
             raise_runtime_error("Right expression is an invalid compound assignment");
         }
+
+        // TODO:
+        // - The compound assignment expression must return the result value stored in the left operand.
+        // - If the left operand is a compound expression, do not evaluate it twice.
+        //
+        // Failed tests:
+        //  - 11_long_integers/valid/extra_credit/compound_bitshift.c (5)
+        //  - 14_pointers/valid/extra_credit/compound_assign_through_pointer.c (2)
+        //  - 14_pointers/valid/extra_credit/compound_bitwise_dereferenced_ptrs.c (3)
+        //  - 14_pointers/valid/extra_credit/eval_compound_lhs_once.c (stdout)
+        //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_nested_subscript.c (1, 4)
+        //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_subscripted_val.c (4, 5)
+
         CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
         if (exp_left->type() == AST_T::CCast_t) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();
