@@ -1482,6 +1482,7 @@ static void generate_binary_operator_conditional_integer_instructions(TacBinary*
 
 static void generate_binary_operator_conditional_double_instructions(TacBinary* node) {
     TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan_ne = "";
     std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
@@ -1500,9 +1501,21 @@ static void generate_binary_operator_conditional_double_instructions(TacBinary* 
     }
     {
         std::unique_ptr<AsmCondCode> cond_code = generate_unsigned_condition_code(node->binary_op.get());
-        push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
+        if(cond_code->type() == AST_T::AsmNE_t) {
+            target_nan_ne = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+            push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
+            push_instruction(std::make_unique<AsmJmp>(target_nan_ne));
+        }
+        else {
+            push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
+        }
     }
     push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
+    if(!target_nan_ne.empty()) {
+        std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+        push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
+        push_instruction(std::make_unique<AsmLabel>(std::move(target_nan_ne)));
+    }
 }
 
 static void generate_binary_operator_conditional_instructions(TacBinary* node) {

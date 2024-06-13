@@ -15,6 +15,7 @@ __pycache__/
 ~/
 .vscode
 perf.data
+*.swp
 
 /bin/wheelcc
 /bin/package_name.txt
