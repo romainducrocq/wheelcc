@@ -643,6 +643,7 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     // "Bitwise operators act on the representation of the value including both the sign and value bits, where the sign
     // bit is considered immediately above the highest-value value bit. Signed ‘>>’ acts on negative numbers by sign
     // extension."
+    // see https://en.wikibooks.org/wiki/X86_Assembly/Shift_and_Rotate#Arithmetic_Shift_Instructions
     //
     // Failed tests:
     //  - 3_binary_operators/valid/extra_credit/bitwise_shiftr_negative.c
