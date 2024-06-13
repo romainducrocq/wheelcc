@@ -624,14 +624,38 @@ static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* no
 }
 
 static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
-    // Note: https://stackoverflow.com/a/70130146
-    // if the value of the right operand is negative or is greater than or equal
-    // to the width of the promoted left operand, the behavior is undefined
     if (!is_type_arithmetic(node->exp_left->exp_type.get())) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
                             + em("non-arithmetic type"));
     }
-    else if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
+    else if (!is_type_integer(node->exp_right->exp_type.get())) {
+        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
+                            + em("non-integer type"));
+    }
+
+    // Note: https://stackoverflow.com/a/70130146
+    // if the value of the right operand is negative or is greater than or equal
+    // to the width of the promoted left operand, the behavior is undefined
+
+    // TODO
+    // https://gcc.gnu.org/onlinedocs/gcc/Integers-implementation.html
+    // The integer promotions are performed on each of the operands. The type of
+    // the result is that of the promoted left operand. If the value of the right
+    // operand is negative or is greater than or equal to the width of the promoted
+    // left operand, the behavior is undefined.
+
+    switch (node->exp_left->exp_type->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t: {
+            std::shared_ptr<Type> left_type = std::make_shared<Int>();
+            node->exp_left = cast_expression(std::move(node->exp_left), left_type);
+            break;
+        }
+        default:
+            break;
+    }
+    if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
         node->exp_right = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
     }
     node->exp_type = node->exp_left->exp_type;
