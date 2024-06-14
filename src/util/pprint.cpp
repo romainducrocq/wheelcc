@@ -429,6 +429,10 @@ static void print_ast(Ast* node, size_t t) {
             field("CBitShiftRight", "", ++t);
             break;
         }
+        case AST_T::CBitShrArithmetic_t: {
+            field("CBitShrArithmetic", "", ++t);
+            break;
+        }
         case AST_T::CAnd_t: {
             field("CAnd", "", ++t);
             break;
@@ -949,6 +953,10 @@ static void print_ast(Ast* node, size_t t) {
             field("TacBitShiftRight", "", ++t);
             break;
         }
+        case AST_T::TacBitShrArithmetic_t: {
+            field("TacBitShrArithmetic", "", ++t);
+            break;
+        }
         case AST_T::TacEqual_t: {
             field("TacEqual", "", ++t);
             break;
@@ -1461,6 +1469,10 @@ static void print_ast(Ast* node, size_t t) {
         }
         case AST_T::AsmBitShiftRight_t: {
             field("AsmBitShiftRight", "", ++t);
+            break;
+        }
+        case AST_T::AsmBitShrArithmetic_t: {
+            field("AsmBitShrArithmetic", "", ++t);
             break;
         }
         case AST_T::AsmUnaryOp_t: {
