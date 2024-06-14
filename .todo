@@ -34,6 +34,8 @@
 
 ---- Notes
 
+- set (or reserve) string to chunk size ?
+- remove reserve for stack_instructions in asm_gen
 - review 18_structures/ asm_gen.cpp
 
 ---- Bug fixes

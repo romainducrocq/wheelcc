@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -std=c++17")
 if(__NDEBUG__)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -D__NDEBUG__")
 endif(__NDEBUG__)
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O3")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../src/")

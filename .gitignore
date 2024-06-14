@@ -24,3 +24,4 @@ perf.data
 ast.out.*
 valgrind.out.*
 format.out.*
+*.callgrind.out.*
