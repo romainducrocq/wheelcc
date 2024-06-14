@@ -14,13 +14,13 @@ function timer () {
     echo "${PACKAGE_NAME}"
     time for FILE in $(find tests/${1}_* -name "*.c" -type f)
     do
-        ${PACKAGE_NAME} ${FILE} > /dev/null 2>&1
+        ${PACKAGE_NAME} -S ${FILE} > /dev/null 2>&1
     done
     echo ""
     echo "nqcc2"
     time for FILE in $(find tests/${1}_* -name "*.c" -type f)
     do
-        ${NQCC2}/_build/default/bin/main.exe $(readlink -f ${FILE}) > /dev/null 2>&1
+        ${NQCC2}/_build/default/bin/main.exe -S $(readlink -f ${FILE}) > /dev/null 2>&1
     done
     for FILE in $(find tests/${1}_* -name "*.c" -type f)
     do
