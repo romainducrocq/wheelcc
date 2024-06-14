@@ -988,8 +988,8 @@ static void generate_bytearray_8byte_stack_arg_fun_call_instructions(
             byte_instructions.push_back(std::move(byte_instruction));
         }
         context->p_instructions->reserve(context->p_instructions->size() + byte_instructions.size());
-        for (size_t byte_instruction = byte_instructions.size(); byte_instruction-- > 0;) {
-            push_instruction(std::move(byte_instructions[byte_instruction]));
+        for (size_t i = byte_instructions.size(); i-- > 0;) {
+            push_instruction(std::move(byte_instructions[i]));
         }
     }
     {
@@ -1024,27 +1024,27 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
     size_t sse_size = 0;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions = context->p_instructions;
-    for (size_t arg = 0; arg < node->args.size(); arg++) {
-        if (is_value_double(node->args[arg].get())) {
+    for (const auto& arg : node->args) {
+        if (is_value_double(arg.get())) {
             if (sse_size < 8) {
-                generate_reg_arg_fun_call_instructions(node->args[arg].get(), context->ARG_SSE_REGISTERS[sse_size]);
+                generate_reg_arg_fun_call_instructions(arg.get(), context->ARG_SSE_REGISTERS[sse_size]);
                 sse_size++;
             }
             else {
                 context->p_instructions = &stack_instructions;
-                generate_stack_arg_fun_call_instructions(node->args[arg].get());
+                generate_stack_arg_fun_call_instructions(arg.get());
                 context->p_instructions = p_instructions;
                 stack_padding += 8l;
             }
         }
-        else if (!is_value_structure(node->args[arg].get())) {
+        else if (!is_value_structure(arg.get())) {
             if (reg_size < 6) {
-                generate_reg_arg_fun_call_instructions(node->args[arg].get(), context->ARG_REGISTERS[reg_size]);
+                generate_reg_arg_fun_call_instructions(arg.get(), context->ARG_REGISTERS[reg_size]);
                 reg_size++;
             }
             else {
                 context->p_instructions = &stack_instructions;
-                generate_stack_arg_fun_call_instructions(node->args[arg].get());
+                generate_stack_arg_fun_call_instructions(arg.get());
                 context->p_instructions = p_instructions;
                 stack_padding += 8l;
             }
@@ -1052,15 +1052,14 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
         else {
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
-            TIdentifier name = static_cast<TacVariable*>(node->args[arg].get())->name;
+            TIdentifier name = static_cast<TacVariable*>(arg.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             generate_structure_type_classes(struct_type);
             if (context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
-                     struct_8b_cls++) {
-                    if (context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
+                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                    if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         struct_sse_size++;
                     }
                     else {
@@ -1070,9 +1069,8 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
-                     struct_8b_cls++) {
-                    if (context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
+                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                    if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_arg_fun_call_instructions(
                             name, offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
                         sse_size++;
@@ -1088,8 +1086,7 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             else {
                 TLong offset = 0l;
                 context->p_instructions = &stack_instructions;
-                for (size_t throwaway = 0; throwaway < context->struct_8b_cls_map[struct_type->tag].size();
-                     throwaway++) {
+                for (size_t i = 0; i < context->struct_8b_cls_map[struct_type->tag].size(); ++i) {
                     generate_8byte_stack_arg_fun_call_instructions(name, offset, struct_type);
                     offset += 8l;
                 }
@@ -1099,8 +1096,8 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
     }
 
     context->p_instructions->reserve(context->p_instructions->size() + stack_instructions.size());
-    for (size_t stack_instruction = stack_instructions.size(); stack_instruction-- > 0;) {
-        push_instruction(std::move(stack_instructions[stack_instruction]));
+    for (size_t i = stack_instructions.size(); i-- > 0;) {
+        push_instruction(std::move(stack_instructions[i]));
     }
 }
 
@@ -2121,8 +2118,8 @@ static void generate_instructions(TacInstruction* node) {
 //             operand) | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
 //             operand) | Label(identifier) | Push(operand) | Call(identifier) | Ret
 static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
-    for (size_t instruction = 0; instruction < list_node.size(); instruction++) {
-        generate_instructions(list_node[instruction].get());
+    for (const auto& instruction : list_node) {
+        generate_instructions(instruction.get());
     }
 }
 
@@ -2192,38 +2189,37 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
     size_t reg_size = is_return_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
-    for (size_t param = 0; param < node->params.size(); param++) {
-        if (frontend->symbol_table[node->params[param]]->type_t->type() == AST_T::Double_t) {
+    for (const auto& param : node->params) {
+        if (frontend->symbol_table[param]->type_t->type() == AST_T::Double_t) {
             if (sse_size < 8) {
-                generate_reg_param_function_instructions(node->params[param], context->ARG_SSE_REGISTERS[sse_size]);
+                generate_reg_param_function_instructions(param, context->ARG_SSE_REGISTERS[sse_size]);
                 sse_size++;
             }
             else {
-                generate_stack_param_function_instructions(node->params[param], stack_bytes);
+                generate_stack_param_function_instructions(param, stack_bytes);
                 stack_bytes += 8l;
             }
         }
-        else if (frontend->symbol_table[node->params[param]]->type_t->type() != AST_T::Structure_t) {
+        else if (frontend->symbol_table[param]->type_t->type() != AST_T::Structure_t) {
             if (reg_size < 6) {
-                generate_reg_param_function_instructions(node->params[param], context->ARG_REGISTERS[reg_size]);
+                generate_reg_param_function_instructions(param, context->ARG_REGISTERS[reg_size]);
                 reg_size++;
             }
             else {
-                generate_stack_param_function_instructions(node->params[param], stack_bytes);
+                generate_stack_param_function_instructions(param, stack_bytes);
                 stack_bytes += 8l;
             }
         }
         else {
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
-            Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[node->params[param]]->type_t.get());
+            Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[param]->type_t.get());
             generate_structure_type_classes(struct_type);
             if (context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
-                     struct_8b_cls++) {
-                    if (context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
+                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                    if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         struct_sse_size++;
                     }
                     else {
@@ -2233,16 +2229,15 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (size_t struct_8b_cls = 0; struct_8b_cls < context->struct_8b_cls_map[struct_type->tag].size();
-                     struct_8b_cls++) {
-                    if (context->struct_8b_cls_map[struct_type->tag][struct_8b_cls] == STRUCT_8B_CLS::SSE) {
+                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                    if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_param_function_instructions(
-                            node->params[param], offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
+                            param, offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
                         sse_size++;
                     }
                     else {
                         generate_8byte_reg_param_function_instructions(
-                            node->params[param], offset, struct_type, context->ARG_REGISTERS[reg_size]);
+                            param, offset, struct_type, context->ARG_REGISTERS[reg_size]);
                         reg_size++;
                     }
                     offset += 8l;
@@ -2250,10 +2245,8 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             }
             else {
                 TLong offset = 0l;
-                for (size_t throwaway = 0; throwaway < context->struct_8b_cls_map[struct_type->tag].size();
-                     throwaway++) {
-                    generate_8byte_stack_param_function_instructions(
-                        node->params[param], stack_bytes, offset, struct_type);
+                for (size_t i = 0; i < context->struct_8b_cls_map[struct_type->tag].size(); ++i) {
+                    generate_8byte_stack_param_function_instructions(param, stack_bytes, offset, struct_type);
                     stack_bytes += 8l;
                     offset += 8l;
                 }
@@ -2347,9 +2340,8 @@ static std::unique_ptr<AsmTopLevel> generate_top_level(TacTopLevel* node) {
 static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
     std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
     {
-        for (size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
-            std::unique_ptr<AsmTopLevel> static_constant_top_level =
-                generate_top_level(node->static_constant_top_levels[top_level].get());
+        for (const auto& top_level : node->static_constant_top_levels) {
+            std::unique_ptr<AsmTopLevel> static_constant_top_level = generate_top_level(top_level.get());
             static_constant_top_levels.push_back(std::move(static_constant_top_level));
         }
     }
@@ -2357,14 +2349,13 @@ static std::unique_ptr<AsmProgram> generate_program(TacProgram* node) {
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
     {
         context->p_static_constant_top_levels = &static_constant_top_levels;
-        for (size_t top_level = 0; top_level < node->static_variable_top_levels.size(); top_level++) {
-            std::unique_ptr<AsmTopLevel> static_variable_top_level =
-                generate_top_level(node->static_variable_top_levels[top_level].get());
+
+        for (const auto& top_level : node->static_variable_top_levels) {
+            std::unique_ptr<AsmTopLevel> static_variable_top_level = generate_top_level(top_level.get());
             top_levels.push_back(std::move(static_variable_top_level));
         }
-        for (size_t top_level = 0; top_level < node->function_top_levels.size(); top_level++) {
-            std::unique_ptr<AsmTopLevel> function_top_level =
-                generate_top_level(node->function_top_levels[top_level].get());
+        for (const auto& top_level : node->function_top_levels) {
+            std::unique_ptr<AsmTopLevel> function_top_level = generate_top_level(top_level.get());
             top_levels.push_back(std::move(function_top_level));
         }
         context->p_static_constant_top_levels = nullptr;

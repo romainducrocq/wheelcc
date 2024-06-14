@@ -942,8 +942,8 @@ static void fix_function_top_level(AsmFunction* node) {
 
     context->stack_bytes = node->is_return_memory ? 8l : 0l;
     context->pseudo_stack_bytes_map.clear();
-    for (size_t instruction = 0; instruction < instructions.size(); instruction++) {
-        push_fix_instruction(std::move(instructions[instruction]));
+    for (size_t i = 0; i < instructions.size(); ++i) {
+        push_fix_instruction(std::move(instructions[i]));
 
         replace_pseudo_registers(context->p_fix_instructions->back().get());
         fix_instruction(context->p_fix_instructions->back().get());
@@ -965,8 +965,8 @@ static void fix_top_level(AsmTopLevel* node) {
 }
 
 static void fix_program(AsmProgram* node) {
-    for (size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
-        fix_top_level(node->top_levels[top_level].get());
+    for (const auto& top_level : node->top_levels) {
+        fix_top_level(top_level.get());
     }
 }
 

@@ -187,8 +187,8 @@ static void convert_program(AsmProgram* node) {
         }
     }
 
-    for (size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
-        convert_top_level(node->static_constant_top_levels[top_level].get());
+    for (const auto& top_level : node->static_constant_top_levels) {
+        convert_top_level(top_level.get());
     }
     context->p_symbol = nullptr;
 }

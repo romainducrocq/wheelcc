@@ -405,7 +405,7 @@ static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
 }
 
 static void emit(std::string&& line, size_t t) {
-    for (size_t i = 0; i < t; i++) {
+    for (size_t i = 0; i < t; ++i) {
         line = "    " + line;
     }
 
@@ -645,8 +645,8 @@ static void emit_instructions(AsmInstruction* node) {
 }
 
 static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
-    for (size_t instruction = list_node[0] ? 0 : 1; instruction < list_node.size(); instruction++) {
-        emit_instructions(list_node[instruction].get());
+    for (size_t i = list_node[0] ? 0 : 1; i < list_node.size(); ++i) {
+        emit_instructions(list_node[i].get());
     }
 }
 
@@ -772,8 +772,8 @@ static void emit_static_variable_top_level(AsmStaticVariable* node) {
     emit_section_static_variable_top_level(node->static_inits);
     emit_alignment_directive_top_level(node->alignment);
     emit(name + ":", 0);
-    for (size_t static_init = 0; static_init < node->static_inits.size(); static_init++) {
-        emit_init_static_variable_top_level(node->static_inits[static_init].get());
+    for (const auto& static_init : node->static_inits) {
+        emit_init_static_variable_top_level(static_init.get());
     }
 }
 
@@ -812,11 +812,11 @@ static void emit_top_level(AsmTopLevel* node) {
 // Program(top_level*) -> $ [<top_level>]
 //                        $     .section .note.GNU-stack,"",@progbits
 static void emit_program(AsmProgram* node) {
-    for (size_t top_level = 0; top_level < node->static_constant_top_levels.size(); top_level++) {
-        emit_top_level(node->static_constant_top_levels[top_level].get());
+    for (const auto& top_level : node->static_constant_top_levels) {
+        emit_top_level(top_level.get());
     }
-    for (size_t top_level = 0; top_level < node->top_levels.size(); top_level++) {
-        emit_top_level(node->top_levels[top_level].get());
+    for (const auto& top_level : node->top_levels) {
+        emit_top_level(top_level.get());
     }
     emit(".section .note.GNU-stack,\"\",@progbits", 2);
 }
