@@ -196,7 +196,8 @@ static std::unique_ptr<AsmUnaryOp> generate_unary_op(TacUnaryOp* node) {
     }
 }
 
-// binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight
+// binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight |
+//                 BitShrArithmetic
 static std::unique_ptr<AsmBinaryOp> generate_binary_op(TacBinaryOp* node) {
     switch (node->type()) {
         case AST_T::TacAdd_t:
@@ -217,6 +218,8 @@ static std::unique_ptr<AsmBinaryOp> generate_binary_op(TacBinaryOp* node) {
             return std::make_unique<AsmBitShiftLeft>();
         case AST_T::TacBitShiftRight_t:
             return std::make_unique<AsmBitShiftRight>();
+        case AST_T::TacBitShrArithmetic_t:
+            return std::make_unique<AsmBitShrArithmetic>();
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -1537,6 +1540,7 @@ static void generate_binary_instructions(TacBinary* node) {
         case AST_T::TacBitXor_t:
         case AST_T::TacBitShiftLeft_t:
         case AST_T::TacBitShiftRight_t:
+        case AST_T::TacBitShrArithmetic_t:
             generate_binary_operator_arithmetic_instructions(node);
             break;
         case AST_T::TacDivide_t:

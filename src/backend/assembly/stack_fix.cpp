@@ -767,7 +767,8 @@ static void fix_binary_instruction(AsmBinary* node) {
                 break;
             }
             case AST_T::AsmBitShiftLeft_t:
-            case AST_T::AsmBitShiftRight_t: {
+            case AST_T::AsmBitShiftRight_t:
+            case AST_T::AsmBitShrArithmetic_t: {
                 if (is_type_imm(node->src.get()) && static_cast<AsmImm*>(node->src.get())->is_quad) {
                     fix_binary_from_quad_word_imm_to_any_instruction(node);
                 }

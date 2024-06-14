@@ -24,6 +24,7 @@ AST_T TacBitOr::type() { return AST_T::TacBitOr_t; }
 AST_T TacBitXor::type() { return AST_T::TacBitXor_t; }
 AST_T TacBitShiftLeft::type() { return AST_T::TacBitShiftLeft_t; }
 AST_T TacBitShiftRight::type() { return AST_T::TacBitShiftRight_t; }
+AST_T TacBitShrArithmetic::type() { return AST_T::TacBitShrArithmetic_t; }
 AST_T TacEqual::type() { return AST_T::TacEqual_t; }
 AST_T TacNotEqual::type() { return AST_T::TacNotEqual_t; }
 AST_T TacLessThan::type() { return AST_T::TacLessThan_t; }

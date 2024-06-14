@@ -271,6 +271,7 @@ struct AsmIndexed : AsmOperand {
 //                 | BitXor
 //                 | BitShiftLeft
 //                 | BitShiftRight
+//                 | BitShrArithmetic
 struct AsmBinaryOp : Ast {
     AST_T type() override;
 };
@@ -308,6 +309,10 @@ struct AsmBitShiftLeft : AsmBinaryOp {
 };
 
 struct AsmBitShiftRight : AsmBinaryOp {
+    AST_T type() override;
+};
+
+struct AsmBitShrArithmetic : AsmBinaryOp {
     AST_T type() override;
 };
 

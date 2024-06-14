@@ -62,6 +62,7 @@ AST_T AsmBitOr::type() { return AST_T::AsmBitOr_t; }
 AST_T AsmBitXor::type() { return AST_T::AsmBitXor_t; }
 AST_T AsmBitShiftLeft::type() { return AST_T::AsmBitShiftLeft_t; }
 AST_T AsmBitShiftRight::type() { return AST_T::AsmBitShiftRight_t; }
+AST_T AsmBitShrArithmetic::type() { return AST_T::AsmBitShrArithmetic_t; }
 AST_T AsmUnaryOp::type() { return AST_T::AsmUnaryOp_t; }
 AST_T AsmNot::type() { return AST_T::AsmNot_t; }
 AST_T AsmNeg::type() { return AST_T::AsmNeg_t; }

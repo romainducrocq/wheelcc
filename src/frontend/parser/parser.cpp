@@ -236,7 +236,8 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
 // binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!="
 //          | "<" | "<=" | ">" | ">="
 // binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
-//                 | BitShiftRight | And | Or | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan | GreaterOrEqual
+//                 | BitShiftRight | BitShrArithmetic | And | Or | Equal | NotEqual | LessThan | LessOrEqual |
+//                 GreaterThan | GreaterOrEqual
 static std::unique_ptr<CBinaryOp> parse_binary_op() {
     switch (pop_next().token_kind) {
         case TOKEN_KIND::binop_addition:

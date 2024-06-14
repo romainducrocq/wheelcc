@@ -44,6 +44,7 @@ struct TacNot : TacUnaryOp {
 //                 | BitXor
 //                 | BitShiftLeft
 //                 | BitShiftRight
+//                 | BitShrArithmetic
 //                 | Equal
 //                 | NotEqual
 //                 | LessThan
@@ -91,6 +92,10 @@ struct TacBitShiftLeft : TacBinaryOp {
 };
 
 struct TacBitShiftRight : TacBinaryOp {
+    AST_T type() override;
+};
+
+struct TacBitShrArithmetic : TacBinaryOp {
     AST_T type() override;
 };
 

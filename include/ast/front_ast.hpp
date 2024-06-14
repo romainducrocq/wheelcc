@@ -44,6 +44,7 @@ struct CNot : CUnaryOp {
 //                 | BitXor
 //                 | BitShiftLeft
 //                 | BitShiftRight
+//                 | BitShrArithmetic
 //                 | And
 //                 | Or
 //                 | Equal
@@ -93,6 +94,10 @@ struct CBitShiftLeft : CBinaryOp {
 };
 
 struct CBitShiftRight : CBinaryOp {
+    AST_T type() override;
+};
+
+struct CBitShrArithmetic : CBinaryOp {
     AST_T type() override;
 };
 

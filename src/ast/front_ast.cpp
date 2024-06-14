@@ -24,6 +24,7 @@ AST_T CBitOr::type() { return AST_T::CBitOr_t; }
 AST_T CBitXor::type() { return AST_T::CBitXor_t; }
 AST_T CBitShiftLeft::type() { return AST_T::CBitShiftLeft_t; }
 AST_T CBitShiftRight::type() { return AST_T::CBitShiftRight_t; }
+AST_T CBitShrArithmetic::type() { return AST_T::CBitShrArithmetic_t; }
 AST_T CAnd::type() { return AST_T::CAnd_t; }
 AST_T COr::type() { return AST_T::COr_t; }
 AST_T CEqual::type() { return AST_T::CEqual_t; }

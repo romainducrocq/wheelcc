@@ -366,16 +366,17 @@ static std::string emit_unary_op(AsmUnaryOp* node) {
     }
 }
 
-// Add           -> $ add
-// Sub           -> $ sub
-// Mult<i>       -> $ imul
-// Mult<d>       -> $ mul
-// DivDouble     -> $ div
-// BitAnd        -> $ and
-// BitOr         -> $ or
-// BitXor        -> $ xor
-// BitShiftLeft  -> $ shl
-// BitShiftRight -> $ shr
+// Add              -> $ add
+// Sub              -> $ sub
+// Mult<i>          -> $ imul
+// Mult<d>          -> $ mul
+// DivDouble        -> $ div
+// BitAnd           -> $ and
+// BitOr            -> $ or
+// BitXor           -> $ xor
+// BitShiftLeft     -> $ shl
+// BitShiftRight    -> $ shr
+// BitShrArithmetic -> $ sar
 static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
     switch (node->type()) {
         case AST_T::AsmAdd_t:
@@ -396,6 +397,8 @@ static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
             return "shl";
         case AST_T::AsmBitShiftRight_t:
             return "shr";
+        case AST_T::AsmBitShrArithmetic_t:
+            return "sar";
         default:
             RAISE_INTERNAL_ERROR;
     }

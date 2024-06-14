@@ -633,36 +633,9 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
                             + em("non-integer type"));
     }
 
-    // Bitshift of negative left operand value is implementation-defined. It is now UB, following the C standard (not
-    // the gcc implementation). "If E1 has a signed type and non-negative value, and E1 × 2E2 is representable in the
-    // result type, then that is the resulting value; otherwise, the behavior is undefined."
-
-    // TODO:
-    // - Follow gcc and use sign extension: sign extend left hand value when lh value is negative.
-    // https://gcc.gnu.org/onlinedocs/gcc/Integers-implementation.html
-    // "Bitwise operators act on the representation of the value including both the sign and value bits, where the sign
-    // bit is considered immediately above the highest-value value bit. Signed ‘>>’ acts on negative numbers by sign
-    // extension."
-    // see https://en.wikibooks.org/wiki/X86_Assembly/Shift_and_Rotate#Arithmetic_Shift_Instructions
-    //
-    // Failed tests:
-    //  - 3_binary_operators/valid/extra_credit/bitwise_shiftr_negative.c
-    //  - 10_file-scope_variables_and_storage-class_specifiers/valid/extra_credit/bitwise_ops_file_scope_vars.c (2)
-    //  - 11_long_integers/valid/extra_credit/bitshift.c (5, 6)
-    //  - 11_long_integers/valid/extra_credit/compound_bitshift.c (5)
-    //  - 12_unsigned_integers/valid/extra_credit/compound_bitshift.c (1)
-    //  - 16_characters_and_strings/valid/extra_credit/bitshift_chars.c (3, 4, 5)
-
-    switch (node->exp_left->exp_type->type()) {
-        case AST_T::Char_t:
-        case AST_T::SChar_t:
-        case AST_T::UChar_t: {
-            std::shared_ptr<Type> left_type = std::make_shared<Int>();
-            node->exp_left = cast_expression(std::move(node->exp_left), left_type);
-            break;
-        }
-        default:
-            break;
+    if (is_type_character(node->exp_left->exp_type.get())) {
+        std::shared_ptr<Type> left_type = std::make_shared<Int>();
+        node->exp_left = cast_expression(std::move(node->exp_left), left_type);
     }
     if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
         node->exp_right = cast_expression(std::move(node->exp_right), node->exp_left->exp_type);
@@ -671,6 +644,13 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     if (node->exp_type->type() == AST_T::Double_t) {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
                             + em("floating-point number"));
+    }
+}
+
+static void checktype_binary_arithmetic_bitshift_right_expression(CBinary* node) {
+    checktype_binary_arithmetic_bitshift_expression(node);
+    if (is_type_signed(node->exp_left->exp_type.get())) {
+        node->binary_op = std::make_unique<CBitShrArithmetic>();
     }
 }
 
@@ -752,8 +732,10 @@ static void checktype_binary_expression(CBinary* node) {
             checktype_binary_arithmetic_remainder_bitwise_expression(node);
             break;
         case AST_T::CBitShiftLeft_t:
-        case AST_T::CBitShiftRight_t:
             checktype_binary_arithmetic_bitshift_expression(node);
+            break;
+        case AST_T::CBitShiftRight_t:
+            checktype_binary_arithmetic_bitshift_right_expression(node);
             break;
         case AST_T::CAnd_t:
         case AST_T::COr_t:
@@ -792,12 +774,17 @@ static void checktype_assignment_expression(CAssignment* node) {
             raise_runtime_error("Right expression is an invalid compound assignment");
         }
 
+        // Compound assignment
+        // C Standard: "The behavior of an expression of the form E1 op= E2 is equivalent to E1 = E1 op E2 except that
+        // E1 is evaluated only once."
+
         // TODO:
-        // - The compound assignment expression must return the result value stored in the left operand.
-        // - If the left operand is a compound expression, do not evaluate it twice.
+        // - Make the compound expression an rvalue that returns the result of E1 op= E2.
+        // - Evaluate E1 only once.
+        //
+        // (Create a type CCompoundAssignment to handle rvalue/lvalue ? Or handle it completely in tac_repr ?)
         //
         // Failed tests:
-        //  - 11_long_integers/valid/extra_credit/compound_bitshift.c (5)
         //  - 14_pointers/valid/extra_credit/compound_assign_through_pointer.c (2)
         //  - 14_pointers/valid/extra_credit/compound_bitwise_dereferenced_ptrs.c (3)
         //  - 14_pointers/valid/extra_credit/eval_compound_lhs_once.c (stdout)

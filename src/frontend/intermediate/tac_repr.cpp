@@ -34,7 +34,8 @@ static std::unique_ptr<TacUnaryOp> represent_unary_op(CUnaryOp* node) {
 }
 
 // binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
-//                 | BitShiftRight | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan | GreaterOrEqual
+//                 | BitShiftRight | BitShrArithmetic | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan |
+//                 GreaterOrEqual
 static std::unique_ptr<TacBinaryOp> represent_binary_op(CBinaryOp* node) {
     switch (node->type()) {
         case AST_T::CAdd_t:
@@ -57,6 +58,8 @@ static std::unique_ptr<TacBinaryOp> represent_binary_op(CBinaryOp* node) {
             return std::make_unique<TacBitShiftLeft>();
         case AST_T::CBitShiftRight_t:
             return std::make_unique<TacBitShiftRight>();
+        case AST_T::CBitShrArithmetic_t:
+            return std::make_unique<TacBitShrArithmetic>();
         case AST_T::CEqual_t:
             return std::make_unique<TacEqual>();
         case AST_T::CNotEqual_t:
