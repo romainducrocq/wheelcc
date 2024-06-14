@@ -98,7 +98,7 @@ void pretty_print_tokens(const std::vector<Token>& tokens) {
 
 static void field(const std::string& name, const std::string& value, size_t t) {
     std::cout << "\n";
-    for(size_t i = 0; i < t-1; i++) {
+    for(size_t i = 0; i < t - 1; ++i) {
         std::cout << "  ";
     }
     std::cout << name << ": ";
