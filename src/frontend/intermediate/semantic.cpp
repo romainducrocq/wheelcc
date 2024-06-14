@@ -63,8 +63,8 @@ static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
     else if (!is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
         return false;
     }
-    for (size_t param_type = 0; param_type < fun_type_1->param_types.size(); param_type++) {
-        if (!is_same_type(fun_type_1->param_types[param_type].get(), fun_type_2->param_types[param_type].get())) {
+    for (size_t i = 0; i < fun_type_1->param_types.size(); ++i) {
+        if (!is_same_type(fun_type_1->param_types[i].get(), fun_type_2->param_types[i].get())) {
             return false;
         }
     }
@@ -856,7 +856,7 @@ static void checktype_function_call_expression(CFunctionCall* node) {
         raise_runtime_error("Function " + em(node->name) + " has " + em(std::to_string(fun_type->param_types.size()))
                             + " arguments but was called with " + em(std::to_string(node->args.size())));
     }
-    for (size_t i = 0; i < node->args.size(); i++) {
+    for (size_t i = 0; i < node->args.size(); ++i) {
         if (!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
             node->args[i] = cast_by_assignment(std::move(node->args[i]), fun_type->param_types[i]);
         }
@@ -1100,7 +1100,7 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
 
 static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initializer(Array* arr_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
-    for (size_t throwaway = 0; throwaway < static_cast<size_t>(arr_type->size); throwaway++) {
+    for (size_t i = 0; i < static_cast<size_t>(arr_type->size); ++i) {
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(arr_type->elem_type.get());
         zero_initializers.push_back(std::move(initializer));
     }
@@ -1154,9 +1154,9 @@ static void checktype_array_compound_init_initializer(
 
 static void checktype_structure_compound_init_initializer(
     CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
-    for (size_t initializer = node->initializers.size();
-         initializer < frontend->struct_typedef_table[struct_type->tag]->members.size(); initializer++) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, initializer);
+    for (size_t i = node->initializers.size(); i < frontend->struct_typedef_table[struct_type->tag]->members.size();
+         ++i) {
+        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(member->member_type.get());
         node->initializers.push_back(std::move(zero_initializer));
     }
@@ -1186,25 +1186,25 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
 
 static void checktype_params_function_declaration(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-    for (size_t param_type = 0; param_type < node->params.size(); param_type++) {
-        resolve_struct_type(fun_type->param_types[param_type].get());
-        if (fun_type->param_types[param_type]->type() == AST_T::Void_t) {
+    for (size_t i = 0; i < node->params.size(); ++i) {
+        resolve_struct_type(fun_type->param_types[i].get());
+        if (fun_type->param_types[i]->type() == AST_T::Void_t) {
             raise_runtime_error("Function parameters can not have void type");
         }
-        is_valid_type(fun_type->param_types[param_type].get());
-        if (fun_type->param_types[param_type]->type() == AST_T::Array_t) {
-            std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[param_type].get())->elem_type;
-            fun_type->param_types[param_type] = std::make_shared<Pointer>(std::move(ref_type));
+        is_valid_type(fun_type->param_types[i].get());
+        if (fun_type->param_types[i]->type() == AST_T::Array_t) {
+            std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
+            fun_type->param_types[i] = std::make_shared<Pointer>(std::move(ref_type));
         }
 
         if (node->body) {
-            if (fun_type->param_types[param_type]->type() == AST_T::Structure_t
-                && !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[param_type].get()))) {
+            if (fun_type->param_types[i]->type() == AST_T::Structure_t
+                && !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[i].get()))) {
                 raise_runtime_error("Function parameter was declared with incomplete structure type");
             }
-            std::shared_ptr<Type> type_t = fun_type->param_types[param_type];
+            std::shared_ptr<Type> type_t = fun_type->param_types[i];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
-            frontend->symbol_table[node->params[param_type]] =
+            frontend->symbol_table[node->params[i]] =
                 std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
         }
     }
@@ -1696,8 +1696,8 @@ static void checktype_single_init_initializer_static_init(CSingleInit* node, Typ
 static void checktype_array_compound_init_initializer_static_init(CCompoundInit* node, Array* arr_type) {
     checktype_bound_array_compound_init_initializer(node, arr_type);
 
-    for (size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        checktype_initializer_static_init(node->initializers[initializer].get(), arr_type->elem_type.get());
+    for (const auto& initializer : node->initializers) {
+        checktype_initializer_static_init(initializer.get(), arr_type->elem_type.get());
     }
     if (static_cast<size_t>(arr_type->size) > node->initializers.size()) {
         checktype_no_initializer_static_init(arr_type->elem_type.get(), arr_type->size - node->initializers.size());
@@ -1708,13 +1708,13 @@ static void checktype_structure_compound_init_initializer_static_init(CCompoundI
     checktype_bound_structure_compound_init_initializer(node, struct_type);
 
     TLong size = 0l;
-    for (size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, initializer);
+    for (size_t i = 0; i < node->initializers.size(); ++i) {
+        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         if (member->offset != size) {
             checktype_no_initializer_static_init(nullptr, member->offset - size);
             size = member->offset;
         }
-        checktype_initializer_static_init(node->initializers[initializer].get(), member->member_type.get());
+        checktype_initializer_static_init(node->initializers[i].get(), member->member_type.get());
         size += get_type_scale(member->member_type.get());
     }
     if (frontend->struct_typedef_table[struct_type->tag]->size != size) {
@@ -1904,20 +1904,20 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 }
 
 static void checktype_members_structure_declaration(CStructDeclaration* node) {
-    for (size_t member = 0; member < node->members.size(); member++) {
-        for (size_t next_member = member + 1; next_member < node->members.size(); next_member++) {
-            if (node->members[member]->member_name.compare(node->members[next_member]->member_name) == 0) {
+    for (size_t i = 0; i < node->members.size(); ++i) {
+        for (size_t j = i + 1; j < node->members.size(); ++j) {
+            if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
                 raise_runtime_error("Structure member was already declared in this scope");
             }
         }
-        if (node->members[member].get()->member_type->type() == AST_T::FunType_t) {
+        if (node->members[i].get()->member_type->type() == AST_T::FunType_t) {
             RAISE_INTERNAL_ERROR;
         }
-        resolve_struct_type(node->members[member].get()->member_type.get());
-        if (!is_type_complete(node->members[member].get()->member_type.get())) {
+        resolve_struct_type(node->members[i].get()->member_type.get());
+        if (!is_type_complete(node->members[i].get()->member_type.get())) {
             raise_runtime_error("Structure member must be declared with a complete type");
         }
-        is_valid_type(node->members[member].get()->member_type.get());
+        is_valid_type(node->members[i].get()->member_type.get());
     }
 }
 
@@ -1929,25 +1929,25 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     TLong size = 0l;
     std::vector<TIdentifier> member_names;
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
-    for (size_t member = 0; member < node->members.size(); member++) {
+    for (const auto& member : node->members) {
         {
-            TIdentifier name = node->members[member]->member_name;
+            TIdentifier name = member->member_name;
             member_names.push_back(std::move(name));
         }
-        TInt member_alignment = get_type_alignment(node->members[member]->member_type.get());
+        TInt member_alignment = get_type_alignment(member->member_type.get());
         {
             TLong offset = size % member_alignment;
             if (offset != 0l) {
                 size += member_alignment - offset;
             }
             offset = size;
-            std::shared_ptr<Type> member_type = node->members[member]->member_type;
+            std::shared_ptr<Type> member_type = member->member_type;
             members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
         }
         if (alignment < member_alignment) {
             alignment = member_alignment;
         }
-        size += get_type_scale(node->members[member]->member_type.get());
+        size += get_type_scale(member->member_type.get());
     }
     {
         TLong offset = size % alignment;
@@ -2124,7 +2124,7 @@ static void resolve_function_call_expression(CFunctionCall* node) {
     raise_runtime_error("Function " + em(node->name) + " was not declared in this scope");
 Lelse:
 
-    for (size_t i = 0; i < node->args.size(); i++) {
+    for (size_t i = 0; i < node->args.size(); ++i) {
         node->args[i] = resolve_typed_expression(std::move(node->args[i]));
     }
     checktype_function_call_expression(node);
@@ -2389,13 +2389,13 @@ static void resolve_statement(CStatement* node) {
 static void resolve_declaration(CDeclaration* node);
 
 static void resolve_block_items(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
-    for (size_t block_item = 0; block_item < list_node.size(); block_item++) {
-        switch (list_node[block_item]->type()) {
+    for (const auto& block_item : list_node) {
+        switch (block_item->type()) {
             case AST_T::CS_t:
-                resolve_statement(static_cast<CS*>(list_node[block_item].get())->statement.get());
+                resolve_statement(static_cast<CS*>(block_item.get())->statement.get());
                 break;
             case AST_T::CD_t:
-                resolve_declaration(static_cast<CD*>(list_node[block_item].get())->declaration.get());
+                resolve_declaration(static_cast<CD*>(block_item.get())->declaration.get());
                 break;
             default:
                 RAISE_INTERNAL_ERROR;
@@ -2431,8 +2431,8 @@ static void resolve_array_compound_init_initializer(
     CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>& init_type) {
     checktype_bound_array_compound_init_initializer(node, arr_type);
 
-    for (size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        resolve_initializer(node->initializers[initializer].get(), arr_type->elem_type);
+    for (const auto& initializer : node->initializers) {
+        resolve_initializer(initializer.get(), arr_type->elem_type);
     }
     checktype_array_compound_init_initializer(node, arr_type, init_type);
 }
@@ -2441,9 +2441,9 @@ static void resolve_structure_compound_init_initializer(
     CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
     checktype_bound_structure_compound_init_initializer(node, struct_type);
 
-    for (size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, initializer);
-        resolve_initializer(node->initializers[initializer].get(), member->member_type);
+    for (size_t i = 0; i < node->initializers.size(); ++i) {
+        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        resolve_initializer(node->initializers[i].get(), member->member_type);
     }
     checktype_structure_compound_init_initializer(node, struct_type, init_type);
 }
@@ -2475,13 +2475,13 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 }
 
 static void resolve_params_function_declaration(CFunctionDeclaration* node) {
-    for (size_t param = 0; param < node->params.size(); param++) {
-        if (context->scoped_identifier_maps.back().find(node->params[param])
+    for (auto& param : node->params) {
+        if (context->scoped_identifier_maps.back().find(param)
             != context->scoped_identifier_maps.back().end()) {
-            raise_runtime_error("Variable " + node->params[param] + " was already declared in this scope");
+            raise_runtime_error("Variable " + param + " was already declared in this scope");
         }
-        context->scoped_identifier_maps.back()[node->params[param]] = resolve_variable_identifier(node->params[param]);
-        node->params[param] = context->scoped_identifier_maps.back()[node->params[param]];
+        context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);
+        param = context->scoped_identifier_maps.back()[param];
     }
     checktype_params_function_declaration(node);
 }
@@ -2614,8 +2614,8 @@ static void resolve_declaration(CDeclaration* node) {
 
 static void resolve_identifiers(CProgram* node) {
     enter_scope();
-    for (size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
-        resolve_declaration(node->declarations[declaration].get());
+    for (const auto& declaration : node->declarations) {
+        resolve_declaration(declaration.get());
     }
 }
 
