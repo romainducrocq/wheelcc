@@ -669,6 +669,8 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    // TODO Compound assignment
+
     std::unique_ptr<CExp> exp_left_2;
     std::unique_ptr<CExp> exp_right_2;
     {

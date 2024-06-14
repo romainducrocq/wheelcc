@@ -483,6 +483,8 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         res = represent_exp_result_instructions(node->exp_left.get());
     }
     else {
+        // TODO Compound assignment
+
         CExp* exp_left = node->exp_right.get();
         if (exp_left->type() == AST_T::CCast_t) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();

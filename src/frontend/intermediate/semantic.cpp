@@ -774,11 +774,11 @@ static void checktype_assignment_expression(CAssignment* node) {
             raise_runtime_error("Right expression is an invalid compound assignment");
         }
 
-        // Compound assignment
+        // TODO Compound assignment
         // C Standard: "The behavior of an expression of the form E1 op= E2 is equivalent to E1 = E1 op E2 except that
         // E1 is evaluated only once."
 
-        // TODO:
+        // TBD
         // - Make the compound expression an rvalue that returns the result of E1 op= E2.
         // - Evaluate E1 only once.
         //
