@@ -2476,8 +2476,7 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 
 static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for (auto& param : node->params) {
-        if (context->scoped_identifier_maps.back().find(param)
-            != context->scoped_identifier_maps.back().end()) {
+        if (context->scoped_identifier_maps.back().find(param) != context->scoped_identifier_maps.back().end()) {
             raise_runtime_error("Variable " + param + " was already declared in this scope");
         }
         context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);

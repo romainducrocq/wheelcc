@@ -566,9 +566,9 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_conditional_instruc
 static std::unique_ptr<TacPlainOperand> represent_exp_result_fun_call_instructions(CFunctionCall* node) {
     TIdentifier name = node->name;
     std::vector<std::shared_ptr<TacValue>> args;
-    for (size_t i = 0; i < node->args.size(); i++) {
-        std::shared_ptr<TacValue> arg = represent_exp_instructions(node->args[i].get());
-        args.push_back(std::move(arg));
+    for (const auto& arg : node->args) {
+        std::shared_ptr<TacValue> arg_1 = represent_exp_instructions(arg.get());
+        args.push_back(std::move(arg_1));
     }
     std::shared_ptr<TacValue> dst;
     if (node->exp_type->type() != AST_T::Void_t) {
@@ -1118,10 +1118,9 @@ static void represent_scalar_compound_init_instructions(
 
 static void represent_array_compound_init_instructions(
     CCompoundInit* node, Array* arr_type, const TIdentifier& symbol, TLong& size) {
-    for (size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        represent_compound_init_instructions(
-            node->initializers[initializer].get(), arr_type->elem_type.get(), symbol, size);
-        if (node->initializers[initializer]->type() == AST_T::CSingleInit_t) {
+    for (const auto& initializer : node->initializers) {
+        represent_compound_init_instructions(initializer.get(), arr_type->elem_type.get(), symbol, size);
+        if (initializer->type() == AST_T::CSingleInit_t) {
             size += get_type_scale(arr_type->elem_type.get());
         }
     }
@@ -1129,11 +1128,10 @@ static void represent_array_compound_init_instructions(
 
 static void represent_structure_compound_init_instructions(
     CCompoundInit* node, Structure* struct_type, const TIdentifier& symbol, TLong& size) {
-    for (size_t initializer = 0; initializer < node->initializers.size(); initializer++) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, initializer);
+    for (size_t i = 0; i < node->initializers.size(); ++i) {
+        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         TLong offset = size + member->offset;
-        represent_compound_init_instructions(
-            node->initializers[initializer].get(), member->member_type.get(), symbol, offset);
+        represent_compound_init_instructions(node->initializers[i].get(), member->member_type.get(), symbol, offset);
     }
     size += get_type_scale(struct_type);
 }
@@ -1213,13 +1211,13 @@ static void represent_declaration_instructions(CDeclaration* node) {
 //             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier) | Label(identifier)
 static void represent_list_instructions(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
-    for (size_t block_item = 0; block_item < list_node.size(); block_item++) {
-        switch (list_node[block_item]->type()) {
+    for (const auto& block_item : list_node) {
+        switch (block_item->type()) {
             case AST_T::CS_t:
-                represent_statement_instructions(static_cast<CS*>(list_node[block_item].get())->statement.get());
+                represent_statement_instructions(static_cast<CS*>(block_item.get())->statement.get());
                 break;
             case AST_T::CD_t:
-                represent_declaration_instructions(static_cast<CD*>(list_node[block_item].get())->declaration.get());
+                represent_declaration_instructions(static_cast<CD*>(block_item.get())->declaration.get());
                 break;
             default:
                 RAISE_INTERNAL_ERROR;
@@ -1242,8 +1240,8 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     bool is_global = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get())->is_global;
 
     std::vector<TIdentifier> params;
-    for (size_t param = 0; param < node->params.size(); param++) {
-        TIdentifier identifier = node->params[param];
+    for (const auto& param : node->params) {
+        TIdentifier identifier = param;
         params.push_back(std::move(identifier));
     }
 
@@ -1361,8 +1359,8 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
     std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
     {
         context->p_top_levels = &function_top_levels;
-        for (size_t declaration = 0; declaration < node->declarations.size(); declaration++) {
-            represent_declaration_top_level(node->declarations[declaration].get());
+        for (const auto& declaration : node->declarations) {
+            represent_declaration_top_level(declaration.get());
         }
         context->p_top_levels = nullptr;
     }
