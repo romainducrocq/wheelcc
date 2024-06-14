@@ -1281,10 +1281,9 @@ static void parse_process_fun_declarator(
 
     std::vector<TIdentifier> params;
     std::vector<std::shared_ptr<Type>> param_types;
-    for (size_t param = 0; param < node->param_list.size(); param++) {
+    for (const auto& param : node->param_list) {
         Declarator param_declarator;
-        parse_process_declarator(
-            node->param_list[param]->declarator.get(), node->param_list[param]->param_type, param_declarator);
+        parse_process_declarator(param->declarator.get(), param->param_type, param_declarator);
         if (param_declarator.derived_type->type() == AST_T::FunType_t) {
             raise_runtime_error_at_line(
                 "Function pointer parameters can not be applied in type derivations", context->next_token->line);
