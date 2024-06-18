@@ -1110,7 +1110,7 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
 static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
     for (const auto& member_name : frontend->struct_typedef_table[struct_type->tag]->member_names) {
-        auto& member = frontend->struct_typedef_table[struct_type->tag]->members[member_name];
+        const auto& member = frontend->struct_typedef_table[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member->member_type.get());
         zero_initializers.push_back(std::move(initializer));
     }
@@ -1156,7 +1156,7 @@ static void checktype_structure_compound_init_initializer(
     CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
     for (size_t i = node->initializers.size(); i < frontend->struct_typedef_table[struct_type->tag]->members.size();
          ++i) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_initializer = checktype_zero_initializer(member->member_type.get());
         node->initializers.push_back(std::move(zero_initializer));
     }
@@ -1709,7 +1709,7 @@ static void checktype_structure_compound_init_initializer_static_init(CCompoundI
 
     TLong size = 0l;
     for (size_t i = 0; i < node->initializers.size(); ++i) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         if (member->offset != size) {
             checktype_no_initializer_static_init(nullptr, member->offset - size);
             size = member->offset;
@@ -2388,7 +2388,7 @@ static void resolve_statement(CStatement* node) {
 
 static void resolve_declaration(CDeclaration* node);
 
-static void resolve_block_items(std::vector<std::unique_ptr<CBlockItem>>& list_node) {
+static void resolve_block_items(const std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for (const auto& block_item : list_node) {
         switch (block_item->type()) {
             case AST_T::CS_t:

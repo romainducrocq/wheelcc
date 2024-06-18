@@ -9,6 +9,6 @@
 
 // Errors
 
-const std::string get_token_kind_hr(TOKEN_KIND token_kind);
+std::string get_token_kind_hr(TOKEN_KIND token_kind);
 
 #endif

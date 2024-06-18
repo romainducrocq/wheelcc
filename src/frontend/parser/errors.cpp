@@ -9,7 +9,7 @@
 
 // Errors
 
-const std::string get_token_kind_hr(TOKEN_KIND token_kind) {
+std::string get_token_kind_hr(TOKEN_KIND token_kind) {
     switch (token_kind) {
         case TOKEN_KIND::assignment_bitshiftleft:
             return "<<=";

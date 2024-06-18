@@ -27,7 +27,7 @@ static void file_free() {
     }
 }
 
-const std::string em(const std::string& message) { return "\033[1m‘" + message + "’\033[0m"; }
+std::string em(const std::string& message) { return "\033[1m‘" + message + "’\033[0m"; }
 
 [[noreturn]] void raise_runtime_error(const std::string& message) {
     file_free();
