@@ -479,6 +479,7 @@ static void generate_return_double_instructions(TacReturn* node) {
 
 static void generate_8byte_return_instructions(
     const TIdentifier& name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+    TIdentifier src_name = name;
     std::shared_ptr<AsmOperand> dst = generate_register(arg_register);
     std::shared_ptr<AssemblyType> assembly_type_src =
         struct_type ? generate_8byte_assembly_type(struct_type, offset) : std::make_shared<BackendDouble>();
@@ -490,7 +491,7 @@ static void generate_8byte_return_instructions(
         std::shared_ptr<AssemblyType> assembly_type_shl = std::make_shared<QuadWord>();
         while (offset >= size) {
             {
-                std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
+                std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
                 push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
             }
             {
@@ -500,24 +501,23 @@ static void generate_8byte_return_instructions(
             offset--;
         }
         {
-            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
+            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
             push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
         }
-        offset--;
         {
             std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftLeft>();
             push_instruction(std::make_unique<AsmBinary>(
                 std::move(binary_op), std::move(assembly_type_shl), std::move(src_shl), dst));
         }
+        offset--;
         {
-            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, std::move(offset));
+            std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(offset));
             push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
         }
     }
     else {
         std::shared_ptr<AsmOperand> src;
         {
-            TIdentifier src_name = name;
             TLong from_offset = offset;
             src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
         }
@@ -1110,6 +1110,7 @@ static void generate_return_fun_call_instructions(TacValue* node, REGISTER_KIND 
 
 static void generate_8byte_return_fun_call_instructions(
     const TIdentifier& name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+    TIdentifier dst_name = name;
     std::shared_ptr<AsmOperand> src = generate_register(arg_register);
     std::shared_ptr<AssemblyType> assembly_type_dst =
         struct_type ? generate_8byte_assembly_type(struct_type, offset) : std::make_shared<BackendDouble>();
@@ -1120,7 +1121,7 @@ static void generate_8byte_return_fun_call_instructions(
         std::shared_ptr<AssemblyType> assembly_type_shr2op = std::make_shared<QuadWord>();
         while (offset < size) {
             {
-                std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
+                std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
                 push_instruction(std::make_unique<AsmMov>(assembly_type_dst, src, std::move(dst)));
             }
             {
@@ -1131,7 +1132,7 @@ static void generate_8byte_return_fun_call_instructions(
             offset++;
         }
         {
-            std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, size);
+            std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
             push_instruction(std::make_unique<AsmMov>(assembly_type_dst, src, std::move(dst)));
         }
         {
@@ -1139,15 +1140,15 @@ static void generate_8byte_return_fun_call_instructions(
             push_instruction(std::make_unique<AsmBinary>(
                 std::move(binary_op), std::move(assembly_type_shr2op), std::move(src_shr2op), src));
         }
+        offset++;
         {
-            std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, size + 1l);
+            std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(offset));
             push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
         }
     }
     else {
         std::shared_ptr<AsmOperand> dst;
         {
-            TIdentifier dst_name = name;
             TLong to_offset = offset;
             dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
         }
@@ -2117,7 +2118,7 @@ static void generate_instructions(TacInstruction* node) {
 //             operand) | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type,
 //             operand) | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
 //             operand) | Label(identifier) | Push(operand) | Call(identifier) | Ret
-static void generate_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
+static void generate_list_instructions(const std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for (const auto& instruction : list_node) {
         generate_instructions(instruction.get());
     }
