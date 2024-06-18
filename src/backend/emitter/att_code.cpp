@@ -644,7 +644,7 @@ static void emit_instructions(AsmInstruction* node) {
     }
 }
 
-static void emit_list_instructions(std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
+static void emit_list_instructions(const std::vector<std::unique_ptr<AsmInstruction>>& list_node) {
     for (size_t i = list_node[0] ? 0 : 1; i < list_node.size(); ++i) {
         emit_instructions(list_node[i].get());
     }
@@ -752,7 +752,7 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
 
 // -> if zero initialized $ .bss
 // ->                else $ .data
-static void emit_section_static_variable_top_level(std::vector<std::shared_ptr<StaticInit>>& list_node) {
+static void emit_section_static_variable_top_level(const std::vector<std::shared_ptr<StaticInit>>& list_node) {
     if (list_node.size() == 1 && list_node[0]->type() == AST_T::ZeroInit_t) {
         emit(".bss", 1);
     }
