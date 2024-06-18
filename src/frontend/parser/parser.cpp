@@ -751,10 +751,9 @@ static int32_t parse_token_precedence(TOKEN_KIND token_kind) {
 //     | AddrOf(exp, type) | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type)
 //     | Dot(exp, identifier, type) | Arrow(exp, identifier, type)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
-    int32_t precedence;
     std::unique_ptr<CExp> exp_left = parse_cast_exp_factor();
     while (true) {
-        precedence = parse_token_precedence(peek_next().token_kind);
+        int32_t precedence = parse_token_precedence(peek_next().token_kind);
         if (precedence < min_precedence) {
             break;
         }
@@ -1481,7 +1480,7 @@ static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(
 }
 
 // <member-declaration> ::= { <type-specifier> }+ <declarator> ";"
-// member_declaration = CMemberDeclaration(identifier, type)
+// member_declaration = MemberDeclaration(identifier, type)
 static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
     Declarator declarator;
     if (parse_declarator_declaration(declarator)) {

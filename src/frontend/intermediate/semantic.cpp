@@ -2442,7 +2442,7 @@ static void resolve_structure_compound_init_initializer(
     checktype_bound_structure_compound_init_initializer(node, struct_type);
 
     for (size_t i = 0; i < node->initializers.size(); ++i) {
-        auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         resolve_initializer(node->initializers[i].get(), member->member_type);
     }
     checktype_structure_compound_init_initializer(node, struct_type, init_type);
