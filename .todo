@@ -36,7 +36,7 @@
 
 - set (or reserve) string to chunk size ?
 - remove reserve for stack_instructions in asm_gen
-- review 18_structures/ asm_gen.cpp
+- raise_runtime_error_at_line with fileio instead of sed
 
 ---- Bug fixes
 
@@ -49,17 +49,8 @@
 
 ---- Performance
 
-- replace for loops with const auto& range where possible
-- remove unnessecery copy + move on primitives
-- add const correctness
-    - https://softwareengineering.stackexchange.com/questions/356477/benefits-or-otherwise-of-using-const-during-variable-assignment
 - see if need to reserve vectors with estimate of previous vectior size ?
 - see if need to reserve strings with chunk size (4096) ?
-- profile with callgrind + kcachegrind
-
-- replace fopen with open
-    - https://stackoverflow.com/questions/1658476/c-fopen-vs-open
-    - https://stackoverflow.com/questions/49011302/how-to-convert-from-fopen-to-open-function
 
 ---- Part 3 Optimization
 
