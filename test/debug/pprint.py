@@ -143,10 +143,10 @@ void pretty_print_static_constant_table() {
         field("[" + static_constant.first + "]", "", 2);
         if(frontend->symbol_table.find(static_constant.second) != frontend->symbol_table.end() &&
            frontend->symbol_table[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
-            ConstantAttr* attr = static_cast<ConstantAttr*>(frontend->symbol_table[static_constant.second]->attrs.get());
-            if(attr->static_init->type() == AST_T::StringInit_t) {
+            ConstantAttr* constant_attr = static_cast<ConstantAttr*>(frontend->symbol_table[static_constant.second]->attrs.get());
+            if(constant_attr->static_init->type() == AST_T::StringInit_t) {
                 std::cout << "\n    string: \"";
-                for(const TChar& byte : static_cast<StringInit*>(attr->static_init.get())->literal.get()->value) {
+                for(const TChar& byte : static_cast<StringInit*>(constant_attr->static_init.get())->literal.get()->value) {
                     switch(byte) {
                         case 39:
                             std::cout << "\\'";
@@ -192,9 +192,9 @@ void pretty_print_static_constant_table() {
         }
         else if(backend->backend_symbol_table.find(static_constant.second) != backend->backend_symbol_table.end() &&
                 backend->backend_symbol_table[static_constant.second]->type() == AST_T::BackendObj_t){
-            BackendObj* obj = static_cast<BackendObj*>(backend->backend_symbol_table[static_constant.second].get());
-            if(obj->is_constant &&
-               obj->assembly_type->type() == AST_T::BackendDouble_t) {
+            BackendObj* backend_obj = static_cast<BackendObj*>(backend->backend_symbol_table[static_constant.second].get());
+            if(backend_obj->is_constant &&
+               backend_obj->assembly_type->type() == AST_T::BackendDouble_t) {
                 double decimal;
                 uint64_t binary = string_to_uint64(static_constant.first);
                 std::memcpy(&decimal, &binary, sizeof(double));
