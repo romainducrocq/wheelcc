@@ -34,10 +34,6 @@
 
 ---- Notes
 
-- set (or reserve) string to chunk size ?
-- remove reserve for stack_instructions in asm_gen
-- raise_runtime_error_at_line with fileio instead of sed
-
 ---- Bug fixes
 
 - see why segfault in 2 invalid tests in 15
@@ -49,9 +45,6 @@
 
 ---- Performance
 
-- see if need to reserve vectors with estimate of previous vectior size ?
-- see if need to reserve strings with chunk size (4096) ?
-
 ---- Part 3 Optimization
 
 - use bitmask for cmd line params
@@ -62,6 +55,12 @@
     - no memory overflow check, max memory allocation is (2^63)-1 bits (function stack, aggregate type)
     - same for memory addresses / pointer values
         -> overflow = undefined behavior
+
+## PERFORMANCE
+
+Not needed, the bottleneck is by far the regex tokenizer.
+- Set capacity of containers (vector, unordered map, string) with reserve() when size is known, or if good upper estimate.
+- Construct line in emitter with += operator instead of +, because it is 3x cheaper (but less readable).
 
 ## Grammar ideas
 
