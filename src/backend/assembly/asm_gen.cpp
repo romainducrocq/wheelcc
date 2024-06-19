@@ -987,7 +987,6 @@ static void generate_bytearray_8byte_stack_arg_fun_call_instructions(
             }
             byte_instructions.push_back(std::move(byte_instruction));
         }
-        context->p_instructions->reserve(context->p_instructions->size() + byte_instructions.size());
         for (size_t i = byte_instructions.size(); i-- > 0;) {
             push_instruction(std::move(byte_instructions[i]));
         }
@@ -1094,8 +1093,6 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
             }
         }
     }
-
-    context->p_instructions->reserve(context->p_instructions->size() + stack_instructions.size());
     for (size_t i = stack_instructions.size(); i-- > 0;) {
         push_instruction(std::move(stack_instructions[i]));
     }
