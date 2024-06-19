@@ -35,19 +35,30 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
 }
 
 [[noreturn]] void raise_runtime_error_at_line(const std::string& message, size_t line_number) {
-    std::string cmd = "sed -n " + std::to_string(line_number) + "p " + util->filename;
-    std::array<char, 128> buffer;
+    file_free();
     std::string line;
     {
-        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-        if (!pipe) {
+        size_t l = 0;
+        char* buffer = nullptr;
+        FILE* file_in = fopen(util->filename.c_str(), "rb");
+        if (file_in == nullptr) {
             raise_runtime_error(message);
         }
-        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-            line += buffer.data();
+        for(size_t i = 0; i < line_number; i++) {
+            if(getline(&buffer, &l, file_in) == -1) {
+                free(buffer);
+                fclose(file_in);
+                buffer = nullptr;
+                file_in = nullptr;
+                raise_runtime_error(message);
+            }
         }
+        line = buffer;
+        free(buffer);
+        fclose(file_in);
+        buffer = nullptr;
+        file_in = nullptr;
     }
-    file_free();
     throw std::runtime_error("\n\033[1m" + util->filename + ":" + std::to_string(line_number)
                              + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\nat line "
                              + std::to_string(line_number) + ": \033[1m" + line + "\033[0m");

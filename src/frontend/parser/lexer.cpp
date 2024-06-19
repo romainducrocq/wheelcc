@@ -118,7 +118,7 @@ static std::vector<Token> tokenize() {
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
     bool is_comment = false;
-    for (size_t line_number = 0; read_line(line); ++line_number) {
+    for (size_t line_number = 1; read_line(line); ++line_number) {
 
         boost::sregex_iterator it_end;
         for (boost::sregex_iterator it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
