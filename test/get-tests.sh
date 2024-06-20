@@ -38,7 +38,7 @@ for FILE in $(find ${TEST_DIR} -name "*.c" -type f); do
     gcc -E -P ${FILE} -o ${FILE%.*}.i
 done
 for FILE in $(\
-    grep -rnw $(find ${TEST_DIR} -name "*.i" -type f) \
+    grep -rn $(find ${TEST_DIR} -name "*.i" -type f) \
         -e "++" -e "--" -e "switch" -e "case" -e "default" -e "union" | \
         cut -d":" -f1 | sort --uniq); do
     rm -rv "${FILE%.*}.c"
