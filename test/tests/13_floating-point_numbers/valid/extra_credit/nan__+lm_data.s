@@ -1,4 +1,4 @@
-	.file	"nan__+lm.c"
+	.file	"nan.c"
 	.text
 	.globl	double_isnan
 	.type	double_isnan, @function
