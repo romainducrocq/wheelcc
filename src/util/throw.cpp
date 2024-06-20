@@ -44,8 +44,8 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
         if (file_in == nullptr) {
             raise_runtime_error(message);
         }
-        for(size_t i = 0; i < line_number; ++i) {
-            if(getline(&buffer, &l, file_in) == -1) {
+        for (size_t i = 0; i < line_number; ++i) {
+            if (getline(&buffer, &l, file_in) == -1) {
                 free(buffer);
                 fclose(file_in);
                 buffer = nullptr;
