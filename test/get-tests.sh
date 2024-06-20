@@ -46,6 +46,9 @@ done
 rm -rv $(find ${TEST_DIR}/${TEST_SRCS[17]}/ -name "*.h" -type f | grep union | grep extra_credit)
 rm -rv $(find ${TEST_DIR} -name "*.i" -type f)
 
+# Remove unused markdown files
+rm -rv $(find ${TEST_DIR} -name "*.md" -type f)
+
 # Remove unused assembly files
 rm -rv $(find ${TEST_DIR} -name "*.s" -type f | grep --invert-match linux)
 
