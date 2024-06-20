@@ -463,8 +463,8 @@ static void represent_exp_result_plain_operand_assignment_instructions(
 static std::unique_ptr<TacPlainOperand> represent_exp_result_dereference_pointer_assignment_instructions(
     TacDereferencedPointer* res, std::shared_ptr<TacValue> src) {
     std::shared_ptr<TacValue> dst = std::move(res->val);
-    push_instruction(std::make_unique<TacStore>(std::move(src), dst));
-    return std::make_unique<TacPlainOperand>(std::move(dst));
+    push_instruction(std::make_unique<TacStore>(src, std::move(dst)));
+    return std::make_unique<TacPlainOperand>(std::move(src));
 }
 
 static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignment_instructions(
@@ -473,7 +473,6 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignme
     TLong offset = std::move(res->offset);
     push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), src));
     return std::make_unique<TacPlainOperand>(std::move(src));
-    ;
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
@@ -484,6 +483,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
     }
     else {
         // TODO Compound assignment
+        // C Standard: "The behavior of an expression of the form E1 op= E2 is equivalent to E1 = E1 op E2 except that
+        // E1 is evaluated only once."
+
+        // 2 failed tests:
+        //  - 14_pointers/valid/extra_credit/eval_compound_lhs_once.c (stdout)
+        //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_subscripted_val.c (4)
 
         CExp* exp_left = node->exp_right.get();
         if (exp_left->type() == AST_T::CCast_t) {

@@ -773,24 +773,6 @@ static void checktype_assignment_expression(CAssignment* node) {
         if (node->exp_right->type() != AST_T::CBinary_t) {
             raise_runtime_error("Right expression is an invalid compound assignment");
         }
-
-        // TODO Compound assignment
-        // C Standard: "The behavior of an expression of the form E1 op= E2 is equivalent to E1 = E1 op E2 except that
-        // E1 is evaluated only once."
-
-        // TBD
-        // - Make the compound expression an rvalue that returns the result of E1 op= E2.
-        // - Evaluate E1 only once.
-        //
-        // (Create a type CCompoundAssignment to handle rvalue/lvalue ? Or handle it completely in tac_repr ?)
-        //
-        // Failed tests:
-        //  - 14_pointers/valid/extra_credit/compound_assign_through_pointer.c (2)
-        //  - 14_pointers/valid/extra_credit/compound_bitwise_dereferenced_ptrs.c (3)
-        //  - 14_pointers/valid/extra_credit/eval_compound_lhs_once.c (stdout)
-        //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_nested_subscript.c (1, 4)
-        //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_subscripted_val.c (4, 5)
-
         CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
         if (exp_left->type() == AST_T::CCast_t) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();
