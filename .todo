@@ -34,8 +34,6 @@
 
 ---- Notes
 
-- fail in parser if list or struct empty initializer
-
 ---- Bug fixes
 
 - compound assign evaluate E1 only once

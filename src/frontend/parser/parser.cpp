@@ -1233,6 +1233,9 @@ static std::unique_ptr<CCompoundInit> parse_compound_initializer() {
         }
         expect_next_is(pop_next(), TOKEN_KIND::separator_comma);
     }
+    if (initializers.empty()) {
+        raise_runtime_error_at_line("Compound initializer can not be empty", context->peek_token->line);
+    }
     pop_next();
     return std::make_unique<CCompoundInit>(std::move(initializers));
 }
