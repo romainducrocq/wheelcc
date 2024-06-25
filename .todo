@@ -36,9 +36,6 @@
 
 ---- Bug fixes
 
-- compound assign evaluate E1 only once
-- see why segfault in 2 invalid tests in 15
-
 ---- Features
 
 - add / clean error msgs in driver
