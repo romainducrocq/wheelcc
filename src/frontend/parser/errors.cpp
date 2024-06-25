@@ -172,6 +172,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "%s: No such file or directory";
         case ERROR_MESSAGE::FAIL_OPEN_WB_FILE:
             return "%s: Failed to create output file";
+        case ERROR_MESSAGE::INVALID_TOKEN:
+            return "invalid token %s";
         default:
             RAISE_INTERNAL_ERROR;
     }

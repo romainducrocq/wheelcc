@@ -6,6 +6,7 @@
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
+#include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
 static std::unique_ptr<LexerContext> context;
@@ -143,7 +144,8 @@ static std::vector<Token> tokenize() {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
                         raise_runtime_error_at_line(
-                            "Found invalid token " + em(match.get_last_closed_paren()), line_number);
+                            GET_ERROR_MESSAGE(ERROR_MESSAGE::INVALID_TOKEN, em(match.get_last_closed_paren()).c_str()),
+                            line_number);
                     case TOKEN_KIND::skip:
                         goto Lcontinue;
                     case TOKEN_KIND::comment_multilinestart: {

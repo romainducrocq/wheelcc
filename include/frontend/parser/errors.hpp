@@ -19,7 +19,10 @@ enum ERROR_MESSAGE
 
     // Util
     FAIL_OPEN_RB_FILE,
-    FAIL_OPEN_WB_FILE
+    FAIL_OPEN_WB_FILE,
+
+    // Lexer
+    INVALID_TOKEN
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
