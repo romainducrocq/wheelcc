@@ -24,7 +24,7 @@ function timer () {
     done
     for FILE in $(find tests/${1}_* -name "*.c" -type f)
     do
-        FILE=${FILE%.*}
+        FILE=${FILE%.*}.s
         if [ -f ${FILE} ]; then
              rm ${FILE}
         fi

@@ -159,3 +159,16 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
             RAISE_INTERNAL_ERROR;
     }
 }
+
+std::string get_error_message(ERROR_MESSAGE message) {
+    switch (message) {
+        case ERROR_MESSAGE::TEST_ERROR_0:
+            return "An error message with 0 param";
+        case ERROR_MESSAGE::TEST_ERROR_1:
+            return "An error message with 1 param: %s";
+        case ERROR_MESSAGE::TEST_ERROR_2:
+            return "An error message with 2 params: %s, %s";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
