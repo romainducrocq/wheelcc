@@ -925,8 +925,11 @@ static void checktype_arrow_expression(CArrow* node) {
         raise_runtime_error("Can not access member on expression with non-pointer to structure type");
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
-    if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
-        == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
+    if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
+        raise_runtime_error("Can not access member of incomplete structure type " + em(struct_type->tag));
+    }
+    else if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
+             == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
         raise_runtime_error("Structure does not have a member named " + em(node->member));
     }
     node->exp_type = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
@@ -1155,9 +1158,8 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
             raise_runtime_error("Function " + em(node->name) + " was declared with array return type");
         case AST_T::Structure_t: {
             if (node->body && !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
-                raise_runtime_error("Function " + em(node->name)
-                                    + " was declared with incomplete "
-                                      " structure return type");
+                raise_runtime_error(
+                    "Function " + em(node->name) + " was declared with incomplete structure return type");
             }
             break;
         }
@@ -1753,9 +1755,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     if (node->init) {
         if (node->var_type->type() == AST_T::Structure_t
             && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-            raise_runtime_error("Non-extern file scope variable " + em(node->name)
-                                + " was declared "
-                                  " with incomplete structure type");
+            raise_runtime_error(
+                "Non-extern file scope variable " + em(node->name) + " was declared with incomplete structure type");
         }
         initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
@@ -1767,8 +1768,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             if (node->var_type->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
                 raise_runtime_error("Non-extern file scope variable " + em(node->name)
-                                    + " was declared "
-                                      " with incomplete structure type");
+                                    + " was declared with incomplete structure type");
             }
             initial_value = std::make_shared<Tentative>();
         }
@@ -1828,9 +1828,8 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error("Non-extern file scope variable " + em(node->name)
-                            + " was declared "
-                              " with incomplete structure type");
+        raise_runtime_error(
+            "Non-extern file scope variable " + em(node->name) + " was declared with incomplete structure type");
     }
 
     std::shared_ptr<InitialValue> initial_value;
@@ -1850,9 +1849,8 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error("Non-extern file scope variable " + em(node->name)
-                            + " was declared "
-                              " with incomplete structure type");
+        raise_runtime_error(
+            "Non-extern file scope variable " + em(node->name) + " was declared with incomplete structure type");
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
