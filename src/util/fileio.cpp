@@ -5,6 +5,8 @@
 #include "util/throw.hpp"
 #include "util/util.hpp"
 
+#include "frontend/parser/errors.hpp"
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // File io
@@ -14,7 +16,7 @@ void file_open_read(const std::string& filename) {
 
     util->file_in = fopen(filename.c_str(), "rb");
     if (util->file_in == nullptr) {
-        raise_runtime_error("File " + em(filename) + " does not exist");
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::FAIL_OPEN_RB_FILE, filename.c_str()));
     }
 
     util->l = 0;
@@ -27,7 +29,7 @@ void file_open_write(const std::string& filename) {
 
     util->file_out = fopen(filename.c_str(), "wb");
     if (util->file_out == nullptr) {
-        raise_runtime_error("File " + em(filename) + " was not created");
+        raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::FAIL_OPEN_WB_FILE, filename.c_str()));
     }
     util->stream_buf = "";
 }

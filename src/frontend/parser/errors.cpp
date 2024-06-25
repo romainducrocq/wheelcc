@@ -168,13 +168,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "invalid option code %s";
         case ERROR_MESSAGE::NO_INPUT_FILES:
             return "no input files";
-
-        case ERROR_MESSAGE::TEST_ERROR_0:
-            return "An error message with 0 param";
-        case ERROR_MESSAGE::TEST_ERROR_1:
-            return "An error message with 1 param: %s";
-        case ERROR_MESSAGE::TEST_ERROR_2:
-            return "An error message with 2 params: %s, %s";
+        case ERROR_MESSAGE::FAIL_OPEN_RB_FILE:
+            return "%s: No such file or directory";
+        case ERROR_MESSAGE::FAIL_OPEN_WB_FILE:
+            return "%s: Failed to create output file";
         default:
             RAISE_INTERNAL_ERROR;
     }

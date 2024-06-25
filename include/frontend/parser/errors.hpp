@@ -18,12 +18,8 @@ enum ERROR_MESSAGE
     NO_INPUT_FILES,
 
     // Util
-
-
-    //
-    TEST_ERROR_0,
-    TEST_ERROR_1,
-    TEST_ERROR_2
+    FAIL_OPEN_RB_FILE,
+    FAIL_OPEN_WB_FILE
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
