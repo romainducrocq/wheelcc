@@ -498,14 +498,6 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         frontend->variable_counter = variable_counter_1;
         frontend->structure_counter = structure_counter_1;
 
-        // TODO Compound assignment
-        // C Standard: "The behavior of an expression of the form E1 op= E2 is equivalent to E1 = E1 op E2 except that
-        // E1 is evaluated only once."
-
-        // 2 failed tests:
-        //  - 14_pointers/valid/extra_credit/eval_compound_lhs_once.c (stdout)
-        //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_subscripted_val.c (4)
-
         {
             CExp* exp_left = node->exp_right.get();
             if (exp_left->type() == AST_T::CCast_t) {
