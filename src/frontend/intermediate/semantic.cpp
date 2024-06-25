@@ -571,6 +571,11 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
             node->exp_type = std::move(common_type);
             return;
         }
+        else {
+            raise_runtime_error("An error occurred in type checking, " + em("binary operator")
+                                + " can not be used with " + em("non-integer") + " or " + em("constant null pointer")
+                                + " and " + em("pointer to incomplete type"));
+        }
     }
     else {
         raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used with "
