@@ -70,7 +70,4 @@ mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/parameters/data_on_page_boundary_linux.
 gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 rm -rv ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/
 
-mv -v ${TEST_DIR}/${TEST_SRCS[13]}/valid/extra_credit/eval_compound_lhs_once.c ${TEST_DIR}/${TEST_SRCS[13]}/valid/extra_credit/eval_compound_lhs_once.c.fail
-mv -v ${TEST_DIR}/${TEST_SRCS[14]}/valid/extra_credit/compound_assign_to_subscripted_val.c ${TEST_DIR}/${TEST_SRCS[14]}/valid/extra_credit/compound_assign_to_subscripted_val.c.fail
-
 exit 0
