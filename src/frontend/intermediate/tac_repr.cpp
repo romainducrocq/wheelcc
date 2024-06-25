@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -476,12 +477,27 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignme
 }
 
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
-    std::shared_ptr<TacValue> src = represent_exp_instructions(node->exp_right.get());
+    std::shared_ptr<TacValue> src;
     std::unique_ptr<TacExpResult> res;
     if (node->exp_left) {
+        src = represent_exp_instructions(node->exp_right.get());
         res = represent_exp_result_instructions(node->exp_left.get());
     }
     else {
+        uint32_t label_counter_1 = frontend->label_counter;
+        uint32_t variable_counter_1 = frontend->variable_counter;
+        uint32_t structure_counter_1 = frontend->structure_counter;
+
+        src = represent_exp_instructions(node->exp_right.get());
+
+        uint32_t label_counter_2 = frontend->label_counter;
+        uint32_t variable_counter_2 = frontend->variable_counter;
+        uint32_t structure_counter_2 = frontend->structure_counter;
+
+        frontend->label_counter = label_counter_1;
+        frontend->variable_counter = variable_counter_1;
+        frontend->structure_counter = structure_counter_1;
+
         // TODO Compound assignment
         // C Standard: "The behavior of an expression of the form E1 op= E2 is equivalent to E1 = E1 op E2 except that
         // E1 is evaluated only once."
@@ -490,15 +506,26 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         //  - 14_pointers/valid/extra_credit/eval_compound_lhs_once.c (stdout)
         //  - 15_arrays_and_pointer_arithmetic/valid/extra_credit/compound_assign_to_subscripted_val.c (4)
 
-        CExp* exp_left = node->exp_right.get();
-        if (exp_left->type() == AST_T::CCast_t) {
-            exp_left = static_cast<CCast*>(exp_left)->exp.get();
+        {
+            CExp* exp_left = node->exp_right.get();
+            if (exp_left->type() == AST_T::CCast_t) {
+                exp_left = static_cast<CCast*>(exp_left)->exp.get();
+            }
+            exp_left = static_cast<CBinary*>(exp_left)->exp_left.get();
+            if (exp_left->type() == AST_T::CCast_t) {
+                exp_left = static_cast<CCast*>(exp_left)->exp.get();
+            }
+
+            std::vector<std::unique_ptr<TacInstruction>> noeval_instructions;
+            std::vector<std::unique_ptr<TacInstruction>>* p_instructions = context->p_instructions;
+            context->p_instructions = &noeval_instructions;
+            res = represent_exp_result_instructions(exp_left);
+            context->p_instructions = p_instructions;
         }
-        exp_left = static_cast<CBinary*>(exp_left)->exp_left.get();
-        if (exp_left->type() == AST_T::CCast_t) {
-            exp_left = static_cast<CCast*>(exp_left)->exp.get();
-        }
-        res = represent_exp_result_instructions(exp_left);
+
+        frontend->label_counter = label_counter_2;
+        frontend->variable_counter = variable_counter_2;
+        frontend->structure_counter = structure_counter_2;
     }
     switch (res->type()) {
         case AST_T::TacPlainOperand_t:

@@ -17,7 +17,7 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 18); do
-        test --chapter ${i} --latest-only --bitwise --goto --nan #--compound
+        test --chapter ${i} --latest-only --bitwise --compound --goto --nan
     done
 fi
 
