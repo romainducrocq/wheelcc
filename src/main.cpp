@@ -16,6 +16,7 @@
 #include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
 
+#include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
 
@@ -193,13 +194,23 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_runtime_error("No option code passed in " + em("args[0]"));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::NO_OPTION_CODE));
     }
-    context->opt_code = std::stoi(arg);
+    {
+        std::vector<char> buffer(arg.begin(), arg.end());
+        buffer.push_back('\0');
+        char* end_ptr = nullptr;
+        errno = 0;
+        context->opt_code = static_cast<int>(strtol(&buffer[0], &end_ptr, 10));
+
+        if (end_ptr == &buffer[0] || context->opt_code < 0 || context->opt_code > 255) {
+            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::INVALID_OPTION_CODE, em(arg).c_str()));
+        }
+    }
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_runtime_error("No file name passed in " + em("args[1]"));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::NO_INPUT_FILES));
     }
     context->filename = std::move(arg);
 

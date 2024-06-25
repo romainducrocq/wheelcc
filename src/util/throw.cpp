@@ -29,6 +29,10 @@ static void file_free() {
 
 std::string em(const std::string& message) { return "\033[1m‘" + message + "’\033[0m"; }
 
+[[noreturn]] void raise_argument_error(const std::string& message) {
+    throw std::runtime_error("\n\033[0;31merror:\033[0m " + message + "\n");
+}
+
 [[noreturn]] void raise_runtime_error(const std::string& message) {
     file_free();
     throw std::runtime_error("\n\033[1m" + util->filename + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\n");

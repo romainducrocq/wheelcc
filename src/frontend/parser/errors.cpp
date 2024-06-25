@@ -162,6 +162,13 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
 
 std::string get_error_message(ERROR_MESSAGE message) {
     switch (message) {
+        case ERROR_MESSAGE::NO_OPTION_CODE:
+            return "no option code";
+        case ERROR_MESSAGE::INVALID_OPTION_CODE:
+            return "invalid option code %s";
+        case ERROR_MESSAGE::NO_INPUT_FILES:
+            return "no input files";
+
         case ERROR_MESSAGE::TEST_ERROR_0:
             return "An error message with 0 param";
         case ERROR_MESSAGE::TEST_ERROR_1:

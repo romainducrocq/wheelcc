@@ -12,6 +12,15 @@
 
 enum ERROR_MESSAGE
 {
+    // Main
+    NO_OPTION_CODE,
+    INVALID_OPTION_CODE,
+    NO_INPUT_FILES,
+
+    // Util
+
+
+    //
     TEST_ERROR_0,
     TEST_ERROR_1,
     TEST_ERROR_2
