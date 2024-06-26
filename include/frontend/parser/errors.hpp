@@ -20,6 +20,9 @@ enum ERROR_MESSAGE
     // Util
     fail_open_rb_file,
     fail_open_wb_file,
+    string_not_integer,
+    string_not_unsigned,
+    string_not_float,
 
     // Lexer
     invalid_token,

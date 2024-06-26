@@ -172,6 +172,12 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "%s: No such file or directory";
         case ERROR_MESSAGE::fail_open_wb_file:
             return "%s: Failed to create output file";
+        case ERROR_MESSAGE::string_not_integer:
+            return "string %s not an integer";
+        case ERROR_MESSAGE::string_not_unsigned:
+            return "string %s not an unsigned integer";
+        case ERROR_MESSAGE::string_not_float:
+            return "string %s not a floating-point number";
         case ERROR_MESSAGE::invalid_token:
             return "invalid token %s";
         case ERROR_MESSAGE::invalid_next_token:
