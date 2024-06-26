@@ -13,24 +13,48 @@
 enum ERROR_MESSAGE
 {
     // Main
-    NO_OPTION_CODE,
-    INVALID_OPTION_CODE,
-    NO_INPUT_FILES,
+    no_option_code,
+    invalid_option_code,
+    no_input_files,
 
     // Util
-    FAIL_OPEN_RB_FILE,
-    FAIL_OPEN_WB_FILE,
+    fail_open_rb_file,
+    fail_open_wb_file,
 
     // Lexer
-    INVALID_TOKEN
+    invalid_token,
+
+    // Parser
+    invalid_next_token,
+    reach_end_of_input,
+    out_of_bound_constant,
+    out_of_bound_unsigned,
+    invalid_arr_size_type,
+    invalid_unary_op,
+    invalid_binary_op,
+    invalid_abstract_declarator,
+    invalid_pointer_unary_factor,
+    invalid_primary_exp_factor,
+    invalid_exp,
+    invalid_for_loop_decl_type,
+    invalid_type_specifier,
+    invalid_type_specifier_list,
+    invalid_storage_class,
+    empty_compound_initializer,
+    many_fun_type_derivation,
+    fun_ptr_param_derivation,
+    invalid_simple_declarator,
+    invalid_param_list,
+    invalid_member_decl_storage,
+    invalid_member_decl_fun_type
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_error_message(ERROR_MESSAGE message);
 template <typename... TArgs> std::string get_error_message(ERROR_MESSAGE message, TArgs&&... args) {
-    char buf[256];
-    snprintf(buf, sizeof(buf), get_error_message(message).c_str(), std::forward<TArgs>(args)...);
-    return std::string(buf);
+    char buffer[4096];
+    snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), std::forward<TArgs>(args)...);
+    return std::string(buffer);
 }
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
 

@@ -26,15 +26,16 @@ ParserContext::ParserContext(std::vector<Token>* p_tokens) : p_tokens(p_tokens),
 
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
-        raise_runtime_error_at_line("Expected token kind " + em(get_token_kind_hr(expected_token)) + " but found token "
-                                        + em(next_token_is.token),
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_next_token,
+                                        em(get_token_kind_hr(expected_token)).c_str(), em(next_token_is.token).c_str()),
             next_token_is.line);
     }
 }
 
 static const Token& pop_next() {
     if (context->pop_index >= context->p_tokens->size()) {
-        raise_runtime_error_at_line("All Tokens were consumed before end of program", context->p_tokens->back().line);
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::reach_end_of_input), context->p_tokens->back().line);
     }
 
     context->next_token = &(*context->p_tokens)[context->pop_index];
@@ -47,7 +48,8 @@ static const Token& pop_next_i(size_t i) {
         return pop_next();
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
-        raise_runtime_error_at_line("All Tokens were consumed before end of program", context->p_tokens->back().line);
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::reach_end_of_input), context->p_tokens->back().line);
     }
 
     if (i == 1) {
@@ -66,7 +68,8 @@ static const Token& pop_next_i(size_t i) {
 
 static const Token& peek_next() {
     if (context->pop_index >= context->p_tokens->size()) {
-        raise_runtime_error_at_line("All Tokens were consumed before end of program", context->p_tokens->back().line);
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::reach_end_of_input), context->p_tokens->back().line);
     }
 
     context->peek_token = &(*context->p_tokens)[context->pop_index];
@@ -78,7 +81,8 @@ static const Token& peek_next_i(size_t i) {
         return peek_next();
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
-        raise_runtime_error_at_line("All Tokens were consumed before end of program", context->p_tokens->back().line);
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::reach_end_of_input), context->p_tokens->back().line);
     }
 
     return (*context->p_tokens)[context->pop_index + i];
@@ -155,7 +159,7 @@ static std::shared_ptr<CConst> parse_constant() {
     intmax_t value = string_to_intmax(context->next_token->token, context->next_token->line);
     if (value > 9223372036854775807ll) {
         raise_runtime_error_at_line(
-            "Constant " + em(context->next_token->token) + " is too large to be represent as an int or a long",
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::out_of_bound_constant, em(context->next_token->token).c_str()),
             context->next_token->line);
     }
     if (context->next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
@@ -174,8 +178,8 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
 
     uintmax_t value = string_to_uintmax(context->next_token->token, context->next_token->line);
     if (value > 18446744073709551615ull) {
-        raise_runtime_error_at_line("Constant " + em(context->next_token->token)
-                                        + " is too large to be represented as an unsigned int or a unsigned long",
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::out_of_bound_unsigned, em(context->next_token->token).c_str()),
             context->next_token->line);
     }
     if (context->next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
@@ -199,7 +203,7 @@ static TLong parse_array_size_t() {
             break;
         default:
             raise_runtime_error_at_line(
-                "Size of array declarator suffix must be a constant integer", context->peek_token->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_arr_size_type), context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
     switch (size->type()) {
@@ -228,7 +232,7 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
             return std::make_unique<CNot>();
         default:
             raise_runtime_error_at_line(
-                "Expected token type " + em("unary operator") + " but found token " + em(context->next_token->token),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_unary_op, em(context->next_token->token).c_str()),
                 context->next_token->line);
     }
 }
@@ -288,7 +292,7 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
             return std::make_unique<CGreaterOrEqual>();
         default:
             raise_runtime_error_at_line(
-                "Expected token type " + em("binary operator") + " but found token " + em(context->next_token->token),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_binary_op, em(context->next_token->token).c_str()),
                 context->next_token->line);
     }
 }
@@ -381,8 +385,8 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
         case TOKEN_KIND::brackets_open:
             return parse_array_direct_abstract_declarator();
         default:
-            raise_runtime_error_at_line("Expected token type " + em("abstract declarator") + " but found token "
-                                            + em(context->peek_token->token),
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_abstract_declarator, em(context->peek_token->token).c_str()),
                 context->peek_token->line);
     }
 }
@@ -516,7 +520,7 @@ static std::unique_ptr<CExp> parse_pointer_unary_factor() {
             return parse_addrof_factor();
         default:
             raise_runtime_error_at_line(
-                "Expected token type " + em("unary operator") + " but found token " + em(context->next_token->token),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_pointer_unary_factor, em(context->next_token->token).c_str()),
                 context->next_token->line);
     }
 }
@@ -583,11 +587,10 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
         case TOKEN_KIND::parenthesis_open:
             return parse_inner_exp_factor();
         default:
-            break;
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_primary_exp_factor, em(context->peek_token->token).c_str()),
+                context->peek_token->line);
     }
-    raise_runtime_error_at_line(
-        "Expected token type " + em("factor") + " but found token " + em(context->peek_token->token),
-        context->peek_token->line);
 }
 
 // <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
@@ -796,7 +799,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 break;
             default:
                 raise_runtime_error_at_line(
-                    "Expected token type " + em("expression") + " but found token " + em(context->peek_token->token),
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_exp, em(context->peek_token->token).c_str()),
                     context->peek_token->line);
         }
     }
@@ -971,7 +974,8 @@ static std::unique_ptr<CInitDecl> parse_decl_for_init() {
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
     if (declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line(
-            "Declaration in for loop initialization must be a variable type", context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_for_loop_decl_type, em(declarator.name).c_str()),
+            context->next_token->line);
     }
     std::unique_ptr<CVariableDeclaration> init =
         parse_variable_declaration(std::move(storage_class), std::move(declarator));
@@ -1101,7 +1105,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             }
             default:
                 raise_runtime_error_at_line(
-                    "Expected token type " + em("specifier") + " but found token " + peek_next_i(specifier).token,
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier, em(peek_next_i(specifier).token).c_str()),
                     peek_next_i(specifier).line);
         }
     }
@@ -1192,8 +1196,8 @@ Lbreak:
     for (const auto& type_token_kind : type_token_kinds) {
         type_token_kinds_string += get_token_kind_hr(type_token_kind) + ",";
     }
-    raise_runtime_error_at_line("Expected list of unique token types " + em("(type specifier,)")
-                                    + " but found token kinds " + em("(" + type_token_kinds_string + ")"),
+    raise_runtime_error_at_line(
+        GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier_list, em("(" + type_token_kinds_string + ")").c_str()),
         line);
 }
 
@@ -1207,7 +1211,7 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
             return std::make_unique<CExtern>();
         default:
             raise_runtime_error_at_line(
-                "Expected token type " + em("storage class") + " but found token " + em(context->next_token->token),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_storage_class, em(context->next_token->token).c_str()),
                 context->next_token->line);
     }
 }
@@ -1234,7 +1238,8 @@ static std::unique_ptr<CCompoundInit> parse_compound_initializer() {
         expect_next_is(pop_next(), TOKEN_KIND::separator_comma);
     }
     if (initializers.empty()) {
-        raise_runtime_error_at_line("Compound initializer can not be empty", context->peek_token->line);
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::empty_compound_initializer), context->peek_token->line);
     }
     pop_next();
     return std::make_unique<CCompoundInit>(std::move(initializers));
@@ -1276,7 +1281,7 @@ static void parse_process_fun_declarator(
     CFunDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
     if (node->declarator->type() != AST_T::CIdent_t) {
         raise_runtime_error_at_line(
-            "Additional type derivations can not be applied to function types", context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::many_fun_type_derivation), context->next_token->line);
     }
 
     std::vector<TIdentifier> params;
@@ -1286,7 +1291,8 @@ static void parse_process_fun_declarator(
         parse_process_declarator(param->declarator.get(), param->param_type, param_declarator);
         if (param_declarator.derived_type->type() == AST_T::FunType_t) {
             raise_runtime_error_at_line(
-                "Function pointer parameters can not be applied in type derivations", context->next_token->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::fun_ptr_param_derivation, em(param_declarator.name).c_str()),
+                context->next_token->line);
         }
         params.push_back(std::move(param_declarator.name));
         param_types.push_back(std::move(param_declarator.derived_type));
@@ -1339,7 +1345,7 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
             return parse_declarator_simple_declarator();
         default:
             raise_runtime_error_at_line(
-                "Expected token type " + em("declarator") + " but found token " + em(context->peek_token->token),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_simple_declarator, em(context->peek_token->token).c_str()),
                 context->peek_token->line);
     }
 }
@@ -1394,7 +1400,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         }
         default:
             raise_runtime_error_at_line(
-                "Expected token type " + em("type specifier") + " but found token " + em(context->peek_token->token),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_param_list, em(context->peek_token->token).c_str()),
                 context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
@@ -1486,11 +1492,13 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
     Declarator declarator;
     if (parse_declarator_declaration(declarator)) {
         raise_runtime_error_at_line(
-            "Structure member declaration can not have a storage class specifier", context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_storage, em(declarator.name).c_str()),
+            context->next_token->line);
     }
     else if (declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line(
-            "Structure member declaration can not be of function type", context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_fun_type, em(declarator.name).c_str()),
+            context->next_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CMemberDeclaration>(std::move(declarator.name), std::move(declarator.derived_type));

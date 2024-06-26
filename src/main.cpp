@@ -194,7 +194,7 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::NO_OPTION_CODE));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_option_code));
     }
     {
         std::vector<char> buffer(arg.begin(), arg.end());
@@ -204,13 +204,13 @@ static void arg_parse() {
         context->opt_code = static_cast<int>(strtol(&buffer[0], &end_ptr, 10));
 
         if (end_ptr == &buffer[0] || context->opt_code < 0 || context->opt_code > 255) {
-            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::INVALID_OPTION_CODE, em(arg).c_str()));
+            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_option_code, em(arg).c_str()));
         }
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::NO_INPUT_FILES));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_input_files));
     }
     context->filename = std::move(arg);
 
