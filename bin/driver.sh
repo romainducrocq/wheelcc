@@ -255,8 +255,12 @@ function preprocess () {
 function compile () {
     for FILE in ${FILES}; do
         verbose "Compile    -> ${FILE}.${EXT_OUT}"
-        ${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN}
-        if [ ${?} -ne 0 ]; then return 1; fi
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN} 2>&1)
+        if [ ${?} -ne 0 ]; then
+            echo "${STDOUT}" | tail -n +3 | head -n -1 1>&2
+            return 1;
+        fi
+        echo "${STDOUT}"
         if [ ${OPT_CODE} -eq 250 ]; then
             cat ${FILE}.${EXT_OUT}
         fi
