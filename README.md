@@ -68,7 +68,7 @@ $ ./valgrind.sh
 
 ### Use
 
-`main.c` :  
+With file `main.c` :  
 ```c
 int puts(char *c);
 
