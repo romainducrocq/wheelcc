@@ -68,7 +68,7 @@ $ ./valgrind.sh
 
 ### Use
 
-Source file `main.c` :  
+`main.c` :  
 ```c
 int puts(char *c);
 
@@ -77,7 +77,7 @@ int main(void) {
 }
 ```
 
-Compile and run with :  
+Compile and run :  
 ```
 $ wheelcc main.c
 $ ./main
