@@ -46,29 +46,42 @@ Yet another C Compiler for Computers. It's a bit rough on the edges (standard-co
 
 ### Get
 ```
-git clone --depth 1 --branch master https://github.com/romainducrocq/LANG-WheelCC.git
-cd LANG-WheelCC/
+$ git clone --depth 1 --branch master https://github.com/romainducrocq/LANG-WheelCC.git
+$ cd LANG-WheelCC/
 ```
 
 ### Build
 ```
-cd bin/
-./configure.sh
-./make.sh
-./install.sh
-. ~/.bashrc
+$ cd bin/
+$ ./configure.sh
+$ ./make.sh
+$ ./install.sh
+$ . ~/.bashrc
 ```
 
 ### Test
 ```
-cd test/
-./test.sh
-./valgrind.sh
+$ cd test/
+$ ./test.sh
+$ ./valgrind.sh
 ```
 
-### Run
+### Use
+
+Source file `main.c` :  
+```c
+int puts(char *c);
+
+int main(void) {
+    puts("Hello, world!");
+}
 ```
-wheelcc path/to/file.c
+
+Compile and run with :  
+```
+$ wheelcc main.c
+$ ./main
+Hello, World!
 ```
 
 ### Help
