@@ -62,6 +62,9 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
         fclose(file_in);
         buffer = nullptr;
         file_in = nullptr;
+        if (line.back() == '\n') {
+            line.pop_back();
+        }
     }
     throw std::runtime_error("\n\033[1m" + util->filename + ":" + std::to_string(line_number)
                              + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\nat line "

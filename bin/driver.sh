@@ -257,7 +257,7 @@ function compile () {
         verbose "Compile    -> ${FILE}.${EXT_OUT}"
         STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN} 2>&1)
         if [ ${?} -ne 0 ]; then
-            echo "${STDOUT}" | tail -n +3 | head -n -1 1>&2
+            echo "${STDOUT}" | tail -n +3 1>&2
             return 1;
         fi
         echo "${STDOUT}"
