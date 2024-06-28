@@ -70,10 +70,11 @@ $ ./valgrind.sh
 
 With file `main.c` :  
 ```c
-int puts(char *c);
+int puts(char* c);
 
 int main(void) {
     puts("Hello, world!");
+    return 0;
 }
 ```
 
