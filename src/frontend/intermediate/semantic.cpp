@@ -250,7 +250,8 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
 
 static TLong get_structure_aggregate_type_scale(Structure* struct_type) {
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error("Structure type " + em(struct_type->tag) + "was not declared in this scope"); // ? TODO other_(type)
+        raise_runtime_error(
+            "Structure type " + em(struct_type->tag) + "was not declared in this scope"); // ? TODO other_(type)
     }
     return frontend->struct_typedef_table[struct_type->tag]->size;
 }
@@ -274,7 +275,8 @@ static TInt get_array_aggregate_type_alignment(Array* arr_type) {
 
 static TInt get_structure_aggregate_type_alignment(Structure* struct_type) {
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error("Structure type " + em(struct_type->tag) + "was not declared in this scope"); // TODO other_(type)
+        raise_runtime_error(
+            "Structure type " + em(struct_type->tag) + "was not declared in this scope"); // TODO other_(type)
     }
     return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
@@ -1027,7 +1029,8 @@ static void checktype_bound_array_single_init_string_initializer(CString* node, 
     }
     else if (node->literal->value.size() > static_cast<size_t>(arr_type->size)) {
         raise_runtime_error("String literal of size " + em(std::to_string(node->literal->value.size()))
-                            + " was initialized with " + em(std::to_string(arr_type->size)) + " initializers"); // TODO exp
+                            + " was initialized with " + em(std::to_string(arr_type->size))
+                            + " initializers"); // TODO exp
     }
 }
 
@@ -1127,9 +1130,10 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
     if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
-        raise_runtime_error(
-            "Structure with " + em(std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size()))
-            + " members was initialized with " + em(std::to_string(node->initializers.size())) + " initializers"); // TODO exp
+        raise_runtime_error("Structure with "
+                            + em(std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size()))
+                            + " members was initialized with " + em(std::to_string(node->initializers.size()))
+                            + " initializers"); // TODO exp
     }
 }
 
@@ -1160,11 +1164,13 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
 
     switch (fun_type->ret_type->type()) {
         case AST_T::Array_t:
-            raise_runtime_error("Function " + em(node->name) + " was declared with array return type"); // TODO function_declaration
+            raise_runtime_error(
+                "Function " + em(node->name) + " was declared with array return type"); // TODO function_declaration
         case AST_T::Structure_t: {
             if (node->body && !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
                 raise_runtime_error(
-                    "Function " + em(node->name) + " was declared with incomplete structure return type"); // TODO function_declaration
+                    "Function " + em(node->name)
+                    + " was declared with incomplete structure return type"); // TODO function_declaration
             }
             break;
         }
@@ -1189,7 +1195,8 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
         if (node->body) {
             if (fun_type->param_types[i]->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[i].get()))) {
-                raise_runtime_error("Function parameter was declared with incomplete structure type"); // TODO function_declaration
+                raise_runtime_error(
+                    "Function parameter was declared with incomplete structure type"); // TODO function_declaration
             }
             std::shared_ptr<Type> type_t = fun_type->param_types[i];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
@@ -1213,16 +1220,19 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         if (!(frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t
                 && fun_type->param_types.size() == node->params.size()
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
-            raise_runtime_error("Function declaration " + em(node->name) + " was redeclared with conflicting type"); // TODO function_declaration
+            raise_runtime_error("Function declaration " + em(node->name)
+                                + " was redeclared with conflicting type"); // TODO function_declaration
         }
 
         else if (is_defined && node->body) {
-            raise_runtime_error("Function declaration " + em(node->name) + " was already defined"); // TODO function_declaration
+            raise_runtime_error(
+                "Function declaration " + em(node->name) + " was already defined"); // TODO function_declaration
         }
 
         FunAttr* fun_attrs = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get());
         if (!is_global && fun_attrs->is_global) {
-            raise_runtime_error("Static function " + em(node->name) + " was already defined non-static"); // TODO function_declaration
+            raise_runtime_error(
+                "Static function " + em(node->name) + " was already defined non-static"); // TODO function_declaration
         }
         is_global = fun_attrs->is_global;
     }
@@ -1760,8 +1770,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     if (node->init) {
         if (node->var_type->type() == AST_T::Structure_t
             && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-            raise_runtime_error(
-                "Non-extern file scope variable " + em(node->name) + " was declared with incomplete structure type"); // TODO variable_declaration
+            raise_runtime_error("Non-extern file scope variable " + em(node->name)
+                                + " was declared with incomplete structure type"); // TODO variable_declaration
         }
         initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
@@ -1781,7 +1791,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
     if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            raise_runtime_error("File scope variable " + em(node->name) + " was redeclared with conflicting type"); // TODO variable_declaration
+            raise_runtime_error("File scope variable " + em(node->name)
+                                + " was redeclared with conflicting type"); // TODO variable_declaration
         }
 
         StaticAttr* global_var_attrs = static_cast<StaticAttr*>(frontend->symbol_table[node->name]->attrs.get());
@@ -1789,12 +1800,14 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             is_global = global_var_attrs->is_global;
         }
         else if (is_global != global_var_attrs->is_global) {
-            raise_runtime_error("File scope variable " + em(node->name) + " was redeclared with conflicting linkage"); // TODO variable_declaration
+            raise_runtime_error("File scope variable " + em(node->name)
+                                + " was redeclared with conflicting linkage"); // TODO variable_declaration
         }
 
         if (global_var_attrs->init->type() == AST_T::Initial_t) {
             if (initial_value->type() == AST_T::Initial_t) {
-                raise_runtime_error("File scope variable " + em(node->name) + " was defined with conflicting linkage"); // TODO variable_declaration
+                raise_runtime_error("File scope variable " + em(node->name)
+                                    + " was defined with conflicting linkage"); // TODO variable_declaration
             }
             else {
                 initial_value = global_var_attrs->init;
@@ -1811,11 +1824,13 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
 static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->init) {
-        raise_runtime_error("Block scope variable " + em(node->name) + " with external linkage was defined"); // TODO variable_declaration
+        raise_runtime_error("Block scope variable " + em(node->name)
+                            + " with external linkage was defined"); // TODO variable_declaration
     }
     else if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            raise_runtime_error("Block scope variable " + em(node->name) + " was redeclared with conflicting type"); // TODO variable_declaration
+            raise_runtime_error("Block scope variable " + em(node->name)
+                                + " was redeclared with conflicting type"); // TODO variable_declaration
         }
         return;
     }
@@ -1833,8 +1848,8 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error(
-            "Non-extern file scope variable " + em(node->name) + " was declared with incomplete structure type"); // TODO variable_declaration
+        raise_runtime_error("Non-extern file scope variable " + em(node->name)
+                            + " was declared with incomplete structure type"); // TODO variable_declaration
     }
 
     std::shared_ptr<InitialValue> initial_value;
@@ -1854,8 +1869,8 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error(
-            "Non-extern file scope variable " + em(node->name) + " was declared with incomplete structure type"); // TODO variable_declaration
+        raise_runtime_error("Non-extern file scope variable " + em(node->name)
+                            + " was declared with incomplete structure type"); // TODO variable_declaration
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
@@ -1908,7 +1923,8 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
-        raise_runtime_error("Structure type " + em(node->tag) + " was already declared in this scope"); // TODO struct_declaration
+        raise_runtime_error(
+            "Structure type " + em(node->tag) + " was already declared in this scope"); // TODO struct_declaration
     }
     TInt alignment = 0;
     TLong size = 0l;
@@ -1965,14 +1981,16 @@ static void annotate_for_loop(CFor* node) {
 
 static void annotate_break_loop(CBreak* node) {
     if (context->loop_labels.empty()) {
-        raise_runtime_error("An error occurred in loop annotation, " + em("break") + "is outside of loop"); // TODO statement_break
+        raise_runtime_error(
+            "An error occurred in loop annotation, " + em("break") + "is outside of loop"); // TODO statement_break
     }
     node->target = context->loop_labels.back();
 }
 
 static void annotate_continue_loop(CContinue* node) {
     if (context->loop_labels.empty()) {
-        raise_runtime_error("An error occurred in loop annotation, " + em("continue") + "is outside of loop"); // TODO statement_continue
+        raise_runtime_error("An error occurred in loop annotation, " + em("continue")
+                            + "is outside of loop"); // TODO statement_continue
     }
     node->target = context->loop_labels.back();
 }
@@ -2006,8 +2024,8 @@ static void exit_scope() {
 static void resolve_label() {
     for (const auto& target : context->goto_map) {
         if (context->label_set.find(target.first) == context->label_set.end()) {
-            raise_runtime_error(
-                "An error occurred in variable resolution, goto " + em(target.first) + " has no target label"); // TODO function_declaration
+            raise_runtime_error("An error occurred in variable resolution, goto " + em(target.first)
+                                + " has no target label"); // TODO function_declaration
         }
     }
 }
@@ -2027,7 +2045,8 @@ static void resolve_structure_struct_type(Structure* struct_type) {
             return;
         }
     }
-    raise_runtime_error("Structure type " + em(struct_type->tag) + " was not declared in this scope"); // TODO other_(type)
+    raise_runtime_error(
+        "Structure type " + em(struct_type->tag) + " was not declared in this scope"); // TODO other_(type)
 }
 
 static void resolve_struct_type(Type* type) {
@@ -2216,7 +2235,8 @@ static void resolve_statement(CStatement* node);
 static void resolve_init_decl_for_init(CInitDecl* node) {
     if (node->init->storage_class) {
         raise_runtime_error(
-            "Variable " + em(node->init->name) + " was not declared with automatic linkage in for loop initializer"); // TODO variable_declaration
+            "Variable " + em(node->init->name)
+            + " was not declared with automatic linkage in for loop initializer"); // TODO variable_declaration
     }
     resolve_block_scope_variable_declaration(node->init.get());
 }
@@ -2273,7 +2293,8 @@ static void resolve_goto_statement(CGoto* node) {
 
 static void resolve_label_statement(CLabel* node) {
     if (context->label_set.find(node->target) != context->label_set.end()) {
-        raise_runtime_error("Label " + em(node->target) + " was already declared in this scope"); // TODO statement_label
+        raise_runtime_error(
+            "Label " + em(node->target) + " was already declared in this scope"); // TODO statement_label
     }
     context->label_set.insert(node->target);
 
@@ -2462,7 +2483,8 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for (auto& param : node->params) {
         if (context->scoped_identifier_maps.back().find(param) != context->scoped_identifier_maps.back().end()) {
-            raise_runtime_error("Variable " + param + " was already declared in this scope"); // TODO function_declaration
+            raise_runtime_error(
+                "Variable " + param + " was already declared in this scope"); // TODO function_declaration
         }
         context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);
         param = context->scoped_identifier_maps.back()[param];
@@ -2473,16 +2495,19 @@ static void resolve_params_function_declaration(CFunctionDeclaration* node) {
 static void resolve_function_declaration(CFunctionDeclaration* node) {
     if (!is_file_scope()) {
         if (node->body) {
-            raise_runtime_error("Block scoped function definition " + em(node->name) + " can not be nested"); // TODO function_declaration
+            raise_runtime_error("Block scoped function definition " + em(node->name)
+                                + " can not be nested"); // TODO function_declaration
         }
         else if (node->storage_class && node->storage_class->type() == AST_T::CStatic_t) {
-            raise_runtime_error("Block scoped function definition " + em(node->name) + " can not be static"); // TODO function_declaration
+            raise_runtime_error("Block scoped function definition " + em(node->name)
+                                + " can not be static"); // TODO function_declaration
         }
     }
 
     if (context->external_linkage_scope_map.find(node->name) == context->external_linkage_scope_map.end()) {
         if (context->scoped_identifier_maps.back().find(node->name) != context->scoped_identifier_maps.back().end()) {
-            raise_runtime_error("Function " + em(node->name) + " was already declared in this scope"); // TODO function_declaration
+            raise_runtime_error(
+                "Function " + em(node->name) + " was already declared in this scope"); // TODO function_declaration
         }
         context->external_linkage_scope_map[node->name] = current_scope_depth();
     }
@@ -2520,7 +2545,8 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
     if (context->scoped_identifier_maps.back().find(node->name) != context->scoped_identifier_maps.back().end()
         && !(context->external_linkage_scope_map.find(node->name) != context->external_linkage_scope_map.end()
              && (node->storage_class && node->storage_class->type() == AST_T::CExtern_t))) {
-        raise_runtime_error("Variable " + em(node->name) + " was already declared in this scope"); // TODO variable_declaration
+        raise_runtime_error(
+            "Variable " + em(node->name) + " was already declared in this scope"); // TODO variable_declaration
     }
     else if (node->storage_class && node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);

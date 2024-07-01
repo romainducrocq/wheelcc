@@ -249,7 +249,7 @@ struct CExp : Ast {
 struct CConstant : CExp {
     AST_T type() override;
     CConstant() = default;
-    CConstant(std::shared_ptr<CConst> constant);
+    CConstant(std::shared_ptr<CConst> constant, size_t line);
 
     std::shared_ptr<CConst> constant;
     /*
@@ -260,7 +260,7 @@ struct CConstant : CExp {
 struct CString : CExp {
     AST_T type() override;
     CString() = default;
-    CString(std::shared_ptr<CStringLiteral> literal);
+    CString(std::shared_ptr<CStringLiteral> literal, size_t line);
 
     std::shared_ptr<CStringLiteral> literal;
     /*
@@ -271,7 +271,7 @@ struct CString : CExp {
 struct CVar : CExp {
     AST_T type() override;
     CVar() = default;
-    CVar(TIdentifier name);
+    CVar(TIdentifier name, size_t line);
 
     TIdentifier name;
     /*
@@ -282,7 +282,7 @@ struct CVar : CExp {
 struct CCast : CExp {
     AST_T type() override;
     CCast() = default;
-    CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type);
+    CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type, size_t line);
 
     std::unique_ptr<CExp> exp;
     std::shared_ptr<Type> target_type;
@@ -294,7 +294,7 @@ struct CCast : CExp {
 struct CUnary : CExp {
     AST_T type() override;
     CUnary() = default;
-    CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp);
+    CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp, size_t line);
 
     std::unique_ptr<CUnaryOp> unary_op;
     std::unique_ptr<CExp> exp;
@@ -306,7 +306,8 @@ struct CUnary : CExp {
 struct CBinary : CExp {
     AST_T type() override;
     CBinary() = default;
-    CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right);
+    CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
+        size_t line);
 
     std::unique_ptr<CBinaryOp> binary_op;
     std::unique_ptr<CExp> exp_left;
@@ -319,7 +320,7 @@ struct CBinary : CExp {
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
-    CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right);
+    CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
 
     // Optional
     std::unique_ptr<CExp> exp_left;
@@ -332,7 +333,8 @@ struct CAssignment : CExp {
 struct CConditional : CExp {
     AST_T type() override;
     CConditional() = default;
-    CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right);
+    CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right,
+        size_t line);
 
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> exp_middle;
@@ -345,7 +347,7 @@ struct CConditional : CExp {
 struct CFunctionCall : CExp {
     AST_T type() override;
     CFunctionCall() = default;
-    CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args);
+    CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args, size_t line);
 
     TIdentifier name;
     std::vector<std::unique_ptr<CExp>> args;
@@ -357,7 +359,7 @@ struct CFunctionCall : CExp {
 struct CDereference : CExp {
     AST_T type() override;
     CDereference() = default;
-    CDereference(std::unique_ptr<CExp> exp);
+    CDereference(std::unique_ptr<CExp> exp, size_t line);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -368,7 +370,7 @@ struct CDereference : CExp {
 struct CAddrOf : CExp {
     AST_T type() override;
     CAddrOf() = default;
-    CAddrOf(std::unique_ptr<CExp> exp);
+    CAddrOf(std::unique_ptr<CExp> exp, size_t line);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -379,7 +381,7 @@ struct CAddrOf : CExp {
 struct CSubscript : CExp {
     AST_T type() override;
     CSubscript() = default;
-    CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp);
+    CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp, size_t line);
 
     std::unique_ptr<CExp> primary_exp;
     std::unique_ptr<CExp> subscript_exp;
@@ -391,7 +393,7 @@ struct CSubscript : CExp {
 struct CSizeOf : CExp {
     AST_T type() override;
     CSizeOf() = default;
-    CSizeOf(std::unique_ptr<CExp> exp);
+    CSizeOf(std::unique_ptr<CExp> exp, size_t line);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -402,7 +404,7 @@ struct CSizeOf : CExp {
 struct CSizeOfT : CExp {
     AST_T type() override;
     CSizeOfT() = default;
-    CSizeOfT(std::shared_ptr<Type> target_type);
+    CSizeOfT(std::shared_ptr<Type> target_type, size_t line);
 
     std::shared_ptr<Type> target_type;
     /*
@@ -413,7 +415,7 @@ struct CSizeOfT : CExp {
 struct CDot : CExp {
     AST_T type() override;
     CDot() = default;
-    CDot(TIdentifier member, std::unique_ptr<CExp> structure);
+    CDot(TIdentifier member, std::unique_ptr<CExp> structure, size_t line);
 
     TIdentifier member;
     std::unique_ptr<CExp> structure;
@@ -425,7 +427,7 @@ struct CDot : CExp {
 struct CArrow : CExp {
     AST_T type() override;
     CArrow() = default;
-    CArrow(TIdentifier member, std::unique_ptr<CExp> pointer);
+    CArrow(TIdentifier member, std::unique_ptr<CExp> pointer, size_t line);
 
     TIdentifier member;
     std::unique_ptr<CExp> pointer;

@@ -118,50 +118,50 @@ CFunDeclarator::CFunDeclarator(
     param_list(std::move(param_list)),
     declarator(std::move(declarator)) {}
 
-CConstant::CConstant(std::shared_ptr<CConst> constant) : constant(std::move(constant)) {}
+CConstant::CConstant(std::shared_ptr<CConst> constant, size_t line) : constant(std::move(constant)), line(line) {}
 
-CString::CString(std::shared_ptr<CStringLiteral> literal) : literal(std::move(literal)) {}
+CString::CString(std::shared_ptr<CStringLiteral> literal, size_t line) : literal(std::move(literal)), line(line) {}
 
-CVar::CVar(TIdentifier name) : name(std::move(name)) {}
+CVar::CVar(TIdentifier name, size_t line) : name(std::move(name)), line(line) {}
 
-CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type) :
-    exp(std::move(exp)), target_type(std::move(target_type)) {}
+CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type, size_t line) :
+    exp(std::move(exp)), target_type(std::move(target_type)), line(line) {}
 
-CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp) :
-    unary_op(std::move(unary_op)), exp(std::move(exp)) {}
+CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp, size_t line) :
+    unary_op(std::move(unary_op)), exp(std::move(exp)), line(line) {}
 
-CBinary::CBinary(
-    std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right) :
+CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
+    size_t line) :
     binary_op(std::move(binary_op)),
-    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)), line(line) {}
 
-CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right) :
-    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
+    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)), line(line) {}
 
 CConditional::CConditional(
-    std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right) :
+    std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right, size_t line) :
     condition(std::move(condition)),
-    exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
+    exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)), line(line) {}
 
-CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args) :
-    name(std::move(name)), args(std::move(args)) {}
+CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args, size_t line) :
+    name(std::move(name)), args(std::move(args)), line(line) {}
 
-CDereference::CDereference(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
+CDereference::CDereference(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
 
-CAddrOf::CAddrOf(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
+CAddrOf::CAddrOf(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
 
-CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp) :
-    primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)) {}
+CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp, size_t line) :
+    primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)), line(line) {}
 
-CSizeOf::CSizeOf(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
+CSizeOf::CSizeOf(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
 
-CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type) : target_type(std::move(target_type)) {}
+CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type, size_t line) : target_type(std::move(target_type)), line(line) {}
 
-CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure) :
-    member(std::move(member)), structure(std::move(structure)) {}
+CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure, size_t line) :
+    member(std::move(member)), structure(std::move(structure)), line(line) {}
 
-CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer) :
-    member(std::move(member)), pointer(std::move(pointer)) {}
+CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer, size_t line) :
+    member(std::move(member)), pointer(std::move(pointer)), line(line) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
