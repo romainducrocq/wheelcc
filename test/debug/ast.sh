@@ -2,6 +2,7 @@
 
 function parse () {
     cat ../../include/ast/${1}.hpp \
+        | grep --invert-match "size_t" \
         | grep --invert-match ")" \
         | grep --invert-match "(" \
         | sed "s/nstruction/nstr_uction/g" \

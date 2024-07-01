@@ -243,6 +243,7 @@ struct CExp : Ast {
     CExp() = default;
 
     std::shared_ptr<Type> exp_type;
+    size_t line;
 };
 
 struct CConstant : CExp {
