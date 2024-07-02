@@ -688,14 +688,14 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
 
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
     size_t line = context->peek_token->line;
-    std::unique_ptr<CExp> exp_left_2;
-    std::unique_ptr<CExp> exp_right_2;
+    std::unique_ptr<CExp> exp_left_1;
+    std::unique_ptr<CExp> exp_right_1;
     {
         std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
         std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-        exp_right_2 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
+        exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2), std::move(line));
+    return std::make_unique<CAssignment>(std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
@@ -1583,7 +1583,8 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
         default:
             storage_class = parse_storage_class();
     }
-    parse_process_declarator(parse_declarator().get(), std::move(type_specifier), declarator); // TODO
+    std::unique_ptr<CDeclarator> declarator_1 = parse_declarator();
+    parse_process_declarator(declarator_1.get(), std::move(type_specifier), declarator);
     return storage_class;
 }
 
