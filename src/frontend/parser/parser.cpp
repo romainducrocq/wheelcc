@@ -830,13 +830,14 @@ static std::unique_ptr<CBlock> parse_block();
 static std::unique_ptr<CStatement> parse_statement();
 
 static std::unique_ptr<CReturn> parse_return_statement() {
+    size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp;
     if (peek_next().token_kind != TOKEN_KIND::semicolon) {
         exp = parse_exp(0);
     }
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CReturn>(std::move(exp));
+    return std::make_unique<CReturn>(std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CExpression> parse_expression_statement() {
@@ -871,12 +872,13 @@ static std::unique_ptr<CGoto> parse_goto_statement() {
 }
 
 static std::unique_ptr<CLabel> parse_label_statement() {
+    size_t line = context->peek_token->line;
     TIdentifier target;
     parse_identifier(target, 0);
     pop_next();
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
-    return std::make_unique<CLabel>(std::move(target), std::move(jump_to));
+    return std::make_unique<CLabel>(std::move(target), std::move(jump_to), std::move(line));
 }
 
 static std::unique_ptr<CCompound> parse_compound_statement() {
@@ -926,15 +928,17 @@ static std::unique_ptr<CFor> parse_for_statement() {
 }
 
 static std::unique_ptr<CBreak> parse_break_statement() {
+    size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CBreak>();
+    return std::make_unique<CBreak>(std::move(line));
 }
 
 static std::unique_ptr<CContinue> parse_continue_statement() {
+    size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CContinue>();
+    return std::make_unique<CContinue>(std::move(line));
 }
 
 static std::unique_ptr<CNull> parse_null_statement() {

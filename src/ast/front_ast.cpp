@@ -165,7 +165,7 @@ CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure, size_t line) :
 CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer, size_t line) :
     CExp(line), member(std::move(member)), pointer(std::move(pointer)) {}
 
-CReturn::CReturn(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
+CReturn::CReturn(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
 
 CExpression::CExpression(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 
@@ -174,8 +174,8 @@ CIf::CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then, std:
 
 CGoto::CGoto(TIdentifier target) : target(std::move(target)) {}
 
-CLabel::CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to) :
-    target(std::move(target)), jump_to(std::move(jump_to)) {}
+CLabel::CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to, size_t line) :
+    target(std::move(target)), jump_to(std::move(jump_to)), line(line) {}
 
 CCompound::CCompound(std::unique_ptr<CBlock> block) : block(std::move(block)) {}
 
@@ -193,6 +193,10 @@ CFor::CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std:
 CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init) : init(std::move(init)) {}
 
 CInitExp::CInitExp(std::unique_ptr<CExp> init) : init(std::move(init)) {}
+
+CBreak::CBreak(size_t line) : line(line) {}
+
+CContinue::CContinue(size_t line) : line(line) {}
 
 CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items) : block_items(std::move(block_items)) {}
 

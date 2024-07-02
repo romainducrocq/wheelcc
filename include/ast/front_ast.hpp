@@ -458,10 +458,11 @@ struct CStatement : Ast {
 struct CReturn : CStatement {
     AST_T type() override;
     CReturn() = default;
-    CReturn(std::unique_ptr<CExp> exp);
+    CReturn(std::unique_ptr<CExp> exp, size_t line);
 
     // Optional
     std::unique_ptr<CExp> exp;
+    size_t line;
 };
 
 struct CExpression : CStatement {
@@ -494,10 +495,11 @@ struct CGoto : CStatement {
 struct CLabel : CStatement {
     AST_T type() override;
     CLabel() = default;
-    CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to);
+    CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to, size_t line);
 
     TIdentifier target;
     std::unique_ptr<CStatement> jump_to;
+    size_t line;
 };
 
 struct CBlock;
@@ -546,15 +548,19 @@ struct CFor : CStatement {
 struct CBreak : CStatement {
     AST_T type() override;
     CBreak() = default;
+    CBreak(size_t line);
 
     TIdentifier target;
+    size_t line;
 };
 
 struct CContinue : CStatement {
     AST_T type() override;
     CContinue() = default;
+    CContinue(size_t line);
 
     TIdentifier target;
+    size_t line;
 };
 
 struct CNull : CStatement {
