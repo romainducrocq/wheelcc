@@ -164,7 +164,7 @@ static void is_pointer_valid_type(Pointer* ptr_type) { is_valid_type(ptr_type->r
 
 static void is_array_valid_type(Array* arr_type) {
     if (!is_type_complete(arr_type->elem_type.get())) {
-        raise_runtime_error("Array must be of complete type"); // TODO other_(type)
+        raise_runtime_error("###1 Array must be of complete type"); // TODO other_(type)
     }
     is_valid_type(arr_type->elem_type.get());
 }
@@ -251,7 +251,7 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
 static TLong get_structure_aggregate_type_scale(Structure* struct_type) {
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
         raise_runtime_error(
-            "Structure type " + em(struct_type->tag) + "was not declared in this scope"); // ? TODO other_(type)
+            "###2 Structure type " + em(struct_type->tag) + "was not declared in this scope"); // ? TODO other_(type)
     }
     return frontend->struct_typedef_table[struct_type->tag]->size;
 }
@@ -276,7 +276,7 @@ static TInt get_array_aggregate_type_alignment(Array* arr_type) {
 static TInt get_structure_aggregate_type_alignment(Structure* struct_type) {
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
         raise_runtime_error(
-            "Structure type " + em(struct_type->tag) + "was not declared in this scope"); // TODO other_(type)
+            "###3 Structure type " + em(struct_type->tag) + "was not declared in this scope"); // TODO other_(type)
     }
     return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
@@ -352,7 +352,7 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
              && node_1->exp_type->type() == AST_T::Pointer_t) {
         return node_2->exp_type;
     }
-    raise_runtime_error("Maybe-pointer expressions have incompatible types"); // TODO exp
+    raise_runtime_error("###4 Maybe-pointer expressions have incompatible types"); // TODO exp
 }
 
 static void resolve_struct_type(Type* type);
@@ -393,7 +393,7 @@ static void checktype_string_expression(CString* node) {
 
 static void checktype_var_expression(CVar* node) {
     if (frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
-        raise_runtime_error("Function " + em(node->name) + " was used as a variable"); // TODO exp
+        raise_runtime_error("###5 Function " + em(node->name) + " was used as a variable"); // TODO exp
     }
     node->exp_type = frontend->symbol_table[node->name]->type_t;
 }
@@ -402,16 +402,18 @@ static void checktype_cast_expression(CCast* node) {
     resolve_struct_type(node->target_type.get());
     if (node->target_type->type() != AST_T::Void_t) {
         if (node->exp->exp_type->type() == AST_T::Double_t && node->target_type->type() == AST_T::Pointer_t) {
-            raise_runtime_error("Types can not be converted from floating-point number to pointer type"); // TODO exp
+            raise_runtime_error(
+                "###6 Types can not be converted from floating-point number to pointer type"); // TODO exp
         }
         else if (node->exp->exp_type->type() == AST_T::Pointer_t && node->target_type->type() == AST_T::Double_t) {
-            raise_runtime_error("Types can not be converted from pointer type to floating-point number"); // TODO exp
+            raise_runtime_error(
+                "###7 Types can not be converted from pointer type to floating-point number"); // TODO exp
         }
         else if (!is_type_scalar(node->exp->exp_type.get())) {
-            raise_runtime_error("Types can not be converted from non-scalar type"); // TODO exp
+            raise_runtime_error("###8 Types can not be converted from non-scalar type"); // TODO exp
         }
         else if (!is_type_scalar(node->target_type.get())) {
-            raise_runtime_error("Types can not be converted to non-scalar and non-void type"); // TODO exp
+            raise_runtime_error("###9 Types can not be converted to non-scalar and non-void type"); // TODO exp
         }
     }
     is_valid_type(node->target_type.get());
@@ -443,12 +445,12 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
              && exp_type->type() == AST_T::Pointer_t) {
         return cast_expression(std::move(node), exp_type);
     }
-    raise_runtime_error("Assignment expressions have incompatible types"); // TODO exp
+    raise_runtime_error("###10 Assignment expressions have incompatible types"); // TODO exp
 }
 
 static void checktype_unary_not_expression(CUnary* node) {
     if (!is_type_scalar(node->exp->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("unary operator") + " can not be used on "
+        raise_runtime_error("###11 An error occurred in type checking, " + em("unary operator") + " can not be used on "
                             + em("non-scalar type")); // TODO exp
     }
 
@@ -457,14 +459,14 @@ static void checktype_unary_not_expression(CUnary* node) {
 
 static void checktype_unary_complement_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("unary operator") + " can not be used on "
+        raise_runtime_error("###12 An error occurred in type checking, " + em("unary operator") + " can not be used on "
                             + em("non-arithmetic type")); // TODO exp
     }
 
     switch (node->exp->exp_type->type()) {
         case AST_T::Double_t:
-            raise_runtime_error("An error occurred in type checking, " + em("unary operator") + " can not be used on "
-                                + em("floating-point number")); // TODO exp
+            raise_runtime_error("###13 An error occurred in type checking, " + em("unary operator")
+                                + " can not be used on " + em("floating-point number")); // TODO exp
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t: {
@@ -480,7 +482,7 @@ static void checktype_unary_complement_expression(CUnary* node) {
 
 static void checktype_unary_negate_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("unary operator") + " can not be used on "
+        raise_runtime_error("###14 An error occurred in type checking, " + em("unary operator") + " can not be used on "
                             + em("non-arithmetic type")); // TODO exp
     }
 
@@ -539,8 +541,9 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
         return;
     }
     else {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used with "
-                            + em("non-arithmetic") + " and " + em("pointer to incomplete type")); // TODO exp
+        raise_runtime_error("###15 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used with " + em("non-arithmetic") + " and "
+                            + em("pointer to incomplete type")); // TODO exp
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -575,14 +578,15 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
             return;
         }
         else {
-            raise_runtime_error("An error occurred in type checking, " + em("binary operator")
+            raise_runtime_error("###16 An error occurred in type checking, " + em("binary operator")
                                 + " can not be used with " + em("non-integer") + " or " + em("constant null pointer")
                                 + " and " + em("pointer to incomplete type")); // TODO exp
         }
     }
     else {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used with "
-                            + em("non-integer") + " or " + em("constant null pointer") + " and " // TODO exp
+        raise_runtime_error("###17 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used with " + em("non-integer") + " or " + em("constant null pointer")
+                            + " and " // TODO exp
                             + em("pointer to incomplete type"));
     }
 
@@ -597,8 +601,8 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
 
 static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error("###18 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-arithmetic type")); // TODO exp
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -613,8 +617,8 @@ static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node
 
 static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error("###19 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-arithmetic type")); // TODO exp
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -626,19 +630,19 @@ static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* no
     }
     node->exp_type = std::move(common_type);
     if (node->exp_type->type() == AST_T::Double_t) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("floating-point number")); // TODO exp
+        raise_runtime_error("###20 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("floating-point number")); // TODO exp
     }
 }
 
 static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error("###21 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-arithmetic type")); // TODO exp
     }
     else if (!is_type_integer(node->exp_right->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-integer type")); // TODO exp
+        raise_runtime_error("###22 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-integer type")); // TODO exp
     }
 
     if (is_type_character(node->exp_left->exp_type.get())) {
@@ -650,8 +654,8 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     }
     node->exp_type = node->exp_left->exp_type;
     if (node->exp_type->type() == AST_T::Double_t) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("floating-point number")); // TODO exp
+        raise_runtime_error("###23 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("floating-point number")); // TODO exp
     }
 }
 
@@ -664,8 +668,8 @@ static void checktype_binary_arithmetic_bitshift_right_expression(CBinary* node)
 
 static void checktype_binary_logical_expression(CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error("###24 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-scalar type")); // TODO exp
     }
 
     node->exp_type = std::make_shared<Int>();
@@ -681,8 +685,8 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
     else {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error("###25 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-scalar type")); // TODO exp
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -696,8 +700,8 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
 
 static void checktype_binary_comparison_relational_expression(CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error("###26 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used on " + em("non-scalar type")); // TODO exp
     }
 
     else if (node->exp_left->exp_type->type() == AST_T::Pointer_t
@@ -706,9 +710,9 @@ static void checktype_binary_comparison_relational_expression(CBinary* node) {
                      && is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get())))
                  || (node->exp_right->type() == AST_T::CConstant_t
                      && is_constant_null_pointer(static_cast<CConstant*>(node->exp_right.get()))))) {
-        raise_runtime_error("An error occurred in type checking, " + em("binary operator") + " can not be used with "
-                            + em("non-pointer type") + " or " + em("constant null pointer") + " and "
-                            + em("pointer type")); // TODO exp
+        raise_runtime_error("###27 An error occurred in type checking, " + em("binary operator")
+                            + " can not be used with " + em("non-pointer type") + " or " + em("constant null pointer")
+                            + " and " + em("pointer type")); // TODO exp
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -767,10 +771,10 @@ static void checktype_binary_expression(CBinary* node) {
 static void checktype_assignment_expression(CAssignment* node) {
     if (node->exp_left) {
         if (node->exp_left->exp_type->type() == AST_T::Void_t) {
-            raise_runtime_error("Assignment left expression can not have void type"); // TODO exp
+            raise_runtime_error("###28 Assignment left expression can not have void type"); // TODO exp
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
-            raise_runtime_error("Assignment left expression is an invalid lvalue"); // TODO exp
+            raise_runtime_error("###29 Assignment left expression is an invalid lvalue"); // TODO exp
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
@@ -779,14 +783,14 @@ static void checktype_assignment_expression(CAssignment* node) {
     }
     else {
         if (node->exp_right->type() != AST_T::CBinary_t) {
-            raise_runtime_error("Right expression is an invalid compound assignment"); // TODO exp
+            raise_runtime_error("###30 Right expression is an invalid compound assignment"); // TODO exp
         }
         CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
         if (exp_left->type() == AST_T::CCast_t) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();
         }
         if (!is_exp_lvalue(exp_left)) {
-            raise_runtime_error("Left expression is an invalid lvalue"); // TODO exp
+            raise_runtime_error("###31 Left expression is an invalid lvalue"); // TODO exp
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
@@ -797,7 +801,7 @@ static void checktype_assignment_expression(CAssignment* node) {
 
 static void checktype_conditional_expression(CConditional* node) {
     if (!is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("Ternary operator must have a conditional expression of scalar type"); // TODO exp
+        raise_runtime_error("###32 Ternary operator must have a conditional expression of scalar type"); // TODO exp
     }
     else if (node->exp_middle->exp_type->type() == AST_T::Void_t
              && node->exp_right->exp_type->type() == AST_T::Void_t) {
@@ -807,7 +811,7 @@ static void checktype_conditional_expression(CConditional* node) {
     else if (node->exp_middle->exp_type->type() == AST_T::Structure_t
              || node->exp_right->exp_type->type() == AST_T::Structure_t) {
         if (!is_same_type(node->exp_middle->exp_type.get(), node->exp_right->exp_type.get())) {
-            raise_runtime_error("Ternary operator must have matching structure type expressions"); // TODO exp
+            raise_runtime_error("###33 Ternary operator must have matching structure type expressions"); // TODO exp
         }
         node->exp_type = node->exp_middle->exp_type;
         return;
@@ -823,10 +827,10 @@ static void checktype_conditional_expression(CConditional* node) {
     }
     else if (node->exp_middle->exp_type->type() == AST_T::Void_t
              || node->exp_right->exp_type->type() == AST_T::Void_t) {
-        raise_runtime_error("Ternary operator must have both void type expressions"); // TODO exp
+        raise_runtime_error("###34 Ternary operator must have both void type expressions"); // TODO exp
     }
     else {
-        raise_runtime_error("Ternary operator must have both scalar type expressions"); // TODO exp
+        raise_runtime_error("###35 Ternary operator must have both scalar type expressions"); // TODO exp
     }
     if (!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
         node->exp_middle = cast_expression(std::move(node->exp_middle), common_type);
@@ -839,12 +843,13 @@ static void checktype_conditional_expression(CConditional* node) {
 
 static void checktype_function_call_expression(CFunctionCall* node) {
     if (frontend->symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
-        raise_runtime_error("Variable " + em(node->name) + " was used as a function"); // TODO exp
+        raise_runtime_error("###36 Variable " + em(node->name) + " was used as a function"); // TODO exp
     }
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     if (fun_type->param_types.size() != node->args.size()) {
-        raise_runtime_error("Function " + em(node->name) + " has " + em(std::to_string(fun_type->param_types.size()))
-                            + " arguments but was called with " + em(std::to_string(node->args.size()))); // TODO exp
+        raise_runtime_error("###37 Function " + em(node->name) + " has "
+                            + em(std::to_string(fun_type->param_types.size())) + " arguments but was called with "
+                            + em(std::to_string(node->args.size()))); // TODO exp
     }
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
@@ -856,14 +861,14 @@ static void checktype_function_call_expression(CFunctionCall* node) {
 
 static void checktype_dereference_expression(CDereference* node) {
     if (node->exp->exp_type->type() != AST_T::Pointer_t) {
-        raise_runtime_error("Non-pointer type can not be de-referenced"); // TODO exp
+        raise_runtime_error("###38 Non-pointer type can not be de-referenced"); // TODO exp
     }
     node->exp_type = static_cast<Pointer*>(node->exp->exp_type.get())->ref_type;
 }
 
 static void checktype_addrof_expression(CAddrOf* node) {
     if (!is_exp_lvalue(node->exp.get())) {
-        raise_runtime_error("Non-lvalue type can not be addressed"); // TODO exp
+        raise_runtime_error("###39 Non-lvalue type can not be addressed"); // TODO exp
     }
     std::shared_ptr<Type> ref_type = node->exp->exp_type;
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
@@ -890,7 +895,7 @@ static void checktype_subscript_expression(CSubscript* node) {
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
     else {
-        raise_runtime_error("Subscript must consist of an integer operand and a pointer to complete type "
+        raise_runtime_error("###40 Subscript must consist of an integer operand and a pointer to complete type "
                             "operand"); // TODO exp
     }
     node->exp_type = std::move(ref_type);
@@ -898,7 +903,7 @@ static void checktype_subscript_expression(CSubscript* node) {
 
 static void checktype_sizeof_expression(CSizeOf* node) {
     if (!is_type_complete(node->exp->exp_type.get())) {
-        raise_runtime_error("Can not get the size of an incomplete type"); // TODO exp
+        raise_runtime_error("###41 Can not get the size of an incomplete type"); // TODO exp
     }
     node->exp_type = std::make_shared<ULong>();
 }
@@ -906,7 +911,7 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 static void checktype_sizeoft_expression(CSizeOfT* node) {
     resolve_struct_type(node->target_type.get());
     if (!is_type_complete(node->target_type.get())) {
-        raise_runtime_error("Can not get the size of an incomplete type"); // TODO exp
+        raise_runtime_error("###42 Can not get the size of an incomplete type"); // TODO exp
     }
     is_valid_type(node->target_type.get());
     node->exp_type = std::make_shared<ULong>();
@@ -914,31 +919,32 @@ static void checktype_sizeoft_expression(CSizeOfT* node) {
 
 static void checktype_dot_expression(CDot* node) {
     if (node->structure->exp_type->type() != AST_T::Structure_t) {
-        raise_runtime_error("Can not access member on expression with non-structure type"); // TODO exp
+        raise_runtime_error("###43 Can not access member on expression with non-structure type"); // TODO exp
     }
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
     if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
         == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
-        raise_runtime_error("Structure does not have a member named " + em(node->member)); // TODO exp
+        raise_runtime_error("###44 Structure does not have a member named " + em(node->member)); // TODO exp
     }
     node->exp_type = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
 
 static void checktype_arrow_expression(CArrow* node) {
     if (node->pointer->exp_type->type() != AST_T::Pointer_t) {
-        raise_runtime_error("Can not access member on expression with non-pointer to structure type"); // TODO exp
+        raise_runtime_error("###45 Can not access member on expression with non-pointer to structure type"); // TODO exp
     }
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
     if (ptr_type->ref_type->type() != AST_T::Structure_t) {
-        raise_runtime_error("Can not access member on expression with non-pointer to structure type"); // TODO exp
+        raise_runtime_error("###46 Can not access member on expression with non-pointer to structure type"); // TODO exp
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error("Can not access member of incomplete structure type " + em(struct_type->tag)); // TODO exp
+        raise_runtime_error(
+            "###47 Can not access member of incomplete structure type " + em(struct_type->tag)); // TODO exp
     }
     else if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
              == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
-        raise_runtime_error("Structure does not have a member named " + em(node->member)); // TODO exp
+        raise_runtime_error("###48 Structure does not have a member named " + em(node->member)); // TODO exp
     }
     node->exp_type = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
@@ -961,7 +967,7 @@ static std::unique_ptr<CAddrOf> checktype_array_aggregate_typed_expression(std::
 
 static std::unique_ptr<CExp> checktype_structure_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
     if (!is_struct_type_complete(static_cast<Structure*>(node->exp_type.get()))) {
-        raise_runtime_error("Expression was declared with incomplete structure type"); // TODO exp
+        raise_runtime_error("###49 Expression was declared with incomplete structure type"); // TODO exp
     }
 
     std::unique_ptr<CExp> exp = std::move(node);
@@ -983,12 +989,12 @@ static void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[context->function_definition_name]->type_t.get());
     if (fun_type->ret_type->type() == AST_T::Void_t) {
         if (node->exp) {
-            raise_runtime_error("Void type function can not return a value"); // TODO exp
+            raise_runtime_error("###50 Void type function can not return a value"); // TODO exp
         }
         return;
     }
     else if (!node->exp) {
-        raise_runtime_error("Non-void type function must return a value"); // TODO statement_return
+        raise_runtime_error("###51 Non-void type function must return a value"); // TODO statement_return
     }
 
     else if (!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
@@ -999,38 +1005,38 @@ static void checktype_return_statement(CReturn* node) {
 
 static void checktype_if_statement(CIf* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("if statement") + " can not be used on "
+        raise_runtime_error("###52 An error occurred in type checking, " + em("if statement") + " can not be used on "
                             + em("non-scalar type")); // TODO exp
     }
 }
 
 static void checktype_while_statement(CWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("while statement") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error("###53 An error occurred in type checking, " + em("while statement")
+                            + " can not be used on " + em("non-scalar type")); // TODO exp
     }
 }
 
 static void checktype_do_while_statement(CDoWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("do while statement") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error("###54 An error occurred in type checking, " + em("do while statement")
+                            + " can not be used on " + em("non-scalar type")); // TODO exp
     }
 }
 
 static void checktype_for_statement(CFor* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("An error occurred in type checking, " + em("for statement") + " can not be used on "
+        raise_runtime_error("###55 An error occurred in type checking, " + em("for statement") + " can not be used on "
                             + em("non-scalar type")); // TODO exp
     }
 }
 
 static void checktype_bound_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if (!is_type_character(arr_type->elem_type.get())) {
-        raise_runtime_error("Array of non-character type was initialized with string literal"); // TODO exp
+        raise_runtime_error("###56 Array of non-character type was initialized with string literal"); // TODO exp
     }
     else if (node->literal->value.size() > static_cast<size_t>(arr_type->size)) {
-        raise_runtime_error("String literal of size " + em(std::to_string(node->literal->value.size()))
+        raise_runtime_error("###57 String literal of size " + em(std::to_string(node->literal->value.size()))
                             + " was initialized with " + em(std::to_string(arr_type->size))
                             + " initializers"); // TODO exp
     }
@@ -1125,14 +1131,14 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
 
 static void checktype_bound_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
     if (node->initializers.size() > static_cast<size_t>(arr_type->size)) {
-        raise_runtime_error("Array of size " + em(std::to_string(arr_type->size)) + " was initialized with "
+        raise_runtime_error("###58 Array of size " + em(std::to_string(arr_type->size)) + " was initialized with "
                             + em(std::to_string(node->initializers.size())) + " initializers"); // TODO exp
     }
 }
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
     if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
-        raise_runtime_error("Structure with "
+        raise_runtime_error("###59 Structure with "
                             + em(std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size()))
                             + " members was initialized with " + em(std::to_string(node->initializers.size()))
                             + " initializers"); // TODO exp
@@ -1166,12 +1172,12 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
 
     switch (fun_type->ret_type->type()) {
         case AST_T::Array_t:
-            raise_runtime_error(
-                "Function " + em(node->name) + " was declared with array return type"); // TODO function_declaration
+            raise_runtime_error("###60 Function " + em(node->name)
+                                + " was declared with array return type"); // TODO function_declaration
         case AST_T::Structure_t: {
             if (node->body && !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
                 raise_runtime_error(
-                    "Function " + em(node->name)
+                    "###61 Function " + em(node->name)
                     + " was declared with incomplete structure return type"); // TODO function_declaration
             }
             break;
@@ -1186,7 +1192,7 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
     for (size_t i = 0; i < node->params.size(); ++i) {
         resolve_struct_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Void_t) {
-            raise_runtime_error("Function parameters can not have void type"); // TODO function_declaration
+            raise_runtime_error("###62 Function parameters can not have void type"); // TODO function_declaration
         }
         is_valid_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Array_t) {
@@ -1198,7 +1204,8 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
             if (fun_type->param_types[i]->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[i].get()))) {
                 raise_runtime_error(
-                    "Function parameter was declared with incomplete structure type"); // TODO function_declaration
+                    "###63 Function parameter was declared with incomplete structure type"); // TODO
+                                                                                             // function_declaration
             }
             std::shared_ptr<Type> type_t = fun_type->param_types[i];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
@@ -1210,7 +1217,7 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
     if (node->fun_type->type() == AST_T::Void_t) {
-        raise_runtime_error("Function declaration can not have void type"); // TODO function_declaration
+        raise_runtime_error("###64 Function declaration can not have void type"); // TODO function_declaration
     }
 
     bool is_defined = context->function_definition_set.find(node->name) != context->function_definition_set.end();
@@ -1222,19 +1229,19 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         if (!(frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t
                 && fun_type->param_types.size() == node->params.size()
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
-            raise_runtime_error("Function declaration " + em(node->name)
+            raise_runtime_error("###65 Function declaration " + em(node->name)
                                 + " was redeclared with conflicting type"); // TODO function_declaration
         }
 
         else if (is_defined && node->body) {
             raise_runtime_error(
-                "Function declaration " + em(node->name) + " was already defined"); // TODO function_declaration
+                "###66 Function declaration " + em(node->name) + " was already defined"); // TODO function_declaration
         }
 
         FunAttr* fun_attrs = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get());
         if (!is_global && fun_attrs->is_global) {
-            raise_runtime_error(
-                "Static function " + em(node->name) + " was already defined non-static"); // TODO function_declaration
+            raise_runtime_error("###67 Static function " + em(node->name)
+                                + " was already defined non-static"); // TODO function_declaration
         }
         is_global = fun_attrs->is_global;
     }
@@ -1600,12 +1607,14 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
                 case AST_T::CConstChar_t:
                 case AST_T::CConstDouble_t:
                 case AST_T::CConstUChar_t:
-                    raise_runtime_error("Static pointer type can only be initialized to integer constant"); // TODO exp
+                    raise_runtime_error(
+                        "###68 Static pointer type can only be initialized to integer constant"); // TODO exp
                 default:
                     RAISE_INTERNAL_ERROR;
             }
             if (value != 0ul) {
-                raise_runtime_error("Static pointer type can only be initialized to null integer constant"); // TODO exp
+                raise_runtime_error(
+                    "###69 Static pointer type can only be initialized to null integer constant"); // TODO exp
             }
             push_zero_init_static_init(8l);
             break;
@@ -1617,7 +1626,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
     if (static_ptr_type->ref_type->type() != AST_T::Char_t) {
-        raise_runtime_error("Pointer of non-character type was initialized with string literal"); // TODO exp
+        raise_runtime_error("###70 Pointer of non-character type was initialized with string literal"); // TODO exp
     }
 
     TIdentifier static_constant_label;
@@ -1690,7 +1699,7 @@ static void checktype_single_init_initializer_static_init(CSingleInit* node, Typ
             checktype_string_initializer_static_init(static_cast<CString*>(node->exp.get()), static_init_type);
             break;
         default:
-            raise_runtime_error("Variable with static linkage was initialized to a non-constant"); // TODO exp
+            raise_runtime_error("###71 Variable with static linkage was initialized to a non-constant"); // TODO exp
     }
 }
 
@@ -1732,7 +1741,7 @@ static void checktype_compound_init_initializer_static_init(CCompoundInit* node,
             checktype_structure_compound_init_initializer_static_init(node, static_cast<Structure*>(static_init_type));
             break;
         default:
-            raise_runtime_error("Compound initializer can not be initialized with scalar type"); // TODO exp
+            raise_runtime_error("###72 Compound initializer can not be initialized with scalar type"); // TODO exp
     }
 }
 
@@ -1762,7 +1771,7 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
-        raise_runtime_error("Variable declaration can not have void type"); // TODO variable_declaration
+        raise_runtime_error("###73 Variable declaration can not have void type"); // TODO variable_declaration
     }
     is_valid_type(node->var_type.get());
 
@@ -1772,7 +1781,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     if (node->init) {
         if (node->var_type->type() == AST_T::Structure_t
             && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-            raise_runtime_error("Non-extern file scope variable " + em(node->name)
+            raise_runtime_error("###74 Non-extern file scope variable " + em(node->name)
                                 + " was declared with incomplete structure type"); // TODO variable_declaration
         }
         initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
@@ -1784,7 +1793,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         else {
             if (node->var_type->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-                raise_runtime_error("Non-extern file scope variable " + em(node->name)
+                raise_runtime_error("###75 Non-extern file scope variable " + em(node->name)
                                     + " was declared with incomplete structure type"); // TODO variable_declaration
             }
             initial_value = std::make_shared<Tentative>();
@@ -1793,7 +1802,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
     if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            raise_runtime_error("File scope variable " + em(node->name)
+            raise_runtime_error("###76 File scope variable " + em(node->name)
                                 + " was redeclared with conflicting type"); // TODO variable_declaration
         }
 
@@ -1802,13 +1811,13 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             is_global = global_var_attrs->is_global;
         }
         else if (is_global != global_var_attrs->is_global) {
-            raise_runtime_error("File scope variable " + em(node->name)
+            raise_runtime_error("###77 File scope variable " + em(node->name)
                                 + " was redeclared with conflicting linkage"); // TODO variable_declaration
         }
 
         if (global_var_attrs->init->type() == AST_T::Initial_t) {
             if (initial_value->type() == AST_T::Initial_t) {
-                raise_runtime_error("File scope variable " + em(node->name)
+                raise_runtime_error("###78 File scope variable " + em(node->name)
                                     + " was defined with conflicting linkage"); // TODO variable_declaration
             }
             else {
@@ -1826,12 +1835,12 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
 static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->init) {
-        raise_runtime_error("Block scope variable " + em(node->name)
+        raise_runtime_error("###79 Block scope variable " + em(node->name)
                             + " with external linkage was defined"); // TODO variable_declaration
     }
     else if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            raise_runtime_error("Block scope variable " + em(node->name)
+            raise_runtime_error("###80 Block scope variable " + em(node->name)
                                 + " was redeclared with conflicting type"); // TODO variable_declaration
         }
         return;
@@ -1850,7 +1859,7 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error("Non-extern file scope variable " + em(node->name)
+        raise_runtime_error("###81 Non-extern file scope variable " + em(node->name)
                             + " was declared with incomplete structure type"); // TODO variable_declaration
     }
 
@@ -1871,7 +1880,7 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error("Non-extern file scope variable " + em(node->name)
+        raise_runtime_error("###82 Non-extern file scope variable " + em(node->name)
                             + " was declared with incomplete structure type"); // TODO variable_declaration
     }
 
@@ -1884,7 +1893,7 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
-        raise_runtime_error("Variable declaration can not have void type"); // TODO variable_declaration
+        raise_runtime_error("###83 Variable declaration can not have void type"); // TODO variable_declaration
     }
     is_valid_type(node->var_type.get());
 
@@ -1909,7 +1918,8 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for (size_t i = 0; i < node->members.size(); ++i) {
         for (size_t j = i + 1; j < node->members.size(); ++j) {
             if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
-                raise_runtime_error("Structure member was already declared in this scope"); // TODO struct_declaration
+                raise_runtime_error(
+                    "###84 Structure member was already declared in this scope"); // TODO struct_declaration
             }
         }
         if (node->members[i].get()->member_type->type() == AST_T::FunType_t) {
@@ -1917,7 +1927,8 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         }
         resolve_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
-            raise_runtime_error("Structure member must be declared with a complete type"); // TODO struct_declaration
+            raise_runtime_error(
+                "###85 Structure member must be declared with a complete type"); // TODO struct_declaration
         }
         is_valid_type(node->members[i].get()->member_type.get());
     }
@@ -1926,7 +1937,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
         raise_runtime_error(
-            "Structure type " + em(node->tag) + " was already declared in this scope"); // TODO struct_declaration
+            "###86 Structure type " + em(node->tag) + " was already declared in this scope"); // TODO struct_declaration
     }
     TInt alignment = 0;
     TLong size = 0l;
@@ -1983,15 +1994,15 @@ static void annotate_for_loop(CFor* node) {
 
 static void annotate_break_loop(CBreak* node) {
     if (context->loop_labels.empty()) {
-        raise_runtime_error(
-            "An error occurred in loop annotation, " + em("break") + "is outside of loop"); // TODO statement_break
+        raise_runtime_error("###87 An error occurred in loop annotation, " + em("break")
+                            + "is outside of loop"); // TODO statement_break
     }
     node->target = context->loop_labels.back();
 }
 
 static void annotate_continue_loop(CContinue* node) {
     if (context->loop_labels.empty()) {
-        raise_runtime_error("An error occurred in loop annotation, " + em("continue")
+        raise_runtime_error("###88 An error occurred in loop annotation, " + em("continue")
                             + "is outside of loop"); // TODO statement_continue
     }
     node->target = context->loop_labels.back();
@@ -2026,7 +2037,7 @@ static void exit_scope() {
 static void resolve_label() {
     for (const auto& target : context->goto_map) {
         if (context->label_set.find(target.first) == context->label_set.end()) {
-            raise_runtime_error("An error occurred in variable resolution, goto " + em(target.first)
+            raise_runtime_error("###89 An error occurred in variable resolution, goto " + em(target.first)
                                 + " has no target label"); // TODO function_declaration
         }
     }
@@ -2048,7 +2059,7 @@ static void resolve_structure_struct_type(Structure* struct_type) {
         }
     }
     raise_runtime_error(
-        "Structure type " + em(struct_type->tag) + " was not declared in this scope"); // TODO other_(type)
+        "###90 Structure type " + em(struct_type->tag) + " was not declared in this scope"); // TODO other_(type)
 }
 
 static void resolve_struct_type(Type* type) {
@@ -2083,7 +2094,7 @@ static void resolve_var_expression(CVar* node) {
             goto Lelse;
         }
     }
-    raise_runtime_error("Variable " + em(node->name) + " was not declared in this scope"); // TODO exp
+    raise_runtime_error("###91 Variable " + em(node->name) + " was not declared in this scope"); // TODO exp
 Lelse:
 
     checktype_var_expression(node);
@@ -2127,7 +2138,7 @@ static void resolve_function_call_expression(CFunctionCall* node) {
             goto Lelse;
         }
     }
-    raise_runtime_error("Function " + em(node->name) + " was not declared in this scope"); // TODO exp
+    raise_runtime_error("###92 Function " + em(node->name) + " was not declared in this scope"); // TODO exp
 Lelse:
 
     for (size_t i = 0; i < node->args.size(); ++i) {
@@ -2237,7 +2248,7 @@ static void resolve_statement(CStatement* node);
 static void resolve_init_decl_for_init(CInitDecl* node) {
     if (node->init->storage_class) {
         raise_runtime_error(
-            "Variable " + em(node->init->name)
+            "###93 Variable " + em(node->init->name)
             + " was not declared with automatic linkage in for loop initializer"); // TODO variable_declaration
     }
     resolve_block_scope_variable_declaration(node->init.get());
@@ -2296,7 +2307,7 @@ static void resolve_goto_statement(CGoto* node) {
 static void resolve_label_statement(CLabel* node) {
     if (context->label_set.find(node->target) != context->label_set.end()) {
         raise_runtime_error(
-            "Label " + em(node->target) + " was already declared in this scope"); // TODO statement_label
+            "###94 Label " + em(node->target) + " was already declared in this scope"); // TODO statement_label
     }
     context->label_set.insert(node->target);
 
@@ -2465,7 +2476,7 @@ static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_p
             resolve_structure_compound_init_initializer(node, static_cast<Structure*>(init_type.get()), init_type);
             break;
         default:
-            raise_runtime_error("Compound initializer can not be initialized with scalar type"); // TODO exp
+            raise_runtime_error("###95 Compound initializer can not be initialized with scalar type"); // TODO exp
     }
 }
 
@@ -2486,7 +2497,7 @@ static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for (auto& param : node->params) {
         if (context->scoped_identifier_maps.back().find(param) != context->scoped_identifier_maps.back().end()) {
             raise_runtime_error(
-                "Variable " + param + " was already declared in this scope"); // TODO function_declaration
+                "###96 Variable " + param + " was already declared in this scope"); // TODO function_declaration
         }
         context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);
         param = context->scoped_identifier_maps.back()[param];
@@ -2497,19 +2508,19 @@ static void resolve_params_function_declaration(CFunctionDeclaration* node) {
 static void resolve_function_declaration(CFunctionDeclaration* node) {
     if (!is_file_scope()) {
         if (node->body) {
-            raise_runtime_error("Block scoped function definition " + em(node->name)
+            raise_runtime_error("###97 Block scoped function definition " + em(node->name)
                                 + " can not be nested"); // TODO function_declaration
         }
         else if (node->storage_class && node->storage_class->type() == AST_T::CStatic_t) {
-            raise_runtime_error("Block scoped function definition " + em(node->name)
+            raise_runtime_error("###98 Block scoped function definition " + em(node->name)
                                 + " can not be static"); // TODO function_declaration
         }
     }
 
     if (context->external_linkage_scope_map.find(node->name) == context->external_linkage_scope_map.end()) {
         if (context->scoped_identifier_maps.back().find(node->name) != context->scoped_identifier_maps.back().end()) {
-            raise_runtime_error(
-                "Function " + em(node->name) + " was already declared in this scope"); // TODO function_declaration
+            raise_runtime_error("###99 Function " + em(node->name)
+                                + " was already declared in this scope"); // TODO function_declaration
         }
         context->external_linkage_scope_map[node->name] = current_scope_depth();
     }
@@ -2548,7 +2559,7 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
         && !(context->external_linkage_scope_map.find(node->name) != context->external_linkage_scope_map.end()
              && (node->storage_class && node->storage_class->type() == AST_T::CExtern_t))) {
         raise_runtime_error(
-            "Variable " + em(node->name) + " was already declared in this scope"); // TODO variable_declaration
+            "###100 Variable " + em(node->name) + " was already declared in this scope"); // TODO variable_declaration
     }
     else if (node->storage_class && node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);
