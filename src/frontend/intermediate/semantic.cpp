@@ -446,7 +446,12 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
              && exp_type->type() == AST_T::Pointer_t) {
         return cast_expression(std::move(node), exp_type);
     }
-    raise_runtime_error("###10 Assignment expressions have incompatible types"); // TODO exp
+    else {
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_convert_from_to, em(get_type_hr(node->exp_type.get())).c_str(),
+                em(get_type_hr(exp_type.get())).c_str()),
+            node->line);
+    }
 }
 
 static void checktype_unary_not_expression(CUnary* node) {
