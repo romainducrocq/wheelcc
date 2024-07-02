@@ -419,7 +419,8 @@ static void checktype_cast_expression(CCast* node) {
 }
 
 static std::unique_ptr<CCast> cast_expression(std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
-    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type);
+    size_t line = node->line;
+    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type, std::move(line));
     checktype_cast_expression(exp.get());
     return exp;
 }
@@ -952,7 +953,8 @@ static std::unique_ptr<CAddrOf> checktype_array_aggregate_typed_expression(std::
         std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
         node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
     }
-    std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node));
+    size_t line = node->line;
+    std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node), std::move(line));
     addrof->exp_type = addrof->exp->exp_type;
     return addrof;
 }
@@ -1086,7 +1088,7 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
             default:
                 RAISE_INTERNAL_ERROR;
         }
-        exp = std::make_unique<CConstant>(std::move(constant));
+        exp = std::make_unique<CConstant>(std::move(constant), -1); // TODO line
     }
     return std::make_unique<CSingleInit>(std::move(exp));
 }

@@ -241,6 +241,7 @@ struct CFunDeclarator : CDeclarator {
 struct CExp : Ast {
     AST_T type() override;
     CExp() = default;
+    CExp(size_t line);
 
     std::shared_ptr<Type> exp_type;
     size_t line;

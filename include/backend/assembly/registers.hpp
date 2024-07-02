@@ -9,8 +9,7 @@
 
 // Registers
 
-enum REGISTER_KIND
-{
+enum REGISTER_KIND {
     Ax,
     Cx,
     Dx,

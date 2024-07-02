@@ -10,8 +10,7 @@
 
 // Errors
 
-enum ERROR_MESSAGE
-{
+enum ERROR_MESSAGE {
     // Main
     no_option_code,
     invalid_option_code,

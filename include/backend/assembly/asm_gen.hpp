@@ -15,8 +15,7 @@
 
 // Assembly generation
 
-enum STRUCT_8B_CLS
-{
+enum STRUCT_8B_CLS {
     INTEGER,
     SSE,
     MEMORY

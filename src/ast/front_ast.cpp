@@ -118,50 +118,52 @@ CFunDeclarator::CFunDeclarator(
     param_list(std::move(param_list)),
     declarator(std::move(declarator)) {}
 
-CConstant::CConstant(std::shared_ptr<CConst> constant, size_t line) : constant(std::move(constant)), line(line) {}
+CExp::CExp(size_t line) : line(line) {}
 
-CString::CString(std::shared_ptr<CStringLiteral> literal, size_t line) : literal(std::move(literal)), line(line) {}
+CConstant::CConstant(std::shared_ptr<CConst> constant, size_t line) : CExp(line), constant(std::move(constant)) {}
 
-CVar::CVar(TIdentifier name, size_t line) : name(std::move(name)), line(line) {}
+CString::CString(std::shared_ptr<CStringLiteral> literal, size_t line) : CExp(line), literal(std::move(literal)) {}
+
+CVar::CVar(TIdentifier name, size_t line) : CExp(line), name(std::move(name)) {}
 
 CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type, size_t line) :
-    exp(std::move(exp)), target_type(std::move(target_type)), line(line) {}
+    CExp(line), exp(std::move(exp)), target_type(std::move(target_type)) {}
 
 CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp, size_t line) :
-    unary_op(std::move(unary_op)), exp(std::move(exp)), line(line) {}
+    CExp(line), unary_op(std::move(unary_op)), exp(std::move(exp)) {}
 
 CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
     size_t line) :
-    binary_op(std::move(binary_op)),
-    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)), line(line) {}
+    CExp(line),
+    binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CAssignment::CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
-    exp_left(std::move(exp_left)), exp_right(std::move(exp_right)), line(line) {}
+    CExp(line), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CConditional::CConditional(
     std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right, size_t line) :
-    condition(std::move(condition)),
-    exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)), line(line) {}
+    CExp(line),
+    condition(std::move(condition)), exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
 
 CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args, size_t line) :
-    name(std::move(name)), args(std::move(args)), line(line) {}
+    CExp(line), name(std::move(name)), args(std::move(args)) {}
 
-CDereference::CDereference(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
+CDereference::CDereference(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(std::move(exp)) {}
 
-CAddrOf::CAddrOf(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
+CAddrOf::CAddrOf(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(std::move(exp)) {}
 
 CSubscript::CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp, size_t line) :
-    primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)), line(line) {}
+    CExp(line), primary_exp(std::move(primary_exp)), subscript_exp(std::move(subscript_exp)) {}
 
-CSizeOf::CSizeOf(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(line) {}
+CSizeOf::CSizeOf(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(std::move(exp)) {}
 
-CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type, size_t line) : target_type(std::move(target_type)), line(line) {}
+CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type, size_t line) : CExp(line), target_type(std::move(target_type)) {}
 
 CDot::CDot(TIdentifier member, std::unique_ptr<CExp> structure, size_t line) :
-    member(std::move(member)), structure(std::move(structure)), line(line) {}
+    CExp(line), member(std::move(member)), structure(std::move(structure)) {}
 
 CArrow::CArrow(TIdentifier member, std::unique_ptr<CExp> pointer, size_t line) :
-    member(std::move(member)), pointer(std::move(pointer)), line(line) {}
+    CExp(line), member(std::move(member)), pointer(std::move(pointer)) {}
 
 CReturn::CReturn(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 

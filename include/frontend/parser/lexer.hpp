@@ -10,8 +10,7 @@
 
 // Lexer
 
-enum TOKEN_KIND
-{
+enum TOKEN_KIND {
     assignment_bitshiftleft,
     assignment_bitshiftright,
 

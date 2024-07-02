@@ -1119,7 +1119,7 @@ static void represent_single_init_instructions(CSingleInit* node, Type* init_typ
         std::shared_ptr<TacValue> dst;
         {
             TIdentifier name = symbol;
-            std::unique_ptr<CExp> exp = std::make_unique<CVar>(std::move(name));
+            std::unique_ptr<CExp> exp = std::make_unique<CVar>(std::move(name), -1);
             dst = represent_value(exp.get());
         }
         push_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
