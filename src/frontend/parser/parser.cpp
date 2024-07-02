@@ -433,28 +433,33 @@ static std::vector<std::unique_ptr<CExp>> parse_argument_list() {
 }
 
 static std::unique_ptr<CConstant> parse_constant_factor() {
+    size_t line = context->peek_token->line;
     std::shared_ptr<CConst> constant = parse_constant();
-    return std::make_unique<CConstant>(std::move(constant));
+    return std::make_unique<CConstant>(std::move(constant), std::move(line));
 }
 
 static std::unique_ptr<CConstant> parse_unsigned_constant_factor() {
+    size_t line = context->peek_token->line;
     std::shared_ptr<CConst> constant = parse_unsigned_constant();
-    return std::make_unique<CConstant>(std::move(constant));
+    return std::make_unique<CConstant>(std::move(constant), std::move(line));
 }
 
 static std::unique_ptr<CString> parse_string_literal_factor() {
+    size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<CStringLiteral> literal = parse_string_literal();
-    return std::make_unique<CString>(std::move(literal));
+    return std::make_unique<CString>(std::move(literal), std::move(line));
 }
 
 static std::unique_ptr<CVar> parse_var_factor() {
+    size_t line = context->peek_token->line;
     TIdentifier name;
     parse_identifier(name, 0);
-    return std::make_unique<CVar>(std::move(name));
+    return std::make_unique<CVar>(std::move(name), std::move(line));
 }
 
 static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
+    size_t line = context->peek_token->line;
     TIdentifier name;
     parse_identifier(name, 0);
     pop_next();
@@ -463,7 +468,7 @@ static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
         args = parse_argument_list();
     }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    return std::make_unique<CFunctionCall>(std::move(name), std::move(args));
+    return std::make_unique<CFunctionCall>(std::move(name), std::move(args), std::move(line));
 }
 
 static std::unique_ptr<CExp> parse_inner_exp_factor() {
@@ -474,42 +479,48 @@ static std::unique_ptr<CExp> parse_inner_exp_factor() {
 }
 
 static std::unique_ptr<CSubscript> parse_subscript_factor(std::unique_ptr<CExp> primary_exp) {
+    size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> subscript_exp = parse_exp(0);
     expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
-    return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp));
+    return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), std::move(line));
 }
 
 static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
+    size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier member;
     parse_identifier(member, 0);
-    return std::make_unique<CDot>(std::move(member), std::move(structure));
+    return std::make_unique<CDot>(std::move(member), std::move(structure), std::move(line));
 }
 
 static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer) {
+    size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier member;
     parse_identifier(member, 0);
-    return std::make_unique<CArrow>(std::move(member), std::move(pointer));
+    return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
 
 static std::unique_ptr<CUnary> parse_unary_factor() {
+    size_t line = context->peek_token->line;
     std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-    return std::make_unique<CUnary>(std::move(unary_op), std::move(exp));
+    return std::make_unique<CUnary>(std::move(unary_op), std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CDereference> parse_dereference_factor() {
+    size_t line = context->next_token->line;
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-    return std::make_unique<CDereference>(std::move(exp));
+    return std::make_unique<CDereference>(std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CAddrOf> parse_addrof_factor() {
+    size_t line = context->next_token->line;
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-    return std::make_unique<CAddrOf>(std::move(exp));
+    return std::make_unique<CAddrOf>(std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CExp> parse_pointer_unary_factor() {
@@ -526,15 +537,17 @@ static std::unique_ptr<CExp> parse_pointer_unary_factor() {
 }
 
 static std::unique_ptr<CSizeOfT> parse_sizeoft_factor() {
+    size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    return std::make_unique<CSizeOfT>(std::move(target_type));
+    return std::make_unique<CSizeOfT>(std::move(target_type), std::move(line));
 }
 
 static std::unique_ptr<CSizeOf> parse_sizeof_factor() {
+    size_t line = context->peek_token->line;
     std::unique_ptr<CExp> exp = parse_unary_exp_factor();
-    return std::make_unique<CSizeOf>(std::move(exp));
+    return std::make_unique<CSizeOf>(std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
@@ -558,11 +571,12 @@ static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
 }
 
 static std::unique_ptr<CCast> parse_cast_factor() {
+    size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-    return std::make_unique<CCast>(std::move(exp), std::move(target_type));
+    return std::make_unique<CCast>(std::move(exp), std::move(target_type), std::move(line));
 }
 
 // <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
@@ -666,34 +680,39 @@ static std::unique_ptr<CExp> parse_cast_exp_factor() {
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-    return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right));
+    return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right), std::move(line));
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    size_t line = context->peek_token->line;
     std::unique_ptr<CExp> exp_left_2;
     std::unique_ptr<CExp> exp_right_2;
     {
         std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
         std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-        exp_right_2 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right));
+        exp_right_2 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2));
+    return std::make_unique<CAssignment>(std::move(exp_left_2), std::move(exp_right_2), std::move(line));
 }
 
 static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    size_t line = context->peek_token->line;
     std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
     std::unique_ptr<CExp> exp_right = parse_exp(precedence + 1);
-    return std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right));
+    return std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), std::move(line));
 }
 
 static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp_middle = parse_exp(0);
     expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-    return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right));
+    return std::make_unique<CConditional>(
+        std::move(exp_left), std::move(exp_middle), std::move(exp_right), std::move(line));
 }
 
 static int32_t parse_token_precedence(TOKEN_KIND token_kind) {
