@@ -1483,6 +1483,7 @@ static std::unique_ptr<CDeclarator> parse_declarator() {
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& declarator) {
+    size_t line = context->next_token->line;
     std::unique_ptr<CBlock> body;
     if (peek_next().token_kind == TOKEN_KIND::semicolon) {
         pop_next();
@@ -1492,21 +1493,22 @@ static std::unique_ptr<CFunctionDeclaration> parse_function_declaration(
         body = parse_block();
     }
     return std::make_unique<CFunctionDeclaration>(std::move(declarator.name), std::move(declarator.params),
-        std::move(body), std::move(declarator.derived_type), std::move(storage_class));
+        std::move(body), std::move(declarator.derived_type), std::move(storage_class), std::move(line));
 }
 
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
 // variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
 static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& declarator) {
+    size_t line = context->next_token->line;
     std::unique_ptr<CInitializer> init;
     if (peek_next().token_kind == TOKEN_KIND::assignment_simple) {
         pop_next();
         init = parse_initializer();
     }
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CVariableDeclaration>(
-        std::move(declarator.name), std::move(init), std::move(declarator.derived_type), std::move(storage_class));
+    return std::make_unique<CVariableDeclaration>(std::move(declarator.name), std::move(init),
+        std::move(declarator.derived_type), std::move(storage_class), std::move(line));
 }
 
 // <member-declaration> ::= { <type-specifier> }+ <declarator> ";"
@@ -1578,7 +1580,7 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
         default:
             storage_class = parse_storage_class();
     }
-    parse_process_declarator(parse_declarator().get(), std::move(type_specifier), declarator);
+    parse_process_declarator(parse_declarator().get(), std::move(type_specifier), declarator); // TODO
     return storage_class;
 }
 

@@ -714,7 +714,7 @@ struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
     CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params, std::unique_ptr<CBlock> body,
-        std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class);
+        std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class, size_t line);
 
     TIdentifier name;
     std::vector<TIdentifier> params;
@@ -723,6 +723,7 @@ struct CFunctionDeclaration : Ast {
     std::shared_ptr<Type> fun_type;
     // Optional
     std::unique_ptr<CStorageClass> storage_class;
+    size_t line;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -732,13 +733,14 @@ struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
     CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer> init, std::shared_ptr<Type> var_type,
-        std::unique_ptr<CStorageClass> storage_class);
+        std::unique_ptr<CStorageClass> storage_class, size_t line);
 
     TIdentifier name;
     // Optional
     std::unique_ptr<CInitializer> init;
     std::shared_ptr<Type> var_type;
     std::unique_ptr<CStorageClass> storage_class;
+    size_t line;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
