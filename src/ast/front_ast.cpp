@@ -209,11 +209,13 @@ CSingleInit::CSingleInit(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers) :
     initializers(std::move(initializers)) {}
 
-CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type) :
-    member_name(std::move(member_name)), member_type(std::move(member_type)) {}
+CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type, size_t line) :
+    member_name(std::move(member_name)), member_type(std::move(member_type)), line(line) {}
 
-CStructDeclaration::CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members) :
-    tag(std::move(tag)), members(std::move(members)) {}
+CStructDeclaration::CStructDeclaration(
+    TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members, size_t line) :
+    tag(std::move(tag)),
+    members(std::move(members)), line(line) {}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
     std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class,

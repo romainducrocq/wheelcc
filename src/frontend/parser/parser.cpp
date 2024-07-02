@@ -1525,13 +1525,16 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
             GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_fun_type, em(declarator.name).c_str()),
             context->next_token->line);
     }
+    size_t line = context->next_token->line;
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CMemberDeclaration>(std::move(declarator.name), std::move(declarator.derived_type));
+    return std::make_unique<CMemberDeclaration>(
+        std::move(declarator.name), std::move(declarator.derived_type), std::move(line));
 }
 
 // <struct-declaration> ::= "struct" <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
 // struct_declaration = StructDeclaration(identifier, member_declaration*)
 static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
+    size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier tag;
@@ -1547,7 +1550,7 @@ static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
         pop_next();
     }
     expect_next_is(*context->next_token, TOKEN_KIND::semicolon);
-    return std::make_unique<CStructDeclaration>(std::move(tag), std::move(members));
+    return std::make_unique<CStructDeclaration>(std::move(tag), std::move(members), std::move(line));
 }
 
 static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(

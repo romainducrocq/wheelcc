@@ -689,10 +689,11 @@ struct CCompoundInit : CInitializer {
 struct CMemberDeclaration : Ast {
     AST_T type() override;
     CMemberDeclaration() = default;
-    CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type);
+    CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type, size_t line);
 
     TIdentifier member_name;
     std::shared_ptr<Type> member_type;
+    size_t line;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -701,10 +702,11 @@ struct CMemberDeclaration : Ast {
 struct CStructDeclaration : Ast {
     AST_T type() override;
     CStructDeclaration() = default;
-    CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members);
+    CStructDeclaration(TIdentifier tag, std::vector<std::unique_ptr<CMemberDeclaration>> members, size_t line);
 
     TIdentifier tag;
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
+    size_t line;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
