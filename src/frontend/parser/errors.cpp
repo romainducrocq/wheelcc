@@ -2,6 +2,8 @@
 
 #include "util/throw.hpp"
 
+#include "ast/ast.hpp"
+
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
@@ -160,6 +162,65 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
     }
 }
 
+static std::string get_name_hr(const TIdentifier& name) {
+    std::string name_hr = name;
+    while (name_hr.back() != '.') {
+        name_hr.pop_back();
+    }
+    name_hr.pop_back();
+    return name_hr;
+}
+
+std::string get_type_hr(Type* type);
+
+static std::string get_pointer_type_hr(Pointer* ptr_type) {
+    std::string type_hr = get_type_hr(ptr_type->ref_type.get());
+    return type_hr + "*";
+}
+
+static std::string get_array_type_hr(Array* arr_type) {
+    std::string type_hr = get_type_hr(arr_type->elem_type.get());
+    return type_hr + "[" + std::to_string(arr_type->size) + "]";
+}
+
+static std::string get_structure_type_hr(Structure* struct_type) {
+    std::string type_hr = get_name_hr(struct_type->tag);
+    return "struct " + type_hr;
+}
+
+std::string get_type_hr(Type* type) {
+    switch (type->type()) {
+        case AST_T::Char_t:
+            return "char";
+        case AST_T::SChar_t:
+            return "signed char";
+        case AST_T::UChar_t:
+            return "unsigned char";
+        case AST_T::Int_t:
+            return "int";
+        case AST_T::Long_t:
+            return "long";
+        case AST_T::UInt_t:
+            return "unsigned int";
+        case AST_T::ULong_t:
+            return "unsigned long";
+        case AST_T::Double_t:
+            return "double";
+        case AST_T::Void_t:
+            return "void";
+        case AST_T::FunType_t:
+            return "function";
+        case AST_T::Pointer_t:
+            return get_pointer_type_hr(static_cast<Pointer*>(type));
+        case AST_T::Array_t:
+            return get_array_type_hr(static_cast<Array*>(type));
+        case AST_T::Structure_t:
+            return get_structure_type_hr(static_cast<Structure*>(type));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 std::string get_error_message(ERROR_MESSAGE message) {
     switch (message) {
         case ERROR_MESSAGE::no_option_code:
@@ -312,6 +373,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "field %s declared with non-automatic storage";
         case ERROR_MESSAGE::invalid_member_decl_fun_type:
             return "field %s declared as a function";
+        case ERROR_MESSAGE::joint_pointer_type_mismatch:
+            return "###4 pointer type mismatch %s and %s in expression";
         default:
             RAISE_INTERNAL_ERROR;
     }

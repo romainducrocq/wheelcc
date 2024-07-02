@@ -10,6 +10,8 @@
 #include "ast/front_ast.hpp"
 #include "ast/front_symt.hpp"
 
+#include "frontend/parser/errors.hpp"
+
 #include "frontend/intermediate/names.hpp"
 #include "frontend/intermediate/semantic.hpp"
 
@@ -352,7 +354,12 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
              && node_1->exp_type->type() == AST_T::Pointer_t) {
         return node_2->exp_type;
     }
-    raise_runtime_error("###4 Maybe-pointer expressions have incompatible types"); // TODO exp
+    else {
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::joint_pointer_type_mismatch,
+                em(get_type_hr(node_1->exp_type.get())).c_str(), em(get_type_hr(node_2->exp_type.get())).c_str()),
+            node_1->line);
+    }
 }
 
 static void resolve_struct_type(Type* type);

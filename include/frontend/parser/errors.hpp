@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <string>
 
+#include "ast/front_symt.hpp"
+
 #include "frontend/parser/lexer.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,10 +50,14 @@ enum ERROR_MESSAGE {
     invalid_simple_declarator,
     invalid_param_list,
     invalid_member_decl_storage,
-    invalid_member_decl_fun_type
+    invalid_member_decl_fun_type,
+
+    // Semantic
+    joint_pointer_type_mismatch
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
+std::string get_type_hr(Type* type);
 std::string get_error_message(ERROR_MESSAGE message);
 template <typename... TArgs> std::string get_error_message(ERROR_MESSAGE message, TArgs&&... args) {
     char buffer[4096];
