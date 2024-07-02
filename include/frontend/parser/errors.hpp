@@ -53,7 +53,9 @@ enum ERROR_MESSAGE {
     invalid_member_decl_fun_type,
 
     // Semantic
-    joint_pointer_type_mismatch
+    joint_pointer_type_mismatch,
+    function_used_as_variable,
+    cannot_convert_from_to
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

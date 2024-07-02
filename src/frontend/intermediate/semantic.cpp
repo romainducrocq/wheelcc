@@ -400,28 +400,22 @@ static void checktype_string_expression(CString* node) {
 
 static void checktype_var_expression(CVar* node) {
     if (frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
-        raise_runtime_error("###5 Function " + em(node->name) + " was used as a variable"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::function_used_as_variable, em(node->name).c_str()), node->line);
     }
     node->exp_type = frontend->symbol_table[node->name]->type_t;
 }
 
 static void checktype_cast_expression(CCast* node) {
     resolve_struct_type(node->target_type.get());
-    if (node->target_type->type() != AST_T::Void_t) {
-        if (node->exp->exp_type->type() == AST_T::Double_t && node->target_type->type() == AST_T::Pointer_t) {
-            raise_runtime_error(
-                "###6 Types can not be converted from floating-point number to pointer type"); // TODO exp
-        }
-        else if (node->exp->exp_type->type() == AST_T::Pointer_t && node->target_type->type() == AST_T::Double_t) {
-            raise_runtime_error(
-                "###7 Types can not be converted from pointer type to floating-point number"); // TODO exp
-        }
-        else if (!is_type_scalar(node->exp->exp_type.get())) {
-            raise_runtime_error("###8 Types can not be converted from non-scalar type"); // TODO exp
-        }
-        else if (!is_type_scalar(node->target_type.get())) {
-            raise_runtime_error("###9 Types can not be converted to non-scalar and non-void type"); // TODO exp
-        }
+    if (node->target_type->type() != AST_T::Void_t
+        && ((node->exp->exp_type->type() == AST_T::Double_t && node->target_type->type() == AST_T::Pointer_t)
+            || (node->exp->exp_type->type() == AST_T::Pointer_t && node->target_type->type() == AST_T::Double_t)
+            || !is_type_scalar(node->exp->exp_type.get()) || !is_type_scalar(node->target_type.get()))) {
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_convert_from_to, em(get_type_hr(node->exp->exp_type.get())).c_str(),
+                em(get_type_hr(node->target_type.get())).c_str()),
+            node->line);
     }
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;

@@ -375,6 +375,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "field %s declared as a function";
         case ERROR_MESSAGE::joint_pointer_type_mismatch:
             return "###4 pointer type mismatch %s and %s in expression";
+        case ERROR_MESSAGE::function_used_as_variable:
+            return "###5 function %s used as a variable";
+        case ERROR_MESSAGE::cannot_convert_from_to:
+            return "###6 cannot convert from %s to %s";
         default:
             RAISE_INTERNAL_ERROR;
     }
