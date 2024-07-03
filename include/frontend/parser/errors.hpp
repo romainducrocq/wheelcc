@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <string>
 
+#include "ast/front_ast.hpp"
 #include "ast/front_symt.hpp"
 
 #include "frontend/parser/lexer.hpp"
@@ -55,11 +56,13 @@ enum ERROR_MESSAGE {
     // Semantic
     joint_pointer_type_mismatch,
     function_used_as_variable,
-    cannot_convert_from_to
+    cannot_convert_from_to,
+    cannot_apply_unop_on_type
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_type_hr(Type* type);
+std::string get_unary_op_hr(CUnaryOp* node);
 std::string get_error_message(ERROR_MESSAGE message);
 template <typename... TArgs> std::string get_error_message(ERROR_MESSAGE message, TArgs&&... args) {
     char buffer[4096];

@@ -456,8 +456,10 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
 
 static void checktype_unary_not_expression(CUnary* node) {
     if (!is_type_scalar(node->exp->exp_type.get())) {
-        raise_runtime_error("###11 An error occurred in type checking, " + em("unary operator") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_unop_on_type,
+                em(get_unary_op_hr(node->unary_op.get())).c_str(), em(get_type_hr(node->exp->exp_type.get())).c_str()),
+            node->line);
     }
 
     node->exp_type = std::make_shared<Int>();
@@ -465,14 +467,18 @@ static void checktype_unary_not_expression(CUnary* node) {
 
 static void checktype_unary_complement_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        raise_runtime_error("###12 An error occurred in type checking, " + em("unary operator") + " can not be used on "
-                            + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_unop_on_type,
+                em(get_unary_op_hr(node->unary_op.get())).c_str(), em(get_type_hr(node->exp->exp_type.get())).c_str()),
+            node->line);
     }
 
     switch (node->exp->exp_type->type()) {
         case AST_T::Double_t:
-            raise_runtime_error("###13 An error occurred in type checking, " + em("unary operator")
-                                + " can not be used on " + em("floating-point number")); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_unop_on_type,
+                                            em(get_unary_op_hr(node->unary_op.get())).c_str(),
+                                            em(get_type_hr(node->exp->exp_type.get())).c_str()),
+                node->line);
         case AST_T::Char_t:
         case AST_T::SChar_t:
         case AST_T::UChar_t: {
@@ -488,8 +494,10 @@ static void checktype_unary_complement_expression(CUnary* node) {
 
 static void checktype_unary_negate_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        raise_runtime_error("###14 An error occurred in type checking, " + em("unary operator") + " can not be used on "
-                            + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_unop_on_type,
+                em(get_unary_op_hr(node->unary_op.get())).c_str(), em(get_type_hr(node->exp->exp_type.get())).c_str()),
+            node->line);
     }
 
     switch (node->exp->exp_type->type()) {

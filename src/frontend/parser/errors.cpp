@@ -221,6 +221,19 @@ std::string get_type_hr(Type* type) {
     }
 }
 
+std::string get_unary_op_hr(CUnaryOp* node) {
+    switch (node->type()) {
+        case AST_T::CComplement_t:
+            return "~";
+        case AST_T::CNegate_t:
+            return "-";
+        case AST_T::CNot_t:
+            return "!";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 std::string get_error_message(ERROR_MESSAGE message) {
     switch (message) {
         case ERROR_MESSAGE::no_option_code:
@@ -379,6 +392,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###5 function %s used as a variable";
         case ERROR_MESSAGE::cannot_convert_from_to:
             return "###6 cannot convert from %s to %s";
+        case ERROR_MESSAGE::cannot_apply_unop_on_type:
+            return "###11 cannot apply unary operator %s on type %s";
         default:
             RAISE_INTERNAL_ERROR;
     }
