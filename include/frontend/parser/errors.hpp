@@ -13,6 +13,7 @@
 
 // Errors
 
+// TODO clean error message enum
 enum ERROR_MESSAGE {
     // Main
     no_option_code,
@@ -59,7 +60,9 @@ enum ERROR_MESSAGE {
     cannot_convert_from_to,
     cannot_apply_unop_on_type,
     cannot_apply_binop_on_type,
-    cannot_apply_binop_on_types
+    cannot_apply_binop_on_types,
+    wrong_lhs_assignment_type,
+    invalid_lvalue_lhs_assignment
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

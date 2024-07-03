@@ -803,10 +803,12 @@ static void checktype_binary_expression(CBinary* node) {
 static void checktype_assignment_expression(CAssignment* node) {
     if (node->exp_left) {
         if (node->exp_left->exp_type->type() == AST_T::Void_t) {
-            raise_runtime_error("###28 Assignment left expression can not have void type"); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_lhs_assignment_type,
+                                            em(get_type_hr(node->exp_left->exp_type.get())).c_str()),
+                node->line);
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
-            raise_runtime_error("###29 Assignment left expression is an invalid lvalue"); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_lhs_assignment), node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
@@ -815,14 +817,14 @@ static void checktype_assignment_expression(CAssignment* node) {
     }
     else {
         if (node->exp_right->type() != AST_T::CBinary_t) {
-            raise_runtime_error("###30 Right expression is an invalid compound assignment"); // TODO exp
+            RAISE_INTERNAL_ERROR;
         }
         CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
         if (exp_left->type() == AST_T::CCast_t) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();
         }
         if (!is_exp_lvalue(exp_left)) {
-            raise_runtime_error("###31 Left expression is an invalid lvalue"); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_lhs_assignment), node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);

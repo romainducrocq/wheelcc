@@ -443,6 +443,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###13 cannot apply binary operator %s on type %s";
         case ERROR_MESSAGE::cannot_apply_binop_on_types:
             return "###12 cannot apply binary operator %s on types %s and %s";
+        case ERROR_MESSAGE::wrong_lhs_assignment_type:
+            return "###28 cannot have type %s lhs-expression in assignment";
+        case ERROR_MESSAGE::invalid_lvalue_lhs_assignment:
+            return "###29 invalid lvalue lhs-expression in assignment";
         default:
             RAISE_INTERNAL_ERROR;
     }
