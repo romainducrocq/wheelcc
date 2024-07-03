@@ -555,9 +555,11 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
         return;
     }
     else {
-        raise_runtime_error("###15 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used with " + em("non-arithmetic") + " and "
-                            + em("pointer to incomplete type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -592,16 +594,19 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
             return;
         }
         else {
-            raise_runtime_error("###16 An error occurred in type checking, " + em("binary operator")
-                                + " can not be used with " + em("non-integer") + " or " + em("constant null pointer")
-                                + " and " + em("pointer to incomplete type")); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                            em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                            em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                            em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+                node->line);
         }
     }
     else {
-        raise_runtime_error("###17 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used with " + em("non-integer") + " or " + em("constant null pointer")
-                            + " and " // TODO exp
-                            + em("pointer to incomplete type"));
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -615,8 +620,11 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
 
 static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
-        raise_runtime_error("###18 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -631,8 +639,11 @@ static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node
 
 static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
-        raise_runtime_error("###19 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-arithmetic type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -644,22 +655,23 @@ static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* no
     }
     node->exp_type = std::move(common_type);
     if (node->exp_type->type() == AST_T::Double_t) {
-        raise_runtime_error("###20 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("floating-point number")); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_type,
+                em(get_binary_op_hr(node->binary_op.get())).c_str(), em(get_type_hr(node->exp_type.get())).c_str()),
+            node->line);
     }
 }
 
 static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
-    if (!is_type_arithmetic(node->exp_left->exp_type.get())) {
-        raise_runtime_error("###21 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-arithmetic type")); // TODO exp
-    }
-    else if (!is_type_integer(node->exp_right->exp_type.get())) {
-        raise_runtime_error("###22 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-integer type")); // TODO exp
+    if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_integer(node->exp_right->exp_type.get())) {
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
-    if (is_type_character(node->exp_left->exp_type.get())) {
+    else if (is_type_character(node->exp_left->exp_type.get())) {
         std::shared_ptr<Type> left_type = std::make_shared<Int>();
         node->exp_left = cast_expression(std::move(node->exp_left), left_type);
     }
@@ -668,8 +680,10 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     }
     node->exp_type = node->exp_left->exp_type;
     if (node->exp_type->type() == AST_T::Double_t) {
-        raise_runtime_error("###23 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("floating-point number")); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_type,
+                em(get_binary_op_hr(node->binary_op.get())).c_str(), em(get_type_hr(node->exp_type.get())).c_str()),
+            node->line);
     }
 }
 
@@ -682,8 +696,11 @@ static void checktype_binary_arithmetic_bitshift_right_expression(CBinary* node)
 
 static void checktype_binary_logical_expression(CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
-        raise_runtime_error("###24 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     node->exp_type = std::make_shared<Int>();
@@ -699,8 +716,11 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
     else {
-        raise_runtime_error("###25 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
@@ -713,20 +733,18 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
 }
 
 static void checktype_binary_comparison_relational_expression(CBinary* node) {
-    if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
-        raise_runtime_error("###26 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used on " + em("non-scalar type")); // TODO exp
-    }
-
-    else if (node->exp_left->exp_type->type() == AST_T::Pointer_t
-             && (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())
-                 || (node->exp_left->type() == AST_T::CConstant_t
-                     && is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get())))
-                 || (node->exp_right->type() == AST_T::CConstant_t
-                     && is_constant_null_pointer(static_cast<CConstant*>(node->exp_right.get()))))) {
-        raise_runtime_error("###27 An error occurred in type checking, " + em("binary operator")
-                            + " can not be used with " + em("non-pointer type") + " or " + em("constant null pointer")
-                            + " and " + em("pointer type")); // TODO exp
+    if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())
+        || (node->exp_left->exp_type->type() == AST_T::Pointer_t
+            && (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())
+                || (node->exp_left->type() == AST_T::CConstant_t
+                    && is_constant_null_pointer(static_cast<CConstant*>(node->exp_left.get())))
+                || (node->exp_right->type() == AST_T::CConstant_t
+                    && is_constant_null_pointer(static_cast<CConstant*>(node->exp_right.get())))))) {
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_apply_binop_on_types,
+                                        em(get_binary_op_hr(node->binary_op.get())).c_str(),
+                                        em(get_type_hr(node->exp_left->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());

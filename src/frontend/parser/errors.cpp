@@ -234,6 +234,51 @@ std::string get_unary_op_hr(CUnaryOp* node) {
     }
 }
 
+std::string get_binary_op_hr(CBinaryOp* node) {
+    switch (node->type()) {
+        case CAdd_t:
+            return "+";
+        case CSubtract_t:
+            return "-";
+        case CMultiply_t:
+            return "*";
+        case CDivide_t:
+            return "/";
+        case CRemainder_t:
+            return "%";
+        case CBitAnd_t:
+            return "&";
+        case CBitOr_t:
+            return "|";
+        case CBitXor_t:
+            return "^";
+        case CBitShiftLeft_t:
+            return "<<";
+        case CBitShiftRight_t:
+            return ">>";
+        case CBitShrArithmetic_t:
+            return ">>";
+        case CAnd_t:
+            return "&&";
+        case COr_t:
+            return "||";
+        case CEqual_t:
+            return "==";
+        case CNotEqual_t:
+            return "!=";
+        case CLessThan_t:
+            return "<";
+        case CLessOrEqual_t:
+            return "<=";
+        case CGreaterThan_t:
+            return ">";
+        case CGreaterOrEqual_t:
+            return ">=";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 std::string get_error_message(ERROR_MESSAGE message) {
     switch (message) {
         case ERROR_MESSAGE::no_option_code:
@@ -394,6 +439,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###6 cannot convert from %s to %s";
         case ERROR_MESSAGE::cannot_apply_unop_on_type:
             return "###11 cannot apply unary operator %s on type %s";
+        case ERROR_MESSAGE::cannot_apply_binop_on_type:
+            return "###13 cannot apply binary operator %s on type %s";
+        case ERROR_MESSAGE::cannot_apply_binop_on_types:
+            return "###12 cannot apply binary operator %s on types %s and %s";
         default:
             RAISE_INTERNAL_ERROR;
     }
