@@ -835,7 +835,9 @@ static void checktype_assignment_expression(CAssignment* node) {
 
 static void checktype_conditional_expression(CConditional* node) {
     if (!is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("###32 Ternary operator must have a conditional expression of scalar type"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_cond_type_conditional,
+                                        em(get_type_hr(node->condition->exp_type.get())).c_str()),
+            node->line);
     }
     else if (node->exp_middle->exp_type->type() == AST_T::Void_t
              && node->exp_right->exp_type->type() == AST_T::Void_t) {
@@ -845,7 +847,10 @@ static void checktype_conditional_expression(CConditional* node) {
     else if (node->exp_middle->exp_type->type() == AST_T::Structure_t
              || node->exp_right->exp_type->type() == AST_T::Structure_t) {
         if (!is_same_type(node->exp_middle->exp_type.get(), node->exp_right->exp_type.get())) {
-            raise_runtime_error("###33 Ternary operator must have matching structure type expressions"); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::conditional_type_mismatch,
+                                            em(get_type_hr(node->exp_middle->exp_type.get())).c_str(),
+                                            em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+                node->line);
         }
         node->exp_type = node->exp_middle->exp_type;
         return;
@@ -859,12 +864,11 @@ static void checktype_conditional_expression(CConditional* node) {
              || node->exp_right->exp_type->type() == AST_T::Pointer_t) {
         common_type = get_joint_pointer_type(node->exp_middle.get(), node->exp_right.get());
     }
-    else if (node->exp_middle->exp_type->type() == AST_T::Void_t
-             || node->exp_right->exp_type->type() == AST_T::Void_t) {
-        raise_runtime_error("###34 Ternary operator must have both void type expressions"); // TODO exp
-    }
     else {
-        raise_runtime_error("###35 Ternary operator must have both scalar type expressions"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::conditional_type_mismatch,
+                                        em(get_type_hr(node->exp_middle->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->exp_right->exp_type.get())).c_str()),
+            node->line);
     }
     if (!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
         node->exp_middle = cast_expression(std::move(node->exp_middle), common_type);

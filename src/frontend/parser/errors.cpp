@@ -436,7 +436,7 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::function_used_as_variable:
             return "###5 function %s used as a variable";
         case ERROR_MESSAGE::cannot_convert_from_to:
-            return "###6 cannot convert from %s to %s";
+            return "###6 cannot convert from type %s to %s";
         case ERROR_MESSAGE::cannot_apply_unop_on_type:
             return "###11 cannot apply unary operator %s on type %s";
         case ERROR_MESSAGE::cannot_apply_binop_on_type:
@@ -447,6 +447,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###28 cannot have type %s lhs-expression in assignment";
         case ERROR_MESSAGE::invalid_lvalue_lhs_assignment:
             return "###29 invalid lvalue lhs-expression in assignment";
+        case ERROR_MESSAGE::wrong_cond_type_conditional:
+            return "###32 cannot have type %s condition in conditional expression";
+        case ERROR_MESSAGE::conditional_type_mismatch:
+            return "###33 type mismatch %s and %s in conditional expression";
         default:
             RAISE_INTERNAL_ERROR;
     }

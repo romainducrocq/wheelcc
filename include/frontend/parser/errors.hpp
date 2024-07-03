@@ -62,7 +62,9 @@ enum ERROR_MESSAGE {
     cannot_apply_binop_on_type,
     cannot_apply_binop_on_types,
     wrong_lhs_assignment_type,
-    invalid_lvalue_lhs_assignment
+    invalid_lvalue_lhs_assignment,
+    wrong_cond_type_conditional,
+    conditional_type_mismatch
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
