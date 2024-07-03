@@ -429,19 +429,19 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::cannot_convert_from_to:
             return "###6 cannot convert from type %s to %s";
         case ERROR_MESSAGE::cannot_apply_unop_on_type:
-            return "###11 cannot apply unary operator %s on type %s";
+            return "###11 cannot apply unary %s on type %s";
         case ERROR_MESSAGE::cannot_apply_binop_on_type:
-            return "###13 cannot apply binary operator %s on type %s";
+            return "###13 cannot apply binary %s on type %s";
         case ERROR_MESSAGE::cannot_apply_binop_on_types:
-            return "###12 cannot apply binary operator %s on types %s and %s";
+            return "###12 cannot apply binary %s on types %s and %s";
         case ERROR_MESSAGE::wrong_lhs_assignment_type:
-            return "###28 cannot have type %s lhs-expression in assignment";
+            return "###28 cannot assign to lhs-operand type %s";
         case ERROR_MESSAGE::invalid_lvalue_lhs_assignment:
-            return "###29 invalid lvalue lhs-expression cannot be assigned to";
+            return "###29 assignment requires lvalue lhs-operand";
         case ERROR_MESSAGE::wrong_cond_type_conditional:
-            return "###32 cannot have type %s condition in conditional expression";
+            return "###32 cannot have type %s condition in conditional";
         case ERROR_MESSAGE::conditional_type_mismatch:
-            return "###33 type mismatch %s and %s in conditional expression";
+            return "###33 type mismatch %s and %s in conditional";
         case ERROR_MESSAGE::variable_used_as_function:
             return "###36 variable %s used as a function";
         case ERROR_MESSAGE::wrong_number_of_arguments:
@@ -449,7 +449,7 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::cannot_dereference_nptr_type:
             return "###38 cannot dereference non-pointer type %s";
         case ERROR_MESSAGE::invalid_lvalue_address_of:
-            return "###39 invalid lvalue expression cannot be addressed";
+            return "###39 address-of requires lvalue operand";
         default:
             RAISE_INTERNAL_ERROR;
     }
