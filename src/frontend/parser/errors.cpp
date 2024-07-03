@@ -2,8 +2,6 @@
 
 #include "util/throw.hpp"
 
-#include "ast/ast.hpp"
-
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
@@ -162,14 +160,7 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
     }
 }
 
-static std::string get_name_hr(const TIdentifier& name) {
-    std::string name_hr = name;
-    while (name_hr.back() != '.') {
-        name_hr.pop_back();
-    }
-    name_hr.pop_back();
-    return name_hr;
-}
+std::string get_name_hr(const TIdentifier& name) { return name.substr(0, name.find('.')); }
 
 std::string get_type_hr(Type* type);
 
@@ -451,6 +442,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###32 cannot have type %s condition in conditional expression";
         case ERROR_MESSAGE::conditional_type_mismatch:
             return "###33 type mismatch %s and %s in conditional expression";
+        case ERROR_MESSAGE::variable_used_as_function:
+            return "###36 variable %s used as a function";
         default:
             RAISE_INTERNAL_ERROR;
     }

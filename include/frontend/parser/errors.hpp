@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <string>
 
+#include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 #include "ast/front_symt.hpp"
 
@@ -64,10 +65,12 @@ enum ERROR_MESSAGE {
     wrong_lhs_assignment_type,
     invalid_lvalue_lhs_assignment,
     wrong_cond_type_conditional,
-    conditional_type_mismatch
+    conditional_type_mismatch,
+    variable_used_as_function
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
+std::string get_name_hr(const TIdentifier& name);
 std::string get_type_hr(Type* type);
 std::string get_unary_op_hr(CUnaryOp* node);
 std::string get_binary_op_hr(CBinaryOp* node);

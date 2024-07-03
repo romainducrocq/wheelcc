@@ -401,7 +401,8 @@ static void checktype_string_expression(CString* node) {
 static void checktype_var_expression(CVar* node) {
     if (frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::function_used_as_variable, em(node->name).c_str()), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::function_used_as_variable, em(get_name_hr(node->name)).c_str()),
+            node->line);
     }
     node->exp_type = frontend->symbol_table[node->name]->type_t;
 }
@@ -881,7 +882,9 @@ static void checktype_conditional_expression(CConditional* node) {
 
 static void checktype_function_call_expression(CFunctionCall* node) {
     if (frontend->symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
-        raise_runtime_error("###36 Variable " + em(node->name) + " was used as a function"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_used_as_function, em(get_name_hr(node->name)).c_str()),
+            node->line);
     }
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     if (fun_type->param_types.size() != node->args.size()) {
