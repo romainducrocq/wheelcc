@@ -888,9 +888,11 @@ static void checktype_function_call_expression(CFunctionCall* node) {
     }
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     if (fun_type->param_types.size() != node->args.size()) {
-        raise_runtime_error("###37 Function " + em(node->name) + " has "
-                            + em(std::to_string(fun_type->param_types.size())) + " arguments but was called with "
-                            + em(std::to_string(node->args.size()))); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_number_of_arguments, em(get_name_hr(node->name)).c_str(),
+                em(std::to_string(node->args.size())).c_str(),
+                em(std::to_string(fun_type->param_types.size())).c_str()),
+            node->line);
     }
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
@@ -902,14 +904,16 @@ static void checktype_function_call_expression(CFunctionCall* node) {
 
 static void checktype_dereference_expression(CDereference* node) {
     if (node->exp->exp_type->type() != AST_T::Pointer_t) {
-        raise_runtime_error("###38 Non-pointer type can not be de-referenced"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_dereference_nptr_type,
+                                        em(get_type_hr(node->exp->exp_type.get())).c_str()),
+            node->line);
     }
     node->exp_type = static_cast<Pointer*>(node->exp->exp_type.get())->ref_type;
 }
 
 static void checktype_addrof_expression(CAddrOf* node) {
     if (!is_exp_lvalue(node->exp.get())) {
-        raise_runtime_error("###39 Non-lvalue type can not be addressed"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_address_of), node->line);
     }
     std::shared_ptr<Type> ref_type = node->exp->exp_type;
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));

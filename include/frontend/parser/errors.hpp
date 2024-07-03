@@ -66,7 +66,10 @@ enum ERROR_MESSAGE {
     invalid_lvalue_lhs_assignment,
     wrong_cond_type_conditional,
     conditional_type_mismatch,
-    variable_used_as_function
+    variable_used_as_function,
+    wrong_number_of_arguments,
+    cannot_dereference_nptr_type,
+    invalid_lvalue_address_of
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

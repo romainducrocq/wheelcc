@@ -437,13 +437,19 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::wrong_lhs_assignment_type:
             return "###28 cannot have type %s lhs-expression in assignment";
         case ERROR_MESSAGE::invalid_lvalue_lhs_assignment:
-            return "###29 invalid lvalue lhs-expression in assignment";
+            return "###29 invalid lvalue lhs-expression cannot be assigned to";
         case ERROR_MESSAGE::wrong_cond_type_conditional:
             return "###32 cannot have type %s condition in conditional expression";
         case ERROR_MESSAGE::conditional_type_mismatch:
             return "###33 type mismatch %s and %s in conditional expression";
         case ERROR_MESSAGE::variable_used_as_function:
             return "###36 variable %s used as a function";
+        case ERROR_MESSAGE::wrong_number_of_arguments:
+            return "###37 function %s called with %s arguments instead of %s";
+        case ERROR_MESSAGE::cannot_dereference_nptr_type:
+            return "###38 cannot dereference non-pointer type %s";
+        case ERROR_MESSAGE::invalid_lvalue_address_of:
+            return "###39 invalid lvalue expression cannot be addressed";
         default:
             RAISE_INTERNAL_ERROR;
     }
