@@ -904,7 +904,7 @@ static void checktype_function_call_expression(CFunctionCall* node) {
 
 static void checktype_dereference_expression(CDereference* node) {
     if (node->exp->exp_type->type() != AST_T::Pointer_t) {
-        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_dereference_nptr_type,
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_dereference_non_pointer,
                                         em(get_type_hr(node->exp->exp_type.get())).c_str()),
             node->line);
     }
@@ -940,15 +940,19 @@ static void checktype_subscript_expression(CSubscript* node) {
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
     else {
-        raise_runtime_error("###40 Subscript must consist of an integer operand and a pointer to complete type "
-                            "operand"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_array_subscript_types,
+                                        em(get_type_hr(node->primary_exp->exp_type.get())).c_str(),
+                                        em(get_type_hr(node->subscript_exp->exp_type.get())).c_str()),
+            node->line);
     }
     node->exp_type = std::move(ref_type);
 }
 
 static void checktype_sizeof_expression(CSizeOf* node) {
     if (!is_type_complete(node->exp->exp_type.get())) {
-        raise_runtime_error("###41 Can not get the size of an incomplete type"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::size_of_incomplete_type,
+                                        em(get_type_hr(node->exp->exp_type.get())).c_str()),
+            node->line);
     }
     node->exp_type = std::make_shared<ULong>();
 }
@@ -956,7 +960,9 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 static void checktype_sizeoft_expression(CSizeOfT* node) {
     resolve_struct_type(node->target_type.get());
     if (!is_type_complete(node->target_type.get())) {
-        raise_runtime_error("###42 Can not get the size of an incomplete type"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::size_of_incomplete_type, em(get_type_hr(node->target_type.get())).c_str()),
+            node->line);
     }
     is_valid_type(node->target_type.get());
     node->exp_type = std::make_shared<ULong>();
@@ -964,32 +970,46 @@ static void checktype_sizeoft_expression(CSizeOfT* node) {
 
 static void checktype_dot_expression(CDot* node) {
     if (node->structure->exp_type->type() != AST_T::Structure_t) {
-        raise_runtime_error("###43 Can not access member on expression with non-structure type"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::access_member_non_struct, em(get_name_hr(node->member)).c_str(),
+                em(get_type_hr(node->structure->exp_type.get())).c_str()),
+            node->line);
     }
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
     if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
         == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
-        raise_runtime_error("###44 Structure does not have a member named " + em(node->member)); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::struct_has_no_member_named,
+                                        em(get_type_hr(struct_type)).c_str(), em(get_name_hr(node->member)).c_str()),
+            node->line);
     }
     node->exp_type = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
 
 static void checktype_arrow_expression(CArrow* node) {
     if (node->pointer->exp_type->type() != AST_T::Pointer_t) {
-        raise_runtime_error("###45 Can not access member on expression with non-pointer to structure type"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::access_member_non_pointer, em(get_name_hr(node->member)).c_str(),
+                em(get_type_hr(node->pointer->exp_type.get())).c_str()),
+            node->line);
     }
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
     if (ptr_type->ref_type->type() != AST_T::Structure_t) {
-        raise_runtime_error("###46 Can not access member on expression with non-pointer to structure type"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::access_member_non_pointer, em(get_name_hr(node->member)).c_str(),
+                em(get_type_hr(node->pointer->exp_type.get())).c_str()),
+            node->line);
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error(
-            "###47 Can not access member of incomplete structure type " + em(struct_type->tag)); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::access_member_incomplete_type, em(get_type_hr(struct_type)).c_str()),
+            node->line);
     }
     else if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
              == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
-        raise_runtime_error("###48 Structure does not have a member named " + em(node->member)); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::struct_has_no_member_named,
+                                        em(get_type_hr(struct_type)).c_str(), em(get_name_hr(node->member)).c_str()),
+            node->line);
     }
     node->exp_type = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
@@ -1012,7 +1032,9 @@ static std::unique_ptr<CAddrOf> checktype_array_aggregate_typed_expression(std::
 
 static std::unique_ptr<CExp> checktype_structure_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
     if (!is_struct_type_complete(static_cast<Structure*>(node->exp_type.get()))) {
-        raise_runtime_error("###49 Expression was declared with incomplete structure type"); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::incomplete_struct_type,
+                                        em(get_type_hr(static_cast<Structure*>(node->exp_type.get()))).c_str()),
+            node->line);
     }
 
     std::unique_ptr<CExp> exp = std::move(node);

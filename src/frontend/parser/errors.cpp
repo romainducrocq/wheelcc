@@ -446,10 +446,24 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###36 variable %s used as a function";
         case ERROR_MESSAGE::wrong_number_of_arguments:
             return "###37 function %s called with %s arguments instead of %s";
-        case ERROR_MESSAGE::cannot_dereference_nptr_type:
+        case ERROR_MESSAGE::cannot_dereference_non_pointer:
             return "###38 cannot dereference non-pointer type %s";
         case ERROR_MESSAGE::invalid_lvalue_address_of:
             return "###39 address-of requires lvalue operand";
+        case ERROR_MESSAGE::invalid_array_subscript_types:
+            return "###40 cannot subscript array with types %s and %s";
+        case ERROR_MESSAGE::size_of_incomplete_type:
+            return "###41 cannot get size of incomplete type %s";
+        case ERROR_MESSAGE::access_member_non_struct:
+            return "###43 cannot access member %s on non-structure type %s";
+        case ERROR_MESSAGE::struct_has_no_member_named:
+            return "###44 structure type %s has no member named %s";
+        case ERROR_MESSAGE::access_member_non_pointer:
+            return "###45 cannot access member %s on non-pointer-to-structure type %s";
+        case ERROR_MESSAGE::access_member_incomplete_type:
+            return "###47 cannot access member on incomplete structure type %s";
+        case ERROR_MESSAGE::incomplete_struct_type:
+            return "###49 incomplete structure type %s in expression";
         default:
             RAISE_INTERNAL_ERROR;
     }

@@ -68,8 +68,15 @@ enum ERROR_MESSAGE {
     conditional_type_mismatch,
     variable_used_as_function,
     wrong_number_of_arguments,
-    cannot_dereference_nptr_type,
-    invalid_lvalue_address_of
+    cannot_dereference_non_pointer,
+    invalid_lvalue_address_of,
+    invalid_array_subscript_types,
+    size_of_incomplete_type,
+    access_member_non_struct,
+    struct_has_no_member_named,
+    access_member_non_pointer,
+    access_member_incomplete_type,
+    incomplete_struct_type
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
