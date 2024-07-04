@@ -1056,12 +1056,17 @@ static void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[context->function_definition_name]->type_t.get());
     if (fun_type->ret_type->type() == AST_T::Void_t) {
         if (node->exp) {
-            raise_runtime_error("###50 Void type function can not return a value"); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::return_value_in_void_function,
+                                            em(get_name_hr(context->function_definition_name)).c_str()),
+                node->line);
         }
         return;
     }
     else if (!node->exp) {
-        raise_runtime_error("###51 Non-void type function must return a value"); // TODO statement_return
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_return_value_in_function,
+                                        em(get_name_hr(context->function_definition_name)).c_str(),
+                                        em(get_type_hr(fun_type->ret_type.get())).c_str()),
+            node->line);
     }
 
     else if (!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {

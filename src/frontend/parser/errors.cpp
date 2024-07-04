@@ -464,6 +464,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###47 cannot access member on incomplete structure type %s";
         case ERROR_MESSAGE::incomplete_struct_type:
             return "###49 incomplete structure type %s in expression";
+        case ERROR_MESSAGE::return_value_in_void_function:
+            return "###50 " + em("return") + " value in function %s returning type " + em("void");
+        case ERROR_MESSAGE::no_return_value_in_function:
+            return "###51 " + em("return") + " with no value in function %s returning type %s";
         default:
             RAISE_INTERNAL_ERROR;
     }

@@ -76,7 +76,9 @@ enum ERROR_MESSAGE {
     struct_has_no_member_named,
     access_member_non_pointer,
     access_member_incomplete_type,
-    incomplete_struct_type
+    incomplete_struct_type,
+    return_value_in_void_function,
+    no_return_value_in_function
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
