@@ -78,7 +78,13 @@ enum ERROR_MESSAGE {
     access_member_incomplete_type,
     incomplete_struct_type,
     return_value_in_void_function,
-    no_return_value_in_function
+    no_return_value_in_function,
+    cannot_use_if_with_type,
+    cannot_use_while_with_type,
+    cannot_use_do_while_with_type,
+    cannot_use_for_with_type,
+    non_char_array_from_string,
+    wrong_string_literal_size
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

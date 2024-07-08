@@ -1077,40 +1077,47 @@ static void checktype_return_statement(CReturn* node) {
 
 static void checktype_if_statement(CIf* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("###52 An error occurred in type checking, " + em("if statement") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_use_if_with_type,
+                                        em(get_type_hr(node->condition->exp_type.get())).c_str()),
+            node->condition->line);
     }
 }
 
 static void checktype_while_statement(CWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("###53 An error occurred in type checking, " + em("while statement")
-                            + " can not be used on " + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_use_while_with_type,
+                                        em(get_type_hr(node->condition->exp_type.get())).c_str()),
+            node->condition->line);
     }
 }
 
 static void checktype_do_while_statement(CDoWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("###54 An error occurred in type checking, " + em("do while statement")
-                            + " can not be used on " + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_use_do_while_with_type,
+                                        em(get_type_hr(node->condition->exp_type.get())).c_str()),
+            node->condition->line);
     }
 }
 
 static void checktype_for_statement(CFor* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        raise_runtime_error("###55 An error occurred in type checking, " + em("for statement") + " can not be used on "
-                            + em("non-scalar type")); // TODO exp
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::cannot_use_for_with_type,
+                                        em(get_type_hr(node->condition->exp_type.get())).c_str()),
+            node->condition->line);
     }
 }
 
 static void checktype_bound_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if (!is_type_character(arr_type->elem_type.get())) {
-        raise_runtime_error("###56 Array of non-character type was initialized with string literal"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::non_char_array_from_string, em(get_type_hr(arr_type)).c_str()),
+            node->line);
     }
     else if (node->literal->value.size() > static_cast<size_t>(arr_type->size)) {
-        raise_runtime_error("###57 String literal of size " + em(std::to_string(node->literal->value.size()))
-                            + " was initialized with " + em(std::to_string(arr_type->size))
-                            + " initializers"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_string_literal_size, em(std::to_string(arr_type->size)).c_str(),
+                em(std::to_string(node->literal->value.size())).c_str()),
+            node->line);
     }
 }
 
@@ -1166,7 +1173,7 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
             default:
                 RAISE_INTERNAL_ERROR;
         }
-        exp = std::make_unique<CConstant>(std::move(constant), -1); // TODO line
+        exp = std::make_unique<CConstant>(std::move(constant), 0);
     }
     return std::make_unique<CSingleInit>(std::move(exp));
 }

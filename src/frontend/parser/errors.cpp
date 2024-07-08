@@ -468,6 +468,18 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###50 " + em("return") + " value in function %s returning type " + em("void");
         case ERROR_MESSAGE::no_return_value_in_function:
             return "###51 " + em("return") + " with no value in function %s returning type %s";
+        case ERROR_MESSAGE::cannot_use_if_with_type:
+            return "###52 cannot use " + em("if") + " statement with type %s";
+        case ERROR_MESSAGE::cannot_use_while_with_type:
+            return "###53 cannot use " + em("while") + " loop statement with type %s";
+        case ERROR_MESSAGE::cannot_use_do_while_with_type:
+            return "###54 cannot use " + em("do while") + " loop statement with type %s";
+        case ERROR_MESSAGE::cannot_use_for_with_type:
+            return "###55 cannot use " + em("for") + " loop statement with type %s";
+        case ERROR_MESSAGE::non_char_array_from_string:
+            return "###56 array of type %s initialized from string literal";
+        case ERROR_MESSAGE::wrong_string_literal_size:
+            return "###57 size %s string literal initialized with %s characters";
         default:
             RAISE_INTERNAL_ERROR;
     }
