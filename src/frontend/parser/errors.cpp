@@ -171,7 +171,7 @@ static std::string get_pointer_type_hr(Pointer* ptr_type) {
 
 static std::string get_array_type_hr(Array* arr_type) {
     std::string type_hr = get_type_hr(arr_type->elem_type.get());
-    return type_hr + "[" + std::to_string(arr_type->size) + "]";
+    return type_hr + "[" + std::to_string(arr_type->size) + "]"; // TODO
 }
 
 static std::string get_structure_type_hr(Structure* struct_type) {
@@ -484,6 +484,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###58 size %s array type %s initialized with %s initializers";
         case ERROR_MESSAGE::wrong_struct_members_number:
             return "###59 structure type %s initialized with %s members instead of %s";
+        case ERROR_MESSAGE::function_returns_array:
+            return "###60 function %s returns array type %s";
+        case ERROR_MESSAGE::function_returns_incomplete:
+            return "###61 function %s returns incomplete structure type %s";
         default:
             RAISE_INTERNAL_ERROR;
     }

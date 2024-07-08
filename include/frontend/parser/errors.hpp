@@ -86,7 +86,9 @@ enum ERROR_MESSAGE {
     non_char_array_from_string,
     wrong_string_literal_size,
     wrong_array_initializer_size,
-    wrong_struct_members_number
+    wrong_struct_members_number,
+    function_returns_array,
+    function_returns_incomplete
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

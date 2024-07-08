@@ -1032,8 +1032,8 @@ static std::unique_ptr<CAddrOf> checktype_array_aggregate_typed_expression(std::
 
 static std::unique_ptr<CExp> checktype_structure_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
     if (!is_struct_type_complete(static_cast<Structure*>(node->exp_type.get()))) {
-        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::incomplete_struct_type,
-                                        em(get_type_hr(static_cast<Structure*>(node->exp_type.get()))).c_str()),
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::incomplete_struct_type, em(get_type_hr(node->exp_type.get())).c_str()),
             node->line);
     }
 
@@ -1254,13 +1254,16 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
 
     switch (fun_type->ret_type->type()) {
         case AST_T::Array_t:
-            raise_runtime_error("###60 Function " + em(node->name)
-                                + " was declared with array return type"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::function_returns_array, em(get_name_hr(node->name)).c_str(),
+                    em(get_type_hr(fun_type->ret_type.get())).c_str()),
+                node->line);
         case AST_T::Structure_t: {
             if (node->body && !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
-                raise_runtime_error(
-                    "###61 Function " + em(node->name)
-                    + " was declared with incomplete structure return type"); // TODO function_declaration
+                raise_runtime_error_at_line(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::function_returns_incomplete, em(get_name_hr(node->name)).c_str(),
+                        em(get_type_hr(fun_type->ret_type.get())).c_str()),
+                    node->line);
             }
             break;
         }
