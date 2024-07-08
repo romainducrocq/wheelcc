@@ -482,6 +482,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###57 size %s string literal initialized with %s characters";
         case ERROR_MESSAGE::wrong_array_initializer_size:
             return "###58 size %s array type %s initialized with %s initializers";
+        case ERROR_MESSAGE::wrong_struct_members_number:
+            return "###59 structure type %s initialized with %s members instead of %s";
         default:
             RAISE_INTERNAL_ERROR;
     }

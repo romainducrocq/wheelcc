@@ -1229,10 +1229,11 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
     if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
-        raise_runtime_error("###59 Structure with "
-                            + em(std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size()))
-                            + " members was initialized with " + em(std::to_string(node->initializers.size()))
-                            + " initializers"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_struct_members_number, em(get_type_hr(struct_type)).c_str(),
+                em(std::to_string(node->initializers.size())).c_str(),
+                em(std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())).c_str()),
+            get_initializer_line(node));
     }
 }
 
