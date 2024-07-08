@@ -91,7 +91,9 @@ enum ERROR_MESSAGE {
     function_returns_incomplete,
     function_has_void_param,
     function_has_incomplete_param,
-    redeclaration_type_mismatch
+    redeclaration_type_mismatch,
+    redeclare_function_type,
+    redefine_non_static_function
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

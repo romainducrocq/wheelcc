@@ -507,6 +507,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###63 function %s declared with parameter %s incomplete structure type %s";
         case ERROR_MESSAGE::redeclaration_type_mismatch:
             return "###65 type mismatch %s and %s in function %s redeclaration";
+        case ERROR_MESSAGE::redeclare_function_type:
+            return "###66 function %s already declared with function type %s";
+        case ERROR_MESSAGE::redefine_non_static_function:
+            return "###67 " + em("static") + " function %s already defined non-static";
         default:
             RAISE_INTERNAL_ERROR;
     }

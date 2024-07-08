@@ -1314,7 +1314,6 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
     bool is_global = !(node->storage_class && node->storage_class->type() == AST_T::CStatic_t);
 
     if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
-
         FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
         if (!(frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t
                 && fun_type->param_types.size() == node->params.size()
@@ -1324,16 +1323,18 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
                                             em(get_type_hr(fun_type)).c_str(), em(get_name_hr(node->name)).c_str()),
                 node->line);
         }
-
         else if (is_defined && node->body) {
-            raise_runtime_error(
-                "###66 Function declaration " + em(node->name) + " was already defined"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_function_type, em(get_name_hr(node->name)).c_str(),
+                    em(get_type_hr(node->fun_type.get())).c_str()),
+                node->line);
         }
 
         FunAttr* fun_attrs = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get());
         if (!is_global && fun_attrs->is_global) {
-            raise_runtime_error("###67 Static function " + em(node->name)
-                                + " was already defined non-static"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redefine_non_static_function, em(get_name_hr(node->name)).c_str()),
+                node->line);
         }
         is_global = fun_attrs->is_global;
     }
