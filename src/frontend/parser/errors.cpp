@@ -164,6 +164,19 @@ std::string get_name_hr(const TIdentifier& name) { return name.substr(0, name.fi
 
 std::string get_type_hr(Type* type);
 
+static std::string get_function_type_hr(FunType* fun_type) {
+    std::string type_hr = get_type_hr(fun_type->ret_type.get());
+    std::string param_type_hr = "";
+    for (const auto& param_type : fun_type->param_types) {
+        param_type_hr += get_type_hr(param_type.get()) + ", ";
+    }
+    if (!fun_type->param_types.empty()) {
+        param_type_hr.pop_back();
+        param_type_hr.pop_back();
+    }
+    return "(" + type_hr + ")(" + param_type_hr + ")";
+}
+
 static std::string get_pointer_type_hr(Pointer* ptr_type) {
     std::string type_hr = get_type_hr(ptr_type->ref_type.get());
     return type_hr + "*";
@@ -200,7 +213,7 @@ std::string get_type_hr(Type* type) {
         case AST_T::Void_t:
             return "void";
         case AST_T::FunType_t:
-            return "function";
+            return get_function_type_hr(static_cast<FunType*>(type));
         case AST_T::Pointer_t:
             return get_pointer_type_hr(static_cast<Pointer*>(type));
         case AST_T::Array_t:
@@ -464,7 +477,7 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###47 cannot access member on incomplete structure type %s";
         case ERROR_MESSAGE::incomplete_struct_type:
             return "###49 incomplete structure type %s in expression";
-        case ERROR_MESSAGE::return_value_in_void_function:
+        case ERROR_MESSAGE::return_value_in_void_function: // TODO review before here
             return "###50 " + em("return") + " value in function %s returning type " + em("void");
         case ERROR_MESSAGE::no_return_value_in_function:
             return "###51 " + em("return") + " with no value in function %s returning type %s";
@@ -488,6 +501,12 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###60 function %s returns array type %s";
         case ERROR_MESSAGE::function_returns_incomplete:
             return "###61 function %s returns incomplete structure type %s";
+        case ERROR_MESSAGE::function_has_void_param:
+            return "###62 function %s declared with parameter %s type " + em("void");
+        case ERROR_MESSAGE::function_has_incomplete_param:
+            return "###63 function %s declared with parameter %s incomplete structure type %s";
+        case ERROR_MESSAGE::redeclaration_type_mismatch:
+            return "###65 type mismatch %s and %s in function %s redeclaration";
         default:
             RAISE_INTERNAL_ERROR;
     }

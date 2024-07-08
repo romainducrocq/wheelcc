@@ -88,7 +88,10 @@ enum ERROR_MESSAGE {
     wrong_array_initializer_size,
     wrong_struct_members_number,
     function_returns_array,
-    function_returns_incomplete
+    function_returns_incomplete,
+    function_has_void_param,
+    function_has_incomplete_param,
+    redeclaration_type_mismatch
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

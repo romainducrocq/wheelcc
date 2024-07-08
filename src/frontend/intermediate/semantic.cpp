@@ -1277,7 +1277,10 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
     for (size_t i = 0; i < node->params.size(); ++i) {
         resolve_struct_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Void_t) {
-            raise_runtime_error("###62 Function parameters can not have void type"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::function_has_void_param, em(get_name_hr(node->name)).c_str(),
+                    em(get_name_hr(node->params[i])).c_str()),
+                node->line);
         }
         is_valid_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Array_t) {
@@ -1288,9 +1291,11 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
         if (node->body) {
             if (fun_type->param_types[i]->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[i].get()))) {
-                raise_runtime_error(
-                    "###63 Function parameter was declared with incomplete structure type"); // TODO
-                                                                                             // function_declaration
+                raise_runtime_error_at_line(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::function_has_incomplete_param, em(get_name_hr(node->name)).c_str(),
+                        em(get_name_hr(node->params[i])).c_str(),
+                        em(get_type_hr(fun_type->param_types[i].get())).c_str()),
+                    node->line);
             }
             std::shared_ptr<Type> type_t = fun_type->param_types[i];
             std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
@@ -1302,7 +1307,7 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
 
 static void checktype_function_declaration(CFunctionDeclaration* node) {
     if (node->fun_type->type() == AST_T::Void_t) {
-        raise_runtime_error("###64 Function declaration can not have void type"); // TODO function_declaration
+        RAISE_INTERNAL_ERROR;
     }
 
     bool is_defined = context->function_definition_set.find(node->name) != context->function_definition_set.end();
@@ -1314,8 +1319,10 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         if (!(frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t
                 && fun_type->param_types.size() == node->params.size()
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
-            raise_runtime_error("###65 Function declaration " + em(node->name)
-                                + " was redeclared with conflicting type"); // TODO function_declaration
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclaration_type_mismatch,
+                                            em(get_type_hr(node->fun_type.get())).c_str(),
+                                            em(get_type_hr(fun_type)).c_str(), em(get_name_hr(node->name)).c_str()),
+                node->line);
         }
 
         else if (is_defined && node->body) {
