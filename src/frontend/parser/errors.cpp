@@ -477,7 +477,7 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::cannot_use_for_with_type:
             return "###55 cannot use " + em("for") + " loop statement with type %s";
         case ERROR_MESSAGE::non_char_array_from_string:
-            return "###56 array of type %s initialized from string literal";
+            return "###56 array type %s initialized from string literal";
         case ERROR_MESSAGE::wrong_string_literal_size:
             return "###57 size %s string literal initialized with %s characters";
         default:
