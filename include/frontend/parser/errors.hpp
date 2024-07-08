@@ -101,5 +101,15 @@ template <typename... TArgs> std::string get_error_message(ERROR_MESSAGE message
     return std::string(buffer);
 }
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
+#define GET_COMPOUND_INIT_LINE(X)                                            \
+    [](CInitializer* node) -> size_t {                                       \
+        while (node->type() == AST_T::CCompoundInit_t) {                     \
+            node = static_cast<CCompoundInit*>(node)->initializers[0].get(); \
+        }                                                                    \
+        if (node->type() != AST_T::CSingleInit_t) {                          \
+            RAISE_INTERNAL_ERROR;                                            \
+        }                                                                    \
+        return static_cast<CSingleInit*>(node)->exp->line;                   \
+    }((X))
 
 #endif
