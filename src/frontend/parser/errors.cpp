@@ -480,6 +480,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###56 array type %s initialized from string literal";
         case ERROR_MESSAGE::wrong_string_literal_size:
             return "###57 size %s string literal initialized with %s characters";
+        case ERROR_MESSAGE::wrong_array_initializer_size:
+            return "###58 size %s array type %s initialized with %s initializers";
         default:
             RAISE_INTERNAL_ERROR;
     }

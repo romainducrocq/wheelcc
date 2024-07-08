@@ -362,6 +362,16 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     }
 }
 
+static size_t get_initializer_line(CInitializer* node) {
+    while (node->type() == AST_T::CCompoundInit_t) {
+        node = static_cast<CCompoundInit*>(node)->initializers[0].get();
+    }
+    if (node->type() != AST_T::CSingleInit_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    return static_cast<CSingleInit*>(node)->exp->line;
+}
+
 static void resolve_struct_type(Type* type);
 
 static void checktype_constant_expression(CConstant* node) {
@@ -1210,8 +1220,10 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
 
 static void checktype_bound_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
     if (node->initializers.size() > static_cast<size_t>(arr_type->size)) {
-        raise_runtime_error("###58 Array of size " + em(std::to_string(arr_type->size)) + " was initialized with "
-                            + em(std::to_string(node->initializers.size())) + " initializers"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_array_initializer_size, em(std::to_string(arr_type->size)).c_str(),
+                em(get_type_hr(arr_type)).c_str(), em(std::to_string(node->initializers.size())).c_str()),
+            get_initializer_line(node));
     }
 }
 

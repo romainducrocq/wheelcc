@@ -84,7 +84,8 @@ enum ERROR_MESSAGE {
     cannot_use_do_while_with_type,
     cannot_use_for_with_type,
     non_char_array_from_string,
-    wrong_string_literal_size
+    wrong_string_literal_size,
+    wrong_array_initializer_size
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
