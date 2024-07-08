@@ -93,12 +93,16 @@ enum ERROR_MESSAGE {
     function_has_incomplete_param,
     redeclaration_type_mismatch,
     redeclare_function_type,
-    redefine_non_static_function
+    redefine_non_static_function,
+    pointer_type_from_constant,
+    pointer_type_from_non_null,
+    non_char_pointer_from_string
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_name_hr(const TIdentifier& name);
 std::string get_type_hr(Type* type);
+std::string get_const_hr(CConst* node);
 std::string get_unary_op_hr(CUnaryOp* node);
 std::string get_binary_op_hr(CBinaryOp* node);
 std::string get_error_message(ERROR_MESSAGE message);

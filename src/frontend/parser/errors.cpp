@@ -225,6 +225,27 @@ std::string get_type_hr(Type* type) {
     }
 }
 
+std::string get_const_hr(CConst* node) {
+    switch (node->type()) {
+        case AST_T::CConstInt_t:
+            return "int";
+        case AST_T::CConstLong_t:
+            return "long";
+        case AST_T::CConstUInt_t:
+            return "unsigned int";
+        case AST_T::CConstULong_t:
+            return "unsigned long";
+        case AST_T::CConstDouble_t:
+            return "double";
+        case AST_T::CConstChar_t:
+            return "char";
+        case AST_T::CConstUChar_t:
+            return "unsigned char";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 std::string get_unary_op_hr(CUnaryOp* node) {
     switch (node->type()) {
         case AST_T::CComplement_t:
@@ -511,6 +532,12 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###66 function %s already declared with function type %s";
         case ERROR_MESSAGE::redefine_non_static_function:
             return "###67 " + em("static") + " function %s already defined non-static";
+        case ERROR_MESSAGE::pointer_type_from_constant:
+            return "###68 cannot initialize pointer type %s from constant %s";
+        case ERROR_MESSAGE::pointer_type_from_non_null:
+            return "###69 cannot initialize pointer type %s from non-null value %s";
+        case ERROR_MESSAGE::non_char_pointer_from_string:
+            return "###70 pointer type %s initialized from string literal";
         default:
             RAISE_INTERNAL_ERROR;
     }

@@ -1700,14 +1700,18 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
                 case AST_T::CConstChar_t:
                 case AST_T::CConstDouble_t:
                 case AST_T::CConstUChar_t:
-                    raise_runtime_error(
-                        "###68 Static pointer type can only be initialized to integer constant"); // TODO exp
+                    raise_runtime_error_at_line(
+                        GET_ERROR_MESSAGE(ERROR_MESSAGE::pointer_type_from_constant,
+                            em(get_type_hr(static_init_type)).c_str(), em(get_const_hr(node->constant.get())).c_str()),
+                        node->line);
                 default:
                     RAISE_INTERNAL_ERROR;
             }
             if (value != 0ul) {
-                raise_runtime_error(
-                    "###69 Static pointer type can only be initialized to null integer constant"); // TODO exp
+                raise_runtime_error_at_line(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::pointer_type_from_non_null,
+                        em(get_type_hr(static_init_type)).c_str(), em(std::to_string(value)).c_str()),
+                    node->line);
             }
             push_zero_init_static_init(8l);
             break;
@@ -1719,7 +1723,9 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
     if (static_ptr_type->ref_type->type() != AST_T::Char_t) {
-        raise_runtime_error("###70 Pointer of non-character type was initialized with string literal"); // TODO exp
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::non_char_pointer_from_string, em(get_type_hr(static_ptr_type)).c_str()),
+            node->line);
     }
 
     TIdentifier static_constant_label;
