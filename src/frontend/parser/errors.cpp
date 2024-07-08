@@ -538,6 +538,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###69 cannot initialize pointer type %s from non-null value %s";
         case ERROR_MESSAGE::non_char_pointer_from_string:
             return "###70 pointer type %s initialized from string literal";
+        case ERROR_MESSAGE::static_variable_non_constant:
+            return "###71 cannot statically initialize variable from non-constant type %s";
+        case ERROR_MESSAGE::scalar_type_from_compound:
+            return "###72 cannot initialize scalar type %s with compound initializer";
         default:
             RAISE_INTERNAL_ERROR;
     }

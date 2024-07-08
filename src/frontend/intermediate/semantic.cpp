@@ -1798,7 +1798,9 @@ static void checktype_single_init_initializer_static_init(CSingleInit* node, Typ
             checktype_string_initializer_static_init(static_cast<CString*>(node->exp.get()), static_init_type);
             break;
         default:
-            raise_runtime_error("###71 Variable with static linkage was initialized to a non-constant"); // TODO exp
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::static_variable_non_constant,
+                                            em(get_type_hr(static_init_type)).c_str()),
+                node->exp->line);
     }
 }
 
@@ -1840,7 +1842,9 @@ static void checktype_compound_init_initializer_static_init(CCompoundInit* node,
             checktype_structure_compound_init_initializer_static_init(node, static_cast<Structure*>(static_init_type));
             break;
         default:
-            raise_runtime_error("###72 Compound initializer can not be initialized with scalar type"); // TODO exp
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::scalar_type_from_compound, em(get_type_hr(static_init_type)).c_str()),
+                GET_COMPOUND_INIT_LINE(node));
     }
 }
 
@@ -2575,7 +2579,9 @@ static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_p
             resolve_structure_compound_init_initializer(node, static_cast<Structure*>(init_type.get()), init_type);
             break;
         default:
-            raise_runtime_error("###95 Compound initializer can not be initialized with scalar type"); // TODO exp
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::scalar_type_from_compound, em(get_type_hr(init_type.get())).c_str()),
+                GET_COMPOUND_INIT_LINE(node));
     }
 }
 

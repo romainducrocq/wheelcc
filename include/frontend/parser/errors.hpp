@@ -96,7 +96,9 @@ enum ERROR_MESSAGE {
     redefine_non_static_function,
     pointer_type_from_constant,
     pointer_type_from_non_null,
-    non_char_pointer_from_string
+    non_char_pointer_from_string,
+    static_variable_non_constant,
+    scalar_type_from_compound
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
