@@ -569,6 +569,14 @@ std::string get_error_message(ERROR_MESSAGE message) {
                    + " loop initial declaration";
         case ERROR_MESSAGE::redeclare_label_in_scope:
             return "###94 label %s already declared in this scope";
+        case ERROR_MESSAGE::redeclare_variable_in_scope:
+            return "###96 variable %s already declared in this scope";
+        case ERROR_MESSAGE::function_defined_nested:
+            return "###97 nested function %s defined in another function";
+        case ERROR_MESSAGE::static_function_declared_nested:
+            return "###98 nested " + em("static") + " function %s declared in another function";
+        case ERROR_MESSAGE::redeclare_function_in_scope:
+            return "###99 function %s already declared in this scope";
         default:
             RAISE_INTERNAL_ERROR;
     }

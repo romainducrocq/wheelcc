@@ -2573,8 +2573,8 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for (auto& param : node->params) {
         if (context->scoped_identifier_maps.back().find(param) != context->scoped_identifier_maps.back().end()) {
-            raise_runtime_error(
-                "###96 Variable " + param + " was already declared in this scope"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_variable_in_scope, get_name_hr(param)), node->line);
         }
         context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);
         param = context->scoped_identifier_maps.back()[param];
@@ -2585,19 +2585,19 @@ static void resolve_params_function_declaration(CFunctionDeclaration* node) {
 static void resolve_function_declaration(CFunctionDeclaration* node) {
     if (!is_file_scope()) {
         if (node->body) {
-            raise_runtime_error("###97 Block scoped function definition " + em(node->name)
-                                + " can not be nested"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::function_defined_nested, get_name_hr(node->name)), node->line);
         }
         else if (node->storage_class && node->storage_class->type() == AST_T::CStatic_t) {
-            raise_runtime_error("###98 Block scoped function definition " + em(node->name)
-                                + " can not be static"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::static_function_declared_nested, get_name_hr(node->name)), node->line);
         }
     }
 
     if (context->external_linkage_scope_map.find(node->name) == context->external_linkage_scope_map.end()) {
         if (context->scoped_identifier_maps.back().find(node->name) != context->scoped_identifier_maps.back().end()) {
-            raise_runtime_error("###99 Function " + em(node->name)
-                                + " was already declared in this scope"); // TODO function_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_function_in_scope, get_name_hr(node->name)), node->line);
         }
         context->external_linkage_scope_map[node->name] = current_scope_depth();
     }
@@ -2635,8 +2635,8 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
     if (context->scoped_identifier_maps.back().find(node->name) != context->scoped_identifier_maps.back().end()
         && !(context->external_linkage_scope_map.find(node->name) != context->external_linkage_scope_map.end()
              && (node->storage_class && node->storage_class->type() == AST_T::CExtern_t))) {
-        raise_runtime_error(
-            "###100 Variable " + em(node->name) + " was already declared in this scope"); // TODO variable_declaration
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_variable_in_scope, get_name_hr(node->name)), node->line);
     }
     else if (node->storage_class && node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);

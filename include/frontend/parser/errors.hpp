@@ -110,7 +110,11 @@ enum ERROR_MESSAGE {
     variable_not_declared_in_scope,
     function_not_declared_in_scope,
     non_auto_variable_for_initial,
-    redeclare_label_in_scope
+    redeclare_label_in_scope,
+    redeclare_variable_in_scope,
+    redeclare_function_in_scope,
+    function_defined_nested,
+    static_function_declared_nested
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
