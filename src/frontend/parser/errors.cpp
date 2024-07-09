@@ -144,17 +144,17 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
         case TOKEN_KIND::string_literal:
             return "string literal";
         case TOKEN_KIND::char_constant:
-            return "const char8";
+            return "const char";
         case TOKEN_KIND::float_constant:
-            return "const float64";
+            return "const double";
         case TOKEN_KIND::unsigned_long_constant:
-            return "const uint64";
+            return "const unsigned long";
         case TOKEN_KIND::unsigned_constant:
-            return "const uint32";
+            return "const unsigned int";
         case TOKEN_KIND::long_constant:
-            return "const int64";
+            return "const long";
         case TOKEN_KIND::constant:
-            return "const int32";
+            return "const int";
         default:
             RAISE_INTERNAL_ERROR;
     }

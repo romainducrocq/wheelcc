@@ -1211,7 +1211,11 @@ Lbreak:
     }
     std::string type_token_kinds_string = "";
     for (const auto& type_token_kind : type_token_kinds) {
-        type_token_kinds_string += get_token_kind_hr(type_token_kind) + ",";
+        type_token_kinds_string += get_token_kind_hr(type_token_kind) + ", ";
+    }
+    if (!type_token_kinds.empty()) {
+        type_token_kinds_string.pop_back();
+        type_token_kinds_string.pop_back();
     }
     raise_runtime_error_at_line(
         GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier_list, "(" + type_token_kinds_string + ")"), line);
