@@ -361,10 +361,14 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     }
 }
 
-size_t get_compound_init_line(CInitializer* node) {
-    while (node->type() == AST_T::CCompoundInit_t) {
+static size_t get_compound_init_line(CInitializer* node) {
+    if (node->type() != AST_T::CCompoundInit_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    do {
         node = static_cast<CCompoundInit*>(node)->initializers[0].get();
     }
+    while (node->type() == AST_T::CCompoundInit_t);
     if (node->type() != AST_T::CSingleInit_t) {
         RAISE_INTERNAL_ERROR;
     }
