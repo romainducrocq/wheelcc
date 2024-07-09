@@ -558,6 +558,16 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###72 cannot initialize scalar type %s with compound initializer";
         case ERROR_MESSAGE::variable_declared_void:
             return "###73 variable %s declared with type " + em("void");
+        case ERROR_MESSAGE::variable_incomplete_structure:
+            return "###74 variable %s declared with incomplete structure type %s"; // only exten variable can be
+                                                                                   // declared with incomplete struct
+                                                                                   // type, but not defined
+        case ERROR_MESSAGE::redeclare_variable_mismatch:
+            return "###76 variable %s redeclared with conflicting type %s, but was %s";
+        case ERROR_MESSAGE::redeclare_variable_storage:
+            return "###77 variable %s redeclared with conflicting storage class";
+        case ERROR_MESSAGE::initialized_extern_variable:
+            return "###79 " + em("extern") + " variable %s is initialized";
         case ERROR_MESSAGE::structure_duplicate_member:
             return "###84 structure type %s declared with duplicate member name %s";
         case ERROR_MESSAGE::structure_has_incomplete_member:

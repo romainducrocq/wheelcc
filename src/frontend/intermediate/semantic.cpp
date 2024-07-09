@@ -1868,8 +1868,9 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     if (node->init) {
         if (node->var_type->type() == AST_T::Structure_t
             && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-            raise_runtime_error("###74 Non-extern file scope variable " + em(node->name)
-                                + " was declared with incomplete structure type"); // TODO variable_declaration
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_incomplete_structure,
+                                            get_name_hr(node->name), get_type_hr(node->var_type.get())),
+                node->line);
         }
         initial_value = checktype_initializer_initial(node->init.get(), node->var_type.get());
     }
@@ -1880,8 +1881,9 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         else {
             if (node->var_type->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-                raise_runtime_error("###75 Non-extern file scope variable " + em(node->name)
-                                    + " was declared with incomplete structure type"); // TODO variable_declaration
+                raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_incomplete_structure,
+                                                get_name_hr(node->name), get_type_hr(node->var_type.get())),
+                    node->line);
             }
             initial_value = std::make_shared<Tentative>();
         }
@@ -1889,8 +1891,10 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
     if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            raise_runtime_error("###76 File scope variable " + em(node->name)
-                                + " was redeclared with conflicting type"); // TODO variable_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_variable_mismatch, get_name_hr(node->name),
+                    get_type_hr(node->var_type.get()), get_type_hr(frontend->symbol_table[node->name]->type_t.get())),
+                node->line);
         }
 
         StaticAttr* global_var_attrs = static_cast<StaticAttr*>(frontend->symbol_table[node->name]->attrs.get());
@@ -1898,14 +1902,14 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             is_global = global_var_attrs->is_global;
         }
         else if (is_global != global_var_attrs->is_global) {
-            raise_runtime_error("###77 File scope variable " + em(node->name)
-                                + " was redeclared with conflicting linkage"); // TODO variable_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_variable_storage, get_name_hr(node->name)), node->line);
         }
 
         if (global_var_attrs->init->type() == AST_T::Initial_t) {
             if (initial_value->type() == AST_T::Initial_t) {
-                raise_runtime_error("###78 File scope variable " + em(node->name)
-                                    + " was defined with conflicting linkage"); // TODO variable_declaration
+                raise_runtime_error_at_line(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_variable_storage, get_name_hr(node->name)), node->line);
             }
             else {
                 initial_value = global_var_attrs->init;
@@ -1922,13 +1926,15 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 
 static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->init) {
-        raise_runtime_error("###79 Block scope variable " + em(node->name)
-                            + " with external linkage was defined"); // TODO variable_declaration
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::initialized_extern_variable, get_name_hr(node->name)), node->line);
     }
     else if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            raise_runtime_error("###80 Block scope variable " + em(node->name)
-                                + " was redeclared with conflicting type"); // TODO variable_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_variable_mismatch, get_name_hr(node->name),
+                    get_type_hr(node->var_type.get()), get_type_hr(frontend->symbol_table[node->name]->type_t.get())),
+                node->line);
         }
         return;
     }
@@ -1946,8 +1952,7 @@ static void checktype_extern_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_static_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error("###81 Non-extern file scope variable " + em(node->name)
-                            + " was declared with incomplete structure type"); // TODO variable_declaration
+        RAISE_INTERNAL_ERROR;
     }
 
     std::shared_ptr<InitialValue> initial_value;
@@ -1967,8 +1972,9 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        raise_runtime_error("###82 Non-extern file scope variable " + em(node->name)
-                            + " was declared with incomplete structure type"); // TODO variable_declaration
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_incomplete_structure,
+                                        get_name_hr(node->name), get_type_hr(node->var_type.get())),
+            node->line);
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
