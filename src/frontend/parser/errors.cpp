@@ -162,6 +162,11 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
 
 std::string get_name_hr(const TIdentifier& name) { return name.substr(0, name.find('.')); }
 
+std::string get_struct_name_hr(const TIdentifier& name) {
+    std::string type_hr = get_name_hr(name);
+    return "struct " + type_hr;
+}
+
 std::string get_type_hr(Type* type);
 
 static std::string get_function_type_hr(FunType* fun_type) {
@@ -187,10 +192,7 @@ static std::string get_array_type_hr(Array* arr_type) {
     return type_hr + "[" + std::to_string(arr_type->size) + "]"; // TODO
 }
 
-static std::string get_structure_type_hr(Structure* struct_type) {
-    std::string type_hr = get_name_hr(struct_type->tag);
-    return "struct " + type_hr;
-}
+static std::string get_structure_type_hr(Structure* struct_type) { return get_struct_name_hr(struct_type->tag); }
 
 std::string get_type_hr(Type* type) {
     switch (type->type()) {
@@ -545,15 +547,19 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::variable_declared_void:
             return "###73 variable %s declared with type " + em("void");
         case ERROR_MESSAGE::structure_duplicate_member:
-            return "###84 structure %s declared with duplicate member name %s";
+            return "###84 structure type %s declared with duplicate member name %s";
         case ERROR_MESSAGE::structure_has_incomplete_member:
-            return "###85 structure %s declared with member %s incomplete type %s";
+            return "###85 structure type %s declared with member %s incomplete type %s";
         case ERROR_MESSAGE::redefine_structure_in_scope:
-            return "###86 structure %s already declared in this scope";
+            return "###86 structure type %s already declared in this scope";
         case ERROR_MESSAGE::break_outside_of_loop:
             return "###87 " + em("break") + " statement not within loop";
         case ERROR_MESSAGE::continue_outside_of_loop:
             return "###88 " + em("continue") + " statement not within loop";
+        case ERROR_MESSAGE::goto_without_target_label:
+            return "###89 " + em("goto") + " statement without target label %s in function %s";
+        case ERROR_MESSAGE::undefined_structure_in_scope:
+            return "###90 structure type %s not defined within this scope";
         default:
             RAISE_INTERNAL_ERROR;
     }

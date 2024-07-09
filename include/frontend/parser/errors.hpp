@@ -104,11 +104,14 @@ enum ERROR_MESSAGE {
     structure_has_incomplete_member,
     redefine_structure_in_scope,
     break_outside_of_loop,
-    continue_outside_of_loop
+    continue_outside_of_loop,
+    goto_without_target_label,
+    undefined_structure_in_scope
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_name_hr(const TIdentifier& name);
+std::string get_struct_name_hr(const TIdentifier& name);
 std::string get_type_hr(Type* type);
 std::string get_const_hr(CConst* node);
 std::string get_unary_op_hr(CUnaryOp* node);

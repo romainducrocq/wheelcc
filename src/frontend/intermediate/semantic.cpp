@@ -1987,8 +1987,9 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for (size_t i = 0; i < node->members.size(); ++i) {
         for (size_t j = i + 1; j < node->members.size(); ++j) {
             if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
-                raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_duplicate_member,
-                                                get_name_hr(node->tag), get_name_hr(node->members[i]->member_name)),
+                raise_runtime_error_at_line(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_duplicate_member, get_struct_name_hr(node->tag),
+                        get_name_hr(node->members[i]->member_name)),
                     node->members[i]->line);
             }
         }
@@ -1998,7 +1999,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         resolve_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_has_incomplete_member, get_name_hr(node->tag),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_has_incomplete_member, get_struct_name_hr(node->tag),
                     get_name_hr(node->members[i]->member_name), get_type_hr(node->members[i].get()->member_type.get())),
                 node->members[i]->line);
         }
@@ -2009,7 +2010,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::redefine_structure_in_scope, get_name_hr(node->tag)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::redefine_structure_in_scope, get_struct_name_hr(node->tag)), node->line);
     }
     TInt alignment = 0;
     TLong size = 0l;
@@ -2104,11 +2105,12 @@ static void exit_scope() {
     context->scoped_structure_tag_maps.pop_back();
 }
 
-static void resolve_label() {
+static void resolve_label(CFunctionDeclaration* node) {
     for (const auto& target : context->goto_map) {
         if (context->label_set.find(target.first) == context->label_set.end()) {
-            raise_runtime_error("###89 An error occurred in variable resolution, goto " + em(target.first)
-                                + " has no target label"); // TODO function_declaration
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::goto_without_target_label,
+                                            get_name_hr(target.first), get_name_hr(node->name)),
+                node->line);
         }
     }
 }
@@ -2128,8 +2130,9 @@ static void resolve_structure_struct_type(Structure* struct_type) {
             return;
         }
     }
-    raise_runtime_error(
-        "###90 Structure type " + em(struct_type->tag) + " was not declared in this scope"); // TODO other_(type)
+    raise_runtime_error_at_line(
+        GET_ERROR_MESSAGE(ERROR_MESSAGE::undefined_structure_in_scope, get_type_hr(struct_type)),
+        1); // TODO other_(type)
 }
 
 static void resolve_struct_type(Type* type) {
@@ -2674,7 +2677,7 @@ static void resolve_fun_decl_declaration(CFunDecl* node) {
     }
     resolve_function_declaration(node->function_decl.get());
     if (is_file_scope()) {
-        resolve_label();
+        resolve_label(node->function_decl.get());
     }
 }
 
