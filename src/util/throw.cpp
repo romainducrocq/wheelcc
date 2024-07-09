@@ -39,6 +39,9 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
 }
 
 [[noreturn]] void raise_runtime_error_at_line(const std::string& message, size_t line_number) {
+    if (line_number == 0) {
+        raise_runtime_error(message);
+    }
     file_free();
     std::string line;
     {
