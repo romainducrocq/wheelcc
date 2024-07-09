@@ -532,8 +532,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###65 type mismatch %s and %s in function %s redeclaration";
         case ERROR_MESSAGE::redeclare_function_type:
             return "###66 function %s already declared with function type %s";
-        case ERROR_MESSAGE::redefine_non_static_function:
-            return "###67 " + em("static") + " function %s already defined non-static";
+        case ERROR_MESSAGE::redeclare_non_static_function:
+            return "###67 " + em("static") + " function %s already declared non-static";
         case ERROR_MESSAGE::pointer_type_from_constant:
             return "###68 cannot initialize pointer type %s from constant %s";
         case ERROR_MESSAGE::pointer_type_from_non_null:
@@ -550,7 +550,7 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###84 structure type %s declared with duplicate member name %s";
         case ERROR_MESSAGE::structure_has_incomplete_member:
             return "###85 structure type %s declared with member %s incomplete type %s";
-        case ERROR_MESSAGE::redefine_structure_in_scope:
+        case ERROR_MESSAGE::redeclare_structure_in_scope:
             return "###86 structure type %s already declared in this scope";
         case ERROR_MESSAGE::break_outside_of_loop:
             return "###87 " + em("break") + " statement not within loop";
@@ -558,8 +558,17 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###88 " + em("continue") + " statement not within loop";
         case ERROR_MESSAGE::goto_without_target_label:
             return "###89 " + em("goto") + " statement without target label %s in function %s";
-        case ERROR_MESSAGE::undefined_structure_in_scope:
+        case ERROR_MESSAGE::structure_not_defined_in_scope:
             return "###90 structure type %s not defined within this scope";
+        case ERROR_MESSAGE::variable_not_declared_in_scope:
+            return "###91 variable %s not declared within this scope";
+        case ERROR_MESSAGE::function_not_declared_in_scope:
+            return "###92 function %s not declared within this scope";
+        case ERROR_MESSAGE::non_auto_variable_for_initial:
+            return "###93 variable %s declared with non-automatic storage in " + em("for")
+                   + " loop initial declaration";
+        case ERROR_MESSAGE::redeclare_label_in_scope:
+            return "###94 label %s already declared in this scope";
         default:
             RAISE_INTERNAL_ERROR;
     }

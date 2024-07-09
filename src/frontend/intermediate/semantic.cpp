@@ -1301,7 +1301,7 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
         FunAttr* fun_attrs = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get());
         if (!is_global && fun_attrs->is_global) {
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::redefine_non_static_function, get_name_hr(node->name)), node->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_non_static_function, get_name_hr(node->name)), node->line);
         }
         is_global = fun_attrs->is_global;
     }
@@ -2010,7 +2010,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::redefine_structure_in_scope, get_struct_name_hr(node->tag)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_structure_in_scope, get_struct_name_hr(node->tag)), node->line);
     }
     TInt alignment = 0;
     TLong size = 0l;
@@ -2131,7 +2131,7 @@ static void resolve_structure_struct_type(Structure* struct_type) {
         }
     }
     raise_runtime_error_at_line(
-        GET_ERROR_MESSAGE(ERROR_MESSAGE::undefined_structure_in_scope, get_type_hr(struct_type)),
+        GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_not_defined_in_scope, get_type_hr(struct_type)),
         1); // TODO other_(type)
 }
 
@@ -2167,7 +2167,8 @@ static void resolve_var_expression(CVar* node) {
             goto Lelse;
         }
     }
-    raise_runtime_error("###91 Variable " + em(node->name) + " was not declared in this scope"); // TODO exp
+    raise_runtime_error_at_line(
+        GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_not_declared_in_scope, get_name_hr(node->name)), node->line);
 Lelse:
 
     checktype_var_expression(node);
@@ -2211,7 +2212,8 @@ static void resolve_function_call_expression(CFunctionCall* node) {
             goto Lelse;
         }
     }
-    raise_runtime_error("###92 Function " + em(node->name) + " was not declared in this scope"); // TODO exp
+    raise_runtime_error_at_line(
+        GET_ERROR_MESSAGE(ERROR_MESSAGE::function_not_declared_in_scope, get_name_hr(node->name)), node->line);
 Lelse:
 
     for (size_t i = 0; i < node->args.size(); ++i) {
@@ -2320,9 +2322,9 @@ static void resolve_statement(CStatement* node);
 
 static void resolve_init_decl_for_init(CInitDecl* node) {
     if (node->init->storage_class) {
-        raise_runtime_error(
-            "###93 Variable " + em(node->init->name)
-            + " was not declared with automatic linkage in for loop initializer"); // TODO variable_declaration
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::non_auto_variable_for_initial, get_name_hr(node->init->name)),
+            node->init->line);
     }
     resolve_block_scope_variable_declaration(node->init.get());
 }
@@ -2379,8 +2381,8 @@ static void resolve_goto_statement(CGoto* node) {
 
 static void resolve_label_statement(CLabel* node) {
     if (context->label_set.find(node->target) != context->label_set.end()) {
-        raise_runtime_error(
-            "###94 Label " + em(node->target) + " was already declared in this scope"); // TODO statement_label
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclare_label_in_scope, get_name_hr(node->target)), node->line);
     }
     context->label_set.insert(node->target);
 

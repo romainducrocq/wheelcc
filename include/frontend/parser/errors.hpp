@@ -93,7 +93,7 @@ enum ERROR_MESSAGE {
     function_has_incomplete_param,
     redeclaration_type_mismatch,
     redeclare_function_type,
-    redefine_non_static_function,
+    redeclare_non_static_function,
     pointer_type_from_constant,
     pointer_type_from_non_null,
     non_char_pointer_from_string,
@@ -102,11 +102,15 @@ enum ERROR_MESSAGE {
     variable_declared_void,
     structure_duplicate_member,
     structure_has_incomplete_member,
-    redefine_structure_in_scope,
+    redeclare_structure_in_scope,
     break_outside_of_loop,
     continue_outside_of_loop,
     goto_without_target_label,
-    undefined_structure_in_scope
+    structure_not_defined_in_scope,
+    variable_not_declared_in_scope,
+    function_not_declared_in_scope,
+    non_auto_variable_for_initial,
+    redeclare_label_in_scope
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
