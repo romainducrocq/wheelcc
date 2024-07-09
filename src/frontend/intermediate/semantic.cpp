@@ -361,6 +361,16 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     }
 }
 
+size_t get_compound_init_line(CInitializer* node) {
+    while (node->type() == AST_T::CCompoundInit_t) {
+        node = static_cast<CCompoundInit*>(node)->initializers[0].get();
+    }
+    if (node->type() != AST_T::CSingleInit_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    return static_cast<CSingleInit*>(node)->exp->line;
+}
+
 static void resolve_struct_type(Type* type);
 
 static void checktype_constant_expression(CConstant* node) {
@@ -1188,7 +1198,7 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
         raise_runtime_error_at_line(
             GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_array_initializer_size, std::to_string(arr_type->size),
                 get_type_hr(arr_type), std::to_string(node->initializers.size())),
-            GET_COMPOUND_INIT_LINE(node));
+            get_compound_init_line(node));
     }
 }
 
@@ -1198,7 +1208,7 @@ static void checktype_bound_structure_compound_init_initializer(CCompoundInit* n
             GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_struct_members_number, get_type_hr(struct_type),
                 std::to_string(node->initializers.size()),
                 std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
-            GET_COMPOUND_INIT_LINE(node));
+            get_compound_init_line(node));
     }
 }
 
@@ -1686,7 +1696,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR; // TODO runtime error
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1812,7 +1822,7 @@ static void checktype_compound_init_initializer_static_init(CCompoundInit* node,
         default:
             raise_runtime_error_at_line(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE::scalar_type_from_compound, get_type_hr(static_init_type)),
-                GET_COMPOUND_INIT_LINE(node));
+                get_compound_init_line(node));
     }
 }
 
@@ -2560,7 +2570,7 @@ static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_p
         default:
             raise_runtime_error_at_line(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE::scalar_type_from_compound, get_type_hr(init_type.get())),
-                GET_COMPOUND_INIT_LINE(node));
+                get_compound_init_line(node));
     }
 }
 
