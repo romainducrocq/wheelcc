@@ -548,6 +548,12 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###84 structure %s declared with duplicate member name %s";
         case ERROR_MESSAGE::structure_has_incomplete_member:
             return "###85 structure %s declared with member %s incomplete type %s";
+        case ERROR_MESSAGE::redefine_structure_in_scope:
+            return "###86 structure %s already declared in this scope";
+        case ERROR_MESSAGE::break_outside_of_loop:
+            return "###87 " + em("break") + " statement not within loop";
+        case ERROR_MESSAGE::continue_outside_of_loop:
+            return "###88 " + em("continue") + " statement not within loop";
         default:
             RAISE_INTERNAL_ERROR;
     }

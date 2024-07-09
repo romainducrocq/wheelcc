@@ -2008,8 +2008,8 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
-        raise_runtime_error(
-            "###86 Structure type " + em(node->tag) + " was already declared in this scope"); // TODO struct_declaration
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::redefine_structure_in_scope, get_name_hr(node->tag)), node->line);
     }
     TInt alignment = 0;
     TLong size = 0l;
@@ -2066,16 +2066,14 @@ static void annotate_for_loop(CFor* node) {
 
 static void annotate_break_loop(CBreak* node) {
     if (context->loop_labels.empty()) {
-        raise_runtime_error("###87 An error occurred in loop annotation, " + em("break")
-                            + "is outside of loop"); // TODO statement_break
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::break_outside_of_loop), node->line);
     }
     node->target = context->loop_labels.back();
 }
 
 static void annotate_continue_loop(CContinue* node) {
     if (context->loop_labels.empty()) {
-        raise_runtime_error("###88 An error occurred in loop annotation, " + em("continue")
-                            + "is outside of loop"); // TODO statement_continue
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::continue_outside_of_loop), node->line);
     }
     node->target = context->loop_labels.back();
 }

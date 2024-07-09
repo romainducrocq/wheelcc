@@ -101,7 +101,10 @@ enum ERROR_MESSAGE {
     scalar_type_from_compound,
     variable_declared_void,
     structure_duplicate_member,
-    structure_has_incomplete_member
+    structure_has_incomplete_member,
+    redefine_structure_in_scope,
+    break_outside_of_loop,
+    continue_outside_of_loop
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
