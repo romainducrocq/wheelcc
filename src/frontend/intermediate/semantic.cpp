@@ -1838,7 +1838,8 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
-        raise_runtime_error("###73 Variable declaration can not have void type"); // TODO variable_declaration
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_void, get_name_hr(node->name)), node->line);
     }
     is_valid_type(node->var_type.get());
 
@@ -1960,7 +1961,8 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
-        raise_runtime_error("###83 Variable declaration can not have void type"); // TODO variable_declaration
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_void, get_name_hr(node->name)), node->line);
     }
     is_valid_type(node->var_type.get());
 
@@ -1985,8 +1987,9 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for (size_t i = 0; i < node->members.size(); ++i) {
         for (size_t j = i + 1; j < node->members.size(); ++j) {
             if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
-                raise_runtime_error(
-                    "###84 Structure member was already declared in this scope"); // TODO struct_declaration
+                raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_duplicate_member,
+                                                get_name_hr(node->tag), get_name_hr(node->members[i]->member_name)),
+                    node->members[i]->line);
             }
         }
         if (node->members[i].get()->member_type->type() == AST_T::FunType_t) {
@@ -1994,8 +1997,10 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         }
         resolve_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
-            raise_runtime_error(
-                "###85 Structure member must be declared with a complete type"); // TODO struct_declaration
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_has_incomplete_member, get_name_hr(node->tag),
+                    get_name_hr(node->members[i]->member_name), get_type_hr(node->members[i].get()->member_type.get())),
+                node->members[i]->line);
         }
         is_valid_type(node->members[i].get()->member_type.get());
     }

@@ -98,7 +98,10 @@ enum ERROR_MESSAGE {
     pointer_type_from_non_null,
     non_char_pointer_from_string,
     static_variable_non_constant,
-    scalar_type_from_compound
+    scalar_type_from_compound,
+    variable_declared_void,
+    structure_duplicate_member,
+    structure_has_incomplete_member
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

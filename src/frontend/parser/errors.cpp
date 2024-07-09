@@ -542,6 +542,12 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###71 cannot statically initialize variable from non-constant type %s";
         case ERROR_MESSAGE::scalar_type_from_compound:
             return "###72 cannot initialize scalar type %s with compound initializer";
+        case ERROR_MESSAGE::variable_declared_void:
+            return "###73 variable %s declared with type " + em("void");
+        case ERROR_MESSAGE::structure_duplicate_member:
+            return "###84 structure %s declared with duplicate member name %s";
+        case ERROR_MESSAGE::structure_has_incomplete_member:
+            return "###85 structure %s declared with member %s incomplete type %s";
         default:
             RAISE_INTERNAL_ERROR;
     }
