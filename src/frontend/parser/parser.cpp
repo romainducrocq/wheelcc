@@ -27,7 +27,7 @@ ParserContext::ParserContext(std::vector<Token>* p_tokens) : p_tokens(p_tokens),
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
         raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_next_token,
-                                        em(get_token_kind_hr(expected_token)).c_str(), em(next_token_is.token).c_str()),
+                                        get_token_kind_hr(expected_token), next_token_is.token),
             next_token_is.line);
     }
 }
@@ -158,8 +158,7 @@ static std::shared_ptr<CConst> parse_constant() {
 
     intmax_t value = string_to_intmax(context->next_token->token, context->next_token->line);
     if (value > 9223372036854775807ll) {
-        raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::out_of_bound_constant, em(context->next_token->token).c_str()),
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::out_of_bound_constant, context->next_token->token),
             context->next_token->line);
     }
     if (context->next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
@@ -178,8 +177,7 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
 
     uintmax_t value = string_to_uintmax(context->next_token->token, context->next_token->line);
     if (value > 18446744073709551615ull) {
-        raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::out_of_bound_unsigned, em(context->next_token->token).c_str()),
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::out_of_bound_unsigned, context->next_token->token),
             context->next_token->line);
     }
     if (context->next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
@@ -231,8 +229,7 @@ static std::unique_ptr<CUnaryOp> parse_unary_op() {
         case TOKEN_KIND::unop_not:
             return std::make_unique<CNot>();
         default:
-            raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_unary_op, em(context->next_token->token).c_str()),
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_unary_op, context->next_token->token),
                 context->next_token->line);
     }
 }
@@ -291,8 +288,7 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
         case TOKEN_KIND::binop_greaterthanorequal:
             return std::make_unique<CGreaterOrEqual>();
         default:
-            raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_binary_op, em(context->next_token->token).c_str()),
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_binary_op, context->next_token->token),
                 context->next_token->line);
     }
 }
@@ -386,7 +382,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_declarator() {
             return parse_array_direct_abstract_declarator();
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_abstract_declarator, em(context->peek_token->token).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_abstract_declarator, context->peek_token->token),
                 context->peek_token->line);
     }
 }
@@ -531,7 +527,7 @@ static std::unique_ptr<CExp> parse_pointer_unary_factor() {
             return parse_addrof_factor();
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_pointer_unary_factor, em(context->next_token->token).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_pointer_unary_factor, context->next_token->token),
                 context->next_token->line);
     }
 }
@@ -602,7 +598,7 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
             return parse_inner_exp_factor();
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_primary_exp_factor, em(context->peek_token->token).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_primary_exp_factor, context->peek_token->token),
                 context->peek_token->line);
     }
 }
@@ -817,8 +813,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 exp_left = parse_ternary_exp(std::move(exp_left), precedence);
                 break;
             default:
-                raise_runtime_error_at_line(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_exp, em(context->peek_token->token).c_str()),
+                raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_exp, context->peek_token->token),
                     context->peek_token->line);
         }
     }
@@ -997,8 +992,7 @@ static std::unique_ptr<CInitDecl> parse_decl_for_init() {
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
     if (declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_for_loop_decl_type, em(declarator.name).c_str()),
-            context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_for_loop_decl_type, declarator.name), context->next_token->line);
     }
     std::unique_ptr<CVariableDeclaration> init =
         parse_variable_declaration(std::move(storage_class), std::move(declarator));
@@ -1128,7 +1122,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             }
             default:
                 raise_runtime_error_at_line(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier, em(peek_next_i(specifier).token).c_str()),
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier, peek_next_i(specifier).token),
                     peek_next_i(specifier).line);
         }
     }
@@ -1220,8 +1214,7 @@ Lbreak:
         type_token_kinds_string += get_token_kind_hr(type_token_kind) + ",";
     }
     raise_runtime_error_at_line(
-        GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier_list, em("(" + type_token_kinds_string + ")").c_str()),
-        line);
+        GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_type_specifier_list, "(" + type_token_kinds_string + ")"), line);
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
@@ -1234,7 +1227,7 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
             return std::make_unique<CExtern>();
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_storage_class, em(context->next_token->token).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_storage_class, context->next_token->token),
                 context->next_token->line);
     }
 }
@@ -1314,7 +1307,7 @@ static void parse_process_fun_declarator(
         parse_process_declarator(param->declarator.get(), param->param_type, param_declarator);
         if (param_declarator.derived_type->type() == AST_T::FunType_t) {
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::fun_ptr_param_derivation, em(param_declarator.name).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::fun_ptr_param_derivation, param_declarator.name),
                 context->next_token->line);
         }
         params.push_back(std::move(param_declarator.name));
@@ -1368,7 +1361,7 @@ static std::unique_ptr<CDeclarator> parse_simple_declarator() {
             return parse_declarator_simple_declarator();
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_simple_declarator, em(context->peek_token->token).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_simple_declarator, context->peek_token->token),
                 context->peek_token->line);
     }
 }
@@ -1423,7 +1416,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         }
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_param_list, em(context->peek_token->token).c_str()),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_param_list, context->peek_token->token),
                 context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
@@ -1517,13 +1510,11 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
     Declarator declarator;
     if (parse_declarator_declaration(declarator)) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_storage, em(declarator.name).c_str()),
-            context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_storage, declarator.name), context->next_token->line);
     }
     else if (declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_fun_type, em(declarator.name).c_str()),
-            context->next_token->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_fun_type, declarator.name), context->next_token->line);
     }
     size_t line = context->next_token->line;
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);

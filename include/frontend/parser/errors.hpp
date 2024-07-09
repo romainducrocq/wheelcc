@@ -110,7 +110,7 @@ std::string get_binary_op_hr(CBinaryOp* node);
 std::string get_error_message(ERROR_MESSAGE message);
 template <typename... TArgs> std::string get_error_message(ERROR_MESSAGE message, TArgs&&... args) {
     char buffer[4096];
-    snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), std::forward<TArgs>(args)...);
+    snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), em(std::forward<TArgs>(args)).c_str()...);
     return std::string(buffer);
 }
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
