@@ -168,7 +168,7 @@ static void is_array_valid_type(Array* arr_type) {
     if (!is_type_complete(arr_type->elem_type.get())) {
         raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::array_of_incomplete_type, get_type_hr(arr_type),
                                         get_type_hr(arr_type->elem_type.get())),
-            1); // TODO other_(type)
+            context->line_buffer);
     }
     is_valid_type(arr_type->elem_type.get());
 }
@@ -415,6 +415,7 @@ static void checktype_cast_expression(CCast* node) {
                                         get_type_hr(node->exp->exp_type.get()), get_type_hr(node->target_type.get())),
             node->line);
     }
+    context->line_buffer = node->line;
     is_valid_type(node->target_type.get());
     node->exp_type = node->target_type;
 }
@@ -944,6 +945,7 @@ static void checktype_sizeoft_expression(CSizeOfT* node) {
             GET_ERROR_MESSAGE(ERROR_MESSAGE::size_of_incomplete_type, get_type_hr(node->target_type.get())),
             node->line);
     }
+    context->line_buffer = node->line;
     is_valid_type(node->target_type.get());
     node->exp_type = std::make_shared<ULong>();
 }
@@ -1223,6 +1225,7 @@ static void checktype_structure_compound_init_initializer(
 static void checktype_return_function_declaration(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     resolve_struct_type(fun_type->ret_type.get());
+    context->line_buffer = node->line;
     is_valid_type(fun_type->ret_type.get());
 
     switch (fun_type->ret_type->type()) {
@@ -1252,6 +1255,7 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
                                             get_name_hr(node->name), get_name_hr(node->params[i])),
                 node->line);
         }
+        context->line_buffer = node->line;
         is_valid_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Array_t) {
             std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
@@ -1841,6 +1845,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         raise_runtime_error_at_line(
             GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_void, get_name_hr(node->name)), node->line);
     }
+    context->line_buffer = node->line;
     is_valid_type(node->var_type.get());
 
     std::shared_ptr<InitialValue> initial_value;
@@ -1964,6 +1969,7 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
         raise_runtime_error_at_line(
             GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_void, get_name_hr(node->name)), node->line);
     }
+    context->line_buffer = node->line;
     is_valid_type(node->var_type.get());
 
     if (node->storage_class) {
@@ -2003,6 +2009,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
                     get_name_hr(node->members[i]->member_name), get_type_hr(node->members[i].get()->member_type.get())),
                 node->members[i]->line);
         }
+        context->line_buffer = node->members[i]->line;
         is_valid_type(node->members[i].get()->member_type.get());
     }
 }
