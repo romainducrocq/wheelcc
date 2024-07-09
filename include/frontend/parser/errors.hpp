@@ -56,6 +56,7 @@ enum ERROR_MESSAGE {
     invalid_member_decl_fun_type,
 
     // Semantic
+    array_of_incomplete_type,
     joint_pointer_type_mismatch,
     function_used_as_variable,
     cannot_convert_from_to,

@@ -166,7 +166,9 @@ static void is_pointer_valid_type(Pointer* ptr_type) { is_valid_type(ptr_type->r
 
 static void is_array_valid_type(Array* arr_type) {
     if (!is_type_complete(arr_type->elem_type.get())) {
-        raise_runtime_error("###1 Array must be of complete type"); // TODO other_(type)
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::array_of_incomplete_type, get_type_hr(arr_type),
+                                        get_type_hr(arr_type->elem_type.get())),
+            1); // TODO other_(type)
     }
     is_valid_type(arr_type->elem_type.get());
 }
@@ -252,8 +254,7 @@ static TLong get_array_aggregate_type_scale(Array* arr_type) {
 
 static TLong get_structure_aggregate_type_scale(Structure* struct_type) {
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error(
-            "###2 Structure type " + em(struct_type->tag) + "was not declared in this scope"); // ? TODO other_(type)
+        RAISE_INTERNAL_ERROR;
     }
     return frontend->struct_typedef_table[struct_type->tag]->size;
 }
@@ -277,8 +278,7 @@ static TInt get_array_aggregate_type_alignment(Array* arr_type) {
 
 static TInt get_structure_aggregate_type_alignment(Structure* struct_type) {
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error(
-            "###3 Structure type " + em(struct_type->tag) + "was not declared in this scope"); // TODO other_(type)
+        RAISE_INTERNAL_ERROR;
     }
     return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }

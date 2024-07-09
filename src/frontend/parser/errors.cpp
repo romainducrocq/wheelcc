@@ -458,6 +458,8 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "field %s declared with non-automatic storage";
         case ERROR_MESSAGE::invalid_member_decl_fun_type:
             return "field %s declared as a function";
+        case ERROR_MESSAGE::array_of_incomplete_type:
+            return "###1 array type %s of incomplete type %s";
         case ERROR_MESSAGE::joint_pointer_type_mismatch:
             return "###4 pointer type mismatch %s and %s in expression";
         case ERROR_MESSAGE::function_used_as_variable:
