@@ -316,6 +316,40 @@ std::string get_binary_op_hr(CBinaryOp* node) {
     }
 }
 
+std::string get_assignment_hr(CBinaryOp* node) {
+    if (!node) {
+        return "=";
+    }
+    else {
+        switch (node->type()) {
+            case CAdd_t:
+                return "+=";
+            case CSubtract_t:
+                return "-=";
+            case CMultiply_t:
+                return "*=";
+            case CDivide_t:
+                return "/=";
+            case CRemainder_t:
+                return "%=";
+            case CBitAnd_t:
+                return "&=";
+            case CBitOr_t:
+                return "|=";
+            case CBitXor_t:
+                return "^=";
+            case CBitShiftLeft_t:
+                return "<<=";
+            case CBitShiftRight_t:
+                return ">>=";
+            case CBitShrArithmetic_t:
+                return ">>=";
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
+    }
+}
+
 std::string get_error_message(ERROR_MESSAGE message) {
     switch (message) {
         case ERROR_MESSAGE::no_option_code:
@@ -469,37 +503,39 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::invalid_member_decl_fun_type:
             return "field %s declared as a function";
         case ERROR_MESSAGE::array_of_incomplete_type:
-            return "###1 array type %s of incomplete type %s";
+            return "###1 array type %s of incomplete type %s, must be of complete type";
         case ERROR_MESSAGE::joint_pointer_type_mismatch:
-            return "###4 pointer type mismatch %s and %s in expression";
+            return "###4 pointer type mismatch %s and %s in operator"; // ? use binary / ternary message instead ?
         case ERROR_MESSAGE::function_used_as_variable:
-            return "###5 function %s used as a variable";
+            return "###5 function %s was used as a variable"; // add fun type ?
         case ERROR_MESSAGE::cannot_convert_from_to:
-            return "###6 cannot convert from type %s to %s";
+            return "###6 illegal cast, cannot convert expression from type %s to %s";
         case ERROR_MESSAGE::cannot_apply_unop_on_type:
-            return "###11 cannot apply unary %s on type %s";
+            return "###11 cannot apply unary operator %s on operand type %s";
         case ERROR_MESSAGE::cannot_apply_binop_on_type:
-            return "###13 cannot apply binary %s on type %s";
+            return "###13 cannot apply binary operator %s on operand type %s";
         case ERROR_MESSAGE::cannot_apply_binop_on_types:
-            return "###12 cannot apply binary %s on types %s and %s";
+            return "###12 cannot apply binary operator %s on operand types %s and %s";
         case ERROR_MESSAGE::wrong_lhs_assignment_type:
-            return "###28 cannot assign to lhs-operand type %s";
+            return "###28 cannot assign " + em("=") + " to left operand type " + em("void");
         case ERROR_MESSAGE::invalid_lvalue_lhs_assignment:
-            return "###29 assignment requires lvalue lhs-operand";
+            return "###29 assignment %s requires lvalue left operand, but got rvalue";
         case ERROR_MESSAGE::wrong_cond_type_conditional:
-            return "###32 cannot have type %s condition in conditional";
+            return "###32 cannot apply conditional " + em("?") + " on condition operand type %s";
         case ERROR_MESSAGE::conditional_type_mismatch:
-            return "###33 type mismatch %s and %s in conditional";
+            return "###33 cannot apply ternary operator " + em(":") + " on operand types %s and %s";
         case ERROR_MESSAGE::variable_used_as_function:
-            return "###36 variable %s used as a function";
+            return "###36 variable %s was used as a function"; // add var type ?
         case ERROR_MESSAGE::wrong_number_of_arguments:
-            return "###37 function %s called with %s arguments instead of %s";
+            return "###37 function %s called with %s arguments instead of %s"; // add fun type
         case ERROR_MESSAGE::cannot_dereference_non_pointer:
-            return "###38 cannot dereference non-pointer type %s";
+            return "###38 cannot apply dereference operator " + em("*") + " on non-pointer type %s";
         case ERROR_MESSAGE::invalid_lvalue_address_of:
-            return "###39 address-of requires lvalue operand";
+            return "###39 addresssing " + em("&") + " requires lvalue operand, but got rvalue";
         case ERROR_MESSAGE::invalid_array_subscript_types:
-            return "###40 cannot subscript array with types %s and %s";
+            return "###40 cannot subscript array with operand types %s and %s, must be a complete pointer and an "
+                   "integer types";
+        // HERE
         case ERROR_MESSAGE::size_of_incomplete_type:
             return "###41 cannot get size of incomplete type %s";
         case ERROR_MESSAGE::access_member_non_struct:

@@ -801,12 +801,12 @@ static void checktype_binary_expression(CBinary* node) {
 static void checktype_assignment_expression(CAssignment* node) {
     if (node->exp_left) {
         if (node->exp_left->exp_type->type() == AST_T::Void_t) {
-            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_lhs_assignment_type,
-                                            get_type_hr(node->exp_left->exp_type.get())),
-                node->line);
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::wrong_lhs_assignment_type), node->line);
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
-            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_lhs_assignment), node->line);
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_lhs_assignment, get_assignment_hr(nullptr)),
+                node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
@@ -822,7 +822,10 @@ static void checktype_assignment_expression(CAssignment* node) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();
         }
         if (!is_exp_lvalue(exp_left)) {
-            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_lhs_assignment), node->line);
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_lvalue_lhs_assignment,
+                    get_assignment_hr(static_cast<CBinary*>(node->exp_right.get())->binary_op.get())),
+                node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), exp_left->exp_type);
