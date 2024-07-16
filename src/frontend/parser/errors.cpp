@@ -562,7 +562,7 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::cannot_use_for_with_type:
             return "###55 cannot use " + em("for") + " loop statement with expression type %s";
         case ERROR_MESSAGE::non_char_array_from_string:
-            return "###56 array type %s initialized from string literal";
+            return "###56 non-character array type %s initialized from string literal";
         case ERROR_MESSAGE::wrong_string_literal_size:
             return "###57 size %s string literal initialized with %s characters";
         case ERROR_MESSAGE::wrong_array_initializer_size:
@@ -581,15 +581,15 @@ std::string get_error_message(ERROR_MESSAGE message) {
             return "###65 function %s redeclared with function type %s, but previous declaration has function type %s";
         case ERROR_MESSAGE::redeclare_function_type:
             return "###66 function %s already defined with function type %s";
-            // HERE
         case ERROR_MESSAGE::redeclare_non_static_function:
             return "###67 " + em("static") + " function %s already declared non-static";
         case ERROR_MESSAGE::pointer_type_from_constant:
-            return "###68 cannot initialize pointer type %s from constant %s";
+            return "###68 cannot statically initialize pointer type %s from constant %s, must be a constant integer";
         case ERROR_MESSAGE::pointer_type_from_non_null:
-            return "###69 cannot initialize pointer type %s from non-null value %s";
+            return "###69 cannot statically initialize pointer type %s from non-null value %s";
         case ERROR_MESSAGE::non_char_pointer_from_string:
-            return "###70 pointer type %s initialized from string literal";
+            return "###70 non-character pointer type %s statically initialized from string literal";
+            // HERE
         case ERROR_MESSAGE::static_variable_non_constant:
             return "###71 cannot statically initialize variable from non-constant type %s";
         case ERROR_MESSAGE::scalar_type_from_compound:
