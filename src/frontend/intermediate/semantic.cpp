@@ -1309,8 +1309,8 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
                 && fun_type->param_types.size() == node->params.size()
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclaration_type_mismatch, get_type_hr(node->fun_type.get()),
-                    get_type_hr(fun_type), get_name_hr(node->name)),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::redeclaration_type_mismatch, get_name_hr(node->name),
+                    get_type_hr(node->fun_type.get()), get_type_hr(fun_type)),
                 node->line);
         }
         else if (is_defined && node->body) {

@@ -535,31 +535,32 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::invalid_array_subscript_types:
             return "###40 cannot subscript array with operand types %s and %s, must be a complete pointer and an "
                    "integer types";
-        // HERE
         case ERROR_MESSAGE::size_of_incomplete_type:
-            return "###41 cannot get size of incomplete type %s";
+            return "###41 cannot get size with " + em("sizeof") + " operator on incomplete type %s";
         case ERROR_MESSAGE::access_member_non_struct:
-            return "###43 cannot access member %s on non-structure type %s";
+            return "###43 cannot access structure member %s with dot operator " + em(".") + " on non-structure type %s";
         case ERROR_MESSAGE::struct_has_no_member_named:
             return "###44 structure type %s has no member named %s";
         case ERROR_MESSAGE::access_member_non_pointer:
-            return "###45 cannot access member %s on non-pointer-to-structure type %s";
+            return "###45 cannot access structure member %s with arrow operator " + em("->")
+                   + " on non-pointer-to-structure type %s";
         case ERROR_MESSAGE::access_member_incomplete_type:
-            return "###47 cannot access member on incomplete structure type %s";
+            return "###47 cannot access structure member %s with arrow operator " + em("->")
+                   + " on incomplete structure type %s";
         case ERROR_MESSAGE::incomplete_struct_type:
             return "###49 incomplete structure type %s in expression";
-        case ERROR_MESSAGE::return_value_in_void_function: // TODO review before here
+        case ERROR_MESSAGE::return_value_in_void_function:
             return "###50 " + em("return") + " value in function %s returning type " + em("void");
         case ERROR_MESSAGE::no_return_value_in_function:
             return "###51 " + em("return") + " with no value in function %s returning type %s";
         case ERROR_MESSAGE::cannot_use_if_with_type:
-            return "###52 cannot use " + em("if") + " statement with type %s";
+            return "###52 cannot use " + em("if") + " statement with expression type %s";
         case ERROR_MESSAGE::cannot_use_while_with_type:
-            return "###53 cannot use " + em("while") + " loop statement with type %s";
+            return "###53 cannot use " + em("while") + " loop statement with expression type %s";
         case ERROR_MESSAGE::cannot_use_do_while_with_type:
-            return "###54 cannot use " + em("do while") + " loop statement with type %s";
+            return "###54 cannot use " + em("do while") + " loop statement with expression type %s";
         case ERROR_MESSAGE::cannot_use_for_with_type:
-            return "###55 cannot use " + em("for") + " loop statement with type %s";
+            return "###55 cannot use " + em("for") + " loop statement with expression type %s";
         case ERROR_MESSAGE::non_char_array_from_string:
             return "###56 array type %s initialized from string literal";
         case ERROR_MESSAGE::wrong_string_literal_size:
@@ -569,17 +570,18 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::wrong_struct_members_number:
             return "###59 structure type %s initialized with %s members instead of %s";
         case ERROR_MESSAGE::function_returns_array:
-            return "###60 function %s returns array type %s";
+            return "###60 function %s returns array type %s, instead of pointer type";
         case ERROR_MESSAGE::function_returns_incomplete:
             return "###61 function %s returns incomplete structure type %s";
         case ERROR_MESSAGE::function_has_void_param:
             return "###62 function %s declared with parameter %s type " + em("void");
         case ERROR_MESSAGE::function_has_incomplete_param:
-            return "###63 function %s declared with parameter %s incomplete structure type %s";
+            return "###63 function %s defined with parameter %s incomplete structure type %s";
         case ERROR_MESSAGE::redeclaration_type_mismatch:
-            return "###65 type mismatch %s and %s in function %s redeclaration";
+            return "###65 function %s redeclared with function type %s, but previous declaration has function type %s";
         case ERROR_MESSAGE::redeclare_function_type:
-            return "###66 function %s already declared with function type %s";
+            return "###66 function %s already defined with function type %s";
+            // HERE
         case ERROR_MESSAGE::redeclare_non_static_function:
             return "###67 " + em("static") + " function %s already declared non-static";
         case ERROR_MESSAGE::pointer_type_from_constant:
