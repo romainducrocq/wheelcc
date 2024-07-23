@@ -505,9 +505,9 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::array_of_incomplete_type:
             return "###1 array type %s of incomplete type %s, must be of complete type";
         case ERROR_MESSAGE::joint_pointer_type_mismatch:
-            return "###4 pointer type mismatch %s and %s in operator"; // ? use binary / ternary message instead ?
+            return "###4 pointer type mismatch %s and %s in operator";
         case ERROR_MESSAGE::function_used_as_variable:
-            return "###5 function %s was used as a variable"; // add fun type ?
+            return "###5 function %s was used as a variable";
         case ERROR_MESSAGE::cannot_convert_from_to:
             return "###6 illegal cast, cannot convert expression from type %s to %s";
         case ERROR_MESSAGE::cannot_apply_unop_on_type:
@@ -525,9 +525,9 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::conditional_type_mismatch:
             return "###33 cannot apply ternary operator " + em(":") + " on operand types %s and %s";
         case ERROR_MESSAGE::variable_used_as_function:
-            return "###36 variable %s was used as a function"; // add var type ?
+            return "###36 variable %s was used as a function";
         case ERROR_MESSAGE::wrong_number_of_arguments:
-            return "###37 function %s called with %s arguments instead of %s"; // add fun type
+            return "###37 function %s called with %s arguments instead of %s";
         case ERROR_MESSAGE::cannot_dereference_non_pointer:
             return "###38 cannot apply dereference operator " + em("*") + " on non-pointer type %s";
         case ERROR_MESSAGE::invalid_lvalue_address_of:
@@ -550,9 +550,9 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::incomplete_struct_type:
             return "###49 incomplete structure type %s in expression";
         case ERROR_MESSAGE::return_value_in_void_function:
-            return "###50 " + em("return") + " value in function %s returning type " + em("void");
+            return "###50 found " + em("return") + " value in function %s returning type " + em("void");
         case ERROR_MESSAGE::no_return_value_in_function:
-            return "###51 " + em("return") + " with no value in function %s returning type %s";
+            return "###51 found " + em("return") + " with no value in function %s returning type %s";
         case ERROR_MESSAGE::cannot_use_if_with_type:
             return "###52 cannot use " + em("if") + " statement with expression type %s";
         case ERROR_MESSAGE::cannot_use_while_with_type:
@@ -582,59 +582,58 @@ std::string get_error_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::redeclare_function_type:
             return "###66 function %s already defined with function type %s";
         case ERROR_MESSAGE::redeclare_non_static_function:
-            return "###67 " + em("static") + " function %s already declared non-static";
+            return "###67 function %s with " + em("static") + " storage class already declared non-static";
         case ERROR_MESSAGE::pointer_type_from_constant:
             return "###68 cannot statically initialize pointer type %s from constant %s, must be a constant integer";
         case ERROR_MESSAGE::pointer_type_from_non_null:
             return "###69 cannot statically initialize pointer type %s from non-null value %s";
         case ERROR_MESSAGE::non_char_pointer_from_string:
             return "###70 non-character pointer type %s statically initialized from string literal";
-            // HERE
         case ERROR_MESSAGE::static_variable_non_constant:
-            return "###71 cannot statically initialize variable from non-constant type %s";
+            return "###71 cannot statically initialize variable from non-constant type %s, must be a constant";
         case ERROR_MESSAGE::scalar_type_from_compound:
             return "###72 cannot initialize scalar type %s with compound initializer";
         case ERROR_MESSAGE::variable_declared_void:
             return "###73 variable %s declared with type " + em("void");
         case ERROR_MESSAGE::variable_incomplete_structure:
-            return "###74 variable %s declared with incomplete structure type %s"; // only exten variable can be
-                                                                                   // declared with incomplete struct
-                                                                                   // type, but not defined
+            return "###74 variable %s declared with incomplete structure type %s";
         case ERROR_MESSAGE::redeclare_variable_mismatch:
-            return "###76 variable %s redeclared with conflicting type %s, but was %s";
+            return "###76 variable %s redeclared with conflicting type %s, but previously declared with type %s";
         case ERROR_MESSAGE::redeclare_variable_storage:
             return "###77 variable %s redeclared with conflicting storage class";
         case ERROR_MESSAGE::initialized_extern_variable:
-            return "###79 " + em("extern") + " variable %s is initialized";
+            return "###79 illegal initializer, can only declare variable %s with " + em("extern") + " storage class";
         case ERROR_MESSAGE::structure_duplicate_member:
             return "###84 structure type %s declared with duplicate member name %s";
         case ERROR_MESSAGE::structure_has_incomplete_member:
-            return "###85 structure type %s declared with member %s incomplete type %s";
+            return "###85 structure type %s declared with member %s with incomplete type %s";
         case ERROR_MESSAGE::redeclare_structure_in_scope:
             return "###86 structure type %s already declared in this scope";
         case ERROR_MESSAGE::break_outside_of_loop:
-            return "###87 " + em("break") + " statement not within loop";
+            return "###87 found " + em("break") + " statement outside of loop";
         case ERROR_MESSAGE::continue_outside_of_loop:
-            return "###88 " + em("continue") + " statement not within loop";
+            return "###88 found " + em("continue") + " statement outside of loop";
         case ERROR_MESSAGE::goto_without_target_label:
-            return "###89 " + em("goto") + " statement without target label %s in function %s";
+            return "###89 found " + em("goto") + " statement, but target label %s is not defined in function %s";
         case ERROR_MESSAGE::structure_not_defined_in_scope:
-            return "###90 structure type %s not defined within this scope";
+            return "###90 structure type %s not defined in this scope";
         case ERROR_MESSAGE::variable_not_declared_in_scope:
-            return "###91 variable %s not declared within this scope";
+            return "###91 variable %s not declared in this scope";
         case ERROR_MESSAGE::function_not_declared_in_scope:
-            return "###92 function %s not declared within this scope";
+            return "###92 function %s not declared in this scope";
         case ERROR_MESSAGE::non_auto_variable_for_initial:
-            return "###93 variable %s declared with non-automatic storage in " + em("for")
+            return "###93 variable %s declared with non-automatic storage class in " + em("for")
                    + " loop initial declaration";
         case ERROR_MESSAGE::redeclare_label_in_scope:
-            return "###94 label %s already declared in this scope";
+            return "###94 label %s already defined in this scope";
         case ERROR_MESSAGE::redeclare_variable_in_scope:
             return "###96 variable %s already declared in this scope";
         case ERROR_MESSAGE::function_defined_nested:
-            return "###97 nested function %s defined in another function";
+            return "###97 function %s is defined inside another function, but nested function definition are not "
+                   "permitted";
         case ERROR_MESSAGE::static_function_declared_nested:
-            return "###98 nested " + em("static") + " function %s declared in another function";
+            return "###98 cannot declare nested function %s in another function with " + em("static")
+                   + " storage class";
         case ERROR_MESSAGE::redeclare_function_in_scope:
             return "###99 function %s already declared in this scope";
         default:
