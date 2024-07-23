@@ -381,21 +381,22 @@ static std::string get_what_message(ERROR_MESSAGE message) {
 
         // Parser
         case ERROR_MESSAGE::invalid_next_token:
-            return "expected %s but found %s instead";
+            return "found token %s, but expected %s next";
         case ERROR_MESSAGE::reach_end_of_input:
-            return "expected declaration or statement at end of input";
-        case ERROR_MESSAGE::out_of_bound_constant:
+            return "reached end of file, but expected declaration or statement next";
+        // HERE
+        case ERROR_MESSAGE::out_of_bound_constant: // TODO
             return "constant %s too large to be represented as a long";
-        case ERROR_MESSAGE::out_of_bound_unsigned:
+        case ERROR_MESSAGE::out_of_bound_unsigned: // TODO
             return "constant %s too large to be represented as an unsigned long";
-        case ERROR_MESSAGE::invalid_arr_size_type:
+        case ERROR_MESSAGE::invalid_arr_size_type: // TODO
             return "size of array must have constant positive integer type";
         case ERROR_MESSAGE::invalid_unary_op:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::unop_complement)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::unop_complement)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::unop_not)) + " but found %s instead";
+                   + em(get_token_kind_hr(TOKEN_KIND::unop_not)) + " next";
         case ERROR_MESSAGE::invalid_binary_op:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::binop_addition)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_addition)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_plus)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_difference)) + ", "
@@ -421,16 +422,16 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::binop_lessthan)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal)) + " but found %s instead";
+                   + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal)) + " next";
         case ERROR_MESSAGE::invalid_abstract_declarator:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " but found %s instead";
+                   + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " next";
         case ERROR_MESSAGE::invalid_pointer_unary_factor:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitand)) + " but found %s instead";
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + " or "
+                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitand)) + " next";
         case ERROR_MESSAGE::invalid_primary_exp_factor:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::constant)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::constant)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::long_constant)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::char_constant)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::float_constant)) + ", "
@@ -439,9 +440,9 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::identifier)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::identifier) + get_token_kind_hr(TOKEN_KIND::parenthesis_open))
                    + ", " + em(get_token_kind_hr(TOKEN_KIND::string_literal)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " but found %s instead";
+                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " next";
         case ERROR_MESSAGE::invalid_exp:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::binop_addition)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_addition)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::binop_division)) + ", "
@@ -469,11 +470,11 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::ternary_if)) + " but found %s instead";
-        case ERROR_MESSAGE::invalid_for_loop_decl_type:
+                   + em(get_token_kind_hr(TOKEN_KIND::ternary_if)) + " next";
+        case ERROR_MESSAGE::invalid_for_loop_decl_type: // TODO
             return "declaration of non-variable %s in for loop initial declaration";
         case ERROR_MESSAGE::invalid_type_specifier:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::parenthesis_close)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::key_char)) + ", " + em(get_token_kind_hr(TOKEN_KIND::key_int))
                    + ", " + em(get_token_kind_hr(TOKEN_KIND::key_long)) + ", "
@@ -485,32 +486,32 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " but found %s instead";
-        case ERROR_MESSAGE::invalid_type_specifier_list:
+                   + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " next";
+        case ERROR_MESSAGE::invalid_type_specifier_list: // TODO
             return "expected valid list of unique type specifiers but found %s instead";
         case ERROR_MESSAGE::invalid_storage_class:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::key_static)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + " but found %s instead";
-        case ERROR_MESSAGE::empty_compound_initializer:
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::key_static)) + " or "
+                   + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + " next";
+        case ERROR_MESSAGE::empty_compound_initializer: // TODO
             return "compound initializer must have at least one element";
-        case ERROR_MESSAGE::many_fun_type_derivation:
+        case ERROR_MESSAGE::many_fun_type_derivation: // TODO
             return "too many type derivations for function type";
-        case ERROR_MESSAGE::fun_ptr_param_derivation:
+        case ERROR_MESSAGE::fun_ptr_param_derivation: // TODO
             return "function pointer type parameter %s in type derivations";
         case ERROR_MESSAGE::invalid_simple_declarator:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " but found %s instead";
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + " or "
+                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " next";
         case ERROR_MESSAGE::invalid_param_list:
-            return "expected " + em(get_token_kind_hr(TOKEN_KIND::key_void)) + ", "
+            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::key_void)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::key_char)) + ", " + em(get_token_kind_hr(TOKEN_KIND::key_int))
                    + ", " + em(get_token_kind_hr(TOKEN_KIND::key_long)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::key_double)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::key_unsigned)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::key_signed)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_struct)) + " but found %s instead";
-        case ERROR_MESSAGE::invalid_member_decl_storage:
+                   + em(get_token_kind_hr(TOKEN_KIND::key_struct)) + " next";
+        case ERROR_MESSAGE::invalid_member_decl_storage: // TODO
             return "field %s declared with non-automatic storage";
-        case ERROR_MESSAGE::invalid_member_decl_fun_type:
+        case ERROR_MESSAGE::invalid_member_decl_fun_type: // TODO
             return "field %s declared as a function";
 
         // Semantic

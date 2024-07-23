@@ -26,8 +26,8 @@ ParserContext::ParserContext(std::vector<Token>* p_tokens) : p_tokens(p_tokens),
 
 static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
-        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_next_token,
-                                        get_token_kind_hr(expected_token), next_token_is.token),
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_next_token, next_token_is.token,
+                                        get_token_kind_hr(expected_token)),
             next_token_is.line);
     }
 }
