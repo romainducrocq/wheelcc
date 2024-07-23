@@ -16,7 +16,7 @@
 
 // TODO clean error message enum
 enum ERROR_MESSAGE {
-    runtime_error = -256,
+    runtime_error,
 
     // Main
     no_option_code,
