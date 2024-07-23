@@ -350,7 +350,7 @@ std::string get_assignment_hr(CBinaryOp* node) {
     }
 }
 
-std::string get_error_message(ERROR_MESSAGE message) {
+static std::string get_what_message(ERROR_MESSAGE message) {
     switch (message) {
         case ERROR_MESSAGE::no_option_code:
             return "no option code";
@@ -639,4 +639,10 @@ std::string get_error_message(ERROR_MESSAGE message) {
         default:
             RAISE_INTERNAL_ERROR;
     }
+}
+
+std::string get_error_message(ERROR_MESSAGE message) {
+    std::string code = std::to_string(static_cast<int>(message));
+    std::string what = get_what_message(message);
+    return "(no. " + code + ") " + what;
 }

@@ -16,6 +16,8 @@
 
 // TODO clean error message enum
 enum ERROR_MESSAGE {
+    runtime_error = -256,
+
     // Main
     no_option_code,
     invalid_option_code,
@@ -133,7 +135,7 @@ std::string get_binary_op_hr(CBinaryOp* node);
 std::string get_assignment_hr(CBinaryOp* node);
 std::string get_error_message(ERROR_MESSAGE message);
 template <typename... TArgs> inline std::string get_error_message(ERROR_MESSAGE message, TArgs&&... args) {
-    char buffer[4096];
+    char buffer[1024];
     snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), em(std::forward<TArgs>(args)).c_str()...);
     return std::string(buffer);
 }
