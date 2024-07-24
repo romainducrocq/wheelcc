@@ -258,6 +258,17 @@ std::string get_const_hr(CConst* node) {
     }
 }
 
+std::string get_storage_class_hr(CStorageClass* node) {
+    switch (node->type()) {
+        case AST_T::CStatic_t:
+            return "static";
+        case AST_T::CExtern_t:
+            return "extern";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 std::string get_unary_op_hr(CUnaryOp* node) {
     switch (node->type()) {
         case AST_T::CComplement_t:
@@ -385,10 +396,10 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::reach_end_of_input:
             return "reached end of file, but expected declaration or statement next";
         // HERE
-        case ERROR_MESSAGE::out_of_bound_constant: // TODO
-            return "constant %s too large to be represented as a long";
-        case ERROR_MESSAGE::out_of_bound_unsigned: // TODO
-            return "constant %s too large to be represented as an unsigned long";
+        case ERROR_MESSAGE::out_of_bound_constant:
+            return "cannot represent %s as a 64 bits signed integer constant, very large number";
+        case ERROR_MESSAGE::out_of_bound_unsigned:
+            return "cannot represent %s as a 64 bits unsigned integer constant, very large number";
         case ERROR_MESSAGE::invalid_arr_size_type: // TODO
             return "size of array must have constant positive integer type";
         case ERROR_MESSAGE::invalid_unary_op:
@@ -471,8 +482,8 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright)) + " or "
                    + em(get_token_kind_hr(TOKEN_KIND::ternary_if)) + " next";
-        case ERROR_MESSAGE::invalid_for_loop_decl_type: // TODO
-            return "declaration of non-variable %s in for loop initial declaration";
+        case ERROR_MESSAGE::invalid_for_loop_decl_type:
+            return "function %s declared in " + em("for") + " loop initial declaration";
         case ERROR_MESSAGE::invalid_type_specifier:
             return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::parenthesis_close)) + ", "
@@ -487,8 +498,8 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " or "
                    + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " next";
-        case ERROR_MESSAGE::invalid_type_specifier_list: // TODO
-            return "expected valid list of unique type specifiers but found %s instead";
+        case ERROR_MESSAGE::invalid_type_specifier_list:
+            return "found tokens %s, but expected valid list of unique type specifiers next";
         case ERROR_MESSAGE::invalid_storage_class:
             return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::key_static)) + " or "
                    + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + " next";
@@ -642,7 +653,7 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::redeclare_variable_in_scope:
             return "variable %s already declared in this scope";
         case ERROR_MESSAGE::function_defined_nested:
-            return "function %s is defined inside another function, but nested function definition are not "
+            return "function %s defined inside another function, but nested function definition are not "
                    "permitted";
         case ERROR_MESSAGE::static_function_declared_nested:
             return "cannot declare nested function %s in another function with " + em("static") + " storage class";

@@ -130,6 +130,7 @@ std::string get_name_hr(const TIdentifier& name);
 std::string get_struct_name_hr(const TIdentifier& name);
 std::string get_type_hr(Type* type);
 std::string get_const_hr(CConst* node);
+std::string get_storage_class_hr(CStorageClass* node);
 std::string get_unary_op_hr(CUnaryOp* node);
 std::string get_binary_op_hr(CBinaryOp* node);
 std::string get_assignment_hr(CBinaryOp* node);
