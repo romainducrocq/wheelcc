@@ -388,20 +388,19 @@ static std::string get_what_message(ERROR_MESSAGE message) {
 
         // Lexer
         case ERROR_MESSAGE::invalid_token:
-            return "invalid token %s";
+            return "found invalid token %s";
 
         // Parser
         case ERROR_MESSAGE::invalid_next_token:
             return "found token %s, but expected %s next";
         case ERROR_MESSAGE::reach_end_of_input:
             return "reached end of file, but expected declaration or statement next";
-        // HERE
         case ERROR_MESSAGE::out_of_bound_constant:
             return "cannot represent %s as a 64 bits signed integer constant, very large number";
         case ERROR_MESSAGE::out_of_bound_unsigned:
             return "cannot represent %s as a 64 bits unsigned integer constant, very large number";
-        case ERROR_MESSAGE::invalid_arr_size_type: // TODO
-            return "size of array must have constant positive integer type";
+        case ERROR_MESSAGE::invalid_arr_size_type:
+            return "illegal array size %s, requires a constant integer";
         case ERROR_MESSAGE::invalid_unary_op:
             return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::unop_complement)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + " or "
@@ -503,12 +502,10 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::invalid_storage_class:
             return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::key_static)) + " or "
                    + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + " next";
-        case ERROR_MESSAGE::empty_compound_initializer: // TODO
-            return "compound initializer must have at least one element";
-        case ERROR_MESSAGE::many_fun_type_derivation: // TODO
-            return "too many type derivations for function type";
-        case ERROR_MESSAGE::fun_ptr_param_derivation: // TODO
-            return "function pointer type parameter %s in type derivations";
+        case ERROR_MESSAGE::empty_compound_initializer:
+            return "empty compound initializer requires at least one initializer";
+        case ERROR_MESSAGE::many_fun_type_derivation:
+            return "cannot apply further type derivation to function declaration";
         case ERROR_MESSAGE::invalid_simple_declarator:
             return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + " or "
                    + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " next";
@@ -520,18 +517,18 @@ static std::string get_what_message(ERROR_MESSAGE message) {
                    + em(get_token_kind_hr(TOKEN_KIND::key_unsigned)) + ", "
                    + em(get_token_kind_hr(TOKEN_KIND::key_signed)) + " or "
                    + em(get_token_kind_hr(TOKEN_KIND::key_struct)) + " next";
-        case ERROR_MESSAGE::invalid_member_decl_storage: // TODO
-            return "field %s declared with non-automatic storage";
-        case ERROR_MESSAGE::invalid_member_decl_fun_type: // TODO
-            return "field %s declared as a function";
+        case ERROR_MESSAGE::invalid_member_decl_storage:
+            return "structure type declared with member %s with %s storage class";
+        case ERROR_MESSAGE::invalid_member_decl_fun_type:
+            return "structure type declared with member %s as a function";
 
         // Semantic
         case ERROR_MESSAGE::array_of_incomplete_type:
-            return "array type %s of incomplete type %s, must be of complete type";
+            return "array type %s of incomplete type %s, requires a complete type";
         case ERROR_MESSAGE::joint_pointer_type_mismatch:
             return "pointer type mismatch %s and %s in operator";
         case ERROR_MESSAGE::function_used_as_variable:
-            return "function %s was used as a variable";
+            return "function %s used as a variable";
         case ERROR_MESSAGE::cannot_convert_from_to:
             return "illegal cast, cannot convert expression from type %s to %s";
         case ERROR_MESSAGE::cannot_apply_unop_on_type:
@@ -549,7 +546,7 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::conditional_type_mismatch:
             return "cannot apply ternary operator " + em(":") + " on operand types %s and %s";
         case ERROR_MESSAGE::variable_used_as_function:
-            return "variable %s was used as a function";
+            return "variable %s used as a function";
         case ERROR_MESSAGE::wrong_number_of_arguments:
             return "function %s called with %s arguments instead of %s";
         case ERROR_MESSAGE::cannot_dereference_non_pointer:
@@ -557,7 +554,7 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::invalid_lvalue_address_of:
             return "addresssing " + em("&") + " requires lvalue operand, but got rvalue";
         case ERROR_MESSAGE::invalid_array_subscript_types:
-            return "cannot subscript array with operand types %s and %s, must be a complete pointer and an "
+            return "cannot subscript array with operand types %s and %s, requires a complete pointer and an "
                    "integer types";
         case ERROR_MESSAGE::size_of_incomplete_type:
             return "cannot get size with " + em("sizeof") + " operator on incomplete type %s";
@@ -608,13 +605,13 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::redeclare_non_static_function:
             return "function %s with " + em("static") + " storage class already declared non-static";
         case ERROR_MESSAGE::pointer_type_from_constant:
-            return "cannot statically initialize pointer type %s from constant %s, must be a constant integer";
+            return "cannot statically initialize pointer type %s from constant %s, requires a constant integer";
         case ERROR_MESSAGE::pointer_type_from_non_null:
             return "cannot statically initialize pointer type %s from non-null value %s";
         case ERROR_MESSAGE::non_char_pointer_from_string:
             return "non-character pointer type %s statically initialized from string literal";
         case ERROR_MESSAGE::static_variable_non_constant:
-            return "cannot statically initialize variable from non-constant type %s, must be a constant";
+            return "cannot statically initialize variable from non-constant type %s, requires a constant";
         case ERROR_MESSAGE::scalar_type_from_compound:
             return "cannot initialize scalar type %s with compound initializer";
         case ERROR_MESSAGE::variable_declared_void:
@@ -638,7 +635,7 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::continue_outside_of_loop:
             return "found " + em("continue") + " statement outside of loop";
         case ERROR_MESSAGE::goto_without_target_label:
-            return "found " + em("goto") + " statement, but target label %s is not defined in function %s";
+            return "found " + em("goto") + " statement, but target label %s not defined in function %s";
         case ERROR_MESSAGE::structure_not_defined_in_scope:
             return "structure type %s not defined in this scope";
         case ERROR_MESSAGE::variable_not_declared_in_scope:
@@ -646,8 +643,7 @@ static std::string get_what_message(ERROR_MESSAGE message) {
         case ERROR_MESSAGE::function_not_declared_in_scope:
             return "function %s not declared in this scope";
         case ERROR_MESSAGE::non_auto_variable_for_initial:
-            return "variable %s declared with non-automatic storage class in " + em("for")
-                   + " loop initial declaration";
+            return "variable %s declared with %s storage class in " + em("for") + " loop initial declaration";
         case ERROR_MESSAGE::redeclare_label_in_scope:
             return "label %s already defined in this scope";
         case ERROR_MESSAGE::redeclare_variable_in_scope:

@@ -201,7 +201,8 @@ static TLong parse_array_size_t() {
             break;
         default:
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_arr_size_type), context->peek_token->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_arr_size_type, context->peek_token->token),
+                context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
     switch (size->type()) {
@@ -1310,9 +1311,7 @@ static void parse_process_fun_declarator(
         Declarator param_declarator;
         parse_process_declarator(param->declarator.get(), param->param_type, param_declarator);
         if (param_declarator.derived_type->type() == AST_T::FunType_t) {
-            raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::fun_ptr_param_derivation, param_declarator.name),
-                context->next_token->line);
+            RAISE_INTERNAL_ERROR;
         }
         params.push_back(std::move(param_declarator.name));
         param_types.push_back(std::move(param_declarator.derived_type));
@@ -1512,11 +1511,15 @@ static std::unique_ptr<CVariableDeclaration> parse_variable_declaration(
 // member_declaration = MemberDeclaration(identifier, type)
 static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
     Declarator declarator;
-    if (parse_declarator_declaration(declarator)) {
-        raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_storage, declarator.name), context->next_token->line);
+    {
+        std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
+        if (storage_class) {
+            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_storage, declarator.name,
+                                            get_storage_class_hr(storage_class.get())),
+                context->next_token->line);
+        }
     }
-    else if (declarator.derived_type->type() == AST_T::FunType_t) {
+    if (declarator.derived_type->type() == AST_T::FunType_t) {
         raise_runtime_error_at_line(
             GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_member_decl_fun_type, declarator.name), context->next_token->line);
     }

@@ -2353,7 +2353,8 @@ static void resolve_statement(CStatement* node);
 static void resolve_init_decl_for_init(CInitDecl* node) {
     if (node->init->storage_class) {
         raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::non_auto_variable_for_initial, get_name_hr(node->init->name)),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::non_auto_variable_for_initial, get_name_hr(node->init->name),
+                get_storage_class_hr(node->init->storage_class.get())),
             node->init->line);
     }
     resolve_block_scope_variable_declaration(node->init.get());

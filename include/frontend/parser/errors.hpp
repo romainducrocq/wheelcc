@@ -51,7 +51,6 @@ enum ERROR_MESSAGE {
     invalid_storage_class,
     empty_compound_initializer,
     many_fun_type_derivation,
-    fun_ptr_param_derivation,
     invalid_simple_declarator,
     invalid_param_list,
     invalid_member_decl_storage,
