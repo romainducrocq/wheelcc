@@ -997,8 +997,9 @@ static void checktype_arrow_expression(CArrow* node) {
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        raise_runtime_error_at_line(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::access_member_incomplete_type, get_type_hr(struct_type)), node->line);
+        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::access_member_incomplete_type,
+                                        get_name_hr(node->member), get_type_hr(struct_type)),
+            node->line);
     }
     else if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
              == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
