@@ -364,27 +364,27 @@ std::string get_assignment_hr(CBinaryOp* node) {
 static std::string get_what_message(ERROR_MESSAGE message) {
     switch (message) {
         case ERROR_MESSAGE::runtime_error:
-            return "";
+            return "an unhandled runtime error occurred";
 
         // Main
         case ERROR_MESSAGE::no_option_code:
-            return "no option code";
+            return "no option code passed in first argument";
         case ERROR_MESSAGE::invalid_option_code:
-            return "invalid option code %s";
+            return "invalid option code %s passed in first argument";
         case ERROR_MESSAGE::no_input_files:
-            return "no input files";
+            return "no input file passed in second argument";
 
         // Util
         case ERROR_MESSAGE::fail_open_rb_file:
-            return "%s: No such file or directory";
+            return "cannot read input file %s";
         case ERROR_MESSAGE::fail_open_wb_file:
-            return "%s: Failed to create output file";
+            return "cannot write output file %s";
         case ERROR_MESSAGE::string_not_integer:
-            return "string %s not an integer";
+            return "cannot interpret string %s to an integer value";
         case ERROR_MESSAGE::string_not_unsigned:
-            return "string %s not an unsigned integer";
+            return "cannot interpret string %s to an unsigned integer value";
         case ERROR_MESSAGE::string_not_float:
-            return "string %s not a floating-point number";
+            return "cannot interpret string %s to a floating point value";
 
         // Lexer
         case ERROR_MESSAGE::invalid_token:
