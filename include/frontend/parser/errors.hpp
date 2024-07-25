@@ -119,7 +119,7 @@ enum ERROR_MESSAGE {
     variable_redeclared_in_scope, // redeclare_variable_in_scope
     nested_function_defined, // function_defined_nested
     nested_static_function_declared, // static_function_declared_nested
-    function_redeclared_in_scope, // redeclare_function_in_scope  
+    function_redeclared_in_scope // redeclare_function_in_scope
 };
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
