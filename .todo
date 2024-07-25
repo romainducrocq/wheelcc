@@ -39,7 +39,6 @@
 ---- Features
 
 - add / clean error msgs in driver
-- clean error msgs in parser + semantic analysis / add line
 
 ---- Performance
 
