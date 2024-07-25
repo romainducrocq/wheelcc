@@ -2291,9 +2291,7 @@ static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(Tac
     TIdentifier name = node->name;
     bool is_global = node->is_global;
     TInt alignment = generate_type_alignment(node->static_init_type.get());
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
-    static_inits.reserve(node->static_inits.size());
-    static_inits.insert(static_inits.end(), node->static_inits.begin(), node->static_inits.end());
+    std::vector<std::shared_ptr<StaticInit>> static_inits(node->static_inits.begin(), node->static_inits.end());
     return std::make_unique<AsmStaticVariable>(
         std::move(name), std::move(alignment), std::move(is_global), std::move(static_inits));
 }

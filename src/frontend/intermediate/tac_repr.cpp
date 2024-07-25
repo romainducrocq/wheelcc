@@ -1264,9 +1264,7 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     TIdentifier name = node->name;
     bool is_global = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get())->is_global;
 
-    std::vector<TIdentifier> params;
-    params.reserve(node->params.size());
-    params.insert(params.end(), node->params.begin(), node->params.end());
+    std::vector<TIdentifier> params(node->params.begin(), node->params.end());
 
     std::vector<std::unique_ptr<TacInstruction>> body;
     {
@@ -1318,9 +1316,7 @@ static std::vector<std::shared_ptr<StaticInit>> represent_tentative_static_varia
 }
 
 static std::vector<std::shared_ptr<StaticInit>> represent_initial_static_variable_top_level(Initial* node) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
-    static_inits.reserve(node->static_inits.size());
-    static_inits.insert(static_inits.end(), node->static_inits.begin(), node->static_inits.end());
+    std::vector<std::shared_ptr<StaticInit>> static_inits(node->static_inits.begin(), node->static_inits.end());
     return static_inits;
 }
 
