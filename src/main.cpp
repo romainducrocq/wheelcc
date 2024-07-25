@@ -229,9 +229,10 @@ int main(int argc, char** argv) {
             context->args.emplace_back(std::string(argv[i]));
         }
     }
-    arg_parse();
 
+    arg_parse();
     compile();
+    
     context.reset();
 
     return 0;

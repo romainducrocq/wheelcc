@@ -2293,9 +2293,7 @@ static std::unique_ptr<AsmStaticVariable> generate_static_variable_top_level(Tac
     TInt alignment = generate_type_alignment(node->static_init_type.get());
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     static_inits.reserve(node->static_inits.size());
-    for (std::shared_ptr<StaticInit> static_init : node->static_inits) {
-        static_inits.push_back(std::move(static_init));
-    }
+    static_inits.insert(static_inits.end(), node->static_inits.begin(), node->static_inits.end());
     return std::make_unique<AsmStaticVariable>(
         std::move(name), std::move(alignment), std::move(is_global), std::move(static_inits));
 }
