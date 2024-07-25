@@ -24,7 +24,8 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
 
     if (end_ptr == &buffer[0]) {
         if (line > 0) {
-            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::string_not_integer, s_int), line);
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::failed_to_interpret_string_to_integer, s_int), line);
         }
         else {
             RAISE_INTERNAL_ERROR;
@@ -47,7 +48,8 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
 
     if (end_ptr == &buffer[0]) {
         if (line > 0) {
-            raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::string_not_unsigned, s_uint), line);
+            raise_runtime_error_at_line(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE::failed_to_interpret_string_to_unsigned_integer, s_uint), line);
         }
         else {
             RAISE_INTERNAL_ERROR;
@@ -261,7 +263,8 @@ double string_to_double(const std::string& s_double, size_t line) {
     double float64 = strtod(&buffer[0], &end_ptr);
 
     if (end_ptr == &buffer[0]) {
-        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE::string_not_float, s_double), line);
+        raise_runtime_error_at_line(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE::failed_to_interpret_string_to_float, s_double), line);
     }
 
     return float64;
