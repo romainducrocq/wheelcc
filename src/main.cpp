@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
         size_t i = static_cast<size_t>(argc);
         context->args.reserve(i);
         for (; i-- > 0;) {
-            context->args.push_back(std::string(argv[i]));
+            context->args.emplace_back(std::string(argv[i]));
         }
     }
     arg_parse();

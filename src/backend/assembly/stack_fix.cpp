@@ -937,6 +937,7 @@ static void fix_function_top_level(AsmFunction* node) {
     std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
 
     node->instructions.clear();
+    node->instructions.reserve(instructions.size());
     context->p_fix_instructions = &node->instructions;
     context->p_fix_instructions->emplace_back();
 
