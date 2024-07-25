@@ -590,6 +590,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_conditional_instruc
 static std::unique_ptr<TacPlainOperand> represent_exp_result_fun_call_instructions(CFunctionCall* node) {
     TIdentifier name = node->name;
     std::vector<std::shared_ptr<TacValue>> args;
+    args.reserve(node->args.size());
     for (const auto& arg : node->args) {
         std::shared_ptr<TacValue> arg_1 = represent_exp_instructions(arg.get());
         args.push_back(std::move(arg_1));
@@ -1264,6 +1265,7 @@ static std::unique_ptr<TacFunction> represent_function_top_level(CFunctionDeclar
     bool is_global = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get())->is_global;
 
     std::vector<TIdentifier> params;
+    params.reserve(node->params.size());
     for (const auto& param : node->params) {
         TIdentifier identifier = param;
         params.push_back(std::move(identifier));
@@ -1320,6 +1322,7 @@ static std::vector<std::shared_ptr<StaticInit>> represent_tentative_static_varia
 
 static std::vector<std::shared_ptr<StaticInit>> represent_initial_static_variable_top_level(Initial* node) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
+    static_inits.reserve(node->static_inits.size());
     for (std::shared_ptr<StaticInit> static_init : node->static_inits) {
         static_inits.push_back(std::move(static_init));
     }

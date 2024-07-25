@@ -177,6 +177,7 @@ static void convert_obj_type(IdentifierAttr* node) {
 }
 
 static void convert_program(AsmProgram* node) {
+    backend->backend_symbol_table.reserve(frontend->symbol_table.size());
     for (const auto& symbol : frontend->symbol_table) {
         context->p_symbol = &symbol.first;
         if (symbol.second->type_t->type() == AST_T::FunType_t) {

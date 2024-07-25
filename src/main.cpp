@@ -222,8 +222,12 @@ static void arg_parse() {
 
 int main(int argc, char** argv) {
     context = std::make_unique<MainContext>();
-    for (size_t i = static_cast<size_t>(argc); i-- > 0;) {
-        context->args.push_back(argv[i]);
+    {
+        size_t i = static_cast<size_t>(argc);
+        context->args.reserve(i);
+        for (; i-- > 0;) {
+            context->args.push_back(std::string(argv[i]));
+        }
     }
     arg_parse();
 

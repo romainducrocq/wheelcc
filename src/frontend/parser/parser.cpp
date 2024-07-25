@@ -1312,6 +1312,8 @@ static void parse_process_fun_declarator(
 
     std::vector<TIdentifier> params;
     std::vector<std::shared_ptr<Type>> param_types;
+    params.reserve(node->param_list.size());
+    param_types.reserve(node->param_list.size());
     for (const auto& param : node->param_list) {
         Declarator param_declarator;
         parse_process_declarator(param->declarator.get(), param->param_type, param_declarator);

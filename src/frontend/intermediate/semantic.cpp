@@ -1175,7 +1175,9 @@ static std::unique_ptr<CSingleInit> checktype_single_init_zero_initializer(Type*
 
 static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initializer(Array* arr_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
-    for (size_t i = 0; i < static_cast<size_t>(arr_type->size); ++i) {
+    size_t arr_type_size = static_cast<size_t>(arr_type->size);
+    zero_initializers.reserve(arr_type_size);
+    for (size_t i = 0; i < arr_type_size; ++i) {
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(arr_type->elem_type.get());
         zero_initializers.push_back(std::move(initializer));
     }
@@ -1184,6 +1186,7 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
 
 static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
+    zero_initializers.reserve(frontend->struct_typedef_table[struct_type->tag]->member_names.size());
     for (const auto& member_name : frontend->struct_typedef_table[struct_type->tag]->member_names) {
         const auto& member = frontend->struct_typedef_table[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member->member_type.get());
@@ -2057,6 +2060,8 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     TLong size = 0l;
     std::vector<TIdentifier> member_names;
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
+    member_names.reserve(node->members.size());
+    members.reserve(node->members.size());
     for (const auto& member : node->members) {
         {
             TIdentifier name = member->member_name;
