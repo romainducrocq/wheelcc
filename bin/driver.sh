@@ -7,7 +7,7 @@ ARGC=${#}
 ARGV=(${@})
 
 function verbose () {
-    if [ ${VERB_CODE} -eq 1 ]; then
+    if [ ${IS_VERBOSE} -eq 1 ]; then
         echo "${1}"
     fi
 }
@@ -48,23 +48,23 @@ function usage () {
 function clean_exit () {
     EXIT_CODE=${1}
     if [ ${EXIT_CODE} -ne 0 ]; then
-        LINK_CODE=255
+        LINK_ENUM=255
     fi
     for FILE in ${FILES}; do
         if [ -f "${FILE}.i" ]; then
             rm ${FILE}.i
         fi
-        if [ ${LINK_CODE} -ne 0 ]; then
+        if [ ${LINK_ENUM} -ne 0 ]; then
             if [ -f "${FILE}" ]; then
                 rm ${FILE}
             fi
         fi
-        if [ ${LINK_CODE} -ne 1 ]; then
+        if [ ${LINK_ENUM} -ne 1 ]; then
             if [ -f "${FILE}.${EXT_OUT}" ]; then
                 rm ${FILE}.${EXT_OUT}
             fi
         fi
-        if [ ${LINK_CODE} -ne 2 ]; then
+        if [ ${LINK_ENUM} -ne 2 ]; then
             if [ -f "${FILE}.o" ]; then
                 rm ${FILE}.o
             fi
@@ -77,7 +77,7 @@ function em() {
     echo "\033[1m‘${1}’\033[0m"
 }
 
-function throw () {
+function raise_error () {
     ERROR_MESSAGE="${1}"
     echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m ${ERROR_MESSAGE}" 1>&2
     clean_exit 1
@@ -93,65 +93,71 @@ function shift_arg () {
     return 0
 }
 
-function help_arg () {
+function parse_help_arg () {
     if [ ! "${ARG}" = "--help" ]; then
         return 1
     fi
     usage
 }
 
-function verb_arg () {
+function parse_verbose_arg () {
     if [ ! "${ARG}" = "-v" ]; then
         return 1
     fi
-    VERB_CODE=1
+    IS_VERBOSE=1
+    DEBUG_ENUM=1
     return 0
 }
 
-function opt_arg () {
+function parse_debug_arg () {
     case "${ARG}" in
         "--lex")
-            OPT_CODE=255 ;;
+            DEBUG_ENUM=255
+            ;;
         "--parse")
-            OPT_CODE=254 ;;
+            DEBUG_ENUM=254
+            ;;
         "--validate")
-            OPT_CODE=253 ;;
+            DEBUG_ENUM=253
+            ;;
         "--tacky")
-            OPT_CODE=252 ;;
+            DEBUG_ENUM=252
+            ;;
         "--codegen")
-            OPT_CODE=251 ;;
+            DEBUG_ENUM=251
+            ;;
         "--codeemit")
-            OPT_CODE=250 ;;
+            DEBUG_ENUM=250
+            ;;
         *)
-            if [ ${VERB_CODE} -eq 1 ]; then # TODO
-                OPT_CODE=1
-            fi
             return 1
     esac
     return 0
 }
 
-function pre_arg () {
+function parse_preproc_arg () {
     if [ ! "${ARG}" = "-E" ]; then
         return 1
     fi
-    PRE_CODE=1
+    IS_PREPROC=1
     return 0
 }
 
-function link_arg () {
+function parse_link_arg () {
     case "${ARG}" in
         "-S")
-            LINK_CODE=1 ;;
+            LINK_ENUM=1
+            ;;
         "-c")
-            LINK_CODE=2 ;;
+            LINK_ENUM=2
+            ;;
         *)
             return 1
     esac
     return 0
 }
 
-function lib_arg () {
+function parse_lib_arg () {
     if [[ "${ARG}" != "-l"* ]]; then
         return 1
     fi
@@ -159,26 +165,26 @@ function lib_arg () {
     return 0
 }
 
-function name_arg () {
+function parse_name_arg () {
     if [ ! "${ARG}" = "-o" ]; then
         return 1
     fi
     shift_arg
     if [ ${?} -ne 0 ]; then
-        throw "no input files"
+        raise_error "no input files"
     elif [[ "${ARG}" == *".${EXT_IN}" ]]; then
-        throw "missing filename after $(em "-o")"
+        raise_error "missing filename after $(em "-o")"
     fi
     NAME_OUT=${ARG}
     return 0
 }
 
-function file_arg () {
+function parse_file_arg () {
     FILE="$(readlink -f ${ARG})"
     if [ ! -f "${FILE}" ]; then
-        throw "cannot find $(em "${FILE}"): no such file"
+        raise_error "cannot find $(em "${FILE}"): no such file"
     elif [[ "${FILE}" != *".${EXT_IN}" ]]; then
-        throw "$(em "${FILE}"): file format not recognized"
+        raise_error "$(em "${FILE}"): file format not recognized"
     else
         FILES="${FILE%.*}"
         if [ -z "${NAME_OUT}" ]; then
@@ -188,15 +194,15 @@ function file_arg () {
     return 0
 }
 
-function file_2_arg () {
+function parse_file_2_arg () {
     FILE="$(readlink -f ${ARG})"
     if [ ! -f "${FILE}" ]; then
-        throw "cannot find $(em "${FILE}"): no such file"
+        raise_error "cannot find $(em "${FILE}"): no such file"
     elif [[ "${FILE}" != *".${EXT_IN}" ]]; then
-        throw "$(em "${FILE}"): file format not recognized"
+        raise_error "$(em "${FILE}"): file format not recognized"
     else
        FILES="${FILES} ${FILE%.*}"
-       FILE_2=1
+       IS_FILE_2=1
     fi
     return 0
 }
@@ -206,86 +212,84 @@ function parse_args () {
 
     shift_arg
     if [ ${?} -ne 0 ]; then
-        throw "no input files"
+        raise_error "no input files"
     fi
 
-    help_arg
+    parse_help_arg
 
-    verb_arg
+    parse_verbose_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then
-            throw "no input files"
+            raise_error "no input files"
         fi
     fi
 
-    opt_arg
+    parse_debug_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then
-            throw "no input files"
+            raise_error "no input files"
         fi
     fi
 
-    pre_arg
+    parse_preproc_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then
-            throw "no input files"
+            raise_error "no input files"
         fi
     fi
 
-    link_arg
+    parse_link_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then
-            throw "no input files"
+            raise_error "no input files"
         fi
     fi
 
     while :; do
-        lib_arg
+        parse_lib_arg
         if [ ${?} -eq 0 ]; then
             shift_arg
             if [ ${?} -ne 0 ]; then
-                throw "no input files"
+                raise_error "no input files"
             fi
         else
             break
         fi
     done
 
-    name_arg
+    parse_name_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
         if [ ${?} -ne 0 ]; then
-            throw "no input files"
+            raise_error "no input files"
         fi
     fi
 
-    file_arg
+    parse_file_arg
     while :; do
         shift_arg
         if [ ${?} -ne 0 ]; then
             break
         fi
-        file_2_arg
+        parse_file_2_arg
     done
     return 0;
 }
 
 function preprocess () {
-    if [ ${PRE_CODE} -eq 0 ]; then
+    if [ ${IS_PREPROC} -eq 0 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess -> ${FILE}.i"
             gcc -E -P ${FILE}.c -o ${FILE}.i
             if [ ${?} -ne 0 ]; then
-                throw "preprocessing failed"
+                raise_error "preprocessing failed"
             fi
         done
         EXT_IN="i"
-    elif [ ${PRE_CODE} -eq 1 ]; then
-        :
     fi
     return 0;
 }
@@ -293,15 +297,15 @@ function preprocess () {
 function compile () {
     for FILE in ${FILES}; do
         verbose "Compile    -> ${FILE}.${EXT_OUT}"
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN} 2>&1)
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
-            throw "compilation failed"
+            raise_error "compilation failed"
         fi
         if [ ! -z "${STDOUT}" ]; then
             echo "${STDOUT}"
         fi
-        if [ ${OPT_CODE} -eq 250 ]; then
+        if [ ${DEBUG_ENUM} -eq 250 ]; then
             cat ${FILE}.${EXT_OUT}
         fi
     done
@@ -309,40 +313,41 @@ function compile () {
 }
 
 function link () {
-    if [ ${OPT_CODE} -le 127 ]; then
-        if [ ${LINK_CODE} -eq 0 ]; then
+    if [ ${DEBUG_ENUM} -le 127 ]; then
+        if [ ${LINK_ENUM} -eq 0 ]; then
             FILES_OUT="${FILES}.${EXT_OUT}"
-            if [ ${FILE_2} -eq 1 ]; then
+            if [ ${IS_FILE_2} -eq 1 ]; then
                 FILES_OUT="$(echo "${FILES_OUT}" |\
                     sed "s/ /.${EXT_OUT} /g")"
             fi
             gcc ${FILES_OUT}${LINK_LIBS} -o ${NAME_OUT}
             if [ ${?} -ne 0 ]; then
-                throw "linking failed"
+                raise_error "linking failed"
             fi
             verbose "Link       -> ${NAME_OUT}"
-        elif [ ${LINK_CODE} -eq 1 ]; then
+        elif [ ${LINK_ENUM} -eq 1 ]; then
             :
-        elif [ ${LINK_CODE} -eq 2 ]; then
+        elif [ ${LINK_ENUM} -eq 2 ]; then
             for FILE in ${FILES}; do
                 gcc -c ${FILE}.${EXT_OUT}${LINK_LIBS} -o ${FILE}.o
                 if [ ${?} -ne 0 ]; then
-                    throw "assembling failed"
+                    raise_error "assembling failed"
                 fi
                 verbose "Assemble   -> ${FILE}.o"
             done
         else
-            throw "assembling failed"
+            raise_error "assembling failed"
         fi
     fi
     return 0;
 }
 
-VERB_CODE=0
-OPT_CODE=0
-PRE_CODE=0
-LINK_CODE=0
-FILE_2=0
+IS_VERBOSE=0
+IS_PREPROC=0
+IS_FILE_2=0
+
+DEBUG_ENUM=0
+LINK_ENUM=0
 
 EXT_IN="c"
 EXT_OUT="s"
