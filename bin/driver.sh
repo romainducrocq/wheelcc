@@ -45,8 +45,9 @@ function usage () {
     exit 0
 }
 
-function clean () {
-    if [ ${EXIT_CODE} -eq 1 ]; then
+function clean_exit () {
+    EXIT_CODE=${1}
+    if [ ${EXIT_CODE} -ne 0 ]; then
         LINK_CODE=255
     fi
     for FILE in ${FILES}; do
@@ -63,6 +64,12 @@ function clean () {
         fi
     done
     exit ${EXIT_CODE}
+}
+
+function throw () {
+    ERROR_MESSAGE="${1}"
+    echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m ${ERROR_MESSAGE}" 1>&2
+    clean_exit 1
 }
 
 function shift_arg () {
@@ -243,7 +250,9 @@ function preprocess () {
         for FILE in ${FILES}; do
             verbose "Preprocess -> ${FILE}.i"
             gcc -E -P ${FILE}.c -o ${FILE}.i
-            if [ ${?} -ne 0 ]; then return 1; fi
+            if [ ${?} -ne 0 ]; then
+                throw "preprocessing failed"
+            fi
         done
         EXT_IN="i"
     elif [ ${PRE_CODE} -eq 1 ]; then
@@ -258,7 +267,7 @@ function compile () {
         STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
-            return 1
+            throw "compilation failed"
         fi
         if [ ! -z "${STDOUT}" ]; then
             echo "${STDOUT}"
@@ -279,24 +288,26 @@ function link () {
                     sed "s/ /.${EXT_OUT} /g")"
             fi
             gcc ${FILES_OUT}${LINK_LIBS} -o ${NAME_OUT}
-            if [ ${?} -ne 0 ]; then return 1; fi
+            if [ ${?} -ne 0 ]; then
+                throw "linking failed"
+            fi
             verbose "Link       -> ${NAME_OUT}"
         elif [ ${LINK_CODE} -eq 1 ]; then
             :
         elif [ ${LINK_CODE} -eq 2 ]; then
             for FILE in ${FILES}; do
                 gcc -c ${FILE}.${EXT_OUT}${LINK_LIBS} -o ${FILE}.o
-                if [ ${?} -ne 0 ]; then return 1; fi
+                if [ ${?} -ne 0 ]; then
+                    throw "assembling failed"
+                fi
                 verbose "Assemble   -> ${FILE}.o"
             done
         else
-            return 1
+            throw "assembling failed"
         fi
     fi
     return 0;
 }
-
-EXIT_CODE=1
 
 VERB_CODE=0
 OPT_CODE=0
@@ -314,13 +325,7 @@ NAME_OUT=""
 parse_args
 
 preprocess
-if [ ${?} -ne 0 ]; then clean; fi
-
 compile
-if [ ${?} -ne 0 ]; then clean; fi
-
 link
-if [ ${?} -ne 0 ]; then clean; fi
 
-EXIT_CODE=0
-clean
+clean_exit 0
