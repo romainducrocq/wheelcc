@@ -109,7 +109,7 @@ function opt_arg () {
         OPT_CODE=250
     elif [ ${VERB_CODE} -eq 1 ]; then
         OPT_CODE=1
-        return 1;
+        return 1
     else
         return 1
     fi
@@ -258,9 +258,11 @@ function compile () {
         STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${OPT_CODE} ${FILE}.${EXT_IN} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
-            return 1;
+            return 1
         fi
-        echo "${STDOUT}"
+        if [ ! -z "${STDOUT}" ]; then
+            echo "${STDOUT}"
+        fi
         if [ ${OPT_CODE} -eq 250 ]; then
             cat ${FILE}.${EXT_OUT}
         fi
