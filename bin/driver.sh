@@ -56,8 +56,7 @@ function clean_exit () {
             if [ -f ${FILE} ]; then rm ${FILE}; fi
         fi
         if [ ${LINK_CODE} -ne 1 ]; then
-            if [ -f ${FILE}.s ]; then rm ${FILE}.s; fi
-            if [ -f ${FILE}.asm ]; then rm ${FILE}.asm; fi
+            if [ -f ${FILE}.${EXT_OUT} ]; then rm ${FILE}.${EXT_OUT}; fi
         fi
         if [ ${LINK_CODE} -ne 2 ]; then
             if [ -f ${FILE}.o ]; then rm ${FILE}.o; fi
@@ -189,40 +188,51 @@ function parse_args () {
     i=0
 
     shift_arg
-    if [ ${?} -ne 0 ]; then exit 1; fi
+    if [ ${?} -ne 0 ]; then
+        throw "no input files"
+    fi
 
     help_arg
-    if [ ${?} -ne 0 ]; then exit 1; fi
 
     verb_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
+        if [ ${?} -ne 0 ]; then
+            throw "no input files"
+        fi
     fi
 
     opt_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
+        if [ ${?} -ne 0 ]; then
+            throw "no input files"
+        fi
     fi
 
     pre_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
+        if [ ${?} -ne 0 ]; then
+            throw "no input files"
+        fi
     fi
 
     link_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
+        if [ ${?} -ne 0 ]; then
+            throw "no input files"
+        fi
     fi
 
     while :; do
         lib_arg
         if [ ${?} -eq 0 ]; then
             shift_arg
-            if [ ${?} -ne 0 ]; then exit 1; fi
+            if [ ${?} -ne 0 ]; then
+                throw "no input files"
+            fi
         else
             break
         fi
@@ -231,14 +241,18 @@ function parse_args () {
     name_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
+        if [ ${?} -ne 0 ]; then
+            throw "no input files"
+        fi
     fi
 
     file_arg
     if [ ${?} -ne 0 ]; then exit 1; fi
     while :; do
         shift_arg
-        if [ ${?} -ne 0 ]; then break; fi
+        if [ ${?} -ne 0 ]; then
+            break
+        fi
         file_2_arg
         if [ ${?} -ne 0 ]; then exit 1; fi
     done
