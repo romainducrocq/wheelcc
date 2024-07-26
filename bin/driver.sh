@@ -170,24 +170,31 @@ function name_arg () {
 }
 
 function file_arg () {
-    FILES="$(readlink -f ${ARG})"
-    if [ ${?} -ne 0 ]; then exit 1; fi
-    FILES="${FILES%.*}"
-    if [ -z ${NAME_OUT} ]; then
-        NAME_OUT=${FILES}
+    FILE="$(readlink -f ${ARG})"
+    if [ ! -f "${FILE}" ]; then
+        throw "cannot find $(em "${FILE}"): no such file"
+    elif [[ "${FILE}" != *".${EXT_IN}" ]]; then
+        throw "$(em "${FILE}"): file format not recognized"
+    else
+        FILES="${FILE%.*}"
+        if [ -z ${NAME_OUT} ]; then
+            NAME_OUT=${FILES}
+        fi
     fi
     return 0
 }
 
 function file_2_arg () {
-   if [[ "${ARG}" == *".${EXT_IN}" ]]; then
-       FILE="$(readlink -f ${ARG})"
-       if [ ${?} -ne 0 ]; then exit 1; fi
+    FILE="$(readlink -f ${ARG})"
+    if [ ! -f "${FILE}" ]; then
+        throw "cannot find $(em "${FILE}"): no such file"
+    elif [[ "${FILE}" != *".${EXT_IN}" ]]; then
+        throw "$(em "${FILE}"): file format not recognized"
+    else
        FILES="${FILES} ${FILE%.*}"
        FILE_2=1
-       return 0
-   fi
-   return 1
+    fi
+    return 0
 }
 
 function parse_args () {
@@ -253,14 +260,12 @@ function parse_args () {
     fi
 
     file_arg
-    if [ ${?} -ne 0 ]; then exit 1; fi
     while :; do
         shift_arg
         if [ ${?} -ne 0 ]; then
             break
         fi
         file_2_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
     done
     return 0;
 }
