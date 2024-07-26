@@ -334,7 +334,6 @@ function link () {
                 verbose "Link       -> ${NAME_OUT}"
                 ;;
             1)
-                :
                 ;;
             2)
                 for FILE in ${FILES}; do
