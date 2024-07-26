@@ -13,10 +13,9 @@
 struct MainContext {
     MainContext();
 
-    bool VERBOSE;
-    // TODO change to uint32_t bitmask
-    int opt_code;
-    int opt_s_code;
+    bool is_verbose;
+    int debug_code;
+    int optim_mask;
     std::string filename;
     std::vector<std::string> args;
 };

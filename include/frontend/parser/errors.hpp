@@ -18,8 +18,8 @@ enum ERROR_MESSAGE {
     unhandled_runtime_error,
 
     // Main
-    no_option_code_in_argument,
-    invalid_option_code_in_argument,
+    no_debug_code_in_argument,
+    invalid_debug_code_in_argument,
     no_input_files_in_argument,
 
     // Util

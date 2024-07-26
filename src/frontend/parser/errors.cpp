@@ -367,10 +367,10 @@ static std::string get_what_message(ERROR_MESSAGE message) {
             return "an unhandled runtime error occurred";
 
         // Main
-        case ERROR_MESSAGE::no_option_code_in_argument:
-            return "no option code passed in first argument";
-        case ERROR_MESSAGE::invalid_option_code_in_argument:
-            return "invalid option code %s passed in first argument";
+        case ERROR_MESSAGE::no_debug_code_in_argument:
+            return "no debug code passed in first argument";
+        case ERROR_MESSAGE::invalid_debug_code_in_argument:
+            return "invalid debug code %s passed in first argument";
         case ERROR_MESSAGE::no_input_files_in_argument:
             return "no input file passed in second argument";
 

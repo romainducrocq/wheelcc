@@ -34,7 +34,7 @@ static std::unique_ptr<MainContext> context;
 // Main
 
 static void verbose(const std::string& out, bool end) {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         std::cout << out;
         if (end) {
             std::cout << std::endl;
@@ -44,55 +44,55 @@ static void verbose(const std::string& out, bool end) {
 
 #ifndef __NDEBUG__
 static void debug_tokens(const std::vector<Token>& tokens) {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_tokens(tokens);
     }
 }
 
 static void debug_ast(Ast* node, const std::string& name) {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_ast(node, name);
     }
 }
 
 static void debug_symbol_table() {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_symbol_table();
     }
 }
 
 static void debug_static_constant_table() {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_static_constant_table();
     }
 }
 
 static void debug_struct_typedef_table() {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_struct_typedef_table();
     }
 }
 
 static void debug_backend_symbol_table() {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_backend_symbol_table();
     }
 }
 
 static void debug_asm_code() {
-    if (context->VERBOSE) {
+    if (context->is_verbose) {
         pretty_print_asm_code();
     }
 }
 #endif
 
 static void compile() {
-    if (context->opt_code > 0
+    if (context->debug_code > 0
 #ifdef __NDEBUG__
-        && context->opt_code <= 127
+        && context->debug_code <= 127
 #endif
     ) {
-        context->VERBOSE = true;
+        context->is_verbose = true;
     }
 
     INIT_UTIL_CONTEXT;
@@ -101,7 +101,7 @@ static void compile() {
     std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename);
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->opt_code == 255) {
+    if (context->debug_code == 255) {
         debug_tokens(*tokens);
         return;
     }
@@ -111,7 +111,7 @@ static void compile() {
     std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->opt_code == 254) {
+    if (context->debug_code == 254) {
         debug_ast(c_ast.get(), "C AST");
         return;
     }
@@ -123,7 +123,7 @@ static void compile() {
     analyze_semantic(c_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->opt_code == 253) {
+    if (context->debug_code == 253) {
         debug_ast(c_ast.get(), "C AST");
         debug_symbol_table();
         debug_static_constant_table();
@@ -136,7 +136,7 @@ static void compile() {
     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->opt_code == 252) {
+    if (context->debug_code == 252) {
         debug_ast(tac_ast.get(), "TAC AST");
         debug_symbol_table();
         debug_static_constant_table();
@@ -151,7 +151,7 @@ static void compile() {
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->opt_code == 251) {
+    if (context->debug_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
         debug_symbol_table();
         debug_static_constant_table();
@@ -168,7 +168,7 @@ static void compile() {
     code_emission(std::move(asm_ast), std::move(context->filename));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->opt_code == 250) {
+    if (context->debug_code == 250) {
         debug_asm_code();
         return;
     }
@@ -194,17 +194,17 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_option_code_in_argument));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_debug_code_in_argument));
     }
     {
         std::vector<char> buffer(arg.begin(), arg.end());
         buffer.push_back('\0');
         char* end_ptr = nullptr;
         errno = 0;
-        context->opt_code = static_cast<int>(strtol(&buffer[0], &end_ptr, 10));
+        context->debug_code = static_cast<int>(strtol(&buffer[0], &end_ptr, 10));
 
-        if (end_ptr == &buffer[0] || context->opt_code < 0 || context->opt_code > 255) {
-            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_option_code_in_argument, arg));
+        if (end_ptr == &buffer[0] || context->debug_code < 0 || context->debug_code > 255) {
+            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_debug_code_in_argument, arg));
         }
     }
 
@@ -214,7 +214,7 @@ static void arg_parse() {
     }
     context->filename = std::move(arg);
 
-    context->opt_s_code = 0; // TODO
+    context->optim_mask = 0; // TODO
     context->args.clear();
 }
 
