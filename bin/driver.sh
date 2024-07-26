@@ -79,11 +79,11 @@ function shift_arg () {
     if [ ${i} -lt ${ARGC} ]; then
         ARG="${ARGV[${i}]}"
         i=$((i+1))
-        return 0
     else
         ARG=""
         return 1
     fi
+    return 0
 }
 
 function help_arg () {
@@ -147,11 +147,12 @@ function link_arg () {
 }
 
 function lib_arg () {
-    if [[ "${ARG}" == "-l"* ]]; then
-      LINK_LIBS="${LINK_LIBS} ${ARG}"
-      return 0
+    if [[ "${ARG}" != "-l"* ]]; then
+        LINK_LIBS="${LINK_LIBS} ${ARG}"
+    else
+        return 1
     fi
-    return 1
+    return 0
 }
 
 function name_arg () {
@@ -177,7 +178,7 @@ function file_arg () {
         throw "$(em "${FILE}"): file format not recognized"
     else
         FILES="${FILE%.*}"
-        if [ -z ${NAME_OUT} ]; then
+        if [ -z "${NAME_OUT}" ]; then
             NAME_OUT=${FILES}
         fi
     fi
