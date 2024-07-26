@@ -65,6 +65,10 @@ function clean_exit () {
     exit ${EXIT_CODE}
 }
 
+function em() {
+    echo "\033[1m‘${1}’\033[0m"
+}
+
 function throw () {
     ERROR_MESSAGE="${1}"
     echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m ${ERROR_MESSAGE}" 1>&2
@@ -153,9 +157,11 @@ function lib_arg () {
 function name_arg () {
     if [ "${ARG}" = "-o" ]; then
         shift_arg
-        if [ ${?} -ne 0 ]; then exit 1; fi
-        touch ${ARG} > /dev/null 2>&1
-        if [ ${?} -ne 0 ]; then exit 1; fi
+        if [ ${?} -ne 0 ]; then
+            throw "no input files"
+        elif [[ "${ARG}" == *".${EXT_IN}" ]]; then
+            throw "missing filename after $(em "-o")"
+        fi
         NAME_OUT=${ARG}
     else
         return 1
