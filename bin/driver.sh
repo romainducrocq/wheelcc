@@ -84,73 +84,70 @@ function throw () {
 }
 
 function shift_arg () {
-    if [ ${i} -lt ${ARGC} ]; then
-        ARG="${ARGV[${i}]}"
-        i=$((i+1))
-    else
+    if [ ${i} -ge ${ARGC} ]; then
         ARG=""
         return 1
     fi
+    ARG="${ARGV[${i}]}"
+    i=$((i+1))
     return 0
 }
 
 function help_arg () {
-    if [ "${ARG}" = "--help" ]; then
-        usage
+    if [ ! "${ARG}" = "--help" ]; then
+        return 1
     fi
-    return 0;
+    usage
 }
 
 function verb_arg () {
-    if [ "${ARG}" = "-v" ]; then
-        VERB_CODE=1
-    else
+    if [ ! "${ARG}" = "-v" ]; then
         return 1
     fi
+    VERB_CODE=1
     return 0
 }
 
 function opt_arg () {
-    if [ "${ARG}" = "-v" ]; then
-        OPT_CODE=1
-    elif [ "${ARG}" = "--lex" ]; then
-        OPT_CODE=255
-    elif [ "${ARG}" = "--parse" ]; then
-        OPT_CODE=254
-    elif [ "${ARG}" = "--validate" ]; then
-        OPT_CODE=253
-    elif [ "${ARG}" = "--tacky" ]; then
-        OPT_CODE=252
-    elif [ "${ARG}" = "--codegen" ]; then
-        OPT_CODE=251
-    elif [ "${ARG}" = "--codeemit" ]; then
-        OPT_CODE=250
-    elif [ ${VERB_CODE} -eq 1 ]; then
-        OPT_CODE=1
-        return 1
-    else
-        return 1
-    fi
+    case "${ARG}" in
+        "--lex")
+            OPT_CODE=255 ;;
+        "--parse")
+            OPT_CODE=254 ;;
+        "--validate")
+            OPT_CODE=253 ;;
+        "--tacky")
+            OPT_CODE=252 ;;
+        "--codegen")
+            OPT_CODE=251 ;;
+        "--codeemit")
+            OPT_CODE=250 ;;
+        *)
+            if [ ${VERB_CODE} -eq 1 ]; then # TODO
+                OPT_CODE=1
+            fi
+            return 1
+    esac
     return 0
 }
 
 function pre_arg () {
-    if [ "${ARG}" = "-E" ]; then
-        PRE_CODE=1
-    else
+    if [ ! "${ARG}" = "-E" ]; then
         return 1
     fi
+    PRE_CODE=1
     return 0
 }
 
 function link_arg () {
-    if [ "${ARG}" = "-S" ]; then
-        LINK_CODE=1
-    elif [ "${ARG}" = "-c" ]; then
-        LINK_CODE=2
-    else
-        return 1
-    fi
+    case "${ARG}" in
+        "-S")
+            LINK_CODE=1 ;;
+        "-c")
+            LINK_CODE=2 ;;
+        *)
+            return 1
+    esac
     return 0
 }
 
