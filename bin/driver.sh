@@ -180,6 +180,9 @@ function parse_name_arg () {
 }
 
 function parse_file_arg () {
+    if [[ "${ARG}" == "-"* ]]; then
+        raise_error "unknown or malformed option: $(em "${ARG}")"
+    fi
     FILE="$(readlink -f ${ARG})"
     if [ ! -f "${FILE}" ]; then
         raise_error "cannot find $(em "${FILE}"): no such file"
@@ -195,6 +198,9 @@ function parse_file_arg () {
 }
 
 function parse_file_2_arg () {
+    if [[ "${ARG}" == "-"* ]]; then
+        raise_error "unknown or malformed option: $(em "${ARG}")"
+    fi
     FILE="$(readlink -f ${ARG})"
     if [ ! -f "${FILE}" ]; then
         raise_error "cannot find $(em "${FILE}"): no such file"
