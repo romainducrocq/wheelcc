@@ -51,15 +51,23 @@ function clean_exit () {
         LINK_CODE=255
     fi
     for FILE in ${FILES}; do
-        if [ -f ${FILE}.i ]; then rm ${FILE}.i; fi
+        if [ -f "${FILE}.i" ]; then
+            rm ${FILE}.i
+        fi
         if [ ${LINK_CODE} -ne 0 ]; then
-            if [ -f ${FILE} ]; then rm ${FILE}; fi
+            if [ -f "${FILE}" ]; then
+                rm ${FILE}
+            fi
         fi
         if [ ${LINK_CODE} -ne 1 ]; then
-            if [ -f ${FILE}.${EXT_OUT} ]; then rm ${FILE}.${EXT_OUT}; fi
+            if [ -f "${FILE}.${EXT_OUT}" ]; then
+                rm ${FILE}.${EXT_OUT}
+            fi
         fi
         if [ ${LINK_CODE} -ne 2 ]; then
-            if [ -f ${FILE}.o ]; then rm ${FILE}.o; fi
+            if [ -f "${FILE}.o" ]; then
+                rm ${FILE}.o
+            fi
         fi
     done
     exit ${EXIT_CODE}
@@ -148,25 +156,23 @@ function link_arg () {
 
 function lib_arg () {
     if [[ "${ARG}" != "-l"* ]]; then
-        LINK_LIBS="${LINK_LIBS} ${ARG}"
-    else
         return 1
     fi
+    LINK_LIBS="${LINK_LIBS} ${ARG}"
     return 0
 }
 
 function name_arg () {
-    if [ "${ARG}" = "-o" ]; then
-        shift_arg
-        if [ ${?} -ne 0 ]; then
-            throw "no input files"
-        elif [[ "${ARG}" == *".${EXT_IN}" ]]; then
-            throw "missing filename after $(em "-o")"
-        fi
-        NAME_OUT=${ARG}
-    else
+    if [ ! "${ARG}" = "-o" ]; then
         return 1
     fi
+    shift_arg
+    if [ ${?} -ne 0 ]; then
+        throw "no input files"
+    elif [[ "${ARG}" == *".${EXT_IN}" ]]; then
+        throw "missing filename after $(em "-o")"
+    fi
+    NAME_OUT=${ARG}
     return 0
 }
 
