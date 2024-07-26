@@ -314,30 +314,34 @@ function compile () {
 
 function link () {
     if [ ${DEBUG_ENUM} -le 127 ]; then
-        if [ ${LINK_ENUM} -eq 0 ]; then
-            FILES_OUT="${FILES}.${EXT_OUT}"
-            if [ ${IS_FILE_2} -eq 1 ]; then
-                FILES_OUT="$(echo "${FILES_OUT}" |\
-                    sed "s/ /.${EXT_OUT} /g")"
-            fi
-            gcc ${FILES_OUT}${LINK_LIBS} -o ${NAME_OUT}
-            if [ ${?} -ne 0 ]; then
-                raise_error "linking failed"
-            fi
-            verbose "Link       -> ${NAME_OUT}"
-        elif [ ${LINK_ENUM} -eq 1 ]; then
-            :
-        elif [ ${LINK_ENUM} -eq 2 ]; then
-            for FILE in ${FILES}; do
-                gcc -c ${FILE}.${EXT_OUT}${LINK_LIBS} -o ${FILE}.o
-                if [ ${?} -ne 0 ]; then
-                    raise_error "assembling failed"
+        case ${LINK_ENUM} in
+            0)
+                FILES_OUT="${FILES}.${EXT_OUT}"
+                if [ ${IS_FILE_2} -eq 1 ]; then
+                    FILES_OUT="$(echo "${FILES_OUT}" |\
+                        sed "s/ /.${EXT_OUT} /g")"
                 fi
-                verbose "Assemble   -> ${FILE}.o"
-            done
-        else
-            raise_error "assembling failed"
-        fi
+                gcc ${FILES_OUT}${LINK_LIBS} -o ${NAME_OUT}
+                if [ ${?} -ne 0 ]; then
+                    raise_error "linking failed"
+                fi
+                verbose "Link       -> ${NAME_OUT}"
+                ;;
+            1)
+                :
+                ;;
+            2)
+                for FILE in ${FILES}; do
+                    gcc -c ${FILE}.${EXT_OUT}${LINK_LIBS} -o ${FILE}.o
+                    if [ ${?} -ne 0 ]; then
+                        raise_error "assembling failed"
+                    fi
+                    verbose "Assemble   -> ${FILE}.o"
+                done
+                ;;
+            *)
+                raise_error "linking failed"
+        esac
     fi
     return 0;
 }
