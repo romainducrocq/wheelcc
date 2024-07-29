@@ -166,8 +166,8 @@ static void is_pointer_valid_type(Pointer* ptr_type) { is_valid_type(ptr_type->r
 
 static void is_array_valid_type(Array* arr_type) {
     if (!is_type_complete(arr_type->elem_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::array_of_incomplete_type, get_type_hr(arr_type),
-                                        get_type_hr(arr_type->elem_type.get())),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::array_of_incomplete_type,
+                                        get_type_hr(arr_type), get_type_hr(arr_type->elem_type.get())),
             context->line_buffer);
     }
     is_valid_type(arr_type->elem_type.get());
@@ -355,7 +355,7 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
         return node_2->exp_type;
     }
     else {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::joint_pointer_type_mismatch,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::joint_pointer_type_mismatch,
                                         get_type_hr(node_1->exp_type.get()), get_type_hr(node_2->exp_type.get())),
             node_1->line);
     }
@@ -414,7 +414,7 @@ static void checktype_string_expression(CString* node) {
 static void checktype_var_expression(CVar* node) {
     if (frontend->symbol_table[node->name]->type_t->type() == AST_T::FunType_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::function_used_as_variable, get_name_hr(node->name)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_used_as_variable, get_name_hr(node->name)), node->line);
     }
     node->exp_type = frontend->symbol_table[node->name]->type_t;
 }
@@ -426,7 +426,7 @@ static void checktype_cast_expression(CCast* node) {
         && ((node->exp->exp_type->type() == AST_T::Double_t && node->target_type->type() == AST_T::Pointer_t)
             || (node->exp->exp_type->type() == AST_T::Pointer_t && node->target_type->type() == AST_T::Double_t)
             || !is_type_scalar(node->exp->exp_type.get()) || !is_type_scalar(node->target_type.get()))) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::illegal_conversion_from_type_to,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::illegal_conversion_from_type_to,
                                         get_type_hr(node->exp->exp_type.get()), get_type_hr(node->target_type.get())),
             node->line);
     }
@@ -460,7 +460,7 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
         return cast_expression(std::move(node), exp_type);
     }
     else {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::illegal_conversion_from_type_to,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::illegal_conversion_from_type_to,
                                         get_type_hr(node->exp_type.get()), get_type_hr(exp_type.get())),
             node->line);
     }
@@ -468,7 +468,7 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
 
 static void checktype_unary_not_expression(CUnary* node) {
     if (!is_type_scalar(node->exp->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::unary_on_invalid_operand_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
                                         get_unary_op_hr(node->unary_op.get()), get_type_hr(node->exp->exp_type.get())),
             node->line);
     }
@@ -478,7 +478,7 @@ static void checktype_unary_not_expression(CUnary* node) {
 
 static void checktype_unary_complement_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::unary_on_invalid_operand_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
                                         get_unary_op_hr(node->unary_op.get()), get_type_hr(node->exp->exp_type.get())),
             node->line);
     }
@@ -486,8 +486,8 @@ static void checktype_unary_complement_expression(CUnary* node) {
     switch (node->exp->exp_type->type()) {
         case AST_T::Double_t:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::unary_on_invalid_operand_type, get_unary_op_hr(node->unary_op.get()),
-                    get_type_hr(node->exp->exp_type.get())),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
+                    get_unary_op_hr(node->unary_op.get()), get_type_hr(node->exp->exp_type.get())),
                 node->line);
         case AST_T::Char_t:
         case AST_T::SChar_t:
@@ -504,7 +504,7 @@ static void checktype_unary_complement_expression(CUnary* node) {
 
 static void checktype_unary_negate_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::unary_on_invalid_operand_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
                                         get_unary_op_hr(node->unary_op.get()), get_type_hr(node->exp->exp_type.get())),
             node->line);
     }
@@ -565,8 +565,9 @@ static void checktype_binary_arithmetic_add_expression(CBinary* node) {
     }
     else {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -603,7 +604,7 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
         }
         else {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types,
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
                     get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
                     get_type_hr(node->exp_right->exp_type.get())),
                 node->line);
@@ -611,8 +612,9 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
     }
     else {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -628,8 +630,9 @@ static void checktype_binary_arithmetic_subtract_expression(CBinary* node) {
 static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -646,8 +649,9 @@ static void checktype_binary_arithmetic_multiply_divide_expression(CBinary* node
 static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -660,7 +664,7 @@ static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* no
     }
     node->exp_type = std::move(common_type);
     if (node->exp_type->type() == AST_T::Double_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_type,
                                         get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_type.get())),
             node->line);
     }
@@ -669,8 +673,9 @@ static void checktype_binary_arithmetic_remainder_bitwise_expression(CBinary* no
 static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_integer(node->exp_right->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -683,7 +688,7 @@ static void checktype_binary_arithmetic_bitshift_expression(CBinary* node) {
     }
     node->exp_type = node->exp_left->exp_type;
     if (node->exp_type->type() == AST_T::Double_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_type,
                                         get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_type.get())),
             node->line);
     }
@@ -699,8 +704,9 @@ static void checktype_binary_arithmetic_bitshift_right_expression(CBinary* node)
 static void checktype_binary_logical_expression(CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -718,8 +724,9 @@ static void checktype_binary_comparison_equality_expression(CBinary* node) {
     }
     else {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -741,8 +748,9 @@ static void checktype_binary_comparison_relational_expression(CBinary* node) {
                 || (node->exp_right->type() == AST_T::CConstant_t
                     && is_constant_null_pointer(static_cast<CConstant*>(node->exp_right.get())))))) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::binary_on_invalid_operand_types, get_binary_op_hr(node->binary_op.get()),
-                get_type_hr(node->exp_left->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types,
+                get_binary_op_hr(node->binary_op.get()), get_type_hr(node->exp_left->exp_type.get()),
+                get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
 
@@ -802,11 +810,12 @@ static void checktype_binary_expression(CBinary* node) {
 static void checktype_assignment_expression(CAssignment* node) {
     if (node->exp_left) {
         if (node->exp_left->exp_type->type() == AST_T::Void_t) {
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::assignment_to_void_type), node->line);
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_void_type), node->line);
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::assignment_to_rvalue, get_assignment_hr(nullptr)), node->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue, get_assignment_hr(nullptr)),
+                node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_by_assignment(std::move(node->exp_right), node->exp_left->exp_type);
@@ -823,7 +832,7 @@ static void checktype_assignment_expression(CAssignment* node) {
         }
         if (!is_exp_lvalue(exp_left)) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::assignment_to_rvalue,
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue,
                     get_assignment_hr(static_cast<CBinary*>(node->exp_right.get())->binary_op.get())),
                 node->line);
         }
@@ -836,7 +845,7 @@ static void checktype_assignment_expression(CAssignment* node) {
 
 static void checktype_conditional_expression(CConditional* node) {
     if (!is_type_scalar(node->condition->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::conditional_on_invalid_condition_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::conditional_on_invalid_condition_type,
                                         get_type_hr(node->condition->exp_type.get())),
             node->line);
     }
@@ -849,7 +858,7 @@ static void checktype_conditional_expression(CConditional* node) {
              || node->exp_right->exp_type->type() == AST_T::Structure_t) {
         if (!is_same_type(node->exp_middle->exp_type.get(), node->exp_right->exp_type.get())) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::ternary_on_invalid_operand_types,
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types,
                     get_type_hr(node->exp_middle->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
                 node->line);
         }
@@ -867,7 +876,7 @@ static void checktype_conditional_expression(CConditional* node) {
     }
     else {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::ternary_on_invalid_operand_types,
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types,
                 get_type_hr(node->exp_middle->exp_type.get()), get_type_hr(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -883,13 +892,14 @@ static void checktype_conditional_expression(CConditional* node) {
 static void checktype_function_call_expression(CFunctionCall* node) {
     if (frontend->symbol_table[node->name]->type_t->type() != AST_T::FunType_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_used_as_function, get_name_hr(node->name)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_used_as_function, get_name_hr(node->name)), node->line);
     }
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     if (fun_type->param_types.size() != node->args.size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::function_called_with_wrong_number_of_arguments, get_name_hr(node->name),
-                std::to_string(node->args.size()), std::to_string(fun_type->param_types.size())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_called_with_wrong_number_of_arguments,
+                get_name_hr(node->name), std::to_string(node->args.size()),
+                std::to_string(fun_type->param_types.size())),
             node->line);
     }
     for (size_t i = 0; i < node->args.size(); ++i) {
@@ -903,7 +913,7 @@ static void checktype_function_call_expression(CFunctionCall* node) {
 static void checktype_dereference_expression(CDereference* node) {
     if (node->exp->exp_type->type() != AST_T::Pointer_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::dereference_non_pointer, get_type_hr(node->exp->exp_type.get())),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::dereference_non_pointer, get_type_hr(node->exp->exp_type.get())),
             node->line);
     }
     node->exp_type = static_cast<Pointer*>(node->exp->exp_type.get())->ref_type;
@@ -911,7 +921,7 @@ static void checktype_dereference_expression(CDereference* node) {
 
 static void checktype_addrof_expression(CAddrOf* node) {
     if (!is_exp_lvalue(node->exp.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::address_of_rvalue), node->line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::address_of_rvalue), node->line);
     }
     std::shared_ptr<Type> ref_type = node->exp->exp_type;
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
@@ -939,7 +949,7 @@ static void checktype_subscript_expression(CSubscript* node) {
     }
     else {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::subscript_array_with_invalid_types,
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::subscript_array_with_invalid_types,
                 get_type_hr(node->primary_exp->exp_type.get()), get_type_hr(node->subscript_exp->exp_type.get())),
             node->line);
     }
@@ -948,8 +958,8 @@ static void checktype_subscript_expression(CSubscript* node) {
 
 static void checktype_sizeof_expression(CSizeOf* node) {
     if (!is_type_complete(node->exp->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::get_size_of_incomplete_type, get_type_hr(node->exp->exp_type.get())),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type,
+                                        get_type_hr(node->exp->exp_type.get())),
             node->line);
     }
     node->exp_type = std::make_shared<ULong>();
@@ -959,8 +969,8 @@ static void checktype_sizeoft_expression(CSizeOfT* node) {
     context->line_buffer = node->line;
     resolve_struct_type(node->target_type.get());
     if (!is_type_complete(node->target_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::get_size_of_incomplete_type, get_type_hr(node->target_type.get())),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type,
+                                        get_type_hr(node->target_type.get())),
             node->line);
     }
     is_valid_type(node->target_type.get());
@@ -969,14 +979,14 @@ static void checktype_sizeoft_expression(CSizeOfT* node) {
 
 static void checktype_dot_expression(CDot* node) {
     if (node->structure->exp_type->type() != AST_T::Structure_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::dot_on_non_structure_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type,
                                         get_name_hr(node->member), get_type_hr(node->structure->exp_type.get())),
             node->line);
     }
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
     if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
         == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::member_not_in_structure_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::member_not_in_structure_type,
                                         get_type_hr(struct_type), get_name_hr(node->member)),
             node->line);
     }
@@ -985,25 +995,25 @@ static void checktype_dot_expression(CDot* node) {
 
 static void checktype_arrow_expression(CArrow* node) {
     if (node->pointer->exp_type->type() != AST_T::Pointer_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::arrow_on_non_pointer_to_structure_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type,
                                         get_name_hr(node->member), get_type_hr(node->pointer->exp_type.get())),
             node->line);
     }
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
     if (ptr_type->ref_type->type() != AST_T::Structure_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::arrow_on_non_pointer_to_structure_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type,
                                         get_name_hr(node->member), get_type_hr(node->pointer->exp_type.get())),
             node->line);
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::arrow_on_incomplete_structure_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type,
                                         get_name_hr(node->member), get_type_hr(struct_type)),
             node->line);
     }
     else if (frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
              == frontend->struct_typedef_table[struct_type->tag]->members.end()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::member_not_in_structure_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::member_not_in_structure_type,
                                         get_type_hr(struct_type), get_name_hr(node->member)),
             node->line);
     }
@@ -1028,7 +1038,7 @@ static std::unique_ptr<CAddrOf> checktype_array_aggregate_typed_expression(std::
 
 static std::unique_ptr<CExp> checktype_structure_aggregate_typed_expression(std::unique_ptr<CExp>&& node) {
     if (!is_struct_type_complete(static_cast<Structure*>(node->exp_type.get()))) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::incomplete_structure_type_in_expression,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::incomplete_structure_type_in_expression,
                                         get_type_hr(node->exp_type.get())),
             node->line);
     }
@@ -1052,7 +1062,7 @@ static void checktype_return_statement(CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[context->function_definition_name]->type_t.get());
     if (fun_type->ret_type->type() == AST_T::Void_t) {
         if (node->exp) {
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::return_value_in_void_function,
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::return_value_in_void_function,
                                             get_name_hr(context->function_definition_name)),
                 node->line);
         }
@@ -1060,7 +1070,7 @@ static void checktype_return_statement(CReturn* node) {
     }
     else if (!node->exp) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::no_return_value_in_non_void_function,
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::no_return_value_in_non_void_function,
                 get_name_hr(context->function_definition_name), get_type_hr(fun_type->ret_type.get())),
             node->line);
     }
@@ -1073,15 +1083,15 @@ static void checktype_return_statement(CReturn* node) {
 
 static void checktype_if_statement(CIf* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::if_used_with_condition_type, get_type_hr(node->condition->exp_type.get())),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::if_used_with_condition_type,
+                                        get_type_hr(node->condition->exp_type.get())),
             node->condition->line);
     }
 }
 
 static void checktype_while_statement(CWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::while_used_with_condition_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::while_used_with_condition_type,
                                         get_type_hr(node->condition->exp_type.get())),
             node->condition->line);
     }
@@ -1089,7 +1099,7 @@ static void checktype_while_statement(CWhile* node) {
 
 static void checktype_do_while_statement(CDoWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::do_while_used_with_condition_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::do_while_used_with_condition_type,
                                         get_type_hr(node->condition->exp_type.get())),
             node->condition->line);
     }
@@ -1097,7 +1107,7 @@ static void checktype_do_while_statement(CDoWhile* node) {
 
 static void checktype_for_statement(CFor* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::for_used_with_condition_type,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::for_used_with_condition_type,
                                         get_type_hr(node->condition->exp_type.get())),
             node->condition->line);
     }
@@ -1106,12 +1116,13 @@ static void checktype_for_statement(CFor* node) {
 static void checktype_bound_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if (!is_type_character(arr_type->elem_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::non_char_array_initialized_from_string, get_type_hr(arr_type)),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::non_char_array_initialized_from_string, get_type_hr(arr_type)),
             node->line);
     }
     else if (node->literal->value.size() > static_cast<size_t>(arr_type->size)) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::string_initialized_with_too_many_characters,
-                                        std::to_string(arr_type->size), std::to_string(node->literal->value.size())),
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::string_initialized_with_too_many_characters,
+                std::to_string(arr_type->size), std::to_string(node->literal->value.size())),
             node->line);
     }
 }
@@ -1209,7 +1220,7 @@ static std::unique_ptr<CInitializer> checktype_zero_initializer(Type* init_type)
 static void checktype_bound_array_compound_init_initializer(CCompoundInit* node, Array* arr_type) {
     if (node->initializers.size() > static_cast<size_t>(arr_type->size)) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::array_initialized_with_too_many_initializers,
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::array_initialized_with_too_many_initializers,
                 std::to_string(arr_type->size), get_type_hr(arr_type), std::to_string(node->initializers.size())),
             get_compound_init_line(node));
     }
@@ -1218,8 +1229,8 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
     if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_initialized_with_too_many_members, get_type_hr(struct_type),
-                std::to_string(node->initializers.size()),
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
+                get_type_hr(struct_type), std::to_string(node->initializers.size()),
                 std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
             get_compound_init_line(node));
     }
@@ -1253,13 +1264,14 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
 
     switch (fun_type->ret_type->type()) {
         case AST_T::Array_t:
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::function_returns_array,
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_returns_array,
                                             get_name_hr(node->name), get_type_hr(fun_type->ret_type.get())),
                 node->line);
         case AST_T::Structure_t: {
             if (node->body && !is_struct_type_complete(static_cast<Structure*>(fun_type->ret_type.get()))) {
-                RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::function_returns_incomplete_structure_type,
-                                                get_name_hr(node->name), get_type_hr(fun_type->ret_type.get())),
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_returns_incomplete_structure_type,
+                        get_name_hr(node->name), get_type_hr(fun_type->ret_type.get())),
                     node->line);
             }
             break;
@@ -1275,7 +1287,7 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
         context->line_buffer = node->line;
         resolve_struct_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Void_t) {
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::parameter_with_type_void,
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::parameter_with_type_void,
                                             get_name_hr(node->name), get_name_hr(node->params[i])),
                 node->line);
         }
@@ -1289,8 +1301,9 @@ static void checktype_params_function_declaration(CFunctionDeclaration* node) {
             if (fun_type->param_types[i]->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(fun_type->param_types[i].get()))) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE::parameter_with_incomplete_structure_type, get_name_hr(node->name),
-                        get_name_hr(node->params[i]), get_type_hr(fun_type->param_types[i].get())),
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::parameter_with_incomplete_structure_type,
+                        get_name_hr(node->name), get_name_hr(node->params[i]),
+                        get_type_hr(fun_type->param_types[i].get())),
                     node->line);
             }
             std::shared_ptr<Type> type_t = fun_type->param_types[i];
@@ -1315,20 +1328,20 @@ static void checktype_function_declaration(CFunctionDeclaration* node) {
                 && fun_type->param_types.size() == node->params.size()
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::function_redeclared_with_conflicting_type, get_name_hr(node->name),
-                    get_type_hr(node->fun_type.get()), get_type_hr(fun_type)),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_redeclared_with_conflicting_type,
+                    get_name_hr(node->name), get_type_hr(node->fun_type.get()), get_type_hr(fun_type)),
                 node->line);
         }
         else if (is_defined && node->body) {
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::function_redefined, get_name_hr(node->name),
-                                            get_type_hr(node->fun_type.get())),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_redefined,
+                                            get_name_hr(node->name), get_type_hr(node->fun_type.get())),
                 node->line);
         }
 
         FunAttr* fun_attrs = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get());
         if (!is_global && fun_attrs->is_global) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::non_static_function_redeclared_static, get_name_hr(node->name)),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::non_static_function_redeclared_static,
+                                            get_name_hr(node->name)),
                 node->line);
         }
         is_global = fun_attrs->is_global;
@@ -1696,15 +1709,16 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
                 case AST_T::CConstDouble_t:
                 case AST_T::CConstUChar_t:
                     RAISE_RUNTIME_ERROR_AT_LINE(
-                        GET_ERROR_MESSAGE(ERROR_MESSAGE::static_pointer_initialized_from_non_integer,
+                        GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_integer,
                             get_type_hr(static_init_type), get_const_hr(node->constant.get())),
                         node->line);
                 default:
                     RAISE_INTERNAL_ERROR;
             }
             if (value != 0ul) {
-                RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::static_pointer_initialized_from_non_null,
-                                                get_type_hr(static_init_type), std::to_string(value)),
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_null,
+                        get_type_hr(static_init_type), std::to_string(value)),
                     node->line);
             }
             push_zero_init_static_init(8l);
@@ -1717,8 +1731,9 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
 
 static void checktype_string_initializer_pointer_static_init(CString* node, Pointer* static_ptr_type) {
     if (static_ptr_type->ref_type->type() != AST_T::Char_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::static_non_char_pointer_initialized_from_string,
-                                        get_type_hr(static_ptr_type)),
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(
+                ERROR_MESSAGE_SEMANTIC::static_non_char_pointer_initialized_from_string, get_type_hr(static_ptr_type)),
             node->line);
     }
 
@@ -1792,8 +1807,8 @@ static void checktype_single_init_initializer_static_init(CSingleInit* node, Typ
             checktype_string_initializer_static_init(static_cast<CString*>(node->exp.get()), static_init_type);
             break;
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::static_initialized_with_non_constant, get_type_hr(static_init_type)),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::static_initialized_with_non_constant,
+                                            get_type_hr(static_init_type)),
                 node->exp->line);
     }
 }
@@ -1836,8 +1851,9 @@ static void checktype_compound_init_initializer_static_init(CCompoundInit* node,
             checktype_structure_compound_init_initializer_static_init(node, static_cast<Structure*>(static_init_type));
             break;
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::scalar_initialized_with_compound_initializer,
-                                            get_type_hr(static_init_type)),
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::scalar_initialized_with_compound_initializer,
+                    get_type_hr(static_init_type)),
                 get_compound_init_line(node));
     }
 }
@@ -1870,7 +1886,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_with_type_void, get_name_hr(node->name)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void, get_name_hr(node->name)),
+            node->line);
     }
     is_valid_type(node->var_type.get());
 
@@ -1881,7 +1898,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         if (node->var_type->type() == AST_T::Structure_t
             && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_with_incomplete_structure_type,
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type,
                     get_name_hr(node->name), get_type_hr(node->var_type.get())),
                 node->line);
         }
@@ -1895,7 +1912,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             if (node->var_type->type() == AST_T::Structure_t
                 && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_with_incomplete_structure_type,
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type,
                         get_name_hr(node->name), get_type_hr(node->var_type.get())),
                     node->line);
             }
@@ -1906,8 +1923,9 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
     if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_redeclared_with_conflicting_type, get_name_hr(node->name),
-                    get_type_hr(node->var_type.get()), get_type_hr(frontend->symbol_table[node->name]->type_t.get())),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type,
+                    get_name_hr(node->name), get_type_hr(node->var_type.get()),
+                    get_type_hr(frontend->symbol_table[node->name]->type_t.get())),
                 node->line);
         }
 
@@ -1917,7 +1935,8 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
         }
         else if (is_global != global_var_attrs->is_global) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_redeclared_with_conflicting_storage, get_name_hr(node->name)),
+                GET_ERROR_MESSAGE(
+                    ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage, get_name_hr(node->name)),
                 node->line);
         }
 
@@ -1925,7 +1944,7 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
             if (initial_value->type() == AST_T::Initial_t) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
                     GET_ERROR_MESSAGE(
-                        ERROR_MESSAGE::variable_redeclared_with_conflicting_storage, get_name_hr(node->name)),
+                        ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage, get_name_hr(node->name)),
                     node->line);
             }
             else {
@@ -1944,13 +1963,14 @@ static void checktype_file_scope_variable_declaration(CVariableDeclaration* node
 static void checktype_extern_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->init) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::extern_variable_defined, get_name_hr(node->name)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::extern_variable_defined, get_name_hr(node->name)), node->line);
     }
     else if (frontend->symbol_table.find(node->name) != frontend->symbol_table.end()) {
         if (!is_same_type(frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_redeclared_with_conflicting_type, get_name_hr(node->name),
-                    get_type_hr(node->var_type.get()), get_type_hr(frontend->symbol_table[node->name]->type_t.get())),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type,
+                    get_name_hr(node->name), get_type_hr(node->var_type.get()),
+                    get_type_hr(frontend->symbol_table[node->name]->type_t.get())),
                 node->line);
         }
         return;
@@ -1989,8 +2009,9 @@ static void checktype_static_block_scope_variable_declaration(CVariableDeclarati
 static void checktype_automatic_block_scope_variable_declaration(CVariableDeclaration* node) {
     if (node->var_type->type() == AST_T::Structure_t
         && !is_struct_type_complete(static_cast<Structure*>(node->var_type.get()))) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_with_incomplete_structure_type,
-                                        get_name_hr(node->name), get_type_hr(node->var_type.get())),
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type,
+                get_name_hr(node->name), get_type_hr(node->var_type.get())),
             node->line);
     }
 
@@ -2005,7 +2026,8 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_declared_with_type_void, get_name_hr(node->name)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void, get_name_hr(node->name)),
+            node->line);
     }
     is_valid_type(node->var_type.get());
 
@@ -2031,7 +2053,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         for (size_t j = i + 1; j < node->members.size(); ++j) {
             if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_declared_with_duplicate_member,
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member,
                         get_struct_name_hr(node->tag), get_name_hr(node->members[i]->member_name)),
                     node->members[i]->line);
             }
@@ -2042,9 +2064,9 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         context->line_buffer = node->members[i]->line;
         resolve_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::member_declared_with_incomplete_type, get_struct_name_hr(node->tag),
-                    get_name_hr(node->members[i]->member_name), get_type_hr(node->members[i].get()->member_type.get())),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type,
+                                            get_struct_name_hr(node->tag), get_name_hr(node->members[i]->member_name),
+                                            get_type_hr(node->members[i].get()->member_type.get())),
                 node->members[i]->line);
         }
         is_valid_type(node->members[i].get()->member_type.get());
@@ -2054,7 +2076,8 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_redeclared_in_scope, get_struct_name_hr(node->tag)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope, get_struct_name_hr(node->tag)),
+            node->line);
     }
     TInt alignment = 0;
     TLong size = 0l;
@@ -2113,14 +2136,14 @@ static void annotate_for_loop(CFor* node) {
 
 static void annotate_break_loop(CBreak* node) {
     if (context->loop_labels.empty()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::break_outside_of_loop), node->line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::break_outside_of_loop), node->line);
     }
     node->target = context->loop_labels.back();
 }
 
 static void annotate_continue_loop(CContinue* node) {
     if (context->loop_labels.empty()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::continue_outside_of_loop), node->line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop), node->line);
     }
     node->target = context->loop_labels.back();
 }
@@ -2154,7 +2177,7 @@ static void exit_scope() {
 static void resolve_label(CFunctionDeclaration* node) {
     for (const auto& target : context->goto_map) {
         if (context->label_set.find(target.first) == context->label_set.end()) {
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::goto_with_undefined_target_label,
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label,
                                             get_name_hr(target.first), get_name_hr(node->name)),
                 node->line);
         }
@@ -2177,7 +2200,7 @@ static void resolve_structure_struct_type(Structure* struct_type) {
         }
     }
     RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_ERROR_MESSAGE(ERROR_MESSAGE::structure_not_defined_in_scope, get_type_hr(struct_type)),
+        GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope, get_type_hr(struct_type)),
         context->line_buffer);
 }
 
@@ -2214,7 +2237,7 @@ static void resolve_var_expression(CVar* node) {
         }
     }
     RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_not_declared_in_scope, get_name_hr(node->name)), node->line);
+        GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_not_declared_in_scope, get_name_hr(node->name)), node->line);
 Lelse:
 
     checktype_var_expression(node);
@@ -2259,7 +2282,7 @@ static void resolve_function_call_expression(CFunctionCall* node) {
         }
     }
     RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_ERROR_MESSAGE(ERROR_MESSAGE::function_not_declared_in_scope, get_name_hr(node->name)), node->line);
+        GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_not_declared_in_scope, get_name_hr(node->name)), node->line);
 Lelse:
 
     for (size_t i = 0; i < node->args.size(); ++i) {
@@ -2369,7 +2392,7 @@ static void resolve_statement(CStatement* node);
 static void resolve_init_decl_for_init(CInitDecl* node) {
     if (node->init->storage_class) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::for_initial_declared_with_non_automatic_storage,
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage,
                 get_name_hr(node->init->name), get_storage_class_hr(node->init->storage_class.get())),
             node->init->line);
     }
@@ -2429,7 +2452,7 @@ static void resolve_goto_statement(CGoto* node) {
 static void resolve_label_statement(CLabel* node) {
     if (context->label_set.find(node->target) != context->label_set.end()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::label_redefined_in_scope, get_name_hr(node->target)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::label_redefined_in_scope, get_name_hr(node->target)), node->line);
     }
     context->label_set.insert(node->target);
 
@@ -2598,8 +2621,9 @@ static void resolve_compound_init_initializer(CCompoundInit* node, std::shared_p
             resolve_structure_compound_init_initializer(node, static_cast<Structure*>(init_type.get()), init_type);
             break;
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE::scalar_initialized_with_compound_initializer,
-                                            get_type_hr(init_type.get())),
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(
+                    ERROR_MESSAGE_SEMANTIC::scalar_initialized_with_compound_initializer, get_type_hr(init_type.get())),
                 get_compound_init_line(node));
     }
 }
@@ -2621,7 +2645,8 @@ static void resolve_params_function_declaration(CFunctionDeclaration* node) {
     for (auto& param : node->params) {
         if (context->scoped_identifier_maps.back().find(param) != context->scoped_identifier_maps.back().end()) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_redeclared_in_scope, get_name_hr(param)), node->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_redeclared_in_scope, get_name_hr(param)),
+                node->line);
         }
         context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);
         param = context->scoped_identifier_maps.back()[param];
@@ -2633,18 +2658,21 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
     if (!is_file_scope()) {
         if (node->body) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::nested_function_defined, get_name_hr(node->name)), node->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::nested_function_defined, get_name_hr(node->name)),
+                node->line);
         }
         else if (node->storage_class && node->storage_class->type() == AST_T::CStatic_t) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::nested_static_function_declared, get_name_hr(node->name)), node->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::nested_static_function_declared, get_name_hr(node->name)),
+                node->line);
         }
     }
 
     if (context->external_linkage_scope_map.find(node->name) == context->external_linkage_scope_map.end()) {
         if (context->scoped_identifier_maps.back().find(node->name) != context->scoped_identifier_maps.back().end()) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE::function_redeclared_in_scope, get_name_hr(node->name)), node->line);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::function_redeclared_in_scope, get_name_hr(node->name)),
+                node->line);
         }
         context->external_linkage_scope_map[node->name] = current_scope_depth();
     }
@@ -2683,7 +2711,8 @@ static void resolve_block_scope_variable_declaration(CVariableDeclaration* node)
         && !(context->external_linkage_scope_map.find(node->name) != context->external_linkage_scope_map.end()
              && (node->storage_class && node->storage_class->type() == AST_T::CExtern_t))) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE::variable_redeclared_in_scope, get_name_hr(node->name)), node->line);
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_redeclared_in_scope, get_name_hr(node->name)),
+            node->line);
     }
     else if (node->storage_class && node->storage_class->type() == AST_T::CExtern_t) {
         resolve_file_scope_variable_declaration(node);

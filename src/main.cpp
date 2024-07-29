@@ -198,7 +198,7 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_debug_code_in_argument));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_debug_code_in_argument));
     }
     {
         std::vector<char> buffer(arg.begin(), arg.end());
@@ -208,13 +208,13 @@ static void arg_parse() {
         context->debug_code = static_cast<int>(strtol(&buffer[0], &end_ptr, 10));
 
         if (end_ptr == &buffer[0] || context->debug_code < 0 || context->debug_code > 255) {
-            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_debug_code_in_argument, arg));
+            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg));
         }
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::no_input_files_in_argument));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument));
     }
     context->filename = std::move(arg);
 

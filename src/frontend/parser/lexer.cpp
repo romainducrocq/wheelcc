@@ -144,7 +144,7 @@ static std::vector<Token> tokenize() {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
                         RAISE_RUNTIME_ERROR_AT_LINE(
-                            GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_token, match.get_last_closed_paren()),
+                            GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, match.get_last_closed_paren()),
                             line_number);
                     case TOKEN_KIND::skip:
                         goto Lcontinue;
