@@ -1018,9 +1018,10 @@ static void generate_8byte_stack_arg_fun_call_instructions(
     }
 }
 
-static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_padding, bool is_return_memory) {
+static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return_memory) {
     size_t reg_size = is_return_memory ? 1 : 0;
     size_t sse_size = 0;
+    TLong stack_padding = 0l;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions = context->p_instructions;
     for (const auto& arg : node->args) {
@@ -1033,7 +1034,7 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                 context->p_instructions = &stack_instructions;
                 generate_stack_arg_fun_call_instructions(arg.get());
                 context->p_instructions = p_instructions;
-                stack_padding += 8l;
+                stack_padding++;
             }
         }
         else if (!is_value_structure(arg.get())) {
@@ -1045,7 +1046,7 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                 context->p_instructions = &stack_instructions;
                 generate_stack_arg_fun_call_instructions(arg.get());
                 context->p_instructions = p_instructions;
-                stack_padding += 8l;
+                stack_padding++;
             }
         }
         else {
@@ -1088,14 +1089,21 @@ static void generate_arg_fun_call_instructions(TacFunCall* node, TLong& stack_pa
                 for (size_t i = 0; i < context->struct_8b_cls_map[struct_type->tag].size(); ++i) {
                     generate_8byte_stack_arg_fun_call_instructions(name, offset, struct_type);
                     offset += 8l;
+                    stack_padding++;
                 }
                 context->p_instructions = p_instructions;
             }
         }
     }
+    if (stack_padding % 2l == 1l) {
+        generate_allocate_stack_instructions(8l);
+        stack_padding++;
+    }
+    stack_padding *= 8l;
     for (size_t i = stack_instructions.size(); i-- > 0;) {
         push_instruction(std::move(stack_instructions[i]));
     }
+    return stack_padding;
 }
 
 static void generate_return_fun_call_instructions(TacValue* node, REGISTER_KIND arg_register) {
@@ -1156,12 +1164,6 @@ static void generate_8byte_return_fun_call_instructions(
 static void generate_fun_call_instructions(TacFunCall* node) {
     bool is_return_memory = false;
     {
-        TLong stack_padding = 0l;
-        if (node->args.size() % 2 == 1) {
-            stack_padding = 8l;
-            generate_allocate_stack_instructions(stack_padding);
-        }
-
         if (node->dst && is_value_structure(node->dst.get())) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
@@ -1175,7 +1177,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                 }
             }
         }
-        generate_arg_fun_call_instructions(node, stack_padding, is_return_memory);
+        TLong stack_padding = generate_arg_fun_call_instructions(node, is_return_memory);
 
         {
             TIdentifier name = node->name;
