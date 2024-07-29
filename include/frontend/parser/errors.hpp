@@ -76,6 +76,7 @@ enum ERROR_MESSAGE_SEMANTIC {
     non_static_function_redeclared_static,
     static_pointer_initialized_from_non_integer,
     static_pointer_initialized_from_non_null,
+    aggregate_initialized_with_single_initializer,
     static_non_char_pointer_initialized_from_string,
     static_initialized_with_non_constant,
     scalar_initialized_with_compound_initializer,

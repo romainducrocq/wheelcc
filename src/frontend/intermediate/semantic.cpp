@@ -1725,7 +1725,10 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::aggregate_initialized_with_single_initializer,
+                    get_type_hr(static_init_type)),
+                node->line);
     }
 }
 

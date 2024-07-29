@@ -629,6 +629,8 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "cannot statically initialize pointer type %s from constant %s, requires a constant integer";
         case ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_null:
             return "cannot statically initialize pointer type %s from non-null value %s";
+        case ERROR_MESSAGE_SEMANTIC::aggregate_initialized_with_single_initializer:
+            return "aggregate type %s statically initialized with single initializer";
         case ERROR_MESSAGE_SEMANTIC::static_non_char_pointer_initialized_from_string:
             return "non-character pointer type %s statically initialized from string literal";
         case ERROR_MESSAGE_SEMANTIC::static_initialized_with_non_constant:
