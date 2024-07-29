@@ -1,6 +1,6 @@
 #include <string>
 
-#include "util/throw.hpp"
+#include "util/util.hpp"
 
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
@@ -8,6 +8,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Errors
+
+size_t handle_error_at_line(size_t line_number) {
+    // util->filename;
+    return line_number;
+}
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind) {
     switch (token_kind) {

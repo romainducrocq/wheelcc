@@ -16,7 +16,7 @@ void file_open_read(const std::string& filename) {
 
     util->file_in = fopen(filename.c_str(), "rb");
     if (util->file_in == nullptr) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::failed_to_read_output_file, filename));
+        raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE::failed_to_read_output_file, filename));
     }
 
     util->l = 0;

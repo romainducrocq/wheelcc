@@ -143,7 +143,7 @@ static std::vector<Token> tokenize() {
                 switch (last_group) {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
-                        raise_runtime_error_at_line(
+                        RAISE_RUNTIME_ERROR_AT_LINE(
                             GET_ERROR_MESSAGE(ERROR_MESSAGE::invalid_token, match.get_last_closed_paren()),
                             line_number);
                     case TOKEN_KIND::skip:

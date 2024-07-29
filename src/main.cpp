@@ -97,6 +97,8 @@ static void compile() {
 
     INIT_UTIL_CONTEXT;
 
+    INIT_INCLUDE_CONTEXT;
+
     verbose("-- Lexing ... ", false);
     std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename);
     verbose("OK", true);
@@ -131,6 +133,8 @@ static void compile() {
         return;
     }
 #endif
+
+    FREE_INCLUDE_CONTEXT;
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
@@ -215,6 +219,9 @@ static void arg_parse() {
     context->filename = std::move(arg);
 
     context->optim_mask = 0; // TODO
+
+    PARSE_INCLUDE_ARGS(context->args);
+
     context->args.clear();
 }
 
