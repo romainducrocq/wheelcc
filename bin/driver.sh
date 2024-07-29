@@ -316,7 +316,6 @@ function parse_args () {
             break
         fi
     done
-    echo ${LINK_DIRS}
 
     while :; do
         parse_lib_arg
