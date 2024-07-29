@@ -57,6 +57,32 @@ Not needed, the bottleneck is by far the regex tokenizer.
 - Set capacity of containers (vector, unordered map, string) with reserve() when size is known, or if good upper estimate.
 - Construct line in emitter with += operator instead of +, because it is 3x cheaper (but less readable).
 
+## PREPROC INCLUDES
+
+- in args, pass all included directories (PARSE_INCLUDE_ARGS(X))
+- create include context that contains:
+    - vector of max FOPEN_MAX file buffers
+      + for each, util file_in, buffer, l
+- during lexing, start with main src and traverse all files in order of includes
+- when hit include, open buffer and pop it on the vector (set file_in, buffer, l), then lex it
+- then pop it and go back to previous file (set back file_in, buffer, l to previous)
+- keep a list of previously traversed files to ignore if a file is hit more than once
+- increment total amount of line read and pass it to the ast (size_t line)
+- keep track in a map of which file is read between which start and end lines
+- during runtime error, use the map and the absolute line count to find back the relative line and file
+    - with errors::handle_error_at_line
+- if the amount of buffers open >= FOPEN_MAX, close the furthest open buffer from current
+    - when back to a closed buffer, reopen it and traverse it to the previous location to continue lex
+- for example:
+    file 1 (l: 0-42) * still open
+    file 2 (l: 43-65) (22 lines)
+    file 1 (l: 66-100) * still open
+    file 3 (l: 101-126) * still open
+    file 4 (l: 126-157) (31 lines)
+    file 5 (l: 158-170) (12 lines)
+    file 3 (l: 171-209) (25 + 38 = 63 lines)
+    file 1 (l: 210-256) (42 + 34 + 46 = 122 lines)
+
 ## Grammar ideas
 
 https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_would_have_changed_about/
