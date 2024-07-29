@@ -13,35 +13,41 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES"
     echo ""
     echo "[Help]:"
-    echo "    --help       print help and exit"
+    echo "    --help          print help and exit"
     echo ""
-    echo "[Dbg]:"
-    echo "    -v           enable verbose mode"
+    echo "[Debug]:"
+    echo "    -v              enable verbose mode"
     echo "    (Debug only):"
-    echo "    --lex        print  lexing    stage and exit"
-    echo "    --parse      print  parsing   stage and exit"
-    echo "    --validate   print  semantic  stage and exit"
-    echo "    --tacky      print  interm    stage and exit"
-    echo "    --codegen    print  assembly  stage and exit"
-    echo "    --codeemit   print  emission  stage and exit"
+    echo "    --lex           print  lexing    stage and exit"
+    echo "    --parse         print  parsing   stage and exit"
+    echo "    --validate      print  semantic  stage and exit"
+    echo "    --tacky         print  interm    stage and exit"
+    echo "    --codegen       print  assembly  stage and exit"
+    echo "    --codeemit      print  emission  stage and exit"
     echo ""
-    echo "[Pre]:"
-    echo "    -E           do not preprocess, then compile"
+    echo "[Preprocess]:"
+    echo "    -E              do not preprocess, then compile"
+    echo ""
+    echo "[Include]:"
+    echo "    -I<includedir>  add a directory to include path"
     echo ""
     echo "[Link]:"
-    echo "    -S           compile, but do not assemble and link"
-    echo "    -c           compile and assemble, but do not link"
+    echo "    -S              compile, but do not assemble and link"
+    echo "    -c              compile and assemble, but do not link"
     echo ""
-    echo "[Lib]:"
-    echo "    -l<libname>  link with a list of library files"
+    echo "[Linkdir]:"
+    echo "    -L<linkdir>     add a directory to link path"
     echo ""
-    echo "[Out]:"
-    echo "    -o <file>    write the output into <file>"
+    echo "[Linklib]:"
+    echo "    -l<libname>     link with a list of library files"
     echo ""
-    echo "FILES:           list of .c files to compile"
+    echo "[Output]:"
+    echo "    -o <file>       write the output into <file>"
+    echo ""
+    echo "FILES:              list of .c files to compile"
     exit 0
 }
 
@@ -143,6 +149,22 @@ function parse_preproc_arg () {
     return 0
 }
 
+function parse_include_arg () {
+    if [[ "${ARG}" != "-I"* ]]; then
+        return 1
+    fi
+    ARG="${ARG:2}"
+    if [[ "${ARG}" == "-"* ]]; then
+        raise_error "unknown or malformed option: $(em "${ARG}")"
+    fi
+    INCLUDE_DIR="$(readlink -f ${ARG})"
+    if [ ! -d "${INCLUDE_DIR}" ]; then
+        raise_error "cannot find $(em "${INCLUDE_DIR}"): no such directory"
+    fi
+    INCLUDE_DIRS="${INCLUDE_DIRS} ${INCLUDE_DIR}/"
+    return 0
+}
+
 function parse_link_arg () {
     case "${ARG}" in
         "-S")
@@ -154,6 +176,22 @@ function parse_link_arg () {
         *)
             return 1
     esac
+    return 0
+}
+
+function parse_linkdir_arg () {
+    if [[ "${ARG}" != "-L"* ]]; then
+        return 1
+    fi
+    ARG="${ARG:2}"
+    if [[ "${ARG}" == "-"* ]]; then
+        raise_error "unknown or malformed option: $(em "${ARG}")"
+    fi
+    LINK_DIR="$(readlink -f ${ARG})"
+    if [ ! -d "${LINK_DIR}" ]; then
+        raise_error "cannot find $(em "${LINK_DIR}"): no such directory"
+    fi
+    LINK_DIRS="${LINK_DIRS} -L${LINK_DIR}/"
     return 0
 }
 
@@ -247,6 +285,18 @@ function parse_args () {
         fi
     fi
 
+    while :; do
+        parse_include_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then
+                raise_error "no input files"
+            fi
+        else
+            break
+        fi
+    done
+
     parse_link_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
@@ -254,6 +304,19 @@ function parse_args () {
             raise_error "no input files"
         fi
     fi
+
+    while :; do
+        parse_linkdir_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then
+                raise_error "no input files"
+            fi
+        else
+            break
+        fi
+    done
+    echo ${LINK_DIRS}
 
     while :; do
         parse_lib_arg
@@ -303,7 +366,7 @@ function preprocess () {
 function compile () {
     for FILE in ${FILES}; do
         verbose "Compile    -> ${FILE}.${EXT_OUT}"
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN} 2>&1)
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN}${INCLUDE_DIRS} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
             raise_error "compilation failed"
@@ -327,7 +390,7 @@ function link () {
                     FILES_OUT="$(echo "${FILES_OUT}" |\
                         sed "s/ /.${EXT_OUT} /g")"
                 fi
-                gcc ${FILES_OUT}${LINK_LIBS} -o ${NAME_OUT}
+                gcc ${FILES_OUT}${LINK_DIRS}${LINK_LIBS} -o ${NAME_OUT}
                 if [ ${?} -ne 0 ]; then
                     raise_error "linking failed"
                 fi
@@ -337,7 +400,7 @@ function link () {
                 ;;
             2)
                 for FILE in ${FILES}; do
-                    gcc -c ${FILE}.${EXT_OUT}${LINK_LIBS} -o ${FILE}.o
+                    gcc -c ${FILE}.${EXT_OUT}${LINK_DIRS}${LINK_LIBS} -o ${FILE}.o
                     if [ ${?} -ne 0 ]; then
                         raise_error "assembling failed"
                     fi
@@ -361,7 +424,9 @@ LINK_ENUM=0
 EXT_IN="c"
 EXT_OUT="s"
 
+INCLUDE_DIRS=""
 LINK_LIBS=""
+LINK_DIRS=""
 FILES=""
 NAME_OUT=""
 
