@@ -1,6 +1,7 @@
 #ifndef _FRONTEND_PARSER_LEXER_HPP
 #define _FRONTEND_PARSER_LEXER_HPP
 
+#include "boost/regex.hpp"
 #include <array>
 #include <memory>
 #include <string>
@@ -21,9 +22,13 @@ struct Token {
 };
 
 struct LexerContext {
-    LexerContext();
+    LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
 
+    std::vector<Token>* p_tokens;
+    std::vector<std::string>* p_includedirs;
     std::array<std::string, TOKEN_KIND_SIZE> TOKEN_REGEXPS;
+    std::string token_groups[TOKEN_KIND_SIZE];
+    std::unique_ptr<const boost::regex> token_pattern;
 };
 
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs);

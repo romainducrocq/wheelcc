@@ -11,7 +11,8 @@
 
 static std::unique_ptr<LexerContext> context;
 
-LexerContext::LexerContext() :
+LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
+    p_tokens(p_tokens), p_includedirs(p_includedirs),
     TOKEN_REGEXPS({
         R"(<<=)", // assignment_bitshiftleft
         R"(>>=)", // assignment_bitshiftright
@@ -104,31 +105,21 @@ LexerContext::LexerContext() :
 
 // Lexer
 
-static std::vector<Token> tokenize() {
-    std::string regexp_string = "";
-    std::string groups[TOKEN_KIND_SIZE];
-    for (size_t i = 0; i < TOKEN_KIND_SIZE; ++i) {
-        groups[i] = std::to_string(i);
-        regexp_string += "(?<" + groups[i] + ">" + context->TOKEN_REGEXPS[i] + ")|";
-    }
-    regexp_string.pop_back();
-
-    const boost::regex token_pattern(regexp_string);
-    std::vector<Token> tokens;
-
+static void tokenize_file() {
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
     bool is_comment = false;
     for (size_t line_number = 1; read_line(line); ++line_number) {
 
         boost::sregex_iterator it_end;
-        for (boost::sregex_iterator it_begin = boost::sregex_iterator(line.begin(), line.end(), token_pattern);
+        for (boost::sregex_iterator it_begin =
+                 boost::sregex_iterator(line.begin(), line.end(), *context->token_pattern);
              it_begin != it_end; it_begin++) {
 
             size_t last_group;
             boost::smatch match = *it_begin;
             for (last_group = TOKEN_KIND_SIZE; last_group-- > 0;) {
-                if (match[groups[last_group]].matched) {
+                if (match[context->token_groups[last_group]].matched) {
                     break;
                 }
             }
@@ -166,36 +157,51 @@ static std::vector<Token> tokenize() {
             }
 
             Token token = {match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group), line_number};
-            tokens.emplace_back(std::move(token));
+            context->p_tokens->emplace_back(std::move(token));
         }
     }
-    return tokens;
+}
+
+// #include <iostream> // TODO rm
+static void tokenize_source() {
+    std::string regexp_string = "";
+    for (size_t i = 0; i < TOKEN_KIND_SIZE; ++i) {
+        context->token_groups[i] = std::to_string(i);
+        regexp_string += "(?<";
+        regexp_string += context->token_groups[i];
+        regexp_string += ">";
+        regexp_string += context->TOKEN_REGEXPS[i];
+        regexp_string += ")|";
+    }
+    regexp_string.pop_back();
+    context->token_pattern = std::make_unique<const boost::regex>(regexp_string);
+    tokenize_file();
+
+    // // TODO rm
+    // {
+    //     std::vector<std::string> filenames = {"errs_all_new_refactor.txt", "format.sh", "tests"};
+    //     for (const auto& includedir : *context->p_includedirs) {
+    //         for (auto filename : filenames) {
+    //             filename = includedir + filename;
+    //             if (find_file(filename)) {
+    //                 std::cout << "YES: " << filename << std::endl;
+    //             }
+    //             else {
+    //                 std::cout << "NO: " << filename << std::endl;
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs) {
-    // TODO
-    {
-
-        // std::vector<std::string> filenames = {"errs_all_new_refactor.txt", "format.sh", "tests"};
-        // for (const auto& includedir : includedirs) {
-        //     for (auto filename : filenames) {
-        //         filename = includedir + filename;
-        //         if (find_file(filename)) {
-        //             std::cout << "YES: " << filename << std::endl;
-        //         }
-        //         else {
-        //             std::cout << "NO: " << filename << std::endl;
-        //         }
-        //     }
-        // }
-    }
     file_open_read(filename);
 
-    context = std::make_unique<LexerContext>();
-    std::vector<Token> tokens = tokenize();
+    std::vector<Token> tokens;
+    context = std::make_unique<LexerContext>(&tokens, &includedirs);
+    tokenize_source();
     context.reset();
 
     file_close_read();
