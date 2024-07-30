@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string>
 
+#include "tinydir/tinydir.h"
+
 #include "util/throw.hpp"
 #include "util/util.hpp"
 
@@ -12,18 +14,22 @@
 
 // Throw
 
-static void file_free() {
-    if (util->buffer != nullptr) {
-        free(util->buffer);
-        util->buffer = nullptr;
+static void free_resources() {
+    if (util->read_buf != nullptr) {
+        free(util->read_buf);
+        util->read_buf = nullptr;
     }
-    if (util->file_in != nullptr) {
-        fclose(util->file_in);
-        util->file_in = nullptr;
+    if (util->file_read != nullptr) {
+        fclose(util->file_read);
+        util->file_read = nullptr;
     }
-    if (util->file_out != nullptr) {
-        fclose(util->file_out);
-        util->file_out = nullptr;
+    if (util->file_write != nullptr) {
+        fclose(util->file_write);
+        util->file_write = nullptr;
+    }
+    if(util->is_dir_open) {
+        tinydir_close(&util->tiny_dir);
+        util->is_dir_open = false;
     }
 }
 
@@ -34,7 +40,7 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
 }
 
 [[noreturn]] void raise_runtime_error(const std::string& message) {
-    file_free();
+    free_resources();
     throw std::runtime_error("\n\033[1m" + util->filename + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\n");
 }
 
@@ -42,7 +48,7 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
     if (line_number == 0) {
         raise_runtime_error(message);
     }
-    file_free();
+    free_resources();
     std::string line;
     {
         size_t l = 0;
@@ -75,7 +81,7 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
 }
 
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
-    file_free();
+    free_resources();
     throw std::runtime_error("\n\033[1m" + std::string(file) + ":" + std::to_string(line)
                              + ":\033[0m\n\033[0;31minternal error:\033[0m " + std::string(func));
 }

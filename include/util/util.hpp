@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "tinydir/tinydir.h"
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Util
@@ -23,11 +25,13 @@ struct MainContext {
 struct UtilContext {
     std::string filename;
     // File io
-    size_t l;
-    char* buffer;
-    FILE* file_in;
-    FILE* file_out;
-    std::string stream_buf;
+    bool is_dir_open;
+    tinydir_dir tiny_dir;
+    size_t read_len;
+    char* read_buf;
+    FILE* file_read;
+    FILE* file_write;
+    std::string write_buf;
 };
 
 extern std::unique_ptr<UtilContext> util;

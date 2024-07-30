@@ -192,6 +192,7 @@ static void shift_args(std::string& arg) {
     arg = "";
 }
 
+// #include <stdio.h>
 static void arg_parse() {
     std::string arg;
     shift_args(arg);
@@ -212,15 +213,19 @@ static void arg_parse() {
         }
     }
 
+    context->optim_mask = 0; // TODO
+
     shift_args(arg);
     if (arg.empty()) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument));
     }
     context->filename = std::move(arg);
 
-    context->optim_mask = 0; // TODO
-
-    PARSE_INCLUDE_ARGS(context->args);
+    // shift_args(arg);
+    // while(!arg.empty()) {
+    //     printf("%s\n", arg.c_str());
+    //     shift_args(arg);
+    // }
 
     context->args.clear();
 }
@@ -233,7 +238,7 @@ int main(int argc, char** argv) {
         size_t i = static_cast<size_t>(argc);
         context->args.reserve(i);
         for (; i-- > 0;) {
-            context->args.emplace_back(std::string(argv[i]));
+            context->args.emplace_back(argv[i]);
         }
     }
 
