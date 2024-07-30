@@ -57,6 +57,7 @@ enum TOKEN_KIND {
     separator_comma,
     structop_member,
 
+    include_directive,
     preprocessor_directive,
 
     key_char,

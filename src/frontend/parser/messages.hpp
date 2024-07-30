@@ -7,7 +7,8 @@
 
 enum ERROR_MESSAGE_LEXER {
     unhandled_lexer_error = 300,
-    invalid_token
+    invalid_token,
+    failed_to_include_header_file
 };
 
 enum ERROR_MESSAGE_PARSER {

@@ -65,7 +65,8 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
         R"(,)",            // separator_comma
         R"(\.(?![0-9]+))", // structop_member
 
-        R"(#[acdefgilmnoprsuw]+\b)", // preprocessor_directive
+        R"(^\s*#\s*include\b\s*(<\w+(/\w+)*\.h>|"\w+(/\w+)*\.h"))", // include_directive
+        R"(^\s*#\s*[acdefgilmnoprsuw]+\b)",                         // preprocessor_directive
 
         R"(char\b)",     // key_char
         R"(int\b)",      // key_int
@@ -105,6 +106,8 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 // Lexer
 
+static void tokenize_header(std::string include_match, size_t tokenize_header);
+
 static void tokenize_file() {
     // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
@@ -143,6 +146,9 @@ static void tokenize_file() {
                         is_comment = true;
                         goto Lcontinue;
                     }
+                    case TOKEN_KIND::include_directive:
+                        tokenize_header(match.get_last_closed_paren(), line_number);
+                        goto Lcontinue;
                     case TOKEN_KIND::comment_singleline:
                     case TOKEN_KIND::preprocessor_directive:
                         goto Lbreak;
@@ -162,7 +168,48 @@ static void tokenize_file() {
     }
 }
 
+static bool find_header(std::vector<std::string>& dirnames, std::string& filename) {
+    for (auto dirname : dirnames) {
+        dirname += filename;
+        if (find_file(dirname)) {
+            filename = std::move(dirname);
+            return true;
+        }
+    }
+    return false;
+}
+
 // #include <iostream> // TODO rm
+static void tokenize_header(std::string filename, size_t line_number) {
+    if (filename.back() == '>') {
+        filename = filename.substr(filename.find('<') + 1);
+        if (context->filename_include_set.find(filename) != context->filename_include_set.end()) {
+            return;
+        }
+        context->filename_include_set.insert(filename);
+        filename.pop_back();
+        // TODO check stdlibdirs
+        if (!find_header(*context->p_includedirs, filename)) {
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
+        }
+    }
+    else {
+        filename = filename.substr(filename.find('"') + 1);
+        if (context->filename_include_set.find(filename) != context->filename_include_set.end()) {
+            return;
+        }
+        context->filename_include_set.insert(filename);
+        filename.pop_back();
+        if (!find_header(*context->p_includedirs, filename)) {
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
+        }
+    }
+    // std::cout << filename << std::endl; // TODO rm
+    // TODO
+}
+
 static void tokenize_source() {
     std::string regexp_string = "";
     for (size_t i = 0; i < TOKEN_KIND_SIZE; ++i) {
@@ -176,22 +223,6 @@ static void tokenize_source() {
     regexp_string.pop_back();
     context->token_pattern = std::make_unique<const boost::regex>(regexp_string);
     tokenize_file();
-
-    // // TODO rm
-    // {
-    //     std::vector<std::string> filenames = {"errs_all_new_refactor.txt", "format.sh", "tests"};
-    //     for (const auto& includedir : *context->p_includedirs) {
-    //         for (auto filename : filenames) {
-    //             filename = includedir + filename;
-    //             if (find_file(filename)) {
-    //                 std::cout << "YES: " << filename << std::endl;
-    //             }
-    //             else {
-    //                 std::cout << "NO: " << filename << std::endl;
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

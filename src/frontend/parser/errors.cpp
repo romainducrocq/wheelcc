@@ -404,6 +404,8 @@ std::string get_what_message(ERROR_MESSAGE_LEXER message) {
     switch (message) {
         case ERROR_MESSAGE_LEXER::invalid_token:
             return "found invalid token %s";
+        case ERROR_MESSAGE_LEXER::failed_to_include_header_file:
+            return "cannot find %s header file in " + em("include") + " directive search";
         default:
             RAISE_INTERNAL_ERROR;
     }

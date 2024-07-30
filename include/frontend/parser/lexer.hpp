@@ -5,6 +5,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "tokens.hpp" // frontend
@@ -29,6 +30,7 @@ struct LexerContext {
     std::array<std::string, TOKEN_KIND_SIZE> TOKEN_REGEXPS;
     std::string token_groups[TOKEN_KIND_SIZE];
     std::unique_ptr<const boost::regex> token_pattern;
+    std::unordered_set<std::string> filename_include_set;
 };
 
 std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs);
