@@ -21,7 +21,8 @@ enum ERROR_MESSAGE_ARGUMENT {
     unhandled_argument_error = 100,
     no_debug_code_in_argument,
     invalid_debug_code_in_argument,
-    no_input_files_in_argument
+    no_input_files_in_argument,
+    no_include_directories_in_argument
 };
 
 enum ERROR_MESSAGE_UTIL {

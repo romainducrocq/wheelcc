@@ -374,6 +374,8 @@ std::string get_what_message(ERROR_MESSAGE_ARGUMENT message) {
             return "invalid debug code %s passed in first argument";
         case ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument:
             return "no input file passed in second argument";
+        case ERROR_MESSAGE_ARGUMENT::no_include_directories_in_argument:
+            return "no include directories passed in third argument";
         default:
             RAISE_INTERNAL_ERROR;
     }

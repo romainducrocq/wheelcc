@@ -97,7 +97,7 @@ static void compile() {
 
     INIT_UTIL_CONTEXT;
 
-    INIT_INCLUDE_CONTEXT;
+    // INIT_INCLUDE_CONTEXT; TODO
 
     verbose("-- Lexing ... ", false);
     std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename);
@@ -134,7 +134,7 @@ static void compile() {
     }
 #endif
 
-    FREE_INCLUDE_CONTEXT;
+    // FREE_INCLUDE_CONTEXT; TODO
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
@@ -192,7 +192,6 @@ static void shift_args(std::string& arg) {
     arg = "";
 }
 
-// #include <stdio.h>
 static void arg_parse() {
     std::string arg;
     shift_args(arg);
@@ -219,15 +218,20 @@ static void arg_parse() {
     if (arg.empty()) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument));
     }
-    context->filename = std::move(arg);
+    context->filename = arg;
 
-    // shift_args(arg);
-    // while(!arg.empty()) {
-    //     printf("%s\n", arg.c_str());
-    //     shift_args(arg);
-    // }
+    shift_args(arg);
+    if (arg.empty()) {
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_include_directories_in_argument));
+    }
+    do {
+        context->includedirs.emplace_back(arg);
+        shift_args(arg);
+    } while(!arg.empty());
 
+    arg = "";
     context->args.clear();
+    std::vector<std::string>().swap(context->args);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

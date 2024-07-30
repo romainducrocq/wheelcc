@@ -18,6 +18,7 @@ struct MainContext {
     int debug_code;
     int optim_mask;
     std::string filename;
+    std::vector<std::string> includedirs;
     std::vector<std::string> args;
 };
 
