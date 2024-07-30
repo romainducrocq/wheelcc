@@ -1,7 +1,6 @@
+#include "tinydir/tinydir.h"
 #include <stdio.h>
 #include <string>
-
-#include "tinydir/tinydir.h"
 
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
@@ -13,9 +12,11 @@
 
 // File io
 
-void dir_open(const std::string& dirname) {
+void directory_open(const std::string& dirname) {
     util->tiny_dir = {};
-    tinydir_open(&util->tiny_dir, dirname.c_str());
+    if (tinydir_open(&util->tiny_dir, dirname.c_str()) == -1) {
+        raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_open_directory, dirname));
+    }
     util->is_dir_open = true;
 }
 
@@ -43,14 +44,16 @@ void file_open_write(const std::string& filename) {
 }
 
 bool list_file(std::string& filename) {
-        if(!util->tiny_dir.has_next) {
-            return false;
-        }
-        tinydir_file file = {};
-        tinydir_readfile(&util->tiny_dir, &file);
-        filename = file.is_dir ? "" : file.name;
-        tinydir_next(&util->tiny_dir);
-        return true;
+    if (!util->tiny_dir.has_next) {
+        return false;
+    }
+    tinydir_file file = {};
+    if (tinydir_readfile(&util->tiny_dir, &file) == -1) {
+        return false;
+    }
+    filename = file.is_dir ? "" : file.name;
+    tinydir_next(&util->tiny_dir);
+    return true;
 }
 
 bool read_line(std::string& line) {
@@ -80,7 +83,7 @@ static void write_file(std::string&& string_stream, size_t chunk_size) {
 
 void write_line(std::string&& line) { write_file(line + "\n", 4096); }
 
-void dir_close() {
+void directory_close() {
     tinydir_close(&util->tiny_dir);
     util->is_dir_open = false;
 }

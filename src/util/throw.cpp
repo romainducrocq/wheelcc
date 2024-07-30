@@ -1,11 +1,10 @@
+#include "tinydir/tinydir.h"
 #include <array>
 #include <cstdio>
 #include <memory>
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
-
-#include "tinydir/tinydir.h"
 
 #include "util/throw.hpp"
 #include "util/util.hpp"
@@ -27,7 +26,7 @@ static void free_resources() {
         fclose(util->file_write);
         util->file_write = nullptr;
     }
-    if(util->is_dir_open) {
+    if (util->is_dir_open) {
         tinydir_close(&util->tiny_dir);
         util->is_dir_open = false;
     }

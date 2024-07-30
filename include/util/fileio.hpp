@@ -7,13 +7,13 @@
 
 // File io
 
-void dir_open(const std::string& dirname);
+void directory_open(const std::string& dirname);
 void file_open_read(const std::string& filename);
 void file_open_write(const std::string& filename);
 bool list_file(std::string& filename);
 bool read_line(std::string& line);
 void write_line(std::string&& line);
-void dir_close();
+void directory_close();
 void file_close_read();
 void file_close_write();
 

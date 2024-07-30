@@ -1,12 +1,11 @@
 #ifndef _UTIL_UTIL_HPP
 #define _UTIL_UTIL_HPP
 
+#include "tinydir/tinydir.h"
 #include <memory>
 #include <stdio.h>
 #include <string>
 #include <vector>
-
-#include "tinydir/tinydir.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
