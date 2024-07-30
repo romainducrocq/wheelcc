@@ -174,7 +174,24 @@ static std::vector<Token> tokenize() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<std::vector<Token>> lexing(const std::string& filename) {
+#include <iostream>
+std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs) {
+    // TODO
+    {
+
+        // std::vector<std::string> filenames = {"errs_all_new_refactor.txt", "format.sh", "tests"};
+        // for (const auto& includedir : includedirs) {
+        //     for (auto filename : filenames) {
+        //         filename = includedir + filename;
+        //         if (find_file(filename)) {
+        //             std::cout << "YES: " << filename << std::endl;
+        //         }
+        //         else {
+        //             std::cout << "NO: " << filename << std::endl;
+        //         }
+        //     }
+        // }
+    }
     file_open_read(filename);
 
     context = std::make_unique<LexerContext>();
@@ -182,5 +199,7 @@ std::unique_ptr<std::vector<Token>> lexing(const std::string& filename) {
     context.reset();
 
     file_close_read();
+    includedirs.clear();
+    std::vector<std::string>().swap(includedirs);
     return std::make_unique<std::vector<Token>>(std::move(tokens));
 }

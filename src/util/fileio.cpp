@@ -12,14 +12,6 @@
 
 // File io
 
-void directory_open(const std::string& dirname) {
-    util->tiny_dir = {};
-    if (tinydir_open(&util->tiny_dir, dirname.c_str()) == -1) {
-        raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_open_directory, dirname));
-    }
-    util->is_dir_open = true;
-}
-
 void file_open_read(const std::string& filename) {
     util->file_read = nullptr;
 
@@ -43,17 +35,9 @@ void file_open_write(const std::string& filename) {
     util->write_buf = "";
 }
 
-bool list_file(std::string& filename) {
-    if (!util->tiny_dir.has_next) {
-        return false;
-    }
+bool find_file(const std::string& filename) {
     tinydir_file file = {};
-    if (tinydir_readfile(&util->tiny_dir, &file) == -1) {
-        return false;
-    }
-    filename = file.is_dir ? "" : file.name;
-    tinydir_next(&util->tiny_dir);
-    return true;
+    return tinydir_file_open(&file, filename.c_str()) != -1 && !file.is_dir;
 }
 
 bool read_line(std::string& line) {
@@ -82,11 +66,6 @@ static void write_file(std::string&& string_stream, size_t chunk_size) {
 }
 
 void write_line(std::string&& line) { write_file(line + "\n", 4096); }
-
-void directory_close() {
-    tinydir_close(&util->tiny_dir);
-    util->is_dir_open = false;
-}
 
 void file_close_read() {
     fclose(util->file_read);

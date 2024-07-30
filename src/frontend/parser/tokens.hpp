@@ -93,8 +93,7 @@ enum TOKEN_KIND {
     error
 };
 
-#define INIT_INCLUDE_CONTEXT
-#define FREE_INCLUDE_CONTEXT
-#define PARSE_INCLUDE_ARGS(X)
+// #define INIT_INCLUDE_CONTEXT // TODO
+// #define FREE_INCLUDE_CONTEXT // TODO
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef _UTIL_UTIL_HPP
 #define _UTIL_UTIL_HPP
 
-#include "tinydir/tinydir.h"
 #include <memory>
 #include <stdio.h>
 #include <string>
@@ -25,8 +24,6 @@ struct MainContext {
 struct UtilContext {
     std::string filename;
     // File io
-    bool is_dir_open;
-    tinydir_dir tiny_dir;
     size_t read_len;
     char* read_buf;
     FILE* file_read;

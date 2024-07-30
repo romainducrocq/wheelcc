@@ -100,7 +100,7 @@ static void compile() {
     // INIT_INCLUDE_CONTEXT; TODO
 
     verbose("-- Lexing ... ", false);
-    std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename);
+    std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename, std::move(context->includedirs));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 255) {
@@ -227,7 +227,8 @@ static void arg_parse() {
     do {
         context->includedirs.emplace_back(arg);
         shift_args(arg);
-    } while(!arg.empty());
+    }
+    while (!arg.empty());
 
     arg = "";
     context->args.clear();

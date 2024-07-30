@@ -26,6 +26,6 @@ struct LexerContext {
     std::array<std::string, TOKEN_KIND_SIZE> TOKEN_REGEXPS;
 };
 
-std::unique_ptr<std::vector<Token>> lexing(const std::string& filename);
+std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs);
 
 #endif
