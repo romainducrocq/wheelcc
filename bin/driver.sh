@@ -348,6 +348,22 @@ function parse_args () {
     return 0;
 }
 
+function add_includedirs () {
+    INCLUDE_DIRS="${INCLUDE_DIRS} $(readlink -f .)/"
+    INCLUDE_DIRS=$(echo "${INCLUDE_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    return 0
+}
+
+function add_linkdirs () {
+    LINK_DIRS=$(echo "${LINK_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    return 0
+}
+
+function add_linklibs () {
+    LINK_LIBS=$(echo "${LINK_LIBS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    return 0
+}
+
 function preprocess () {
     if [ ${IS_PREPROC} -eq 0 ]; then
         for FILE in ${FILES}; do
@@ -365,7 +381,7 @@ function preprocess () {
 function compile () {
     for FILE in ${FILES}; do
         verbose "Compile    -> ${FILE}.${EXT_OUT}"
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN}${INCLUDE_DIRS} 2>&1)
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN} ${INCLUDE_DIRS} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
             raise_error "compilation failed"
@@ -389,7 +405,7 @@ function link () {
                     FILES_OUT="$(echo "${FILES_OUT}" |\
                         sed "s/ /.${EXT_OUT} /g")"
                 fi
-                gcc ${FILES_OUT}${LINK_DIRS}${LINK_LIBS} -o ${NAME_OUT}
+                gcc ${FILES_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
                 if [ ${?} -ne 0 ]; then
                     raise_error "linking failed"
                 fi
@@ -399,7 +415,7 @@ function link () {
                 ;;
             2)
                 for FILE in ${FILES}; do
-                    gcc -c ${FILE}.${EXT_OUT}${LINK_DIRS}${LINK_LIBS} -o ${FILE}.o
+                    gcc -c ${FILE}.${EXT_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${FILE}.o
                     if [ ${?} -ne 0 ]; then
                         raise_error "assembling failed"
                     fi
@@ -424,12 +440,15 @@ EXT_IN="c"
 EXT_OUT="s"
 
 INCLUDE_DIRS=""
-LINK_LIBS=""
 LINK_DIRS=""
+LINK_LIBS=""
 FILES=""
 NAME_OUT=""
 
 parse_args
+add_includedirs
+add_linkdirs
+add_linklibs
 
 preprocess
 compile
