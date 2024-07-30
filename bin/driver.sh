@@ -349,8 +349,9 @@ function parse_args () {
 }
 
 function add_includedirs () {
-    INCLUDE_DIRS="${INCLUDE_DIRS} $(readlink -f .)/"
-    INCLUDE_DIRS=$(echo "${INCLUDE_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    if [ ! -z "${INCLUDE_DIRS}" ]; then
+        INCLUDE_DIRS=$(echo "${INCLUDE_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    fi
     return 0
 }
 
@@ -385,7 +386,12 @@ function preprocess () {
 function compile () {
     for FILE in ${FILES}; do
         verbose "Compile    -> ${FILE}.${EXT_OUT}"
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN} ${INCLUDE_DIRS} 2>&1)
+        SOURCE_DIR="$(dirname ${FILE})/"
+        echo "${INCLUDE_DIRS}" | grep -q ${SOURCE_DIR}
+        if [ ${?} -eq 0 ]; then
+            SOURCE_DIR=""
+        fi
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
             raise_error "compilation failed"
