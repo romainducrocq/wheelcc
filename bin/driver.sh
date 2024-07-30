@@ -355,12 +355,16 @@ function add_includedirs () {
 }
 
 function add_linkdirs () {
-    LINK_DIRS=$(echo "${LINK_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    if [ ! -z "${LINK_DIRS}" ]; then
+        LINK_DIRS=$(echo "${LINK_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    fi
     return 0
 }
 
 function add_linklibs () {
-    LINK_LIBS=$(echo "${LINK_LIBS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    if [ ! -z "${LINK_LIBS}" ]; then
+        LINK_LIBS=$(echo "${LINK_LIBS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+    fi
     return 0
 }
 
