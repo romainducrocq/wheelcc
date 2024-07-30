@@ -40,6 +40,9 @@
 
 ---- Performance
 
+- replace string + with += where it is easy and makes sense
+(do not spend to much time on this optim, as the runtime is 70% regex)
+
 ---- Part 3 Optimization
 
 - use bitmask for cmd line params
