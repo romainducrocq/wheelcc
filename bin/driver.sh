@@ -345,7 +345,7 @@ function parse_args () {
         fi
         parse_file_2_arg
     done
-    return 0;
+    return 0
 }
 
 function add_includedirs () {
@@ -379,7 +379,7 @@ function preprocess () {
         done
         EXT_IN="i"
     fi
-    return 0;
+    return 0
 }
 
 function compile () {
@@ -397,7 +397,7 @@ function compile () {
             cat ${FILE}.${EXT_OUT}
         fi
     done
-    return 0;
+    return 0
 }
 
 function link () {
@@ -430,7 +430,7 @@ function link () {
                 raise_error "linking failed"
         esac
     fi
-    return 0;
+    return 0
 }
 
 IS_VERBOSE=0
