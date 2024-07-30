@@ -97,7 +97,7 @@ static void compile() {
 
     INIT_UTIL_CONTEXT;
 
-    // INIT_INCLUDE_CONTEXT; TODO
+    INIT_ERRORS_CONTEXT;
 
     verbose("-- Lexing ... ", false);
     std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename, std::move(context->includedirs));
@@ -134,7 +134,7 @@ static void compile() {
     }
 #endif
 
-    // FREE_INCLUDE_CONTEXT; TODO
+    FREE_ERRORS_CONTEXT;
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));

@@ -33,8 +33,6 @@ struct SemanticContext {
     std::unordered_set<TIdentifier> function_definition_set;
     std::unordered_set<TIdentifier> structure_definition_set;
     std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
-    // Error handling
-    size_t line_buffer;
 };
 
 void analyze_semantic(CProgram* node);

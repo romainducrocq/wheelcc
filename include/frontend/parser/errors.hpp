@@ -2,6 +2,7 @@
 #define _FRONTEND_PARSER_ERRORS_HPP
 
 #include <cstdio>
+#include <memory>
 #include <string>
 
 #include "util/throw.hpp"
@@ -102,6 +103,14 @@ enum ERROR_MESSAGE_SEMANTIC {
     nested_static_function_declared,
     function_redeclared_in_scope,
 };
+
+struct ErrorsContext {
+    size_t line_buffer;
+};
+
+extern std::unique_ptr<ErrorsContext> errors;
+#define INIT_ERRORS_CONTEXT errors = std::make_unique<ErrorsContext>()
+#define FREE_ERRORS_CONTEXT errors.reset()
 
 size_t handle_error_at_line(size_t line_number);
 std::string get_token_kind_hr(TOKEN_KIND token_kind);

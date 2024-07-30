@@ -168,7 +168,7 @@ static void is_array_valid_type(Array* arr_type) {
     if (!is_type_complete(arr_type->elem_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::array_of_incomplete_type,
                                         get_type_hr(arr_type), get_type_hr(arr_type->elem_type.get())),
-            context->line_buffer);
+            errors->line_buffer);
     }
     is_valid_type(arr_type->elem_type.get());
 }
@@ -420,7 +420,7 @@ static void checktype_var_expression(CVar* node) {
 }
 
 static void checktype_cast_expression(CCast* node) {
-    context->line_buffer = node->line;
+    errors->line_buffer = node->line;
     resolve_struct_type(node->target_type.get());
     if (node->target_type->type() != AST_T::Void_t
         && ((node->exp->exp_type->type() == AST_T::Double_t && node->target_type->type() == AST_T::Pointer_t)
@@ -966,7 +966,7 @@ static void checktype_sizeof_expression(CSizeOf* node) {
 }
 
 static void checktype_sizeoft_expression(CSizeOfT* node) {
-    context->line_buffer = node->line;
+    errors->line_buffer = node->line;
     resolve_struct_type(node->target_type.get());
     if (!is_type_complete(node->target_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type,
@@ -1258,7 +1258,7 @@ static void checktype_structure_compound_init_initializer(
 
 static void checktype_return_function_declaration(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-    context->line_buffer = node->line;
+    errors->line_buffer = node->line;
     resolve_struct_type(fun_type->ret_type.get());
     is_valid_type(fun_type->ret_type.get());
 
@@ -1284,7 +1284,7 @@ static void checktype_return_function_declaration(CFunctionDeclaration* node) {
 static void checktype_params_function_declaration(CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for (size_t i = 0; i < node->params.size(); ++i) {
-        context->line_buffer = node->line;
+        errors->line_buffer = node->line;
         resolve_struct_type(fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_T::Void_t) {
             RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::parameter_with_type_void,
@@ -1885,7 +1885,7 @@ static std::shared_ptr<Initial> checktype_initializer_initial(CInitializer* node
 }
 
 static void checktype_file_scope_variable_declaration(CVariableDeclaration* node) {
-    context->line_buffer = node->line;
+    errors->line_buffer = node->line;
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
@@ -2025,7 +2025,7 @@ static void checktype_automatic_block_scope_variable_declaration(CVariableDeclar
 }
 
 static void checktype_block_scope_variable_declaration(CVariableDeclaration* node) {
-    context->line_buffer = node->line;
+    errors->line_buffer = node->line;
     resolve_struct_type(node->var_type.get());
     if (node->var_type->type() == AST_T::Void_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
@@ -2064,7 +2064,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         if (node->members[i].get()->member_type->type() == AST_T::FunType_t) {
             RAISE_INTERNAL_ERROR;
         }
-        context->line_buffer = node->members[i]->line;
+        errors->line_buffer = node->members[i]->line;
         resolve_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
             RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type,
@@ -2204,7 +2204,7 @@ static void resolve_structure_struct_type(Structure* struct_type) {
     }
     RAISE_RUNTIME_ERROR_AT_LINE(
         GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope, get_type_hr(struct_type)),
-        context->line_buffer);
+        errors->line_buffer);
 }
 
 static void resolve_struct_type(Type* type) {
