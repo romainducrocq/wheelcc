@@ -60,7 +60,7 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
         size_t len = 0;
         char* buffer = nullptr;
         FILE* file_descriptor = fopen(filename.c_str(), "rb");
-        if (file_descriptor == nullptr) {
+        if (!file_descriptor) {
             raise_runtime_error(message);
         }
         for (size_t i = 0; i < line_number; ++i) {

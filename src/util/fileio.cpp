@@ -15,11 +15,25 @@
 void set_filename(const std::string& filename) { util->filename = filename; }
 
 void file_open_read(const std::string& filename) {
+    for (size_t i = 0; i < util->file_reads.size(); ++i) {
+        if (util->file_reads[i].file_descriptor) {
+            size_t n_open_files = util->file_reads.size() - i;
+            if (n_open_files > FOPEN_MAX) {
+                RAISE_INTERNAL_ERROR;
+            }
+            else if (n_open_files == FOPEN_MAX) {
+                fclose(util->file_reads.back().file_descriptor);
+                util->file_reads.back().file_descriptor = nullptr;
+            }
+            break;
+        }
+    }
+
     util->file_reads.emplace_back();
     util->file_reads.back().file_descriptor = nullptr;
 
     util->file_reads.back().file_descriptor = fopen(filename.c_str(), "rb");
-    if (util->file_reads.back().file_descriptor == nullptr) {
+    if (!util->file_reads.back().file_descriptor) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_read_output_file, filename));
     }
 
@@ -32,7 +46,7 @@ void file_open_write(const std::string& filename) {
     util->file_descriptor_write = nullptr;
 
     util->file_descriptor_write = fopen(filename.c_str(), "wb");
-    if (util->file_descriptor_write == nullptr) {
+    if (!util->file_descriptor_write) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_write_to_output_file, filename));
     }
     util->write_buffer = "";
