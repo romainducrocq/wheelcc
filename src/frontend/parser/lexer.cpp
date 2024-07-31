@@ -12,7 +12,11 @@
 static std::unique_ptr<LexerContext> context;
 
 LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
-    p_tokens(p_tokens), p_includedirs(p_includedirs),
+    p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+#ifdef __GNUC__
+                                                          "/usr/include/", "/usr/local/include/"
+#endif
+                                                      }),
     TOKEN_REGEXPS({
         R"(<<=)", // assignment_bitshiftleft
         R"(>>=)", // assignment_bitshiftright
@@ -100,7 +104,8 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
         R"([ \n\r\t\f\v])", // skip
         R"(.)"              // error
-    }) {}
+    }) {
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -183,24 +188,25 @@ static bool find_header(std::vector<std::string>& dirnames, std::string& filenam
 static void tokenize_header(std::string filename, size_t line_number) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
+        filename.pop_back();
         if (context->filename_include_set.find(filename) != context->filename_include_set.end()) {
             return;
         }
         context->filename_include_set.insert(filename);
-        filename.pop_back();
-        // TODO check stdlibdirs
-        if (!find_header(*context->p_includedirs, filename)) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
+        if (!find_header(context->stdlibdirs, filename)) {
+            if (!find_header(*context->p_includedirs, filename)) {
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
+            }
         }
     }
     else {
         filename = filename.substr(filename.find('"') + 1);
+        filename.pop_back();
         if (context->filename_include_set.find(filename) != context->filename_include_set.end()) {
             return;
         }
         context->filename_include_set.insert(filename);
-        filename.pop_back();
         if (!find_header(*context->p_includedirs, filename)) {
             RAISE_RUNTIME_ERROR_AT_LINE(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
