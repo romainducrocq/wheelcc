@@ -12,11 +12,11 @@
 static std::unique_ptr<LexerContext> context;
 
 LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
-    p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+    total_line_number(1), p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
 #ifdef __GNUC__
-                                                          "/usr/include/", "/usr/local/include/"
+                                                                                "/usr/include/", "/usr/local/include/"
 #endif
-                                                      }),
+                                                                            }),
     TOKEN_REGEXPS({
         R"(<<=)", // assignment_bitshiftleft
         R"(>>=)", // assignment_bitshiftright

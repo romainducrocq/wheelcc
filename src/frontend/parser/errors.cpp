@@ -12,6 +12,7 @@ std::unique_ptr<ErrorsContext> errors;
 // Errors
 
 size_t handle_error_at_line(size_t line_number) {
+    // TODO
     // set_filename()
     return line_number;
 }

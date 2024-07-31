@@ -38,8 +38,8 @@
 
 ---- Features
 
-- handle fopen with files open >= FOPEN_MAX
 - handle get relative file and line from total line in error messages
+- invert preproc arg, use -E for gcc
 
 ---- Performance
 

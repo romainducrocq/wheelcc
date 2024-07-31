@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "util/throw.hpp"
 
@@ -104,8 +105,15 @@ enum ERROR_MESSAGE_SEMANTIC {
     function_redeclared_in_scope,
 };
 
+struct FileOpenLine {
+    size_t at_file_line_number;
+    size_t at_total_line_number;
+    std::string filename;
+};
+
 struct ErrorsContext {
     size_t line_buffer;
+    std::vector<FileOpenLine> file_open_lines;
 };
 
 extern std::unique_ptr<ErrorsContext> errors;
