@@ -142,7 +142,7 @@ static void tokenize_file() {
                 switch (last_group) {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
-                        RAISE_RUNTIME_ERROR_AT_LINE(
+                        raise_runtime_error_at_line(
                             GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, match.get_last_closed_paren()),
                             line_number);
                     case TOKEN_KIND::skip:
@@ -195,7 +195,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
         context->filename_include_set.insert(filename);
         if (!find_header(context->stdlibdirs, filename)) {
             if (!find_header(*context->p_includedirs, filename)) {
-                RAISE_RUNTIME_ERROR_AT_LINE(
+                raise_runtime_error_at_line(
                     GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
             }
         }
@@ -208,7 +208,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
         }
         context->filename_include_set.insert(filename);
         if (!find_header(*context->p_includedirs, filename)) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
+            raise_runtime_error_at_line(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
         }
     }
@@ -231,6 +231,8 @@ static void tokenize_source() {
     tokenize_file();
 }
 
+static void strip_filename_extension(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
@@ -245,6 +247,6 @@ std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<st
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
     set_filename(filename);
-    filename = filename.substr(0, filename.size() - 2);
+    strip_filename_extension(filename);
     return std::make_unique<std::vector<Token>>(std::move(tokens));
 }
