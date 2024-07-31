@@ -233,7 +233,7 @@ static void tokenize_source() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs) {
+std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
     file_open_read(filename);
 
     std::vector<Token> tokens;
@@ -244,5 +244,7 @@ std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vec
     file_close_read();
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
+    set_filename(filename);
+    filename = filename.substr(0, filename.size() - 2);
     return std::make_unique<std::vector<Token>>(std::move(tokens));
 }

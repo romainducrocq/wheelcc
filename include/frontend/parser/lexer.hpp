@@ -34,6 +34,6 @@ struct LexerContext {
     std::unordered_set<std::string> filename_include_set;
 };
 
-std::unique_ptr<std::vector<Token>> lexing(const std::string& filename, std::vector<std::string>&& includedirs);
+std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<std::string>&& includedirs);
 
 #endif

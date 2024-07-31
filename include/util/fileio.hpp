@@ -7,6 +7,7 @@
 
 // File io
 
+void set_filename(const std::string& filename);
 void file_open_read(const std::string& filename);
 void file_open_write(const std::string& filename);
 bool find_file(const std::string& filename);

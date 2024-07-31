@@ -168,7 +168,7 @@ static void compile() {
     FREE_FRONT_END_CONTEXT;
 
     verbose("-- Code emission ... ", false);
-    context->filename = context->filename.substr(0, context->filename.size() - 2) + ".s";
+    context->filename += ".s";
     code_emission(std::move(asm_ast), std::move(context->filename));
     verbose("OK", true);
 #ifndef __NDEBUG__

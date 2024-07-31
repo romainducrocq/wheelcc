@@ -12,27 +12,30 @@
 
 // File io
 
-void file_open_read(const std::string& filename) {
-    util->file_read = nullptr;
+void set_filename(const std::string& filename) { util->filename = filename; }
 
-    util->file_read = fopen(filename.c_str(), "rb");
-    if (util->file_read == nullptr) {
+void file_open_read(const std::string& filename) {
+    util->file_reads.emplace_back();
+    util->file_reads.back().file_descriptor = nullptr;
+
+    util->file_reads.back().file_descriptor = fopen(filename.c_str(), "rb");
+    if (util->file_reads.back().file_descriptor == nullptr) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_read_output_file, filename));
     }
 
-    util->read_len = 0;
-    util->read_buf = nullptr;
-    util->filename = filename;
+    util->file_reads.back().len = 0;
+    util->file_reads.back().buffer = nullptr;
+    util->file_reads.back().filename = filename;
 }
 
 void file_open_write(const std::string& filename) {
-    util->file_write = nullptr;
+    util->file_descriptor_write = nullptr;
 
-    util->file_write = fopen(filename.c_str(), "wb");
-    if (util->file_write == nullptr) {
+    util->file_descriptor_write = fopen(filename.c_str(), "wb");
+    if (util->file_descriptor_write == nullptr) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_write_to_output_file, filename));
     }
-    util->write_buf = "";
+    util->write_buffer = "";
 }
 
 bool find_file(const std::string& filename) {
@@ -41,41 +44,43 @@ bool find_file(const std::string& filename) {
 }
 
 bool read_line(std::string& line) {
-    if (getline(&util->read_buf, &util->read_len, util->file_read) == -1) {
-        util->read_len = 0;
+    if (getline(&util->file_reads.back().buffer, &util->file_reads.back().len, util->file_reads.back().file_descriptor)
+        == -1) {
+        util->file_reads.back().len = 0;
         line = "";
-        free(util->read_buf);
-        util->read_buf = nullptr;
+        free(util->file_reads.back().buffer);
+        util->file_reads.back().buffer = nullptr;
         return false;
     }
 
-    line = util->read_buf;
+    line = util->file_reads.back().buffer;
     return true;
 }
 
-static void write_chunk(const std::string& chunk_fp, size_t chunk_l) {
-    fwrite(chunk_fp.c_str(), sizeof(char), chunk_l, util->file_write);
+static void write_chunk(const std::string& chunk_buffer) {
+    fwrite(chunk_buffer.c_str(), sizeof(char), chunk_buffer.size(), util->file_descriptor_write);
 }
 
 static void write_file(std::string&& string_stream, size_t chunk_size) {
-    util->write_buf += string_stream;
-    while (util->write_buf.size() >= chunk_size) {
-        write_chunk(util->write_buf.substr(0, chunk_size), chunk_size);
-        util->write_buf = util->write_buf.substr(chunk_size, util->write_buf.size() - chunk_size);
+    util->write_buffer += string_stream;
+    while (util->write_buffer.size() >= chunk_size) {
+        write_chunk(util->write_buffer.substr(0, chunk_size));
+        util->write_buffer = util->write_buffer.substr(chunk_size, util->write_buffer.size() - chunk_size);
     }
 }
 
 void write_line(std::string&& line) { write_file(line + "\n", 4096); }
 
 void file_close_read() {
-    fclose(util->file_read);
-    util->file_read = nullptr;
+    fclose(util->file_reads.back().file_descriptor);
+    util->file_reads.back().file_descriptor = nullptr;
+    util->file_reads.pop_back();
 }
 
 void file_close_write() {
-    write_chunk(util->write_buf, util->write_buf.size());
-    util->write_buf = "";
+    write_chunk(util->write_buffer);
+    util->write_buffer = "";
 
-    fclose(util->file_write);
-    util->file_write = nullptr;
+    fclose(util->file_descriptor_write);
+    util->file_descriptor_write = nullptr;
 }

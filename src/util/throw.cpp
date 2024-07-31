@@ -13,17 +13,28 @@
 // Throw
 
 static void free_resources() {
-    if (util->read_buf != nullptr) {
-        free(util->read_buf);
-        util->read_buf = nullptr;
+    for (auto& file_read : util->file_reads) {
+        if (file_read.buffer != nullptr) {
+            free(file_read.buffer);
+            file_read.buffer = nullptr;
+        }
+        if (file_read.file_descriptor != nullptr) {
+            fclose(file_read.file_descriptor);
+            file_read.file_descriptor = nullptr;
+        }
     }
-    if (util->file_read != nullptr) {
-        fclose(util->file_read);
-        util->file_read = nullptr;
+    if (util->file_descriptor_write != nullptr) {
+        fclose(util->file_descriptor_write);
+        util->file_descriptor_write = nullptr;
     }
-    if (util->file_write != nullptr) {
-        fclose(util->file_write);
-        util->file_write = nullptr;
+}
+
+static const std::string& get_filename() {
+    if (!util->file_reads.empty()) {
+        return util->file_reads.back().filename;
+    }
+    else {
+        return util->filename;
     }
 }
 
@@ -35,7 +46,7 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
 
 [[noreturn]] void raise_runtime_error(const std::string& message) {
     free_resources();
-    throw std::runtime_error("\n\033[1m" + util->filename + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\n");
+    throw std::runtime_error("\n\033[1m" + get_filename() + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\n");
 }
 
 [[noreturn]] void raise_runtime_error_at_line(const std::string& message, size_t line_number) {
@@ -43,33 +54,34 @@ std::string em(const std::string& message) { return "\033[1mâ€˜" + message + "â€
         raise_runtime_error(message);
     }
     free_resources();
+    const std::string& filename = get_filename();
     std::string line;
     {
-        size_t l = 0;
+        size_t len = 0;
         char* buffer = nullptr;
-        FILE* file_in = fopen(util->filename.c_str(), "rb");
-        if (file_in == nullptr) {
+        FILE* file_descriptor = fopen(filename.c_str(), "rb");
+        if (file_descriptor == nullptr) {
             raise_runtime_error(message);
         }
         for (size_t i = 0; i < line_number; ++i) {
-            if (getline(&buffer, &l, file_in) == -1) {
+            if (getline(&buffer, &len, file_descriptor) == -1) {
                 free(buffer);
-                fclose(file_in);
+                fclose(file_descriptor);
                 buffer = nullptr;
-                file_in = nullptr;
+                file_descriptor = nullptr;
                 raise_runtime_error(message);
             }
         }
         line = buffer;
         free(buffer);
-        fclose(file_in);
+        fclose(file_descriptor);
         buffer = nullptr;
-        file_in = nullptr;
+        file_descriptor = nullptr;
         if (line.back() == '\n') {
             line.pop_back();
         }
     }
-    throw std::runtime_error("\n\033[1m" + util->filename + ":" + std::to_string(line_number)
+    throw std::runtime_error("\n\033[1m" + filename + ":" + std::to_string(line_number)
                              + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\nat line "
                              + std::to_string(line_number) + ": \033[1m" + line + "\033[0m");
 }

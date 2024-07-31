@@ -21,14 +21,19 @@ struct MainContext {
     std::vector<std::string> args;
 };
 
-struct UtilContext {
+struct FileRead {
+    size_t len;
+    char* buffer;
+    FILE* file_descriptor;
     std::string filename;
+};
+
+struct UtilContext {
     // File io
-    size_t read_len;
-    char* read_buf;
-    FILE* file_read;
-    FILE* file_write;
-    std::string write_buf;
+    FILE* file_descriptor_write;
+    std::string write_buffer;
+    std::string filename;
+    std::vector<FileRead> file_reads;
 };
 
 extern std::unique_ptr<UtilContext> util;
