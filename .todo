@@ -38,6 +38,9 @@
 
 ---- Features
 
+- handle fopen with files open >= FOPEN_MAX
+- handle get relative file and line from total line in error messages
+
 ---- Performance
 
 - replace string + with += where it is easy and makes sense
@@ -61,6 +64,8 @@ Not needed, the bottleneck is by far the regex tokenizer.
 - Construct line in emitter with += operator instead of +, because it is 3x cheaper (but less readable).
 
 ## PREPROC INCLUDES
+
+%%%% old
 
 - in args, pass all included directories (PARSE_INCLUDE_ARGS(X))
 - create include context that contains:

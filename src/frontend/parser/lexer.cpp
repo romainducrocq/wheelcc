@@ -184,7 +184,6 @@ static bool find_header(std::vector<std::string>& dirnames, std::string& filenam
     return false;
 }
 
-// #include <iostream> // TODO rm
 static void tokenize_header(std::string filename, size_t line_number) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
@@ -212,8 +211,10 @@ static void tokenize_header(std::string filename, size_t line_number) {
                 GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
         }
     }
-    // std::cout << filename << std::endl; // TODO rm
-    // TODO
+
+    file_open_read(filename);
+    tokenize_file();
+    file_close_read();
 }
 
 static void tokenize_source() {
