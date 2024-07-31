@@ -28,7 +28,7 @@ enum ERROR_MESSAGE_ARGUMENT {
 
 enum ERROR_MESSAGE_UTIL {
     unhandled_util_error = 200,
-    failed_to_read_output_file,
+    failed_to_read_input_file,
     failed_to_write_to_output_file,
     failed_to_interpret_string_to_integer,
     failed_to_interpret_string_to_unsigned_integer,

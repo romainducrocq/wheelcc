@@ -22,8 +22,11 @@ void file_open_read(const std::string& filename) {
                 RAISE_INTERNAL_ERROR;
             }
             else if (n_open_files == FOPEN_MAX) {
-                fclose(util->file_reads.back().file_descriptor);
-                util->file_reads.back().file_descriptor = nullptr;
+                util->file_reads[i].len = 0;
+                free(util->file_reads[i].buffer);
+                util->file_reads[i].buffer = nullptr;
+                fclose(util->file_reads[i].file_descriptor);
+                util->file_reads[i].file_descriptor = nullptr;
             }
             break;
         }
@@ -31,10 +34,9 @@ void file_open_read(const std::string& filename) {
 
     util->file_reads.emplace_back();
     util->file_reads.back().file_descriptor = nullptr;
-
     util->file_reads.back().file_descriptor = fopen(filename.c_str(), "rb");
     if (!util->file_reads.back().file_descriptor) {
-        raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_read_output_file, filename));
+        raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_read_input_file, filename));
     }
 
     util->file_reads.back().len = 0;
@@ -43,12 +45,16 @@ void file_open_read(const std::string& filename) {
 }
 
 void file_open_write(const std::string& filename) {
-    util->file_descriptor_write = nullptr;
+    if (!util->file_reads.empty()) {
+        RAISE_INTERNAL_ERROR;
+    }
 
+    util->file_descriptor_write = nullptr;
     util->file_descriptor_write = fopen(filename.c_str(), "wb");
     if (!util->file_descriptor_write) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_write_to_output_file, filename));
     }
+
     util->write_buffer = "";
 }
 
@@ -60,8 +66,8 @@ bool find_file(const std::string& filename) {
 bool read_line(std::string& line) {
     if (getline(&util->file_reads.back().buffer, &util->file_reads.back().len, util->file_reads.back().file_descriptor)
         == -1) {
-        util->file_reads.back().len = 0;
         line = "";
+        util->file_reads.back().len = 0;
         free(util->file_reads.back().buffer);
         util->file_reads.back().buffer = nullptr;
         return false;
@@ -85,10 +91,28 @@ static void write_file(std::string&& string_stream, size_t chunk_size) {
 
 void write_line(std::string&& line) { write_file(line + "\n", 4096); }
 
-void file_close_read() {
+void file_close_read(size_t line_number) {
     fclose(util->file_reads.back().file_descriptor);
     util->file_reads.back().file_descriptor = nullptr;
     util->file_reads.pop_back();
+
+    if (!util->file_reads.empty() && !util->file_reads.back().file_descriptor) {
+        if (util->file_reads.back().buffer || util->file_reads.back().len != 0) {
+            RAISE_INTERNAL_ERROR;
+        }
+        util->file_reads.back().file_descriptor = fopen(util->file_reads.back().filename.c_str(), "rb");
+        if (!util->file_reads.back().file_descriptor) {
+            raise_runtime_error(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_read_input_file, util->file_reads.back().filename));
+        }
+        for (size_t i = 0; i < line_number; ++i) {
+            if (getline(&util->file_reads.back().buffer, &util->file_reads.back().len,
+                    util->file_reads.back().file_descriptor)
+                == -1) {
+                RAISE_INTERNAL_ERROR;
+            }
+        }
+    }
 }
 
 void file_close_write() {

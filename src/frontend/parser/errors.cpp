@@ -385,7 +385,7 @@ std::string get_what_message(ERROR_MESSAGE_ARGUMENT message) {
 
 std::string get_what_message(ERROR_MESSAGE_UTIL message) {
     switch (message) {
-        case ERROR_MESSAGE_UTIL::failed_to_read_output_file:
+        case ERROR_MESSAGE_UTIL::failed_to_read_input_file:
             return "cannot read input file %s";
         case ERROR_MESSAGE_UTIL::failed_to_write_to_output_file:
             return "cannot write output file %s";

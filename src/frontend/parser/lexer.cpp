@@ -214,7 +214,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
 
     file_open_read(filename);
     tokenize_file();
-    file_close_read();
+    file_close_read(line_number);
 }
 
 static void tokenize_source() {
@@ -244,7 +244,7 @@ std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<st
     tokenize_source();
     context.reset();
 
-    file_close_read();
+    file_close_read(0);
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
     set_filename(filename);
