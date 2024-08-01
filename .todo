@@ -38,7 +38,6 @@
 
 ---- Features
 
-- add include argument in launch.json, profile.sh, valgrind.sh 
 - in install.sh, check for gcc -v, g++ -v, cmake -v ${?} instead of installed package ?
 
 ---- Performance

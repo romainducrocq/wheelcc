@@ -40,7 +40,8 @@ function print_memory () {
 }
 
 function check_memory () {
-    if ! ( ./${PACKAGE_NAME} 0 ${TEST_DIR}/${FILE}.i || false ) > /dev/null 2>&1; then
+    INCLUDE_DIR="$(dirname ${TEST_DIR}/${FILE}.c)/"
+    if ! ( ./${PACKAGE_NAME} 0 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR} || false ) > /dev/null 2>&1; then
         return
     fi
 
@@ -51,7 +52,7 @@ function check_memory () {
              --track-origins=yes \
              --verbose \
              --log-file=valgrind.out.1 \
-             ./${PACKAGE_NAME} 0 ${TEST_DIR}/${FILE}.i
+             ./${PACKAGE_NAME} 0 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR}
 
     SUMMARY=$(cat valgrind.out.1 | grep "ERROR SUMMARY")
     echo "${SUMMARY}" | grep -q "ERROR SUMMARY: 0 errors"
@@ -68,11 +69,9 @@ function check_memory () {
 
 function check_test () {
     FILE=$(file ${1})
-    gcc -E -P ${FILE}.c -o ${FILE}.i > /dev/null 2>&1
     cd ../../bin/
     check_memory
     cd ${TEST_DIR}
-    rm ${FILE}.i
 }
 
 function test_src () {
