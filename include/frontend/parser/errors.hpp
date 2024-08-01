@@ -120,7 +120,6 @@ extern std::unique_ptr<ErrorsContext> errors;
 #define INIT_ERRORS_CONTEXT errors = std::make_unique<ErrorsContext>()
 #define FREE_ERRORS_CONTEXT errors.reset()
 
-size_t handle_error_at_line(size_t line_number);
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_name_hr(const TIdentifier& name);
 std::string get_struct_name_hr(const TIdentifier& name);
@@ -146,6 +145,7 @@ inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
     snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), em(std::forward<TArgs>(args)).c_str()...);
     return std::string(buffer);
 }
+size_t handle_error_at_line(size_t total_line_number);
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
 #define RAISE_RUNTIME_ERROR_AT_LINE(X, Y) raise_runtime_error_at_line((X), handle_error_at_line(Y))
 
