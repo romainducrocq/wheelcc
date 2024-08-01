@@ -29,7 +29,7 @@ function usage () {
     echo "    --codeemit      print  emission  stage and exit"
     echo ""
     echo "[Preprocess]:"
-    echo "    -E              do not preprocess, then compile"
+    echo "    -E              enable macro expansion with gcc"
     echo ""
     echo "[Include]:"
     echo "    -I<includedir>  add a directory to include path"
@@ -370,7 +370,7 @@ function add_linklibs () {
 }
 
 function preprocess () {
-    if [ ${IS_PREPROC} -eq 0 ]; then
+    if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess -> ${FILE}.i"
             gcc -E -P ${FILE}.c -o ${FILE}.i
