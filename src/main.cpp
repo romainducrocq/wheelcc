@@ -225,7 +225,8 @@ static void arg_parse() {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_include_directories_in_argument));
     }
     do {
-        context->includedirs.emplace_back(arg);
+        std::string includedir = arg;
+        context->includedirs.emplace_back(std::move(includedir));
         shift_args(arg);
     }
     while (!arg.empty());
@@ -243,7 +244,8 @@ int main(int argc, char** argv) {
         size_t i = static_cast<size_t>(argc);
         context->args.reserve(i);
         for (; i-- > 0;) {
-            context->args.emplace_back(argv[i]);
+            std::string arg = argv[i];
+            context->args.emplace_back(std::move(arg));
         }
     }
 

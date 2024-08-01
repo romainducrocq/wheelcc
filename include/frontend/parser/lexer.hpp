@@ -25,7 +25,7 @@ struct Token {
 struct LexerContext {
     LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
 
-    size_t total_line_number; // TODO
+    size_t total_line_number;
     std::vector<Token>* p_tokens;
     std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;

@@ -106,8 +106,8 @@ enum ERROR_MESSAGE_SEMANTIC {
 };
 
 struct FileOpenLine {
-    size_t at_file_line_number;
-    size_t at_total_line_number;
+    size_t line_number;
+    size_t total_line_number;
     std::string filename;
 };
 

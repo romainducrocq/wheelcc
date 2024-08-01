@@ -12,7 +12,7 @@
 static std::unique_ptr<LexerContext> context;
 
 LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
-    total_line_number(1), p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+    total_line_number(0), p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
 #ifdef __GNUC__
                                                                                 "/usr/include/", "/usr/local/include/"
 #endif
@@ -118,6 +118,7 @@ static void tokenize_file() {
     std::string line;
     bool is_comment = false;
     for (size_t line_number = 1; read_line(line); ++line_number) {
+        context->total_line_number++;
 
         boost::sregex_iterator it_end;
         for (boost::sregex_iterator it_begin =
@@ -167,7 +168,8 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            Token token = {match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group), line_number};
+            Token token = {
+                match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group), context->total_line_number};
             context->p_tokens->emplace_back(std::move(token));
         }
     }
@@ -212,9 +214,18 @@ static void tokenize_header(std::string filename, size_t line_number) {
         }
     }
 
+    std::string include_filename = errors->file_open_lines.back().filename;
     file_open_read(filename);
+    {
+        FileOpenLine file_open_line = {1, context->total_line_number + 1, std::move(filename)};
+        errors->file_open_lines.emplace_back(std::move(file_open_line));
+    }
     tokenize_file();
     file_close_read(line_number);
+    {
+        FileOpenLine file_open_line = {line_number + 1, context->total_line_number + 1, std::move(include_filename)};
+        errors->file_open_lines.emplace_back(std::move(file_open_line));
+    }
 }
 
 static void tokenize_source() {
@@ -228,7 +239,7 @@ static void tokenize_source() {
         regexp_string += ")|";
     }
     regexp_string.pop_back();
-    context->token_pattern = std::make_unique<const boost::regex>(regexp_string);
+    context->token_pattern = std::make_unique<const boost::regex>(std::move(regexp_string));
     tokenize_file();
 }
 
@@ -238,6 +249,10 @@ static void strip_filename_extension(std::string& filename) { filename = filenam
 
 std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
     file_open_read(filename);
+    {
+        FileOpenLine file_open_line = {1, 1, filename};
+        errors->file_open_lines.emplace_back(std::move(file_open_line));
+    }
 
     std::vector<Token> tokens;
     context = std::make_unique<LexerContext>(&tokens, &includedirs);
