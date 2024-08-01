@@ -78,7 +78,7 @@ function print_client () {
 }
 
 function check_fail () {
-    ${PACKAGE_NAME}${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${LIBS} ${FILE}.c > /dev/null 2>&1
     RET_THIS=${?}
 
     if [ ${RET_THIS} -ne 0 ]; then
@@ -118,7 +118,7 @@ function check_pass () {
 }
 
 function check_single () {
-    gcc -pedantic-errors ${FILE}.c${LIBS} -o ${FILE} > /dev/null 2>&1
+    gcc -pedantic-errors ${FILE}.c ${LIBS} -o ${FILE} > /dev/null 2>&1
     RET_GCC=${?}
 
     if [ ${RET_GCC} -ne 0 ]; then
@@ -130,7 +130,7 @@ function check_single () {
     RET_GCC=${?}
     rm ${FILE}
 
-    ${PACKAGE_NAME}${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${LIBS} ${FILE}.c > /dev/null 2>&1
     RET_THIS=${?}
 
     check_pass 0
@@ -142,20 +142,20 @@ function check_single () {
 }
 
 function check_data () {
-    gcc -pedantic-errors -c ${FILE}_data.s${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
-    gcc -pedantic-errors -c ${FILE}.c${LIBS} -o ${FILE}.o > /dev/null 2>&1
-    gcc -pedantic-errors ${FILE}.o ${FILE}_data.o${LIBS} -o ${FILE} > /dev/null 2>&1
+    gcc -pedantic-errors -c ${FILE}_data.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
+    gcc -pedantic-errors -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
+    gcc -pedantic-errors ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
     OUT_GCC=$(${FILE})
     RET_GCC=${?}
     rm ${FILE}
 
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
 
-    ${PACKAGE_NAME} -c${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
     RET_THIS=${?}
 
     if [ ${RET_THIS} -eq 0 ]; then
-        gcc -pedantic-errors ${FILE}.o ${FILE}_data.s${LIBS} -o ${FILE} > /dev/null 2>&1
+        gcc -pedantic-errors ${FILE}.o ${FILE}_data.s ${LIBS} -o ${FILE} > /dev/null 2>&1
         RET_THIS=${?}
     fi
 
@@ -171,11 +171,11 @@ function check_data () {
 }
 
 function compile_client () {
-    ${PACKAGE_NAME} -c${LIBS} ${1} > /dev/null 2>&1
+    ${PACKAGE_NAME} -c ${LIBS} ${1} > /dev/null 2>&1
     RET_THIS=${?}
 
     if [ ${RET_THIS} -eq 0 ]; then
-        gcc -pedantic-errors ${FILE}.o ${FILE}_client.o${LIBS} -o ${FILE} > /dev/null 2>&1
+        gcc -pedantic-errors ${FILE}.o ${FILE}_client.o ${LIBS} -o ${FILE} > /dev/null 2>&1
         RET_THIS=${?}
     fi
 
@@ -184,7 +184,7 @@ function compile_client () {
 }
 
 function check_client () {
-    gcc -pedantic-errors ${FILE}.c ${FILE}_client.c${LIBS} -o ${FILE} > /dev/null 2>&1
+    gcc -pedantic-errors ${FILE}.c ${FILE}_client.c ${LIBS} -o ${FILE} > /dev/null 2>&1
     OUT_GCC=$(${FILE})
     RET_GCC=${?}
     rm ${FILE}
@@ -192,7 +192,7 @@ function check_client () {
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
     if [ -f "${FILE}_client.o" ]; then rm ${FILE}_client.o; fi
 
-    gcc -pedantic-errors -c ${FILE}_client.c${LIBS} -o ${FILE}_client.o > /dev/null 2>&1
+    gcc -pedantic-errors -c ${FILE}_client.c ${LIBS} -o ${FILE}_client.o > /dev/null 2>&1
     compile_client ${FILE}.c
     check_pass 1
     RET_PASS=${?}
@@ -204,7 +204,7 @@ function check_client () {
         return
     fi
 
-    gcc -pedantic-errors -c ${FILE}.c${LIBS} -o ${FILE}.o > /dev/null 2>&1
+    gcc -pedantic-errors -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
     compile_client ${FILE}_client.c
     check_pass 1
     RET_PASS=${?}
@@ -216,7 +216,7 @@ function check_client () {
         return
     fi
 
-    ${PACKAGE_NAME} -c${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
     compile_client ${FILE}_client.c
     check_pass 0
     RET_PASS=${?}
