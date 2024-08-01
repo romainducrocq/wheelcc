@@ -69,8 +69,8 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
         R"(,)",            // separator_comma
         R"(\.(?![0-9]+))", // structop_member
 
-        R"(^\s*#\s*include\b\s*(<\w+(/\w+)*\.h>|"\w+(/\w+)*\.h"))", // include_directive
-        R"(^\s*#\s*[acdefgilmnoprsuw]+\b)",                         // preprocessor_directive
+        R"(^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))", // include_directive
+        R"(^\s*#\s*[acdefgilmnoprsuw]+\b)",                                 // preprocessor_directive
 
         R"(char\b)",     // key_char
         R"(int\b)",      // key_int

@@ -1,4 +1,5 @@
 #include "tinydir/tinydir.h"
+#include <limits.h>
 #include <stdio.h>
 #include <string>
 
@@ -35,7 +36,7 @@ void file_open_read(const std::string& filename) {
     util->file_reads.emplace_back();
     util->file_reads.back().file_descriptor = nullptr;
     util->file_reads.back().file_descriptor = fopen(filename.c_str(), "rb");
-    if (!util->file_reads.back().file_descriptor) {
+    if (!util->file_reads.back().file_descriptor || filename.size() >= PATH_MAX) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_read_input_file, filename));
     }
 
@@ -51,7 +52,7 @@ void file_open_write(const std::string& filename) {
 
     util->file_descriptor_write = nullptr;
     util->file_descriptor_write = fopen(filename.c_str(), "wb");
-    if (!util->file_descriptor_write) {
+    if (!util->file_descriptor_write || filename.size() >= PATH_MAX) {
         raise_runtime_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_write_to_output_file, filename));
     }
 
