@@ -46,8 +46,8 @@ Yet another C Compiler for Computers. It's a bit rough on the edges (standard-co
 
 ### Get
 ```
-$ git clone --depth 1 --branch master https://github.com/romainducrocq/LANG-WheelCC.git
-$ cd LANG-WheelCC/
+$ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
+$ cd wheelcc/
 ```
 
 ### Build
@@ -55,15 +55,16 @@ $ cd LANG-WheelCC/
 $ cd bin/
 $ ./configure.sh
 $ ./make.sh
-$ ./install.sh
+$ sudo ./install.sh
 $ . ~/.bashrc
 ```
 
 ### Test
 ```
 $ cd test/
-$ ./test.sh
-$ ./valgrind.sh
+$ ./test-compiler.sh
+$ ./test-preprocessor.sh
+$ ./test-memory.sh
 ```
 
 ### Use
@@ -87,35 +88,41 @@ Hello, World!
 
 ### Help
 ```
-Usage: wheelcc [Help] [Dbg] [Pre] [Link] [Lib] [Out] FILES
+Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES
 
 [Help]:
-    --help       print help and exit
+    --help          print help and exit
 
-[Dbg]:
-    -v           enable verbose mode
+[Debug]:
+    -v              enable verbose mode
     (Debug only):
-    --lex        print  lexing    stage and exit
-    --parse      print  parsing   stage and exit
-    --validate   print  semantic  stage and exit
-    --tacky      print  interm    stage and exit
-    --codegen    print  assembly  stage and exit
-    --codeemit   print  emission  stage and exit
+    --lex           print  lexing    stage and exit
+    --parse         print  parsing   stage and exit
+    --validate      print  semantic  stage and exit
+    --tacky         print  interm    stage and exit
+    --codegen       print  assembly  stage and exit
+    --codeemit      print  emission  stage and exit
 
-[Pre]:
-    -E           do not preprocess, then compile
+[Preprocess]:
+    -E              enable macro expansion with gcc
+
+[Include]:
+    -I<includedir>  add a list of paths to include path
 
 [Link]:
-    -S           compile, but do not assemble and link
-    -c           compile and assemble, but do not link
+    -S              compile, but do not assemble and link
+    -c              compile and assemble, but do not link
 
-[Lib]:
-    -l<libname>  link with a list of library files
+[Linkdir]:
+    -L<linkdir>     add a list of paths to link path
 
-[Out]:
-    -o <file>    write the output into <file>
+[Linklib]:
+    -l<libname>     link with a list of library files
 
-FILES:           list of .c files to compile
+[Output]:
+    -o <file>       write the output into <file>
+
+FILES:              list of .c files to compile
 ```
 
 ****
