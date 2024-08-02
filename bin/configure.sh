@@ -25,9 +25,9 @@ function apt_install () {
 function dnf_install () {
     i=0
     for PKG in $(echo "\
-        gcc     \
-        gcc-c++ \
-        cmake   \
+        gcc.x86_64     \
+        gcc-c++.x86_64 \
+        cmake.x86_64   \
     ")
     do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
