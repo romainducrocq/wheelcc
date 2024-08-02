@@ -70,13 +70,18 @@ function other_install () {
     do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             if [ ${GET_UPDATE} -eq 0 ]; then
-                echo "install these dependencies before building:"
+                echo -n "install the following packages before building: "
                 GET_UPDATE=1
+            else
+                echo -n ", "
             fi
-            echo "  - ${PKG}"
+            echo -e -n "\033[1m‘${PKG}’\033[0m"
         fi
         i=$((i+1))
     done
+    if [ ${GET_UPDATE} -eq 1 ]; then
+        echo ""
+    fi
 }
 
 GET_UPDATE=0
