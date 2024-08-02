@@ -7,6 +7,7 @@ function apt_install () {
     for PKG in $(echo "\
         gcc   \
         g++   \
+        make  \
         cmake \
     ")
     do
@@ -27,6 +28,7 @@ function dnf_install () {
     for PKG in $(echo "\
         gcc.x86_64     \
         gcc-c++.x86_64 \
+        make.x86_64    \
         cmake.x86_64   \
     ")
     do
@@ -46,6 +48,7 @@ function pacman_install () {
     for PKG in $(echo "\
         gcc   \
         gcc   \
+        make  \
         cmake \
     ")
     do
@@ -65,6 +68,7 @@ function other_install () {
     for PKG in $(echo "\
         gcc   \
         g++   \
+        make  \
         cmake \
     ")
     do
