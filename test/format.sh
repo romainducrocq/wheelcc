@@ -35,6 +35,10 @@ else
     do
         format ${FILE}
     done
+    for FILE in $(find ${ROOT}/src/frontend/parser -name "*.hpp" -type f | sort --uniq)
+    do
+        format ${FILE}
+    done
 fi
 
 exit 0
