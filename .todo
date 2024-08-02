@@ -36,8 +36,6 @@
 
 ---- Features
 
-- in install.sh, check for gcc -v, g++ -v, cmake -v ${?} instead of installed package ?
-
 ---- Performance
 
 - replace string + with += where it is easy and makes sense
