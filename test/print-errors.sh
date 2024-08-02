@@ -7,7 +7,7 @@ TEST_DIR="${PWD}/tests"
 function print_errors () {
     for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid)
     do
-        cat <(${PACKAGE_NAME} -S ${FILE} 2>&1) | grep -P "${PRINT_PATTERN}"
+        cat <(${PACKAGE_NAME} -S ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
         if [ -f ${FILE%.*}.s ]; then
              rm ${FILE%.*}.s
         fi
@@ -16,12 +16,12 @@ function print_errors () {
 
 ARG=${1}
 
-PRINT_PATTERN=""
+MATCH_PATTERN=""
 if [ "${1}" = "--what" ]; then
-    PRINT_PATTERN="(no\. [0-9]+)"
+    MATCH_PATTERN="(no\. [0-9]+)"
     ARG=${2}
 elif [ "${1}" = "--line" ]; then
-    PRINT_PATTERN="^at line [0-9]+:"
+    MATCH_PATTERN="^at line [0-9]+:"
     ARG=${2}
 fi
 

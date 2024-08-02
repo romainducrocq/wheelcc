@@ -20,13 +20,13 @@ function file () {
 
 function total () {
     echo "----------------------------------------------------------------------"
-    RES="${PASS} / ${TOTAL}"
+    RESULT="${PASS} / ${TOTAL}"
     if [ ${PASS} -eq ${TOTAL} ]; then
-        RES="${LIGHT_GREEN}PASS: ${RES}${NC}"
+        RESULT="${LIGHT_GREEN}PASS: ${RESULT}${NC}"
     else
-        RES="${LIGHT_RED}FAIL: ${RES}${NC}"
+        RESULT="${LIGHT_RED}FAIL: ${RESULT}${NC}"
     fi
-    echo -e "${RES}"
+    echo -e "${RESULT}"
 }
 
 function print_check () {
@@ -34,7 +34,7 @@ function print_check () {
 }
 
 function print_memory () {
-    echo -e -n "${TOTAL} ${RES} ${FILE}.c${NC}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
     PRINT="$(echo "${SUMMARY}" | cut -d" " -f2-)"
     print_check "memory leaks" "[${PRINT}]"
 }
@@ -57,10 +57,10 @@ function check_memory () {
     SUMMARY=$(cat valgrind.out.1 | grep "ERROR SUMMARY")
     echo "${SUMMARY}" | grep -q "ERROR SUMMARY: 0 errors"
     if [ ${?} -eq 0 ]; then
-        RES="${LIGHT_GREEN}[y]"
+        RESULT="${LIGHT_GREEN}[y]"
         let PASS+=1
     else
-        RES="${LIGHT_RED}[n]"
+        RESULT="${LIGHT_RED}[n]"
     fi
     rm valgrind.out.1
 

@@ -20,13 +20,13 @@ function file () {
 
 function total () {
     echo "----------------------------------------------------------------------"
-    RES="${PASS} / ${TOTAL}"
+    RESULT="${PASS} / ${TOTAL}"
     if [ ${PASS} -eq ${TOTAL} ]; then
-        RES="${LIGHT_GREEN}PASS: ${RES}${NC}"
+        RESULT="${LIGHT_GREEN}PASS: ${RESULT}${NC}"
     else
-        RES="${LIGHT_RED}FAIL: ${RES}${NC}"
+        RESULT="${LIGHT_RED}FAIL: ${RESULT}${NC}"
     fi
-    echo -e "${RES}"
+    echo -e "${RESULT}"
 }
 
 function indent () {
@@ -38,40 +38,40 @@ function print_check () {
 }
 
 function print_fail () {
-    echo -e -n "${TOTAL} ${RES} ${FILE}.c${NC}"
-    PRINT="${PACKAGE_NAME}: ${RET_THIS}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    PRINT="${PACKAGE_NAME}: ${RETURN_THIS}"
     print_check "fail" "[${PRINT}]"
 }
 
 function print_single () {
-    echo -e -n "${TOTAL} ${RES} ${FILE}.c${NC}"
-    if [ ${RET_PASS} -ne 0 ]; then
-        PRINT="${COMP_2}: ${RET_THIS}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    if [ ${RETURN_PASS} -ne 0 ]; then
+        PRINT="${COMP_2}: ${RETURN_THIS}"
         print_check "return" "[${PRINT}]"
     else
-        PRINT="${COMP_1}: ${RET_GCC}, ${COMP_2}: ${RET_THIS}"
+        PRINT="${COMP_1}: ${RETURN_GCC}, ${COMP_2}: ${RETURN_THIS}"
         print_check "return" "[${PRINT}]"
-        if [ ! -z "${OUT_THIS}" ]; then
+        if [ ! -z "${STDOUT_THIS}" ]; then
             indent
-            PRINT="${COMP_1}: \"${OUT_GCC}\", ${COMP_2}: \"${OUT_THIS}\""
+            PRINT="${COMP_1}: \"${STDOUT_GCC}\", ${COMP_2}: \"${STDOUT_THIS}\""
             print_check "stdout" "[${PRINT}]"
         fi
     fi
 }
 
 function print_client () {
-    echo -e -n "${TOTAL} ${RES} ${FILE}.c${NC}"
-    if [ ${RET_PASS} -ne 0 ]; then
-        PRINT="${COMP_4}: ${RET_THIS}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    if [ ${RETURN_PASS} -ne 0 ]; then
+        PRINT="${COMP_4}: ${RETURN_THIS}"
         print_check "return" "[${PRINT}]"
     else
-        PRINT="${COMP_1}: ${RET_GCC}, ${COMP_2}: ${RET_GCC_THIS}, "
-        PRINT="${PRINT}${COMP_3}: ${RET_THIS_GCC}, ${COMP_4}: ${RET_THIS}"
+        PRINT="${COMP_1}: ${RETURN_GCC}, ${COMP_2}: ${RETURN_GCC_THIS}, "
+        PRINT="${PRINT}${COMP_3}: ${RETURN_THIS_GCC}, ${COMP_4}: ${RETURN_THIS}"
         print_check "return" "[${PRINT}]"
-        if [ ! -z "${OUT_THIS}" ]; then
+        if [ ! -z "${STDOUT_THIS}" ]; then
             indent
-            PRINT="${COMP_1}: \"${OUT_GCC}\", ${COMP_2}: \"${OUT_GCC_THIS}\", "
-            PRINT="${PRINT}${COMP_3}: \"${OUT_THIS_GCC}\", ${COMP_4}: \"${OUT_THIS}\""
+            PRINT="${COMP_1}: \"${STDOUT_GCC}\", ${COMP_2}: \"${STDOUT_GCC_THIS}\", "
+            PRINT="${PRINT}${COMP_3}: \"${STDOUT_THIS_GCC}\", ${COMP_4}: \"${STDOUT_THIS}\""
             print_check "stdout" "[${PRINT}]"
         fi
     fi
@@ -79,39 +79,39 @@ function print_client () {
 
 function check_fail () {
     ${PACKAGE_NAME} ${LIBS} ${FILE}.c > /dev/null 2>&1
-    RET_THIS=${?}
+    RETURN_THIS=${?}
 
-    if [ ${RET_THIS} -ne 0 ]; then
-        RES="${LIGHT_GREEN}[y]"
+    if [ ${RETURN_THIS} -ne 0 ]; then
+        RESULT="${LIGHT_GREEN}[y]"
         if [ ${1} -eq 0 ]; then
             let PASS+=1
         fi
     else
-        RES="${LIGHT_RED}[n]"
+        RESULT="${LIGHT_RED}[n]"
     fi
 
     print_fail
 }
 
 function check_pass () {
-    if [ ${RET_THIS} -ne 0 ]; then
-        RES="${LIGHT_RED}[n]"
+    if [ ${RETURN_THIS} -ne 0 ]; then
+        RESULT="${LIGHT_RED}[n]"
         return 1
     fi
 
-    OUT_THIS=$(${FILE})
-    RET_THIS=${?}
+    STDOUT_THIS=$(${FILE})
+    RETURN_THIS=${?}
     rm ${FILE}
 
-    if [ ${RET_GCC} -eq ${RET_THIS} ]; then
-        if [[ "${OUT_GCC}" == "${OUT_THIS}" ]]; then
-            RES="${LIGHT_GREEN}[y]"
+    if [ ${RETURN_GCC} -eq ${RETURN_THIS} ]; then
+        if [[ "${STDOUT_GCC}" == "${STDOUT_THIS}" ]]; then
+            RESULT="${LIGHT_GREEN}[y]"
             if [ ${1} -eq 0 ]; then
                 let PASS+=1
             fi
         fi
     else
-        RES="${LIGHT_RED}[n]"
+        RESULT="${LIGHT_RED}[n]"
     fi
 
     return 0
@@ -119,22 +119,22 @@ function check_pass () {
 
 function check_single () {
     gcc -pedantic-errors ${FILE}.c ${LIBS} -o ${FILE} > /dev/null 2>&1
-    RET_GCC=${?}
+    RETURN_GCC=${?}
 
-    if [ ${RET_GCC} -ne 0 ]; then
+    if [ ${RETURN_GCC} -ne 0 ]; then
         check_fail 0
         return
     fi
 
-    OUT_GCC=$(${FILE})
-    RET_GCC=${?}
+    STDOUT_GCC=$(${FILE})
+    RETURN_GCC=${?}
     rm ${FILE}
 
     ${PACKAGE_NAME} ${LIBS} ${FILE}.c > /dev/null 2>&1
-    RET_THIS=${?}
+    RETURN_THIS=${?}
 
     check_pass 0
-    RET_PASS=${?}
+    RETURN_PASS=${?}
 
     COMP_1="gcc"
     COMP_2="${PACKAGE_NAME}"
@@ -145,25 +145,25 @@ function check_data () {
     gcc -pedantic-errors -c ${FILE}_data.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
     gcc -pedantic-errors -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
     gcc -pedantic-errors ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
-    OUT_GCC=$(${FILE})
-    RET_GCC=${?}
+    STDOUT_GCC=$(${FILE})
+    RETURN_GCC=${?}
     rm ${FILE}
 
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
 
     ${PACKAGE_NAME} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
-    RET_THIS=${?}
+    RETURN_THIS=${?}
 
-    if [ ${RET_THIS} -eq 0 ]; then
+    if [ ${RETURN_THIS} -eq 0 ]; then
         gcc -pedantic-errors ${FILE}.o ${FILE}_data.s ${LIBS} -o ${FILE} > /dev/null 2>&1
-        RET_THIS=${?}
+        RETURN_THIS=${?}
     fi
 
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
     if [ -f "${FILE}_data.o" ]; then rm ${FILE}_data.o; fi
 
     check_pass 0
-    RET_PASS=${?}
+    RETURN_PASS=${?}
 
     COMP_1="gcc"
     COMP_2="${PACKAGE_NAME}"
@@ -172,11 +172,11 @@ function check_data () {
 
 function compile_client () {
     ${PACKAGE_NAME} -c ${LIBS} ${1} > /dev/null 2>&1
-    RET_THIS=${?}
+    RETURN_THIS=${?}
 
-    if [ ${RET_THIS} -eq 0 ]; then
+    if [ ${RETURN_THIS} -eq 0 ]; then
         gcc -pedantic-errors ${FILE}.o ${FILE}_client.o ${LIBS} -o ${FILE} > /dev/null 2>&1
-        RET_THIS=${?}
+        RETURN_THIS=${?}
     fi
 
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
@@ -185,8 +185,8 @@ function compile_client () {
 
 function check_client () {
     gcc -pedantic-errors ${FILE}.c ${FILE}_client.c ${LIBS} -o ${FILE} > /dev/null 2>&1
-    OUT_GCC=$(${FILE})
-    RET_GCC=${?}
+    STDOUT_GCC=$(${FILE})
+    RETURN_GCC=${?}
     rm ${FILE}
 
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
@@ -195,10 +195,10 @@ function check_client () {
     gcc -pedantic-errors -c ${FILE}_client.c ${LIBS} -o ${FILE}_client.o > /dev/null 2>&1
     compile_client ${FILE}.c
     check_pass 1
-    RET_PASS=${?}
-    RET_GCC_THIS=${RET_THIS}
-    OUT_GCC_THIS=${OUT_THIS}
-    if [ ${RET_PASS} -ne 0 ]; then
+    RETURN_PASS=${?}
+    RETURN_GCC_THIS=${RETURN_THIS}
+    STDOUT_GCC_THIS=${STDOUT_THIS}
+    if [ ${RETURN_PASS} -ne 0 ]; then
         COMP_4="gcc+${PACKAGE_NAME}"
         print_client
         return
@@ -207,10 +207,10 @@ function check_client () {
     gcc -pedantic-errors -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
     compile_client ${FILE}_client.c
     check_pass 1
-    RET_PASS=${?}
-    RET_THIS_GCC=${RET_THIS}
-    OUT_THIS_GCC=${OUT_THIS}
-    if [ ${RET_PASS} -ne 0 ]; then
+    RETURN_PASS=${?}
+    RETURN_THIS_GCC=${RETURN_THIS}
+    STDOUT_THIS_GCC=${STDOUT_THIS}
+    if [ ${RETURN_PASS} -ne 0 ]; then
         COMP_4="${PACKAGE_NAME}+gcc"
         print_client
         return
@@ -219,7 +219,7 @@ function check_client () {
     ${PACKAGE_NAME} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
     compile_client ${FILE}_client.c
     check_pass 0
-    RET_PASS=${?}
+    RETURN_PASS=${?}
 
     COMP_1="gcc"
     COMP_2="gcc+${PACKAGE_NAME}"
