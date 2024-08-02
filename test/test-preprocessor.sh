@@ -17,13 +17,38 @@ function file () {
 
 function total () {
     echo "----------------------------------------------------------------------"
-    RES="${PASS} / ${TOTAL}"
+    RESULT="${PASS} / ${TOTAL}"
     if [ ${PASS} -eq ${TOTAL} ]; then
-        RES="${LIGHT_GREEN}PASS: ${RES}${NC}"
+        RESULT="${LIGHT_GREEN}PASS: ${RESULT}${NC}"
     else
-        RES="${LIGHT_RED}FAIL: ${RES}${NC}"
+        RESULT="${LIGHT_RED}FAIL: ${RESULT}${NC}"
     fi
-    echo -e "${RES}"
+    echo -e "${RESULT}"
+}
+
+function indent () {
+    echo -n "$(echo "${TOTAL} [ ] ${FILE}.c" | sed -r 's/./ /g')"
+}
+
+function print_check () {
+    echo " - check ${1} -> ${2}"
+}
+
+function print_preprocess () {
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    PRINT="${PACKAGE_NAME}: ${RETURN}"
+    print_check "return" "[${PRINT}]"
+    if [ ! -z "${STDOUT}" ]; then
+        indent
+        PRINT=$(echo "${PACKAGE_NAME}:"; echo ${STDOUT})
+        print_check "stdout" "[${PRINT}]"
+    fi
+}
+
+function print_error () {
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    PRINT=$(echo "${PACKAGE_NAME}:"; echo "${STDOUT}")
+    print_check "error" "[${PRINT}]"
 }
 
 function header_dir () {
@@ -102,30 +127,31 @@ check_preprocess () {
     RETURN=${?}
     STDOUT=""
     if [ ${RETURN} -ne 0 ]; then
-        # TODO
-        return 1
-    fi
+        RESULT="${LIGHT_RED}[n]"
+    else
+        STDOUT=$(${FILE})
+        RETURN=${?}
+        rm ${FILE}
 
-    STDOUT=$(${FILE})
-    RETURN=${?}
-    rm ${FILE}
-
-    diff -sq <(echo "${STDOUT}") <(
-        for i in $(seq 1 $((${N}+1)))
-        do
-            echo "Hello ${i}!"
-        done
-    ) | grep -q "identical"
-    if [ ${?} -eq 0 ]; then
-        if [ ${RETURN} -eq $((${N}+1)) ]; then
-            let PASS+=1
-            # TODO
-            return 0
+        diff -sq <(echo "${STDOUT}") <(
+            for i in $(seq 1 $((${N}+1)))
+            do
+                echo "Hello ${i}!"
+            done
+        ) | grep -q "identical"
+        if [ ${?} -eq 0 ]; then
+            if [ ${RETURN} -eq $((${N}+1)) ]; then
+                RESULT="${LIGHT_GREEN}[y]"
+                let PASS+=1
+            else
+                RESULT="${LIGHT_RED}[n]"
+            fi
+        else
+            RESULT="${LIGHT_RED}[n]"
         fi
     fi
 
-    # TODO
-    return 1
+    print_preprocess
 }
 
 check_error () {
@@ -141,29 +167,28 @@ check_error () {
     RETURN=${?}
     if [ ${RETURN} -eq 0 ]; then
         rm ${FILE}
-        # TODO
-        return 1
+        RESULT="${LIGHT_RED}[n]"
+    else
+        diff -sq <(echo "${STDOUT}") <(
+            echo -e -n "\033[1m${TEST_SRC}/"
+            for i in $(seq 1 $((${ERR})))
+            do
+                echo -n "${i}/"
+            done
+            echo -e "test-header_${ERR}.h:8:${NC}"
+            echo -e "\033[0;31merror:${NC} (no. 545) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
+            echo -e "at line 8: \033[1mint e1 = {0};${NC}"
+            echo -e "wheelcc: \033[0;31merror:${NC} compilation failed"
+        ) | grep -q "identical"
+        if [ ${?} -eq 0 ]; then
+            RESULT="${LIGHT_GREEN}[y]"
+            let PASS+=1
+        else
+            RESULT="${LIGHT_RED}[n]"
+        fi
     fi
 
-    diff -sq <(echo "${STDOUT}") <(
-        echo -e -n "\033[1m${TEST_SRC}/"
-        for i in $(seq 1 $((${ERR})))
-        do
-            echo -n "${i}/"
-        done
-        echo -e "test-header_${ERR}.h:8:${NC}"
-        echo -e "\033[0;31merror:${NC} (no. 545) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
-        echo -e "at line 8: \033[1mint e1 = {0};${NC}"
-        echo -e "wheelcc: \033[0;31merror:${NC} compilation failed"
-    ) | grep -q "identical"
-    if [ ${?} -eq 0 ]; then
-        let PASS+=1
-        # TODO
-        return 0
-    fi
-
-    # TODO
-    return 1
+    print_error
 }
 
 function check_test () {
