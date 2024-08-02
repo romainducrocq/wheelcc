@@ -92,10 +92,11 @@ GET_UPDATE=0
 
 INSTALL_GCC=0
 INSTALL_GPP=1
-INSTALL_CMAKE=2
+INSTALL_MAKE=2
+INSTALL_CMAKE=3
 
 INSTALL_PKGS=(
-    0 0 0
+    0 0 0 0
 )
 
 gcc --help > /dev/null 2>&1
@@ -106,6 +107,11 @@ fi
 g++ --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
     INSTALL_PKGS[${INSTALL_GPP}]=1
+fi
+
+make --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_PKGS[${INSTALL_MAKE}]=1
 fi
 
 cmake --help > /dev/null 2>&1
