@@ -2,7 +2,29 @@
 
 PACKAGE_NAME="$(cat ../bin/package_name.txt)"
 
-TEST_SRC="${PWD}/tests/preprocessor"
+LIGHT_RED='\033[1;31m'
+LIGHT_GREEN='\033[1;32m'
+NC='\033[0m'
+
+TEST_DIR="${PWD}/tests"
+TEST_SRC="${TEST_DIR}/preprocessor"
+
+function file () {
+    FILE=${1%.*}
+    if [ -f "${FILE}" ]; then rm ${FILE}; fi
+    echo "${FILE}"
+}
+
+function total () {
+    echo "----------------------------------------------------------------------"
+    RES="${PASS} / ${TOTAL}"
+    if [ ${PASS} -eq ${TOTAL} ]; then
+        RES="${LIGHT_GREEN}PASS: ${RES}${NC}"
+    else
+        RES="${LIGHT_RED}FAIL: ${RES}${NC}"
+    fi
+    echo -e "${RES}"
+}
 
 function header_dir () {
     HEADER_DIR=""
@@ -14,7 +36,7 @@ function header_dir () {
     echo "${HEADER_DIR}"
 }
 
-function create_test () {
+function make_test () {
     if [ -d "${TEST_SRC}" ]; then
         rm -r ${TEST_SRC}
     fi
@@ -71,8 +93,10 @@ function create_test () {
     echo "}" >> ${FILE}.c
 }
 
-test_preprocess () {
-    create_test
+check_preprocess () {
+    let TOTAL+=1
+    
+    make_test
 
     ${PACKAGE_NAME} ${FILE}.c > /dev/null 2>&1
     RETURN=${?}
@@ -94,7 +118,7 @@ test_preprocess () {
     ) | grep -q "identical"
     if [ ${?} -eq 0 ]; then
         if [ ${RETURN} -eq $((${N}+1)) ]; then
-            echo "YESSS"
+            let PASS+=1
             # TODO
             return 0
         fi
@@ -104,10 +128,8 @@ test_preprocess () {
     return 1
 }
 
-test_error () {
-    if [ ! -f "${FILE}.c" ]; then
-        create_test
-    fi
+check_error () {
+    let TOTAL+=1
 
     echo "int e1 = {0};" >> ${TEST_SRC}/$(header_dir ${ERR})test-header_${ERR}.h
 
@@ -129,13 +151,13 @@ test_error () {
         do
             echo -n "${i}/"
         done
-        echo -e "test-header_${ERR}.h:8:\033[0m"
-        echo -e "\033[0;31merror:\033[0m (no. 545) cannot initialize scalar type \033[1m‘int’\033[0m with compound initializer"
-        echo -e "at line 8: \033[1mint e1 = {0};\033[0m"
-        echo -e "wheelcc: \033[0;31merror:\033[0m compilation failed"
+        echo -e "test-header_${ERR}.h:8:${NC}"
+        echo -e "\033[0;31merror:${NC} (no. 545) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
+        echo -e "at line 8: \033[1mint e1 = {0};${NC}"
+        echo -e "wheelcc: \033[0;31merror:${NC} compilation failed"
     ) | grep -q "identical"
     if [ ${?} -eq 0 ]; then
-        echo "YESSS 2"
+        let PASS+=1
         # TODO
         return 0
     fi
@@ -144,12 +166,18 @@ test_error () {
     return 1
 }
 
+function check_test () {
+    FILE=$(file ${1})
+    check_preprocess
+    check_error
+}
+
 N=63
 ERR=27
 
-FILE=${TEST_SRC}/main
-
-test_preprocess
-test_error
+PASS=0
+TOTAL=0
+check_test ${TEST_SRC}/main.c
+total
 
 exit 0
