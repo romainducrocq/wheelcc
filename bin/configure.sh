@@ -3,15 +3,14 @@
 PACKAGE_NAME="wheelcc"
 
 function apt_install () {
-    GET_UPDATE=0
+    i=0
     for PKG in $(echo "\
         gcc   \
         g++   \
         cmake \
     ")
     do
-        dpkg -s ${PKG} | grep Status | grep -q "install ok installed"
-        if [ ${?} -ne 0 ]; then
+        if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             if [ ${GET_UPDATE} -eq 0 ]; then
                 sudo apt-get update
                 sudo apt-get -y upgrade
@@ -19,8 +18,34 @@ function apt_install () {
             fi
             sudo apt-get -y install ${PKG}
         fi
+        i=$((i+1))
     done
 }
+
+GET_UPDATE=0
+
+INSTALL_GCC=0
+INSTALL_GPP=1
+INSTALL_CMAKE=2
+
+INSTALL_PKGS=(
+    0 0 0
+)
+
+gcc --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_PKGS[${INSTALL_GCC}]=1
+fi
+
+g++ --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_PKGS[${INSTALL_GPP}]=1
+fi
+
+cmake --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_PKGS[${INSTALL_CMAKE}]=1
+fi
 
 DISTRO="$(cat /etc/os-release | grep -P "^NAME=" | cut -d"\"" -f2)"
 case ${DISTRO} in
