@@ -19,6 +19,11 @@ function format () {
     fi
 }
 
+clang-format --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    sudo apt-get install -y clang-format
+fi
+
 if [ ! -z "${1}" ]; then
     format ${1}
 else

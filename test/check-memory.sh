@@ -89,9 +89,15 @@ function test_all () {
     done
 }
 
-dpkg -s valgrind | grep Status | grep -q "install ok installed"
+valgrind --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
-    sudo apt-get install -y valgrind
+    DISTRO="$(cat /etc/os-release | grep -P "^NAME=" | cut -d"\"" -f2)"
+    if [ "${DISTRO}" = "Debian GNU/Linux" ]; then
+        sudo apt-get install -y valgrind
+    else
+        echo -e "${LIGHT_RED}error:${NC} package \033[1m‘valgrind’${NC} not installed, install then run again"
+        exit 1
+    fi
 fi
 
 PASS=0
