@@ -15,7 +15,6 @@ set(HEADER_DIR "${PROJECT_SOURCE_DIR}/../include/" "${SOURCE_DIR}/frontend/parse
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/../lib/")
 set(BIN_DIR "${PROJECT_SOURCE_DIR}/../bin/")
 file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/*.cpp")
-file(GLOB_RECURSE HEADER_FILES "${HEADER_DIR}/*.hpp" "${LIB_DIR}/*.hpp" "${LIB_DIR}/*.h")
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${HEADER_DIR} ${LIB_DIR})
