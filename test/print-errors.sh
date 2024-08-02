@@ -2,10 +2,10 @@
 
 PACKAGE_NAME="$(cat ../bin/package_name.txt)"
 
-ROOT="${PWD}/.."
+TEST_DIR="${PWD}/tests"
 
 function print_errors () {
-    for FILE in $(find tests/${1}_* -name "*.c" -type f | grep invalid)
+    for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid)
     do
         cat <(${PACKAGE_NAME} -S ${FILE} 2>&1) | grep -P "${PRINT_PATTERN}"
         if [ -f ${FILE%.*}.s ]; then
