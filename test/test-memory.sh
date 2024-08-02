@@ -95,7 +95,7 @@ if [ ${?} -ne 0 ]; then
     if [ "${DISTRO}" = "Debian GNU/Linux" ]; then
         sudo apt-get install -y valgrind
     else
-        echo -e "${LIGHT_RED}error:${NC} package \033[1m‘valgrind’${NC} not installed, install then run again"
+        echo -e "${LIGHT_RED}error:${NC} install the following package, then run again: \033[1m‘valgrind’${NC}"
         exit 1
     fi
 fi

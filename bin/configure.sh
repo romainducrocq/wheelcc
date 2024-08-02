@@ -70,7 +70,7 @@ function other_install () {
     do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             if [ ${GET_UPDATE} -eq 0 ]; then
-                echo -n "install the following packages before building: "
+                echo -e -n "\033[1;34mwarning:\033[0m install the following packages before building: "
                 GET_UPDATE=1
             else
                 echo -n ", "
