@@ -22,6 +22,63 @@ function apt_install () {
     done
 }
 
+function dnf_install () {
+    i=0
+    for PKG in $(echo "\
+        gcc     \
+        gcc-c++ \
+        cmake   \
+    ")
+    do
+        if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
+            if [ ${GET_UPDATE} -eq 0 ]; then
+                sudo dnf -y upgrade
+                GET_UPDATE=1
+            fi
+            sudo dnf -y install ${PKG}
+        fi
+        i=$((i+1))
+    done
+}
+
+function pacman_install () {
+    i=0
+    for PKG in $(echo "\
+        gcc   \
+        gcc   \
+        cmake \
+    ")
+    do
+        if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
+            if [ ${GET_UPDATE} -eq 0 ]; then
+                sudo pacman -Syu
+                GET_UPDATE=1
+            fi
+            sudo pacman -Syu ${PKG}
+        fi
+        i=$((i+1))
+    done
+}
+
+function other_install () {
+    i=0
+    for PKG in $(echo "\
+        gcc   \
+        g++   \
+        cmake \
+    ")
+    do
+        if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
+            if [ ${GET_UPDATE} -eq 0 ]; then
+                echo "install these dependencies before building:"
+                GET_UPDATE=1
+            fi
+            echo "  - ${PKG}"
+        fi
+        i=$((i+1))
+    done
+}
+
 GET_UPDATE=0
 
 INSTALL_GCC=0
@@ -59,11 +116,30 @@ case ${DISTRO} in
     "Ubuntu")
         apt_install
         ;;
+    # RPM-based
+    "AlmaLinux") ;&
+    "CentOS Linux") ;&
+    "CentOS Stream") ;&
+    "Clear Linux OS") ;&
+    "ClearOS") ;&
+    "Fedora") ;&
+    "Fedora Linux") ;&
+    "Mageia") ;&
+    "openSUSE Leap") ;&
+    "Red Hat Enterprise Linux") ;&
+    "Rocky Linux") ;&
+    "Scientific Linux")
+        dnf_install
+        ;;
+    # Pacman-based
+    "Arch Linux") ;&
+    "EndeavourOS") ;&
+    "Manjaro")
+        pacman_install
+        ;;
     # Other
     *)
-        echo "install the following dependencies with your preferred package manager:"
-        echo "  - gcc/g++ (>=8)"
-        echo "  - cmake (>=3.5)"
+        other_install
 esac
 
 echo -n "${PACKAGE_NAME}" > ./package_name.txt
