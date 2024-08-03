@@ -53,8 +53,7 @@ function time_all () {
 }
 
 function time_total () {
-    FILES=$(find ${TEST_DIR} -name "*.c" -type f | sort --uniq | \
-        grep --invert-match "extra_credit" | grep --invert-match "${TEST_DIR}/preprocessor")
+    FILES=$(find ${TEST_DIR} -name "*.c" -type f | sort --uniq | grep --invert-match "extra_credit")
     performance "1-${#TEST_SRCS[@]}"
 }
 
