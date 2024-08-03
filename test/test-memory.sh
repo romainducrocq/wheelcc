@@ -89,6 +89,14 @@ function test_all () {
     done
 }
 
+DISTRO="$(cat /etc/os-release | grep -P "^NAME=" | cut -d"\"" -f2)"
+case ${DISTRO} in
+    "Arch Linux") ;&
+    "EndeavourOS") ;&
+    "Manjaro")
+        export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
+esac
+
 PASS=0
 TOTAL=0
 cd ${TEST_DIR}
