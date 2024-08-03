@@ -89,17 +89,6 @@ function test_all () {
     done
 }
 
-valgrind --help > /dev/null 2>&1
-if [ ${?} -ne 0 ]; then
-    DISTRO="$(cat /etc/os-release | grep -P "^NAME=" | cut -d"\"" -f2)"
-    if [ "${DISTRO}" = "Debian GNU/Linux" ]; then
-        sudo apt-get install -y valgrind
-    else
-        echo -e "${LIGHT_RED}error:${NC} install the following package, then run again: \033[1m‘valgrind’${NC}"
-        exit 1
-    fi
-fi
-
 PASS=0
 TOTAL=0
 cd ${TEST_DIR}
