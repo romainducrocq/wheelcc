@@ -22,7 +22,7 @@ function apt_install () {
 function dnf_install () {
     i=0
     for PKG in $(echo "\
-        diffutils \ # TODO
+        diffutils.x86_64 \
         valgrind.x86_64  \
     ")
     do
