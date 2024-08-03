@@ -71,19 +71,23 @@ function make_test () {
     do
         echo "int x${i} = 1;" > ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "// a single-line comment ${i}" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
+        echo "#pragma pragma${i}" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "#include \"$(header_dir $((${N}-${i})))test-header_$((${N}-${i})).h\"" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "/* a multi-line" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "comment ${i}" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "   */" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
+        echo "#define MACRO_${i} ${i}" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "char* s${i} = \"Hello ${i}!\";" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
     done
 
     echo "int x${N} = 1;" > ${TEST_SRC}/test-header_${N}.h
     echo "// a single-line comment ${N}" >> ${TEST_SRC}/test-header_${N}.h
+    echo "#pragma pragma${N}" >> ${TEST_SRC}/test-header_${N}.h
     echo "#include \"test-header_0.h\"" >> ${TEST_SRC}/test-header_${N}.h
     echo "/* a multi-line" >> ${TEST_SRC}/test-header_${N}.h
     echo "comment ${N}" >> ${TEST_SRC}/test-header_${N}.h
     echo "   */" >> ${TEST_SRC}/test-header_${N}.h
+    echo "#define MACRO_${N} ${N}" >> ${TEST_SRC}/test-header_${N}.h
     echo "char* s${N} = \"Hello ${N}!\";" >> ${TEST_SRC}/test-header_${N}.h
 
     echo -n "" > ${TEST_SRC}/test-header_0.h
@@ -92,6 +96,7 @@ function make_test () {
     echo "" >> ${FILE}.c
     echo "int x$((${N}+1)) = 1;" >> ${FILE}.c
     echo "// a single-line comment $((${N}+1))" >> ${FILE}.c
+    echo "#pragma pragma$((${N}+1))" >> ${FILE}.c
     echo "" >> ${FILE}.c
     for i in $(seq 1 $((N-1)))
     do
@@ -102,6 +107,7 @@ function make_test () {
     echo "/* a multi-line" >> ${FILE}.c
     echo "comment $((${N}+1))" >> ${FILE}.c
     echo "   */" >> ${FILE}.c
+    echo "#define MACRO_$((${N}+1)) $((${N}+1))" >> ${FILE}.c
     echo "char* s$((${N}+1)) = \"Hello $((${N}+1))!\";" >> ${FILE}.c
     echo "" >> ${FILE}.c
     echo "int main(void) {" >> ${FILE}.c
@@ -175,9 +181,9 @@ check_error () {
             do
                 echo -n "${i}/"
             done
-            echo -e "test-header_${ERR}.h:8:${NC}"
+            echo -e "test-header_${ERR}.h:10:${NC}"
             echo -e "\033[0;31merror:${NC} (no. 545) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
-            echo -e "at line 8: \033[1mint e1 = {0};${NC}"
+            echo -e "at line 10: \033[1mint e1 = {0};${NC}"
             echo -e "${PACKAGE_NAME}: \033[0;31merror:${NC} compilation failed"
         ) | grep -q "identical"
         if [ ${?} -eq 0 ]; then
