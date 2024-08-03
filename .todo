@@ -70,6 +70,7 @@ part_2 280cef141cc30bb3e3bd3ed4142b950d02141ea5
 ## Grammar ideas
 
 https://www.reddit.com/r/C_Programming/comments/xt6n5t/what_is_something_you_would_have_changed_about/
+https://gcc.gnu.org/onlinedocs/cpp/C_002b_002b-Named-Operators.html
 
 pub fn add:: x: uint32, y: uint32 -> uint32 = {
     if x eq 0: (
