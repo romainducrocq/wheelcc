@@ -5,7 +5,7 @@ PACKAGE_NAME="$(cat ../bin/package_name.txt)"
 ROOT="${PWD}/.."
 NQCC2="${ROOT}/../nqcc2"
 
-TEST_DIR="${PWD}/tests"
+TEST_DIR="${PWD}/tests/compiler"
 TEST_SRCS=()
 for i in $(seq 1 18); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")

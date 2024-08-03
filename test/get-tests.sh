@@ -3,7 +3,7 @@
 ROOT="${PWD}/.."
 TEST_SUITE="${ROOT}/../writing-a-c-compiler-tests"
 
-TEST_DIR="${PWD}/tests"
+TEST_DIR="${PWD}/tests/compiler"
 TEST_SRCS=(
 "1_int_constants"
 "2_unary_operators"
@@ -29,7 +29,8 @@ TEST_SRCS=(
 i=0
 for SRC in ${TEST_SRCS[@]}; do
     i=$((i+1))
-    rm -rv ${TEST_DIR}/${SRC}/*
+    mkdir -p ${TEST_DIR}/${SRC}/
+    rm -rv $${TEST_DIR}/${SRC}/*
     cp -rv ${TEST_SUITE}/tests/chapter_${i}/* ${TEST_DIR}/${SRC}/
 done
 

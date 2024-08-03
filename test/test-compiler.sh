@@ -6,7 +6,7 @@ LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
 NC='\033[0m'
 
-TEST_DIR="${PWD}/tests"
+TEST_DIR="${PWD}/tests/compiler"
 TEST_SRCS=()
 for i in $(seq 1 18); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
