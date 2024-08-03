@@ -6,7 +6,7 @@ LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
 NC='\033[0m'
 
-TEST_DIR="${PWD}/tests"
+TEST_DIR="${PWD}/tests/preprocessor"
 TEST_SRC="${TEST_DIR}/preprocessor"
 
 function file () {
@@ -65,7 +65,7 @@ function make_test () {
     if [ -d "${TEST_SRC}" ]; then
         rm -r ${TEST_SRC}
     fi
-    mkdir ${TEST_SRC}
+    mkdir -p ${TEST_SRC}
 
     for i in $(seq 1 $((N-1)))
     do
