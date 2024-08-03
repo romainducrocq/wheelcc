@@ -127,7 +127,6 @@ case ${DISTRO} in
     "Kali GNU/Linux") ;&
     "Linux Mint") ;&
     "Pop!_OS") ;&
-    "Raspbian GNU/Linux") ;&
     "Ubuntu")
         apt_install
         ;;
@@ -142,8 +141,7 @@ case ${DISTRO} in
     "Mageia") ;&
     "openSUSE Leap") ;&
     "Red Hat Enterprise Linux") ;&
-    "Rocky Linux") ;&
-    "Scientific Linux")
+    "Rocky Linux")
         dnf_install
         ;;
     # Pacman-based
