@@ -38,15 +38,29 @@ static const std::string& get_filename() {
     }
 }
 
-std::string em(const std::string& message) { return "\033[1m‘" + message + "’\033[0m"; }
+std::string em(const std::string& message) {
+    std::string em_message = "\033[1m‘";
+    em_message += message;
+    em_message += "’\033[0m";
+    return em_message;
+}
 
 [[noreturn]] void raise_argument_error(const std::string& message) {
-    throw std::runtime_error("\n\033[0;31merror:\033[0m " + message + "\n");
+    std::string error_message = "\n\033[0;31merror:\033[0m ";
+    error_message += message;
+    error_message += "\n";
+    throw std::runtime_error(std::move(error_message));
 }
 
 [[noreturn]] void raise_runtime_error(const std::string& message) {
     free_resources();
-    throw std::runtime_error("\n\033[1m" + get_filename() + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\n");
+    const std::string& filename = get_filename();
+    std::string error_message = "\n\033[1m";
+    error_message += filename;
+    error_message += ":\033[0m\n\033[0;31merror:\033[0m ";
+    error_message += message;
+    error_message += "\n";
+    throw std::runtime_error(std::move(error_message));
 }
 
 [[noreturn]] void raise_runtime_error_at_line(const std::string& message, size_t line_number) {
@@ -81,13 +95,27 @@ std::string em(const std::string& message) { return "\033[1m‘" + message + "�
             line.pop_back();
         }
     }
-    throw std::runtime_error("\n\033[1m" + filename + ":" + std::to_string(line_number)
-                             + ":\033[0m\n\033[0;31merror:\033[0m " + message + "\nat line "
-                             + std::to_string(line_number) + ": \033[1m" + line + "\033[0m");
+    std::string error_message = "\n\033[1m";
+    error_message += filename;
+    error_message += ":";
+    error_message += std::to_string(line_number);
+    error_message += ":\033[0m\n\033[0;31merror:\033[0m ";
+    error_message += message;
+    error_message += "\nat line ";
+    error_message += std::to_string(line_number);
+    error_message += ": \033[1m";
+    error_message += line;
+    error_message += "\033[0m";
+    throw std::runtime_error(std::move(error_message));
 }
 
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
     free_resources();
-    throw std::runtime_error("\n\033[1m" + std::string(file) + ":" + std::to_string(line)
-                             + ":\033[0m\n\033[0;31minternal error:\033[0m " + std::string(func));
+    std::string error_message = "\n\033[1m";
+    error_message += std::string(file);
+    error_message += ":";
+    error_message += std::to_string(line);
+    error_message += ":\033[0m\n\033[0;31minternal error:\033[0m ";
+    error_message += std::string(func);
+    throw std::runtime_error(std::move(error_message));
 }

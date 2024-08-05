@@ -90,7 +90,7 @@ static void write_file(std::string&& string_stream, size_t chunk_size) {
     }
 }
 
-void write_line(std::string&& line) { write_file(line + "\n", 4096); }
+void write_line(std::string&& line) { write_file(line + "\n", 4096); } // TODO
 
 void file_close_read(size_t line_number) {
     fclose(util->file_reads.back().file_descriptor);
