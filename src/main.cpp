@@ -25,7 +25,7 @@
 
 #include "backend/assembly/asm_gen.hpp"
 
-#include "backend/emitter/att_code.hpp"
+#include "backend/emitter/gas_code.hpp"
 
 static std::unique_ptr<MainContext> context;
 
@@ -169,7 +169,7 @@ static void compile() {
 
     verbose("-- Code emission ... ", false);
     context->filename += ".s";
-    code_emission(std::move(asm_ast), std::move(context->filename));
+    gas_code_emission(std::move(asm_ast), std::move(context->filename));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 250) {

@@ -7,8 +7,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// At&t code emission
+// Gnu assembler code emission
 
-void code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename);
+void gas_code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename);
 
 #endif

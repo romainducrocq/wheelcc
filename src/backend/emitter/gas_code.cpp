@@ -9,11 +9,11 @@
 #include "ast/back_ast.hpp"
 #include "ast/back_symt.hpp"
 
-#include "backend/emitter/att_code.hpp"
+#include "backend/emitter/gas_code.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// At&t code emission
+// Gnu assembler code emission
 
 // identifier -> $ identifier
 static const std::string& emit_identifier(const TIdentifier& identifier) { return identifier; }
@@ -823,7 +823,7 @@ static void emit_program(AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
+void gas_code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
     file_open_write(filename);
     emit_program(asm_ast.get());
     asm_ast.reset();
