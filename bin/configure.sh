@@ -60,7 +60,7 @@ function no_install () {
     fi
 }
 
-function get_update () {
+function get_install () {
     i=0
     for PKG in $(echo "\
         gcc   \
@@ -70,8 +70,8 @@ function get_update () {
     ")
     do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
-            if [ ${GET_UPDATE} -eq 0 ]; then
-                GET_UPDATE=1
+            if [ ! "${INSTALL_Y}" = "y" ]; then
+                INSTALL_Y="y"
             else
                 INSTALL_MSG="${INSTALL_MSG}, "
             fi
@@ -80,18 +80,13 @@ function get_update () {
         i=$((i+1))
     done
 
-    if [ ${GET_UPDATE} -eq 1 ]; then
+    if [ "${INSTALL_Y}" = "y" ]; then
         echo -e -n "install missing dependencies ${INSTALL_MSG}? [y/n]: "
-        read -p "" GET_UPDATE
-        if [ ${GET_UPDATE} = "y" ]; then
-            GET_UPDATE=1
-        else
-            GET_UPDATE=0
-        fi
+        read -p "" INSTALL_Y
     fi
 }
 
-GET_UPDATE=0
+INSTALL_Y=""
 INSTALL_MSG=""
 
 INSTALL_GCC=0
@@ -123,9 +118,9 @@ if [ ${?} -ne 0 ]; then
     INSTALL_PKGS[${INSTALL_CMAKE}]=1
 fi
 
-get_update
+get_install
 
-if [ ${GET_UPDATE} -eq 1 ]; then
+if [ "${INSTALL_Y}" = "y" ]; then
     DISTRO="$(cat /etc/os-release | grep -P "^NAME=" | cut -d"\"" -f2)"
     case "${DISTRO}" in
         # Debian-based
@@ -171,5 +166,5 @@ if [ ${?} -ne 0 ]; then
     exit 1
 fi
 
-echo "configuration was successful"
+echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
 exit 0
