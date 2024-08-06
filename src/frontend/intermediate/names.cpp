@@ -13,19 +13,25 @@
 // Names
 
 TIdentifier resolve_label_identifier(const TIdentifier& label) {
-    TIdentifier name = label + "." + std::to_string(frontend->label_counter);
+    TIdentifier name = label;
+    name += ".";
+    name += std::to_string(frontend->label_counter);
     frontend->label_counter++;
     return name;
 }
 
 TIdentifier resolve_variable_identifier(const TIdentifier& variable) {
-    TIdentifier name = variable + "." + std::to_string(frontend->variable_counter);
+    TIdentifier name = variable;
+    name += ".";
+    name += std::to_string(frontend->variable_counter);
     frontend->variable_counter++;
     return name;
 }
 
 TIdentifier resolve_structure_tag(const TIdentifier& structure) {
-    TIdentifier name = structure + "." + std::to_string(frontend->structure_counter);
+    TIdentifier name = structure;
+    name += ".";
+    name += std::to_string(frontend->structure_counter);
     frontend->structure_counter++;
     return name;
 }
@@ -116,8 +122,8 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-
-    name += "." + std::to_string(frontend->label_counter);
+    name += ".";
+    name += std::to_string(frontend->label_counter);
     frontend->label_counter++;
     return name;
 }
@@ -184,8 +190,8 @@ TIdentifier represent_variable_identifier(CExp* node) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-
-    name += "." + std::to_string(frontend->variable_counter);
+    name += ".";
+    name += std::to_string(frontend->variable_counter);
     frontend->variable_counter++;
     return name;
 }

@@ -923,8 +923,10 @@ static void represent_statement_label_instructions(CLabel* node) {
 static void represent_statement_compound_instructions(CCompound* node) { represent_block(node->block.get()); }
 
 static void represent_statement_while_instructions(CWhile* node) {
-    TIdentifier target_continue = "continue_" + node->target;
-    TIdentifier target_break = "break_" + node->target;
+    TIdentifier target_break = "break_";
+    target_break += node->target;
+    TIdentifier target_continue = "continue_";
+    target_continue += node->target;
     push_instruction(std::make_unique<TacLabel>(target_continue));
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
@@ -937,8 +939,10 @@ static void represent_statement_while_instructions(CWhile* node) {
 
 static void represent_statement_do_while_instructions(CDoWhile* node) {
     TIdentifier target_do_while_start = represent_label_identifier(LABEL_KIND::Ldo_while_start);
-    TIdentifier target_continue = "continue_" + node->target;
-    TIdentifier target_break = "break_" + node->target;
+    TIdentifier target_break = "break_";
+    target_break += node->target;
+    TIdentifier target_continue = "continue_";
+    target_continue += node->target;
     push_instruction(std::make_unique<TacLabel>(target_do_while_start));
     represent_statement_instructions(node->body.get());
     push_instruction(std::make_unique<TacLabel>(std::move(target_continue)));
@@ -974,8 +978,10 @@ static void represent_statement_for_init_instructions(CForInit* node) {
 
 static void represent_statement_for_instructions(CFor* node) {
     TIdentifier target_for_start = represent_label_identifier(LABEL_KIND::Lfor_start);
-    TIdentifier target_break = "break_" + node->target;
-    TIdentifier target_continue = "continue_" + node->target;
+    TIdentifier target_break = "break_";
+    target_break += node->target;
+    TIdentifier target_continue = "continue_";
+    target_continue += node->target;
     represent_statement_for_init_instructions(node->init.get());
     push_instruction(std::make_unique<TacLabel>(target_for_start));
     if (node->condition) {
@@ -992,12 +998,14 @@ static void represent_statement_for_instructions(CFor* node) {
 }
 
 static void represent_statement_break_instructions(CBreak* node) {
-    TIdentifier target_break = "break_" + node->target;
+    TIdentifier target_break = "break_";
+    target_break += node->target;
     push_instruction(std::make_unique<TacJump>(std::move(target_break)));
 }
 
 static void represent_statement_continue_instructions(CContinue* node) {
-    TIdentifier target_continue = "continue_" + node->target;
+    TIdentifier target_continue = "continue_";
+    target_continue += node->target;
     push_instruction(std::make_unique<TacJump>(std::move(target_continue)));
 }
 
