@@ -539,7 +539,7 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             {
                 std::string token_kind_hr = get_token_kind_hr(TOKEN_KIND::identifier);
                 token_kind_hr += get_token_kind_hr(TOKEN_KIND::parenthesis_open);
-                what_message += em(std::move(token_kind_hr));
+                what_message += em(token_kind_hr);
             }
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::string_literal));
