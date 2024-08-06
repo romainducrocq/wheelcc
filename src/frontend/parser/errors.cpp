@@ -165,43 +165,53 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
 std::string get_name_hr(const TIdentifier& name) { return name.substr(0, name.find('.')); }
 
 std::string get_struct_name_hr(const TIdentifier& name) {
-    std::string type_hr = get_name_hr(name);
-    return "struct " + type_hr;
+    std::string type_hr = "struct ";
+    type_hr += get_name_hr(name);
+    return type_hr;
 }
 
 std::string get_type_hr(Type* type);
 
 static std::string get_function_type_hr(FunType* fun_type) {
-    std::string param_type_hr = "";
+    std::string type_hr = "(";
+    type_hr += get_type_hr(fun_type->ret_type.get());
+    type_hr += ")(";
     for (const auto& param_type : fun_type->param_types) {
-        param_type_hr += get_type_hr(param_type.get()) + ", ";
+        type_hr += get_type_hr(param_type.get());
+        type_hr += ", ";
     }
     if (!fun_type->param_types.empty()) {
-        param_type_hr.pop_back();
-        param_type_hr.pop_back();
+        type_hr.pop_back();
+        type_hr.pop_back();
     }
-    std::string type_hr = get_type_hr(fun_type->ret_type.get());
-    return "(" + type_hr + ")(" + param_type_hr + ")";
+    type_hr += ")";
+    return type_hr;
 }
 
 static std::string get_pointer_type_hr(Pointer* ptr_type) {
-    std::string ptr_type_hr = "*";
+    std::string decl_type_hr = "*";
     while (ptr_type->ref_type->type() == Pointer_t) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
-        ptr_type_hr += "*";
+        decl_type_hr += "*";
     }
     std::string type_hr = get_type_hr(ptr_type->ref_type.get());
-    return type_hr + ptr_type_hr;
+    type_hr += decl_type_hr;
+    return type_hr;
 }
 
 static std::string get_array_type_hr(Array* arr_type) {
-    std::string array_type_hr = "[" + std::to_string(arr_type->size) + "]";
+    std::string decl_type_hr = "[";
+    decl_type_hr += std::to_string(arr_type->size);
+    decl_type_hr += "]";
     while (arr_type->elem_type->type() == Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
-        array_type_hr += "[" + std::to_string(arr_type->size) + "]";
+        decl_type_hr += "[";
+        decl_type_hr += std::to_string(arr_type->size);
+        decl_type_hr += "]";
     }
     std::string type_hr = get_type_hr(arr_type->elem_type.get());
-    return type_hr + array_type_hr;
+    type_hr += decl_type_hr;
+    return type_hr;
 }
 
 static std::string get_structure_type_hr(Structure* struct_type) { return get_struct_name_hr(struct_type->tag); }
