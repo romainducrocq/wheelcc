@@ -1216,17 +1216,18 @@ Lbreak:
         default:
             break;
     }
-    std::string type_token_kinds_string = "";
+    std::string type_token_kinds_string = "(";
     for (const auto& type_token_kind : type_token_kinds) {
-        type_token_kinds_string += get_token_kind_hr(type_token_kind) + ", ";
+        type_token_kinds_string += get_token_kind_hr(type_token_kind);
+        type_token_kinds_string += ", ";
     }
     if (!type_token_kinds.empty()) {
         type_token_kinds_string.pop_back();
         type_token_kinds_string.pop_back();
     }
+    type_token_kinds_string += ")";
     RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::unexpected_type_specifier_list, "(" + type_token_kinds_string + ")"),
-        line);
+        GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::unexpected_type_specifier_list, type_token_kinds_string), line);
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
