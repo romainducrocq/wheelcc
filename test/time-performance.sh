@@ -18,16 +18,16 @@ function performance () {
     echo "----------------------------------------------------------------------"
     echo ""
     echo "${PACKAGE_NAME}"
-    time for FILE in ${FILES}
+    { time for FILE in ${FILES}
     do
         ${PACKAGE_NAME} -S ${FILE} > /dev/null 2>&1
-    done
+    done } 2>&1
     echo ""
     echo "nqcc2"
-    time for FILE in ${FILES}
+    { time for FILE in ${FILES}
     do
         ${NQCC2}/_build/default/bin/main.exe -S $(readlink -f ${FILE}) > /dev/null 2>&1
-    done
+    done } 2>&1
     for FILE in ${FILES}
     do
         FILE=${FILE%.*}.s
