@@ -135,9 +135,11 @@ std::string get_what_message(ERROR_MESSAGE_LEXER message);
 std::string get_what_message(ERROR_MESSAGE_PARSER message);
 std::string get_what_message(ERROR_MESSAGE_SEMANTIC message);
 template <typename TErrorMessage> inline std::string get_error_message(TErrorMessage message) {
-    std::string code = std::to_string(static_cast<int>(message));
-    std::string what = get_what_message(message);
-    return "(no. " + code + ") " + what;
+    std::string error_message = "(no. ";
+    error_message += std::to_string(static_cast<int>(message));
+    error_message += ") ";
+    error_message += get_what_message(message);
+    return error_message;
 }
 template <typename TErrorMessage, typename... TArgs>
 inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {

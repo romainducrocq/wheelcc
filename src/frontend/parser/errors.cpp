@@ -409,8 +409,12 @@ std::string get_what_message(ERROR_MESSAGE_LEXER message) {
     switch (message) {
         case ERROR_MESSAGE_LEXER::invalid_token:
             return "found invalid token %s";
-        case ERROR_MESSAGE_LEXER::failed_to_include_header_file:
-            return "cannot find %s header file in " + em("include") + " directive search";
+        case ERROR_MESSAGE_LEXER::failed_to_include_header_file: {
+            std::string what_message = "cannot find %s header file in ";
+            what_message += em("include");
+            what_message += " directive search";
+            return what_message;
+        }
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -428,122 +432,268 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             return "cannot represent %s as a 64 bits unsigned integer constant, very large number";
         case ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer:
             return "illegal array size %s, requires a constant integer";
-        case ERROR_MESSAGE_PARSER::unexpected_unary_operator:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::unop_complement)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::unop_not)) + " next";
-        case ERROR_MESSAGE_PARSER::unexpected_binary_operator:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_addition)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_plus)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_difference)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_product)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_division)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_quotient)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_remainder)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_remainder)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitand)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitand)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitxor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_and)) + ", " + em(get_token_kind_hr(TOKEN_KIND::binop_or))
-                   + ", " + em(get_token_kind_hr(TOKEN_KIND::binop_equalto)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_notequal)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_lessthan)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal)) + " next";
-        case ERROR_MESSAGE_PARSER::unexpected_abstract_declarator:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " next";
-        case ERROR_MESSAGE_PARSER::unexpected_pointer_unary_factor:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitand)) + " next";
-        case ERROR_MESSAGE_PARSER::unexpected_primary_expression_factor:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::constant)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::long_constant)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::char_constant)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::float_constant)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::unsigned_constant)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::unsigned_long_constant)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::identifier)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::identifier) + get_token_kind_hr(TOKEN_KIND::parenthesis_open))
-                   + ", " + em(get_token_kind_hr(TOKEN_KIND::string_literal)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " next";
-        case ERROR_MESSAGE_PARSER::unexpected_expression:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::binop_addition)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::unop_negation)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_division)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_remainder)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitand)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitxor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_lessthan)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_equalto)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_notequal)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_and)) + ", " + em(get_token_kind_hr(TOKEN_KIND::binop_or))
-                   + ", " + em(get_token_kind_hr(TOKEN_KIND::assignment_simple)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_plus)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_difference)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_product)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_quotient)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_remainder)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitand)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::ternary_if)) + " next";
-        case ERROR_MESSAGE_PARSER::function_declared_in_for_initial:
-            return "function %s declared in " + em("for") + " loop initial declaration";
-        case ERROR_MESSAGE_PARSER::unexpected_type_specifier:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_close)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_char)) + ", " + em(get_token_kind_hr(TOKEN_KIND::key_int))
-                   + ", " + em(get_token_kind_hr(TOKEN_KIND::key_long)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_double)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_unsigned)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_signed)) + ", " + em(get_token_kind_hr(TOKEN_KIND::key_void))
-                   + ", " + em(get_token_kind_hr(TOKEN_KIND::key_struct)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_static)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::binop_multiplication)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::brackets_open)) + " next";
+        case ERROR_MESSAGE_PARSER::unexpected_unary_operator: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_complement));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_not));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_binary_operator: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_addition));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_plus));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_difference));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_product));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_division));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_remainder));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitand));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_and));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_or));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_equalto));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_notequal));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_abstract_declarator: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::brackets_open));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_pointer_unary_factor: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitand));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_primary_expression_factor: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::constant));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::long_constant));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::char_constant));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::float_constant));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unsigned_constant));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unsigned_long_constant));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::identifier));
+            what_message += ", ";
+            {
+                std::string token_kind_hr = get_token_kind_hr(TOKEN_KIND::identifier);
+                token_kind_hr += get_token_kind_hr(TOKEN_KIND::parenthesis_open);
+                what_message += em(std::move(token_kind_hr));
+            }
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::string_literal));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_expression: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_addition));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_division));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_remainder));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitand));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_equalto));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_notequal));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_and));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_or));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_simple));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_plus));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_difference));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_product));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::ternary_if));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::function_declared_in_for_initial: {
+            std::string what_message = "function %s declared in ";
+            what_message += em("for");
+            what_message += " loop initial declaration";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_type_specifier: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::identifier));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_close));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_char));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_int));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_long));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_double));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_unsigned));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_signed));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_void));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_struct));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_static));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_extern));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::brackets_open));
+            what_message += " next";
+            return what_message;
+        }
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier_list:
             return "found tokens %s, but expected valid list of unique type specifiers next";
-        case ERROR_MESSAGE_PARSER::unexpected_storage_class:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::key_static)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_extern)) + " next";
+        case ERROR_MESSAGE_PARSER::unexpected_storage_class: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_static));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_extern));
+            what_message += " next";
+            return what_message;
+        }
         case ERROR_MESSAGE_PARSER::empty_compound_initializer:
             return "empty compound initializer requires at least one initializer";
         case ERROR_MESSAGE_PARSER::type_derivation_on_function_declaration:
             return "cannot apply further type derivation to function declaration";
-        case ERROR_MESSAGE_PARSER::unexpected_simple_declarator:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::identifier)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::parenthesis_open)) + " next";
-        case ERROR_MESSAGE_PARSER::unexpected_parameter_list:
-            return "found token %s, but expected " + em(get_token_kind_hr(TOKEN_KIND::key_void)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_char)) + ", " + em(get_token_kind_hr(TOKEN_KIND::key_int))
-                   + ", " + em(get_token_kind_hr(TOKEN_KIND::key_long)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_double)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_unsigned)) + ", "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_signed)) + " or "
-                   + em(get_token_kind_hr(TOKEN_KIND::key_struct)) + " next";
+        case ERROR_MESSAGE_PARSER::unexpected_simple_declarator: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::identifier));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += " next";
+            return what_message;
+        }
+        case ERROR_MESSAGE_PARSER::unexpected_parameter_list: {
+            std::string what_message = "found token %s, but expected ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_void));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_char));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_int));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_long));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_double));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_unsigned));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_signed));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_struct));
+            what_message += " next";
+            return what_message;
+        }
         case ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage:
             return "structure type declared with member %s with %s storage class";
         case ERROR_MESSAGE_PARSER::member_declared_as_function:
@@ -569,51 +719,111 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "cannot apply binary operator %s on operand type %s";
         case ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types:
             return "cannot apply binary operator %s on operand types %s and %s";
-        case ERROR_MESSAGE_SEMANTIC::assignment_to_void_type:
-            return "cannot assign " + em("=") + " to left operand type " + em("void");
+        case ERROR_MESSAGE_SEMANTIC::assignment_to_void_type: {
+            std::string what_message = "cannot assign ";
+            what_message += em("=");
+            what_message += " to left operand type ";
+            what_message += em("void");
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue:
             return "assignment %s requires lvalue left operand, but got rvalue";
-        case ERROR_MESSAGE_SEMANTIC::conditional_on_invalid_condition_type:
-            return "cannot apply conditional " + em("?") + " on condition operand type %s";
-        case ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types:
-            return "cannot apply ternary operator " + em(":") + " on operand types %s and %s";
+        case ERROR_MESSAGE_SEMANTIC::conditional_on_invalid_condition_type: {
+            std::string what_message = "cannot apply conditional ";
+            what_message += em("?");
+            what_message += " on condition operand type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types: {
+            std::string what_message = "cannot apply ternary operator ";
+            what_message += em(":");
+            what_message += " on operand types %s and %s";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::variable_used_as_function:
             return "variable %s used as a function";
         case ERROR_MESSAGE_SEMANTIC::function_called_with_wrong_number_of_arguments:
             return "function %s called with %s arguments instead of %s";
-        case ERROR_MESSAGE_SEMANTIC::dereference_non_pointer:
-            return "cannot apply dereference operator " + em("*") + " on non-pointer type %s";
-        case ERROR_MESSAGE_SEMANTIC::address_of_rvalue:
-            return "addresssing " + em("&") + " requires lvalue operand, but got rvalue";
+        case ERROR_MESSAGE_SEMANTIC::dereference_non_pointer: {
+            std::string what_message = "cannot apply dereference operator ";
+            what_message += em("*");
+            what_message += " on non-pointer type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::address_of_rvalue: {
+            std::string what_message = "addresssing ";
+            what_message += em("&");
+            what_message += " requires lvalue operand, but got rvalue";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::subscript_array_with_invalid_types:
             return "cannot subscript array with operand types %s and %s, requires a complete pointer and an "
                    "integer types";
-        case ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type:
-            return "cannot get size with " + em("sizeof") + " operator on incomplete type %s";
-        case ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type:
-            return "cannot access structure member %s with dot operator " + em(".") + " on non-structure type %s";
+        case ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type: {
+            std::string what_message = "cannot get size with ";
+            what_message += em("sizeof");
+            what_message += " operator on incomplete type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type: {
+            std::string what_message = "cannot access structure member %s with dot operator ";
+            what_message += em(".");
+            what_message += " on non-structure type %s";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::member_not_in_structure_type:
             return "structure type %s has no member named %s";
-        case ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type:
-            return "cannot access structure member %s with arrow operator " + em("->")
-                   + " on non-pointer-to-structure type %s";
-        case ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type:
-            return "cannot access structure member %s with arrow operator " + em("->")
-                   + " on incomplete structure type %s";
+        case ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type: {
+            std::string what_message = "cannot access structure member %s with arrow operator ";
+            what_message += em("->");
+            what_message += " on non-pointer-to-structure type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type: {
+            std::string what_message = "cannot access structure member %s with arrow operator ";
+            what_message += em("->");
+            what_message += " on incomplete structure type %s";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::incomplete_structure_type_in_expression:
             return "incomplete structure type %s in expression";
-        case ERROR_MESSAGE_SEMANTIC::return_value_in_void_function:
-            return "found " + em("return") + " value in function %s returning type " + em("void");
-        case ERROR_MESSAGE_SEMANTIC::no_return_value_in_non_void_function:
-            return "found " + em("return") + " with no value in function %s returning type %s";
-        case ERROR_MESSAGE_SEMANTIC::if_used_with_condition_type:
-            return "cannot use " + em("if") + " statement with condition expression type %s";
-        case ERROR_MESSAGE_SEMANTIC::while_used_with_condition_type:
-            return "cannot use " + em("while") + " loop statement with condition expression type %s";
-        case ERROR_MESSAGE_SEMANTIC::do_while_used_with_condition_type:
-            return "cannot use " + em("do while") + " loop statement with condition expression type %s";
-        case ERROR_MESSAGE_SEMANTIC::for_used_with_condition_type:
-            return "cannot use " + em("for") + " loop statement with condition expression type %s";
+        case ERROR_MESSAGE_SEMANTIC::return_value_in_void_function: {
+            std::string what_message = "found ";
+            what_message += em("return");
+            what_message += " value in function %s returning type ";
+            what_message += em("void");
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::no_return_value_in_non_void_function: {
+            std::string what_message = "found ";
+            what_message += em("return");
+            what_message += " with no value in function %s returning type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::if_used_with_condition_type: {
+            std::string what_message = "cannot use ";
+            what_message += em("if");
+            what_message += " statement with condition expression type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::while_used_with_condition_type: {
+            std::string what_message = "cannot use ";
+            what_message += em("while");
+            what_message += " loop statement with condition expression type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::do_while_used_with_condition_type: {
+            std::string what_message = "cannot use ";
+            what_message += em("do while");
+            what_message += " loop statement with condition expression type %s";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::for_used_with_condition_type: {
+            std::string what_message = "cannot use ";
+            what_message += em("for");
+            what_message += " loop statement with condition expression type %s";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::non_char_array_initialized_from_string:
             return "non-character array type %s initialized from string literal";
         case ERROR_MESSAGE_SEMANTIC::string_initialized_with_too_many_characters:
@@ -626,16 +836,23 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "function %s returns array type %s, instead of pointer type";
         case ERROR_MESSAGE_SEMANTIC::function_returns_incomplete_structure_type:
             return "function %s returns incomplete structure type %s";
-        case ERROR_MESSAGE_SEMANTIC::parameter_with_type_void:
-            return "function %s declared with parameter %s with type " + em("void");
+        case ERROR_MESSAGE_SEMANTIC::parameter_with_type_void: {
+            std::string what_message = "function %s declared with parameter %s with type ";
+            what_message += em("void");
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::parameter_with_incomplete_structure_type:
             return "function %s defined with parameter %s with incomplete structure type %s";
         case ERROR_MESSAGE_SEMANTIC::function_redeclared_with_conflicting_type:
             return "function %s redeclared with function type %s, but previous declaration has function type %s";
         case ERROR_MESSAGE_SEMANTIC::function_redefined:
             return "function %s already defined with function type %s";
-        case ERROR_MESSAGE_SEMANTIC::non_static_function_redeclared_static:
-            return "function %s with " + em("static") + " storage class already declared non-static";
+        case ERROR_MESSAGE_SEMANTIC::non_static_function_redeclared_static: {
+            std::string what_message = "function %s with ";
+            what_message += em("static");
+            what_message += " storage class already declared non-static";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_integer:
             return "cannot statically initialize pointer type %s from constant %s, requires a constant integer";
         case ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_null:
@@ -648,36 +865,59 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "cannot statically initialize variable from non-constant type %s, requires a constant";
         case ERROR_MESSAGE_SEMANTIC::scalar_initialized_with_compound_initializer:
             return "cannot initialize scalar type %s with compound initializer";
-        case ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void:
-            return "variable %s declared with type " + em("void");
+        case ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void: {
+            std::string what_message = "variable %s declared with type ";
+            what_message += em("void");
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type:
             return "variable %s declared with incomplete structure type %s";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type:
             return "variable %s redeclared with conflicting type %s, but previously declared with type %s";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage:
             return "variable %s redeclared with conflicting storage class";
-        case ERROR_MESSAGE_SEMANTIC::extern_variable_defined:
-            return "illegal initializer, can only declare variable %s with " + em("extern") + " storage class";
+        case ERROR_MESSAGE_SEMANTIC::extern_variable_defined: {
+            std::string what_message = "illegal initializer, can only declare variable %s with ";
+            what_message += em("extern");
+            what_message += " storage class";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member:
             return "structure type %s declared with duplicate member name %s";
         case ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type:
             return "structure type %s declared with member %s with incomplete type %s";
         case ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope:
             return "structure type %s already declared in this scope";
-        case ERROR_MESSAGE_SEMANTIC::break_outside_of_loop:
-            return "found " + em("break") + " statement outside of loop";
-        case ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop:
-            return "found " + em("continue") + " statement outside of loop";
-        case ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label:
-            return "found " + em("goto") + " statement, but target label %s not defined in function %s";
+        case ERROR_MESSAGE_SEMANTIC::break_outside_of_loop: {
+            std::string what_message = "found ";
+            what_message += em("break");
+            what_message += " statement outside of loop";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop: {
+            std::string what_message = "found ";
+            what_message += em("continue");
+            what_message += " statement outside of loop";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label: {
+            std::string what_message = "found ";
+            what_message += em("goto");
+            what_message += " statement, but target label %s not defined in function %s";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope:
             return "structure type %s not defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_not_declared_in_scope:
             return "variable %s not declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::function_not_declared_in_scope:
             return "function %s not declared in this scope";
-        case ERROR_MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage:
-            return "variable %s declared with %s storage class in " + em("for") + " loop initial declaration";
+        case ERROR_MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage: {
+            std::string what_message = "variable %s declared with %s storage class in ";
+            what_message += em("for");
+            what_message += " loop initial declaration";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::label_redefined_in_scope:
             return "label %s already defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_in_scope:
@@ -685,8 +925,12 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
         case ERROR_MESSAGE_SEMANTIC::nested_function_defined:
             return "function %s defined inside another function, but nested function definition are not "
                    "permitted";
-        case ERROR_MESSAGE_SEMANTIC::nested_static_function_declared:
-            return "cannot declare nested function %s in another function with " + em("static") + " storage class";
+        case ERROR_MESSAGE_SEMANTIC::nested_static_function_declared: {
+            std::string what_message = "cannot declare nested function %s in another function with ";
+            what_message += em("static");
+            what_message += " storage class";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::function_redeclared_in_scope:
             return "function %s already declared in this scope";
         default:
