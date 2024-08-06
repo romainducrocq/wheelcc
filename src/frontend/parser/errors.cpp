@@ -195,7 +195,7 @@ static std::string get_pointer_type_hr(Pointer* ptr_type) {
         decl_type_hr += "*";
     }
     std::string type_hr = get_type_hr(ptr_type->ref_type.get());
-    type_hr += std::move(decl_type_hr);
+    type_hr += decl_type_hr;
     return type_hr;
 }
 
@@ -210,7 +210,7 @@ static std::string get_array_type_hr(Array* arr_type) {
         decl_type_hr += "]";
     }
     std::string type_hr = get_type_hr(arr_type->elem_type.get());
-    type_hr += std::move(decl_type_hr);
+    type_hr += decl_type_hr;
     return type_hr;
 }
 
