@@ -104,7 +104,7 @@ std::string em(const std::string& text) {
     message += "\nat line ";
     message += std::to_string(line_number);
     message += ": \033[1m";
-    message += line;
+    message += std::move(line);
     message += "\033[0m";
     throw std::runtime_error(std::move(message));
 }
