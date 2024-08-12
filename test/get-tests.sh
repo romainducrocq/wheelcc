@@ -63,10 +63,11 @@ mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/special_values/negative_zero.c ${TEST_D
 mv -v ${TEST_DIR}/${TEST_SRCS[8]}/valid/stack_arguments/stack_alignment_check_linux.s ${TEST_DIR}/${TEST_SRCS[8]}/valid/stack_arguments/stack_alignment_data.s
 mv -v ${TEST_DIR}/${TEST_SRCS[9]}/valid/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[9]}/valid/push_arg_on_page_boundary_data.s
 mv -v ${TEST_DIR}/${TEST_SRCS[15]}/valid/chars/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[15]}/valid/chars/push_arg_on_page_boundary_data.s
+mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/parameters/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/parameters/pass_args_on_page_boundary_data.s
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_struct_on_page_boundary_data.s
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_space_address_overlap_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_space_overlap_data.s
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/big_data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_big_struct_on_page_boundary_data.s
-mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/parameters/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/parameters/pass_args_on_page_boundary_data.s
+mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/validate_return_pointer_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_pointer_in_rax_data.s
 
 gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 rm -rv ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/
