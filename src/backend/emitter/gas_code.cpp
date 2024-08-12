@@ -272,60 +272,62 @@ static std::string emit_type_instruction_suffix(AssemblyType* node) {
 }
 
 static std::string emit_imm_operand(AsmImm* node) {
-    std::string value = emit_identifier(node->value);
-    return "$" + value;
+    std::string operand = "$";
+    operand += emit_identifier(node->value);
+    return operand;
 }
 
 static std::string emit_register_operand(AsmRegister* node, TInt byte) {
-    std::string reg;
+    std::string operand = "%";
     switch (byte) {
         case 1:
-            reg = emit_register_1byte(node->reg.get());
+            operand += emit_register_1byte(node->reg.get());
             break;
         case 4:
-            reg = emit_register_4byte(node->reg.get());
+            operand += emit_register_4byte(node->reg.get());
             break;
         case 8:
-            reg = emit_register_8byte(node->reg.get());
+            operand += emit_register_8byte(node->reg.get());
             break;
         default:
             RAISE_INTERNAL_ERROR;
     }
-    return "%" + reg;
+    return operand;
 }
 
 static std::string emit_memory_operand(AsmMemory* node) {
-    std::string reg = emit_register_8byte(node->reg.get());
-    if (node->value != 0l) {
-        std::string value = emit_long(node->value);
-        return value + "(%" + reg + ")";
-    }
-    else {
-        return "(%" + reg + ")";
-    }
+    std::string operand = node->value != 0l ? emit_long(node->value) : "";
+    operand += "(%";
+    operand += emit_register_8byte(node->reg.get());
+    operand += ")";
+    return operand;
 }
 
 static std::string emit_data_operand(AsmData* node) {
-    std::string value = emit_identifier(node->name);
-    if (backend->backend_symbol_table.find(value) != backend->backend_symbol_table.end()
-        && backend->backend_symbol_table[value]->type() == AST_T::BackendObj_t
-        && static_cast<BackendObj*>(backend->backend_symbol_table[value].get())->is_constant) {
-        value = ".L" + value;
-    }
+    std::string operand =
+        backend->backend_symbol_table.find(node->name) != backend->backend_symbol_table.end()
+                && backend->backend_symbol_table[node->name]->type() == AST_T::BackendObj_t
+                && static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get())->is_constant ?
+            ".L" :
+            "";
+    operand += emit_identifier(node->name);
     if (node->offset != 0l) {
-        std::string offset = emit_long(node->offset);
-        return value + "+" + offset + "(%rip)";
+        operand += "+";
+        operand += emit_long(node->offset);
     }
-    else {
-        return value + "(%rip)";
-    }
+    operand += "(%rip)";
+    return operand;
 }
 
 static std::string emit_indexed_operand(AsmIndexed* node) {
-    std::string reg_base = emit_register_8byte(node->reg_base.get());
-    std::string reg_index = emit_register_8byte(node->reg_index.get());
-    std::string scale = emit_long(node->scale);
-    return "(%" + reg_base + ", %" + reg_index + ", " + scale + ")";
+    std::string operand = "(%";
+    operand += emit_register_8byte(node->reg_base.get());
+    operand += ", %";
+    operand += emit_register_8byte(node->reg_index.get());
+    operand += ", ";
+    operand += emit_long(node->scale);
+    operand += ")";
+    return operand;
 }
 
 // Imm(int)                 -> $ $<int>
@@ -404,7 +406,7 @@ static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
     }
 }
 
-static void emit(std::string&& line, size_t t) {
+static void emit(std::string&& line, size_t t) { // TODO
     for (size_t i = 0; i < t; ++i) {
         line = "    " + line;
     }
