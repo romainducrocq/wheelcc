@@ -406,12 +406,19 @@ static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
     }
 }
 
-static void emit(std::string&& line, size_t t) { // TODO
-    for (size_t i = 0; i < t; ++i) {
-        line = "    " + line;
+static void emit(std::string&& line, size_t t) {
+    if (t > 0) {
+        std::string indent_line = "    ";
+        while (t > 1) {
+            indent_line += "    ";
+            t--;
+        }
+        indent_line += line;
+        emit(std::move(indent_line), 0);
     }
-
-    write_line(std::move(line));
+    else {
+        write_line(std::move(line));
+    }
 }
 
 static void emit_mov_instructions(AsmMov* node) {
