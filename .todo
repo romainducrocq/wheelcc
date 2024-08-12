@@ -38,9 +38,6 @@
 
 ---- Performance
 
-- replace string + with += where it is easy and makes sense
-(do not spend to much time on this optim, as the runtime is 70% regex)
-
 ---- Part 3 Optimization
 
 - use bitmask for cmd line params
@@ -53,9 +50,6 @@
         -> overflow = undefined behavior
 
 ## PERFORMANCE
-
-Not needed, the bottleneck is by far the regex tokenizer.
-- Construct line in emitter with += operator instead of +, because it is 3x cheaper (but less readable).
 
 ## TAGS
 
