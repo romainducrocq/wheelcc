@@ -164,6 +164,9 @@ wheelcc supports a large subset of the C17 language, but many features of the la
 
 ## C language reference
 
+This is what the wheelcc compiler supports of C17 so far.  
+For code samples and examples, see `wheelcc/test/tests/compiler/`.
+
 ### Language grammar
 
 ```
