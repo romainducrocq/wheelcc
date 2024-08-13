@@ -116,7 +116,7 @@ Test memory leaks
 $ ./test-memory.sh
 ```
 
-wheelcc is frequently tested on these distributions (x86-64)
+The latest master branch of wheelcc is always tested on these distributions (x86-64)
 Debian GNU/Linux  | Ubuntu           | Rocky Linux      | Arch Linux
 :---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
@@ -163,7 +163,40 @@ wheelcc supports a large subset of the C17 language, but many features of the la
 
 ## C Language Reference
 
-TODO
+### Language Grammar
+
+```
+<param> ::= { <type-specifier> }+ <declarator>
+<simple-declarator> ::= <identifier> | "(" <declarator> ")"
+<type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void" | "struct" <identifier>
+<specifier> ::= <type-specifier> | "static" | "extern"
+<block> ::= "{" { <block-item> } "}"
+<block-item> ::= <statement> | <declaration>
+<initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [ "," ] "}"
+<for-init> ::= <variable-declaration> | [ <exp> ] ";"
+<statement> ::= "return" [ <exp> ] ";" | <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";" | <identifier> ":" | <block> | "break" ";" | "continue" ";" | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";" | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
+<exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
+<cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
+<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" | <postfix-exp>
+<type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
+<postfix-exp> ::= <primary-exp> { <postfix-op> }
+<postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
+<primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
+<argument-list> ::= <exp> { "," <exp> }
+<abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
+<direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } | { "[" <const> "]" }+
+<unop> ::= "-" | "~" | "!" | "*" | "&"
+<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!=" | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>="
+<const> ::= <int> | <long> | <uint> | <ulong> | <double> | <char>
+<identifier> ::= ? An identifier token ?
+<string> ::= ? A string token ?
+<int> ::= ? An int token ?
+<char> ::= ? A char token ?
+<long> ::= ? An int or long token ?
+<uint> ::= ? An unsigned int token ?
+<ulong> ::= ? An unsigned int or unsigned long token ?
+<double> ::= ? A floating-point constant token ?
+```
 
 ## Development
 
