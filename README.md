@@ -5,7 +5,7 @@
 <!---->
 A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Linux platforms. 
 
-## Overview
+****
 
 The wheelcc compiler supports a large subset of C17 ([International Standard ISO/IEC 9899:2018](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf)), for which it has it's own built-in preprocessor, frontend, IR and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is entirely written in C++17, and builds to a standalone executable plus a driver in bash. wheelcc is overall designed after Nora Sandler's [Writing a C Compiler](https://nostarch.com/writing-c-compiler), and was tested against it's [test suite](https://github.com/nlsandler/writing-a-c-compiler-tests).
 
@@ -121,7 +121,7 @@ Debian GNU/Linux  | Ubuntu           | Rocky Linux      | Arch Linux
 :---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
-## Functional and technical details
+## Compiler overview
 
 ### Preprocessor
 
