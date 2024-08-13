@@ -1,4 +1,4 @@
-# wheelcc - the c compiler reinventing the wheel
+# wheelcc - the C compiler reinventing the wheel
 > **THIS COMPILER IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS COMPILER AT YOUR OWN RISK!**
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
@@ -51,9 +51,8 @@ $ ./main
 Hello, World!
 ```
 
-Usage
-> **Note**: Except for one source file to compile, all other command-line arguments are optional.  
-> However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
+Usage 
+> **Note**: Except for one source file to compile, all other command-line arguments are optional. However,  <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES
@@ -120,6 +119,41 @@ wheelcc is frequently tested on these distributions (x86-64)
 Debian GNU/Linux  | Ubuntu           | Rocky Linux      | Arch Linux
 :---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
+
+## Implementation details
+
+### Preprocessor
+
+wheelcc has a minimal built-in preprocessor that supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out. The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc.
+
+### Compiler
+
+TODO
+
+### Optimization
+
+(TBD)
+
+### Linker
+
+wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by the compiler. It complies with the System-V ABI, such that libraries already compiled with gcc or other compilers can be linked and used at runtime in a program compiled by wheelcc with the `-L` and `-l` command-line options. This also allows to link the C standard library APIs which signatures are compatible with the current implementation of wheelcc.  
+(TBD, it is planned to support fasm as an alternative linker to produce very small executables.)
+
+### Standard Library
+
+(TBD, an experimental standard library is planned in the future, with at least support for the compiler tests.)
+
+### Coding Style
+
+TODO
+
+### Limitations
+
+wheelcc supports a large subset of the C17 language, but many features of the language are not implemented. These include but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and should by no means be used as a production C compiler.
+
+## C Language Reference
+
+TODO
 
 ## Development
 
