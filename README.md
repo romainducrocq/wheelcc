@@ -95,7 +95,7 @@ FILES:              list of .c files to compile
 
 ### Test
 
-cd to the test directory, get the testtime dependencies: `diffutils valgrind`
+cd to the test directory, install the testtime dependencies: `diffutils valgrind`
 ```
 $ cd wheelcc/test/
 $ ./get-dependencies.sh
