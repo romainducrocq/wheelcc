@@ -168,25 +168,33 @@ wheelcc supports a large subset of the C17 language, but many features of the la
 ```
 <param> ::= { <type-specifier> }+ <declarator>
 <simple-declarator> ::= <identifier> | "(" <declarator> ")"
-<type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void" | "struct" <identifier>
+<type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void" 
+                   | "struct" <identifier>
 <specifier> ::= <type-specifier> | "static" | "extern"
 <block> ::= "{" { <block-item> } "}"
 <block-item> ::= <statement> | <declaration>
 <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [ "," ] "}"
 <for-init> ::= <variable-declaration> | [ <exp> ] ";"
-<statement> ::= "return" [ <exp> ] ";" | <exp> ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";" | <identifier> ":" | <block> | "break" ";" | "continue" ";" | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";" | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
+<statement> ::= "return" [ <exp> ] ";" | <exp> ";" 
+            | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";"
+            | <identifier> ":" | <block> | "break" ";" | "continue" ";" 
+            | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";" 
+            | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
 <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
 <unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" | <postfix-exp>
 <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
 <postfix-exp> ::= <primary-exp> { <postfix-op> }
 <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
-<primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
+<primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ 
+                | <identifier> "(" [ <argument-list> ] ")"
 <argument-list> ::= <exp> { "," <exp> }
 <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
 <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } | { "[" <const> "]" }+
 <unop> ::= "-" | "~" | "!" | "*" | "&"
-<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!=" | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>="
+<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!=" 
+          | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" 
+          | "<<=" | ">>="
 <const> ::= <int> | <long> | <uint> | <ulong> | <double> | <char>
 <identifier> ::= ? An identifier token ?
 <string> ::= ? A string token ?
