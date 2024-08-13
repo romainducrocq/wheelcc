@@ -20,7 +20,7 @@ function usage () {
     echo ""
     echo "[Debug]:"
     echo "    -v              enable verbose mode"
-    echo "    (Debug only):"
+    echo "    (Test/Debug build only):"
     echo "    --lex           print  lexing    stage and exit"
     echo "    --parse         print  parsing   stage and exit"
     echo "    --validate      print  semantic  stage and exit"

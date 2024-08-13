@@ -137,7 +137,7 @@ TODO
 
 ### Linker
 
-wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by the compiler. It complies with the System-V ABI, such that libraries already compiled with gcc or other compilers can be linked and used at runtime in a program compiled by wheelcc with the `-L` and `-l` command-line options. This also allows to link the C standard library APIs which signatures are compatible with the current implementation of wheelcc.  
+wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by the compiler. It complies with the System-V ABI, such that libraries already compiled with gcc or other compilers can be linked with the `-L` and `-l` command-line options and used at runtime in a program compiled by wheelcc. This also allows to link the C standard library APIs which signatures are compatible with the current implementation of wheelcc.  
 (TBD, it is planned to support fasm as an alternative linker to produce very small executables.)
 
 ### Standard Library
