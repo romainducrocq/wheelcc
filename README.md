@@ -116,8 +116,8 @@ Test memory leaks
 $ ./test-memory.sh
 ```
 
-The latest master branch of wheelcc is always tested on these distributions (x86-64)
-Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | Manjaro
+The latest master branch of wheelcc is tested on these distributions (x86-64)
+Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
@@ -162,10 +162,14 @@ Very few other C++ features are used, and only when doing so provides a real adv
 
 wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
-## C language reference
+## Implementation reference
 
-This is what the wheelcc compiler supports of C17 so far.  
-For code samples and examples, see `wheelcc/test/tests/compiler/`.
+This is what the wheelcc compiler supports of C17 so far. For code examples, see:
+- `wheelcc/test/tests/compiler/`
+- `wheelcc/test/tests/preprocessor/`
+
+### Development
+
 
 ### Language grammar
 
