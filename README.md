@@ -95,7 +95,7 @@ FILES:              list of .c files to compile
 
 ### Test
 
-cd to the test directory, install the testtime dependencies: `diffutils valgrind`
+cd to the test directory, get the testtime dependencies: `diffutils valgrind`
 ```
 $ cd wheelcc/test/
 $ ./get-dependencies.sh
@@ -146,11 +146,11 @@ wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by 
 
 ### Dependencies
 
-wheelcc is mostly self-contained and aims to be as less bloated as possible. It depends just on the C and C++ standard libraries and header-only dependencies ([boost::regex](https://github.com/boostorg/regex),  [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires bash, gcc/g++ and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
+wheelcc is mostly self-contained and aims to be as less bloated as possible. It depends on no more than the C and C++ standard libraries and some header-only dependencies ([boost::regex](https://github.com/boostorg/regex),  [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires bash, gcc/g++ and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
 
 ### Coding Style
 
-wheelcc is implemented entirely with a restricted subset of C++17. The code follows a C-style procedural design where state context data is grouped into structures, and modified by local functions in a single corresponding translation unit. Each translation unit mainly represents a separate compilation stage. Thus, it can be thought of as mostly C plus some C\++ sugar for:  
+wheelcc is implemented entirely in a restricted subset of C++17 with a C-style procedural design. Each compilation stage is a single translation unit, with state context data grouped into structures and modified by local functions. The code is effectively mostly C plus some C\++ sugar for:  
 - smart pointers with reference counting to manage the lifetime of AST datatypes.  
 - single inheritance and polymorphism to emulate pattern matching over algebraic datatype.  
 - standard containers, collections, string manipulation and move semantics.  
@@ -159,7 +159,7 @@ Very few other C++ features are used, and only when doing so provides a real adv
 
 ### Limitations
 
-wheelcc supports a large subset of the C17 language, but many features of the language are not implemented. These include but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+wheelcc supports a large subset of the C17 language, but many features of the language are not implemented. These include, but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
 ## C Language Reference
 
