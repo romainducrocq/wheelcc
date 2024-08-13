@@ -26,7 +26,7 @@ Build the compiler in Release mode
 ```
 $ ./make.sh
 ```
-Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). As an alternative, do not install and use `wheelcc/bin/driver.sh` instead  
+Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). As an alternative, do not install and use `bin/driver.sh` instead  
 ```
 $ ./install.sh
 $ . ~/.bashrc
@@ -97,7 +97,7 @@ FILES:              list of .c files to compile
 
 cd to the test directory, get the testtime dependencies: `diffutils valgrind`
 ```
-$ cd wheelcc/test/
+$ cd test/
 $ ./get-dependencies.sh
 ```
 
@@ -165,8 +165,8 @@ wheelcc supports a large subset of the C17 language, but many features of the la
 ## Implementation reference
 
 This is what the wheelcc compiler supports of C17 so far. For code examples, see:
-- `wheelcc/test/tests/compiler/`
-- `wheelcc/test/tests/preprocessor/`
+- `test/tests/compiler/`  
+- `test/tests/preprocessor/`  
 
 ### Development
 
