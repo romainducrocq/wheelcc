@@ -1,75 +1,40 @@
-# [C++] Wheel C Compiler
-> **THIS COMPILER IS A WORK IN PROGRESS!**  
-> **ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE AT YOUR OWN RISK!**  
+# wheelcc - the c compiler reinventing the wheel
+> **THIS COMPILER IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS COMPILER AT YOUR OWN RISK!**
 
-*__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*  
-Yet another C Compiler for Computers. It's a bit rough on the edges (standard-compliant with a large subset of C17).  
+*__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
 <!---->
+A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Linux platforms. 
 
-- Writing a C Compiler - Build a Real Programming Language from Scratch : https://norasandler.com/book/
-- An Incremental Approach to Compiler Construction : http://scheme2006.cs.uchicago.edu/11-ghuloum.pdf
-- C17 International Standard ISO/IEC 9899:2018 : https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf
-****
+## Overview
 
-## Development
+The wheelcc compiler supports a large subset of C17 ([International Standard ISO/IEC 9899:2018](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf)), for which it has it's own built-in preprocessor, frontend, IR and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is entirely written in C++17, and builds to a standalone executable plus a driver in bash. wheelcc is overall designed after Nora Sandler's [Writing a C Compiler](https://nostarch.com/writing-c-compiler), and was tested against it's [test suite](https://github.com/nlsandler/writing-a-c-compiler-tests).
 
-### Language features
+## Usage
 
-- [x] 1\. Integer constants  
-- [x] 2\. Unary operators  
-- [x] 3\. Binary operators  
-- [x] 4\. Logical and relational operators  
-- [x] 5\. Local variables  
-- [x] 6\. Statements and conditional expressions  
-- [x] 7\. Compound statements  
-- [x] 8\. Loops  
-- [x] 9\. Functions  
-- [x] 10\. File-scope variables and storage-class specifiers  
+### Install
 
-### Types
-
-- [x] 11\. Long integers  
-- [x] 12\. Unsigned integers  
-- [x] 13\. Floating-point numbers  
-- [x] 14\. Pointers  
-- [x] 15\. Arrays and pointer arithmetic  
-- [x] 16\. Characters and strings  
-- [x] 17\. Supporting dynamic memory allocation  
-- [x] 18\. Structures  
-
-### Optimization
-
-- [ ] 19\. Optimizing TAC programs  
-- [ ] 20\. Register allocation  
-
-## How To _
-
-### Get
+Get the repo, cd to the bin directory  
 ```
 $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
-$ cd wheelcc/
+$ cd wheelcc/bin/
 ```
-
-### Build
+Configure the repo and install the build/runtime dependencies: `gcc g++ make cmake`  
 ```
-$ cd bin/
 $ ./configure.sh
+```
+Build the compiler in Release mode  
+```
 $ ./make.sh
-$ sudo ./install.sh
+```
+Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). As an alternative, do not install and use `wheelcc/bin/driver.sh` instead  
+```
+$ ./install.sh
 $ . ~/.bashrc
-```
-
-### Test
-```
-$ cd test/
-$ ./test-compiler.sh
-$ ./test-preprocessor.sh
-$ ./test-memory.sh
 ```
 
 ### Use
 
-With file `main.c` :  
+With file `main.c`  
 ```c
 int puts(char* c);
 
@@ -79,15 +44,16 @@ int main(void) {
 }
 ```
 
-Compile and run :  
+Compile and run  
 ```
 $ wheelcc main.c
 $ ./main
 Hello, World!
 ```
 
-### Help
+Usage. **Note**: Except for one source file to compile, all other command-line arguments are optional. However, <u>the order of arguments passed matters</u>: they are parsed only in this order, any other order will fail  
 ```
+$ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES
 
 [Help]:
@@ -95,7 +61,7 @@ Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] 
 
 [Debug]:
     -v              enable verbose mode
-    (Debug only):
+    (Test/Debug build only):
     --lex           print  lexing    stage and exit
     --parse         print  parsing   stage and exit
     --validate      print  semantic  stage and exit
@@ -125,21 +91,64 @@ Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] 
 FILES:              list of .c files to compile
 ```
 
-****
+### Test
 
-This compiler was developped and tested with:  
+cd to the test directory, get the testtime dependencies: `diffutils valgrind`
 ```
-gcc      (Debian 10.2.1-6) 10.2.1 20210110
-g++      (Debian 10.2.1-6) 10.2.1 20210110
-GLIBC    2.31
-GLIBCXX  20210110
+$ cd wheelcc/test/
+$ ./get-dependencies.sh
+```
 
-OS       Debian GNU/Linux 11 (bullseye) on Windows 10 x86_64
-Kernel   5.15.133.1-microsoft-standard-WSL2
-Shell    bash 5.1.4
-CPU      11th Gen Intel i7-11850H (16) @ 2.496GHz
-Memory   15860MiB
+Test the compiler
 ```
+$ ./test-compiler.sh
+```
+
+Test the preprocessor
+```
+$ ./test-preprocessor.sh
+```
+
+Test memory leaks
+```
+$ ./test-memory.sh
+```
+
+wheelcc is frequently tested on these distributions (x86-64)
+Debian GNU/Linux  | Ubuntu           | Rocky Linux      | Arch Linux
+:---:             |:---:             |:---:             |:---:
+:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
+
+## Development
+
+### Language features
+
+- [x] 1\. Integer constants
+- [x] 2\. Unary operators
+- [x] 3\. Binary operators
+- [x] 4\. Logical and relational operators
+- [x] 5\. Local variables
+- [x] 6\. Statements and conditional expressions
+- [x] 7\. Compound statements
+- [x] 8\. Loops
+- [x] 9\. Functions
+- [x] 10\. File-scope variables and storage-class specifiers
+
+### Types
+
+- [x] 11\. Long integers
+- [x] 12\. Unsigned integers
+- [x] 13\. Floating-point numbers
+- [x] 14\. Pointers
+- [x] 15\. Arrays and pointer arithmetic
+- [x] 16\. Characters and strings
+- [x] 17\. Supporting dynamic memory allocation
+- [x] 18\. Structures
+
+### Optimization
+
+- [ ] 19\. Optimizing TAC programs
+- [ ] 20\. Register allocation
 
 ****
 
