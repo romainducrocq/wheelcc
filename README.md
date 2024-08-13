@@ -121,7 +121,7 @@ Debian GNU/Linux  | Ubuntu           | Rocky Linux      | Arch Linux
 :---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
-## Implementation details
+## Functional and technical details
 
 ### Preprocessor
 
@@ -129,7 +129,8 @@ wheelcc has a minimal built-in preprocessor that supports `include` header direc
 
 ### Compiler
 
-TODO
+wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see _C Language Reference_ section below for a complete list of supported C language features). The `-S` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
+(TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)
 
 ### Optimization
 
@@ -140,7 +141,7 @@ TODO
 wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by the compiler. It complies with the System-V ABI, such that libraries already compiled with gcc or other compilers can be linked with the `-L` and `-l` command-line options and used at runtime in a program compiled by wheelcc. This also allows to link the C standard library APIs which signatures are compatible with the current implementation of wheelcc.  
 (TBD, it is planned to support fasm as an alternative linker to produce very small executables.)
 
-### Standard Library
+### Standard library
 
 (TBD, an experimental standard library is planned in the future, with at least support for the compiler tests.)
 
@@ -148,7 +149,7 @@ wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by 
 
 wheelcc is mostly self-contained and aims to be as less bloated as possible. It depends on no more than the C and C++ standard libraries and some header-only dependencies ([boost::regex](https://github.com/boostorg/regex),  [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires bash, gcc/g++ and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
 
-### Coding Style
+### Coding style
 
 wheelcc is implemented entirely in a restricted subset of C++17 with a C-style procedural design. Each compilation stage is a single translation unit, with state context data grouped into structures and modified by local functions. The code is effectively mostly C plus some C\++ sugar for:  
 - smart pointers with reference counting to manage the lifetime of AST datatypes.  
@@ -159,11 +160,11 @@ Very few other C++ features are used, and only when doing so provides a real adv
 
 ### Limitations
 
-wheelcc supports a large subset of the C17 language, but many features of the language are not implemented. These include, but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
-## C Language Reference
+## C language reference
 
-### Language Grammar
+### Language grammar
 
 ```
 <param> ::= { <type-specifier> }+ <declarator>
