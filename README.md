@@ -51,7 +51,8 @@ $ ./main
 Hello, World!
 ```
 
-Usage. **Note**: Except for one source file to compile, all other command-line arguments are optional. However,  <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
+Usage
+> **Note**: Except for one source file to compile, all other command-line arguments are optional. However,  <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES
