@@ -144,9 +144,18 @@ wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by 
 
 (TBD, an experimental standard library is planned in the future, with at least support for the compiler tests.)
 
+### Dependencies
+
+wheelcc is mostly self-contained and aims to be as less bloated as possible. It depends just on the C and C++ standard libraries and header-only dependencies ([boost::regex](https://github.com/boostorg/regex),  [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires to install `gcc/g++` and `cmake`, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
+
 ### Coding Style
 
-TODO
+wheelcc is implemented entirely with a restricted subset of C++17. The code follows a C-style procedural design where state context data is grouped into structures, and modified by local functions in a single corresponding translation unit. Each translation unit mainly represents a separate compilation stage. Thus, it can be thought of as mostly C plus some C\++ sugar for:  
+- single inheritance polymorphism to emulate algebraic datatype pattern matching.  
+- smart pointers with reference counting for managing the lifetime of AST datatypes.  
+- standard containers, collections, string manipulation and move semantics.  
+
+Very few other C++ features are used, and only when doing so provides a real advantage. This is to make the code cleaner without adding too much complexity.   
 
 ### Limitations
 
@@ -190,3 +199,4 @@ TODO
 ****
 
 @romainducrocq
+
