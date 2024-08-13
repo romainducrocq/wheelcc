@@ -182,7 +182,8 @@ wheelcc supports a large subset of the C17 language, but many features of the la
             | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
 <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
-<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" | <postfix-exp>
+<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" 
+              | <postfix-exp>
 <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
 <postfix-exp> ::= <primary-exp> { <postfix-op> }
 <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
@@ -190,11 +191,12 @@ wheelcc supports a large subset of the C17 language, but many features of the la
                 | <identifier> "(" [ <argument-list> ] ")"
 <argument-list> ::= <exp> { "," <exp> }
 <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
-<direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } | { "[" <const> "]" }+
+<direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } 
+                               | { "[" <const> "]" }+
 <unop> ::= "-" | "~" | "!" | "*" | "&"
-<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" | "!=" 
-          | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" 
-          | "<<=" | ">>="
+<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" 
+          | "!=" | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" 
+          | "|=" | "^=" | "<<=" | ">>="
 <const> ::= <int> | <long> | <uint> | <ulong> | <double> | <char>
 <identifier> ::= ? An identifier token ?
 <string> ::= ? A string token ?
