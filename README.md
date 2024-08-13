@@ -152,10 +152,10 @@ wheelcc is mostly self-contained and aims to be as less bloated as possible. It 
 
 wheelcc is implemented entirely in a restricted subset of C++17 with a C-style procedural design. Each compilation stage is a single translation unit, with state context data grouped into structures and modified by local functions. The code is effectively mostly C plus some C\++ sugar for:  
 - smart pointers with reference counting to manage the lifetime of AST datatypes.  
-- single inheritance and polymorphism to emulate pattern matching over algebraic datatype.  
+- single inheritance/polymorphism to emulate pattern matching on algebraic datatypes.  
 - standard containers, collections, string manipulation and move semantics.  
 
-Very few other C++ features are used, and only when doing so provides a real advantage. This is to make the code cleaner without adding too much complexity.   
+Very few other C++ features are used, and only when doing so provides a real advantage (template, constexpr, ...). This is to make the code cleaner without adding too much complexity.  
 
 ### Limitations
 
