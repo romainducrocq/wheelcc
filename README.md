@@ -26,7 +26,7 @@ $ ./configure.sh
 ```
 $ ./make.sh
 ```
-- Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). As an alternative, do not install and use `bin/driver.sh` instead  
+- Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). Or, do not install and use `bin/driver.sh` instead  
 ```
 $ ./install.sh
 $ . ~/.bashrc
@@ -34,7 +34,7 @@ $ . ~/.bashrc
 
 ### Use
 
-`main.c`  
+With file `main.c`  
 ```c
 int puts(char* c);
 
@@ -95,7 +95,7 @@ FILES:              list of .c files to compile
 
 ### Errors
 
-Compile errors output messages with file, line and explanation to stderr.  
+Compile errors output messages with file, line and explanation to stderr:  
 ```c
 int main(void) {
     int i = { 1 };
@@ -133,7 +133,7 @@ $ ./test-preprocessor.sh
 $ ./test-memory.sh
 ```
 
-The latest master branch of wheelcc is tested on these distributions (x86-64).  
+The latest master branch of wheelcc is tested on these distributions (x86-64):  
 Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
