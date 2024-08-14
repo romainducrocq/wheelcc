@@ -142,12 +142,14 @@ Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arc
 
 ### Preprocessor
 
-wheelcc has a minimal built-in preprocessor that supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out. The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc.
+wheelcc has a minimal built-in preprocessor that supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out.  
+The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc.
 
 ### Compiler
 
-wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see _C Language Reference_ section below for a complete list of supported C language features). The `-S` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
-(TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)
+wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see _Implementation Reference_ section below for a list of supported C language features). (TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)  
+The `-S` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
+wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line and explanation for the compile error to stderr.
 
 ### Optimization
 
