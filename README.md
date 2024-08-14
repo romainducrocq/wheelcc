@@ -7,26 +7,26 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 ****
 
-The wheelcc compiler supports a large subset of C17 ([International Standard ISO/IEC 9899:2018](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf)), for which it has it's own built-in preprocessor, frontend, IR and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is entirely written in C++17, and builds to a standalone executable plus a driver in bash. wheelcc is overall designed after Nora Sandler's [Writing a C Compiler](https://nostarch.com/writing-c-compiler), and was tested against it's [test suite](https://github.com/nlsandler/writing-a-c-compiler-tests).
+The wheelcc C compiler supports a large subset of C17 ([International Standard ISO/IEC 9899:2018](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf)), for which it has it's own built-in preprocessor, frontend, IR and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is entirely written in C++17, and builds to a standalone executable plus a driver in bash. wheelcc is overall designed after Nora Sandler's [Writing a C Compiler](https://nostarch.com/writing-c-compiler), and was tested against it's [test suite](https://github.com/nlsandler/writing-a-c-compiler-tests).
 
 ## Usage
 
 ### Install
 
-Get the repo, cd to the bin directory  
+- Get the repo, cd to the bin directory  
 ```
 $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
 $ cd wheelcc/bin/
 ```
-Configure the repo and install the build/runtime dependencies: `gcc g++ make cmake`  
+- Configure the repo and install the build/runtime dependencies: `gcc g++ make cmake`  
 ```
 $ ./configure.sh
 ```
-Build the compiler in Release mode  
+- Build the compiler in Release mode  
 ```
 $ ./make.sh
 ```
-Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). As an alternative, do not install and use `bin/driver.sh` instead  
+- Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`). As an alternative, do not install and use `bin/driver.sh` instead  
 ```
 $ ./install.sh
 $ . ~/.bashrc
@@ -34,7 +34,7 @@ $ . ~/.bashrc
 
 ### Use
 
-With `main.c`  
+`main.c`  
 ```c
 int puts(char* c);
 
@@ -44,14 +44,14 @@ int main(void) {
 }
 ```
 
-Compile and run  
+- Compile and run  
 ```
 $ wheelcc main.c
 $ ./main
 Hello, World!
 ```
 
-Usage  
+- Usage  
 > **Note**: Except for one source file to compile, all other command-line arguments are optional.  
 However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
@@ -95,7 +95,7 @@ FILES:              list of .c files to compile
 
 ### Errors
 
-Compile error messages with file, line and explanation  
+Compile errors output messages with file, line and explanation to stderr.  
 ```c
 int main(void) {
     int i = { 1 };
@@ -112,28 +112,28 @@ wheelcc: error: compilation failed
 
 ### Test
 
-cd to the test directory, get the testtime dependencies: `diffutils valgrind`  
+- cd to the test directory, get the testtime dependencies: `diffutils valgrind`  
 ```
 $ cd test/
 $ ./get-dependencies.sh
 ```
 
-Test the compiler  
+- Test the compiler  
 ```
 $ ./test-compiler.sh
 ```
 
-Test the preprocessor  
+- Test the preprocessor  
 ```
 $ ./test-preprocessor.sh
 ```
 
-Test memory leaks  
+- Test memory leaks  
 ```
 $ ./test-memory.sh
 ```
 
-The latest master branch of wheelcc is tested on these distributions (x86-64)  
+The latest master branch of wheelcc is tested on these distributions (x86-64).  
 Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
