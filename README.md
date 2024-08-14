@@ -105,9 +105,9 @@ int main(void) {
 ```
 $ wheelcc main.c
 /home/user/wheelcc/main.c:2:
-<span style="color: red">error:</span> (no. 545) cannot initialize scalar type ‘int’ with compound initializer
+error: (no. 545) cannot initialize scalar type ‘int’ with compound initializer
 at line 2:     int i = { 1 };
-wheelcc: <span style="color: red">error:</span>: compilation failed
+wheelcc: error: compilation failed
 ```
 
 ### Test
