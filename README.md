@@ -27,7 +27,7 @@ $ ./configure.sh
 $ ./make.sh
 ```
 - Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`)  
-    > Or do not install and use `bin/driver.sh` instead  
+    > Or as an alternative, do not install and use `bin/driver.sh` instead  
 ```
 $ ./install.sh
 $ . ~/.bashrc
