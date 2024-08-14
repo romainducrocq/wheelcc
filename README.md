@@ -230,10 +230,10 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [ "," ] "}"
 <for-init> ::= <variable-declaration> | [ <exp> ] ";"
 <statement> ::= "return" [ <exp> ] ";" | <exp> ";" 
-            | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";"
-            | <identifier> ":" | <block> | "break" ";" | "continue" ";" 
-            | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";" 
-            | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
+              | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";"
+              | <identifier> ":" | <block> | "break" ";" | "continue" ";"
+              | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
+              | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
 <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
 <unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" 
