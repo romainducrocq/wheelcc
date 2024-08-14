@@ -147,7 +147,7 @@ The preprocessor does not natively support macros, but macro expansion can be en
 
 ### Compiler
 
-wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see _Implementation Reference_ section below for a list of supported C language features). (TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)  
+wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features). (TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)  
 The `-S` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
 wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line and explanation for the compile error to stderr.
 
@@ -189,6 +189,33 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 
 ### Development
 
+**Preprocessor**
+
+- [x] [Include directives and comments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/preprocessor/preprocessor)
+
+**Language features**
+
+- [x] [Integer constants](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/1_int_constants)
+- [x] [Unary operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/2_unary_operators)
+- [x] [Binary operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators)
+- [x] [Logical and relational operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/4_logical_and_relational_operators)
+- [x] [Local variables](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables)
+- [x] [Statements and conditional expressions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions)
+- [x] [Compound statements](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/7_compound_statements)
+- [x] [Loops](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/8_loops)
+- [x] [Functions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/9_functions)
+- [x] [File-scope variables and storage-class specifiers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/10_file-scope_variables_and_storage-class_specifiers)
+
+**Types**
+
+- [x] [Long integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/11_long_integers)
+- [x] [Unsigned integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/12_unsigned_integers)
+- [x] [Floating-point numbers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/13_floating-point_numbers)
+- [x] [Pointers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/14_pointers)
+- [x] [Arrays and pointer arithmetic](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/15_arrays_and_pointer_arithmetic)
+- [x] [Characters and strings](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/16_characters_and_strings)
+- [x] [Supporting dynamic memory allocation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/17_supporting_dynamic_memory_allocation)
+- [x] [Structures](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/18_structures)
 
 ### Language grammar
 
@@ -234,37 +261,6 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 <ulong> ::= ? An unsigned int or unsigned long token ?
 <double> ::= ? A floating-point constant token ?
 ```
-
-## Development
-
-### Language features
-
-- [x] 1\. Integer constants
-- [x] 2\. Unary operators
-- [x] 3\. Binary operators
-- [x] 4\. Logical and relational operators
-- [x] 5\. Local variables
-- [x] 6\. Statements and conditional expressions
-- [x] 7\. Compound statements
-- [x] 8\. Loops
-- [x] 9\. Functions
-- [x] 10\. File-scope variables and storage-class specifiers
-
-### Types
-
-- [x] 11\. Long integers
-- [x] 12\. Unsigned integers
-- [x] 13\. Floating-point numbers
-- [x] 14\. Pointers
-- [x] 15\. Arrays and pointer arithmetic
-- [x] 16\. Characters and strings
-- [x] 17\. Supporting dynamic memory allocation
-- [x] 18\. Structures
-
-### Optimization
-
-- [ ] 19\. Optimizing TAC programs
-- [ ] 20\. Register allocation
 
 ****
 
