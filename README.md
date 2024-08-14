@@ -34,7 +34,7 @@ $ . ~/.bashrc
 
 ### Use
 
-With file `main.c`  
+With `main.c`  
 ```c
 int puts(char* c);
 
@@ -51,7 +51,7 @@ $ ./main
 Hello, World!
 ```
 
-Usage 
+Usage  
 > **Note**: Except for one source file to compile, all other command-line arguments are optional.  
 However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
@@ -93,30 +93,47 @@ Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] 
 FILES:              list of .c files to compile
 ```
 
+### Errors
+
+Compile error messages with file, line and explanation  
+```c
+int main(void) {
+    int i = { 1 };
+    return 0;
+}
+```
+```
+$ wheelcc main.c
+/home/user/wheelcc/main.c:2:
+<span style="color: red">error:</span> (no. 545) cannot initialize scalar type ‘int’ with compound initializer
+at line 2:     int i = { 1 };
+wheelcc: <span style="color: red">error:</span>: compilation failed
+```
+
 ### Test
 
-cd to the test directory, get the testtime dependencies: `diffutils valgrind`
+cd to the test directory, get the testtime dependencies: `diffutils valgrind`  
 ```
 $ cd test/
 $ ./get-dependencies.sh
 ```
 
-Test the compiler
+Test the compiler  
 ```
 $ ./test-compiler.sh
 ```
 
-Test the preprocessor
+Test the preprocessor  
 ```
 $ ./test-preprocessor.sh
 ```
 
-Test memory leaks
+Test memory leaks  
 ```
 $ ./test-memory.sh
 ```
 
-The latest master branch of wheelcc is tested on these distributions (x86-64)
+The latest master branch of wheelcc is tested on these distributions (x86-64)  
 Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
