@@ -361,6 +361,153 @@ static std::shared_ptr<Type> get_joint_pointer_type(CExp* node_1, CExp* node_2) 
     }
 }
 
+static TChar get_char_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<CConstChar*>(node->constant.get())->value;
+        case AST_T::CConstInt_t:
+            return static_cast<TChar>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<TChar>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstDouble_t:
+            return static_cast<TChar>(static_cast<CConstDouble*>(node->constant.get())->value);
+        case AST_T::CConstUChar_t:
+            return static_cast<TChar>(static_cast<CConstUChar*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<TChar>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<TChar>(static_cast<CConstULong*>(node->constant.get())->value);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TInt get_int_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<TInt>(static_cast<CConstChar*>(node->constant.get())->value);
+        case AST_T::CConstInt_t:
+            return static_cast<CConstInt*>(node->constant.get())->value;
+        case AST_T::CConstLong_t:
+            return static_cast<TInt>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstDouble_t:
+            return static_cast<TInt>(static_cast<CConstDouble*>(node->constant.get())->value);
+        case AST_T::CConstUChar_t:
+            return static_cast<TInt>(static_cast<CConstUChar*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<TInt>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<TInt>(static_cast<CConstULong*>(node->constant.get())->value);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TLong get_long_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<TLong>(static_cast<CConstChar*>(node->constant.get())->value);
+        case AST_T::CConstInt_t:
+            return static_cast<TLong>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<CConstLong*>(node->constant.get())->value;
+        case AST_T::CConstDouble_t:
+            return static_cast<TLong>(static_cast<CConstDouble*>(node->constant.get())->value);
+        case AST_T::CConstUChar_t:
+            return static_cast<TLong>(static_cast<CConstUChar*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<TLong>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<TLong>(static_cast<CConstULong*>(node->constant.get())->value);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TDouble get_double_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<TDouble>(static_cast<CConstChar*>(node->constant.get())->value);
+        case AST_T::CConstInt_t:
+            return static_cast<TDouble>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<TDouble>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstDouble_t:
+            return static_cast<CConstDouble*>(node->constant.get())->value;
+        case AST_T::CConstUChar_t:
+            return static_cast<TDouble>(static_cast<CConstUChar*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<TDouble>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<TDouble>(static_cast<CConstULong*>(node->constant.get())->value);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TUChar get_uchar_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<TUChar>(static_cast<CConstChar*>(node->constant.get())->value);
+        case AST_T::CConstInt_t:
+            return static_cast<TUChar>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<TUChar>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstDouble_t:
+            return static_cast<TUChar>(static_cast<CConstDouble*>(node->constant.get())->value);
+        case AST_T::CConstUChar_t:
+            return static_cast<CConstUChar*>(node->constant.get())->value;
+        case AST_T::CConstUInt_t:
+            return static_cast<TUChar>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<TUChar>(static_cast<CConstULong*>(node->constant.get())->value);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TUInt get_uint_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<TUInt>(static_cast<CConstChar*>(node->constant.get())->value);
+        case AST_T::CConstInt_t:
+            return static_cast<TUInt>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<TUInt>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstDouble_t:
+            return static_cast<TUInt>(static_cast<CConstDouble*>(node->constant.get())->value);
+        case AST_T::CConstUChar_t:
+            return static_cast<TUInt>(static_cast<CConstUChar*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<CConstUInt*>(node->constant.get())->value;
+        case AST_T::CConstULong_t:
+            return static_cast<TUInt>(static_cast<CConstULong*>(node->constant.get())->value);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static TULong get_ulong_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<TULong>(static_cast<CConstChar*>(node->constant.get())->value);
+        case AST_T::CConstInt_t:
+            return static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<TULong>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstDouble_t:
+            return static_cast<TULong>(static_cast<CConstDouble*>(node->constant.get())->value);
+        case AST_T::CConstUChar_t:
+            return static_cast<TULong>(static_cast<CConstUChar*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(node->constant.get())->value;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static size_t get_compound_init_line(CInitializer* node) {
     if (node->type() != AST_T::CCompoundInit_t) {
         RAISE_INTERNAL_ERROR;
@@ -1117,11 +1264,48 @@ static void checktype_switch_statement(CSwitch* node) {
     if (!is_type_integer(node->match->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE("switch match value is not an integer/arithmetic", node->match->line); // TODO
     }
+    std::vector<size_t> values;
+    values.reserve(node->cases.size());
     for (size_t i = 0; i < node->cases.size(); ++i) {
         if (node->cases[i]->type() != AST_T::CConstant_t) { // TODO rm ?
             RAISE_INTERNAL_ERROR;
         }
+        /*
+            case AST_T::Char_t:
+            case AST_T::SChar_t:
+            case AST_T::Int_t:
+            case AST_T::Long_t:
+            case AST_T::UChar_t:
+            case AST_T::UInt_t:
+            case AST_T::ULong_t:
+        */
+        switch (node->match->type()) {
+            case AST_T::Char_t: {
+                break;
+            }
+            case AST_T::SChar_t: {
+                break;
+            }
+            case AST_T::Int_t: {
+                break;
+            }
+            case AST_T::Long_t: {
+                break;
+            }
+            case AST_T::UChar_t: {
+                break;
+            }
+            case AST_T::UInt_t: {
+                break;
+            }
+            case AST_T::ULong_t: {
+                break;
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
         // TODO
+
         node->cases[i] = cast_expression(std::move(node->cases[i]), node->match->exp_type);
     }
 }
@@ -1405,39 +1589,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
     switch (static_init_type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t: {
-            TChar value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<CConstChar*>(node->constant.get())->value;
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TChar>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TChar>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<TChar>(static_cast<CConstDouble*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<TChar>(static_cast<CConstUChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TChar>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<TChar>(static_cast<CConstULong*>(node->constant.get())->value);
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TChar value = get_char_constant_value(node);
             if (value == 0) {
                 push_zero_init_static_init(1l);
             }
@@ -1447,39 +1599,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::Int_t: {
-            TInt value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<TInt>(static_cast<CConstChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<CConstInt*>(node->constant.get())->value;
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TInt>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<TInt>(static_cast<CConstDouble*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<TInt>(static_cast<CConstUChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TInt>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<TInt>(static_cast<CConstULong*>(node->constant.get())->value);
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TInt value = get_int_constant_value(node);
             if (value == 0) {
                 push_zero_init_static_init(4l);
             }
@@ -1489,39 +1609,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::Long_t: {
-            TLong value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<TLong>(static_cast<CConstChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TLong>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<CConstLong*>(node->constant.get())->value;
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<TLong>(static_cast<CConstDouble*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<TLong>(static_cast<CConstUChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TLong>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<TLong>(static_cast<CConstULong*>(node->constant.get())->value);
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TLong value = get_long_constant_value(node);
             if (value == 0l) {
                 push_zero_init_static_init(8l);
             }
@@ -1531,39 +1619,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::Double_t: {
-            TDouble value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<TDouble>(static_cast<CConstChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TDouble>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TDouble>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<CConstDouble*>(node->constant.get())->value;
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<TDouble>(static_cast<CConstUChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TDouble>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<TDouble>(static_cast<CConstULong*>(node->constant.get())->value);
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TDouble value = get_double_constant_value(node);
             TULong binary = double_to_binary(value);
             if (binary == 0ul) {
                 push_zero_init_static_init(8l);
@@ -1574,39 +1630,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::UChar_t: {
-            TUChar value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<TUChar>(static_cast<CConstChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TUChar>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TUChar>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<TUChar>(static_cast<CConstDouble*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<CConstUChar*>(node->constant.get())->value;
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TUChar>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<TUChar>(static_cast<CConstULong*>(node->constant.get())->value);
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TUChar value = get_uchar_constant_value(node);
             if (value == 0u) {
                 push_zero_init_static_init(1l);
             }
@@ -1616,39 +1640,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::UInt_t: {
-            TUInt value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<TUInt>(static_cast<CConstChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TUInt>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TUInt>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<TUInt>(static_cast<CConstDouble*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<TUInt>(static_cast<CConstUChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<CConstUInt*>(node->constant.get())->value;
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<TUInt>(static_cast<CConstULong*>(node->constant.get())->value);
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TUInt value = get_uint_constant_value(node);
             if (value == 0u) {
                 push_zero_init_static_init(4l);
             }
@@ -1658,39 +1650,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::ULong_t: {
-            TULong value;
-            switch (node->constant->type()) {
-                case AST_T::CConstChar_t: {
-                    value = static_cast<TULong>(static_cast<CConstChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TULong>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstDouble_t: {
-                    value = static_cast<TULong>(static_cast<CConstDouble*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUChar_t: {
-                    value = static_cast<TULong>(static_cast<CConstUChar*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<CConstULong*>(node->constant.get())->value;
-                    break;
-                }
-                default:
-                    RAISE_INTERNAL_ERROR;
-            }
+            TULong value = get_ulong_constant_value(node);
             if (value == 0ul) {
                 push_zero_init_static_init(8l);
             }
