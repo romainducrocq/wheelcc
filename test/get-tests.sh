@@ -40,7 +40,7 @@ for FILE in $(find ${TEST_DIR} -name "*.c" -type f); do
 done
 for FILE in $(\
     grep -rn $(find ${TEST_DIR} -name "*.i" -type f) \
-        -e "++" -e "--" -e "switch" -e "case" -e "default" -e "union" | \
+        -e "++" -e "--" -e "union" | \
         cut -d":" -f1 | sort --uniq); do
     rm -rv "${FILE%.*}.c"
 done
