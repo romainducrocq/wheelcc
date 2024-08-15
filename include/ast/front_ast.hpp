@@ -545,6 +545,19 @@ struct CFor : CStatement {
     std::unique_ptr<CStatement> body;
 };
 
+struct CSwitch : CStatement {
+    AST_T type() override;
+    CSwitch() = default;
+    CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body);
+
+    TIdentifier target;
+    bool is_default;
+    bool is_inner_loop;
+    std::unique_ptr<CExp> match;
+    std::unique_ptr<CStatement> body;
+    std::vector<std::unique_ptr<CExp>> cases;
+};
+
 struct CCase : CStatement {
     AST_T type() override;
     CCase() = default;
@@ -563,19 +576,6 @@ struct CDefault : CStatement {
     TIdentifier target;
     std::unique_ptr<CStatement> jump_to;
     size_t line;
-};
-
-struct CSwitch : CStatement {
-    AST_T type() override;
-    CSwitch() = default;
-    CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body);
-
-    TIdentifier target;
-    bool is_default;
-    bool is_inner_loop;
-    std::unique_ptr<CExp> match;
-    std::unique_ptr<CStatement> body;
-    std::vector<std::unique_ptr<CExp>> cases;
 };
 
 struct CBreak : CStatement {
