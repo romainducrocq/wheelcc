@@ -27,7 +27,8 @@ struct SemanticContext {
     std::unordered_map<TIdentifier, TIdentifier> goto_map;
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
-    std::vector<TIdentifier> loop_labels;
+    std::vector<TIdentifier> break_loop_labels;
+    std::vector<TIdentifier> continue_loop_labels;
     // Identifier resolution
     TIdentifier function_definition_name;
     CSwitch* p_switch_statement;
