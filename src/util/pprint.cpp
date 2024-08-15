@@ -746,6 +746,7 @@ static void print_ast(Ast* node, size_t t) {
             field("CSwitch", "", ++t);
             CSwitch* p_node = static_cast<CSwitch*>(node);
             field("TIdentifier", p_node->target, t + 1);
+            field("Bool", std::to_string(p_node->is_default), t + 1);
             print_ast(p_node->match.get(), t);
             print_ast(p_node->body.get(), t);
             field("List[" + std::to_string(p_node->cases.size()) + "]", "", t + 1);
