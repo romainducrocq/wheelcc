@@ -140,7 +140,7 @@ ast = [
     ["CFor", [(TIdentifier, "target")], ["init", "condition", "post", "body"]],
     ["CCase", [(TIdentifier, "target")], ["value", "jump_to"]],
     ["CDefault", [(TIdentifier, "target")], ["jump_to"]],
-    ["CSwitch", [(TIdentifier, "target"), (Bool, "is_default")], ["match", "body", "[cases"]],
+    ["CSwitch", [(TIdentifier, "target"), (Bool, "is_default"), (Bool, "is_inner_loop")], ["match", "body", "[cases"]],
     ["CBreak", [(TIdentifier, "target")], []],
     ["CContinue", [(TIdentifier, "target")], []],
     ["CNull", [], []],
