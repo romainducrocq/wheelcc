@@ -1264,49 +1264,84 @@ static void checktype_switch_statement(CSwitch* node) {
     if (!is_type_integer(node->match->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE("switch match value is not an integer/arithmetic", node->match->line); // TODO
     }
-    std::vector<size_t> values;
-    values.reserve(node->cases.size());
-    for (size_t i = 0; i < node->cases.size(); ++i) {
-        if (node->cases[i]->type() != AST_T::CConstant_t) { // TODO rm ?
+    switch (node->match->exp_type->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t: {
+            std::shared_ptr<Type> promote_type = std::make_shared<Int>();
+            node->match = cast_expression(std::move(node->match), promote_type);
+            break;
+        }
+        default:
+            break;
+    }
+    switch (node->match->exp_type->type()) {
+        case AST_T::Int_t: {
+            std::vector<TInt> values(node->cases.size());
+            for (size_t i = 0; i < values.size(); ++i) {
+                if (node->cases[i]->type() != AST_T::CConstant_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                values[i] = get_int_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                for (size_t j = 0; j < i; ++j) {
+                    if (values[i] == values[j]) {
+                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                    }
+                }
+                // TODO
+            }
+            break;
+        }
+        case AST_T::Long_t: {
+            std::vector<TLong> values(node->cases.size());
+            for (size_t i = 0; i < values.size(); ++i) {
+                if (node->cases[i]->type() != AST_T::CConstant_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                values[i] = get_long_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                for (size_t j = 0; j < i; ++j) {
+                    if (values[i] == values[j]) {
+                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                    }
+                }
+                // TODO
+            }
+            break;
+        }
+        case AST_T::UInt_t: {
+            std::vector<TUInt> values(node->cases.size());
+            for (size_t i = 0; i < values.size(); ++i) {
+                if (node->cases[i]->type() != AST_T::CConstant_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                values[i] = get_uint_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                for (size_t j = 0; j < i; ++j) {
+                    if (values[i] == values[j]) {
+                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                    }
+                }
+                // TODO
+            }
+            break;
+        }
+        case AST_T::ULong_t: {
+            std::vector<TULong> values(node->cases.size());
+            for (size_t i = 0; i < values.size(); ++i) {
+                if (node->cases[i]->type() != AST_T::CConstant_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                values[i] = get_ulong_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                for (size_t j = 0; j < i; ++j) {
+                    if (values[i] == values[j]) {
+                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                    }
+                }
+                // TODO
+            }
+            break;
+        }
+        default:
             RAISE_INTERNAL_ERROR;
-        }
-        /*
-            case AST_T::Char_t:
-            case AST_T::SChar_t:
-            case AST_T::Int_t:
-            case AST_T::Long_t:
-            case AST_T::UChar_t:
-            case AST_T::UInt_t:
-            case AST_T::ULong_t:
-        */
-        switch (node->match->type()) {
-            case AST_T::Char_t: {
-                break;
-            }
-            case AST_T::SChar_t: {
-                break;
-            }
-            case AST_T::Int_t: {
-                break;
-            }
-            case AST_T::Long_t: {
-                break;
-            }
-            case AST_T::UChar_t: {
-                break;
-            }
-            case AST_T::UInt_t: {
-                break;
-            }
-            case AST_T::ULong_t: {
-                break;
-            }
-            default:
-                RAISE_INTERNAL_ERROR;
-        }
-        // TODO
-
-        node->cases[i] = cast_expression(std::move(node->cases[i]), node->match->exp_type);
     }
 }
 
