@@ -192,30 +192,33 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 
 **Preprocessor**
 
-- [x] [Include directives and comments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/preprocessor/preprocessor)
+- [x] [Include directives, comments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/preprocessor/preprocessor)
 
 **Language features**
 
-- [x] [Integer constants](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/1_int_constants)
-- [x] [Unary operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/2_unary_operators)
-- [x] [Binary operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators)
+- [x] [Return, integer constants](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/1_int_constants)
+- [x] [Unary arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/2_unary_operators)
+- [x] [Binary arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators)
+- [x] [Bitwise binary arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators/valid/extra_credit)
 - [x] [Logical and relational operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/4_logical_and_relational_operators)
-- [x] [Local variables](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables)
-- [x] [Statements and conditional expressions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions)
-- [x] [Compound statements](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/7_compound_statements)
-- [x] [Loops](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/8_loops)
+- [x] [Local variables, assignments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables)
+- [x] [Compound assignments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables/valid/extra_credit)
+- [x] [If statements, conditional expressions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions)
+- [x] [Goto statements, labels](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions/valid/extra_credit)
+- [x] [If if-else else compound statements](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/7_compound_statements)
+- [x] [While, do while and for loops](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/8_loops)
 - [x] [Functions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/9_functions)
-- [x] [File-scope variables and storage-class specifiers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/10_file-scope_variables_and_storage-class_specifiers)
+- [x] [File-scope variables, static and extern storage-class specifiers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/10_file-scope_variables_and_storage-class_specifiers)
 
 **Types**
 
-- [x] [Long integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/11_long_integers)
-- [x] [Unsigned integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/12_unsigned_integers)
-- [x] [Floating-point numbers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/13_floating-point_numbers)
-- [x] [Pointers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/14_pointers)
-- [x] [Arrays and pointer arithmetic](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/15_arrays_and_pointer_arithmetic)
-- [x] [Characters and strings](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/16_characters_and_strings)
-- [x] [Supporting dynamic memory allocation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/17_supporting_dynamic_memory_allocation)
+- [x] [Integers, long integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/11_long_integers)
+- [x] [Signed and unsigned integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/12_unsigned_integers)
+- [x] [Double floating-point numbers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/13_floating-point_numbers)
+- [x] [Pointers to variable](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/14_pointers)
+- [x] [Fixed-sized arrays, pointer arithmetic](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/15_arrays_and_pointer_arithmetic)
+- [x] [Characters, strings literals, ascii](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/16_characters_and_strings)
+- [x] [Void, support dynamic memory allocation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/17_supporting_dynamic_memory_allocation)
 - [x] [Structures](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/18_structures)
 
 ### Language grammar
