@@ -727,6 +727,33 @@ static void print_ast(Ast* node, size_t t) {
             print_ast(p_node->body.get(), t);
             break;
         }
+        case AST_T::CCase_t: {
+            field("CCase", "", ++t);
+            CCase* p_node = static_cast<CCase*>(node);
+            field("TIdentifier", p_node->target, t + 1);
+            print_ast(p_node->value.get(), t);
+            print_ast(p_node->jump_to.get(), t);
+            break;
+        }
+        case AST_T::CDefault_t: {
+            field("CDefault", "", ++t);
+            CDefault* p_node = static_cast<CDefault*>(node);
+            field("TIdentifier", p_node->target, t + 1);
+            print_ast(p_node->jump_to.get(), t);
+            break;
+        }
+        case AST_T::CSwitch_t: {
+            field("CSwitch", "", ++t);
+            CSwitch* p_node = static_cast<CSwitch*>(node);
+            field("TIdentifier", p_node->target, t + 1);
+            print_ast(p_node->match.get(), t);
+            print_ast(p_node->body.get(), t);
+            field("List[" + std::to_string(p_node->cases.size()) + "]", "", t + 1);
+            for (const auto& item : p_node->cases) {
+                print_ast(item.get(), t + 1);
+            }
+            break;
+        }
         case AST_T::CBreak_t: {
             field("CBreak", "", ++t);
             CBreak* p_node = static_cast<CBreak*>(node);

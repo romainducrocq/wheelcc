@@ -190,16 +190,16 @@ static std::shared_ptr<CConst> parse_unsigned_constant() {
 
 static TLong parse_array_size_t() {
     pop_next();
-    std::shared_ptr<CConst> size;
+    std::shared_ptr<CConst> constant;
     switch (peek_next().token_kind) {
         case TOKEN_KIND::constant:
         case TOKEN_KIND::long_constant:
         case TOKEN_KIND::char_constant:
-            size = parse_constant();
+            constant = parse_constant();
             break;
         case TOKEN_KIND::unsigned_constant:
         case TOKEN_KIND::unsigned_long_constant:
-            size = parse_unsigned_constant();
+            constant = parse_unsigned_constant();
             break;
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
@@ -207,15 +207,15 @@ static TLong parse_array_size_t() {
                 context->peek_token->line);
     }
     expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
-    switch (size->type()) {
+    switch (constant->type()) {
         case AST_T::CConstInt_t:
-            return static_cast<TLong>(static_cast<CConstInt*>(size.get())->value);
+            return static_cast<TLong>(static_cast<CConstInt*>(constant.get())->value);
         case AST_T::CConstLong_t:
-            return static_cast<CConstLong*>(size.get())->value;
+            return static_cast<CConstLong*>(constant.get())->value;
         case AST_T::CConstUInt_t:
-            return static_cast<TLong>(static_cast<CConstUInt*>(size.get())->value);
+            return static_cast<TLong>(static_cast<CConstUInt*>(constant.get())->value);
         case AST_T::CConstULong_t:
-            return static_cast<TLong>(static_cast<CConstULong*>(size.get())->value);
+            return static_cast<TLong>(static_cast<CConstULong*>(constant.get())->value);
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -931,8 +931,50 @@ static std::unique_ptr<CFor> parse_for_statement() {
 static std::unique_ptr<CSwitch> parse_switch_statement() {
     pop_next();
     expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
-    // TODO
-    return nullptr;
+    std::unique_ptr<CExp> match = parse_exp(0);
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    peek_next();
+    std::unique_ptr<CStatement> body = parse_statement();
+    return std::make_unique<CSwitch>(std::move(match), std::move(body));
+}
+
+static std::unique_ptr<CCase> parse_case_statement() {
+    pop_next();
+    std::unique_ptr<CExp> value;
+    {
+        size_t line = context->peek_token->line;
+        std::shared_ptr<CConst> constant;
+        switch (peek_next().token_kind) {
+            case TOKEN_KIND::constant:
+            case TOKEN_KIND::long_constant:
+            case TOKEN_KIND::char_constant:
+                constant = parse_constant();
+                break;
+            case TOKEN_KIND::unsigned_constant:
+            case TOKEN_KIND::unsigned_long_constant:
+                constant = parse_unsigned_constant();
+                break;
+            default:
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    // GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer,
+                    // context->peek_token->token), // TODO
+                    "case value is not a constant integer", context->peek_token->line);
+        }
+        value = std::make_unique<CConstant>(std::move(constant), std::move(line));
+    }
+    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    peek_next();
+    std::unique_ptr<CStatement> jump_to = parse_statement();
+    return std::make_unique<CCase>(std::move(value), std::move(jump_to));
+}
+
+static std::unique_ptr<CDefault> parse_default_statement() {
+    size_t line = context->peek_token->line;
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    peek_next();
+    std::unique_ptr<CStatement> jump_to = parse_statement();
+    return std::make_unique<CDefault>(std::move(jump_to), std::move(line));
 }
 
 static std::unique_ptr<CBreak> parse_break_statement() {
@@ -987,6 +1029,10 @@ static std::unique_ptr<CStatement> parse_statement() {
             return parse_for_statement();
         case TOKEN_KIND::key_switch:
             return parse_switch_statement();
+        case TOKEN_KIND::key_case:
+            return parse_case_statement();
+        case TOKEN_KIND::key_default:
+            return parse_default_statement();
         case TOKEN_KIND::key_break:
             return parse_break_statement();
         case TOKEN_KIND::key_continue:
