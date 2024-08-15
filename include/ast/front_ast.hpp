@@ -550,9 +550,9 @@ struct CSwitch : CStatement {
     CSwitch() = default;
     CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body);
 
-    TIdentifier target;
     bool is_default;
-    bool is_inner_loop;
+    TLong inner_loop;
+    TIdentifier target;
     std::unique_ptr<CExp> match;
     std::unique_ptr<CStatement> body;
     std::vector<std::unique_ptr<CExp>> cases;

@@ -138,7 +138,7 @@ ast = [
     ["CWhile", [(TIdentifier, "target")], ["condition", "body"]],
     ["CDoWhile", [(TIdentifier, "target")], ["condition", "body"]],
     ["CFor", [(TIdentifier, "target")], ["init", "condition", "post", "body"]],
-    ["CSwitch", [(TIdentifier, "target"), (Bool, "is_default"), (Bool, "is_inner_loop")], ["match", "body", "[cases"]],
+    ["CSwitch", [(Bool, "is_default"), (TLong, "inner_loop"), (TIdentifier, "target")], ["match", "body", "[cases"]],
     ["CCase", [(TIdentifier, "target")], ["value", "jump_to"]],
     ["CDefault", [(TIdentifier, "target")], ["jump_to"]],
     ["CBreak", [(TIdentifier, "target")], []],
