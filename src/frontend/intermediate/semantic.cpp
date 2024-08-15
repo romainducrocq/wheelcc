@@ -1114,7 +1114,16 @@ static void checktype_for_statement(CFor* node) {
 }
 
 static void checktype_switch_statement(CSwitch* node) {
-    // TODO
+    if (!is_type_integer(node->match->exp_type.get())) {
+        RAISE_RUNTIME_ERROR_AT_LINE("switch match value is not an integer/arithmetic", node->match->line); // TODO
+    }
+    for (size_t i = 0; i < node->cases.size(); ++i) {
+        if (node->cases[i]->type() != AST_T::CConstant_t) { // TODO rm ?
+            RAISE_INTERNAL_ERROR;
+        }
+        // TODO
+        node->cases[i] = cast_expression(std::move(node->cases[i]), node->match->exp_type);
+    }
 }
 
 static void checktype_bound_array_single_init_string_initializer(CString* node, Array* arr_type) {
@@ -2150,8 +2159,8 @@ static void annotate_for_loop(CFor* node) {
 }
 
 static void annotate_switch_lookup(CSwitch* node) {
+    node->inner_loop = 0l;
     node->is_default = false;
-    node->is_inner_loop = false;
     node->target = represent_label_identifier(LABEL_KIND::Lswitch);
     context->loop_labels.push_back(node->target);
 }
@@ -2186,7 +2195,7 @@ static void annotate_continue_jump(CContinue* node) {
     if (context->loop_labels.empty()) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop), node->line);
     }
-    else if (context->p_switch_statement && !context->p_switch_statement->is_inner_loop) {
+    else if (context->p_switch_statement && context->p_switch_statement->inner_loop <= 0l) {
         RAISE_RUNTIME_ERROR_AT_LINE("cannot continue in a switch", node->line); // TODO
     }
     node->target = context->loop_labels.back();
@@ -2216,6 +2225,21 @@ static void exit_scope() {
     }
     context->scoped_identifier_maps.pop_back();
     context->scoped_structure_tag_maps.pop_back();
+}
+
+static void enter_switch_inner_loop() {
+    if (context->p_switch_statement) {
+        context->p_switch_statement->inner_loop++;
+    }
+}
+
+static void exit_switch_inner_loop() {
+    if (context->p_switch_statement) {
+        context->p_switch_statement->inner_loop--;
+        // if (context->p_switch_statement->inner_loop < 0l) {
+        //     RAISE_INTERNAL_ERROR;
+        // } // TODO rm ?
+    }
 }
 
 static void resolve_label(CFunctionDeclaration* node) {
@@ -2512,38 +2536,28 @@ static void resolve_compound_statement(CCompound* node) {
 }
 
 static void resolve_while_statement(CWhile* node) {
-    if (context->p_switch_statement) {
-        context->p_switch_statement->is_inner_loop = true;
-    }
     annotate_while_loop(node);
+    enter_switch_inner_loop();
     node->condition = resolve_typed_expression(std::move(node->condition));
     resolve_statement(node->body.get());
+    exit_switch_inner_loop();
     deannotate_loop();
-    if (context->p_switch_statement) {
-        context->p_switch_statement->is_inner_loop = false;
-    }
     checktype_while_statement(node);
 }
 
 static void resolve_do_while_statement(CDoWhile* node) {
-    if (context->p_switch_statement) {
-        context->p_switch_statement->is_inner_loop = true;
-    }
     annotate_do_while_loop(node);
+    enter_switch_inner_loop();
     resolve_statement(node->body.get());
     node->condition = resolve_typed_expression(std::move(node->condition));
+    exit_switch_inner_loop();
     deannotate_loop();
-    if (context->p_switch_statement) {
-        context->p_switch_statement->is_inner_loop = false;
-    }
     checktype_do_while_statement(node);
 }
 
 static void resolve_for_statement(CFor* node) {
-    if (context->p_switch_statement) {
-        context->p_switch_statement->is_inner_loop = true;
-    }
     annotate_for_loop(node);
+    enter_switch_inner_loop();
     enter_scope();
     resolve_for_init(node->init.get());
     if (node->condition) {
@@ -2554,10 +2568,8 @@ static void resolve_for_statement(CFor* node) {
     }
     resolve_statement(node->body.get());
     exit_scope();
+    exit_switch_inner_loop();
     deannotate_loop();
-    if (context->p_switch_statement) {
-        context->p_switch_statement->is_inner_loop = false;
-    }
     checktype_for_statement(node);
 }
 

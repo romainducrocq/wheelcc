@@ -67,6 +67,10 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
             name = "for";
             break;
         }
+        case LABEL_KIND::Lswitch: {
+            name = "switch";
+            break;
+        }
         case LABEL_KIND::Lfor_start: {
             name = "for_start";
             break;
