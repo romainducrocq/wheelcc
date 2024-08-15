@@ -88,6 +88,9 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
         R"(do\b)",       // key_do
         R"(while\b)",    // key_while
         R"(for\b)",      // key_for
+        R"(switch\b)",   // key_switch
+        R"(case\b)",     // key_case
+        R"(default\b)",  // key_default
         R"(break\b)",    // key_break
         R"(continue\b)", // key_continue
         R"(static\b)",   // key_static

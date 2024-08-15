@@ -133,6 +133,12 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
             return "while";
         case TOKEN_KIND::key_for:
             return "for";
+        case TOKEN_KIND::key_switch:
+            return "switch";
+        case TOKEN_KIND::key_case:
+            return "case";
+        case TOKEN_KIND::key_default:
+            return "default";
         case TOKEN_KIND::key_break:
             return "break";
         case TOKEN_KIND::key_continue:
