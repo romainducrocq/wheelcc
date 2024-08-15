@@ -571,6 +571,7 @@ struct CSwitch : CStatement {
     CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body);
 
     TIdentifier target;
+    bool is_default;
     std::unique_ptr<CExp> match;
     std::unique_ptr<CStatement> body;
     std::vector<std::unique_ptr<CExp>> cases;
