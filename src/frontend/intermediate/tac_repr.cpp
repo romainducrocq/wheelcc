@@ -1013,7 +1013,7 @@ static void represent_statement_switch_instructions(CSwitch* node) {
                 std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacEqual>();
                 push_instruction(std::make_unique<TacBinary>(std::move(binary_op), match, std::move(esac), case_match));
             }
-            if (i == node->cases.size() - 1 && !node->is_default) { // TODO clean
+            if (i == node->cases.size() - 1 && !node->is_default) {
                 push_instruction(std::make_unique<TacJumpIfZero>(target_break, case_match));
             }
             push_instruction(std::make_unique<TacJumpIfNotZero>(std::move(target_case), std::move(case_match)));
