@@ -16,6 +16,7 @@ enum LABEL_KIND {
     Ldo_while,
     Ldo_while_start,
     Lfor,
+    Lswitch,
     Lfor_start,
     Lif_else,
     Lif_false,

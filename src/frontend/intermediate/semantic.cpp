@@ -1113,6 +1113,10 @@ static void checktype_for_statement(CFor* node) {
     }
 }
 
+static void checktype_switch_statement(CSwitch* node) {
+    // TODO
+}
+
 static void checktype_bound_array_single_init_string_initializer(CString* node, Array* arr_type) {
     if (!is_type_character(arr_type->elem_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(
@@ -2122,6 +2126,14 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
 
 // Loop labeling
 
+static void annotate_goto_label(CLabel* node) {
+    if (context->label_set.find(node->target) != context->label_set.end()) {
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::label_redefined_in_scope, get_name_hr(node->target)), node->line);
+    }
+    context->label_set.insert(node->target);
+}
+
 static void annotate_while_loop(CWhile* node) {
     node->target = represent_label_identifier(LABEL_KIND::Lwhile);
     context->loop_labels.push_back(node->target);
@@ -2137,16 +2149,45 @@ static void annotate_for_loop(CFor* node) {
     context->loop_labels.push_back(node->target);
 }
 
-static void annotate_break_loop(CBreak* node) {
+static void annotate_switch_lookup(CSwitch* node) {
+    node->is_default = false;
+    node->is_inner_loop = false;
+    node->target = represent_label_identifier(LABEL_KIND::Lswitch);
+    context->loop_labels.push_back(node->target);
+}
+
+static void annotate_case_jump(CCase* node) {
+    if (!context->p_switch_statement) {
+        RAISE_RUNTIME_ERROR_AT_LINE("case not in switch", node->value->line); // TODO
+    }
+    node->target = std::to_string(context->p_switch_statement->cases.size());
+    node->target += context->p_switch_statement->target;
+}
+
+static void annotate_default_jump(CDefault* node) {
+    if (!context->p_switch_statement) {
+        RAISE_RUNTIME_ERROR_AT_LINE("default not in switch", node->line); // TODO
+    }
+    else if (context->p_switch_statement->is_default) {
+        RAISE_RUNTIME_ERROR_AT_LINE("switch already has default", node->line); // TODO
+    }
+    node->target = context->p_switch_statement->target;
+    context->p_switch_statement->is_default = true;
+}
+
+static void annotate_break_jump(CBreak* node) {
     if (context->loop_labels.empty()) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::break_outside_of_loop), node->line);
     }
     node->target = context->loop_labels.back();
 }
 
-static void annotate_continue_loop(CContinue* node) {
+static void annotate_continue_jump(CContinue* node) {
     if (context->loop_labels.empty()) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop), node->line);
+    }
+    else if (context->p_switch_statement && !context->p_switch_statement->is_inner_loop) {
+        RAISE_RUNTIME_ERROR_AT_LINE("cannot continue in a switch", node->line); // TODO
     }
     node->target = context->loop_labels.back();
 }
@@ -2453,12 +2494,7 @@ static void resolve_goto_statement(CGoto* node) {
 }
 
 static void resolve_label_statement(CLabel* node) {
-    if (context->label_set.find(node->target) != context->label_set.end()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::label_redefined_in_scope, get_name_hr(node->target)), node->line);
-    }
-    context->label_set.insert(node->target);
-
+    annotate_goto_label(node);
     if (context->goto_map.find(node->target) != context->goto_map.end()) {
         node->target = context->goto_map[node->target];
     }
@@ -2476,22 +2512,37 @@ static void resolve_compound_statement(CCompound* node) {
 }
 
 static void resolve_while_statement(CWhile* node) {
+    if (context->p_switch_statement) {
+        context->p_switch_statement->is_inner_loop = true;
+    }
     annotate_while_loop(node);
     node->condition = resolve_typed_expression(std::move(node->condition));
     resolve_statement(node->body.get());
     deannotate_loop();
+    if (context->p_switch_statement) {
+        context->p_switch_statement->is_inner_loop = false;
+    }
     checktype_while_statement(node);
 }
 
 static void resolve_do_while_statement(CDoWhile* node) {
+    if (context->p_switch_statement) {
+        context->p_switch_statement->is_inner_loop = true;
+    }
     annotate_do_while_loop(node);
     resolve_statement(node->body.get());
     node->condition = resolve_typed_expression(std::move(node->condition));
     deannotate_loop();
+    if (context->p_switch_statement) {
+        context->p_switch_statement->is_inner_loop = false;
+    }
     checktype_do_while_statement(node);
 }
 
 static void resolve_for_statement(CFor* node) {
+    if (context->p_switch_statement) {
+        context->p_switch_statement->is_inner_loop = true;
+    }
     annotate_for_loop(node);
     enter_scope();
     resolve_for_init(node->init.get());
@@ -2504,12 +2555,42 @@ static void resolve_for_statement(CFor* node) {
     resolve_statement(node->body.get());
     exit_scope();
     deannotate_loop();
+    if (context->p_switch_statement) {
+        context->p_switch_statement->is_inner_loop = false;
+    }
     checktype_for_statement(node);
 }
 
-static void resolve_break_statement(CBreak* node) { annotate_break_loop(node); }
+static void resolve_switch_statement(CSwitch* node) {
+    annotate_switch_lookup(node);
+    enter_scope();
+    node->match = resolve_typed_expression(std::move(node->match));
+    {
+        CSwitch* p_switch_statement = context->p_switch_statement;
+        context->p_switch_statement = node;
+        resolve_statement(node->body.get());
+        context->p_switch_statement = p_switch_statement;
+    }
+    exit_scope();
+    deannotate_loop();
+    checktype_switch_statement(node);
+}
 
-static void resolve_continue_statement(CContinue* node) { annotate_continue_loop(node); }
+static void resolve_case_statement(CCase* node) {
+    annotate_case_jump(node);
+    node->value = resolve_typed_expression(std::move(node->value));
+    context->p_switch_statement->cases.push_back(std::move(node->value));
+    resolve_statement(node->jump_to.get());
+}
+
+static void resolve_default_statement(CDefault* node) {
+    annotate_default_jump(node);
+    resolve_statement(node->jump_to.get());
+}
+
+static void resolve_break_statement(CBreak* node) { annotate_break_jump(node); }
+
+static void resolve_continue_statement(CContinue* node) { annotate_continue_jump(node); }
 
 static void resolve_statement(CStatement* node) {
     switch (node->type()) {
@@ -2539,6 +2620,15 @@ static void resolve_statement(CStatement* node) {
             break;
         case AST_T::CFor_t:
             resolve_for_statement(static_cast<CFor*>(node));
+            break;
+        case AST_T::CSwitch_t:
+            resolve_switch_statement(static_cast<CSwitch*>(node));
+            break;
+        case AST_T::CCase_t:
+            resolve_case_statement(static_cast<CCase*>(node));
+            break;
+        case AST_T::CDefault_t:
+            resolve_default_statement(static_cast<CDefault*>(node));
             break;
         case AST_T::CBreak_t:
             resolve_break_statement(static_cast<CBreak*>(node));
@@ -2755,6 +2845,7 @@ static void resolve_fun_decl_declaration(CFunDecl* node) {
         context->goto_map.clear();
         context->label_set.clear();
         context->loop_labels.clear();
+        context->p_switch_statement = nullptr;
     }
     resolve_function_declaration(node->function_decl.get());
     if (is_file_scope()) {
