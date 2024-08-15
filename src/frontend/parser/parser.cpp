@@ -928,6 +928,13 @@ static std::unique_ptr<CFor> parse_for_statement() {
     return std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
 }
 
+static std::unique_ptr<CSwitch> parse_switch_statement() {
+    pop_next();
+    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    // TODO
+    return nullptr;
+}
+
 static std::unique_ptr<CBreak> parse_break_statement() {
     size_t line = context->peek_token->line;
     pop_next();
@@ -947,6 +954,7 @@ static std::unique_ptr<CNull> parse_null_statement() {
     return std::make_unique<CNull>();
 }
 
+// TODO comment switch, case, default
 // <statement> ::= ";" | "return" [ <exp> ] ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
 //               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
 //               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
@@ -977,6 +985,8 @@ static std::unique_ptr<CStatement> parse_statement() {
             return parse_do_while_statement();
         case TOKEN_KIND::key_for:
             return parse_for_statement();
+        case TOKEN_KIND::key_switch:
+            return parse_switch_statement();
         case TOKEN_KIND::key_break:
             return parse_break_statement();
         case TOKEN_KIND::key_continue:

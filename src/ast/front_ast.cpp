@@ -70,6 +70,9 @@ AST_T CCompound::type() { return AST_T::CCompound_t; }
 AST_T CWhile::type() { return AST_T::CWhile_t; }
 AST_T CDoWhile::type() { return AST_T::CDoWhile_t; }
 AST_T CFor::type() { return AST_T::CFor_t; }
+AST_T CCase::type() { return AST_T::CCase_t; }
+AST_T CDefault::type() { return AST_T::CDefault_t; }
+AST_T CSwitch::type() { return AST_T::CSwitch_t; }
 AST_T CBreak::type() { return AST_T::CBreak_t; }
 AST_T CContinue::type() { return AST_T::CContinue_t; }
 AST_T CNull::type() { return AST_T::CNull_t; }
@@ -190,13 +193,21 @@ CFor::CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std:
     init(std::move(init)),
     condition(std::move(condition)), post(std::move(post)), body(std::move(body)) {}
 
-CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init) : init(std::move(init)) {}
+CCase::CCase(std::unique_ptr<CExp> value, std::unique_ptr<CStatement> jump_to) :
+    value(std::move(value)), jump_to(std::move(jump_to)) {}
 
-CInitExp::CInitExp(std::unique_ptr<CExp> init) : init(std::move(init)) {}
+CDefault::CDefault(std::unique_ptr<CStatement> jump_to, size_t line) : jump_to(std::move(jump_to)), line(line) {}
+
+CSwitch::CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body) :
+    match(std::move(match)), body(std::move(body)) {}
 
 CBreak::CBreak(size_t line) : line(line) {}
 
 CContinue::CContinue(size_t line) : line(line) {}
+
+CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init) : init(std::move(init)) {}
+
+CInitExp::CInitExp(std::unique_ptr<CExp> init) : init(std::move(init)) {}
 
 CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items) : block_items(std::move(block_items)) {}
 

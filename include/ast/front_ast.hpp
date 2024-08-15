@@ -438,7 +438,7 @@ struct CArrow : CExp {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// TODO comment switch, case, default
 // statement = Return(exp?)
 //           | Expression(exp)
 //           | If(exp, statement, statement?)
@@ -543,6 +543,37 @@ struct CFor : CStatement {
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> post;
     std::unique_ptr<CStatement> body;
+};
+
+struct CCase : CStatement {
+    AST_T type() override;
+    CCase() = default;
+    CCase(std::unique_ptr<CExp> value, std::unique_ptr<CStatement> jump_to);
+
+    TIdentifier target;
+    std::unique_ptr<CExp> value;
+    std::unique_ptr<CStatement> jump_to;
+};
+
+struct CDefault : CStatement {
+    AST_T type() override;
+    CDefault() = default;
+    CDefault(std::unique_ptr<CStatement> jump_to, size_t line);
+
+    TIdentifier target;
+    std::unique_ptr<CStatement> jump_to;
+    size_t line;
+};
+
+struct CSwitch : CStatement {
+    AST_T type() override;
+    CSwitch() = default;
+    CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body);
+
+    TIdentifier target;
+    std::unique_ptr<CExp> match;
+    std::unique_ptr<CStatement> body;
+    std::vector<std::unique_ptr<CExp>> cases;
 };
 
 struct CBreak : CStatement {
