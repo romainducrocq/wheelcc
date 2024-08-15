@@ -1282,13 +1282,15 @@ static void checktype_switch_statement(CSwitch* node) {
                 if (node->cases[i]->type() != AST_T::CConstant_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                values[i] = get_int_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+                values[i] = get_int_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
                         RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
                     }
                 }
-                // TODO
+                esac->constant = std::make_shared<CConstInt>(values[i]);
+                esac->exp_type = node->match->exp_type;
             }
             break;
         }
@@ -1298,13 +1300,15 @@ static void checktype_switch_statement(CSwitch* node) {
                 if (node->cases[i]->type() != AST_T::CConstant_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                values[i] = get_long_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+                values[i] = get_long_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
                         RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
                     }
                 }
-                // TODO
+                esac->constant = std::make_shared<CConstLong>(values[i]);
+                esac->exp_type = node->match->exp_type;
             }
             break;
         }
@@ -1314,13 +1318,15 @@ static void checktype_switch_statement(CSwitch* node) {
                 if (node->cases[i]->type() != AST_T::CConstant_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                values[i] = get_uint_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+                values[i] = get_uint_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
                         RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
                     }
                 }
-                // TODO
+                esac->constant = std::make_shared<CConstUInt>(values[i]);
+                esac->exp_type = node->match->exp_type;
             }
             break;
         }
@@ -1330,13 +1336,15 @@ static void checktype_switch_statement(CSwitch* node) {
                 if (node->cases[i]->type() != AST_T::CConstant_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                values[i] = get_ulong_constant_value(static_cast<CConstant*>(node->cases[i].get()));
+                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+                values[i] = get_ulong_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
                         RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
                     }
                 }
-                // TODO
+                esac->constant = std::make_shared<CConstULong>(values[i]);
+                esac->exp_type = node->match->exp_type;
             }
             break;
         }
