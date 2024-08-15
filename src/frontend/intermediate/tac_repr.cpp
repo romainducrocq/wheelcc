@@ -997,6 +997,47 @@ static void represent_statement_for_instructions(CFor* node) {
     push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
 }
 
+static void represent_statement_switch_instructions(CSwitch* node) {
+    TIdentifier target_break = "break_";
+    target_break += node->target;
+    {
+        std::shared_ptr<TacValue> match = represent_exp_instructions(node->match.get());
+        for (size_t i = 0; i < node->cases.size(); ++i) {
+            TIdentifier target_case = "case_";
+            target_case += std::to_string(i);
+            target_case += node->target;
+            std::shared_ptr<TacValue> case_match;
+            {
+                std::shared_ptr<TacValue> esac = represent_exp_instructions(node->cases[i].get());
+                case_match = represent_plain_inner_value(node->cases[i].get());
+                std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacEqual>();
+                push_instruction(std::make_unique<TacBinary>(std::move(binary_op), match, std::move(esac), case_match));
+            }
+            push_instruction(std::make_unique<TacJumpIfNotZero>(std::move(target_case), std::move(case_match)));
+        }
+    }
+    if (node->is_default) {
+        TIdentifier target_default = "default_";
+        target_default += node->target;
+        push_instruction(std::make_unique<TacJump>(std::move(target_default)));
+    }
+    push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
+}
+
+static void represent_statement_case_instructions(CCase* node) {
+    TIdentifier target_case = "case_";
+    target_case += node->target;
+    push_instruction(std::make_unique<TacLabel>(std::move(target_case)));
+    represent_statement_instructions(node->jump_to.get());
+}
+
+static void represent_statement_default_instructions(CDefault* node) {
+    TIdentifier target_default = "default_";
+    target_default += node->target;
+    push_instruction(std::make_unique<TacLabel>(std::move(target_default)));
+    represent_statement_instructions(node->jump_to.get());
+}
+
 static void represent_statement_break_instructions(CBreak* node) {
     TIdentifier target_break = "break_";
     target_break += node->target;
@@ -1037,6 +1078,15 @@ static void represent_statement_instructions(CStatement* node) {
             break;
         case AST_T::CFor_t:
             represent_statement_for_instructions(static_cast<CFor*>(node));
+            break;
+        case AST_T::CSwitch_t:
+            represent_statement_switch_instructions(static_cast<CSwitch*>(node));
+            break;
+        case AST_T::CCase_t:
+            represent_statement_case_instructions(static_cast<CCase*>(node));
+            break;
+        case AST_T::CDefault_t:
+            represent_statement_default_instructions(static_cast<CDefault*>(node));
             break;
         case AST_T::CBreak_t:
             represent_statement_break_instructions(static_cast<CBreak*>(node));
