@@ -654,6 +654,8 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::key_struct));
             what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_union));
+            what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::key_static));
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::key_extern));
@@ -703,15 +705,17 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             what_message += em(get_token_kind_hr(TOKEN_KIND::key_unsigned));
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::key_signed));
-            what_message += " or ";
+            what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::key_struct));
+            what_message += " or ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::key_union));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage:
-            return "structure type declared with member %s with %s storage class";
+            return "data structure type declared with member %s with %s storage class";
         case ERROR_MESSAGE_PARSER::member_declared_as_function:
-            return "structure type declared with member %s as a function";
+            return "data structure type declared with member %s as a function";
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -780,27 +784,27 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type: {
-            std::string what_message = "cannot access structure member %s with dot operator ";
+            std::string what_message = "cannot access data structure member %s with dot operator ";
             what_message += em(".");
-            what_message += " on non-structure type %s";
+            what_message += " on non-data structure type %s";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::member_not_in_structure_type:
-            return "structure type %s has no member named %s";
+            return "data structure type %s has no member named %s";
         case ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type: {
-            std::string what_message = "cannot access structure member %s with arrow operator ";
+            std::string what_message = "cannot access data structure member %s with arrow operator ";
             what_message += em("->");
-            what_message += " on non-pointer-to-structure type %s";
+            what_message += " on non-pointer-to-data structure type %s";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type: {
-            std::string what_message = "cannot access structure member %s with arrow operator ";
+            std::string what_message = "cannot access data structure member %s with arrow operator ";
             what_message += em("->");
-            what_message += " on incomplete structure type %s";
+            what_message += " on incomplete data structure type %s";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::incomplete_structure_type_in_expression:
-            return "incomplete structure type %s in expression";
+            return "incomplete data structure type %s in expression";
         case ERROR_MESSAGE_SEMANTIC::return_value_in_void_function: {
             std::string what_message = "found ";
             what_message += em("return");
@@ -859,18 +863,18 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
         case ERROR_MESSAGE_SEMANTIC::array_initialized_with_too_many_initializers:
             return "size %s array type %s initialized with %s initializers";
         case ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members:
-            return "structure type %s initialized with %s members instead of %s";
+            return "data structure type %s initialized with %s members instead of %s";
         case ERROR_MESSAGE_SEMANTIC::function_returns_array:
             return "function %s returns array type %s, instead of pointer type";
         case ERROR_MESSAGE_SEMANTIC::function_returns_incomplete_structure_type:
-            return "function %s returns incomplete structure type %s";
+            return "function %s returns incomplete data structure type %s";
         case ERROR_MESSAGE_SEMANTIC::parameter_with_type_void: {
             std::string what_message = "function %s declared with parameter %s with type ";
             what_message += em("void");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::parameter_with_incomplete_structure_type:
-            return "function %s defined with parameter %s with incomplete structure type %s";
+            return "function %s defined with parameter %s with incomplete data structure type %s";
         case ERROR_MESSAGE_SEMANTIC::function_redeclared_with_conflicting_type:
             return "function %s redeclared with function type %s, but previous declaration has function type %s";
         case ERROR_MESSAGE_SEMANTIC::function_redefined:
@@ -899,7 +903,7 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type:
-            return "variable %s declared with incomplete structure type %s";
+            return "variable %s declared with incomplete data structure type %s";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type:
             return "variable %s redeclared with conflicting type %s, but previously declared with type %s";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage:
@@ -911,11 +915,11 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member:
-            return "structure type %s declared with duplicate member name %s";
+            return "data structure type %s declared with duplicate member name %s";
         case ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type:
-            return "structure type %s declared with member %s with incomplete type %s";
+            return "data structure type %s declared with member %s with incomplete type %s";
         case ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope:
-            return "structure type %s already declared in this scope";
+            return "data structure type %s already declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::case_outside_of_switch: {
             std::string what_message = "found ";
             what_message += em("case");
@@ -956,7 +960,7 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope:
-            return "structure type %s not defined in this scope";
+            return "data structure type %s not defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_not_declared_in_scope:
             return "variable %s not declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::function_not_declared_in_scope:
