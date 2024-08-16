@@ -26,7 +26,7 @@
 //      | FunType(type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
-//      | Structure(identifier)
+//      | Structure(identifier, bool)
 struct Type : Ast {
     AST_T type() override;
 };
@@ -96,9 +96,10 @@ struct Array : Type {
 struct Structure : Type {
     AST_T type() override;
     Structure() = default;
-    Structure(TIdentifier tag);
+    Structure(TIdentifier tag, bool is_union);
 
     TIdentifier tag;
+    bool is_union;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

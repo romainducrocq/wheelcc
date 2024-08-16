@@ -176,6 +176,7 @@ static void print_ast(Ast* node, size_t t) {
             field("Structure", "", ++t);
             Structure* p_node = static_cast<Structure*>(node);
             field("TIdentifier", p_node->tag, t + 1);
+            field("Bool", std::to_string(p_node->is_union), t + 1);
             break;
         }
         case AST_T::StaticInit_t: {
@@ -862,6 +863,7 @@ static void print_ast(Ast* node, size_t t) {
             field("CStructDeclaration", "", ++t);
             CStructDeclaration* p_node = static_cast<CStructDeclaration*>(node);
             field("TIdentifier", p_node->tag, t + 1);
+            field("Bool", std::to_string(p_node->is_union), t + 1);
             field("List[" + std::to_string(p_node->members.size()) + "]", "", t + 1);
             for (const auto& item : p_node->members) {
                 print_ast(item.get(), t + 1);
