@@ -1141,20 +1141,13 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-static std::shared_ptr<Structure> parse_struct_type_specifier(size_t i) {
-    expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
-    TIdentifier tag;
-    parse_identifier(tag, i);
-    return std::make_shared<Structure>(std::move(tag));
-}
-
 // <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void" | "struct" <identifier>
 static std::shared_ptr<Type> parse_type_specifier() {
-    size_t specifier = 0;
+    size_t i = 0;
     size_t line = peek_next().line;
     std::vector<TOKEN_KIND> type_token_kinds;
     while (true) {
-        switch (peek_next_i(specifier).token_kind) {
+        switch (peek_next_i(i).token_kind) {
             case TOKEN_KIND::identifier:
             case TOKEN_KIND::parenthesis_close:
                 goto Lbreak;
@@ -1165,28 +1158,31 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_unsigned:
             case TOKEN_KIND::key_signed:
             case TOKEN_KIND::key_void:
-            case TOKEN_KIND::key_struct:
-                type_token_kinds.push_back(pop_next_i(specifier).token_kind);
+                type_token_kinds.push_back(pop_next_i(i).token_kind);
                 break;
+            case TOKEN_KIND::key_struct: {
+                type_token_kinds.push_back(pop_next_i(i).token_kind);
+                expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
+                break;
+            }
             case TOKEN_KIND::key_static:
             case TOKEN_KIND::key_extern:
             case TOKEN_KIND::binop_multiplication:
-            case TOKEN_KIND::parenthesis_open: {
-                specifier++;
+            case TOKEN_KIND::parenthesis_open:
+                i++;
                 break;
-            }
             case TOKEN_KIND::brackets_open: {
-                specifier++;
-                while (peek_next_i(specifier).token_kind != TOKEN_KIND::brackets_close) {
-                    specifier++;
+                i++;
+                while (peek_next_i(i).token_kind != TOKEN_KIND::brackets_close) {
+                    i++;
                 }
-                specifier++;
+                i++;
                 break;
             }
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::unexpected_type_specifier, peek_next_i(specifier).token),
-                    peek_next_i(specifier).line);
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::unexpected_type_specifier, peek_next_i(i).token),
+                    peek_next_i(i).line);
         }
     }
 Lbreak:
@@ -1207,8 +1203,11 @@ Lbreak:
                     return std::make_shared<Int>();
                 case TOKEN_KIND::key_void:
                     return std::make_shared<Void>();
-                case TOKEN_KIND::key_struct:
-                    return parse_struct_type_specifier(specifier);
+                case TOKEN_KIND::key_struct: {
+                    TIdentifier tag;
+                    parse_identifier(tag, i);
+                    return std::make_shared<Structure>(std::move(tag));
+                }
                 default:
                     break;
             }
