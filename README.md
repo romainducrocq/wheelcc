@@ -180,7 +180,7 @@ Very few other C++ features are used, and only when doing so provides a real adv
 
 ### Limitations
 
-wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, switch statements, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
 ## Implementation reference
 
@@ -199,7 +199,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 - [x] [Return, integer constants](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/1_int_constants)
 - [x] [Unary arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/2_unary_operators)
 - [x] [Binary arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators)
-- [x] [Bitwise binary arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators/valid/extra_credit)
+- [x] [Bitwise arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators/valid/extra_credit)
 - [x] [Logical and relational operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/4_logical_and_relational_operators)
 - [x] [Local variables, assignments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables)
 - [x] [Compound assignments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables/valid/extra_credit)
@@ -207,6 +207,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 - [x] [Goto statements, labels](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions/valid/extra_credit)
 - [x] [If if-else else compound statements](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/7_compound_statements)
 - [x] [While, do while and for loops](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/8_loops)
+- [x] [Switch statements](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/8_loops/valid/extra_credit)
 - [x] [Functions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/9_functions)
 - [x] [File-scope variables, static and extern storage-class specifiers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/10_file-scope_variables_and_storage-class_specifiers)
 
@@ -214,7 +215,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 
 - [x] [Integers, long integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/11_long_integers)
 - [x] [Signed and unsigned integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/12_unsigned_integers)
-- [x] [Double floating-point numbers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/13_floating-point_numbers)
+- [x] [Double floating-point numbers, nan](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/13_floating-point_numbers)
 - [x] [Pointers to variable](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/14_pointers)
 - [x] [Fixed-sized arrays, pointer arithmetic](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/15_arrays_and_pointer_arithmetic)
 - [x] [Characters, strings literals, ascii](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/16_characters_and_strings)
@@ -237,7 +238,9 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
               | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";"
               | <identifier> ":" | <block> | "break" ";" | "continue" ";"
               | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
-              | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | ";"
+              | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
+              | "switch" "(" <exp> ")" <statement> | "case" <const> ":" <statement>
+              | "default" ":" <statement> | ";"
 <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
 <unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" 
