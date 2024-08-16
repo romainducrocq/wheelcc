@@ -996,15 +996,16 @@ static std::unique_ptr<CNull> parse_null_statement() {
     return std::make_unique<CNull>();
 }
 
-// TODO comment switch, case, default
 // <statement> ::= ";" | "return" [ <exp> ] ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
 //               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
 //               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
+//               | "switch" "(" <exp> ")" <statement> | "case" <const> ":" <statement> | "default" ":" <statement>
 //               | "break" ";" | "continue" ";" | <exp> ";"
 // statement = Return(exp?) | Expression(exp) | If(exp, statement, statement?) | Goto(identifier)
 //           | Label(identifier, target) | Compound(block) | While(exp, statement, identifier)
 //           | DoWhile(statement, exp, identifier) | For(for_init, exp?, exp?, statement, identifier)
-//           | Break(identifier) | Continue(identifier) | Null
+//           | Switch(identifier, bool, exp, statement, exp*) | Case(identifier, exp, statement)
+//           | Default(identifier, statement) | Break(identifier) | Continue(identifier) | Null
 static std::unique_ptr<CStatement> parse_statement() {
     switch (context->peek_token->token_kind) {
         case TOKEN_KIND::key_return:
