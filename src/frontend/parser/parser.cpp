@@ -563,6 +563,7 @@ static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
             case TOKEN_KIND::key_signed:
             case TOKEN_KIND::key_void:
             case TOKEN_KIND::key_struct:
+            case TOKEN_KIND::key_union:
                 return parse_sizeoft_factor();
             default:
                 break;
@@ -672,6 +673,7 @@ static std::unique_ptr<CExp> parse_cast_exp_factor() {
             case TOKEN_KIND::key_signed:
             case TOKEN_KIND::key_void:
             case TOKEN_KIND::key_struct:
+            case TOKEN_KIND::key_union:
                 return parse_cast_factor();
             default:
                 break;
@@ -1084,6 +1086,7 @@ static std::unique_ptr<CForInit> parse_for_init() {
         case TOKEN_KIND::key_signed:
         case TOKEN_KIND::key_void:
         case TOKEN_KIND::key_struct:
+        case TOKEN_KIND::key_union:
         case TOKEN_KIND::key_static:
         case TOKEN_KIND::key_extern:
             return parse_decl_for_init();
@@ -1116,6 +1119,7 @@ static std::unique_ptr<CBlockItem> parse_block_item() {
         case TOKEN_KIND::key_signed:
         case TOKEN_KIND::key_void:
         case TOKEN_KIND::key_struct:
+        case TOKEN_KIND::key_union:
         case TOKEN_KIND::key_static:
         case TOKEN_KIND::key_extern:
             return parse_d_block_item();
@@ -1142,7 +1146,8 @@ static std::unique_ptr<CBlock> parse_block() {
     return block;
 }
 
-// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void" | "struct" <identifier>
+// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
+//                    | ("struct" | "union") <identifier>
 static std::shared_ptr<Type> parse_type_specifier() {
     size_t i = 0;
     size_t line = peek_next().line;
@@ -1161,7 +1166,8 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_void:
                 type_token_kinds.push_back(pop_next_i(i).token_kind);
                 break;
-            case TOKEN_KIND::key_struct: {
+            case TOKEN_KIND::key_struct:
+            case TOKEN_KIND::key_union: {
                 type_token_kinds.push_back(pop_next_i(i).token_kind);
                 expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
                 break;
@@ -1207,7 +1213,12 @@ Lbreak:
                 case TOKEN_KIND::key_struct: {
                     TIdentifier tag;
                     parse_identifier(tag, i);
-                    return std::make_shared<Structure>(std::move(tag));
+                    return std::make_shared<Structure>(std::move(tag), false);
+                }
+                case TOKEN_KIND::key_union: {
+                    TIdentifier tag;
+                    parse_identifier(tag, i);
+                    return std::make_shared<Structure>(std::move(tag), true);
                 }
                 default:
                     break;
@@ -1479,7 +1490,8 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         case TOKEN_KIND::key_double:
         case TOKEN_KIND::key_unsigned:
         case TOKEN_KIND::key_signed:
-        case TOKEN_KIND::key_struct: {
+        case TOKEN_KIND::key_struct:
+        case TOKEN_KIND::key_union: {
             param_list = parse_non_empty_param_list();
             break;
         }
@@ -1597,11 +1609,12 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
         std::move(declarator.name), std::move(declarator.derived_type), std::move(line));
 }
 
-// <struct-declaration> ::= "struct" <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
-// struct_declaration = StructDeclaration(identifier, member_declaration*)
+// <struct-declaration> ::= ("struct" | "union") <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
+// struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
     size_t line = context->peek_token->line;
     pop_next();
+    bool is_union = context->next_token->token_kind == TOKEN_KIND::key_union;
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier tag;
     parse_identifier(tag, 0);
@@ -1616,7 +1629,8 @@ static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
         pop_next();
     }
     expect_next_is(*context->next_token, TOKEN_KIND::semicolon);
-    return std::make_unique<CStructDeclaration>(std::move(tag), std::move(members), std::move(line));
+    return std::make_unique<CStructDeclaration>(
+        std::move(tag), std::move(is_union), std::move(members), std::move(line));
 }
 
 static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(
@@ -1657,14 +1671,19 @@ static std::unique_ptr<CStorageClass> parse_declarator_declaration(Declarator& d
 // <declaration> ::= <variable-declaration> | <function-declaration> | <struct-declaration>
 // declaration = FunDecl(function_declaration) | VarDecl(variable_declaration) | StructDecl(struct_declaration)
 static std::unique_ptr<CDeclaration> parse_declaration() {
-    if (peek_next().token_kind == TOKEN_KIND::key_struct) {
-        switch (peek_next_i(2).token_kind) {
-            case TOKEN_KIND::brace_open:
-            case TOKEN_KIND::semicolon:
-                return parse_struct_decl_declaration();
-            default:
-                break;
+    switch (peek_next().token_kind) {
+        case TOKEN_KIND::key_struct:
+        case TOKEN_KIND::key_union: {
+            switch (peek_next_i(2).token_kind) {
+                case TOKEN_KIND::brace_open:
+                case TOKEN_KIND::semicolon:
+                    return parse_struct_decl_declaration();
+                default:
+                    break;
+            }
         }
+        default:
+            break;
     }
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
