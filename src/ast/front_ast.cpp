@@ -175,7 +175,7 @@ CExpression::CExpression(std::unique_ptr<CExp> exp) : exp(std::move(exp)) {}
 CIf::CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then, std::unique_ptr<CStatement> else_fi) :
     condition(std::move(condition)), then(std::move(then)), else_fi(std::move(else_fi)) {}
 
-CGoto::CGoto(TIdentifier target) : target(std::move(target)) {}
+CGoto::CGoto(TIdentifier target, size_t line) : target(std::move(target)), line(line) {}
 
 CLabel::CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to, size_t line) :
     target(std::move(target)), jump_to(std::move(jump_to)), line(line) {}

@@ -489,9 +489,10 @@ struct CIf : CStatement {
 struct CGoto : CStatement {
     AST_T type() override;
     CGoto() = default;
-    CGoto(TIdentifier target);
+    CGoto(TIdentifier target, size_t line);
 
     TIdentifier target;
+    size_t line;
 };
 
 struct CLabel : CStatement {
