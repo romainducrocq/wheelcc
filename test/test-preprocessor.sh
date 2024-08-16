@@ -182,7 +182,7 @@ check_error () {
                 echo -n "${i}/"
             done
             echo -e "test-header_${ERR}.h:10:${NC}"
-            echo -e "\033[0;31merror:${NC} (no. 545) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
+            echo -e "\033[0;31merror:${NC} (no. 547) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
             echo -e "at line 10: \033[1mint e1 = {0};${NC}"
             echo -e "${PACKAGE_NAME}: \033[0;31merror:${NC} compilation failed"
         ) | grep -q "identical"
