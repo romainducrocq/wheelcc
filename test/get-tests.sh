@@ -40,11 +40,10 @@ for FILE in $(find ${TEST_DIR} -name "*.c" -type f); do
 done
 for FILE in $(\
     grep -rn $(find ${TEST_DIR} -name "*.i" -type f) \
-        -e "++" -e "--" -e "union" | \
+        -e "++" -e "--" | \
         cut -d":" -f1 | sort --uniq); do
     rm -rv "${FILE%.*}.c"
 done
-rm -rv $(find ${TEST_DIR}/${TEST_SRCS[17]}/ -name "*.h" -type f | grep union | grep extra_credit)
 rm -rv $(find ${TEST_DIR} -name "*.i" -type f)
 
 # Remove unused markdown files
