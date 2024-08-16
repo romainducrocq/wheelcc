@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "util/throw.hpp"
@@ -118,6 +119,7 @@ struct FileOpenLine {
 
 struct ErrorsContext {
     size_t line_buffer;
+    std::unordered_map<std::string, size_t> line_buffer_map;
     std::vector<FileOpenLine> file_open_lines;
 };
 

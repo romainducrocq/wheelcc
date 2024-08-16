@@ -864,12 +864,13 @@ static std::unique_ptr<CIf> parse_if_statement() {
 }
 
 static std::unique_ptr<CGoto> parse_goto_statement() {
+    size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier target;
     parse_identifier(target, 0);
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
-    return std::make_unique<CGoto>(std::move(target));
+    return std::make_unique<CGoto>(std::move(target), std::move(line));
 }
 
 static std::unique_ptr<CLabel> parse_label_statement() {

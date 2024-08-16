@@ -2255,7 +2255,7 @@ static void resolve_label(CFunctionDeclaration* node) {
         if (context->label_set.find(target.first) == context->label_set.end()) {
             RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label,
                                             get_name_hr(target.first), get_name_hr(node->name)),
-                node->line);
+                errors->line_buffer_map[target.second]);
         }
     }
 }
@@ -2518,10 +2518,12 @@ static void resolve_if_statement(CIf* node) {
 static void resolve_goto_statement(CGoto* node) {
     if (context->goto_map.find(node->target) != context->goto_map.end()) {
         node->target = context->goto_map[node->target];
+        errors->line_buffer_map[node->target] = node->line;
     }
     else {
         context->goto_map[node->target] = resolve_label_identifier(node->target);
         node->target = context->goto_map[node->target];
+        errors->line_buffer_map[node->target] = node->line;
     }
 }
 
