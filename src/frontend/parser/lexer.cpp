@@ -80,6 +80,7 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
         R"(unsigned\b)", // key_unsigned
         R"(void\b)",     // key_void
         R"(struct\b)",   // key_struct
+        R"(union\b)",    // key_union
         R"(sizeof\b)",   // key_sizeof
         R"(return\b)",   // key_return
         R"(if\b)",       // key_if

@@ -117,6 +117,8 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
             return "void";
         case TOKEN_KIND::key_struct:
             return "struct";
+        case TOKEN_KIND::key_union:
+            return "union";
         case TOKEN_KIND::key_sizeof:
             return "sizeof";
         case TOKEN_KIND::key_return:
