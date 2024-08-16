@@ -1013,9 +1013,6 @@ static void represent_statement_switch_instructions(CSwitch* node) {
                 std::unique_ptr<TacBinaryOp> binary_op = std::make_unique<TacEqual>();
                 push_instruction(std::make_unique<TacBinary>(std::move(binary_op), match, std::move(esac), case_match));
             }
-            if (i == node->cases.size() - 1 && !node->is_default) {
-                push_instruction(std::make_unique<TacJumpIfZero>(target_break, case_match));
-            }
             push_instruction(std::make_unique<TacJumpIfNotZero>(std::move(target_case), std::move(case_match)));
         }
     }
@@ -1023,11 +1020,12 @@ static void represent_statement_switch_instructions(CSwitch* node) {
         TIdentifier target_default = "default_";
         target_default += node->target;
         push_instruction(std::make_unique<TacJump>(std::move(target_default)));
+        represent_statement_instructions(node->body.get());
     }
-    else if (node->cases.empty()) {
+    else if (!node->cases.empty()) {
         push_instruction(std::make_unique<TacJump>(target_break));
+        represent_statement_instructions(node->body.get());
     }
-    represent_statement_instructions(node->body.get());
     push_instruction(std::make_unique<TacLabel>(std::move(target_break)));
 }
 
