@@ -18,6 +18,7 @@ enum ERROR_MESSAGE_PARSER {
     number_too_large_for_long_constant,
     number_too_large_for_unsigned_long_constant,
     array_size_not_a_constant_integer,
+    case_value_not_a_constant_integer,
     unexpected_unary_operator,
     unexpected_binary_operator,
     unexpected_abstract_declarator,

@@ -955,10 +955,9 @@ static std::unique_ptr<CCase> parse_case_statement() {
                 constant = parse_unsigned_constant();
                 break;
             default:
-                RAISE_RUNTIME_ERROR_AT_LINE(
-                    // GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer,
-                    // context->peek_token->token), // TODO
-                    "case value is not a constant integer", context->peek_token->line);
+                RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::case_value_not_a_constant_integer,
+                                                context->peek_token->token),
+                    context->peek_token->line);
         }
         value = std::make_unique<CConstant>(std::move(constant), std::move(line));
     }

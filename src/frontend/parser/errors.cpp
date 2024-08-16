@@ -438,6 +438,12 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             return "cannot represent %s as a 64 bits unsigned integer constant, very large number";
         case ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer:
             return "illegal array size %s, requires a constant integer";
+        case ERROR_MESSAGE_PARSER::case_value_not_a_constant_integer: {
+            std::string what_message = "TODO1 illegal ";
+            what_message += em("case");
+            what_message += " value %s, requires a constant integer";
+            return what_message;
+        }
         case ERROR_MESSAGE_PARSER::unexpected_unary_operator: {
             std::string what_message = "found token %s, but expected ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::unop_complement));
@@ -830,6 +836,20 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             what_message += " loop statement with condition expression type %s";
             return what_message;
         }
+        case ERROR_MESSAGE_SEMANTIC::switch_used_with_match_type: {
+            std::string what_message = "TODO2 cannot use ";
+            what_message += em("switch");
+            what_message += " statement with match expression type %s, requires an integer type";
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch: {
+            std::string what_message = "TODO6 found duplicate ";
+            what_message += em("case");
+            what_message += " value %s in ";
+            what_message += em("switch");
+            what_message += " statement";
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::non_char_array_initialized_from_string:
             return "non-character array type %s initialized from string literal";
         case ERROR_MESSAGE_SEMANTIC::string_initialized_with_too_many_characters:
@@ -894,6 +914,27 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "structure type %s declared with member %s with incomplete type %s";
         case ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope:
             return "structure type %s already declared in this scope";
+        case ERROR_MESSAGE_SEMANTIC::case_outside_of_switch: {
+            std::string what_message = "TODO3 found ";
+            what_message += em("case");
+            what_message += " statement outside of ";
+            what_message += em("switch");
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::default_outside_of_switch: {
+            std::string what_message = "TODO4 found ";
+            what_message += em("default");
+            what_message += " statement outside of ";
+            what_message += em("switch");
+            return what_message;
+        }
+        case ERROR_MESSAGE_SEMANTIC::more_than_one_default_in_switch: {
+            std::string what_message = "TODO5 found more than one ";
+            what_message += em("default");
+            what_message += " statement in ";
+            what_message += em("switch");
+            return what_message;
+        }
         case ERROR_MESSAGE_SEMANTIC::break_outside_of_loop: {
             std::string what_message = "found ";
             what_message += em("break");

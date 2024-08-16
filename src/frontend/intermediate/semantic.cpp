@@ -1262,7 +1262,9 @@ static void checktype_for_statement(CFor* node) {
 
 static void checktype_switch_statement(CSwitch* node) {
     if (!is_type_integer(node->match->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE("switch match value is not an integer/arithmetic", node->match->line); // TODO
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::switch_used_with_match_type,
+                                        get_type_hr(node->match->exp_type.get())),
+            node->match->line);
     }
     switch (node->match->exp_type->type()) {
         case AST_T::Char_t:
@@ -1286,7 +1288,10 @@ static void checktype_switch_statement(CSwitch* node) {
                 values[i] = get_int_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
-                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                        RAISE_RUNTIME_ERROR_AT_LINE(
+                            GET_ERROR_MESSAGE(
+                                ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch, std::to_string(values[i])),
+                            node->cases[i]->line);
                     }
                 }
                 esac->constant = std::make_shared<CConstInt>(values[i]);
@@ -1304,7 +1309,10 @@ static void checktype_switch_statement(CSwitch* node) {
                 values[i] = get_long_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
-                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                        RAISE_RUNTIME_ERROR_AT_LINE(
+                            GET_ERROR_MESSAGE(
+                                ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch, std::to_string(values[i])),
+                            node->cases[i]->line);
                     }
                 }
                 esac->constant = std::make_shared<CConstLong>(values[i]);
@@ -1322,7 +1330,10 @@ static void checktype_switch_statement(CSwitch* node) {
                 values[i] = get_uint_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
-                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                        RAISE_RUNTIME_ERROR_AT_LINE(
+                            GET_ERROR_MESSAGE(
+                                ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch, std::to_string(values[i])),
+                            node->cases[i]->line);
                     }
                 }
                 esac->constant = std::make_shared<CConstUInt>(values[i]);
@@ -1340,7 +1351,10 @@ static void checktype_switch_statement(CSwitch* node) {
                 values[i] = get_ulong_constant_value(esac);
                 for (size_t j = 0; j < i; ++j) {
                     if (values[i] == values[j]) {
-                        RAISE_RUNTIME_ERROR_AT_LINE("duplicate case in switch", node->cases[i]->line); // TODO
+                        RAISE_RUNTIME_ERROR_AT_LINE(
+                            GET_ERROR_MESSAGE(
+                                ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch, std::to_string(values[i])),
+                            node->cases[i]->line);
                     }
                 }
                 esac->constant = std::make_shared<CConstULong>(values[i]);
@@ -2172,7 +2186,8 @@ static void annotate_switch_lookup(CSwitch* node) {
 
 static void annotate_case_jump(CCase* node) {
     if (!context->p_switch_statement) {
-        RAISE_RUNTIME_ERROR_AT_LINE("case not in switch", node->value->line); // TODO
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::case_outside_of_switch), node->value->line);
     }
     node->target = std::to_string(context->p_switch_statement->cases.size());
     node->target += context->p_switch_statement->target;
@@ -2180,10 +2195,11 @@ static void annotate_case_jump(CCase* node) {
 
 static void annotate_default_jump(CDefault* node) {
     if (!context->p_switch_statement) {
-        RAISE_RUNTIME_ERROR_AT_LINE("default not in switch", node->line); // TODO
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::default_outside_of_switch), node->line);
     }
     else if (context->p_switch_statement->is_default) {
-        RAISE_RUNTIME_ERROR_AT_LINE("switch already has default", node->line); // TODO
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::more_than_one_default_in_switch), node->line);
     }
     node->target = context->p_switch_statement->target;
     context->p_switch_statement->is_default = true;
