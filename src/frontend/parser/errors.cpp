@@ -439,7 +439,7 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
         case ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer:
             return "illegal array size %s, requires a constant integer";
         case ERROR_MESSAGE_PARSER::case_value_not_a_constant_integer: {
-            std::string what_message = "TODO1 illegal ";
+            std::string what_message = "illegal ";
             what_message += em("case");
             what_message += " value %s, requires a constant integer";
             return what_message;
@@ -837,13 +837,13 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::switch_used_with_match_type: {
-            std::string what_message = "TODO2 cannot use ";
+            std::string what_message = "cannot use ";
             what_message += em("switch");
             what_message += " statement with match expression type %s, requires an integer type";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch: {
-            std::string what_message = "TODO6 found duplicate ";
+            std::string what_message = "found duplicate ";
             what_message += em("case");
             what_message += " value %s in ";
             what_message += em("switch");
@@ -915,21 +915,21 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
         case ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope:
             return "structure type %s already declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::case_outside_of_switch: {
-            std::string what_message = "TODO3 found ";
+            std::string what_message = "found ";
             what_message += em("case");
             what_message += " statement outside of ";
             what_message += em("switch");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::default_outside_of_switch: {
-            std::string what_message = "TODO4 found ";
+            std::string what_message = "found ";
             what_message += em("default");
             what_message += " statement outside of ";
             what_message += em("switch");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::more_than_one_default_in_switch: {
-            std::string what_message = "TODO5 found more than one ";
+            std::string what_message = "found more than one ";
             what_message += em("default");
             what_message += " statement in ";
             what_message += em("switch");
