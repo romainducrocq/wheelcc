@@ -438,7 +438,6 @@ struct CArrow : CExp {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// TODO comment switch, case, default
 // statement = Return(exp?)
 //           | Expression(exp)
 //           | If(exp, statement, statement?)
@@ -448,6 +447,9 @@ struct CArrow : CExp {
 //           | While(exp, statement, identifier)
 //           | DoWhile(statement, exp, identifier)
 //           | For(for_init, exp?, exp?, statement, identifier)
+//           | Switch(identifier, bool, exp, statement, exp*)
+//           | Case(identifier, exp, statement)
+//           | Default(identifier, statement)
 //           | Break(identifier)
 //           | Continue(identifier)
 //           | Null
