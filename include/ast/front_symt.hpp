@@ -93,6 +93,7 @@ struct Array : Type {
     std::shared_ptr<Type> elem_type;
 };
 
+struct DataStructureType;
 struct Structure : Type {
     AST_T type() override;
     Structure() = default;
@@ -100,6 +101,22 @@ struct Structure : Type {
 
     TIdentifier tag;
     bool is_union;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// data_structure_type = Struct
+//                     | Union
+struct DataStructureType : Ast {
+    AST_T type() override;
+};
+
+struct Struct : Type {
+    AST_T type() override;
+};
+
+struct Union : Type {
+    AST_T type() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

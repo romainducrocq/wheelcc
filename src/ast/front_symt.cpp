@@ -23,6 +23,9 @@ AST_T FunType::type() { return AST_T::FunType_t; }
 AST_T Pointer::type() { return AST_T::Pointer_t; }
 AST_T Array::type() { return AST_T::Array_t; }
 AST_T Structure::type() { return AST_T::Structure_t; }
+AST_T DataStructureType::type() { return AST_T::DataStructureType_t; }
+AST_T Struct::type() { return AST_T::Struct_t; }
+AST_T Union::type() { return AST_T::Union_t; }
 AST_T StaticInit::type() { return AST_T::StaticInit_t; }
 AST_T IntInit::type() { return AST_T::IntInit_t; }
 AST_T LongInit::type() { return AST_T::LongInit_t; }
