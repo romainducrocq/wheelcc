@@ -33,7 +33,8 @@ struct SemanticContext {
     TIdentifier function_definition_name;
     CSwitch* p_switch_statement;
     std::unordered_set<TIdentifier> function_definition_set;
-    std::unordered_set<TIdentifier> structure_definition_set;
+    std::unordered_set<TIdentifier> struct_definition_set;
+    std::unordered_set<TIdentifier> union_definition_set;
     std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
 };
 

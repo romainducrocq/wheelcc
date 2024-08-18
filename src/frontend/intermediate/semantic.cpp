@@ -2272,8 +2272,21 @@ static void resolve_pointer_struct_type(Pointer* ptr_type) { resolve_struct_type
 static void resolve_array_struct_type(Array* arr_type) { resolve_struct_type(arr_type->elem_type.get()); }
 
 static void resolve_structure_struct_type(Structure* struct_type) {
-    if (context->structure_definition_set.find(struct_type->tag) != context->structure_definition_set.end()) {
-        return;
+    switch (struct_type->data_type->type()) {
+        case AST_T::Struct_t: {
+            if (context->struct_definition_set.find(struct_type->tag) != context->struct_definition_set.end()) {
+                return;
+            }
+            break;
+        }
+        case AST_T::Union_t: {
+            if (context->union_definition_set.find(struct_type->tag) != context->union_definition_set.end()) {
+                return;
+            }
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
     }
     for (size_t i = current_scope_depth(); i-- > 0;) {
         if (context->scoped_structure_tag_maps[i].find(struct_type->tag)
@@ -2851,11 +2864,38 @@ static void resolve_members_structure_declaration(CStructDeclaration* node) {
 static void resolve_structure_declaration(CStructDeclaration* node) {
     if (context->scoped_structure_tag_maps.back().find(node->tag) != context->scoped_structure_tag_maps.back().end()) {
         node->tag = context->scoped_structure_tag_maps.back()[node->tag];
+        switch (node->data_type->type()) {
+            case AST_T::Struct_t: {
+                if (context->struct_definition_set.find(node->tag) == context->struct_definition_set.end()) {
+                    // TODO RAISE_RUNTIME_ERROR_AT_LINE
+                    RAISE_INTERNAL_ERROR;
+                }
+                break;
+            }
+            case AST_T::Union_t: {
+                if (context->union_definition_set.find(node->tag) == context->union_definition_set.end()) {
+                    // TODO RAISE_RUNTIME_ERROR_AT_LINE
+                    RAISE_INTERNAL_ERROR;
+                }
+                break;
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
     }
     else {
         context->scoped_structure_tag_maps.back()[node->tag] = resolve_structure_tag(node->tag);
         node->tag = context->scoped_structure_tag_maps.back()[node->tag];
-        context->structure_definition_set.insert(node->tag);
+        switch (node->data_type->type()) {
+            case AST_T::Struct_t:
+                context->struct_definition_set.insert(node->tag);
+                break;
+            case AST_T::Union_t:
+                context->union_definition_set.insert(node->tag);
+                break;
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
     }
     if (!node->members.empty()) {
         resolve_members_structure_declaration(node);
