@@ -2125,18 +2125,24 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
         }
         TInt member_alignment = get_type_alignment(member->member_type.get());
         {
-            TLong offset = size % member_alignment;
-            if (offset != 0l) {
-                size += member_alignment - offset;
+            TLong offset = 0l;
+            if (node->data_type->type() == AST_T::Struct_t) {
+                offset = size % member_alignment;
+                if (offset != 0l) {
+                    size += member_alignment - offset;
+                }
+                offset = size;
+                size += get_type_scale(member->member_type.get());
             }
-            offset = size;
             std::shared_ptr<Type> member_type = member->member_type;
             members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
         }
         if (alignment < member_alignment) {
             alignment = member_alignment;
+            if (node->data_type->type() == AST_T::Union_t) {
+                size = get_type_scale(member->member_type.get());
+            }
         }
-        size += get_type_scale(member->member_type.get());
     }
     {
         TLong offset = size % alignment;
