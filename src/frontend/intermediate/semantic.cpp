@@ -2144,8 +2144,9 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
             size += alignment - offset;
         }
     }
+    std::shared_ptr<DataStructureType> data_type = node->data_type;
     frontend->struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(
-        std::move(alignment), std::move(size), std::move(member_names), std::move(members));
+        std::move(alignment), std::move(size), std::move(member_names), std::move(data_type), std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
