@@ -26,7 +26,7 @@
 //      | FunType(type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
-//      | Structure(identifier, bool)
+//      | Structure(identifier, data_structure_type)
 struct Type : Ast {
     AST_T type() override;
 };
@@ -97,10 +97,10 @@ struct DataStructureType;
 struct Structure : Type {
     AST_T type() override;
     Structure() = default;
-    Structure(TIdentifier tag, bool is_union);
+    Structure(TIdentifier tag, std::shared_ptr<DataStructureType> data_type);
 
     TIdentifier tag;
-    bool is_union;
+    std::shared_ptr<DataStructureType> data_type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -57,7 +57,8 @@ Pointer::Pointer(std::shared_ptr<Type> ref_type) : ref_type(std::move(ref_type))
 
 Array::Array(TLong size, std::shared_ptr<Type> elem_type) : size(size), elem_type(std::move(elem_type)) {}
 
-Structure::Structure(TIdentifier tag, bool is_union) : tag(std::move(tag)), is_union(is_union) {}
+Structure::Structure(TIdentifier tag, std::shared_ptr<DataStructureType> data_type) :
+    tag(std::move(tag)), data_type(std::move(data_type)) {}
 
 IntInit::IntInit(TInt value) : value(value) {}
 
