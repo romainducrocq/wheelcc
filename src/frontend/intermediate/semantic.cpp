@@ -2243,7 +2243,7 @@ static bool is_file_scope() { return current_scope_depth() == 1; }
 
 static void enter_scope() {
     context->scoped_identifier_maps.emplace_back();
-    context->scoped_structure_tag_maps.emplace_back();
+    context->scoped_structure_type_maps.emplace_back();
 }
 
 static void exit_scope() {
@@ -2254,7 +2254,7 @@ static void exit_scope() {
         }
     }
     context->scoped_identifier_maps.pop_back();
-    context->scoped_structure_tag_maps.pop_back();
+    context->scoped_structure_type_maps.pop_back();
 }
 
 static void resolve_label(CFunctionDeclaration* node) {
@@ -2289,9 +2289,14 @@ static void resolve_structure_struct_type(Structure* struct_type) {
             RAISE_INTERNAL_ERROR;
     }
     for (size_t i = current_scope_depth(); i-- > 0;) {
-        if (context->scoped_structure_tag_maps[i].find(struct_type->tag)
-            != context->scoped_structure_tag_maps[i].end()) {
-            struct_type->tag = context->scoped_structure_tag_maps[i][struct_type->tag];
+        if (context->scoped_structure_type_maps[i].find(struct_type->tag)
+            != context->scoped_structure_type_maps[i].end()) {
+            if (context->scoped_structure_type_maps[i][struct_type->tag].data_type->type()
+                != struct_type->data_type->type()) {
+                // TODO RAISE_RUNTIME_ERROR_AT_LINE
+                RAISE_INTERNAL_ERROR;
+            }
+            struct_type->tag = context->scoped_structure_type_maps[i][struct_type->tag].tag;
             return;
         }
     }
@@ -2862,8 +2867,9 @@ static void resolve_members_structure_declaration(CStructDeclaration* node) {
 }
 
 static void resolve_structure_declaration(CStructDeclaration* node) {
-    if (context->scoped_structure_tag_maps.back().find(node->tag) != context->scoped_structure_tag_maps.back().end()) {
-        node->tag = context->scoped_structure_tag_maps.back()[node->tag];
+    if (context->scoped_structure_type_maps.back().find(node->tag)
+        != context->scoped_structure_type_maps.back().end()) {
+        node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
         switch (node->data_type->type()) {
             case AST_T::Struct_t: {
                 if (context->struct_definition_set.find(node->tag) == context->struct_definition_set.end()) {
@@ -2884,8 +2890,8 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
         }
     }
     else {
-        context->scoped_structure_tag_maps.back()[node->tag] = resolve_structure_tag(node->tag);
-        node->tag = context->scoped_structure_tag_maps.back()[node->tag];
+        context->scoped_structure_type_maps.back()[node->tag] = {resolve_structure_tag(node->tag), node->data_type};
+        node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
         switch (node->data_type->type()) {
             case AST_T::Struct_t:
                 context->struct_definition_set.insert(node->tag);
