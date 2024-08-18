@@ -111,11 +111,11 @@ struct DataStructureType : Ast {
     AST_T type() override;
 };
 
-struct Struct : Type {
+struct Struct : DataStructureType {
     AST_T type() override;
 };
 
-struct Union : Type {
+struct Union : DataStructureType {
     AST_T type() override;
 };
 
