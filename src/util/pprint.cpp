@@ -330,6 +330,7 @@ static void print_ast(Ast* node, size_t t) {
             for (const auto& item : p_node->member_names) {
                 field("TIdentifier", item, t + 2);
             }
+            print_ast(p_node->data_type.get(), t);
             field("Dict[" + std::to_string(p_node->members.size()) + "]", "", t + 1);
             for (const auto& item : p_node->members) {
                 field("[" + item.first + "]", "", t + 2);
