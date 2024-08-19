@@ -1216,7 +1216,7 @@ static void represent_array_compound_init_instructions(
 
 static void represent_structure_compound_init_instructions(
     CCompoundInit* node, Structure* struct_type, const TIdentifier& symbol, TLong& size) {
-    for (size_t i = 0; i < node->initializers.size(); ++i) {
+    for (size_t i = node->initializers.size(); i-- > 0;) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         TLong offset = size + member->offset;
         represent_compound_init_instructions(node->initializers[i].get(), member->member_type.get(), symbol, offset);
