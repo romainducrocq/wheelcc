@@ -309,16 +309,17 @@ struct StructMember : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// struct_typedef(int, int, identifier*, data_structure_type, struct_member*)
+// struct_typedef(int, int, int, identifier*, data_structure_type, struct_member*)
 struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef() = default;
-    StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
+    StructTypedef(TInt alignment, TLong size, TLong total_size, std::vector<TIdentifier> member_names,
         std::shared_ptr<DataStructureType> data_type,
         std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members);
 
     TInt alignment;
     TLong size;
+    TLong total_size;
     std::vector<TIdentifier> member_names;
     std::shared_ptr<DataStructureType> data_type;
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
