@@ -1481,12 +1481,26 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 }
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
-    if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
-                get_type_hr(struct_type), std::to_string(node->initializers.size()),
-                std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
-            get_compound_init_line(node));
+    switch (struct_type->data_type->type()) {
+        case AST_T::Struct_t: {
+            if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
+                        get_type_hr(struct_type), std::to_string(node->initializers.size()),
+                        std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
+                    get_compound_init_line(node));
+            }
+            break;
+        }
+        case AST_T::Union_t: {
+            if (node->initializers.size() > 1) {
+                RAISE_INTERNAL_ERROR;
+                // TODO RAISE_RUNTIME_ERROR_AT_LINE
+            }
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -2150,6 +2164,7 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
             size += alignment - offset;
         }
     }
+    // TODO is DataStructureType needed in StructTypedef? => no?
     std::shared_ptr<DataStructureType> data_type = node->data_type;
     frontend->struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(
         std::move(alignment), std::move(size), std::move(member_names), std::move(data_type), std::move(members));
