@@ -2128,6 +2128,7 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     }
     TInt alignment = 0;
     TLong size = 0l;
+    TLong total_size = 0l;
     std::vector<TIdentifier> member_names;
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
     member_names.reserve(node->members.size());
@@ -2140,18 +2141,18 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
         TInt member_alignment = get_type_alignment(member->member_type.get());
         TLong member_size = get_type_scale(member->member_type.get());
         {
-            TLong offset = 0l;
+            TLong offset = total_size % member_alignment;
+            if (offset != 0l) {
+                total_size += member_alignment - offset;
+            }
             switch (node->data_type->type()) {
                 case AST_T::Struct_t: {
-                    offset = size % member_alignment;
-                    if (offset != 0l) {
-                        size += member_alignment - offset;
-                    }
-                    offset = size;
-                    size += member_size;
+                    offset = total_size;
+                    size = offset + member_size;
                     break;
                 }
                 case AST_T::Union_t: {
+                    offset = 0l;
                     if (size < member_size) {
                         size = member_size;
                     }
@@ -2160,6 +2161,7 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
                 default:
                     RAISE_INTERNAL_ERROR;
             }
+            total_size += member_size;
             std::shared_ptr<Type> member_type = member->member_type;
             members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
         }
@@ -2176,7 +2178,7 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     // TODO is DataStructureType needed in StructTypedef? => no?
     std::shared_ptr<DataStructureType> data_type = node->data_type;
     frontend->struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(
-        std::move(alignment), std::move(size), std::move(member_names), std::move(data_type), std::move(members));
+        std::move(alignment), std::move(size), std::move(total_size), std::move(member_names), std::move(data_type), std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

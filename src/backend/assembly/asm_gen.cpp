@@ -389,28 +389,28 @@ static std::shared_ptr<AssemblyType> generate_assembly_type(TacValue* node) {
 }
 
 static std::shared_ptr<AssemblyType> generate_8byte_assembly_type(Structure* struct_type, TLong offset) {
-    TLong size = frontend->struct_typedef_table[struct_type->tag]->size - offset;
-    if (size >= 8l) {
+    TLong total_size = frontend->struct_typedef_table[struct_type->tag]->total_size - offset;
+    if (total_size >= 8l) {
         return std::make_shared<QuadWord>();
     }
-    switch (size) {
+    switch (total_size) {
         case 1l:
             return std::make_shared<Byte>();
         case 4l:
             return std::make_shared<LongWord>();
         default:
-            return std::make_shared<ByteArray>(std::move(size), 8);
+            return std::make_shared<ByteArray>(std::move(total_size), 8);
     }
 }
 
 static void generate_structure_type_classes(Structure* struct_type) {
     if (context->struct_8b_cls_map.find(struct_type->tag) == context->struct_8b_cls_map.end()) {
         std::vector<STRUCT_8B_CLS> struct_8b_cls;
-        if (frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
-            TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
-            while (size > 0l) {
+        if (frontend->struct_typedef_table[struct_type->tag]->total_size > 16l) {
+            TLong total_size = frontend->struct_typedef_table[struct_type->tag]->total_size;
+            while (total_size > 0l) {
                 struct_8b_cls.push_back(STRUCT_8B_CLS::MEMORY);
-                size -= 8l;
+                total_size -= 8l;
             }
         }
         else {
@@ -433,7 +433,7 @@ static void generate_structure_type_classes(Structure* struct_type) {
         Lbreak_1:
             struct_8b_cls.push_back(
                 member_type->type() == AST_T::Double_t ? STRUCT_8B_CLS::SSE : STRUCT_8B_CLS::INTEGER);
-            if (frontend->struct_typedef_table[struct_type->tag]->size > 8l) {
+            if (frontend->struct_typedef_table[struct_type->tag]->total_size > 8l) {
                 member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
                 while (true) {
                     switch (member_type->type()) {
