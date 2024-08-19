@@ -2291,8 +2291,7 @@ static void resolve_structure_struct_type(Structure* struct_type) {
     for (size_t i = current_scope_depth(); i-- > 0;) {
         if (context->scoped_structure_type_maps[i].find(struct_type->tag)
             != context->scoped_structure_type_maps[i].end()) {
-            if (context->scoped_structure_type_maps[i][struct_type->tag].data_type->type()
-                != struct_type->data_type->type()) {
+            if (context->scoped_structure_type_maps[i][struct_type->tag].type != struct_type->data_type->type()) {
                 // TODO RAISE_RUNTIME_ERROR_AT_LINE
                 RAISE_INTERNAL_ERROR;
             }
@@ -2890,7 +2889,8 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
         }
     }
     else {
-        context->scoped_structure_type_maps.back()[node->tag] = {resolve_structure_tag(node->tag), node->data_type};
+        context->scoped_structure_type_maps.back()[node->tag] = {
+            node->data_type->type(), resolve_structure_tag(node->tag)};
         node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
         switch (node->data_type->type()) {
             case AST_T::Struct_t:

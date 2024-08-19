@@ -19,11 +19,16 @@
 // Loop labeling
 // Identifier resolution
 
+struct ScopedStructure {
+    AST_T type;
+    TIdentifier tag;
+};
+
 struct SemanticContext {
     // Type checking
     std::unordered_map<TIdentifier, size_t> external_linkage_scope_map;
     std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
-    std::vector<std::unordered_map<TIdentifier, Structure>> scoped_structure_type_maps;
+    std::vector<std::unordered_map<TIdentifier, ScopedStructure>> scoped_structure_type_maps;
     std::unordered_map<TIdentifier, TIdentifier> goto_map;
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
