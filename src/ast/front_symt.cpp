@@ -96,12 +96,11 @@ Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> att
 StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type) :
     offset(offset), member_type(std::move(member_type)) {}
 
-StructTypedef::StructTypedef(TInt alignment, TLong size, TLong total_size, std::vector<TIdentifier> member_names,
+StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
     std::shared_ptr<DataStructureType> data_type,
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members) :
     alignment(alignment),
-    size(size), total_size(total_size), member_names(std::move(member_names)), data_type(std::move(data_type)),
-    members(std::move(members)) {}
+    size(size), member_names(std::move(member_names)), data_type(std::move(data_type)), members(std::move(members)) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

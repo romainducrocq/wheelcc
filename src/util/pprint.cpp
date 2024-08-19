@@ -326,7 +326,6 @@ static void print_ast(Ast* node, size_t t) {
             StructTypedef* p_node = static_cast<StructTypedef*>(node);
             field("TInt", std::to_string(p_node->alignment), t + 1);
             field("TLong", std::to_string(p_node->size), t + 1);
-            field("TLong", std::to_string(p_node->total_size), t + 1);
             field("List[" + std::to_string(p_node->member_names.size()) + "]", "", t + 1);
             for (const auto& item : p_node->member_names) {
                 field("TIdentifier", item, t + 2);
