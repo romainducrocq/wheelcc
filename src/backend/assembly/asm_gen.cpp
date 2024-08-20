@@ -413,67 +413,96 @@ static std::vector<STRUCT_8B_CLS> generate_structure_memory_type_classes(Structu
     return struct_8b_cls;
 }
 
+static void generate_structure_type_classes(Structure* struct_type);
+
 static std::vector<STRUCT_8B_CLS> generate_structure_one_reg_type_classes(Structure* struct_type) {
-    std::vector<STRUCT_8B_CLS> struct_8b_cls;
-    Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
-    while (true) {
-        switch (member_type->type()) {
-            case AST_T::Array_t: {
-                member_type = static_cast<Array*>(member_type)->elem_type.get();
-                break;
+    std::vector<STRUCT_8B_CLS> struct_8b_cls {STRUCT_8B_CLS::SSE};
+    size_t members = struct_type->data_type->type() == AST_T::Union_t ?
+                         frontend->struct_typedef_table[struct_type->tag]->members.size() :
+                         1;
+    for (size_t i = 0; i < members; ++i) {
+        if (struct_8b_cls[0] == STRUCT_8B_CLS::INTEGER) {
+            break;
+        }
+        Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
+        while (member_type->type() == AST_T::Array_t) {
+            member_type = static_cast<Array*>(member_type)->elem_type.get();
+        }
+        if (member_type->type() == AST_T::Structure_t) {
+            if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0] == STRUCT_8B_CLS::INTEGER) {
+                struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
             }
-            case AST_T::Structure_t: {
-                member_type =
-                    GET_STRUCT_TYPEDEF_MEMBER(static_cast<Structure*>(member_type)->tag, 0)->member_type.get();
-                break;
-            }
-            default:
-                goto Lbreak_1;
+        }
+        else if (member_type->type() != AST_T::Double_t) {
+            struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
         }
     }
-Lbreak_1:
-    struct_8b_cls.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8B_CLS::SSE : STRUCT_8B_CLS::INTEGER);
     return struct_8b_cls;
 }
 
 static std::vector<STRUCT_8B_CLS> generate_structure_two_regs_type_classes(Structure* struct_type) {
-    std::vector<STRUCT_8B_CLS> struct_8b_cls;
+    std::vector<STRUCT_8B_CLS> struct_8b_cls {STRUCT_8B_CLS::SSE, STRUCT_8B_CLS::SSE};
+    TLong size = 1l;
     Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, 0)->member_type.get();
-    while (true) {
-        switch (member_type->type()) {
-            case AST_T::Array_t: {
-                member_type = static_cast<Array*>(member_type)->elem_type.get();
-                break;
+    if (member_type->type() == AST_T::Array_t) {
+        do {
+            Array* arr_type = static_cast<Array*>(member_type);
+            member_type = arr_type->elem_type.get();
+            size *= arr_type->size;
+        }
+        while (member_type->type() == AST_T::Array_t);
+    }
+    size *= generate_type_alignment(member_type);
+    if (size > 8l) {
+        if (member_type->type() == AST_T::Structure_t) {
+            // TODO refactor static_cast<Structure*>(member_type)
+            if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag].size() > 1) {
+                if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0]
+                    == STRUCT_8B_CLS::INTEGER) {
+                    struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
+                }
+                if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][1]
+                    == STRUCT_8B_CLS::INTEGER) {
+                    struct_8b_cls[1] = STRUCT_8B_CLS::INTEGER;
+                }
             }
-            case AST_T::Structure_t: {
-                member_type =
-                    GET_STRUCT_TYPEDEF_MEMBER(static_cast<Structure*>(member_type)->tag, 0)->member_type.get();
-                break;
+            else {
+                if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0]
+                    == STRUCT_8B_CLS::INTEGER) {
+                    struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
+                    struct_8b_cls[1] = STRUCT_8B_CLS::INTEGER;
+                }
             }
-            default:
-                goto Lbreak_1;
+        }
+        else if (member_type->type() != AST_T::Double_t) {
+            struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
+            struct_8b_cls[1] = STRUCT_8B_CLS::INTEGER;
         }
     }
-Lbreak_1:
-    struct_8b_cls.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8B_CLS::SSE : STRUCT_8B_CLS::INTEGER);
-    member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
-    while (true) {
-        switch (member_type->type()) {
-            case AST_T::Array_t: {
-                member_type = static_cast<Array*>(member_type)->elem_type.get();
-                break;
+    else {
+        if (member_type->type() == AST_T::Structure_t) {
+            if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0] == STRUCT_8B_CLS::INTEGER) {
+                struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
             }
-            case AST_T::Structure_t: {
-                member_type =
-                    GET_STRUCT_TYPEDEF_MEMBER_BACK(static_cast<Structure*>(member_type)->tag)->member_type.get();
-                break;
+        }
+        else if (member_type->type() != AST_T::Double_t) {
+            struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
+        }
+        member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
+        while (member_type->type() == AST_T::Array_t) {
+            member_type = static_cast<Array*>(member_type)->elem_type.get();
+        }
+        if (member_type->type() == AST_T::Structure_t) {
+            // TODO refactor static_cast<Structure*>(member_type)
+            generate_structure_type_classes(static_cast<Structure*>(member_type));
+            if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0] == STRUCT_8B_CLS::INTEGER) {
+                struct_8b_cls[1] = STRUCT_8B_CLS::INTEGER;
             }
-            default:
-                goto Lbreak_2;
+        }
+        else if (member_type->type() != AST_T::Double_t) {
+            struct_8b_cls[1] = STRUCT_8B_CLS::INTEGER;
         }
     }
-Lbreak_2:
-    struct_8b_cls.push_back(member_type->type() == AST_T::Double_t ? STRUCT_8B_CLS::SSE : STRUCT_8B_CLS::INTEGER);
     return struct_8b_cls;
 }
 
