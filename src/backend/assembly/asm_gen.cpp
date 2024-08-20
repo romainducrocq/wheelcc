@@ -485,6 +485,7 @@ static std::vector<STRUCT_8B_CLS> generate_structure_two_regs_type_classes(Struc
         }
         else {
             if (member_type->type() == AST_T::Structure_t) {
+                generate_structure_type_classes(static_cast<Structure*>(member_type));
                 if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0]
                     == STRUCT_8B_CLS::INTEGER) {
                     struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
