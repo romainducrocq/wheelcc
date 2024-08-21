@@ -508,6 +508,21 @@ static TULong get_ulong_constant_value(CConstant* node) {
     }
 }
 
+static TULong get_pointer_constant_value(CConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstInt_t:
+            return static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
+        case AST_T::CConstLong_t:
+            return static_cast<TULong>(static_cast<CConstLong*>(node->constant.get())->value);
+        case AST_T::CConstUInt_t:
+            return static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(node->constant.get())->value;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static size_t get_compound_init_line(CInitializer* node) {
     if (node->type() != AST_T::CCompoundInit_t) {
         RAISE_INTERNAL_ERROR;
@@ -1717,24 +1732,7 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
             break;
         }
         case AST_T::Pointer_t: {
-            TULong value;
             switch (node->constant->type()) {
-                case AST_T::CConstInt_t: {
-                    value = static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstLong_t: {
-                    value = static_cast<TULong>(static_cast<CConstLong*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstUInt_t: {
-                    value = static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
-                    break;
-                }
-                case AST_T::CConstULong_t: {
-                    value = static_cast<CConstULong*>(node->constant.get())->value;
-                    break;
-                }
                 case AST_T::CConstChar_t:
                 case AST_T::CConstDouble_t:
                 case AST_T::CConstUChar_t:
@@ -1743,8 +1741,9 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
                             get_type_hr(static_init_type), get_const_hr(node->constant.get())),
                         node->line);
                 default:
-                    RAISE_INTERNAL_ERROR;
+                    break;
             }
+            TULong value = get_pointer_constant_value(node);
             if (value != 0ul) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
                     GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_null,
