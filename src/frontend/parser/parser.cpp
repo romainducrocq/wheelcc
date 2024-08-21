@@ -1612,7 +1612,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
 }
 
 // <struct-declaration> ::= ("struct" | "union") <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
-// struct_declaration = StructDeclaration(identifier, data_structure_type, member_declaration*)
+// struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
     size_t line = context->peek_token->line;
     std::shared_ptr<DataStructureType> data_type;

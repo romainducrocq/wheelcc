@@ -23,9 +23,6 @@ AST_T FunType::type() { return AST_T::FunType_t; }
 AST_T Pointer::type() { return AST_T::Pointer_t; }
 AST_T Array::type() { return AST_T::Array_t; }
 AST_T Structure::type() { return AST_T::Structure_t; }
-AST_T DataStructureType::type() { return AST_T::DataStructureType_t; }
-AST_T Struct::type() { return AST_T::Struct_t; }
-AST_T Union::type() { return AST_T::Union_t; }
 AST_T StaticInit::type() { return AST_T::StaticInit_t; }
 AST_T IntInit::type() { return AST_T::IntInit_t; }
 AST_T LongInit::type() { return AST_T::LongInit_t; }
@@ -57,8 +54,7 @@ Pointer::Pointer(std::shared_ptr<Type> ref_type) : ref_type(std::move(ref_type))
 
 Array::Array(TLong size, std::shared_ptr<Type> elem_type) : size(size), elem_type(std::move(elem_type)) {}
 
-Structure::Structure(TIdentifier tag, std::shared_ptr<DataStructureType> data_type) :
-    tag(std::move(tag)), data_type(std::move(data_type)) {}
+Structure::Structure(TIdentifier tag, bool is_union) : tag(std::move(tag)), is_union(is_union) {}
 
 IntInit::IntInit(TInt value) : value(value) {}
 
@@ -97,10 +93,9 @@ StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type) :
     offset(offset), member_type(std::move(member_type)) {}
 
 StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
-    std::shared_ptr<DataStructureType> data_type,
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members) :
     alignment(alignment),
-    size(size), member_names(std::move(member_names)), data_type(std::move(data_type)), members(std::move(members)) {}
+    size(size), member_names(std::move(member_names)), members(std::move(members)) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

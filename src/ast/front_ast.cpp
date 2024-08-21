@@ -223,10 +223,10 @@ CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initiali
 CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type, size_t line) :
     member_name(std::move(member_name)), member_type(std::move(member_type)), line(line) {}
 
-CStructDeclaration::CStructDeclaration(TIdentifier tag, std::shared_ptr<DataStructureType> data_type,
-    std::vector<std::unique_ptr<CMemberDeclaration>> members, size_t line) :
+CStructDeclaration::CStructDeclaration(
+    TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>> members, size_t line) :
     tag(std::move(tag)),
-    data_type(std::move(data_type)), members(std::move(members)), line(line) {}
+    is_union(is_union), members(std::move(members)), line(line) {}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
     std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class,

@@ -26,7 +26,7 @@
 //      | FunType(type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
-//      | Structure(identifier, data_structure_type)
+//      | Structure(identifier, bool)
 struct Type : Ast {
     AST_T type() override;
 };
@@ -93,30 +93,13 @@ struct Array : Type {
     std::shared_ptr<Type> elem_type;
 };
 
-struct DataStructureType;
 struct Structure : Type {
     AST_T type() override;
     Structure() = default;
-    Structure(TIdentifier tag, std::shared_ptr<DataStructureType> data_type);
+    Structure(TIdentifier tag, bool is_union);
 
     TIdentifier tag;
-    std::shared_ptr<DataStructureType> data_type;
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// data_structure_type = Struct
-//                     | Union
-struct DataStructureType : Ast {
-    AST_T type() override;
-};
-
-struct Struct : DataStructureType {
-    AST_T type() override;
-};
-
-struct Union : DataStructureType {
-    AST_T type() override;
+    bool is_union;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -309,18 +292,16 @@ struct StructMember : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// struct_typedef(int, int, identifier*, data_structure_type, struct_member*)
+// struct_typedef(int, int, identifier*, struct_member*)
 struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef() = default;
     StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names,
-        std::shared_ptr<DataStructureType> data_type,
         std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members);
 
     TInt alignment;
     TLong size;
     std::vector<TIdentifier> member_names;
-    std::shared_ptr<DataStructureType> data_type;
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
 };
 
