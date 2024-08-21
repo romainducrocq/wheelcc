@@ -24,6 +24,8 @@
 #include "frontend/intermediate/tac_repr.hpp"
 
 #include "backend/assembly/asm_gen.hpp"
+#include "backend/assembly/stack_fix.hpp"
+#include "backend/assembly/symt_cvt.hpp"
 
 #include "backend/emitter/gas_code.hpp"
 
@@ -153,6 +155,8 @@ static void compile() {
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
+    convert_symbol_table(asm_ast.get());
+    fix_stack(asm_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 251) {
