@@ -1481,20 +1481,12 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 }
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
-    if (struct_type->is_union) {
-        if (node->initializers.size() > 1) {
-            RAISE_INTERNAL_ERROR;
-            // TODO RAISE_RUNTIME_ERROR_AT_LINE
-        }
-    }
-    else {
-        if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
-                    get_type_hr(struct_type), std::to_string(node->initializers.size()),
-                    std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
-                get_compound_init_line(node));
-        }
+    size_t bound = struct_type->is_union ? 1 : frontend->struct_typedef_table[struct_type->tag]->members.size();
+    if (node->initializers.size() > bound) {
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
+                get_type_hr(struct_type), std::to_string(node->initializers.size()), std::to_string(bound)),
+            get_compound_init_line(node));
     }
 }
 
