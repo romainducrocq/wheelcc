@@ -180,7 +180,7 @@ Very few other C++ features are used, and only when doing so provides a real adv
 
 ### Limitations
 
-wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, union and enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
 ## Implementation reference
 
@@ -221,6 +221,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 - [x] [Characters, strings literals, ascii](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/16_characters_and_strings)
 - [x] [Void, support dynamic memory allocation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/17_supporting_dynamic_memory_allocation)
 - [x] [Structures](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/18_structures)
+- [x] [Unions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/18_structures/valid/extra_credit)
 
 ### Language grammar
 
@@ -228,7 +229,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 <param> ::= { <type-specifier> }+ <declarator>
 <simple-declarator> ::= <identifier> | "(" <declarator> ")"
 <type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void" 
-                   | "struct" <identifier>
+                   | ("struct" | "union") <identifier>
 <specifier> ::= <type-specifier> | "static" | "extern"
 <block> ::= "{" { <block-item> } "}"
 <block-item> ::= <statement> | <declaration>
