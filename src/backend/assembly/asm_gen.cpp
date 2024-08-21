@@ -456,10 +456,16 @@ static std::vector<STRUCT_8B_CLS> generate_structure_two_regs_type_classes(Struc
             }
             while (member_type->type() == AST_T::Array_t);
         }
-        size *= generate_type_alignment(member_type);
+        if (member_type->type() == AST_T::Structure_t) {
+            size *= frontend->struct_typedef_table[static_cast<Structure*>(member_type)->tag]->size;
+        }
+        else {
+            size *= generate_type_alignment(member_type);
+        }
         if (size > 8l) {
             if (member_type->type() == AST_T::Structure_t) {
                 // TODO refactor static_cast<Structure*>(member_type)
+                generate_structure_type_classes(static_cast<Structure*>(member_type));
                 if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag].size() > 1) {
                     if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0]
                         == STRUCT_8B_CLS::INTEGER) {

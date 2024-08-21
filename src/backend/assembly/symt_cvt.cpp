@@ -15,7 +15,7 @@ static std::unique_ptr<SymtCvtContext> context;
 
 // Symbol table conversion
 
-TInt generate_scalar_type_alignment(Type* type) {
+static TInt generate_scalar_type_alignment(Type* type) {
     switch (type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
