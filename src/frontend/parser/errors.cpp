@@ -962,7 +962,7 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::structure_conflicts_with_previously_declared:
-            return "TODO 1 %s conflicts with data structure type %s previously declared or defined in this scope";
+            return "%s conflicts with data structure type %s previously declared or defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope:
             return "data structure type %s not defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_not_declared_in_scope:
