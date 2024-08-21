@@ -2095,7 +2095,7 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
             if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
                     GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member,
-                        get_struct_name_hr(node->tag), get_name_hr(node->members[i]->member_name)),
+                        get_struct_name_hr(node->tag, node->is_union), get_name_hr(node->members[i]->member_name)),
                     node->members[i]->line);
             }
         }
@@ -2105,9 +2105,10 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
         errors->line_buffer = node->members[i]->line;
         resolve_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type,
-                                            get_struct_name_hr(node->tag), get_name_hr(node->members[i]->member_name),
-                                            get_type_hr(node->members[i].get()->member_type.get())),
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type,
+                    get_struct_name_hr(node->tag, node->is_union), get_name_hr(node->members[i]->member_name),
+                    get_type_hr(node->members[i].get()->member_type.get())),
                 node->members[i]->line);
         }
         is_valid_type(node->members[i].get()->member_type.get());
@@ -2116,8 +2117,8 @@ static void checktype_members_structure_declaration(CStructDeclaration* node) {
 
 static void checktype_structure_declaration(CStructDeclaration* node) {
     if (frontend->struct_typedef_table.find(node->tag) != frontend->struct_typedef_table.end()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope, get_struct_name_hr(node->tag)),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope,
+                                        get_struct_name_hr(node->tag, node->is_union)),
             node->line);
     }
     TInt alignment = 0;

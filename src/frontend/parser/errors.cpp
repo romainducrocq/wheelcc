@@ -172,8 +172,8 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
 
 std::string get_name_hr(const TIdentifier& name) { return name.substr(0, name.find('.')); }
 
-std::string get_struct_name_hr(const TIdentifier& name) {
-    std::string type_hr = "struct ";
+std::string get_struct_name_hr(const TIdentifier& name, bool is_union) {
+    std::string type_hr = is_union ? "union " : "struct ";
     type_hr += get_name_hr(name);
     return type_hr;
 }
@@ -222,7 +222,9 @@ static std::string get_array_type_hr(Array* arr_type) {
     return type_hr;
 }
 
-static std::string get_structure_type_hr(Structure* struct_type) { return get_struct_name_hr(struct_type->tag); }
+static std::string get_structure_type_hr(Structure* struct_type) {
+    return get_struct_name_hr(struct_type->tag, struct_type->is_union);
+}
 
 std::string get_type_hr(Type* type) {
     switch (type->type()) {

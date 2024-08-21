@@ -129,7 +129,7 @@ extern std::unique_ptr<ErrorsContext> errors;
 
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_name_hr(const TIdentifier& name);
-std::string get_struct_name_hr(const TIdentifier& name);
+std::string get_struct_name_hr(const TIdentifier& name, bool is_union);
 std::string get_type_hr(Type* type);
 std::string get_const_hr(CConst* node);
 std::string get_storage_class_hr(CStorageClass* node);
