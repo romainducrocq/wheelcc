@@ -2868,14 +2868,20 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
         node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
         if (node->is_union) {
             if (context->union_definition_set.find(node->tag) == context->union_definition_set.end()) {
-                // TODO RAISE_RUNTIME_ERROR_AT_LINE
-                RAISE_INTERNAL_ERROR;
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(
+                        ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope, // TODO conflicting declaration
+                        get_struct_name_hr(node->tag, node->is_union)),
+                    node->line);
             }
         }
         else {
             if (context->struct_definition_set.find(node->tag) == context->struct_definition_set.end()) {
-                // TODO RAISE_RUNTIME_ERROR_AT_LINE
-                RAISE_INTERNAL_ERROR;
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(
+                        ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope, // TODO conflicting declaration
+                        get_struct_name_hr(node->tag, node->is_union)),
+                    node->line);
             }
         }
     }
