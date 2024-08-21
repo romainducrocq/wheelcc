@@ -427,7 +427,9 @@ static std::vector<STRUCT_8B_CLS> generate_structure_one_reg_type_classes(Struct
             member_type = static_cast<Array*>(member_type)->elem_type.get();
         }
         if (member_type->type() == AST_T::Structure_t) {
-            if (context->struct_8b_cls_map[static_cast<Structure*>(member_type)->tag][0] == STRUCT_8B_CLS::INTEGER) {
+            Structure* member_struct_type = static_cast<Structure*>(member_type);
+            generate_structure_type_classes(member_struct_type);
+            if (context->struct_8b_cls_map[member_struct_type->tag][0] == STRUCT_8B_CLS::INTEGER) {
                 struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
             }
         }
