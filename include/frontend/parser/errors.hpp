@@ -100,6 +100,7 @@ enum ERROR_MESSAGE_SEMANTIC {
     break_outside_of_loop,
     continue_outside_of_loop,
     goto_with_undefined_target_label,
+    structure_conflicts_with_previously_declared,
     structure_not_defined_in_scope,
     variable_not_declared_in_scope,
     function_not_declared_in_scope,

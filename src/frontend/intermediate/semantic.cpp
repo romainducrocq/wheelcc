@@ -2289,8 +2289,10 @@ static void resolve_structure_struct_type(Structure* struct_type) {
         if (context->scoped_structure_type_maps[i].find(struct_type->tag)
             != context->scoped_structure_type_maps[i].end()) {
             if (context->scoped_structure_type_maps[i][struct_type->tag].is_union != struct_type->is_union) {
-                // TODO RAISE_RUNTIME_ERROR_AT_LINE
-                RAISE_INTERNAL_ERROR;
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_conflicts_with_previously_declared,
+                        get_type_hr(struct_type), get_struct_name_hr(struct_type->tag, !struct_type->is_union)),
+                    errors->line_buffer);
             }
             struct_type->tag = context->scoped_structure_type_maps[i][struct_type->tag].tag;
             return;
