@@ -1481,26 +1481,20 @@ static void checktype_bound_array_compound_init_initializer(CCompoundInit* node,
 }
 
 static void checktype_bound_structure_compound_init_initializer(CCompoundInit* node, Structure* struct_type) {
-    switch (struct_type->data_type->type()) {
-        case AST_T::Struct_t: {
-            if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
-                RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
-                        get_type_hr(struct_type), std::to_string(node->initializers.size()),
-                        std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
-                    get_compound_init_line(node));
-            }
-            break;
-        }
-        case AST_T::Union_t: {
-            if (node->initializers.size() > 1) {
-                RAISE_INTERNAL_ERROR;
-                // TODO RAISE_RUNTIME_ERROR_AT_LINE
-            }
-            break;
-        }
-        default:
+    if (struct_type->is_union) {
+        if (node->initializers.size() > 1) {
             RAISE_INTERNAL_ERROR;
+            // TODO RAISE_RUNTIME_ERROR_AT_LINE
+        }
+    }
+    else {
+        if (node->initializers.size() > frontend->struct_typedef_table[struct_type->tag]->members.size()) {
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members,
+                    get_type_hr(struct_type), std::to_string(node->initializers.size()),
+                    std::to_string(frontend->struct_typedef_table[struct_type->tag]->members.size())),
+                get_compound_init_line(node));
+        }
     }
 }
 
@@ -2141,24 +2135,18 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
         TLong member_size = get_type_scale(member->member_type.get());
         {
             TLong offset = 0l;
-            switch (node->data_type->type()) {
-                case AST_T::Struct_t: {
-                    offset = size % member_alignment;
-                    if (offset != 0l) {
-                        size += member_alignment - offset;
-                    }
-                    offset = size;
-                    size += member_size;
-                    break;
+            if (node->is_union) {
+                if (size < member_size) {
+                    size = member_size;
                 }
-                case AST_T::Union_t: {
-                    if (size < member_size) {
-                        size = member_size;
-                    }
-                    break;
+            }
+            else {
+                offset = size % member_alignment;
+                if (offset != 0l) {
+                    size += member_alignment - offset;
                 }
-                default:
-                    RAISE_INTERNAL_ERROR;
+                offset = size;
+                size += member_size;
             }
             std::shared_ptr<Type> member_type = member->member_type;
             members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
@@ -2173,10 +2161,8 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
             size += alignment - offset;
         }
     }
-    // TODO is DataStructureType needed in StructTypedef? => no?
-    std::shared_ptr<DataStructureType> data_type = node->data_type;
     frontend->struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(
-        std::move(alignment), std::move(size), std::move(member_names), std::move(data_type), std::move(members));
+        std::move(alignment), std::move(size), std::move(member_names), std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2296,26 +2282,20 @@ static void resolve_pointer_struct_type(Pointer* ptr_type) { resolve_struct_type
 static void resolve_array_struct_type(Array* arr_type) { resolve_struct_type(arr_type->elem_type.get()); }
 
 static void resolve_structure_struct_type(Structure* struct_type) {
-    switch (struct_type->data_type->type()) {
-        case AST_T::Struct_t: {
-            if (context->struct_definition_set.find(struct_type->tag) != context->struct_definition_set.end()) {
-                return;
-            }
-            break;
+    if (struct_type->is_union) {
+        if (context->union_definition_set.find(struct_type->tag) != context->union_definition_set.end()) {
+            return;
         }
-        case AST_T::Union_t: {
-            if (context->union_definition_set.find(struct_type->tag) != context->union_definition_set.end()) {
-                return;
-            }
-            break;
+    }
+    else {
+        if (context->struct_definition_set.find(struct_type->tag) != context->struct_definition_set.end()) {
+            return;
         }
-        default:
-            RAISE_INTERNAL_ERROR;
     }
     for (size_t i = current_scope_depth(); i-- > 0;) {
         if (context->scoped_structure_type_maps[i].find(struct_type->tag)
             != context->scoped_structure_type_maps[i].end()) {
-            if (context->scoped_structure_type_maps[i][struct_type->tag].type != struct_type->data_type->type()) {
+            if (context->scoped_structure_type_maps[i][struct_type->tag].is_union != struct_type->is_union) {
                 // TODO RAISE_RUNTIME_ERROR_AT_LINE
                 RAISE_INTERNAL_ERROR;
             }
@@ -2893,38 +2873,27 @@ static void resolve_structure_declaration(CStructDeclaration* node) {
     if (context->scoped_structure_type_maps.back().find(node->tag)
         != context->scoped_structure_type_maps.back().end()) {
         node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
-        switch (node->data_type->type()) {
-            case AST_T::Struct_t: {
-                if (context->struct_definition_set.find(node->tag) == context->struct_definition_set.end()) {
-                    // TODO RAISE_RUNTIME_ERROR_AT_LINE
-                    RAISE_INTERNAL_ERROR;
-                }
-                break;
-            }
-            case AST_T::Union_t: {
-                if (context->union_definition_set.find(node->tag) == context->union_definition_set.end()) {
-                    // TODO RAISE_RUNTIME_ERROR_AT_LINE
-                    RAISE_INTERNAL_ERROR;
-                }
-                break;
-            }
-            default:
+        if (node->is_union) {
+            if (context->union_definition_set.find(node->tag) == context->union_definition_set.end()) {
+                // TODO RAISE_RUNTIME_ERROR_AT_LINE
                 RAISE_INTERNAL_ERROR;
+            }
+        }
+        else {
+            if (context->struct_definition_set.find(node->tag) == context->struct_definition_set.end()) {
+                // TODO RAISE_RUNTIME_ERROR_AT_LINE
+                RAISE_INTERNAL_ERROR;
+            }
         }
     }
     else {
-        context->scoped_structure_type_maps.back()[node->tag] = {
-            node->data_type->type(), resolve_structure_tag(node->tag)};
+        context->scoped_structure_type_maps.back()[node->tag] = {resolve_structure_tag(node->tag), node->is_union};
         node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
-        switch (node->data_type->type()) {
-            case AST_T::Struct_t:
-                context->struct_definition_set.insert(node->tag);
-                break;
-            case AST_T::Union_t:
-                context->union_definition_set.insert(node->tag);
-                break;
-            default:
-                RAISE_INTERNAL_ERROR;
+        if (node->is_union) {
+            context->union_definition_set.insert(node->tag);
+        }
+        else {
+            context->struct_definition_set.insert(node->tag);
         }
     }
     if (!node->members.empty()) {

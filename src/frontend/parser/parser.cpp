@@ -1213,14 +1213,12 @@ Lbreak:
                 case TOKEN_KIND::key_struct: {
                     TIdentifier tag;
                     parse_identifier(tag, i);
-                    std::shared_ptr<DataStructureType> data_type = std::make_shared<Struct>();
-                    return std::make_shared<Structure>(std::move(tag), std::move(data_type));
+                    return std::make_shared<Structure>(std::move(tag), false);
                 }
                 case TOKEN_KIND::key_union: {
                     TIdentifier tag;
                     parse_identifier(tag, i);
-                    std::shared_ptr<DataStructureType> data_type = std::make_shared<Union>();
-                    return std::make_shared<Structure>(std::move(tag), std::move(data_type));
+                    return std::make_shared<Structure>(std::move(tag), true);
                 }
                 default:
                     break;
@@ -1615,19 +1613,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
 // struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
     size_t line = context->peek_token->line;
-    std::shared_ptr<DataStructureType> data_type;
-    switch (pop_next().token_kind) {
-        case TOKEN_KIND::key_struct: {
-            data_type = std::make_shared<Struct>();
-            break;
-        }
-        case TOKEN_KIND::key_union: {
-            data_type = std::make_shared<Union>();
-            break;
-        }
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
+    bool is_union = pop_next().token_kind == TOKEN_KIND::key_union;
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
     TIdentifier tag;
     parse_identifier(tag, 0);
@@ -1642,8 +1628,7 @@ static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
         pop_next();
     }
     expect_next_is(*context->next_token, TOKEN_KIND::semicolon);
-    return std::make_unique<CStructDeclaration>(
-        std::move(tag), std::move(data_type), std::move(members), std::move(line));
+    return std::make_unique<CStructDeclaration>(std::move(tag), is_union, std::move(members), std::move(line));
 }
 
 static std::unique_ptr<CFunDecl> parse_fun_decl_declaration(
