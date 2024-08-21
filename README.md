@@ -216,7 +216,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 - [x] [Integers, long integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/11_long_integers)
 - [x] [Signed and unsigned integers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/12_unsigned_integers)
 - [x] [Double floating-point numbers, nan](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/13_floating-point_numbers)
-- [x] [Pointers to variable](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/14_pointers)
+- [x] [Pointers](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/14_pointers)
 - [x] [Fixed-sized arrays, pointer arithmetic](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/15_arrays_and_pointer_arithmetic)
 - [x] [Characters, strings literals, ascii](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/16_characters_and_strings)
 - [x] [Void, support dynamic memory allocation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/17_supporting_dynamic_memory_allocation)
