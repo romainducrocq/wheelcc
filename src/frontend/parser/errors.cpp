@@ -361,9 +361,9 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
             case CPostfix_t: {
                 switch (node->type()) {
                     case CAdd_t:
-                        return "+=";
+                        return "++";
                     case CSubtract_t:
-                        return "-=";
+                        return "--";
                     default:
                         RAISE_INTERNAL_ERROR;
                 }
