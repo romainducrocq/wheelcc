@@ -582,6 +582,7 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::CAssignment_t: {
             field("CAssignment", "", ++t);
             CAssignment* p_node = static_cast<CAssignment*>(node);
+            field("Bool", std::to_string(p_node->is_postfix), t + 1);
             print_ast(p_node->exp_left.get(), t);
             print_ast(p_node->exp_right.get(), t);
             print_ast(p_node->exp_type.get(), t);

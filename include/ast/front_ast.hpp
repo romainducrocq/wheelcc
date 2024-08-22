@@ -321,8 +321,9 @@ struct CBinary : CExp {
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
-    CAssignment(std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
+    CAssignment(bool is_postfix, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
 
+    bool is_postfix;
     // Optional
     std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;

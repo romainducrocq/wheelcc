@@ -118,7 +118,7 @@ ast = [
     ["CCast", [], ["exp", "target_type", "exp_type"]],
     ["CUnary", [], ["unary_op", "exp", "exp_type"]],
     ["CBinary", [], ["binary_op", "exp_left", "exp_right", "exp_type"]],
-    ["CAssignment", [], ["exp_left", "exp_right", "exp_type"]],
+    ["CAssignment", [(Bool, "is_postfix")], ["exp_left", "exp_right", "exp_type"]],
     ["CConditional", [], ["condition", "exp_middle", "exp_right", "exp_type"]],
     ["CFunctionCall", [(TIdentifier, "name")], ["[args", "exp_type"]],
     ["CDereference", [], ["exp", "exp_type"]],
