@@ -478,6 +478,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignme
 
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
     std::shared_ptr<TacValue> src;
+    std::shared_ptr<TacValue> dst;
     std::unique_ptr<TacExpResult> res;
     if (node->exp_left) {
         src = represent_exp_instructions(node->exp_right.get());
@@ -512,12 +513,25 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             std::vector<std::unique_ptr<TacInstruction>>* p_instructions = context->p_instructions;
             context->p_instructions = &noeval_instructions;
             res = represent_exp_result_instructions(exp_left);
-            context->p_instructions = p_instructions;
-        }
+            if (node->is_postfix) {
+                std::shared_ptr<TacValue> src_2 = represent_exp_instructions(exp_left);
+                context->p_instructions = p_instructions;
 
-        frontend->label_counter = label_counter_2;
-        frontend->variable_counter = variable_counter_2;
-        frontend->structure_counter = structure_counter_2;
+                frontend->label_counter = label_counter_2;
+                frontend->variable_counter = variable_counter_2;
+                frontend->structure_counter = structure_counter_2;
+
+                dst = represent_plain_inner_value(node);
+                push_instruction(std::make_unique<TacCopy>(std::move(src_2), dst));
+            }
+            else {
+                context->p_instructions = p_instructions;
+
+                frontend->label_counter = label_counter_2;
+                frontend->variable_counter = variable_counter_2;
+                frontend->structure_counter = structure_counter_2;
+            }
+        }
     }
     switch (res->type()) {
         case AST_T::TacPlainOperand_t:
@@ -537,7 +551,12 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         default:
             RAISE_INTERNAL_ERROR;
     }
-    return res;
+    if (node->is_postfix) {
+        return std::make_unique<TacPlainOperand>(std::move(dst));
+    }
+    else {
+        return res;
+    }
 }
 
 static std::unique_ptr<TacPlainOperand> represent_complete_exp_result_conditional_instructions(CConditional* node) {
