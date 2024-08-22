@@ -180,7 +180,7 @@ Very few other C++ features are used, and only when doing so provides a real adv
 
 ### Limitations
 
-wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: increment and decrement operators, enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
 ## Implementation reference
 
@@ -202,7 +202,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 - [x] [Bitwise arithmetic operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/3_binary_operators/valid/extra_credit)
 - [x] [Logical and relational operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/4_logical_and_relational_operators)
 - [x] [Local variables, assignments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables)
-- [x] [Compound assignments](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables/valid/extra_credit)
+- [x] [Compound assignments, increment operators](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/5_local_variables/valid/extra_credit)
 - [x] [If statements, conditional expressions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions)
 - [x] [Goto statements, labels](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/6_statements_and_conditional_expressions/valid/extra_credit)
 - [x] [If if-else else compound statements](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/7_compound_statements)
@@ -255,7 +255,7 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
 <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } 
                                | { "[" <const> "]" }+
-<unop> ::= "-" | "~" | "!" | "*" | "&"
+<unop> ::= "-" | "~" | "!" | "*" | "&" | "++" | "--"
 <binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" 
           | "!=" | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" 
           | "|=" | "^=" | "<<=" | ">>="
