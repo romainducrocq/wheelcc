@@ -538,7 +538,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             frontend->variable_counter = variable_counter_2;
             frontend->structure_counter = structure_counter_2;
 
-            if (node->is_postfix) {
+            if (node->unary_op && node->unary_op->type() == AST_T::CPostfix_t) {
                 std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
                 switch (res->type()) {
                     case AST_T::TacPlainOperand_t:
@@ -578,7 +578,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         default:
             RAISE_INTERNAL_ERROR;
     }
-    if (node->is_postfix) {
+    if (node->unary_op && node->unary_op->type() == AST_T::CPostfix_t) {
         return res_postfix;
     }
     else {

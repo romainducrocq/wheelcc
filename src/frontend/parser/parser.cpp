@@ -509,6 +509,7 @@ static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer)
 
 static std::unique_ptr<CAssignment> parse_postfix_increment_factor(std::unique_ptr<CExp> exp_left) {
     size_t line = context->peek_token->line;
+    std::unique_ptr<CUnaryOp> unary_op = std::make_unique<CPostfix>();
     std::unique_ptr<CExp> exp_left_1;
     std::unique_ptr<CExp> exp_right_1;
     {
@@ -520,7 +521,8 @@ static std::unique_ptr<CAssignment> parse_postfix_increment_factor(std::unique_p
         }
         exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(true, std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(
+        std::move(unary_op), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CUnary> parse_unary_factor() {
@@ -532,6 +534,7 @@ static std::unique_ptr<CUnary> parse_unary_factor() {
 
 static std::unique_ptr<CAssignment> parse_increment_unary_factor() {
     size_t line = context->peek_token->line;
+    std::unique_ptr<CUnaryOp> unary_op = std::make_unique<CPrefix>();
     std::unique_ptr<CExp> exp_left_1;
     std::unique_ptr<CExp> exp_right_1;
     {
@@ -544,7 +547,8 @@ static std::unique_ptr<CAssignment> parse_increment_unary_factor() {
         }
         exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(false, std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(
+        std::move(unary_op), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CDereference> parse_dereference_factor() {
@@ -730,12 +734,15 @@ static std::unique_ptr<CExp> parse_cast_exp_factor() {
 static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
     size_t line = context->peek_token->line;
     pop_next();
+    std::unique_ptr<CUnaryOp> unary_op;
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-    return std::make_unique<CAssignment>(false, std::move(exp_left), std::move(exp_right), std::move(line));
+    return std::make_unique<CAssignment>(
+        std::move(unary_op), std::move(exp_left), std::move(exp_right), std::move(line));
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
     size_t line = context->peek_token->line;
+    std::unique_ptr<CUnaryOp> unary_op;
     std::unique_ptr<CExp> exp_left_1;
     std::unique_ptr<CExp> exp_right_1;
     {
@@ -743,7 +750,8 @@ static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr
         std::unique_ptr<CExp> exp_right = parse_exp(precedence);
         exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(false, std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(
+        std::move(unary_op), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
