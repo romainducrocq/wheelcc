@@ -34,18 +34,6 @@ for SRC in ${TEST_SRCS[@]}; do
     cp -rv ${TEST_SUITE}/tests/chapter_${i}/* ${TEST_DIR}/${SRC}/
 done
 
-# Remove unsupported extra credit
-for FILE in $(find ${TEST_DIR} -name "*.c" -type f); do
-    gcc -E -P ${FILE} -o ${FILE%.*}.i
-done
-for FILE in $(\
-    grep -rn $(find ${TEST_DIR} -name "*.i" -type f) \
-        -e "++" -e "--" | \
-        cut -d":" -f1 | sort --uniq); do
-    rm -rv "${FILE%.*}.c"
-done
-rm -rv $(find ${TEST_DIR} -name "*.i" -type f)
-
 # Remove unused markdown files
 rm -rv $(find ${TEST_DIR} -name "*.md" -type f)
 
