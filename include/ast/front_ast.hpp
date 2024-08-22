@@ -329,7 +329,8 @@ struct CBinary : CExp {
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
-    CAssignment(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
+    CAssignment(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
+        size_t line);
 
     // Optional
     std::unique_ptr<CUnaryOp> unary_op;
