@@ -513,23 +513,37 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             std::vector<std::unique_ptr<TacInstruction>>* p_instructions = context->p_instructions;
             context->p_instructions = &noeval_instructions;
             res = represent_exp_result_instructions(exp_left);
+            context->p_instructions = p_instructions;
+
+            frontend->label_counter = label_counter_2;
+            frontend->variable_counter = variable_counter_2;
+            frontend->structure_counter = structure_counter_2;
+
             if (node->is_postfix) {
-                std::shared_ptr<TacValue> src_2 = represent_exp_instructions(exp_left);
-                context->p_instructions = p_instructions;
-
-                frontend->label_counter = label_counter_2;
-                frontend->variable_counter = variable_counter_2;
-                frontend->structure_counter = structure_counter_2;
-
-                dst = represent_plain_inner_value(node);
-                push_instruction(std::make_unique<TacCopy>(std::move(src_2), dst));
-            }
-            else {
-                context->p_instructions = p_instructions;
-
-                frontend->label_counter = label_counter_2;
-                frontend->variable_counter = variable_counter_2;
-                frontend->structure_counter = structure_counter_2;
+                switch (res->type()) {
+                    case AST_T::TacPlainOperand_t: {
+                        std::shared_ptr<TacValue> src_2 = static_cast<TacPlainOperand*>(res.get())->val;
+                        dst = represent_plain_inner_value(node);
+                        push_instruction(std::make_unique<TacCopy>(std::move(src_2), dst));
+                        break;
+                    }
+                    case AST_T::TacDereferencedPointer_t: {
+                        std::shared_ptr<TacValue> src_2 = static_cast<TacDereferencedPointer*>(res.get())->val;
+                        dst = represent_plain_inner_value(node);
+                        push_instruction(std::make_unique<TacLoad>(std::move(src_2), dst));
+                        break;
+                    }
+                    case AST_T::TacSubObject_t: {
+                        TIdentifier src_name = static_cast<TacSubObject*>(res.get())->base_name;
+                        TLong offset = static_cast<TacSubObject*>(res.get())->offset;
+                        dst = represent_plain_inner_value(node);
+                        push_instruction(
+                            std::make_unique<TacCopyFromOffset>(std::move(src_name), std::move(offset), dst));
+                        break;
+                    }
+                    default:
+                        RAISE_INTERNAL_ERROR;
+                }
             }
         }
     }
