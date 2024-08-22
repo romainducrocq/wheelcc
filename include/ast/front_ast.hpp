@@ -16,6 +16,8 @@
 // unary_operator = Complement
 //                | Negate
 //                | Not
+//                | Prefix
+//                | Postfix
 struct CUnaryOp : Ast {
     AST_T type() override;
 };
@@ -236,7 +238,7 @@ struct CFunDeclarator : CDeclarator {
 //     | Cast(type, exp, type)
 //     | Unary(unary_operator, exp, type)
 //     | Binary(binary_operator, exp, exp, type)
-//     | Assignment(exp, exp, type)
+//     | Assignment(unary_operator, exp, exp, type)
 //     | Conditional(exp, exp, exp, type)
 //     | FunctionCall(identifier, exp*, type)
 //     | Dereference(exp, type)
