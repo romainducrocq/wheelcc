@@ -455,6 +455,25 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_binary_instructions
     }
 }
 
+static void represent_exp_plain_operand_postfix_assignment_instructions(
+    TacPlainOperand* res, std::shared_ptr<TacValue>& dst) {
+    std::shared_ptr<TacValue> src = res->val;
+    push_instruction(std::make_unique<TacCopy>(std::move(src), dst));
+}
+
+static void represent_exp_dereference_pointer_postfix_assignment_instructions(
+    TacDereferencedPointer* res, std::shared_ptr<TacValue>& dst) {
+    std::shared_ptr<TacValue> src = res->val;
+    push_instruction(std::make_unique<TacLoad>(std::move(src), dst));
+}
+
+static void represent_exp_sub_object_postfix_assignment_instructions(
+    TacSubObject* res, std::shared_ptr<TacValue>& dst) {
+    TIdentifier src_name = res->base_name;
+    TLong offset = res->offset;
+    push_instruction(std::make_unique<TacCopyFromOffset>(std::move(src_name), std::move(offset), dst));
+}
+
 static void represent_exp_result_plain_operand_assignment_instructions(
     TacPlainOperand* res, std::shared_ptr<TacValue> src) {
     std::shared_ptr<TacValue> dst = res->val;
@@ -478,8 +497,8 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignme
 
 static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instructions(CAssignment* node) {
     std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
     std::unique_ptr<TacExpResult> res;
+    std::unique_ptr<TacExpResult> res_postfix;
     if (node->exp_left) {
         src = represent_exp_instructions(node->exp_right.get());
         res = represent_exp_result_instructions(node->exp_left.get());
@@ -520,30 +539,24 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             frontend->structure_counter = structure_counter_2;
 
             if (node->is_postfix) {
+                std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
                 switch (res->type()) {
-                    case AST_T::TacPlainOperand_t: {
-                        std::shared_ptr<TacValue> src_2 = static_cast<TacPlainOperand*>(res.get())->val;
-                        dst = represent_plain_inner_value(node);
-                        push_instruction(std::make_unique<TacCopy>(std::move(src_2), dst));
+                    case AST_T::TacPlainOperand_t:
+                        represent_exp_plain_operand_postfix_assignment_instructions(
+                            static_cast<TacPlainOperand*>(res.get()), dst);
                         break;
-                    }
-                    case AST_T::TacDereferencedPointer_t: {
-                        std::shared_ptr<TacValue> src_2 = static_cast<TacDereferencedPointer*>(res.get())->val;
-                        dst = represent_plain_inner_value(node);
-                        push_instruction(std::make_unique<TacLoad>(std::move(src_2), dst));
+                    case AST_T::TacDereferencedPointer_t:
+                        represent_exp_dereference_pointer_postfix_assignment_instructions(
+                            static_cast<TacDereferencedPointer*>(res.get()), dst);
                         break;
-                    }
-                    case AST_T::TacSubObject_t: {
-                        TIdentifier src_name = static_cast<TacSubObject*>(res.get())->base_name;
-                        TLong offset = static_cast<TacSubObject*>(res.get())->offset;
-                        dst = represent_plain_inner_value(node);
-                        push_instruction(
-                            std::make_unique<TacCopyFromOffset>(std::move(src_name), std::move(offset), dst));
+                    case AST_T::TacSubObject_t:
+                        represent_exp_sub_object_postfix_assignment_instructions(
+                            static_cast<TacSubObject*>(res.get()), dst);
                         break;
-                    }
                     default:
                         RAISE_INTERNAL_ERROR;
                 }
+                res_postfix = std::make_unique<TacPlainOperand>(std::move(dst));
             }
         }
     }
@@ -566,7 +579,7 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             RAISE_INTERNAL_ERROR;
     }
     if (node->is_postfix) {
-        return std::make_unique<TacPlainOperand>(std::move(dst));
+        return res_postfix;
     }
     else {
         return res;
