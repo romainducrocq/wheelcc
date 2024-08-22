@@ -505,11 +505,27 @@ static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer)
     return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
 
+static std::unique_ptr<CExp> parse_postfix_increment_factor(std::unique_ptr<CExp> postfix_exp) {
+    size_t line = context->peek_token->line;
+    pop_next();
+    // TODO
+    return nullptr;
+}
+
 static std::unique_ptr<CUnary> parse_unary_factor() {
     size_t line = context->peek_token->line;
     std::unique_ptr<CUnaryOp> unary_op = parse_unary_op();
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
     return std::make_unique<CUnary>(std::move(unary_op), std::move(exp), std::move(line));
+}
+
+static std::unique_ptr<CExp> parse_increment_unary_factor() {
+    size_t line = context->next_token->line;
+    // TODO
+    pop_next();
+    //
+    std::unique_ptr<CExp> exp = parse_cast_exp_factor();
+    return nullptr;
 }
 
 static std::unique_ptr<CDereference> parse_dereference_factor() {
@@ -625,6 +641,11 @@ static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&&
             postfix_exp = parse_arrow_factor(std::move(postfix_exp));
             break;
         }
+        case TOKEN_KIND::unop_increment:
+        case TOKEN_KIND::unop_decrement: {
+            postfix_exp = parse_postfix_increment_factor(std::move(postfix_exp));
+            break;
+        }
         default:
             return postfix_exp;
     }
@@ -638,6 +659,8 @@ static std::unique_ptr<CExp> parse_postfix_exp_factor() {
         case TOKEN_KIND::brackets_open:
         case TOKEN_KIND::structop_member:
         case TOKEN_KIND::structop_pointer:
+        case TOKEN_KIND::unop_increment:
+        case TOKEN_KIND::unop_decrement:
             return parse_postfix_op_exp_factor(std::move(primary_exp));
         default:
             return primary_exp;
@@ -651,6 +674,9 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
         case TOKEN_KIND::unop_negation:
         case TOKEN_KIND::unop_not:
             return parse_unary_factor();
+        case TOKEN_KIND::unop_increment:
+        case TOKEN_KIND::unop_decrement:
+            return parse_increment_unary_factor();
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::binop_bitand:
             return parse_pointer_unary_factor();
