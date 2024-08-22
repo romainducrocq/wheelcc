@@ -247,9 +247,11 @@ static std::unique_ptr<CBinaryOp> parse_binary_op() {
     switch (pop_next().token_kind) {
         case TOKEN_KIND::binop_addition:
         case TOKEN_KIND::assignment_plus:
+        case TOKEN_KIND::unop_increment:
             return std::make_unique<CAdd>();
         case TOKEN_KIND::unop_negation:
         case TOKEN_KIND::assignment_difference:
+        case TOKEN_KIND::unop_decrement:
             return std::make_unique<CSubtract>();
         case TOKEN_KIND::binop_multiplication:
         case TOKEN_KIND::assignment_product:
@@ -505,11 +507,20 @@ static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer)
     return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
 
-static std::unique_ptr<CExp> parse_postfix_increment_factor(std::unique_ptr<CExp> postfix_exp) {
+static std::unique_ptr<CAssignment> parse_postfix_increment_factor(std::unique_ptr<CExp> exp_left) {
     size_t line = context->peek_token->line;
-    pop_next();
-    // TODO
-    return nullptr;
+    std::unique_ptr<CExp> exp_left_1;
+    std::unique_ptr<CExp> exp_right_1;
+    {
+        std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
+        std::unique_ptr<CExp> exp_right;
+        {
+            std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
+            exp_right = std::make_unique<CConstant>(std::move(constant), line);
+        }
+        exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
+    }
+    return std::make_unique<CAssignment>(std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CUnary> parse_unary_factor() {
@@ -519,13 +530,21 @@ static std::unique_ptr<CUnary> parse_unary_factor() {
     return std::make_unique<CUnary>(std::move(unary_op), std::move(exp), std::move(line));
 }
 
-static std::unique_ptr<CExp> parse_increment_unary_factor() {
-    size_t line = context->next_token->line;
-    // TODO
-    pop_next();
-    //
-    std::unique_ptr<CExp> exp = parse_cast_exp_factor();
-    return nullptr;
+static std::unique_ptr<CAssignment> parse_increment_unary_factor() {
+    size_t line = context->peek_token->line;
+    std::unique_ptr<CExp> exp_left_1;
+    std::unique_ptr<CExp> exp_right_1;
+    {
+        std::unique_ptr<CBinaryOp> binary_op = parse_binary_op();
+        std::unique_ptr<CExp> exp_left = parse_cast_exp_factor();
+        std::unique_ptr<CExp> exp_right;
+        {
+            std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
+            exp_right = std::make_unique<CConstant>(std::move(constant), line);
+        }
+        exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
+    }
+    return std::make_unique<CAssignment>(std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CDereference> parse_dereference_factor() {
