@@ -520,7 +520,7 @@ static std::unique_ptr<CAssignment> parse_postfix_increment_factor(std::unique_p
         }
         exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(true, std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CUnary> parse_unary_factor() {
@@ -544,7 +544,7 @@ static std::unique_ptr<CAssignment> parse_increment_unary_factor() {
         }
         exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(false, std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CDereference> parse_dereference_factor() {
@@ -731,7 +731,7 @@ static std::unique_ptr<CAssignment> parse_assigment_exp(std::unique_ptr<CExp> ex
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
-    return std::make_unique<CAssignment>(std::move(exp_left), std::move(exp_right), std::move(line));
+    return std::make_unique<CAssignment>(false, std::move(exp_left), std::move(exp_right), std::move(line));
 }
 
 static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
@@ -743,7 +743,7 @@ static std::unique_ptr<CAssignment> parse_assigment_compound_exp(std::unique_ptr
         std::unique_ptr<CExp> exp_right = parse_exp(precedence);
         exp_right_1 = std::make_unique<CBinary>(std::move(binary_op), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(false, std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
 static std::unique_ptr<CBinary> parse_binary_exp(std::unique_ptr<CExp> exp_left, int32_t precedence) {
