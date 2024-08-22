@@ -221,8 +221,8 @@ static TLong parse_array_size_t() {
     }
 }
 
-// <unop> ::= "-" | "~" | "!" | "*" | "&"
-// unary_operator = Complement | Negate | Not
+// <unop> ::= "-" | "~" | "!" | "*" | "&" | "++" | "--"
+// unary_operator = Complement | Negate | Not | Prefix | Postfix
 static std::unique_ptr<CUnaryOp> parse_unary_op() {
     switch (pop_next().token_kind) {
         case TOKEN_KIND::unop_complement:
@@ -822,10 +822,11 @@ static int32_t parse_token_precedence(TOKEN_KIND token_kind) {
 
 // <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 // exp = Constant(const, type) | String(string, type) | Var(identifier, type) | Cast(type, exp, type)
-//     | Unary(unary_operator, exp, type) | Binary(binary_operator, exp, exp, type) | Assignment(exp, exp, type)
-//     | Conditional(exp, exp, exp, type) | FunctionCall(identifier, exp*, type) | Dereference(exp, type)
-//     | AddrOf(exp, type) | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type)
-//     | Dot(exp, identifier, type) | Arrow(exp, identifier, type)
+//     | Unary(unary_operator, exp, type) | Binary(binary_operator, exp, exp, type)
+//     | Assignment(unary_operator, exp, exp, type) | Conditional(exp, exp, exp, type)
+//     | FunctionCall(identifier, exp*, type) | Dereference(exp, type) | AddrOf(exp, type)
+//     | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type) | Dot(exp, identifier, type)
+//     | Arrow(exp, identifier, type)
 static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
     std::unique_ptr<CExp> exp_left = parse_cast_exp_factor();
     while (true) {
