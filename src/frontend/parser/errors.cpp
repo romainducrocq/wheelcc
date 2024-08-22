@@ -351,9 +351,26 @@ std::string get_binary_op_hr(CBinaryOp* node) {
     }
 }
 
-std::string get_assignment_hr(CBinaryOp* node) {
+std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
     if (!node) {
         return "=";
+    }
+    else if (unary_op) {
+        switch (node->type()) {
+            case CPrefix_t:
+            case CPostfix_t: {
+                switch (node->type()) {
+                    case CAdd_t:
+                        return "+=";
+                    case CSubtract_t:
+                        return "-=";
+                    default:
+                        RAISE_INTERNAL_ERROR;
+                }
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
     }
     else {
         switch (node->type()) {

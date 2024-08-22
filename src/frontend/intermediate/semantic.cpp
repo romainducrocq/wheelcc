@@ -975,8 +975,8 @@ static void checktype_assignment_expression(CAssignment* node) {
             RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_void_type), node->line);
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue, get_assignment_hr(nullptr)),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue,
+                                            get_assignment_hr(nullptr, node->unary_op.get())),
                 node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
@@ -995,7 +995,8 @@ static void checktype_assignment_expression(CAssignment* node) {
         if (!is_exp_lvalue(exp_left)) {
             RAISE_RUNTIME_ERROR_AT_LINE(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue,
-                    get_assignment_hr(static_cast<CBinary*>(node->exp_right.get())->binary_op.get())),
+                    get_assignment_hr(
+                        static_cast<CBinary*>(node->exp_right.get())->binary_op.get(), node->unary_op.get())),
                 node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
