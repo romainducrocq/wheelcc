@@ -21,6 +21,7 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
         R"(<<=)", // assignment_bitshiftleft
         R"(>>=)", // assignment_bitshiftright
 
+        R"(\+\+)", // unop_increment
         R"(--)",   // unop_decrement
         R"(<<)",   // binop_bitshiftleft
         R"(>>)",   // binop_bitshiftright

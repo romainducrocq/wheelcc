@@ -17,7 +17,8 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 18); do
-        test --chapter ${i} --latest-only --bitwise --compound --goto --switch --nan --union
+        test --chapter ${i} --stage lex --latest-only --extra-credit
+        # --bitwise --compound --increment --goto --switch --nan --union
     done
 fi
 

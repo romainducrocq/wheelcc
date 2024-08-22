@@ -9,6 +9,7 @@ enum TOKEN_KIND {
     assignment_bitshiftleft,
     assignment_bitshiftright,
 
+    unop_increment,
     unop_decrement,
     binop_bitshiftleft,
     binop_bitshiftright,

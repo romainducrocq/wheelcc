@@ -17,6 +17,8 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
             return "<<=";
         case TOKEN_KIND::assignment_bitshiftright:
             return ">>=";
+        case TOKEN_KIND::unop_increment:
+            return "++";
         case TOKEN_KIND::unop_decrement:
             return "--";
         case TOKEN_KIND::binop_bitshiftleft:
