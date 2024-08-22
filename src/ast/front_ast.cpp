@@ -13,6 +13,8 @@ AST_T CUnaryOp::type() { return AST_T::CUnaryOp_t; }
 AST_T CComplement::type() { return AST_T::CComplement_t; }
 AST_T CNegate::type() { return AST_T::CNegate_t; }
 AST_T CNot::type() { return AST_T::CNot_t; }
+AST_T CPrefix::type() { return AST_T::CPrefix_t; }
+AST_T CPostfix::type() { return AST_T::CPostfix_t; }
 AST_T CBinaryOp::type() { return AST_T::CBinaryOp_t; }
 AST_T CAdd::type() { return AST_T::CAdd_t; }
 AST_T CSubtract::type() { return AST_T::CSubtract_t; }

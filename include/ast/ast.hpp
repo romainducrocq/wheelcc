@@ -74,6 +74,8 @@ enum AST_T {
     CComplement_t,
     CNegate_t,
     CNot_t,
+    CPrefix_t,
+    CPostfix_t,
     CBinaryOp_t,
     CAdd_t,
     CSubtract_t,

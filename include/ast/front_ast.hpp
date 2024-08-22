@@ -32,6 +32,14 @@ struct CNot : CUnaryOp {
     AST_T type() override;
 };
 
+struct CPrefix : CUnaryOp {
+    AST_T type() override;
+};
+
+struct CPostfix : CUnaryOp {
+    AST_T type() override;
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // binary_operator = Add
