@@ -492,9 +492,13 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_plus));
             what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_increment));
+            what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_difference));
+            what_message += ", ";
+            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_decrement));
             what_message += ", ";
             what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
             what_message += ", ";
