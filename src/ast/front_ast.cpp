@@ -143,9 +143,9 @@ CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp
     binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CAssignment::CAssignment(
-    bool is_postfix, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
+    std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
     CExp(line),
-    is_postfix(is_postfix), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+    unary_op(std::move(unary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CConditional::CConditional(
     std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right, size_t line) :
