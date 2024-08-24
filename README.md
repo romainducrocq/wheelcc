@@ -1,4 +1,6 @@
-# wheelcc - the C compiler reinventing the wheel
+<div><img style="float: left" src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/>
+<h1>&nbsp;&nbsp;&nbsp;&nbsp;wheelcc - the C compiler</br>&nbsp;&nbsp;&nbsp;&nbsp;reinventing the wheel</h1></div><div style="clear: both"></div>
+
 > **THIS COMPILER IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS COMPILER AT YOUR OWN RISK!**
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
