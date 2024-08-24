@@ -1,10 +1,16 @@
-<div><img style="float: right" src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/><h1>&nbsp;&nbsp;&nbsp;&nbsp;wheelcc - the C compiler</br>&nbsp;&nbsp;&nbsp;&nbsp;reinventing the wheel</h1></div><div style="clear: both"></div>
+# wheelcc - the C compiler reinventing the wheel
+
+<img src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/>
 
 > **THIS COMPILER IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS COMPILER AT YOUR OWN RISK!**
+
+<img src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/>
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
 <!---->
 A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Linux platforms. 
+
+<img src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/>
 
 ****
 
