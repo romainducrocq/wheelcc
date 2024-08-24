@@ -2,7 +2,7 @@
 
 > **THIS COMPILER IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS COMPILER AT YOUR OWN RISK!**
 
-<img src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/> - - - - - - - - - - - - - - - - - - - - - - - - __<span style="color: #FABA4A">c</span>__ o  
+<img src="https://raw.githubusercontent.com/romainducrocq/wheelcc/master/icon.png" alt="icon"/> - - - - - - - - - - - - - - - - - - - - - - - - __C__  &nbsp;&nbsp;o&nbsp;&nbsp;&nbsp;&nbsp;o&nbsp;&nbsp;&nbsp;&nbsp;o&nbsp;&nbsp;&nbsp;&nbsp;o&nbsp;&nbsp;&nbsp;&nbsp;o  
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
 <!---->
