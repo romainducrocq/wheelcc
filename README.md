@@ -135,9 +135,9 @@ $ ./test-memory.sh
 ```
 
 The latest master branch of wheelcc is tested on these distributions (x86-64):  
-Debian GNU/Linux  | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
-:---:             |:---:             |:---:             |:---:             |:---:             |:---:
-:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
+Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
+:---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
+:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
 ## Compiler overview
 
