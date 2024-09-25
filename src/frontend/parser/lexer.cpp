@@ -23,21 +23,22 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 // Lexer
 
+// TODO make PATTERN a macro
 static constexpr ctll::fixed_string pattern(
     // R"((<<=)|)" // assignment_bitshiftleft
     // R"((>>=)|)" // assignment_bitshiftright
 
     // R"((\+\+)|)" // unop_increment
-    // R"((--)|)"   // unop_decrement
-    // R"((<<)|)"   // binop_bitshiftleft
-    // R"((>>)|)"   // binop_bitshiftright
-    // R"((&&)|)"   // binop_and
-    // R"((\|\|)|)" // binop_or
-    // R"((==)|)"   // binop_equalto
-    // R"((!=)|)"   // binop_notequal
-    // R"((<=)|)"   // binop_lessthanorequal
-    // R"((>=)|)"   // binop_greaterthanorequal
-    // R"((\+=)|)"  // assignment_plus
+    R"((--)|)"   // unop_decrement
+    R"((<<)|)"   // binop_bitshiftleft
+    R"((>>)|)"   // binop_bitshiftright
+    R"((&&)|)"   // binop_and
+    R"((\|\|)|)" // binop_or
+    R"((==)|)"   // binop_equalto
+    R"((!=)|)"   // binop_notequal
+    R"((<=)|)"   // binop_lessthanorequal
+    R"((>=)|)"   // binop_greaterthanorequal
+    R"((\+=)|)"  // assignment_plus
     // R"((-=)|)"   // assignment_difference
     // R"((\*=)|)"  // assignment_product
     // R"((/=)|)"   // assignment_quotient
@@ -58,19 +59,19 @@ static constexpr ctll::fixed_string pattern(
     // R"((\[)|)"           // brackets_open
     // R"((\])|)"           // brackets_close
     R"((;)|)" // semicolon
-    // R"((~)|)"            // unop_complement
-    // R"((-)|)"            // unop_negation
-    // R"((!)|)"            // unop_not
-    // R"((\+)|)"           // binop_addition
-    // R"((\*)|)"           // binop_multiplication
-    // R"((/)|)"            // binop_division
-    // R"((%)|)"            // binop_remainder
-    // R"((&)|)"            // binop_bitand
-    // R"((\|)|)"           // binop_bitor
-    // R"((\^)|)"           // binop_bitxor
-    // R"((<)|)"            // binop_lessthan
-    // R"((>)|)"            // binop_greaterthan
-    // R"((=)|)"            // assignment_simple
+    R"((~)|)"            // unop_complement
+    R"((-)|)"            // unop_negation
+    R"((!)|)"            // unop_not
+    R"((\+)|)"           // binop_addition
+    R"((\*)|)"           // binop_multiplication
+    R"((/)|)"            // binop_division
+    R"((%)|)"            // binop_remainder
+    R"((&)|)"            // binop_bitand
+    R"((\|)|)"           // binop_bitor
+    R"((\^)|)"           // binop_bitxor
+    R"((<)|)"            // binop_lessthan
+    R"((>)|)"            // binop_greaterthan
+    R"((=)|)"            // assignment_simple
     // R"((\?)|)"           // ternary_if
     // R"((:)|)"            // ternary_else
     // R"((,)|)"            // separator_comma
@@ -117,6 +118,7 @@ static constexpr ctll::fixed_string pattern(
     R"((.))"              // error
 );
 
+// TODO remove when all tokens pass
 static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
     error, //
            //
@@ -124,16 +126,16 @@ static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
     // assignment_bitshiftright,//
     //
     // unop_increment,//
-    // unop_decrement,//
-    // binop_bitshiftleft,//
-    // binop_bitshiftright,//
-    // binop_and,//
-    // binop_or,//
-    // binop_equalto,//
-    // binop_notequal,//
-    // binop_lessthanorequal,//
-    // binop_greaterthanorequal,//
-    // assignment_plus,//
+    unop_decrement,//
+    binop_bitshiftleft,//
+    binop_bitshiftright,//
+    binop_and,//
+    binop_or,//
+    binop_equalto,//
+    binop_notequal,//
+    binop_lessthanorequal,//
+    binop_greaterthanorequal,//
+    assignment_plus,//
     // assignment_difference,//
     // assignment_product,//
     // assignment_quotient,//
@@ -154,19 +156,19 @@ static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
     // brackets_open,//
     // brackets_close,//
     semicolon, //
-    // unop_complement,//
-    // unop_negation,//
-    // unop_not,//
-    // binop_addition,//
-    // binop_multiplication,//
-    // binop_division,//
-    // binop_remainder,//
-    // binop_bitand,//
-    // binop_bitor,//
-    // binop_bitxor,//
-    // binop_lessthan,//
-    // binop_greaterthan,//
-    // assignment_simple,//
+    unop_complement,//
+    unop_negation,//
+    unop_not,//
+    binop_addition,//
+    binop_multiplication,//
+    binop_division,//
+    binop_remainder,//
+    binop_bitand,//
+    binop_bitor,//
+    binop_bitxor,//
+    binop_lessthan,//
+    binop_greaterthan,//
+    assignment_simple,//
     // ternary_if,//
     // ternary_else,//
     // separator_comma,//
@@ -215,55 +217,37 @@ static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
 
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
-template <int I> TOKEN_KIND get_token_kind(const auto& f_match_get) {
+template <int I> TOKEN_KIND get_token_kind(const auto& is_match) {
     if constexpr (I == 0) {
         RAISE_INTERNAL_ERROR;
     }
-    else if (f_match_get.template operator()<I>()) {
+    else if (is_match.template operator()<I>()) {
         return static_cast<TOKEN_KIND>(I);
     }
     else {
-        return get_token_kind<I - 1>(f_match_get);
+        return get_token_kind<I - 1>(is_match);
     }
 }
 
-#include <iostream>
 static void tokenize_file() {
-    // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
     std::string line;
     bool is_comment = false;
     for (size_t line_number = 1; read_line(line); ++line_number) {
         context->total_line_number++;
 
         bool it_next = true;
+        // TODO pass macro pattern to iterator template arg
         for (ctre::regex_iterator it = ctre::iterator<pattern>(line); it_next; it++) {
             if (it.current == it.end) {
                 it_next = false;
             }
 
-            TOKEN_KIND token_kind = get_token_kind<16 /*TOKEN_KIND_SIZE*/>([&it]<int I>() -> bool {
+            // TODO set template arg to TOKEN_KIND_SIZE
+            TOKEN_KIND token_kind = get_token_kind<39 /*TOKEN_KIND_SIZE*/>([&it]<int I>() -> bool {
                 return it.current_match.template get<I>() ? true : false;
             });
-            size_t last_group = TOKEN_KIND_TMP[token_kind]; // TODO rm
-
-            // size_t last_group =
-            //     it.current_match.get<16>() ? TOKEN_KIND_TMP[16] :
-            //     it.current_match.get<15>() ? TOKEN_KIND_TMP[15] :
-            //     it.current_match.get<14>() ? TOKEN_KIND_TMP[14] :
-            //     it.current_match.get<13>() ? TOKEN_KIND_TMP[13] :
-            //     it.current_match.get<12>() ? TOKEN_KIND_TMP[12] :
-            //     it.current_match.get<11>() ? TOKEN_KIND_TMP[11] :
-            //     it.current_match.get<10>() ? TOKEN_KIND_TMP[10] :
-            //     it.current_match.get<9>() ? TOKEN_KIND_TMP[9] :
-            //     it.current_match.get<8>() ? TOKEN_KIND_TMP[8] :
-            //     it.current_match.get<7>() ? TOKEN_KIND_TMP[7] :
-            //     it.current_match.get<6>() ? TOKEN_KIND_TMP[6] :
-            //     it.current_match.get<5>() ? TOKEN_KIND_TMP[5] :
-            //     it.current_match.get<4>() ? TOKEN_KIND_TMP[4] :
-            //     it.current_match.get<3>() ? TOKEN_KIND_TMP[3] :
-            //     it.current_match.get<2>() ? TOKEN_KIND_TMP[2] :
-            //     it.current_match.get<1>() ? TOKEN_KIND_TMP[1] :
-            //         []() -> TOKEN_KIND { RAISE_INTERNAL_ERROR; return TOKEN_KIND::error; }();
+            // TODO remove when all tokens pass
+            size_t last_group = TOKEN_KIND_TMP[token_kind];
 
             if (is_comment) {
                 if (last_group == TOKEN_KIND::comment_multilineend) {
@@ -300,65 +284,10 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            std::cout << std::string(it.current_match.get<0>()) << std::endl;
-
             Token token = {std::string(it.current_match.get<0>()), static_cast<TOKEN_KIND>(last_group),
                 context->total_line_number};
             context->p_tokens->emplace_back(std::move(token));
         }
-
-        // boost::sregex_iterator it_end;
-        // for (boost::sregex_iterator it_begin =
-        //          boost::sregex_iterator(line.begin(), line.end(), *context->token_pattern);
-        //      it_begin != it_end; it_begin++) {
-
-        //     size_t last_group;
-        //     boost::smatch match = *it_begin;
-        //     for (last_group = TOKEN_KIND_SIZE; last_group-- > 0;) {
-        //         if (match[context->token_groups[last_group]].matched) {
-        //             break;
-        //         }
-        //     }
-
-        //     if (is_comment) {
-        //         if (last_group == TOKEN_KIND::comment_multilineend) {
-        //             is_comment = false;
-        //         }
-        //         continue;
-        //     }
-        //     else {
-        //         switch (last_group) {
-        //             case TOKEN_KIND::error:
-        //             case TOKEN_KIND::comment_multilineend:
-        //                 raise_runtime_error_at_line(
-        //                     GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, match.get_last_closed_paren()),
-        //                     line_number);
-        //             case TOKEN_KIND::skip:
-        //                 goto Lcontinue;
-        //             case TOKEN_KIND::comment_multilinestart: {
-        //                 is_comment = true;
-        //                 goto Lcontinue;
-        //             }
-        //             case TOKEN_KIND::include_directive:
-        //                 tokenize_header(match.get_last_closed_paren(), line_number);
-        //                 goto Lcontinue;
-        //             case TOKEN_KIND::comment_singleline:
-        //             case TOKEN_KIND::preprocessor_directive:
-        //                 goto Lbreak;
-        //             default:
-        //                 goto Lpass;
-        //         }
-        //     Lbreak:
-        //         break;
-        //     Lcontinue:
-        //         continue;
-        //     Lpass:;
-        //     }
-
-        //     Token token = {
-        //         match.get_last_closed_paren(), static_cast<TOKEN_KIND>(last_group), context->total_line_number};
-        //     context->p_tokens->emplace_back(std::move(token));
-        // }
     }
 }
 
