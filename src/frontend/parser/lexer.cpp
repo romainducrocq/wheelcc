@@ -1,4 +1,5 @@
 #include "ctre/ctre.hpp"
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -23,8 +24,18 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 // Lexer
 
-// TODO make PATTERN a macro
-static constexpr ctll::fixed_string pattern(
+// TODO
+// Lexer implementation with compile time regex works
+// but the compilation time explodes with the number of tokens/capture groups
+// during testing, it works up to 39 tokens and crashes with 40
+// => can only use ctre if i find a way to use many small patterns instead of 1 very big
+//
+// If ctre works, merge with boost (this file, lexer.hpp, CMakeLists.txt)
+// and add lexing with ctre as a build option (default stays regex::boost)
+//
+
+// TODO make MATCH_PATTERN a macro
+static constexpr ctll::fixed_string MATCH_PATTERN(
     // R"((<<=)|)" // assignment_bitshiftleft
     // R"((>>=)|)" // assignment_bitshiftright
 
@@ -58,20 +69,20 @@ static constexpr ctll::fixed_string pattern(
     R"((\})|)" // brace_close
     // R"((\[)|)"           // brackets_open
     // R"((\])|)"           // brackets_close
-    R"((;)|)" // semicolon
-    R"((~)|)"            // unop_complement
-    R"((-)|)"            // unop_negation
-    R"((!)|)"            // unop_not
-    R"((\+)|)"           // binop_addition
-    R"((\*)|)"           // binop_multiplication
-    R"((/)|)"            // binop_division
-    R"((%)|)"            // binop_remainder
-    R"((&)|)"            // binop_bitand
-    R"((\|)|)"           // binop_bitor
-    R"((\^)|)"           // binop_bitxor
-    R"((<)|)"            // binop_lessthan
-    R"((>)|)"            // binop_greaterthan
-    R"((=)|)"            // assignment_simple
+    R"((;)|)"  // semicolon
+    R"((~)|)"  // unop_complement
+    R"((-)|)"  // unop_negation
+    R"((!)|)"  // unop_not
+    R"((\+)|)" // binop_addition
+    R"((\*)|)" // binop_multiplication
+    R"((/)|)"  // binop_division
+    R"((%)|)"  // binop_remainder
+    R"((&)|)"  // binop_bitand
+    R"((\|)|)" // binop_bitor
+    R"((\^)|)" // binop_bitxor
+    R"((<)|)"  // binop_lessthan
+    R"((>)|)"  // binop_greaterthan
+    R"((=)|)"  // assignment_simple
     // R"((\?)|)"           // ternary_if
     // R"((:)|)"            // ternary_else
     // R"((,)|)"            // separator_comma
@@ -119,23 +130,22 @@ static constexpr ctll::fixed_string pattern(
 );
 
 // TODO remove when all tokens pass
-static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
-    error, //
-           //
+constexpr size_t TOKEN_KIND_TEMP_SIZE = 39;
+static std::array<TOKEN_KIND, TOKEN_KIND_TEMP_SIZE> TOKEN_KIND_TEMP({
     // assignment_bitshiftleft,//
     // assignment_bitshiftright,//
     //
     // unop_increment,//
-    unop_decrement,//
-    binop_bitshiftleft,//
-    binop_bitshiftright,//
-    binop_and,//
-    binop_or,//
-    binop_equalto,//
-    binop_notequal,//
-    binop_lessthanorequal,//
-    binop_greaterthanorequal,//
-    assignment_plus,//
+    unop_decrement,           //
+    binop_bitshiftleft,       //
+    binop_bitshiftright,      //
+    binop_and,                //
+    binop_or,                 //
+    binop_equalto,            //
+    binop_notequal,           //
+    binop_lessthanorequal,    //
+    binop_greaterthanorequal, //
+    assignment_plus,          //
     // assignment_difference,//
     // assignment_product,//
     // assignment_quotient,//
@@ -155,20 +165,20 @@ static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
     brace_close,            //
     // brackets_open,//
     // brackets_close,//
-    semicolon, //
-    unop_complement,//
-    unop_negation,//
-    unop_not,//
-    binop_addition,//
-    binop_multiplication,//
-    binop_division,//
-    binop_remainder,//
-    binop_bitand,//
-    binop_bitor,//
-    binop_bitxor,//
-    binop_lessthan,//
-    binop_greaterthan,//
-    assignment_simple,//
+    semicolon,            //
+    unop_complement,      //
+    unop_negation,        //
+    unop_not,             //
+    binop_addition,       //
+    binop_multiplication, //
+    binop_division,       //
+    binop_remainder,      //
+    binop_bitand,         //
+    binop_bitor,          //
+    binop_bitxor,         //
+    binop_lessthan,       //
+    binop_greaterthan,    //
+    assignment_simple,    //
     // ternary_if,//
     // ternary_else,//
     // separator_comma,//
@@ -213,7 +223,7 @@ static std::vector<TOKEN_KIND> TOKEN_KIND_TMP = {
               //
     skip,     //
     error     //
-};
+});
 
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
@@ -236,27 +246,27 @@ static void tokenize_file() {
         context->total_line_number++;
 
         bool it_next = true;
-        // TODO pass macro pattern to iterator template arg
-        for (ctre::regex_iterator it = ctre::iterator<pattern>(line); it_next; it++) {
+        // TODO pass macro MATCH_PATTERN to iterator template arg
+        for (ctre::regex_iterator it = ctre::iterator<MATCH_PATTERN>(line); it_next; it++) {
             if (it.current == it.end) {
                 it_next = false;
             }
 
             // TODO set template arg to TOKEN_KIND_SIZE
-            TOKEN_KIND token_kind = get_token_kind<39 /*TOKEN_KIND_SIZE*/>([&it]<int I>() -> bool {
+            TOKEN_KIND token_kind = get_token_kind<TOKEN_KIND_TEMP_SIZE>([&it]<int I>() -> bool {
                 return it.current_match.template get<I>() ? true : false;
             });
             // TODO remove when all tokens pass
-            size_t last_group = TOKEN_KIND_TMP[token_kind];
+            token_kind = TOKEN_KIND_TEMP[token_kind - 1];
 
             if (is_comment) {
-                if (last_group == TOKEN_KIND::comment_multilineend) {
+                if (token_kind == TOKEN_KIND::comment_multilineend) {
                     is_comment = false;
                 }
                 continue;
             }
             else {
-                switch (last_group) {
+                switch (token_kind) {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
                         raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token,
@@ -284,8 +294,7 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            Token token = {std::string(it.current_match.get<0>()), static_cast<TOKEN_KIND>(last_group),
-                context->total_line_number};
+            Token token = {std::string(it.current_match.get<0>()), token_kind, context->total_line_number};
             context->p_tokens->emplace_back(std::move(token));
         }
     }

@@ -1,7 +1,6 @@
 #ifndef _FRONTEND_PARSER_LEXER_HPP
 #define _FRONTEND_PARSER_LEXER_HPP
 
-#include <array>
 #include <memory>
 #include <string>
 #include <unordered_set>
