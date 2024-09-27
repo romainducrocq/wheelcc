@@ -1,4 +1,13 @@
+#ifdef __GNUC__
+#if __cplusplus > 201703L
+#define __WITH_CTRE__
+#endif
+#endif
+#ifdef __WITH_CTRE__
 #include "ctre/ctre.hpp"
+#else
+#include "boost/regex.hpp"
+#endif
 #include <array>
 #include <memory>
 #include <string>
