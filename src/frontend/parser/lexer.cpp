@@ -131,11 +131,10 @@ static void ctre_match_current_token() {
     CTRE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOKEN_KIND::long_constant)
     CTRE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOKEN_KIND::constant)
 
-    CTRE_MATCH_TOKEN(R"(^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))", TOKEN_KIND::include_directive)
+    CTRE_MATCH_TOKEN(R"(^\s*#\s*include\s*[<"][^>"]+\.h[>"])", TOKEN_KIND::include_directive)
     CTRE_MATCH_TOKEN(R"(^\s*#\s*[_acdefgilmnoprstuwx]+\b)", TOKEN_KIND::preprocessor_directive)
 
     CTRE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
-
     CTRE_MATCH_TOKEN(R"(.)", TOKEN_KIND::error)
 }
 
