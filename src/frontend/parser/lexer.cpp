@@ -8,7 +8,6 @@
 #else
 #include "boost/regex.hpp"
 #endif
-#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
