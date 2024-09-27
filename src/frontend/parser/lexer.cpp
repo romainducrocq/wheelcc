@@ -25,101 +25,6 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 // Lexer
 
-// // TODO make MATCH_PATTERN a macro
-// static constexpr ctll::fixed_string MATCH_PATTERN(
-//     // R"((<<=)|)" // assignment_bitshiftleft
-//     // R"((>>=)|)" // assignment_bitshiftright
-
-//     // R"((\+\+)|)" // unop_increment
-//     // R"((--)|)"   // unop_decrement
-//     // R"((<<)|)"   // binop_bitshiftleft
-//     // R"((>>)|)"   // binop_bitshiftright
-//     // R"((&&)|)"   // binop_and
-//     // R"((\|\|)|)" // binop_or
-//     // R"((==)|)"   // binop_equalto
-//     // R"((!=)|)"   // binop_notequal
-//     // R"((<=)|)"   // binop_lessthanorequal
-//     // R"((>=)|)"   // binop_greaterthanorequal
-//     // R"((\+=)|)"  // assignment_plus
-//     // R"((-=)|)"   // assignment_difference
-//     // R"((\*=)|)"  // assignment_product
-//     // R"((/=)|)"   // assignment_quotient
-//     // R"((%=)|)"   // assignment_remainder
-//     // R"((&=)|)"   // assignment_bitand
-//     // R"((\|=)|)"  // assignment_bitor
-//     // R"((\^=)|)"  // assignment_bitxor
-//     // R"((->)|)"   // structop_pointer
-
-//     R"((//)|)"  // comment_singleline
-//     R"((/\*)|)" // comment_multilinestart
-//     R"((\*/)|)" // comment_multilineend
-
-//     R"((\()|)" // parenthesis_open
-//     R"((\))|)" // parenthesis_close
-//     R"((\{)|)" // brace_open
-//     R"((\})|)" // brace_close
-//     // R"((\[)|)"           // brackets_open
-//     // R"((\])|)"           // brackets_close
-//     R"((;)|)" // semicolon
-//     // R"((~)|)"  // unop_complement
-//     // R"((-)|)"  // unop_negation
-//     // R"((!)|)"  // unop_not
-//     // R"((\+)|)" // binop_addition
-//     // R"((\*)|)" // binop_multiplication
-//     // R"((/)|)"  // binop_division
-//     // R"((%)|)"  // binop_remainder
-//     // R"((&)|)"  // binop_bitand
-//     // R"((\|)|)" // binop_bitor
-//     // R"((\^)|)" // binop_bitxor
-//     // R"((<)|)"  // binop_lessthan
-//     // R"((>)|)"  // binop_greaterthan
-//     // R"((=)|)"  // assignment_simple
-//     // R"((\?)|)"           // ternary_if
-//     // R"((:)|)"            // ternary_else
-//     // R"((,)|)"            // separator_comma
-//     // R"((\.(?![0-9]+))|)" // structop_member
-
-//     // R"((^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))|)" // include_directive
-//     // R"((^\s*#\s*[_acdefgilmnoprstuwx]+\b)|)" // preprocessor_directive
-
-//     // R"((char\b)|)"     // key_char
-//     R"((int\b)|)" // key_int
-//     // R"((long\b)|)"     // key_long
-//     // R"((double\b)|)"   // key_double
-//     // R"((signed\b)|)"   // key_signed
-//     // R"((unsigned\b)|)" // key_unsigned
-//     R"((void\b)|)" // key_void
-//     // R"((struct\b)|)"   // key_struct
-//     // R"((union\b)|)"    // key_union
-//     // R"((sizeof\b)|)"   // key_sizeof
-//     R"((return\b)|)" // key_return
-//     // R"((if\b)|)"       // key_if
-//     // R"((else\b)|)"     // key_else
-//     // R"((goto\b)|)"     // key_goto
-//     // R"((do\b)|)"       // key_do
-//     // R"((while\b)|)"    // key_while
-//     // R"((for\b)|)"      // key_for
-//     // R"((switch\b)|)"   // key_switch
-//     // R"((case\b)|)"     // key_case
-//     // R"((default\b)|)"  // key_default
-//     // R"((break\b)|)"    // key_break
-//     // R"((continue\b)|)" // key_continue
-//     // R"((static\b)|)"   // key_static
-//     // R"((extern\b)|)"   // key_extern
-
-//     R"(([a-zA-Z_]\w*\b)|)" // identifier
-//     // R"(("([^"\\\n]|\\['"\\?abfnrtv])*")|)"                                               // string_literal
-//     // R"(('([^'\\\n]|\\['"?\\abfnrtv])')|)"                                                // char_constant
-//     // R"(((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))|)" // float_constant
-//     // R"(([0-9]+([lL][uU]|[uU][lL])(?![\w.]))|)"                                           // unsigned_long_constant
-//     // R"(([0-9]+[uU](?![\w.]))|)"                                                          // unsigned_constant
-//     // R"(([0-9]+[lL](?![\w.]))|)"                                                          // long_constant
-//     R"(([0-9]+(?![\w.]))|)" // constant
-
-//     R"(([ \n\r\t\f\v])|)" // skip
-//     R"((.))"              // error
-// );
-
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
 template <ctll::fixed_string regex_pattern, TOKEN_KIND token_kind> bool ctre_match_token() {
@@ -139,6 +44,29 @@ template <ctll::fixed_string regex_pattern, TOKEN_KIND token_kind> bool ctre_mat
     }
 
 static void ctre_match_current_token() {
+    // CTRE_MATCH_TOKEN(R"(<<=)", TOKEN_KIND::assignment_bitshiftleft)
+    // CTRE_MATCH_TOKEN(R"(>>=)", TOKEN_KIND::assignment_bitshiftright)
+
+    // CTRE_MATCH_TOKEN(R"(\+\+)", TOKEN_KIND::unop_increment)
+    // CTRE_MATCH_TOKEN(R"(--)", TOKEN_KIND::unop_decrement)
+    // CTRE_MATCH_TOKEN(R"(<<)", TOKEN_KIND::binop_bitshiftleft)
+    // CTRE_MATCH_TOKEN(R"(>>)", TOKEN_KIND::binop_bitshiftright)
+    // CTRE_MATCH_TOKEN(R"(&&)", TOKEN_KIND::binop_and)
+    // CTRE_MATCH_TOKEN(R"(\|\|)", TOKEN_KIND::binop_or)
+    // CTRE_MATCH_TOKEN(R"(==)", TOKEN_KIND::binop_equalto)
+    // CTRE_MATCH_TOKEN(R"(!=)", TOKEN_KIND::binop_notequal)
+    // CTRE_MATCH_TOKEN(R"(<=)", TOKEN_KIND::binop_lessthanorequal)
+    // CTRE_MATCH_TOKEN(R"(>=)", TOKEN_KIND::binop_greaterthanorequal)
+    // CTRE_MATCH_TOKEN(R"(\+=)", TOKEN_KIND::assignment_plus)
+    // CTRE_MATCH_TOKEN(R"(-=)", TOKEN_KIND::assignment_difference)
+    // CTRE_MATCH_TOKEN(R"(\*=)", TOKEN_KIND::assignment_product)
+    // CTRE_MATCH_TOKEN(R"(/=)", TOKEN_KIND::assignment_quotient)
+    // CTRE_MATCH_TOKEN(R"(%=)", TOKEN_KIND::assignment_remainder)
+    // CTRE_MATCH_TOKEN(R"(&=)", TOKEN_KIND::assignment_bitand)
+    // CTRE_MATCH_TOKEN(R"(\|=)", TOKEN_KIND::assignment_bitor)
+    // CTRE_MATCH_TOKEN(R"(\^=)", TOKEN_KIND::assignment_bitxor)
+    // CTRE_MATCH_TOKEN(R"(->)", TOKEN_KIND::structop_pointer)
+
     CTRE_MATCH_TOKEN(R"(//)", TOKEN_KIND::comment_singleline)
     CTRE_MATCH_TOKEN(R"(/\*)", TOKEN_KIND::comment_multilinestart)
     CTRE_MATCH_TOKEN(R"(\*/)", TOKEN_KIND::comment_multilineend)
@@ -147,13 +75,63 @@ static void ctre_match_current_token() {
     CTRE_MATCH_TOKEN(R"(\))", TOKEN_KIND::parenthesis_close)
     CTRE_MATCH_TOKEN(R"(\{)", TOKEN_KIND::brace_open)
     CTRE_MATCH_TOKEN(R"(\})", TOKEN_KIND::brace_close)
+    // CTRE_MATCH_TOKEN(R"(\[)", TOKEN_KIND::brackets_open)
+    // CTRE_MATCH_TOKEN(R"(\])", TOKEN_KIND::brackets_close)
     CTRE_MATCH_TOKEN(R"(;)", TOKEN_KIND::semicolon)
+    // CTRE_MATCH_TOKEN(R"(~)", TOKEN_KIND::unop_complement)
+    // CTRE_MATCH_TOKEN(R"(-)", TOKEN_KIND::unop_negation)
+    // CTRE_MATCH_TOKEN(R"(!)", TOKEN_KIND::unop_not)
+    // CTRE_MATCH_TOKEN(R"(\+)", TOKEN_KIND::binop_addition)
+    // CTRE_MATCH_TOKEN(R"(\*)", TOKEN_KIND::binop_multiplication)
+    // CTRE_MATCH_TOKEN(R"(/)", TOKEN_KIND::binop_division)
+    // CTRE_MATCH_TOKEN(R"(%)", TOKEN_KIND::binop_remainder)
+    // CTRE_MATCH_TOKEN(R"(&)", TOKEN_KIND::binop_bitand)
+    // CTRE_MATCH_TOKEN(R"(\|)", TOKEN_KIND::binop_bitor)
+    // CTRE_MATCH_TOKEN(R"(\^)", TOKEN_KIND::binop_bitxor)
+    // CTRE_MATCH_TOKEN(R"(<)", TOKEN_KIND::binop_lessthan)
+    // CTRE_MATCH_TOKEN(R"(>)", TOKEN_KIND::binop_greaterthan)
+    // CTRE_MATCH_TOKEN(R"(=)", TOKEN_KIND::assignment_simple)
+    // CTRE_MATCH_TOKEN(R"(\?)", TOKEN_KIND::ternary_if)
+    // CTRE_MATCH_TOKEN(R"(:)", TOKEN_KIND::ternary_else)
+    // CTRE_MATCH_TOKEN(R"(,)", TOKEN_KIND::separator_comma)
+    // CTRE_MATCH_TOKEN(R"(\.(?![0-9]+))", TOKEN_KIND::structop_member)
 
+    // CTRE_MATCH_TOKEN(R"(^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))",
+    // TOKEN_KIND::include_directive) CTRE_MATCH_TOKEN(R"(^\s*#\s*[_acdefgilmnoprstuwx]+\b)",
+    // TOKEN_KIND::preprocessor_directive)
+
+    // CTRE_MATCH_TOKEN(R"(char\b)", TOKEN_KIND::key_char)
     CTRE_MATCH_TOKEN(R"(int\b)", TOKEN_KIND::key_int)
+    // CTRE_MATCH_TOKEN(R"(long\b)", TOKEN_KIND::key_long)
+    // CTRE_MATCH_TOKEN(R"(double\b)", TOKEN_KIND::key_double)
+    // CTRE_MATCH_TOKEN(R"(signed\b)", TOKEN_KIND::key_signed)
+    // CTRE_MATCH_TOKEN(R"(unsigned\b)", TOKEN_KIND::key_unsigned)
     CTRE_MATCH_TOKEN(R"(void\b)", TOKEN_KIND::key_void)
+    // CTRE_MATCH_TOKEN(R"(struct\b)", TOKEN_KIND::key_struct)
+    // CTRE_MATCH_TOKEN(R"(union\b)", TOKEN_KIND::key_union)
+    // CTRE_MATCH_TOKEN(R"(sizeof\b)", TOKEN_KIND::key_sizeof)
     CTRE_MATCH_TOKEN(R"(return\b)", TOKEN_KIND::key_return)
+    // CTRE_MATCH_TOKEN(R"(if\b)", TOKEN_KIND::key_if)
+    // CTRE_MATCH_TOKEN(R"(else\b)", TOKEN_KIND::key_else)
+    // CTRE_MATCH_TOKEN(R"(goto\b)", TOKEN_KIND::key_goto)
+    // CTRE_MATCH_TOKEN(R"(do\b)", TOKEN_KIND::key_do)
+    // CTRE_MATCH_TOKEN(R"(while\b)", TOKEN_KIND::key_while)
+    // CTRE_MATCH_TOKEN(R"(for\b)", TOKEN_KIND::key_for)
+    // CTRE_MATCH_TOKEN(R"(switch\b)", TOKEN_KIND::key_switch)
+    // CTRE_MATCH_TOKEN(R"(case\b)", TOKEN_KIND::key_case)
+    // CTRE_MATCH_TOKEN(R"(default\b)", TOKEN_KIND::key_default)
+    // CTRE_MATCH_TOKEN(R"(break\b)", TOKEN_KIND::key_break)
+    // CTRE_MATCH_TOKEN(R"(continue\b)", TOKEN_KIND::key_continue)
+    // CTRE_MATCH_TOKEN(R"(static\b)", TOKEN_KIND::key_static)
+    // CTRE_MATCH_TOKEN(R"(extern\b)", TOKEN_KIND::key_extern)
 
     CTRE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOKEN_KIND::identifier)
+    // CTRE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOKEN_KIND::string_literal)
+    // CTRE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOKEN_KIND::char_constant)
+    // CTRE_MATCH_TOKEN(R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))",
+    // TOKEN_KIND::float_constant) CTRE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))",
+    // TOKEN_KIND::unsigned_long_constant) CTRE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOKEN_KIND::unsigned_constant)
+    // CTRE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOKEN_KIND::long_constant)
     CTRE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOKEN_KIND::constant)
 
     CTRE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
