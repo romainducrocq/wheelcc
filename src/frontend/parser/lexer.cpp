@@ -45,6 +45,8 @@ template <ctll::fixed_string re_pattern, TOKEN_KIND token_kind> bool re_match_to
     }
 
 static void re_match_current_token() {
+    RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
+
     RE_MATCH_TOKEN(R"(<<=)", TOKEN_KIND::assignment_bitshiftleft)
     RE_MATCH_TOKEN(R"(>>=)", TOKEN_KIND::assignment_bitshiftright)
 
@@ -132,10 +134,9 @@ static void re_match_current_token() {
     RE_MATCH_TOKEN(
         R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))", TOKEN_KIND::float_constant)
 
-    RE_MATCH_TOKEN(R"(^\s*#\s*include\s*[<"][^>"]+\.h[>"])", TOKEN_KIND::include_directive)
-    RE_MATCH_TOKEN(R"(^\s*#\s*[_acdefgilmnoprstuwx]+\b)", TOKEN_KIND::preprocessor_directive)
+    RE_MATCH_TOKEN(R"(#\s*include\s*[<"][^>"]+\.h[>"])", TOKEN_KIND::include_directive)
+    RE_MATCH_TOKEN(R"(#\s*[_acdefgilmnoprstuwx]+\b)", TOKEN_KIND::preprocessor_directive)
 
-    RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
     RE_MATCH_TOKEN(R"(.)", TOKEN_KIND::error)
 }
 
