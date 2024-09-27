@@ -14,11 +14,12 @@
 static std::unique_ptr<LexerContext> context;
 
 LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
-    total_line_number(0), p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+    p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
 #ifdef __GNUC__
-                                                                                "/usr/include/", "/usr/local/include/"
+                                                          "/usr/include/", "/usr/local/include/"
 #endif
-                                                                            }) {
+                                                      }),
+    total_line_number(0) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,115 +28,115 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
-template <ctll::fixed_string regex_pattern, TOKEN_KIND token_kind> bool ctre_match_token() {
-    ctre::regex_results match = ctre::starts_with<regex_pattern>(context->ctre_iterator_view_substr);
+template <ctll::fixed_string re_pattern, TOKEN_KIND token_kind> bool re_match_token() {
+    ctre::regex_results match = ctre::starts_with<re_pattern>(context->re_iterator_view_substr);
     if (match.size()) {
-        context->ctre_match_token_kind = token_kind;
-        context->ctre_match_token = std::string(match.template get<0>());
+        context->re_match_token_kind = token_kind;
+        context->re_match_token = std::string(match.template get<0>());
         return true;
     }
     else {
         return false;
     }
 }
-#define CTRE_MATCH_TOKEN(X, Y)      \
-    if (ctre_match_token<X, Y>()) { \
-        return;                     \
+#define RE_MATCH_TOKEN(X, Y)      \
+    if (re_match_token<X, Y>()) { \
+        return;                   \
     }
 
-static void ctre_match_current_token() {
-    CTRE_MATCH_TOKEN(R"(<<=)", TOKEN_KIND::assignment_bitshiftleft)
-    CTRE_MATCH_TOKEN(R"(>>=)", TOKEN_KIND::assignment_bitshiftright)
+static void re_match_current_token() {
+    RE_MATCH_TOKEN(R"(<<=)", TOKEN_KIND::assignment_bitshiftleft)
+    RE_MATCH_TOKEN(R"(>>=)", TOKEN_KIND::assignment_bitshiftright)
 
-    CTRE_MATCH_TOKEN(R"(\+\+)", TOKEN_KIND::unop_increment)
-    CTRE_MATCH_TOKEN(R"(--)", TOKEN_KIND::unop_decrement)
-    CTRE_MATCH_TOKEN(R"(<<)", TOKEN_KIND::binop_bitshiftleft)
-    CTRE_MATCH_TOKEN(R"(>>)", TOKEN_KIND::binop_bitshiftright)
-    CTRE_MATCH_TOKEN(R"(&&)", TOKEN_KIND::binop_and)
-    CTRE_MATCH_TOKEN(R"(\|\|)", TOKEN_KIND::binop_or)
-    CTRE_MATCH_TOKEN(R"(==)", TOKEN_KIND::binop_equalto)
-    CTRE_MATCH_TOKEN(R"(!=)", TOKEN_KIND::binop_notequal)
-    CTRE_MATCH_TOKEN(R"(<=)", TOKEN_KIND::binop_lessthanorequal)
-    CTRE_MATCH_TOKEN(R"(>=)", TOKEN_KIND::binop_greaterthanorequal)
-    CTRE_MATCH_TOKEN(R"(\+=)", TOKEN_KIND::assignment_plus)
-    CTRE_MATCH_TOKEN(R"(-=)", TOKEN_KIND::assignment_difference)
-    CTRE_MATCH_TOKEN(R"(\*=)", TOKEN_KIND::assignment_product)
-    CTRE_MATCH_TOKEN(R"(/=)", TOKEN_KIND::assignment_quotient)
-    CTRE_MATCH_TOKEN(R"(%=)", TOKEN_KIND::assignment_remainder)
-    CTRE_MATCH_TOKEN(R"(&=)", TOKEN_KIND::assignment_bitand)
-    CTRE_MATCH_TOKEN(R"(\|=)", TOKEN_KIND::assignment_bitor)
-    CTRE_MATCH_TOKEN(R"(\^=)", TOKEN_KIND::assignment_bitxor)
-    CTRE_MATCH_TOKEN(R"(->)", TOKEN_KIND::structop_pointer)
+    RE_MATCH_TOKEN(R"(\+\+)", TOKEN_KIND::unop_increment)
+    RE_MATCH_TOKEN(R"(--)", TOKEN_KIND::unop_decrement)
+    RE_MATCH_TOKEN(R"(<<)", TOKEN_KIND::binop_bitshiftleft)
+    RE_MATCH_TOKEN(R"(>>)", TOKEN_KIND::binop_bitshiftright)
+    RE_MATCH_TOKEN(R"(&&)", TOKEN_KIND::binop_and)
+    RE_MATCH_TOKEN(R"(\|\|)", TOKEN_KIND::binop_or)
+    RE_MATCH_TOKEN(R"(==)", TOKEN_KIND::binop_equalto)
+    RE_MATCH_TOKEN(R"(!=)", TOKEN_KIND::binop_notequal)
+    RE_MATCH_TOKEN(R"(<=)", TOKEN_KIND::binop_lessthanorequal)
+    RE_MATCH_TOKEN(R"(>=)", TOKEN_KIND::binop_greaterthanorequal)
+    RE_MATCH_TOKEN(R"(\+=)", TOKEN_KIND::assignment_plus)
+    RE_MATCH_TOKEN(R"(-=)", TOKEN_KIND::assignment_difference)
+    RE_MATCH_TOKEN(R"(\*=)", TOKEN_KIND::assignment_product)
+    RE_MATCH_TOKEN(R"(/=)", TOKEN_KIND::assignment_quotient)
+    RE_MATCH_TOKEN(R"(%=)", TOKEN_KIND::assignment_remainder)
+    RE_MATCH_TOKEN(R"(&=)", TOKEN_KIND::assignment_bitand)
+    RE_MATCH_TOKEN(R"(\|=)", TOKEN_KIND::assignment_bitor)
+    RE_MATCH_TOKEN(R"(\^=)", TOKEN_KIND::assignment_bitxor)
+    RE_MATCH_TOKEN(R"(->)", TOKEN_KIND::structop_pointer)
 
-    CTRE_MATCH_TOKEN(R"(//)", TOKEN_KIND::comment_singleline)
-    CTRE_MATCH_TOKEN(R"(/\*)", TOKEN_KIND::comment_multilinestart)
-    CTRE_MATCH_TOKEN(R"(\*/)", TOKEN_KIND::comment_multilineend)
+    RE_MATCH_TOKEN(R"(//)", TOKEN_KIND::comment_singleline)
+    RE_MATCH_TOKEN(R"(/\*)", TOKEN_KIND::comment_multilinestart)
+    RE_MATCH_TOKEN(R"(\*/)", TOKEN_KIND::comment_multilineend)
 
-    CTRE_MATCH_TOKEN(R"(\()", TOKEN_KIND::parenthesis_open)
-    CTRE_MATCH_TOKEN(R"(\))", TOKEN_KIND::parenthesis_close)
-    CTRE_MATCH_TOKEN(R"(\{)", TOKEN_KIND::brace_open)
-    CTRE_MATCH_TOKEN(R"(\})", TOKEN_KIND::brace_close)
-    CTRE_MATCH_TOKEN(R"(\[)", TOKEN_KIND::brackets_open)
-    CTRE_MATCH_TOKEN(R"(\])", TOKEN_KIND::brackets_close)
-    CTRE_MATCH_TOKEN(R"(;)", TOKEN_KIND::semicolon)
-    CTRE_MATCH_TOKEN(R"(~)", TOKEN_KIND::unop_complement)
-    CTRE_MATCH_TOKEN(R"(-)", TOKEN_KIND::unop_negation)
-    CTRE_MATCH_TOKEN(R"(!)", TOKEN_KIND::unop_not)
-    CTRE_MATCH_TOKEN(R"(\+)", TOKEN_KIND::binop_addition)
-    CTRE_MATCH_TOKEN(R"(\*)", TOKEN_KIND::binop_multiplication)
-    CTRE_MATCH_TOKEN(R"(/)", TOKEN_KIND::binop_division)
-    CTRE_MATCH_TOKEN(R"(%)", TOKEN_KIND::binop_remainder)
-    CTRE_MATCH_TOKEN(R"(&)", TOKEN_KIND::binop_bitand)
-    CTRE_MATCH_TOKEN(R"(\|)", TOKEN_KIND::binop_bitor)
-    CTRE_MATCH_TOKEN(R"(\^)", TOKEN_KIND::binop_bitxor)
-    CTRE_MATCH_TOKEN(R"(<)", TOKEN_KIND::binop_lessthan)
-    CTRE_MATCH_TOKEN(R"(>)", TOKEN_KIND::binop_greaterthan)
-    CTRE_MATCH_TOKEN(R"(=)", TOKEN_KIND::assignment_simple)
-    CTRE_MATCH_TOKEN(R"(\?)", TOKEN_KIND::ternary_if)
-    CTRE_MATCH_TOKEN(R"(:)", TOKEN_KIND::ternary_else)
-    CTRE_MATCH_TOKEN(R"(,)", TOKEN_KIND::separator_comma)
-    CTRE_MATCH_TOKEN(R"(\.(?![0-9]+))", TOKEN_KIND::structop_member)
+    RE_MATCH_TOKEN(R"(\()", TOKEN_KIND::parenthesis_open)
+    RE_MATCH_TOKEN(R"(\))", TOKEN_KIND::parenthesis_close)
+    RE_MATCH_TOKEN(R"(\{)", TOKEN_KIND::brace_open)
+    RE_MATCH_TOKEN(R"(\})", TOKEN_KIND::brace_close)
+    RE_MATCH_TOKEN(R"(\[)", TOKEN_KIND::brackets_open)
+    RE_MATCH_TOKEN(R"(\])", TOKEN_KIND::brackets_close)
+    RE_MATCH_TOKEN(R"(;)", TOKEN_KIND::semicolon)
+    RE_MATCH_TOKEN(R"(~)", TOKEN_KIND::unop_complement)
+    RE_MATCH_TOKEN(R"(-)", TOKEN_KIND::unop_negation)
+    RE_MATCH_TOKEN(R"(!)", TOKEN_KIND::unop_not)
+    RE_MATCH_TOKEN(R"(\+)", TOKEN_KIND::binop_addition)
+    RE_MATCH_TOKEN(R"(\*)", TOKEN_KIND::binop_multiplication)
+    RE_MATCH_TOKEN(R"(/)", TOKEN_KIND::binop_division)
+    RE_MATCH_TOKEN(R"(%)", TOKEN_KIND::binop_remainder)
+    RE_MATCH_TOKEN(R"(&)", TOKEN_KIND::binop_bitand)
+    RE_MATCH_TOKEN(R"(\|)", TOKEN_KIND::binop_bitor)
+    RE_MATCH_TOKEN(R"(\^)", TOKEN_KIND::binop_bitxor)
+    RE_MATCH_TOKEN(R"(<)", TOKEN_KIND::binop_lessthan)
+    RE_MATCH_TOKEN(R"(>)", TOKEN_KIND::binop_greaterthan)
+    RE_MATCH_TOKEN(R"(=)", TOKEN_KIND::assignment_simple)
+    RE_MATCH_TOKEN(R"(\?)", TOKEN_KIND::ternary_if)
+    RE_MATCH_TOKEN(R"(:)", TOKEN_KIND::ternary_else)
+    RE_MATCH_TOKEN(R"(,)", TOKEN_KIND::separator_comma)
+    RE_MATCH_TOKEN(R"(\.(?![0-9]+))", TOKEN_KIND::structop_member)
 
-    CTRE_MATCH_TOKEN(R"(char\b)", TOKEN_KIND::key_char)
-    CTRE_MATCH_TOKEN(R"(int\b)", TOKEN_KIND::key_int)
-    CTRE_MATCH_TOKEN(R"(long\b)", TOKEN_KIND::key_long)
-    CTRE_MATCH_TOKEN(R"(double\b)", TOKEN_KIND::key_double)
-    CTRE_MATCH_TOKEN(R"(signed\b)", TOKEN_KIND::key_signed)
-    CTRE_MATCH_TOKEN(R"(unsigned\b)", TOKEN_KIND::key_unsigned)
-    CTRE_MATCH_TOKEN(R"(void\b)", TOKEN_KIND::key_void)
-    CTRE_MATCH_TOKEN(R"(struct\b)", TOKEN_KIND::key_struct)
-    CTRE_MATCH_TOKEN(R"(union\b)", TOKEN_KIND::key_union)
-    CTRE_MATCH_TOKEN(R"(sizeof\b)", TOKEN_KIND::key_sizeof)
-    CTRE_MATCH_TOKEN(R"(return\b)", TOKEN_KIND::key_return)
-    CTRE_MATCH_TOKEN(R"(if\b)", TOKEN_KIND::key_if)
-    CTRE_MATCH_TOKEN(R"(else\b)", TOKEN_KIND::key_else)
-    CTRE_MATCH_TOKEN(R"(goto\b)", TOKEN_KIND::key_goto)
-    CTRE_MATCH_TOKEN(R"(do\b)", TOKEN_KIND::key_do)
-    CTRE_MATCH_TOKEN(R"(while\b)", TOKEN_KIND::key_while)
-    CTRE_MATCH_TOKEN(R"(for\b)", TOKEN_KIND::key_for)
-    CTRE_MATCH_TOKEN(R"(switch\b)", TOKEN_KIND::key_switch)
-    CTRE_MATCH_TOKEN(R"(case\b)", TOKEN_KIND::key_case)
-    CTRE_MATCH_TOKEN(R"(default\b)", TOKEN_KIND::key_default)
-    CTRE_MATCH_TOKEN(R"(break\b)", TOKEN_KIND::key_break)
-    CTRE_MATCH_TOKEN(R"(continue\b)", TOKEN_KIND::key_continue)
-    CTRE_MATCH_TOKEN(R"(static\b)", TOKEN_KIND::key_static)
-    CTRE_MATCH_TOKEN(R"(extern\b)", TOKEN_KIND::key_extern)
+    RE_MATCH_TOKEN(R"(char\b)", TOKEN_KIND::key_char)
+    RE_MATCH_TOKEN(R"(int\b)", TOKEN_KIND::key_int)
+    RE_MATCH_TOKEN(R"(long\b)", TOKEN_KIND::key_long)
+    RE_MATCH_TOKEN(R"(double\b)", TOKEN_KIND::key_double)
+    RE_MATCH_TOKEN(R"(signed\b)", TOKEN_KIND::key_signed)
+    RE_MATCH_TOKEN(R"(unsigned\b)", TOKEN_KIND::key_unsigned)
+    RE_MATCH_TOKEN(R"(void\b)", TOKEN_KIND::key_void)
+    RE_MATCH_TOKEN(R"(struct\b)", TOKEN_KIND::key_struct)
+    RE_MATCH_TOKEN(R"(union\b)", TOKEN_KIND::key_union)
+    RE_MATCH_TOKEN(R"(sizeof\b)", TOKEN_KIND::key_sizeof)
+    RE_MATCH_TOKEN(R"(return\b)", TOKEN_KIND::key_return)
+    RE_MATCH_TOKEN(R"(if\b)", TOKEN_KIND::key_if)
+    RE_MATCH_TOKEN(R"(else\b)", TOKEN_KIND::key_else)
+    RE_MATCH_TOKEN(R"(goto\b)", TOKEN_KIND::key_goto)
+    RE_MATCH_TOKEN(R"(do\b)", TOKEN_KIND::key_do)
+    RE_MATCH_TOKEN(R"(while\b)", TOKEN_KIND::key_while)
+    RE_MATCH_TOKEN(R"(for\b)", TOKEN_KIND::key_for)
+    RE_MATCH_TOKEN(R"(switch\b)", TOKEN_KIND::key_switch)
+    RE_MATCH_TOKEN(R"(case\b)", TOKEN_KIND::key_case)
+    RE_MATCH_TOKEN(R"(default\b)", TOKEN_KIND::key_default)
+    RE_MATCH_TOKEN(R"(break\b)", TOKEN_KIND::key_break)
+    RE_MATCH_TOKEN(R"(continue\b)", TOKEN_KIND::key_continue)
+    RE_MATCH_TOKEN(R"(static\b)", TOKEN_KIND::key_static)
+    RE_MATCH_TOKEN(R"(extern\b)", TOKEN_KIND::key_extern)
 
-    CTRE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOKEN_KIND::identifier)
-    CTRE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOKEN_KIND::string_literal)
-    CTRE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOKEN_KIND::char_constant)
-    CTRE_MATCH_TOKEN(
+    RE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOKEN_KIND::identifier)
+    RE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOKEN_KIND::string_literal)
+    RE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOKEN_KIND::char_constant)
+    RE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOKEN_KIND::constant)
+    RE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOKEN_KIND::long_constant)
+    RE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOKEN_KIND::unsigned_constant)
+    RE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))", TOKEN_KIND::unsigned_long_constant)
+    RE_MATCH_TOKEN(
         R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))", TOKEN_KIND::float_constant)
-    CTRE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))", TOKEN_KIND::unsigned_long_constant)
-    CTRE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOKEN_KIND::unsigned_constant)
-    CTRE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOKEN_KIND::long_constant)
-    CTRE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOKEN_KIND::constant)
 
-    CTRE_MATCH_TOKEN(R"(^\s*#\s*include\s*[<"][^>"]+\.h[>"])", TOKEN_KIND::include_directive)
-    CTRE_MATCH_TOKEN(R"(^\s*#\s*[_acdefgilmnoprstuwx]+\b)", TOKEN_KIND::preprocessor_directive)
+    RE_MATCH_TOKEN(R"(^\s*#\s*include\s*[<"][^>"]+\.h[>"])", TOKEN_KIND::include_directive)
+    RE_MATCH_TOKEN(R"(^\s*#\s*[_acdefgilmnoprstuwx]+\b)", TOKEN_KIND::preprocessor_directive)
 
-    CTRE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
-    CTRE_MATCH_TOKEN(R"(.)", TOKEN_KIND::error)
+    RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
+    RE_MATCH_TOKEN(R"(.)", TOKEN_KIND::error)
 }
 
 static void tokenize_file() {
@@ -144,23 +145,23 @@ static void tokenize_file() {
     for (size_t line_number = 1; read_line(line); ++line_number) {
         context->total_line_number++;
 
-        const std::string_view ctre_iterator_view(line);
-        for (size_t i = 0; i < line.size(); i += context->ctre_match_token.size()) {
-            context->ctre_iterator_view_substr = ctre_iterator_view.substr(i);
-            ctre_match_current_token();
+        const std::string_view re_iterator_view(line);
+        for (size_t i = 0; i < line.size(); i += context->re_match_token.size()) {
+            context->re_iterator_view_substr = re_iterator_view.substr(i);
+            re_match_current_token();
 
             if (is_comment) {
-                if (context->ctre_match_token_kind == TOKEN_KIND::comment_multilineend) {
+                if (context->re_match_token_kind == TOKEN_KIND::comment_multilineend) {
                     is_comment = false;
                 }
                 continue;
             }
             else {
-                switch (context->ctre_match_token_kind) {
+                switch (context->re_match_token_kind) {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
                         raise_runtime_error_at_line(
-                            GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, context->ctre_match_token),
+                            GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, context->re_match_token),
                             line_number);
                     case TOKEN_KIND::skip:
                         goto Lcontinue;
@@ -169,9 +170,9 @@ static void tokenize_file() {
                         goto Lcontinue;
                     }
                     case TOKEN_KIND::include_directive: {
-                        i += context->ctre_match_token.size();
-                        tokenize_header(context->ctre_match_token, line_number);
-                        context->ctre_match_token.clear();
+                        i += context->re_match_token.size();
+                        tokenize_header(context->re_match_token, line_number);
+                        context->re_match_token.clear();
                         goto Lcontinue;
                     }
                     case TOKEN_KIND::comment_singleline:
@@ -187,7 +188,7 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            Token token = {context->ctre_match_token, context->ctre_match_token_kind, context->total_line_number};
+            Token token = {context->re_match_token_kind, context->re_match_token, context->total_line_number};
             context->p_tokens->emplace_back(std::move(token));
         }
     }
