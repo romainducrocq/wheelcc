@@ -6,6 +6,8 @@
 // Lexer
 
 enum TOKEN_KIND {
+    skip,
+
     assignment_bitshiftleft,
     assignment_bitshiftright,
 
@@ -58,9 +60,6 @@ enum TOKEN_KIND {
     separator_comma,
     structop_member,
 
-    include_directive,
-    preprocessor_directive,
-
     key_char,
     key_int,
     key_long,
@@ -89,13 +88,15 @@ enum TOKEN_KIND {
     identifier,
     string_literal,
     char_constant,
-    float_constant,
-    unsigned_long_constant,
-    unsigned_constant,
-    long_constant,
     constant,
+    long_constant,
+    unsigned_constant,
+    unsigned_long_constant,
+    float_constant,
 
-    skip,
+    include_directive,
+    preprocessor_directive,
+
     error
 };
 

@@ -13,8 +13,6 @@
 
 // Lexer
 
-constexpr size_t TOKEN_KIND_SIZE = TOKEN_KIND::error + 1;
-
 struct Token {
     TOKEN_KIND token_kind;
     std::string token;
