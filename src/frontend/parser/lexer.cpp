@@ -131,7 +131,7 @@ static void ctre_match_current_token() {
     CTRE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOKEN_KIND::long_constant)
     CTRE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOKEN_KIND::constant)
 
-    // CTRE_MATCH_TOKEN(R"(^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))", TOKEN_KIND::include_directive)
+    CTRE_MATCH_TOKEN(R"(^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))", TOKEN_KIND::include_directive)
     CTRE_MATCH_TOKEN(R"(^\s*#\s*[_acdefgilmnoprstuwx]+\b)", TOKEN_KIND::preprocessor_directive)
 
     CTRE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
@@ -169,9 +169,12 @@ static void tokenize_file() {
                         is_comment = true;
                         goto Lcontinue;
                     }
-                    case TOKEN_KIND::include_directive:
+                    case TOKEN_KIND::include_directive: {
+                        i += context->ctre_match_token.size();
                         tokenize_header(context->ctre_match_token, line_number);
+                        context->ctre_match_token.clear();
                         goto Lcontinue;
+                    }
                     case TOKEN_KIND::comment_singleline:
                     case TOKEN_KIND::preprocessor_directive:
                         goto Lbreak;
