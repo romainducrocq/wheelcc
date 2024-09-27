@@ -16,8 +16,8 @@ cd ${TEST_SUITE}
 if [ ${#} -ne 0 ]; then
     test ${@}
 else
-    for i in $(seq 1 5); do
-        test --chapter ${i} --latest-only # --extra-credit # --stage lex
+    for i in $(seq 1 1); do
+        test --chapter ${i} --latest-only --extra-credit --stage lex
     done
 fi
 

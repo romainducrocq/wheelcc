@@ -2,6 +2,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "util/fileio.hpp"
@@ -24,219 +25,139 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 // Lexer
 
-// TODO
-// Lexer implementation with compile time regex works
-// but the compilation time explodes with the number of tokens/capture groups
-// during testing, it works up to 39 tokens and crashes with 40
-// => can only use ctre if i find a way to use many small patterns instead of 1 very big
-//
-// If ctre works, merge with boost (this file, lexer.hpp, CMakeLists.txt)
-// and add lexing with ctre as a build option (default stays regex::boost)
-//
+// // TODO make MATCH_PATTERN a macro
+// static constexpr ctll::fixed_string MATCH_PATTERN(
+//     // R"((<<=)|)" // assignment_bitshiftleft
+//     // R"((>>=)|)" // assignment_bitshiftright
 
-// TODO make MATCH_PATTERN a macro
-static constexpr ctll::fixed_string MATCH_PATTERN(
-    // R"((<<=)|)" // assignment_bitshiftleft
-    // R"((>>=)|)" // assignment_bitshiftright
+//     // R"((\+\+)|)" // unop_increment
+//     // R"((--)|)"   // unop_decrement
+//     // R"((<<)|)"   // binop_bitshiftleft
+//     // R"((>>)|)"   // binop_bitshiftright
+//     // R"((&&)|)"   // binop_and
+//     // R"((\|\|)|)" // binop_or
+//     // R"((==)|)"   // binop_equalto
+//     // R"((!=)|)"   // binop_notequal
+//     // R"((<=)|)"   // binop_lessthanorequal
+//     // R"((>=)|)"   // binop_greaterthanorequal
+//     // R"((\+=)|)"  // assignment_plus
+//     // R"((-=)|)"   // assignment_difference
+//     // R"((\*=)|)"  // assignment_product
+//     // R"((/=)|)"   // assignment_quotient
+//     // R"((%=)|)"   // assignment_remainder
+//     // R"((&=)|)"   // assignment_bitand
+//     // R"((\|=)|)"  // assignment_bitor
+//     // R"((\^=)|)"  // assignment_bitxor
+//     // R"((->)|)"   // structop_pointer
 
-    // R"((\+\+)|)" // unop_increment
-    R"((--)|)"   // unop_decrement
-    R"((<<)|)"   // binop_bitshiftleft
-    R"((>>)|)"   // binop_bitshiftright
-    R"((&&)|)"   // binop_and
-    R"((\|\|)|)" // binop_or
-    R"((==)|)"   // binop_equalto
-    R"((!=)|)"   // binop_notequal
-    R"((<=)|)"   // binop_lessthanorequal
-    R"((>=)|)"   // binop_greaterthanorequal
-    R"((\+=)|)"  // assignment_plus
-    // R"((-=)|)"   // assignment_difference
-    // R"((\*=)|)"  // assignment_product
-    // R"((/=)|)"   // assignment_quotient
-    // R"((%=)|)"   // assignment_remainder
-    // R"((&=)|)"   // assignment_bitand
-    // R"((\|=)|)"  // assignment_bitor
-    // R"((\^=)|)"  // assignment_bitxor
-    // R"((->)|)"   // structop_pointer
+//     R"((//)|)"  // comment_singleline
+//     R"((/\*)|)" // comment_multilinestart
+//     R"((\*/)|)" // comment_multilineend
 
-    R"((//)|)"  // comment_singleline
-    R"((/\*)|)" // comment_multilinestart
-    R"((\*/)|)" // comment_multilineend
+//     R"((\()|)" // parenthesis_open
+//     R"((\))|)" // parenthesis_close
+//     R"((\{)|)" // brace_open
+//     R"((\})|)" // brace_close
+//     // R"((\[)|)"           // brackets_open
+//     // R"((\])|)"           // brackets_close
+//     R"((;)|)" // semicolon
+//     // R"((~)|)"  // unop_complement
+//     // R"((-)|)"  // unop_negation
+//     // R"((!)|)"  // unop_not
+//     // R"((\+)|)" // binop_addition
+//     // R"((\*)|)" // binop_multiplication
+//     // R"((/)|)"  // binop_division
+//     // R"((%)|)"  // binop_remainder
+//     // R"((&)|)"  // binop_bitand
+//     // R"((\|)|)" // binop_bitor
+//     // R"((\^)|)" // binop_bitxor
+//     // R"((<)|)"  // binop_lessthan
+//     // R"((>)|)"  // binop_greaterthan
+//     // R"((=)|)"  // assignment_simple
+//     // R"((\?)|)"           // ternary_if
+//     // R"((:)|)"            // ternary_else
+//     // R"((,)|)"            // separator_comma
+//     // R"((\.(?![0-9]+))|)" // structop_member
 
-    R"((\()|)" // parenthesis_open
-    R"((\))|)" // parenthesis_close
-    R"((\{)|)" // brace_open
-    R"((\})|)" // brace_close
-    // R"((\[)|)"           // brackets_open
-    // R"((\])|)"           // brackets_close
-    R"((;)|)"  // semicolon
-    R"((~)|)"  // unop_complement
-    R"((-)|)"  // unop_negation
-    R"((!)|)"  // unop_not
-    R"((\+)|)" // binop_addition
-    R"((\*)|)" // binop_multiplication
-    R"((/)|)"  // binop_division
-    R"((%)|)"  // binop_remainder
-    R"((&)|)"  // binop_bitand
-    R"((\|)|)" // binop_bitor
-    R"((\^)|)" // binop_bitxor
-    R"((<)|)"  // binop_lessthan
-    R"((>)|)"  // binop_greaterthan
-    R"((=)|)"  // assignment_simple
-    // R"((\?)|)"           // ternary_if
-    // R"((:)|)"            // ternary_else
-    // R"((,)|)"            // separator_comma
-    // R"((\.(?![0-9]+))|)" // structop_member
+//     // R"((^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))|)" // include_directive
+//     // R"((^\s*#\s*[_acdefgilmnoprstuwx]+\b)|)" // preprocessor_directive
 
-    // R"((^\s*#\s*include\b\s*(<[^/]+(/[^/]+)*\.h>|"[^/]+(/[^/]+)*\.h"))|)" // include_directive
-    R"((^\s*#\s*[_acdefgilmnoprstuwx]+\b)|)" // preprocessor_directive
+//     // R"((char\b)|)"     // key_char
+//     R"((int\b)|)" // key_int
+//     // R"((long\b)|)"     // key_long
+//     // R"((double\b)|)"   // key_double
+//     // R"((signed\b)|)"   // key_signed
+//     // R"((unsigned\b)|)" // key_unsigned
+//     R"((void\b)|)" // key_void
+//     // R"((struct\b)|)"   // key_struct
+//     // R"((union\b)|)"    // key_union
+//     // R"((sizeof\b)|)"   // key_sizeof
+//     R"((return\b)|)" // key_return
+//     // R"((if\b)|)"       // key_if
+//     // R"((else\b)|)"     // key_else
+//     // R"((goto\b)|)"     // key_goto
+//     // R"((do\b)|)"       // key_do
+//     // R"((while\b)|)"    // key_while
+//     // R"((for\b)|)"      // key_for
+//     // R"((switch\b)|)"   // key_switch
+//     // R"((case\b)|)"     // key_case
+//     // R"((default\b)|)"  // key_default
+//     // R"((break\b)|)"    // key_break
+//     // R"((continue\b)|)" // key_continue
+//     // R"((static\b)|)"   // key_static
+//     // R"((extern\b)|)"   // key_extern
 
-    // R"((char\b)|)"     // key_char
-    R"((int\b)|)" // key_int
-    // R"((long\b)|)"     // key_long
-    // R"((double\b)|)"   // key_double
-    // R"((signed\b)|)"   // key_signed
-    // R"((unsigned\b)|)" // key_unsigned
-    R"((void\b)|)" // key_void
-    // R"((struct\b)|)"   // key_struct
-    // R"((union\b)|)"    // key_union
-    // R"((sizeof\b)|)"   // key_sizeof
-    R"((return\b)|)" // key_return
-    // R"((if\b)|)"       // key_if
-    // R"((else\b)|)"     // key_else
-    // R"((goto\b)|)"     // key_goto
-    // R"((do\b)|)"       // key_do
-    // R"((while\b)|)"    // key_while
-    // R"((for\b)|)"      // key_for
-    // R"((switch\b)|)"   // key_switch
-    // R"((case\b)|)"     // key_case
-    // R"((default\b)|)"  // key_default
-    // R"((break\b)|)"    // key_break
-    // R"((continue\b)|)" // key_continue
-    // R"((static\b)|)"   // key_static
-    // R"((extern\b)|)"   // key_extern
+//     R"(([a-zA-Z_]\w*\b)|)" // identifier
+//     // R"(("([^"\\\n]|\\['"\\?abfnrtv])*")|)"                                               // string_literal
+//     // R"(('([^'\\\n]|\\['"?\\abfnrtv])')|)"                                                // char_constant
+//     // R"(((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))|)" // float_constant
+//     // R"(([0-9]+([lL][uU]|[uU][lL])(?![\w.]))|)"                                           // unsigned_long_constant
+//     // R"(([0-9]+[uU](?![\w.]))|)"                                                          // unsigned_constant
+//     // R"(([0-9]+[lL](?![\w.]))|)"                                                          // long_constant
+//     R"(([0-9]+(?![\w.]))|)" // constant
 
-    R"(([a-zA-Z_]\w*\b)|)" // identifier
-    // R"(("([^"\\\n]|\\['"\\?abfnrtv])*")|)"                                               // string_literal
-    // R"(('([^'\\\n]|\\['"?\\abfnrtv])')|)"                                                // char_constant
-    // R"(((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))|)" // float_constant
-    // R"(([0-9]+([lL][uU]|[uU][lL])(?![\w.]))|)"                                           // unsigned_long_constant
-    // R"(([0-9]+[uU](?![\w.]))|)"                                                          // unsigned_constant
-    // R"(([0-9]+[lL](?![\w.]))|)"                                                          // long_constant
-    R"(([0-9]+(?![\w.]))|)" // constant
-
-    R"(([ \n\r\t\f\v])|)" // skip
-    R"((.))"              // error
-);
-
-// TODO remove when all tokens pass
-constexpr size_t TOKEN_KIND_TEMP_SIZE = 39;
-static std::array<TOKEN_KIND, TOKEN_KIND_TEMP_SIZE> TOKEN_KIND_TEMP({
-    // assignment_bitshiftleft,//
-    // assignment_bitshiftright,//
-    //
-    // unop_increment,//
-    unop_decrement,           //
-    binop_bitshiftleft,       //
-    binop_bitshiftright,      //
-    binop_and,                //
-    binop_or,                 //
-    binop_equalto,            //
-    binop_notequal,           //
-    binop_lessthanorequal,    //
-    binop_greaterthanorequal, //
-    assignment_plus,          //
-    // assignment_difference,//
-    // assignment_product,//
-    // assignment_quotient,//
-    // assignment_remainder,//
-    // assignment_bitand,//
-    // assignment_bitor,//
-    // assignment_bitxor,//
-    // structop_pointer,//
-    //
-    comment_singleline,     //
-    comment_multilinestart, //
-    comment_multilineend,   //
-                            //
-    parenthesis_open,       //
-    parenthesis_close,      //
-    brace_open,             //
-    brace_close,            //
-    // brackets_open,//
-    // brackets_close,//
-    semicolon,            //
-    unop_complement,      //
-    unop_negation,        //
-    unop_not,             //
-    binop_addition,       //
-    binop_multiplication, //
-    binop_division,       //
-    binop_remainder,      //
-    binop_bitand,         //
-    binop_bitor,          //
-    binop_bitxor,         //
-    binop_lessthan,       //
-    binop_greaterthan,    //
-    assignment_simple,    //
-    // ternary_if,//
-    // ternary_else,//
-    // separator_comma,//
-    // structop_member,//
-    //
-    // include_directive,//
-    preprocessor_directive, //
-                            //
-    // key_char,//
-    key_int, //
-    // key_long,//
-    // key_double,//
-    // key_signed,//
-    // key_unsigned,//
-    key_void, //
-    // key_struct,//
-    // key_union,//
-    // key_sizeof,//
-    key_return, //
-    // key_if,//
-    // key_else,//
-    // key_goto,//
-    // key_do,//
-    // key_while,//
-    // key_for,//
-    // key_switch,//
-    // key_case,//
-    // key_default,//
-    // key_break,//
-    // key_continue,//
-    // key_static,//
-    // key_extern,//
-    //
-    identifier, //
-    // string_literal,//
-    // char_constant,//
-    // float_constant,//
-    // unsigned_long_constant,//
-    // unsigned_constant,//
-    // long_constant,//
-    constant, //
-              //
-    skip,     //
-    error     //
-});
+//     R"(([ \n\r\t\f\v])|)" // skip
+//     R"((.))"              // error
+// );
 
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
-template <int I> TOKEN_KIND get_token_kind(const auto& is_match) {
-    if constexpr (I == 0) {
-        RAISE_INTERNAL_ERROR;
-    }
-    else if (is_match.template operator()<I>()) {
-        return static_cast<TOKEN_KIND>(I);
+template <ctll::fixed_string regex_pattern, TOKEN_KIND token_kind> bool ctre_match_token() {
+    ctre::regex_results match = ctre::starts_with<regex_pattern>(context->ctre_iterator_view_substr);
+    if (match.size()) {
+        context->ctre_match_token_kind = token_kind;
+        context->ctre_match_token = std::string(match.template get<0>());
+        return true;
     }
     else {
-        return get_token_kind<I - 1>(is_match);
+        return false;
     }
+}
+#define CTRE_MATCH_TOKEN(X, Y)      \
+    if (ctre_match_token<X, Y>()) { \
+        return;                     \
+    }
+
+static void ctre_match_current_token() {
+    CTRE_MATCH_TOKEN(R"(//)", TOKEN_KIND::comment_singleline)
+    CTRE_MATCH_TOKEN(R"(/\*)", TOKEN_KIND::comment_multilinestart)
+    CTRE_MATCH_TOKEN(R"(\*/)", TOKEN_KIND::comment_multilineend)
+
+    CTRE_MATCH_TOKEN(R"(\()", TOKEN_KIND::parenthesis_open)
+    CTRE_MATCH_TOKEN(R"(\))", TOKEN_KIND::parenthesis_close)
+    CTRE_MATCH_TOKEN(R"(\{)", TOKEN_KIND::brace_open)
+    CTRE_MATCH_TOKEN(R"(\})", TOKEN_KIND::brace_close)
+    CTRE_MATCH_TOKEN(R"(;)", TOKEN_KIND::semicolon)
+
+    CTRE_MATCH_TOKEN(R"(int\b)", TOKEN_KIND::key_int)
+    CTRE_MATCH_TOKEN(R"(void\b)", TOKEN_KIND::key_void)
+    CTRE_MATCH_TOKEN(R"(return\b)", TOKEN_KIND::key_return)
+
+    CTRE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOKEN_KIND::identifier)
+    CTRE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOKEN_KIND::constant)
+
+    CTRE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
+    CTRE_MATCH_TOKEN(R"(.)", TOKEN_KIND::error)
 }
 
 static void tokenize_file() {
@@ -245,32 +166,23 @@ static void tokenize_file() {
     for (size_t line_number = 1; read_line(line); ++line_number) {
         context->total_line_number++;
 
-        bool it_next = true;
-        // TODO pass macro MATCH_PATTERN to iterator template arg
-        for (ctre::regex_iterator it = ctre::iterator<MATCH_PATTERN>(line); it_next; it++) {
-            if (it.current == it.end) {
-                it_next = false;
-            }
-
-            // TODO set template arg to TOKEN_KIND_SIZE
-            TOKEN_KIND token_kind = get_token_kind<TOKEN_KIND_TEMP_SIZE>([&it]<int I>() -> bool {
-                return it.current_match.template get<I>() ? true : false;
-            });
-            // TODO remove when all tokens pass
-            token_kind = TOKEN_KIND_TEMP[token_kind - 1];
+        const std::string_view ctre_iterator_view(line);
+        for (size_t i = 0; i < line.size(); i += context->ctre_match_token.size()) {
+            context->ctre_iterator_view_substr = ctre_iterator_view.substr(i);
+            ctre_match_current_token();
 
             if (is_comment) {
-                if (token_kind == TOKEN_KIND::comment_multilineend) {
+                if (context->ctre_match_token_kind == TOKEN_KIND::comment_multilineend) {
                     is_comment = false;
                 }
                 continue;
             }
             else {
-                switch (token_kind) {
+                switch (context->ctre_match_token_kind) {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
-                        raise_runtime_error_at_line(GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token,
-                                                        std::string(it.current_match.get<0>())),
+                        raise_runtime_error_at_line(
+                            GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, context->ctre_match_token),
                             line_number);
                     case TOKEN_KIND::skip:
                         goto Lcontinue;
@@ -279,7 +191,7 @@ static void tokenize_file() {
                         goto Lcontinue;
                     }
                     case TOKEN_KIND::include_directive:
-                        tokenize_header(std::string(it.current_match.get<0>()), line_number);
+                        tokenize_header(context->ctre_match_token, line_number);
                         goto Lcontinue;
                     case TOKEN_KIND::comment_singleline:
                     case TOKEN_KIND::preprocessor_directive:
@@ -294,7 +206,7 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            Token token = {std::string(it.current_match.get<0>()), token_kind, context->total_line_number};
+            Token token = {context->ctre_match_token, context->ctre_match_token_kind, context->total_line_number};
             context->p_tokens->emplace_back(std::move(token));
         }
     }

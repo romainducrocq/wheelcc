@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -24,6 +25,9 @@ struct LexerContext {
     LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
 
     size_t total_line_number;
+    TOKEN_KIND ctre_match_token_kind;
+    std::string ctre_match_token;
+    std::string_view ctre_iterator_view_substr;
     std::vector<Token>* p_tokens;
     std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;
