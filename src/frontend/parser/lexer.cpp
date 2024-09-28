@@ -11,6 +11,8 @@
 #ifdef __WITH_CTRE__
 #include "ctre/ctre.hpp"
 #include <string_view>
+#else
+#include "boost/regex.hpp"
 #endif
 
 static std::unique_ptr<LexerContext> context;
@@ -31,22 +33,35 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
 #ifdef __WITH_CTRE__
-#define RE_MATCH_TOKEN(X, Y)                                                               \
-    {                                                                                      \
-        ctre::regex_results match = ctre::starts_with<X>(context->re_iterator_view_slice); \
-        if (match.size()) {                                                                \
-            context->re_match_token_kind = Y;                                              \
-            context->re_match_token = std::string(match.get<0>());                         \
-            return;                                                                        \
-        }                                                                                  \
+#define RE_MATCH_TOKEN(X, Y)                                                                  \
+    {                                                                                         \
+        ctre::regex_results re_match = ctre::starts_with<X>(context->re_iterator_view_slice); \
+        if (re_match.size()) {                                                                \
+            context->re_match_token_kind = Y;                                                 \
+            context->re_match_token = std::string(re_match.get<0>());                         \
+            return;                                                                           \
+        }                                                                                     \
+    }
+#else
+#define RE_MATCH_TOKEN(X, Y)                               \
+    {                                                      \
+        size_t i = static_cast<size_t>(Y);                 \
+        context->re_capture_groups[i] = std::to_string(i); \
+        re_pattern += "(?<";                               \
+        re_pattern += context->re_capture_groups[i];       \
+        re_pattern += ">";                                 \
+        re_pattern += X;                                   \
+        re_pattern += ")|";                                \
     }
 #endif
 
 static void
 #ifdef __WITH_CTRE__
-    re_match_current_token(
+    re_match_current_token()
+#else
+    re_build_token_pattern(std::string& re_pattern)
 #endif
-    ) {
+{
     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
 
     RE_MATCH_TOKEN(R"(<<=)", TOKEN_KIND::assignment_bitshiftleft)
@@ -150,15 +165,32 @@ static void tokenize_file() {
 
 #ifdef __WITH_CTRE__
         const std::string_view re_iterator_view(line);
+#else
+        boost::sregex_iterator re_iterator_end;
 #endif
         for (
 #ifdef __WITH_CTRE__
             size_t i = 0; i < line.size(); i += context->re_match_token.size()
+#else
+            boost::sregex_iterator re_iterator_begin =
+                boost::sregex_iterator(line.begin(), line.end(), *context->re_compiled_pattern);
+            re_iterator_begin != re_iterator_end; re_iterator_begin++
 #endif
         ) {
 #ifdef __WITH_CTRE__
             context->re_iterator_view_slice = re_iterator_view.substr(i);
             re_match_current_token();
+#else
+            {
+                boost::smatch re_match = *re_iterator_begin;
+                for (size_t i = TOKEN_KIND::error + 1; i-- > 0;) {
+                    if (re_match[context->re_capture_groups[i]].matched) {
+                        context->re_match_token_kind = static_cast<TOKEN_KIND>(i);
+                        context->re_match_token = re_match.get_last_closed_paren();
+                        break;
+                    }
+                }
+            }
 #endif
 
             if (is_comment) {
@@ -262,7 +294,15 @@ static void tokenize_header(std::string filename, size_t line_number) {
     }
 }
 
-static void tokenize_source() { tokenize_file(); }
+static void tokenize_source() {
+#ifndef __WITH_CTRE__
+    std::string re_pattern("");
+    re_build_token_pattern(re_pattern);
+    re_pattern.pop_back();
+    context->re_compiled_pattern = std::make_unique<const boost::regex>(std::move(re_pattern));
+#endif
+    tokenize_file();
+}
 
 static void strip_filename_extension(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
 

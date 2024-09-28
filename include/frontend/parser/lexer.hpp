@@ -9,13 +9,16 @@
 
 #include <memory>
 #include <string>
-#ifdef __WITH_CTRE__
-#include <string_view>
-#endif
 #include <unordered_set>
 #include <vector>
 
 #include "tokens.hpp" // frontend
+
+#ifdef __WITH_CTRE__
+#include <string_view>
+#else
+#include "boost/regex.hpp"
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +37,9 @@ struct LexerContext {
     std::string re_match_token;
 #ifdef __WITH_CTRE__
     std::string_view re_iterator_view_slice;
+#else
+    std::string re_capture_groups[TOKEN_KIND::error + 1];
+    std::unique_ptr<const boost::regex> re_compiled_pattern;
 #endif
     std::vector<Token>* p_tokens;
     std::vector<std::string>* p_includedirs;
