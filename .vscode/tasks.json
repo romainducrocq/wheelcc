@@ -2,12 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Clean",
+            "type": "shell",
+            "command": "if [ -f \"wheelcc\" ]; then rm wheelcc; fi",
+            "options": {
+                "cwd": "${workspaceFolder}/bin"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "Configure",
             "type": "shell",
             "command": "cmake -G \"Unix Makefiles\" -S . -B debug/ -DCMAKE_BUILD_TYPE=Debug",
             "options": {
                 "cwd": "${workspaceFolder}/build"
             },
+            "dependsOn": "Clean",
             "problemMatcher": []
         },
         {
