@@ -182,8 +182,9 @@ static void tokenize_file() {
             re_match_current_token();
 #else
             {
+                // https://stackoverflow.com/questions/13612837/how-to-check-which-matching-group-was-used-to-match-boost-regex
                 boost::smatch re_match = *re_iterator_begin;
-                for (size_t i = TOKEN_KIND::error + 1; i-- > 0;) {
+                for (size_t i = TOKEN_KIND_SIZE; i-- > 0;) {
                     if (re_match[context->re_capture_groups[i]].matched) {
                         context->re_match_token_kind = static_cast<TOKEN_KIND>(i);
                         context->re_match_token = re_match.get_last_closed_paren();

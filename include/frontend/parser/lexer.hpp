@@ -24,6 +24,10 @@
 
 // Lexer
 
+#ifndef __WITH_CTRE__
+constexpr size_t TOKEN_KIND_SIZE = TOKEN_KIND::error + 1;
+#endif
+
 struct Token {
     TOKEN_KIND token_kind;
     std::string token;
@@ -38,7 +42,7 @@ struct LexerContext {
 #ifdef __WITH_CTRE__
     std::string_view re_iterator_view_slice;
 #else
-    std::string re_capture_groups[TOKEN_KIND::error + 1];
+    std::string re_capture_groups[TOKEN_KIND_SIZE];
     std::unique_ptr<const boost::regex> re_compiled_pattern;
 #endif
     std::vector<Token>* p_tokens;
