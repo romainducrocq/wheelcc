@@ -1,16 +1,5 @@
-#ifdef __GNUC__
-#if __cplusplus > 201703L
-#define __WITH_CTRE__
-#endif
-#endif
-#ifdef __WITH_CTRE__
-#include "ctre/ctre.hpp"
-#else
-#include "boost/regex.hpp"
-#endif
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "util/fileio.hpp"
@@ -18,6 +7,11 @@
 
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
+
+#ifdef __WITH_CTRE__
+#include "ctre/ctre.hpp"
+#include <string_view>
+#endif
 
 static std::unique_ptr<LexerContext> context;
 
@@ -36,23 +30,23 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
 
 static void tokenize_header(std::string include_match, size_t tokenize_header);
 
-template <ctll::fixed_string re_pattern, TOKEN_KIND token_kind> bool re_match_token() {
-    ctre::regex_results match = ctre::starts_with<re_pattern>(context->re_iterator_view_substr);
-    if (match.size()) {
-        context->re_match_token_kind = token_kind;
-        context->re_match_token = std::string(match.template get<0>());
-        return true;
+#ifdef __WITH_CTRE__
+#define RE_MATCH_TOKEN(X, Y)                                                               \
+    {                                                                                      \
+        ctre::regex_results match = ctre::starts_with<X>(context->re_iterator_view_slice); \
+        if (match.size()) {                                                                \
+            context->re_match_token_kind = Y;                                              \
+            context->re_match_token = std::string(match.get<0>());                         \
+            return;                                                                        \
+        }                                                                                  \
     }
-    else {
-        return false;
-    }
-}
-#define RE_MATCH_TOKEN(X, Y)      \
-    if (re_match_token<X, Y>()) { \
-        return;                   \
-    }
+#endif
 
-static void re_match_current_token() {
+static void
+#ifdef __WITH_CTRE__
+    re_match_current_token(
+#endif
+    ) {
     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
 
     RE_MATCH_TOKEN(R"(<<=)", TOKEN_KIND::assignment_bitshiftleft)
@@ -154,10 +148,18 @@ static void tokenize_file() {
     for (size_t line_number = 1; read_line(line); ++line_number) {
         context->total_line_number++;
 
+#ifdef __WITH_CTRE__
         const std::string_view re_iterator_view(line);
-        for (size_t i = 0; i < line.size(); i += context->re_match_token.size()) {
-            context->re_iterator_view_substr = re_iterator_view.substr(i);
+#endif
+        for (
+#ifdef __WITH_CTRE__
+            size_t i = 0; i < line.size(); i += context->re_match_token.size()
+#endif
+        ) {
+#ifdef __WITH_CTRE__
+            context->re_iterator_view_slice = re_iterator_view.substr(i);
             re_match_current_token();
+#endif
 
             if (is_comment) {
                 if (context->re_match_token_kind == TOKEN_KIND::comment_multilineend) {
@@ -179,9 +181,13 @@ static void tokenize_file() {
                         goto Lcontinue;
                     }
                     case TOKEN_KIND::include_directive: {
+#ifdef __WITH_CTRE__
                         i += context->re_match_token.size();
+#endif
                         tokenize_header(context->re_match_token, line_number);
+#ifdef __WITH_CTRE__
                         context->re_match_token.clear();
+#endif
                         goto Lcontinue;
                     }
                     case TOKEN_KIND::comment_singleline:

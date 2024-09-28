@@ -1,9 +1,17 @@
 #ifndef _FRONTEND_PARSER_LEXER_HPP
 #define _FRONTEND_PARSER_LEXER_HPP
 
+#ifdef __GNUC__
+#if __cplusplus > 201703L
+#define __WITH_CTRE__
+#endif
+#endif
+
 #include <memory>
 #include <string>
+#ifdef __WITH_CTRE__
 #include <string_view>
+#endif
 #include <unordered_set>
 #include <vector>
 
@@ -24,7 +32,9 @@ struct LexerContext {
 
     TOKEN_KIND re_match_token_kind;
     std::string re_match_token;
-    std::string_view re_iterator_view_substr;
+#ifdef __WITH_CTRE__
+    std::string_view re_iterator_view_slice;
+#endif
     std::vector<Token>* p_tokens;
     std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;
