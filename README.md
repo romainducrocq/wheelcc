@@ -170,7 +170,7 @@ wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by 
 
 ### Dependencies
 
-wheelcc is mostly self-contained and aims to be as less bloated as possible. It simply depends on the C and C++ standard libraries and some header-only dependencies ([boost::regex](https://github.com/boostorg/regex), [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires bash, gcc/g++ and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
+wheelcc is mostly self-contained and aims to be as less bloated as possible. It simply depends on the C and C++ standard libraries and some header-only dependencies ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [boost::regex](https://github.com/boostorg/regex), [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires bash, gcc/g++ and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
 
 ### Coding style
 
