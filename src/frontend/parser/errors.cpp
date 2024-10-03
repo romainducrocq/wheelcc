@@ -417,10 +417,18 @@ std::string get_what_message(ERROR_MESSAGE_ARGUMENT message) {
             return "no debug code passed in first argument";
         case ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument:
             return "invalid debug code %s passed in first argument";
+        case ERROR_MESSAGE_ARGUMENT::no_optim_1_mask_in_argument:
+            return "no level 1 optimization mask passed in second argument";
+        case ERROR_MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument:
+            return "invalid level 1 optimization mask %s passed in second argument";
+        case ERROR_MESSAGE_ARGUMENT::no_optim_2_code_in_argument:
+            return "no level 2 optimization code passed in third argument";
+        case ERROR_MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument:
+            return "invalid level 2 optimization code %s passed in third argument";
         case ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument:
-            return "no input file passed in second argument";
+            return "no input file passed in fourth argument";
         case ERROR_MESSAGE_ARGUMENT::no_include_directories_in_argument:
-            return "no include directories passed in third argument";
+            return "no include directories passed in fifth argument";
         default:
             RAISE_INTERNAL_ERROR;
     }
