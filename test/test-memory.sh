@@ -41,7 +41,7 @@ function print_memory () {
 
 function check_memory () {
     INCLUDE_DIR="$(dirname ${TEST_DIR}/${FILE}.c)/"
-    if ! ( ./${PACKAGE_NAME} 0 30 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR} || false ) > /dev/null 2>&1; then
+    if ! ( ./${PACKAGE_NAME} 0 30 2 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR} || false ) > /dev/null 2>&1; then
         return
     fi
 
@@ -52,7 +52,7 @@ function check_memory () {
              --track-origins=yes \
              --verbose \
              --log-file=valgrind.out.1 \
-             ./${PACKAGE_NAME} 0 30 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR}
+             ./${PACKAGE_NAME} 0 30 2 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR}
 
     SUMMARY=$(cat valgrind.out.1 | grep "ERROR SUMMARY")
     echo "${SUMMARY}" | grep -q "ERROR SUMMARY: 0 errors"

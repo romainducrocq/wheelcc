@@ -36,13 +36,22 @@ function usage () {
     echo "    -c  compile and assemble, but do not link"
     echo ""
     echo "[Optimize...]:"
+    echo "    (Level 0):"
+    echo "    -O0                           disable  all optimizations"
     echo "    (Level 1):"
-    echo "    --fold-constants              enable  constant folding"
-    echo "    --propagate-copies            enable  copy propagation"
-    echo "    --eliminate-unreachable-code  enable  unreachable code elimination"
-    echo "    --eliminate-dead-stores       enable  dead store elimination"
-    echo "    --optimize                    enable  all level 1 optimizations"
-    echo "    -O1                           alias   for --optimize"
+    echo "    --fold-constants              enable   constant folding"
+    echo "    --propagate-copies            enable   copy propagation"
+    echo "    --eliminate-unreachable-code  enable   unreachable code elimination"
+    echo "    --eliminate-dead-stores       enable   dead store elimination"
+    echo "    --optimize                    enable   all level 1 optimizations"
+    echo "    -O1                           alias    for --optimize"
+    echo "    (Level 2):"
+    echo "    --no-allocation               disable  register allocation"
+    echo "    --no-coalescing               disable  register coalescing"
+    echo "    --allocate-register           enable   register allocation (default)"
+    echo "    -O2                           alias    for --allocate-register"
+    echo "    (Level 3):"
+    echo "    -O3                           alias    for -O1 -O2"
     echo ""
     echo "[Include...]:"
     echo "    -I<includedir>  add a list of paths to include path"
@@ -172,26 +181,47 @@ function parse_link_arg () {
     return 0
 }
 
-function parse_optimize_1_arg () {
+function parse_optimize_arg () {
     case "${ARG}" in
+        "-O0")
+            OPTIM_L1_MASK=0
+            OPTIM_L2_ENUM=0
+            ;;
         "--fold-constants")
-            OPTIM_L1=$((OPTIM_L1 | 2 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 0))
             ;;
         "--propagate-copies")
-            OPTIM_L1=$((OPTIM_L1 | 2 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 1))
             ;;
         "--eliminate-unreachable-code")
-            OPTIM_L1=$((OPTIM_L1 | 2 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 2))
             ;;
         "--eliminate-dead-stores")
-            OPTIM_L1=$((OPTIM_L1 | 2 << 3))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 3))
             ;;
         "--optimize") ;&
         "-O1")
-            OPTIM_L1=$((OPTIM_L1 | 2 << 0))
-            OPTIM_L1=$((OPTIM_L1 | 2 << 1))
-            OPTIM_L1=$((OPTIM_L1 | 2 << 2))
-            OPTIM_L1=$((OPTIM_L1 | 2 << 3))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 3))
+            ;;
+        "--no-allocation")
+            OPTIM_L2_ENUM=0
+            ;;
+        "--no-coalescing")
+            OPTIM_L2_ENUM=1
+            ;;
+        "--allocate-register") ;&
+        "-O2")
+            OPTIM_L2_ENUM=2
+            ;;
+        "-O3")
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 3))
+            OPTIM_L2_ENUM=2
             ;;
         *)
             return 1
@@ -330,7 +360,7 @@ function parse_args () {
     fi
 
     while :; do
-        parse_optimize_1_arg
+        parse_optimize_arg
         if [ ${?} -eq 0 ]; then
             shift_arg
             if [ ${?} -ne 0 ]; then
@@ -439,7 +469,7 @@ function compile () {
         if [ ${?} -eq 0 ]; then
             SOURCE_DIR=""
         fi
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
             raise_error "compilation failed"
@@ -494,7 +524,8 @@ IS_FILE_2=0
 DEBUG_ENUM=0
 LINK_ENUM=0
 
-OPTIM_L1=0
+OPTIM_L1_MASK=0
+OPTIM_L2_ENUM=2
 
 INCLUDE_DIRS=""
 LINK_DIRS=""
