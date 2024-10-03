@@ -179,6 +179,33 @@ function parse_link_arg () {
     return 0
 }
 
+function parse_optimize_1_arg () {
+    case "${ARG}" in
+        "--fold-constants")
+            OPTIM_L1=$((OPTIM_L1 | 2 << 0))
+            ;;
+        "--propagate-copies")
+            OPTIM_L1=$((OPTIM_L1 | 2 << 1))
+            ;;
+        "--eliminate-unreachable-code")
+            OPTIM_L1=$((OPTIM_L1 | 2 << 2))
+            ;;
+        "--eliminate-dead-stores")
+            OPTIM_L1=$((OPTIM_L1 | 2 << 3))
+            ;;
+        "--optimize") ;&
+        "-O1")
+            OPTIM_L1=$((OPTIM_L1 | 2 << 0))
+            OPTIM_L1=$((OPTIM_L1 | 2 << 1))
+            OPTIM_L1=$((OPTIM_L1 | 2 << 2))
+            OPTIM_L1=$((OPTIM_L1 | 2 << 3))
+            ;;
+        *)
+            return 1
+    esac
+    return 0
+}
+
 function parse_linkdir_arg () {
     if [[ "${ARG}" != "-L"* ]]; then
         return 1
@@ -306,6 +333,18 @@ function parse_args () {
     fi
 
     while :; do
+        parse_optimize_1_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then
+                raise_error "no input files"
+            fi
+        else
+            break
+        fi
+    done
+
+    while :; do
         parse_linkdir_arg
         if [ ${?} -eq 0 ]; then
             shift_arg
@@ -391,7 +430,7 @@ function compile () {
         if [ ${?} -eq 0 ]; then
             SOURCE_DIR=""
         fi
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
+        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
         if [ ${?} -ne 0 ]; then
             echo "${STDOUT}" | tail -n +3 1>&2
             raise_error "compilation failed"
@@ -445,6 +484,8 @@ IS_FILE_2=0
 
 DEBUG_ENUM=0
 LINK_ENUM=0
+
+OPTIM_L1=0
 
 EXT_IN="c"
 EXT_OUT="s"

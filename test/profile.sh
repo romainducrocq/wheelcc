@@ -16,7 +16,7 @@ if [ ! -f "${FILE}.c" ]; then exit 1; fi
 valgrind \
     --tool=callgrind \
     --callgrind-out-file=$(basename ${FILE}).callgrind.out.1 \
-    ${ROOT}/bin/${PACKAGE_NAME} 0 ${FILE}.c $(dirname ${FILE})/ > /dev/null 2>&1
+    ${ROOT}/bin/${PACKAGE_NAME} 0 30 ${FILE}.c $(dirname ${FILE})/ > /dev/null 2>&1
 
 exit 0
 
