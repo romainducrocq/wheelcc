@@ -83,13 +83,22 @@ Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...] [Li
     -c  compile and assemble, but do not link
 
 [Optimize...]:
+    (Level 0):
+    -O0                           disable  all optimizations
     (Level 1):
-    --fold-constants              enable  constant folding
-    --propagate-copies            enable  copy propagation
-    --eliminate-unreachable-code  enable  unreachable code elimination
-    --eliminate-dead-stores       enable  dead store elimination
-    --optimize                    enable  all level 1 optimizations
-    -O1                           alias   for --optimize
+    --fold-constants              enable   constant folding
+    --propagate-copies            enable   copy propagation
+    --eliminate-unreachable-code  enable   unreachable code elimination
+    --eliminate-dead-stores       enable   dead store elimination
+    --optimize                    enable   all level 1 optimizations
+    -O1                           alias    for --optimize
+    (Level 2):
+    --no-allocation               disable  register allocation
+    --no-coalescing               disable  register coalescing
+    --allocate-register           enable   register allocation (default)
+    -O2                           alias    for --allocate-register
+    (Level 3):
+    -O3                           alias    for -O1 -O2
 
 [Include...]:
     -I<includedir>  add a list of paths to include path
