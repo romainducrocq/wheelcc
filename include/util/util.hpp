@@ -1,6 +1,7 @@
 #ifndef _UTIL_UTIL_HPP
 #define _UTIL_UTIL_HPP
 
+#include <inttypes.h>
 #include <memory>
 #include <stdio.h>
 #include <string>
@@ -14,8 +15,9 @@ struct MainContext {
     MainContext();
 
     bool is_verbose;
-    int debug_code;
-    int optim_mask;
+    int32_t debug_code;
+    int32_t optim_1_mask;
+    int32_t optim_2_code;
     std::string filename;
     std::vector<std::string> includedirs;
     std::vector<std::string> args;

@@ -1,6 +1,7 @@
 #ifndef __NDEBUG__
 #include "util/pprint.hpp"
 #endif
+#include <inttypes.h>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -196,6 +197,15 @@ static void shift_args(std::string& arg) {
     arg = "";
 }
 
+static bool arg_parse_int(std::string& arg, int32_t& param) {
+    std::vector<char> buffer(arg.begin(), arg.end());
+    buffer.push_back('\0');
+    char* end_ptr = nullptr;
+    errno = 0;
+    param = static_cast<int32_t>(strtol(&buffer[0], &end_ptr, 10));
+    return end_ptr == &buffer[0];
+}
+
 static void arg_parse() {
     std::string arg;
     shift_args(arg);
@@ -204,19 +214,25 @@ static void arg_parse() {
     if (arg.empty()) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_debug_code_in_argument));
     }
-    {
-        std::vector<char> buffer(arg.begin(), arg.end());
-        buffer.push_back('\0');
-        char* end_ptr = nullptr;
-        errno = 0;
-        context->debug_code = static_cast<int>(strtol(&buffer[0], &end_ptr, 10));
-
-        if (end_ptr == &buffer[0] || context->debug_code < 0 || context->debug_code > 255) {
-            raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg));
-        }
+    else if (arg_parse_int(arg, context->debug_code) || context->debug_code < 0 || context->debug_code > 255) {
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg));
     }
 
-    context->optim_mask = 0; // TODO
+    shift_args(arg);
+    if (arg.empty()) {
+        raise_argument_error("TODO no optim 1");
+    }
+    else if (arg_parse_int(arg, context->optim_1_mask) || context->optim_1_mask < 0 || context->optim_1_mask > 30) {
+        raise_argument_error("TODO invalid optim 1");
+    }
+
+    shift_args(arg);
+    if (arg.empty()) {
+        raise_argument_error("TODO no optim 2");
+    }
+    else if (arg_parse_int(arg, context->optim_2_code) || context->optim_2_code < 0 || context->optim_2_code > 2) {
+        raise_argument_error("TODO invalid optim 2");
+    }
 
     shift_args(arg);
     if (arg.empty()) {
