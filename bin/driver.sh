@@ -13,7 +13,8 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...]"
+    echo "       [Linkdir...] [Linklib...] [Output] FILES"
     echo ""
     echo "[Help]:"
     echo "    --help  print help and exit"

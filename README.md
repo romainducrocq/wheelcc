@@ -60,7 +60,8 @@ Hello, World!
 However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
 $ wheelcc --help
-Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...] [Linkdir...] [Linklib...] [Output] FILES
+Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...]
+       [Linkdir...] [Linklib...] [Output] FILES
 
 [Help]:
     --help  print help and exit
