@@ -223,7 +223,7 @@ static void arg_parse() {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_optim_1_mask_in_argument));
     }
     else if (arg_parse_int(arg, context->optim_1_mask) || context->optim_1_mask < 0 || context->optim_1_mask > 30) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument, arg));
     }
 
     shift_args(arg);
@@ -231,7 +231,7 @@ static void arg_parse() {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_optim_2_code_in_argument));
     }
     else if (arg_parse_int(arg, context->optim_2_code) || context->optim_2_code < 0 || context->optim_2_code > 2) {
-        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument));
+        raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument, arg));
     }
 
     shift_args(arg);
