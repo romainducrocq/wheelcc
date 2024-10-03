@@ -61,7 +61,7 @@ However, <ins>the order of arguments passed matters</ins>: they are parsed only 
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...]
-       [Linkdir...] [Linklib...] [Output] FILES
+ [Linkdir...] [Linklib...] [Output] FILES
 
 [Help]:
     --help  print help and exit
