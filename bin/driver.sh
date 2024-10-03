@@ -13,41 +13,50 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
     echo ""
     echo "[Help]:"
-    echo "    --help          print help and exit"
+    echo "    --help  print help and exit"
     echo ""
     echo "[Debug]:"
-    echo "    -v              enable verbose mode"
-    echo "    (Test/Debug build only):"
-    echo "    --lex           print  lexing    stage and exit"
-    echo "    --parse         print  parsing   stage and exit"
-    echo "    --validate      print  semantic  stage and exit"
-    echo "    --tacky         print  interm    stage and exit"
-    echo "    --codegen       print  assembly  stage and exit"
-    echo "    --codeemit      print  emission  stage and exit"
+    echo "    -v          enable verbose mode"
+    echo "    (Test|Debug build only):"
+    echo "    --lex       print  lexing    stage and exit"
+    echo "    --parse     print  parsing   stage and exit"
+    echo "    --validate  print  semantic  stage and exit"
+    echo "    --tacky     print  interm    stage and exit"
+    echo "    --codegen   print  assembly  stage and exit"
+    echo "    --codeemit  print  emission  stage and exit"
     echo ""
     echo "[Preprocess]:"
-    echo "    -E              enable macro expansion with gcc"
-    echo ""
-    echo "[Include]:"
-    echo "    -I<includedir>  add a list of paths to include path"
+    echo "    -E  enable macro expansion with gcc"
     echo ""
     echo "[Link]:"
-    echo "    -S              compile, but do not assemble and link"
-    echo "    -c              compile and assemble, but do not link"
+    echo "    -S  compile, but do not assemble and link"
+    echo "    -c  compile and assemble, but do not link"
     echo ""
-    echo "[Linkdir]:"
-    echo "    -L<linkdir>     add a list of paths to link path"
+    echo "[Optimize...]:"
+    echo "    (Level 1):"
+    echo "    --fold-constants              enable  constant folding"
+    echo "    --propagate-copies            enable  copy propagation"
+    echo "    --eliminate-unreachable-code  enable  unreachable code elimination"
+    echo "    --eliminate-dead-stores       enable  dead store elimination"
+    echo "    --optimize                    enable  all level 1 optimizations"
+    echo "    -O1                           alias   for --optimize"
     echo ""
-    echo "[Linklib]:"
-    echo "    -l<libname>     link with a list of library files"
+    echo "[Include...]:"
+    echo "    -I<includedir>  add a list of paths to include path"
+    echo ""
+    echo "[Linkdir...]:"
+    echo "    -L<linkdir>  add a list of paths to link path"
+    echo ""
+    echo "[Linklib...]:"
+    echo "    -l<libname>  link with a list of library files"
     echo ""
     echo "[Output]:"
-    echo "    -o <file>       write the output into <file>"
+    echo "    -o <file>  write the output into <file>"
     echo ""
-    echo "FILES:              list of .c files to compile"
+    echo "FILES:  list of .c files to compile"
     exit 0
 }
 
@@ -149,22 +158,6 @@ function parse_preproc_arg () {
     return 0
 }
 
-function parse_include_arg () {
-    if [[ "${ARG}" != "-I"* ]]; then
-        return 1
-    fi
-    ARG="${ARG:2}"
-    if [[ "${ARG}" == "-"* ]]; then
-        raise_error "unknown or malformed option: $(em "${ARG}")"
-    fi
-    INCLUDE_DIR="$(readlink -f ${ARG})"
-    if [ ! -d "${INCLUDE_DIR}" ]; then
-        raise_error "cannot find $(em "${INCLUDE_DIR}"): no such directory"
-    fi
-    INCLUDE_DIRS="${INCLUDE_DIRS} ${INCLUDE_DIR}/"
-    return 0
-}
-
 function parse_link_arg () {
     case "${ARG}" in
         "-S")
@@ -203,6 +196,22 @@ function parse_optimize_1_arg () {
         *)
             return 1
     esac
+    return 0
+}
+
+function parse_include_arg () {
+    if [[ "${ARG}" != "-I"* ]]; then
+        return 1
+    fi
+    ARG="${ARG:2}"
+    if [[ "${ARG}" == "-"* ]]; then
+        raise_error "unknown or malformed option: $(em "${ARG}")"
+    fi
+    INCLUDE_DIR="$(readlink -f ${ARG})"
+    if [ ! -d "${INCLUDE_DIR}" ]; then
+        raise_error "cannot find $(em "${INCLUDE_DIR}"): no such directory"
+    fi
+    INCLUDE_DIRS="${INCLUDE_DIRS} ${INCLUDE_DIR}/"
     return 0
 }
 
@@ -312,18 +321,6 @@ function parse_args () {
         fi
     fi
 
-    while :; do
-        parse_include_arg
-        if [ ${?} -eq 0 ]; then
-            shift_arg
-            if [ ${?} -ne 0 ]; then
-                raise_error "no input files"
-            fi
-        else
-            break
-        fi
-    done
-
     parse_link_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
@@ -334,6 +331,18 @@ function parse_args () {
 
     while :; do
         parse_optimize_1_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then
+                raise_error "no input files"
+            fi
+        else
+            break
+        fi
+    done
+
+    while :; do
+        parse_include_arg
         if [ ${?} -eq 0 ]; then
             shift_arg
             if [ ${?} -ne 0 ]; then
@@ -487,14 +496,14 @@ LINK_ENUM=0
 
 OPTIM_L1=0
 
-EXT_IN="c"
-EXT_OUT="s"
-
 INCLUDE_DIRS=""
 LINK_DIRS=""
 LINK_LIBS=""
-FILES=""
 NAME_OUT=""
+FILES=""
+
+EXT_IN="c"
+EXT_OUT="s"
 
 parse_args
 add_includedirs
