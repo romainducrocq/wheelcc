@@ -60,41 +60,50 @@ Hello, World!
 However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
 $ wheelcc --help
-Usage: wheelcc [Help] [Debug] [Preprocess] [Include] [Link] [Linkdir] [Linklib] [Output] FILES
+Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...] [Linkdir...] [Linklib...] [Output] FILES
 
 [Help]:
-    --help          print help and exit
+    --help  print help and exit
 
 [Debug]:
-    -v              enable verbose mode
-    (Test/Debug build only):
-    --lex           print  lexing    stage and exit
-    --parse         print  parsing   stage and exit
-    --validate      print  semantic  stage and exit
-    --tacky         print  interm    stage and exit
-    --codegen       print  assembly  stage and exit
-    --codeemit      print  emission  stage and exit
+    -v          enable verbose mode
+    (Test|Debug build only):
+    --lex       print  lexing    stage and exit
+    --parse     print  parsing   stage and exit
+    --validate  print  semantic  stage and exit
+    --tacky     print  interm    stage and exit
+    --codegen   print  assembly  stage and exit
+    --codeemit  print  emission  stage and exit
 
 [Preprocess]:
-    -E              enable macro expansion with gcc
-
-[Include]:
-    -I<includedir>  add a list of paths to include path
+    -E  enable macro expansion with gcc
 
 [Link]:
-    -S              compile, but do not assemble and link
-    -c              compile and assemble, but do not link
+    -S  compile, but do not assemble and link
+    -c  compile and assemble, but do not link
 
-[Linkdir]:
-    -L<linkdir>     add a list of paths to link path
+[Optimize...]:
+    (Level 1):
+    --fold-constants              enable  constant folding
+    --propagate-copies            enable  copy propagation
+    --eliminate-unreachable-code  enable  unreachable code elimination
+    --eliminate-dead-stores       enable  dead store elimination
+    --optimize                    enable  all level 1 optimizations
+    -O1                           alias   for --optimize
 
-[Linklib]:
-    -l<libname>     link with a list of library files
+[Include...]:
+    -I<includedir>  add a list of paths to include path
+
+[Linkdir...]:
+    -L<linkdir>  add a list of paths to link path
+
+[Linklib...]:
+    -l<libname>  link with a list of library files
 
 [Output]:
-    -o <file>       write the output into <file>
+    -o <file>  write the output into <file>
 
-FILES:              list of .c files to compile
+FILES:  list of .c files to compile
 ```
 
 ### Errors
