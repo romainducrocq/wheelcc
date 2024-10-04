@@ -21,7 +21,7 @@ struct OptimTacContext {
     OptimTacContext(uint8_t optim_1_mask);
 
     bool is_fixed_point;
-    std::array<bool, 4> enabled_optimizations;
+    std::array<bool, 5> enabled_optimizations;
     // Constant folding
     // Copy propagation
     // Unreachable code elimination
