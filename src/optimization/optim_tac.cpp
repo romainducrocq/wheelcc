@@ -46,22 +46,28 @@ static void fold_constants_list_instructions(const std::vector<std::unique_ptr<T
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#define CONSTANT_FOLDING 0
+#define COPY_PROPAGATION 1
+#define UNREACHABLE_CODE_ELIMINATION 2
+#define DEAD_STORE_ELMININATION 3
+#define CONTROL_FLOW_GRAPH 4
+
 // #include <stdio.h> // TODO rm
 static void optimize_function_top_level(TacFunction* node) {
     context->is_fixed_point = true;
     do {
-        if (context->enabled_optimizations[0]) {
+        if (context->enabled_optimizations[CONSTANT_FOLDING]) {
             // printf("--fold-constants\n"); // TODO rm
             fold_constants_list_instructions(node->body);
         }
-        if (context->enabled_optimizations.back()) {
-            if (context->enabled_optimizations[1]) {
+        if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
+            if (context->enabled_optimizations[COPY_PROPAGATION]) {
                 // printf("--propagate-copies\n"); // TODO rm
             }
-            if (context->enabled_optimizations[2]) {
+            if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
                 // printf("--eliminate-unreachable-code\n"); // TODO rm
             }
-            if (context->enabled_optimizations[3]) {
+            if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
                 // printf("--eliminate-dead-stores\n"); // TODO rm
             }
         }
