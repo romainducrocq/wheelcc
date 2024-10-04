@@ -8,12 +8,12 @@
 
 static std::unique_ptr<OptimTacContext> context;
 
-OptimTacContext::OptimTacContext(int32_t optim_1_mask) :
+OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
     is_fixed_point(true), enabled_optimizations({
-                              (optim_1_mask & 2 << 0) > 0, // Constant folding
-                              (optim_1_mask & 2 << 1) > 0, // Copy propagation
-                              (optim_1_mask & 2 << 2) > 0, // Unreachable code elimination
-                              (optim_1_mask & 2 << 3) > 0  // Dead store elimination
+                              (optim_1_mask & 1 << 0) > 0, // Constant folding
+                              (optim_1_mask & 1 << 1) > 0, // Copy propagation
+                              (optim_1_mask & 1 << 2) > 0, // Unreachable code elimination
+                              (optim_1_mask & 1 << 3) > 0  // Dead store elimination
                           }) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ static void optimize_program(TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void three_address_code_optimization(TacProgram* node, int32_t optim_1_mask) {
+void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(optim_1_mask);
     optimize_program(node);
     context.reset();

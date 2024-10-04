@@ -18,7 +18,7 @@
 // Dead store elimination
 
 struct OptimTacContext {
-    OptimTacContext(int32_t optim_1_mask);
+    OptimTacContext(uint8_t optim_1_mask);
 
     bool is_fixed_point;
     std::array<bool, 4> enabled_optimizations;
@@ -28,6 +28,6 @@ struct OptimTacContext {
     // Dead store elimination
 };
 
-void three_address_code_optimization(TacProgram* node, int32_t optim_1_mask);
+void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask);
 
 #endif

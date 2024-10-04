@@ -188,23 +188,23 @@ function parse_optimize_arg () {
             OPTIM_L2_ENUM=0
             ;;
         "--fold-constants")
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 0))
             ;;
         "--propagate-copies")
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 1))
             ;;
         "--eliminate-unreachable-code")
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 2))
             ;;
         "--eliminate-dead-stores")
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 3))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 3))
             ;;
         "--optimize") ;&
         "-O1")
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 0))
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 1))
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 2))
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 3))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 3))
             ;;
         "--no-allocation")
             OPTIM_L2_ENUM=0
@@ -217,10 +217,10 @@ function parse_optimize_arg () {
             OPTIM_L2_ENUM=2
             ;;
         "-O3")
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 0))
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 1))
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 2))
-            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 2 << 3))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 3))
             OPTIM_L2_ENUM=2
             ;;
         *)

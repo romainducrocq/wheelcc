@@ -210,12 +210,12 @@ static void shift_args(std::string& arg) {
     arg = "";
 }
 
-static bool arg_parse_int(std::string& arg, int32_t& param) {
+static bool arg_parse_uint8(std::string& arg, uint8_t& code) {
     std::vector<char> buffer(arg.begin(), arg.end());
     buffer.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
-    param = static_cast<int32_t>(strtol(&buffer[0], &end_ptr, 10));
+    code = static_cast<uint8_t>(strtol(&buffer[0], &end_ptr, 10));
     return end_ptr == &buffer[0];
 }
 
@@ -227,7 +227,7 @@ static void arg_parse() {
     if (arg.empty()) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_debug_code_in_argument));
     }
-    else if (arg_parse_int(arg, context->debug_code) || context->debug_code < 0 || context->debug_code > 255) {
+    else if (arg_parse_uint8(arg, context->debug_code)) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg));
     }
 
@@ -235,7 +235,7 @@ static void arg_parse() {
     if (arg.empty()) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_optim_1_mask_in_argument));
     }
-    else if (arg_parse_int(arg, context->optim_1_mask) || context->optim_1_mask < 0 || context->optim_1_mask > 30) {
+    else if (arg_parse_uint8(arg, context->optim_1_mask) || context->optim_1_mask > 15) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument, arg));
     }
 
@@ -243,7 +243,7 @@ static void arg_parse() {
     if (arg.empty()) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::no_optim_2_code_in_argument));
     }
-    else if (arg_parse_int(arg, context->optim_2_code) || context->optim_2_code < 0 || context->optim_2_code > 2) {
+    else if (arg_parse_uint8(arg, context->optim_2_code) || context->optim_2_code > 2) {
         raise_argument_error(GET_ERROR_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument, arg));
     }
 

@@ -11,6 +11,6 @@
 
 struct RegAllocContext {};
 
-void register_allocation(AsmProgram* node, int32_t optim_2_code);
+void register_allocation(AsmProgram* node, uint8_t optim_2_code);
 
 #endif
