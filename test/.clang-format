@@ -75,6 +75,9 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
+  - Regex:           '^"optimization/'
+    Priority:        8
+    SortPriority:    0
   - Regex:           '^"backend/emitter/'
     Priority:        7
     SortPriority:    0
