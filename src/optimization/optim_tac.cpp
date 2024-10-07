@@ -2,6 +2,8 @@
 
 #include "util/throw.hpp"
 
+#include "ast/ast.hpp"
+#include "ast/front_ast.hpp"
 #include "ast/interm_ast.hpp"
 
 #include "optimization/optim_tac.hpp"
@@ -25,6 +27,119 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Constant folding
+
+static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
+    if (instruction) {
+        (*context->p_instructions)[context->instruction_index] = std::move(instruction);
+    }
+    else {
+        (*context->p_instructions)[context->instruction_index].reset();
+    }
+}
+
+static std::shared_ptr<TacConstant> fold_constants_unary_not_value(TacConstant* node) {
+    std::shared_ptr<CConst> constant;
+    switch (node->constant->type()) {
+        case AST_T::CConstInt_t: {
+            TInt value = !static_cast<CConstInt*>(node->constant.get())->value;
+            constant = std::make_shared<CConstInt>(std::move(value));
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    return std::make_shared<TacConstant>(std::move(constant));
+}
+
+static std::shared_ptr<TacConstant> fold_constants_unary_complement_value(TacConstant* node) {
+    std::shared_ptr<CConst> constant;
+    switch (node->constant->type()) {
+        case AST_T::CConstInt_t: {
+            TInt value = ~static_cast<CConstInt*>(node->constant.get())->value;
+            constant = std::make_shared<CConstInt>(std::move(value));
+            break;
+        }
+        case AST_T::CConstLong_t: {
+            TLong value = ~static_cast<CConstLong*>(node->constant.get())->value;
+            constant = std::make_shared<CConstLong>(std::move(value));
+            break;
+        }
+        case AST_T::CConstUInt_t: {
+            TUInt value = ~static_cast<CConstUInt*>(node->constant.get())->value;
+            constant = std::make_shared<CConstUInt>(std::move(value));
+            break;
+        }
+        case AST_T::CConstULong_t: {
+            TULong value = ~static_cast<CConstULong*>(node->constant.get())->value;
+            constant = std::make_shared<CConstULong>(std::move(value));
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    return std::make_shared<TacConstant>(std::move(constant));
+}
+
+static std::shared_ptr<TacConstant> fold_constants_unary_negate_value(TacConstant* node) {
+    std::shared_ptr<CConst> constant;
+    switch (node->constant->type()) {
+        case AST_T::CConstInt_t: {
+            TInt value = -static_cast<CConstInt*>(node->constant.get())->value;
+            constant = std::make_shared<CConstInt>(std::move(value));
+            break;
+        }
+        case AST_T::CConstLong_t: {
+            TLong value = -static_cast<CConstLong*>(node->constant.get())->value;
+            constant = std::make_shared<CConstLong>(std::move(value));
+            break;
+        }
+        case AST_T::CConstDouble_t: {
+            TDouble value = -static_cast<CConstDouble*>(node->constant.get())->value;
+            constant = std::make_shared<CConstDouble>(std::move(value));
+            break;
+        }
+        case AST_T::CConstUInt_t: {
+            TUInt value = -static_cast<CConstUInt*>(node->constant.get())->value;
+            constant = std::make_shared<CConstUInt>(std::move(value));
+            break;
+        }
+        case AST_T::CConstULong_t: {
+            TULong value = -static_cast<CConstULong*>(node->constant.get())->value;
+            constant = std::make_shared<CConstULong>(std::move(value));
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    return std::make_shared<TacConstant>(std::move(constant));
+}
+
+static std::shared_ptr<TacConstant> fold_constants_unary_value(TacUnary* node) {
+    switch (node->unary_op->type()) {
+        case AST_T::TacNot_t:
+            return fold_constants_unary_not_value(static_cast<TacConstant*>(node->src.get()));
+        case AST_T::TacComplement_t:
+            return fold_constants_unary_complement_value(static_cast<TacConstant*>(node->src.get()));
+        case AST_T::TacNegate_t:
+            return fold_constants_unary_negate_value(static_cast<TacConstant*>(node->src.get()));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void fold_constants_unary_instructions(TacUnary* node) {
+    if (node->src->type() == AST_T::TacConstant_t) {
+        std::shared_ptr<TacValue> src = fold_constants_unary_value(node);
+        std::shared_ptr<TacValue> dst = node->dst;
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    }
+}
+
+static void fold_constants_binary_instructions(TacBinary* node) {
+    // if (node->src1->type() == AST_T::TacConstant_t && node->src2->type() == AST_T::TacConstant_t) {
+
+    // }
+}
 
 static void fold_constants_instructions(TacInstruction* node) {
     switch (node->type()) {
@@ -57,11 +172,11 @@ static void fold_constants_instructions(TacInstruction* node) {
             break;
         }
         case AST_T::TacUnary_t: {
-            // fold_constants_unary_instructions(static_cast<TacUnary*>(node)); // TODO
+            fold_constants_unary_instructions(static_cast<TacUnary*>(node));
             break;
         }
         case AST_T::TacBinary_t: {
-            // fold_constants_binary_instructions(static_cast<TacBinary*>(node)); // TODO
+            fold_constants_binary_instructions(static_cast<TacBinary*>(node));
             break;
         }
         case AST_T::TacJumpIfZero_t: {
@@ -77,10 +192,12 @@ static void fold_constants_instructions(TacInstruction* node) {
     }
 }
 
-static void fold_constants_list_instructions(const std::vector<std::unique_ptr<TacInstruction>>& list_node) {
-    for (const auto& instruction : list_node) {
-        fold_constants_instructions(instruction.get());
+static void fold_constants_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
+    context->p_instructions = &list_node;
+    for (context->instruction_index = 0; context->instruction_index < list_node.size(); ++context->instruction_index) {
+        fold_constants_instructions((*context->p_instructions)[context->instruction_index].get());
     }
+    context->p_instructions = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

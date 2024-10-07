@@ -3,6 +3,7 @@
 
 #include <array>
 #include <inttypes.h>
+#include <vector>
 
 #include "ast/interm_ast.hpp"
 
@@ -23,6 +24,8 @@ struct OptimTacContext {
     bool is_fixed_point;
     std::array<bool, 5> enabled_optimizations;
     // Constant folding
+    size_t instruction_index;
+    std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Copy propagation
     // Unreachable code elimination
     // Dead store elimination
