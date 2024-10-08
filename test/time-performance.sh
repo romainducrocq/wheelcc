@@ -20,7 +20,7 @@ function performance () {
     echo "${PACKAGE_NAME}"
     { time for FILE in ${FILES}
     do
-        ${PACKAGE_NAME} -S ${FILE} > /dev/null 2>&1
+        ${PACKAGE_NAME} -s ${FILE} > /dev/null 2>&1
     done } 2>&1
     echo ""
     echo "nqcc2"
