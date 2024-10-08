@@ -30,6 +30,48 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Constant folding
 
+/*
+-- zero extend
+unsigned int -> long
+             -> unsigned long
+
+-- sign extend
+int -> long
+    -> unsigned long
+
+-- truncate
+long -> int
+     -> unsigned int
+unsigned long -> int
+              -> unsigned int
+
+
+unsigned int -> long
+             -> unsigned long
+             -> double
+
+
+int -> long
+    -> unsigned long
+    -> double
+
+
+long -> int
+     -> unsigned int
+     -> double
+
+
+unsigned long -> int
+              -> unsigned int
+              -> double
+
+
+double -> int
+       -> long
+       -> unsigned int
+       -> unsigned long
+*/
+
 static TInt fold_constants_unary_int_value(TacUnaryOp* node, TInt value) {
     switch (node->type()) {
         case AST_T::TacNot_t:
@@ -381,6 +423,7 @@ static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
     else {
         (*context->p_instructions)[context->instruction_index].reset();
     }
+    context->is_fixed_point = false;
 }
 
 static void fold_constants_unary_instructions(TacUnary* node) {
@@ -480,7 +523,9 @@ static void fold_constants_instructions(TacInstruction* node) {
 static void fold_constants_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     context->p_instructions = &list_node;
     for (context->instruction_index = 0; context->instruction_index < list_node.size(); ++context->instruction_index) {
-        fold_constants_instructions((*context->p_instructions)[context->instruction_index].get());
+        if ((*context->p_instructions)[context->instruction_index]) {
+            fold_constants_instructions((*context->p_instructions)[context->instruction_index].get());
+        }
     }
     context->p_instructions = nullptr;
 }
@@ -507,8 +552,8 @@ static void fold_constants_list_instructions(std::vector<std::unique_ptr<TacInst
 
 // #include <stdio.h> // TODO rm
 static void optimize_function_top_level(TacFunction* node) {
-    context->is_fixed_point = true;
     do {
+        context->is_fixed_point = true;
         if (context->enabled_optimizations[CONSTANT_FOLDING]) {
             // printf("--fold-constants\n"); // TODO rm
             fold_constants_list_instructions(node->body);
