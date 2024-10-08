@@ -60,7 +60,7 @@ Hello, World!
 However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
 ```
 $ wheelcc --help
-Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...]
+Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
  [Linkdir...] [Linklib...] [Output] FILES
 
 [Help]:
@@ -75,13 +75,6 @@ Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...]
     --tacky     print  interm    stage and exit
     --codegen   print  assembly  stage and exit
     --codeemit  print  emission  stage and exit
-
-[Preprocess]:
-    -E  enable macro expansion with gcc
-
-[Link]:
-    -S  compile, but do not assemble and link
-    -c  compile and assemble, but do not link
 
 [Optimize...]:
     (Level 0):
@@ -100,6 +93,13 @@ Usage: wheelcc [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...]
     -O2                           alias    for --allocate-register
     (Level 3):
     -O3                           alias    for -O1 -O2
+
+[Preprocess]:
+    -E  enable macro expansion with gcc
+
+[Link]:
+    -s  compile, but do not assemble and link
+    -c  compile and assemble, but do not link
 
 [Include...]:
     -I<includedir>  add a list of paths to include path
