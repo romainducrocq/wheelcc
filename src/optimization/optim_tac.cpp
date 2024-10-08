@@ -1,4 +1,6 @@
+#include <math.h>
 #include <memory>
+#include <stdint.h>
 
 #include "util/throw.hpp"
 
@@ -134,9 +136,9 @@ static TInt fold_constants_binary_int_value(TacBinaryOp* node, TInt value_1, TIn
         case AST_T::TacMultiply_t:
             return value_1 * value_2;
         case AST_T::TacDivide_t:
-            return value_1 / value_2;
+            return value_2 == 0 ? INT32_MAX : value_1 / value_2;
         case AST_T::TacRemainder_t:
-            return value_1 % value_2;
+            return value_2 == 0 ? 0 : value_1 % value_2;
         case AST_T::TacBitAnd_t:
             return value_1 & value_2;
         case AST_T::TacBitOr_t:
@@ -426,34 +428,34 @@ static void fold_constants_jump_if_not_zero_instructions(TacJumpIfNotZero* node)
 
 static void fold_constants_instructions(TacInstruction* node) {
     switch (node->type()) {
-        case AST_T::TacSignExtend_t: {
-            // fold_constants_sign_extend_instructions(static_cast<TacSignExtend*>(node)); // TODO
-            break;
-        }
-        case AST_T::TacTruncate_t: {
-            // fold_constants_truncate_instructions(static_cast<TacTruncate*>(node)); // TODO
-            break;
-        }
-        case AST_T::TacZeroExtend_t: {
-            // fold_constants_zero_extend_instructions(static_cast<TacZeroExtend*>(node)); // TODO
-            break;
-        }
-        case AST_T::TacDoubleToInt_t: {
-            // fold_constants_double_to_signed_instructions(static_cast<TacDoubleToInt*>(node)); // TODO
-            break;
-        }
-        case AST_T::TacDoubleToUInt_t: {
-            // fold_constants_double_to_unsigned_instructions(static_cast<TacDoubleToUInt*>(node)); // TODO
-            break;
-        }
-        case AST_T::TacIntToDouble_t: {
-            // fold_constants_signed_to_double_instructions(static_cast<TacIntToDouble*>(node)); // TODO
-            break;
-        }
-        case AST_T::TacUIntToDouble_t: {
-            // fold_constants_unsigned_to_double_instructions(static_cast<TacUIntToDouble*>(node)); // TODO
-            break;
-        }
+        // case AST_T::TacSignExtend_t: {
+        //     // fold_constants_sign_extend_instructions(static_cast<TacSignExtend*>(node)); // TODO
+        //     break;
+        // }
+        // case AST_T::TacTruncate_t: {
+        //     // fold_constants_truncate_instructions(static_cast<TacTruncate*>(node)); // TODO
+        //     break;
+        // }
+        // case AST_T::TacZeroExtend_t: {
+        //     // fold_constants_zero_extend_instructions(static_cast<TacZeroExtend*>(node)); // TODO
+        //     break;
+        // }
+        // case AST_T::TacDoubleToInt_t: {
+        //     // fold_constants_double_to_signed_instructions(static_cast<TacDoubleToInt*>(node)); // TODO
+        //     break;
+        // }
+        // case AST_T::TacDoubleToUInt_t: {
+        //     // fold_constants_double_to_unsigned_instructions(static_cast<TacDoubleToUInt*>(node)); // TODO
+        //     break;
+        // }
+        // case AST_T::TacIntToDouble_t: {
+        //     // fold_constants_signed_to_double_instructions(static_cast<TacIntToDouble*>(node)); // TODO
+        //     break;
+        // }
+        // case AST_T::TacUIntToDouble_t: {
+        //     // fold_constants_unsigned_to_double_instructions(static_cast<TacUIntToDouble*>(node)); // TODO
+        //     break;
+        // }
         case AST_T::TacUnary_t: {
             fold_constants_unary_instructions(static_cast<TacUnary*>(node));
             break;
