@@ -13,7 +13,7 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Preprocess] [Link] [Optimize...] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
     echo ""
     echo "[Help]:"
     echo "    --help  print help and exit"
@@ -27,13 +27,6 @@ function usage () {
     echo "    --tacky     print  interm    stage and exit"
     echo "    --codegen   print  assembly  stage and exit"
     echo "    --codeemit  print  emission  stage and exit"
-    echo ""
-    echo "[Preprocess]:"
-    echo "    -E  enable macro expansion with gcc"
-    echo ""
-    echo "[Link]:"
-    echo "    -S  compile, but do not assemble and link"
-    echo "    -c  compile and assemble, but do not link"
     echo ""
     echo "[Optimize...]:"
     echo "    (Level 0):"
@@ -52,6 +45,13 @@ function usage () {
     echo "    -O2                           alias    for --allocate-register"
     echo "    (Level 3):"
     echo "    -O3                           alias    for -O1 -O2"
+    echo ""
+    echo "[Preprocess]:"
+    echo "    -E  enable macro expansion with gcc"
+    echo ""
+    echo "[Link]:"
+    echo "    -s  compile, but do not assemble and link"
+    echo "    -c  compile and assemble, but do not link"
     echo ""
     echo "[Include...]:"
     echo "    -I<includedir>  add a list of paths to include path"
@@ -159,28 +159,6 @@ function parse_debug_arg () {
     return 0
 }
 
-function parse_preproc_arg () {
-    if [ ! "${ARG}" = "-E" ]; then
-        return 1
-    fi
-    IS_PREPROC=1
-    return 0
-}
-
-function parse_link_arg () {
-    case "${ARG}" in
-        "-S")
-            LINK_ENUM=1
-            ;;
-        "-c")
-            LINK_ENUM=2
-            ;;
-        *)
-            return 1
-    esac
-    return 0
-}
-
 function parse_optimize_arg () {
     case "${ARG}" in
         "-O0")
@@ -222,6 +200,28 @@ function parse_optimize_arg () {
             OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 2))
             OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 3))
             OPTIM_L2_ENUM=2
+            ;;
+        *)
+            return 1
+    esac
+    return 0
+}
+
+function parse_preproc_arg () {
+    if [ ! "${ARG}" = "-E" ]; then
+        return 1
+    fi
+    IS_PREPROC=1
+    return 0
+}
+
+function parse_link_arg () {
+    case "${ARG}" in
+        "-s")
+            LINK_ENUM=1
+            ;;
+        "-c")
+            LINK_ENUM=2
             ;;
         *)
             return 1
@@ -343,6 +343,18 @@ function parse_args () {
         fi
     fi
 
+    while :; do
+        parse_optimize_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then
+                raise_error "no input files"
+            fi
+        else
+            break
+        fi
+    done
+
     parse_preproc_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
@@ -358,18 +370,6 @@ function parse_args () {
             raise_error "no input files"
         fi
     fi
-
-    while :; do
-        parse_optimize_arg
-        if [ ${?} -eq 0 ]; then
-            shift_arg
-            if [ ${?} -ne 0 ]; then
-                raise_error "no input files"
-            fi
-        else
-            break
-        fi
-    done
 
     while :; do
         parse_include_arg
