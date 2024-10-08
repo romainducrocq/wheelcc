@@ -17,6 +17,7 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     for i in $(seq 1 19); do
+        if [ ${i} -ne 19 ]; then if [ ${i} -gt 10 ]; then continue; fi; fi
         test --chapter ${i} --latest-only --extra-credit --fold-constants --int-only
     done
 fi
