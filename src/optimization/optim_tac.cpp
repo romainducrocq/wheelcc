@@ -355,6 +355,23 @@ static std::shared_ptr<TacConstant> fold_constants_binary_constant_value(
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
+static bool fold_constants_is_zero_constant_value(CConst* constant) {
+    switch (constant->type()) {
+        case AST_T::CConstInt_t:
+            return static_cast<CConstInt*>(constant)->value == 0;
+        case AST_T::CConstLong_t:
+            return static_cast<CConstLong*>(constant)->value == 0l;
+        case AST_T::CConstDouble_t:
+            return static_cast<CConstDouble*>(constant)->value == 0.0;
+        case AST_T::CConstUInt_t:
+            return static_cast<CConstUInt*>(constant)->value == 0u;
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(constant)->value == 0ul;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
     if (instruction) {
         (*context->p_instructions)[context->instruction_index] = std::move(instruction);
@@ -380,6 +397,30 @@ static void fold_constants_binary_instructions(TacBinary* node) {
             static_cast<TacConstant*>(node->src2.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
         set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    }
+}
+
+static void fold_constants_jump_if_zero_instructions(TacJumpIfZero* node) {
+    if (node->condition->type() == AST_T::TacConstant_t) {
+        if (fold_constants_is_zero_constant_value(static_cast<TacConstant*>(node->condition.get())->constant.get())) {
+            TIdentifier target = node->target;
+            set_instruction(std::make_unique<TacJump>(std::move(target)));
+        }
+        else {
+            set_instruction(nullptr);
+        }
+    }
+}
+
+static void fold_constants_jump_if_not_zero_instructions(TacJumpIfNotZero* node) {
+    if (node->condition->type() == AST_T::TacConstant_t) {
+        if (fold_constants_is_zero_constant_value(static_cast<TacConstant*>(node->condition.get())->constant.get())) {
+            set_instruction(nullptr);
+        }
+        else {
+            TIdentifier target = node->target;
+            set_instruction(std::make_unique<TacJump>(std::move(target)));
+        }
     }
 }
 
@@ -422,11 +463,11 @@ static void fold_constants_instructions(TacInstruction* node) {
             break;
         }
         case AST_T::TacJumpIfZero_t: {
-            // fold_constants_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node)); // TODO
+            fold_constants_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node));
             break;
         }
         case AST_T::TacJumpIfNotZero_t: {
-            // fold_constants_jump_if_not_zero_instructions(static_cast<TacJumpIfNotZero*>(node)); // TODO
+            fold_constants_jump_if_not_zero_instructions(static_cast<TacJumpIfNotZero*>(node));
             break;
         }
         default:
