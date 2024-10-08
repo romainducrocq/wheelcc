@@ -2195,7 +2195,9 @@ static void generate_instructions(TacInstruction* node) {
 //             operand) | Label(identifier) | Push(operand) | Call(identifier) | Ret
 static void generate_list_instructions(const std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for (const auto& instruction : list_node) {
-        generate_instructions(instruction.get());
+        if (instruction) {
+            generate_instructions(instruction.get());
+        }
     }
 }
 
