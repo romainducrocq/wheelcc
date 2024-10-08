@@ -28,15 +28,6 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Constant folding
 
-static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
-    if (instruction) {
-        (*context->p_instructions)[context->instruction_index] = std::move(instruction);
-    }
-    else {
-        (*context->p_instructions)[context->instruction_index].reset();
-    }
-}
-
 static TInt fold_constants_unary_int_value(TacUnaryOp* node, TInt value) {
     switch (node->type()) {
         case AST_T::TacNot_t:
@@ -52,6 +43,8 @@ static TInt fold_constants_unary_int_value(TacUnaryOp* node, TInt value) {
 
 static TLong fold_constants_unary_long_value(TacUnaryOp* node, TLong value) {
     switch (node->type()) {
+        case AST_T::TacNot_t:
+            return !value;
         case AST_T::TacComplement_t:
             return ~value;
         case AST_T::TacNegate_t:
@@ -63,6 +56,8 @@ static TLong fold_constants_unary_long_value(TacUnaryOp* node, TLong value) {
 
 static TDouble fold_constants_unary_double_value(TacUnaryOp* node, TDouble value) {
     switch (node->type()) {
+        case AST_T::TacNot_t:
+            return !value;
         case AST_T::TacNegate_t:
             return -value;
         default:
@@ -72,6 +67,8 @@ static TDouble fold_constants_unary_double_value(TacUnaryOp* node, TDouble value
 
 static TUInt fold_constants_unary_uint_value(TacUnaryOp* node, TUInt value) {
     switch (node->type()) {
+        case AST_T::TacNot_t:
+            return !value;
         case AST_T::TacComplement_t:
             return ~value;
         case AST_T::TacNegate_t:
@@ -83,6 +80,8 @@ static TUInt fold_constants_unary_uint_value(TacUnaryOp* node, TUInt value) {
 
 static TULong fold_constants_unary_ulong_value(TacUnaryOp* node, TULong value) {
     switch (node->type()) {
+        case AST_T::TacNot_t:
+            return !value;
         case AST_T::TacComplement_t:
             return ~value;
         case AST_T::TacNegate_t:
@@ -126,6 +125,254 @@ static std::shared_ptr<TacConstant> fold_constants_unary_constant_value(TacUnary
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
+// static TInt fold_constants_binary_int_values(TacUnaryOp* node, TInt value_1, TInt value_2) {
+//     switch (node->type()) {
+//         case AST_T::TacAdd_t:
+//             return value_1 + value_2;
+//         case AST_T::TacSubtract_t:
+//             return value_1 - value_2;
+//         case AST_T::TacMultiply_t:
+//             return value_1 * value_2;
+//         case AST_T::TacDivide_t:
+//             return value_1 / value_2;
+//         case AST_T::TacRemainder_t:
+//             return value_1 % value_2;
+//         case AST_T::TacBitAnd_t:
+//             return value_1 & value_2;
+//         case AST_T::TacBitOr_t:
+//             return value_1 | value_2;
+//         case AST_T::TacBitXor_t:
+//             return value_1 ^ value_2;
+//         case AST_T::TacBitShiftLeft_t:
+//             return value_1 << value_2;
+//         case AST_T::TacBitShiftRight_t:
+//         case AST_T::TacBitShrArithmetic_t:
+//             return value_1 >> value_2;
+//         case AST_T::TacEqual_t:
+//             return value_1 == value_2;
+//         case AST_T::TacNotEqual_t:
+//             return value_1 != value_2;
+//         case AST_T::TacLessThan_t:
+//             return value_1 < value_2;
+//         case AST_T::TacLessOrEqual_t:
+//             return value_1 <= value_2;
+//         case AST_T::TacGreaterThan_t:
+//             return value_1 > value_2;
+//         case AST_T::TacGreaterOrEqual_t:
+//             return value_1 >= value_2;
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+// static TLong fold_constants_binary_long_values(TacUnaryOp* node, TLong value_1, TLong value_2) {
+//     switch (node->type()) {
+//         case AST_T::TacAdd_t:
+//             return value_1 + value_2;
+//         case AST_T::TacSubtract_t:
+//             return value_1 - value_2;
+//         case AST_T::TacMultiply_t:
+//             return value_1 * value_2;
+//         case AST_T::TacDivide_t:
+//             return value_1 / value_2;
+//         case AST_T::TacRemainder_t:
+//             return value_1 % value_2;
+//         case AST_T::TacBitAnd_t:
+//             return value_1 & value_2;
+//         case AST_T::TacBitOr_t:
+//             return value_1 | value_2;
+//         case AST_T::TacBitXor_t:
+//             return value_1 ^ value_2;
+//         case AST_T::TacBitShiftLeft_t:
+//             return value_1 << value_2;
+//         case AST_T::TacBitShiftRight_t:
+//         case AST_T::TacBitShrArithmetic_t:
+//             return value_1 >> value_2;
+//         case AST_T::TacEqual_t:
+//             return value_1 == value_2;
+//         case AST_T::TacNotEqual_t:
+//             return value_1 != value_2;
+//         case AST_T::TacLessThan_t:
+//             return value_1 < value_2;
+//         case AST_T::TacLessOrEqual_t:
+//             return value_1 <= value_2;
+//         case AST_T::TacGreaterThan_t:
+//             return value_1 > value_2;
+//         case AST_T::TacGreaterOrEqual_t:
+//             return value_1 >= value_2;
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+// static TDouble fold_constants_binary_double_values(TacUnaryOp* node, TDouble value_1, TDouble value_2) {
+//     switch (node->type()) {
+//         case AST_T::TacAdd_t:
+//             return value_1 + value_2;
+//         case AST_T::TacSubtract_t:
+//             return value_1 - value_2;
+//         case AST_T::TacMultiply_t:
+//             return value_1 * value_2;
+//         case AST_T::TacDivide_t:
+//             return value_1 / value_2;
+//         case AST_T::TacRemainder_t:
+//             return value_1 % value_2;
+//         case AST_T::TacBitAnd_t:
+//             return value_1 & value_2;
+//         case AST_T::TacBitOr_t:
+//             return value_1 | value_2;
+//         case AST_T::TacBitXor_t:
+//             return value_1 ^ value_2;
+//         case AST_T::TacBitShiftLeft_t:
+//             return value_1 << value_2;
+//         case AST_T::TacBitShiftRight_t:
+//         case AST_T::TacBitShrArithmetic_t:
+//             return value_1 >> value_2;
+//         case AST_T::TacEqual_t:
+//             return value_1 == value_2;
+//         case AST_T::TacNotEqual_t:
+//             return value_1 != value_2;
+//         case AST_T::TacLessThan_t:
+//             return value_1 < value_2;
+//         case AST_T::TacLessOrEqual_t:
+//             return value_1 <= value_2;
+//         case AST_T::TacGreaterThan_t:
+//             return value_1 > value_2;
+//         case AST_T::TacGreaterOrEqual_t:
+//             return value_1 >= value_2;
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+// static TUInt fold_constants_binary_uint_values(TacUnaryOp* node, TUInt value_1, TUInt value_2) {
+//     switch (node->type()) {
+//         case AST_T::TacAdd_t:
+//             return value_1 + value_2;
+//         case AST_T::TacSubtract_t:
+//             return value_1 - value_2;
+//         case AST_T::TacMultiply_t:
+//             return value_1 * value_2;
+//         case AST_T::TacDivide_t:
+//             return value_1 / value_2;
+//         case AST_T::TacRemainder_t:
+//             return value_1 % value_2;
+//         case AST_T::TacBitAnd_t:
+//             return value_1 & value_2;
+//         case AST_T::TacBitOr_t:
+//             return value_1 | value_2;
+//         case AST_T::TacBitXor_t:
+//             return value_1 ^ value_2;
+//         case AST_T::TacBitShiftLeft_t:
+//             return value_1 << value_2;
+//         case AST_T::TacBitShiftRight_t:
+//         case AST_T::TacBitShrArithmetic_t:
+//             return value_1 >> value_2;
+//         case AST_T::TacEqual_t:
+//             return value_1 == value_2;
+//         case AST_T::TacNotEqual_t:
+//             return value_1 != value_2;
+//         case AST_T::TacLessThan_t:
+//             return value_1 < value_2;
+//         case AST_T::TacLessOrEqual_t:
+//             return value_1 <= value_2;
+//         case AST_T::TacGreaterThan_t:
+//             return value_1 > value_2;
+//         case AST_T::TacGreaterOrEqual_t:
+//             return value_1 >= value_2;
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+// static TULong fold_constants_binary_ulong_values(TacUnaryOp* node, TULong value_1, TULong value_2) {
+//     switch (node->type()) {
+//         case AST_T::TacAdd_t:
+//             return value_1 + value_2;
+//         case AST_T::TacSubtract_t:
+//             return value_1 - value_2;
+//         case AST_T::TacMultiply_t:
+//             return value_1 * value_2;
+//         case AST_T::TacDivide_t:
+//             return value_1 / value_2;
+//         case AST_T::TacRemainder_t:
+//             return value_1 % value_2;
+//         case AST_T::TacBitAnd_t:
+//             return value_1 & value_2;
+//         case AST_T::TacBitOr_t:
+//             return value_1 | value_2;
+//         case AST_T::TacBitXor_t:
+//             return value_1 ^ value_2;
+//         case AST_T::TacBitShiftLeft_t:
+//             return value_1 << value_2;
+//         case AST_T::TacBitShiftRight_t:
+//         case AST_T::TacBitShrArithmetic_t:
+//             return value_1 >> value_2;
+//         case AST_T::TacEqual_t:
+//             return value_1 == value_2;
+//         case AST_T::TacNotEqual_t:
+//             return value_1 != value_2;
+//         case AST_T::TacLessThan_t:
+//             return value_1 < value_2;
+//         case AST_T::TacLessOrEqual_t:
+//             return value_1 <= value_2;
+//         case AST_T::TacGreaterThan_t:
+//             return value_1 > value_2;
+//         case AST_T::TacGreaterOrEqual_t:
+//             return value_1 >= value_2;
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+static std::shared_ptr<TacConstant> fold_constants_binary_constant_values(
+    TacBinaryOp* node, CConst* constant_1, CConst* constant_2) {
+    std::shared_ptr<CConst> fold_constant;
+    if (constant_1->type() != constant_2->type()) {
+        RAISE_INTERNAL_ERROR;
+    }
+    switch (constant_1->type()) {
+        case AST_T::CConstInt_t: {
+            TInt value = 0; // = fold_constants_unary_int_value(node, static_cast<CConstInt*>(constant)->value);
+            fold_constant = std::make_shared<CConstInt>(std::move(value));
+            break;
+        }
+        case AST_T::CConstLong_t: {
+            TLong value = 0; //  = fold_constants_unary_long_value(node, static_cast<CConstLong*>(constant)->value);
+            fold_constant = std::make_shared<CConstLong>(std::move(value));
+            break;
+        }
+        case AST_T::CConstDouble_t: {
+            TDouble value =
+                0; //  = fold_constants_unary_double_value(node, static_cast<CConstDouble*>(constant)->value);
+            fold_constant = std::make_shared<CConstDouble>(std::move(value));
+            break;
+        }
+        case AST_T::CConstUInt_t: {
+            TUInt value = 0; //  = fold_constants_unary_uint_value(node, static_cast<CConstUInt*>(constant)->value);
+            fold_constant = std::make_shared<CConstUInt>(std::move(value));
+            break;
+        }
+        case AST_T::CConstULong_t: {
+            TULong value = 0; //  = fold_constants_unary_ulong_value(node, static_cast<CConstULong*>(constant)->value);
+            fold_constant = std::make_shared<CConstULong>(std::move(value));
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    return std::make_shared<TacConstant>(std::move(fold_constant));
+}
+
+static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
+    if (instruction) {
+        (*context->p_instructions)[context->instruction_index] = std::move(instruction);
+    }
+    else {
+        (*context->p_instructions)[context->instruction_index].reset();
+    }
+}
+
 static void fold_constants_unary_instructions(TacUnary* node) {
     if (node->src->type() == AST_T::TacConstant_t) {
         std::shared_ptr<TacValue> src = fold_constants_unary_constant_value(
@@ -136,9 +383,13 @@ static void fold_constants_unary_instructions(TacUnary* node) {
 }
 
 static void fold_constants_binary_instructions(TacBinary* node) {
-    // if (node->src1->type() == AST_T::TacConstant_t && node->src2->type() == AST_T::TacConstant_t) {
-
-    // }
+    if (node->src1->type() == AST_T::TacConstant_t && node->src2->type() == AST_T::TacConstant_t) {
+        std::shared_ptr<TacValue> src = fold_constants_binary_constant_values(node->binary_op.get(),
+            static_cast<TacConstant*>(node->src1.get())->constant.get(),
+            static_cast<TacConstant*>(node->src2.get())->constant.get());
+        std::shared_ptr<TacValue> dst = node->dst;
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    }
 }
 
 static void fold_constants_instructions(TacInstruction* node) {
