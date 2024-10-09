@@ -628,16 +628,6 @@ static std::unique_ptr<CCast> cast_by_assignment(std::unique_ptr<CExp> node, std
     }
 }
 
-static void checktype_unary_not_expression(CUnary* node) {
-    if (!is_type_scalar(node->exp->exp_type.get())) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
-                                        get_unary_op_hr(node->unary_op.get()), get_type_hr(node->exp->exp_type.get())),
-            node->line);
-    }
-
-    node->exp_type = std::make_shared<Int>();
-}
-
 static void checktype_unary_complement_expression(CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
@@ -685,16 +675,26 @@ static void checktype_unary_negate_expression(CUnary* node) {
     node->exp_type = node->exp->exp_type;
 }
 
+static void checktype_unary_not_expression(CUnary* node) {
+    if (!is_type_scalar(node->exp->exp_type.get())) {
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type,
+                                        get_unary_op_hr(node->unary_op.get()), get_type_hr(node->exp->exp_type.get())),
+            node->line);
+    }
+
+    node->exp_type = std::make_shared<Int>();
+}
+
 static void checktype_unary_expression(CUnary* node) {
     switch (node->unary_op->type()) {
-        case AST_T::CNot_t:
-            checktype_unary_not_expression(node);
-            break;
         case AST_T::CComplement_t:
             checktype_unary_complement_expression(node);
             break;
         case AST_T::CNegate_t:
             checktype_unary_negate_expression(node);
+            break;
+        case AST_T::CNot_t:
+            checktype_unary_not_expression(node);
             break;
         default:
             RAISE_INTERNAL_ERROR;
