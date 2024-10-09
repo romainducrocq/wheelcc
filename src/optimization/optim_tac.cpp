@@ -6,6 +6,7 @@
 
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
+#include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
 
 #include "optimization/optim_tac.hpp"
@@ -31,13 +32,13 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 // Constant folding
 
 /*
--- zero extend
-unsigned int -> long
-             -> unsigned long
-
 -- sign extend
 int -> long
     -> unsigned long
+
+-- zero extend
+unsigned int -> long
+             -> unsigned long
 
 -- truncate
 long -> int
@@ -71,6 +72,132 @@ double -> int
        -> unsigned int
        -> unsigned long
 */
+
+/*
+long -> int
+double -> int
+unsigned long -> int
+*/
+
+// static TInt get_int_constant_value(CConstant* node) {
+//     switch (node->constant->type()) {
+//         case AST_T::CConstLong_t:
+//             return static_cast<TInt>(static_cast<CConstLong*>(node->constant.get())->value);
+//         case AST_T::CConstDouble_t:
+//             return static_cast<TInt>(static_cast<CConstDouble*>(node->constant.get())->value);
+//         case AST_T::CConstULong_t:
+//             return static_cast<TInt>(static_cast<CConstULong*>(node->constant.get())->value);
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+/*
+int -> long
+double -> long
+unsigned int -> long
+*/
+
+// static TLong get_long_constant_value(CConstant* node) {
+//     switch (node->constant->type()) {
+//         case AST_T::CConstInt_t:
+//             return static_cast<TLong>(static_cast<CConstInt*>(node->constant.get())->value);
+//         case AST_T::CConstDouble_t:
+//             return static_cast<TLong>(static_cast<CConstDouble*>(node->constant.get())->value);
+//         case AST_T::CConstUInt_t:
+//             return static_cast<TLong>(static_cast<CConstUInt*>(node->constant.get())->value);
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+
+/*
+int -> double
+long -> double
+unsigned int -> double
+unsigned long -> double
+*/
+
+// static TDouble get_double_constant_value(CConstant* node) {
+//     switch (node->constant->type()) {
+//         case AST_T::CConstInt_t:
+//             return static_cast<TDouble>(static_cast<CConstInt*>(node->constant.get())->value);
+//         case AST_T::CConstLong_t:
+//             return static_cast<TDouble>(static_cast<CConstLong*>(node->constant.get())->value);
+//         case AST_T::CConstUInt_t:
+//             return static_cast<TDouble>(static_cast<CConstUInt*>(node->constant.get())->value);
+//         case AST_T::CConstULong_t:
+//             return static_cast<TDouble>(static_cast<CConstULong*>(node->constant.get())->value);
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+/*
+long -> unsigned int
+double -> unsigned int
+unsigned long -> unsigned int
+*/
+
+// static TUInt get_uint_constant_value(CConstant* node) {
+//     switch (node->constant->type()) {
+//         case AST_T::CConstLong_t:
+//             return static_cast<TUInt>(static_cast<CConstLong*>(node->constant.get())->value);
+//         case AST_T::CConstDouble_t:
+//             return static_cast<TUInt>(static_cast<CConstDouble*>(node->constant.get())->value);
+//         case AST_T::CConstULong_t:
+//             return static_cast<TUInt>(static_cast<CConstULong*>(node->constant.get())->value);
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+/*
+int -> unsigned long
+double -> unsigned long
+unsigned int -> unsigned long
+*/
+
+// static TULong get_ulong_constant_value(CConstant* node) {
+//     switch (node->constant->type()) {
+//         case AST_T::CConstInt_t:
+//             return static_cast<TULong>(static_cast<CConstInt*>(node->constant.get())->value);
+//         case AST_T::CConstDouble_t:
+//             return static_cast<TULong>(static_cast<CConstDouble*>(node->constant.get())->value);
+//         case AST_T::CConstUInt_t:
+//             return static_cast<TULong>(static_cast<CConstUInt*>(node->constant.get())->value);
+//         default:
+//             RAISE_INTERNAL_ERROR;
+//     }
+// }
+
+/*
+-- sign extend
+int -> long
+    -> unsigned long
+*/
+static std::shared_ptr<TacConstant> fold_constants_sign_extend_constant_value(TacVariable* node, CConst* constant) {
+    if (constant->type() != AST_T::CConstInt_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    std::shared_ptr<CConst> fold_constant;
+    switch (frontend->symbol_table[node->name]->type_t->type()) {
+        case AST_T::Long_t: {
+            TLong value = static_cast<TLong>(static_cast<CConstInt*>(constant)->value);
+            fold_constant = std::make_shared<CConstLong>(std::move(value));
+            break;
+        }
+        case AST_T::ULong_t: {
+            TULong value = static_cast<TULong>(static_cast<CConstInt*>(constant)->value);
+            fold_constant = std::make_shared<CConstULong>(std::move(value));
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    return std::make_shared<TacConstant>(std::move(fold_constant));
+}
 
 static TInt fold_constants_unary_int_value(TacUnaryOp* node, TInt value) {
     switch (node->type()) {
@@ -426,6 +553,18 @@ static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
     context->is_fixed_point = false;
 }
 
+static void fold_constants_sign_extend_instructions(TacSignExtend* node) {
+    if (node->src->type() == AST_T::TacConstant_t) {
+        if (node->dst->type() != AST_T::TacVariable_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        std::shared_ptr<TacValue> src = fold_constants_sign_extend_constant_value(
+            static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
+        std::shared_ptr<TacValue> dst = node->dst;
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    }
+}
+
 static void fold_constants_unary_instructions(TacUnary* node) {
     if (node->src->type() == AST_T::TacConstant_t) {
         std::shared_ptr<TacValue> src = fold_constants_unary_constant_value(
@@ -471,10 +610,10 @@ static void fold_constants_jump_if_not_zero_instructions(TacJumpIfNotZero* node)
 
 static void fold_constants_instructions(TacInstruction* node) {
     switch (node->type()) {
-        // case AST_T::TacSignExtend_t: {
-        //     // fold_constants_sign_extend_instructions(static_cast<TacSignExtend*>(node)); // TODO
-        //     break;
-        // }
+        case AST_T::TacSignExtend_t: {
+            fold_constants_sign_extend_instructions(static_cast<TacSignExtend*>(node));
+            break;
+        }
         // case AST_T::TacTruncate_t: {
         //     // fold_constants_truncate_instructions(static_cast<TacTruncate*>(node)); // TODO
         //     break;
