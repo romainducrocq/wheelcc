@@ -391,6 +391,12 @@ static std::shared_ptr<TacConstant> fold_constants_double_to_signed_constant_val
     }
     std::shared_ptr<CConst> fold_constant;
     switch (frontend->symbol_table[node->name]->type_t->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t: {
+            TChar value = static_cast<TChar>(static_cast<CConstDouble*>(constant)->value);
+            fold_constant = std::make_shared<CConstChar>(std::move(value));
+            break;
+        }
         case AST_T::Int_t: {
             TInt value = static_cast<TInt>(static_cast<CConstDouble*>(constant)->value);
             fold_constant = std::make_shared<CConstInt>(std::move(value));
@@ -430,6 +436,11 @@ static std::shared_ptr<TacConstant> fold_constants_double_to_unsigned_constant_v
     }
     std::shared_ptr<CConst> fold_constant;
     switch (frontend->symbol_table[node->name]->type_t->type()) {
+        case AST_T::UChar_t: {
+            TUChar value = static_cast<TUChar>(static_cast<CConstDouble*>(constant)->value);
+            fold_constant = std::make_shared<CConstUChar>(std::move(value));
+            break;
+        }
         case AST_T::UInt_t: {
             TUInt value = static_cast<TUInt>(static_cast<CConstDouble*>(constant)->value);
             fold_constant = std::make_shared<CConstUInt>(std::move(value));
