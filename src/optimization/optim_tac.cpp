@@ -547,95 +547,112 @@ static void fold_constants_unsigned_to_double_instructions(TacUIntToDouble* node
     }
 }
 
-static TInt fold_constants_unary_int_value(TacUnaryOp* node, TInt value) {
-    switch (node->type()) {
-        case AST_T::TacNot_t:
-            return !value;
-        case AST_T::TacComplement_t:
-            return ~value;
-        case AST_T::TacNegate_t:
-            return -value;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TLong fold_constants_unary_long_value(TacUnaryOp* node, TLong value) {
-    switch (node->type()) {
-        case AST_T::TacNot_t:
-            return !value;
-        case AST_T::TacComplement_t:
-            return ~value;
-        case AST_T::TacNegate_t:
-            return -value;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TDouble fold_constants_unary_double_value(TacUnaryOp* node, TDouble value) {
-    switch (node->type()) {
-        case AST_T::TacNot_t:
-            return !value;
-        case AST_T::TacNegate_t:
-            return -value;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TUInt fold_constants_unary_uint_value(TacUnaryOp* node, TUInt value) {
-    switch (node->type()) {
-        case AST_T::TacNot_t:
-            return !value;
-        case AST_T::TacComplement_t:
-            return ~value;
-        case AST_T::TacNegate_t:
-            return -value;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TULong fold_constants_unary_ulong_value(TacUnaryOp* node, TULong value) {
-    switch (node->type()) {
-        case AST_T::TacNot_t:
-            return !value;
-        case AST_T::TacComplement_t:
-            return ~value;
-        case AST_T::TacNegate_t:
-            return -value;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
 static std::shared_ptr<TacConstant> fold_constants_unary_constant_value(TacUnaryOp* node, CConst* constant) {
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
         case AST_T::CConstInt_t: {
-            TInt value = fold_constants_unary_int_value(node, static_cast<CConstInt*>(constant)->value);
-            fold_constant = std::make_shared<CConstInt>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacComplement_t: {
+                    TInt value = ~static_cast<CConstInt*>(constant)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNegate_t: {
+                    TInt value = -static_cast<CConstInt*>(constant)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNot_t: {
+                    TInt value = !static_cast<CConstInt*>(constant)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstLong_t: {
-            TLong value = fold_constants_unary_long_value(node, static_cast<CConstLong*>(constant)->value);
-            fold_constant = std::make_shared<CConstLong>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacComplement_t: {
+                    TLong value = ~static_cast<CConstLong*>(constant)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNegate_t: {
+                    TLong value = -static_cast<CConstLong*>(constant)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNot_t: {
+                    TInt value = !static_cast<CConstLong*>(constant)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstDouble_t: {
-            TDouble value = fold_constants_unary_double_value(node, static_cast<CConstDouble*>(constant)->value);
-            fold_constant = std::make_shared<CConstDouble>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacNegate_t: {
+                    TDouble value = -static_cast<CConstDouble*>(constant)->value;
+                    fold_constant = std::make_shared<CConstDouble>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNot_t: {
+                    TInt value = !static_cast<CConstDouble*>(constant)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstUInt_t: {
-            TUInt value = fold_constants_unary_uint_value(node, static_cast<CConstUInt*>(constant)->value);
-            fold_constant = std::make_shared<CConstUInt>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacComplement_t: {
+                    TUInt value = ~static_cast<CConstUInt*>(constant)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNegate_t: {
+                    TUInt value = -static_cast<CConstUInt*>(constant)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNot_t: {
+                    TInt value = !static_cast<CConstUInt*>(constant)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstULong_t: {
-            TULong value = fold_constants_unary_ulong_value(node, static_cast<CConstULong*>(constant)->value);
-            fold_constant = std::make_shared<CConstULong>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacComplement_t: {
+                    TULong value = ~static_cast<CConstULong*>(constant)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNegate_t: {
+                    TULong value = -static_cast<CConstULong*>(constant)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacNot_t: {
+                    TInt value = !static_cast<CConstULong*>(constant)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         default:
