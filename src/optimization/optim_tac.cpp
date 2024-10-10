@@ -187,7 +187,8 @@ int -> long
 */
 static std::shared_ptr<CConst> fold_constants_sign_extend_int_constant_value(TacVariable* node, CConstInt* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
-        case AST_T::Long_t: {
+        case AST_T::Long_t:
+        case AST_T::Pointer_t: {
             TLong value = static_cast<TLong>(constant->value);
             return std::make_shared<CConstLong>(std::move(value));
         }
@@ -356,7 +357,8 @@ unsigned int -> long
 */
 static std::shared_ptr<CConst> fold_constants_zero_extend_uint_constant_value(TacVariable* node, CConstUInt* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
-        case AST_T::Long_t: {
+        case AST_T::Long_t:
+        case AST_T::Pointer_t: {
             TLong value = static_cast<TLong>(constant->value);
             return std::make_shared<CConstLong>(std::move(value));
         }
