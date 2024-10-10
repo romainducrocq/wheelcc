@@ -670,193 +670,6 @@ static void fold_constants_unary_instructions(TacUnary* node) {
     }
 }
 
-static TInt fold_constants_binary_int_value(TacBinaryOp* node, TInt value_1, TInt value_2) {
-    switch (node->type()) {
-        case AST_T::TacAdd_t:
-            return value_1 + value_2;
-        case AST_T::TacSubtract_t:
-            return value_1 - value_2;
-        case AST_T::TacMultiply_t:
-            return value_1 * value_2;
-        case AST_T::TacDivide_t:
-            return value_2 == 0 ? INT32_MAX : value_1 / value_2;
-        case AST_T::TacRemainder_t:
-            return value_2 == 0 ? 0 : value_1 % value_2;
-        case AST_T::TacBitAnd_t:
-            return value_1 & value_2;
-        case AST_T::TacBitOr_t:
-            return value_1 | value_2;
-        case AST_T::TacBitXor_t:
-            return value_1 ^ value_2;
-        case AST_T::TacBitShiftLeft_t:
-            return value_1 << value_2;
-        case AST_T::TacBitShiftRight_t:
-        case AST_T::TacBitShrArithmetic_t:
-            return value_1 >> value_2;
-        case AST_T::TacEqual_t:
-            return value_1 == value_2;
-        case AST_T::TacNotEqual_t:
-            return value_1 != value_2;
-        case AST_T::TacLessThan_t:
-            return value_1 < value_2;
-        case AST_T::TacLessOrEqual_t:
-            return value_1 <= value_2;
-        case AST_T::TacGreaterThan_t:
-            return value_1 > value_2;
-        case AST_T::TacGreaterOrEqual_t:
-            return value_1 >= value_2;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TLong fold_constants_binary_long_value(TacBinaryOp* node, TLong value_1, TLong value_2) {
-    switch (node->type()) {
-        case AST_T::TacAdd_t:
-            return value_1 + value_2;
-        case AST_T::TacSubtract_t:
-            return value_1 - value_2;
-        case AST_T::TacMultiply_t:
-            return value_1 * value_2;
-        case AST_T::TacDivide_t:
-            return value_1 / value_2;
-        case AST_T::TacRemainder_t:
-            return value_1 % value_2;
-        case AST_T::TacBitAnd_t:
-            return value_1 & value_2;
-        case AST_T::TacBitOr_t:
-            return value_1 | value_2;
-        case AST_T::TacBitXor_t:
-            return value_1 ^ value_2;
-        case AST_T::TacBitShiftLeft_t:
-            return value_1 << value_2;
-        case AST_T::TacBitShiftRight_t:
-        case AST_T::TacBitShrArithmetic_t:
-            return value_1 >> value_2;
-        case AST_T::TacEqual_t:
-            return value_1 == value_2;
-        case AST_T::TacNotEqual_t:
-            return value_1 != value_2;
-        case AST_T::TacLessThan_t:
-            return value_1 < value_2;
-        case AST_T::TacLessOrEqual_t:
-            return value_1 <= value_2;
-        case AST_T::TacGreaterThan_t:
-            return value_1 > value_2;
-        case AST_T::TacGreaterOrEqual_t:
-            return value_1 >= value_2;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TDouble fold_constants_binary_double_value(TacBinaryOp* node, TDouble value_1, TDouble value_2) {
-    switch (node->type()) {
-        case AST_T::TacAdd_t:
-            return value_1 + value_2;
-        case AST_T::TacSubtract_t:
-            return value_1 - value_2;
-        case AST_T::TacMultiply_t:
-            return value_1 * value_2;
-        case AST_T::TacDivide_t:
-            return value_1 / value_2;
-        case AST_T::TacEqual_t:
-            return value_1 == value_2;
-        case AST_T::TacNotEqual_t:
-            return value_1 != value_2;
-        case AST_T::TacLessThan_t:
-            return value_1 < value_2;
-        case AST_T::TacLessOrEqual_t:
-            return value_1 <= value_2;
-        case AST_T::TacGreaterThan_t:
-            return value_1 > value_2;
-        case AST_T::TacGreaterOrEqual_t:
-            return value_1 >= value_2;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TUInt fold_constants_binary_uint_value(TacBinaryOp* node, TUInt value_1, TUInt value_2) {
-    switch (node->type()) {
-        case AST_T::TacAdd_t:
-            return value_1 + value_2;
-        case AST_T::TacSubtract_t:
-            return value_1 - value_2;
-        case AST_T::TacMultiply_t:
-            return value_1 * value_2;
-        case AST_T::TacDivide_t:
-            return value_1 / value_2;
-        case AST_T::TacRemainder_t:
-            return value_1 % value_2;
-        case AST_T::TacBitAnd_t:
-            return value_1 & value_2;
-        case AST_T::TacBitOr_t:
-            return value_1 | value_2;
-        case AST_T::TacBitXor_t:
-            return value_1 ^ value_2;
-        case AST_T::TacBitShiftLeft_t:
-            return value_1 << value_2;
-        case AST_T::TacBitShiftRight_t:
-        case AST_T::TacBitShrArithmetic_t:
-            return value_1 >> value_2;
-        case AST_T::TacEqual_t:
-            return value_1 == value_2;
-        case AST_T::TacNotEqual_t:
-            return value_1 != value_2;
-        case AST_T::TacLessThan_t:
-            return value_1 < value_2;
-        case AST_T::TacLessOrEqual_t:
-            return value_1 <= value_2;
-        case AST_T::TacGreaterThan_t:
-            return value_1 > value_2;
-        case AST_T::TacGreaterOrEqual_t:
-            return value_1 >= value_2;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
-static TULong fold_constants_binary_ulong_value(TacBinaryOp* node, TULong value_1, TULong value_2) {
-    switch (node->type()) {
-        case AST_T::TacAdd_t:
-            return value_1 + value_2;
-        case AST_T::TacSubtract_t:
-            return value_1 - value_2;
-        case AST_T::TacMultiply_t:
-            return value_1 * value_2;
-        case AST_T::TacDivide_t:
-            return value_1 / value_2;
-        case AST_T::TacRemainder_t:
-            return value_1 % value_2;
-        case AST_T::TacBitAnd_t:
-            return value_1 & value_2;
-        case AST_T::TacBitOr_t:
-            return value_1 | value_2;
-        case AST_T::TacBitXor_t:
-            return value_1 ^ value_2;
-        case AST_T::TacBitShiftLeft_t:
-            return value_1 << value_2;
-        case AST_T::TacBitShiftRight_t:
-        case AST_T::TacBitShrArithmetic_t:
-            return value_1 >> value_2;
-        case AST_T::TacEqual_t:
-            return value_1 == value_2;
-        case AST_T::TacNotEqual_t:
-            return value_1 != value_2;
-        case AST_T::TacLessThan_t:
-            return value_1 < value_2;
-        case AST_T::TacLessOrEqual_t:
-            return value_1 <= value_2;
-        case AST_T::TacGreaterThan_t:
-            return value_1 > value_2;
-        case AST_T::TacGreaterOrEqual_t:
-            return value_1 >= value_2;
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
 static std::shared_ptr<TacConstant> fold_constants_binary_constant_value(
     TacBinaryOp* node, CConst* constant_1, CConst* constant_2) {
     std::shared_ptr<CConst> fold_constant;
@@ -865,33 +678,544 @@ static std::shared_ptr<TacConstant> fold_constants_binary_constant_value(
     }
     switch (constant_1->type()) {
         case AST_T::CConstInt_t: {
-            TInt value = fold_constants_binary_int_value(
-                node, static_cast<CConstInt*>(constant_1)->value, static_cast<CConstInt*>(constant_2)->value);
-            fold_constant = std::make_shared<CConstInt>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacAdd_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value + static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacSubtract_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value - static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacMultiply_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value * static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacDivide_t: {
+                    TInt value = static_cast<CConstInt*>(constant_2)->value;
+                    if (value != 0) {
+                        value = static_cast<CConstInt*>(constant_1)->value / value;
+                    }
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacRemainder_t: {
+                    TInt value = static_cast<CConstInt*>(constant_2)->value;
+                    if (value != 0) {
+                        value = static_cast<CConstInt*>(constant_1)->value % value;
+                    }
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacBitAnd_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value & static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitOr_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value | static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitXor_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value ^ static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftLeft_t: {
+                    TInt value = static_cast<CConstInt*>(constant_1)->value
+                                 << static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftRight_t:
+                case AST_T::TacBitShrArithmetic_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value >> static_cast<CConstInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacEqual_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value == static_cast<CConstInt*>(constant_2)->value ? 1 :
+                                                                                                                   0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacNotEqual_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value != static_cast<CConstInt*>(constant_2)->value ? 1 :
+                                                                                                                   0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessThan_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value < static_cast<CConstInt*>(constant_2)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value <= static_cast<CConstInt*>(constant_2)->value ? 1 :
+                                                                                                                   0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterThan_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value > static_cast<CConstInt*>(constant_2)->value ? 1 : 0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstInt*>(constant_1)->value >= static_cast<CConstInt*>(constant_2)->value ? 1 :
+                                                                                                                   0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstLong_t: {
-            TLong value = fold_constants_binary_long_value(
-                node, static_cast<CConstLong*>(constant_1)->value, static_cast<CConstLong*>(constant_2)->value);
-            fold_constant = std::make_shared<CConstLong>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacAdd_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value + static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacSubtract_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value - static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacMultiply_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value * static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacDivide_t: {
+                    TLong value = static_cast<CConstLong*>(constant_2)->value;
+                    if (value != 0l) {
+                        value = static_cast<CConstLong*>(constant_1)->value / value;
+                    }
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacRemainder_t: {
+                    TLong value = static_cast<CConstLong*>(constant_2)->value;
+                    if (value != 0l) {
+                        value = static_cast<CConstLong*>(constant_1)->value % value;
+                    }
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacBitAnd_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value & static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitOr_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value | static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitXor_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value ^ static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftLeft_t: {
+                    TLong value = static_cast<CConstLong*>(constant_1)->value
+                                  << static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftRight_t:
+                case AST_T::TacBitShrArithmetic_t: {
+                    TLong value =
+                        static_cast<CConstLong*>(constant_1)->value >> static_cast<CConstLong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstLong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacEqual_t: {
+                    TInt value =
+                        static_cast<CConstLong*>(constant_1)->value == static_cast<CConstLong*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacNotEqual_t: {
+                    TInt value =
+                        static_cast<CConstLong*>(constant_1)->value != static_cast<CConstLong*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessThan_t: {
+                    TInt value =
+                        static_cast<CConstLong*>(constant_1)->value < static_cast<CConstLong*>(constant_2)->value ? 1 :
+                                                                                                                    0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstLong*>(constant_1)->value <= static_cast<CConstLong*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterThan_t: {
+                    TInt value =
+                        static_cast<CConstLong*>(constant_1)->value > static_cast<CConstLong*>(constant_2)->value ? 1 :
+                                                                                                                    0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstLong*>(constant_1)->value >= static_cast<CConstLong*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstDouble_t: {
-            TDouble value = fold_constants_binary_double_value(
-                node, static_cast<CConstDouble*>(constant_1)->value, static_cast<CConstDouble*>(constant_2)->value);
-            fold_constant = std::make_shared<CConstDouble>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacAdd_t: {
+                    TDouble value =
+                        static_cast<CConstDouble*>(constant_1)->value + static_cast<CConstDouble*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstDouble>(std::move(value));
+                    break;
+                }
+                case AST_T::TacSubtract_t: {
+                    TDouble value =
+                        static_cast<CConstDouble*>(constant_1)->value - static_cast<CConstDouble*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstDouble>(std::move(value));
+                    break;
+                };
+                case AST_T::TacMultiply_t: {
+                    TDouble value =
+                        static_cast<CConstDouble*>(constant_1)->value * static_cast<CConstDouble*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstDouble>(std::move(value));
+                    break;
+                };
+                case AST_T::TacDivide_t: {
+                    TDouble value = static_cast<CConstDouble*>(constant_2)->value;
+                    if (value != 0.0) {
+                        value = static_cast<CConstDouble*>(constant_1)->value / value;
+                    }
+                    fold_constant = std::make_shared<CConstDouble>(std::move(value));
+                    break;
+                }
+                case AST_T::TacEqual_t: {
+                    TInt value =
+                        static_cast<CConstDouble*>(constant_1)->value == static_cast<CConstDouble*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacNotEqual_t: {
+                    TInt value =
+                        static_cast<CConstDouble*>(constant_1)->value != static_cast<CConstDouble*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessThan_t: {
+                    TInt value =
+                        static_cast<CConstDouble*>(constant_1)->value < static_cast<CConstDouble*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstDouble*>(constant_1)->value <= static_cast<CConstDouble*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterThan_t: {
+                    TInt value =
+                        static_cast<CConstDouble*>(constant_1)->value > static_cast<CConstDouble*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstDouble*>(constant_1)->value >= static_cast<CConstDouble*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstUInt_t: {
-            TUInt value = fold_constants_binary_uint_value(
-                node, static_cast<CConstUInt*>(constant_1)->value, static_cast<CConstUInt*>(constant_2)->value);
-            fold_constant = std::make_shared<CConstUInt>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacAdd_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value + static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacSubtract_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value - static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacMultiply_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value * static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacDivide_t: {
+                    TUInt value = static_cast<CConstUInt*>(constant_2)->value;
+                    if (value != 0u) {
+                        value = static_cast<CConstUInt*>(constant_1)->value / value;
+                    }
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacRemainder_t: {
+                    TUInt value = static_cast<CConstUInt*>(constant_2)->value;
+                    if (value != 0u) {
+                        value = static_cast<CConstUInt*>(constant_1)->value % value;
+                    }
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                }
+                case AST_T::TacBitAnd_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value & static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitOr_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value | static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitXor_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value ^ static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftLeft_t: {
+                    TUInt value = static_cast<CConstUInt*>(constant_1)->value
+                                  << static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftRight_t:
+                case AST_T::TacBitShrArithmetic_t: {
+                    TUInt value =
+                        static_cast<CConstUInt*>(constant_1)->value >> static_cast<CConstUInt*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstUInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacEqual_t: {
+                    TInt value =
+                        static_cast<CConstUInt*>(constant_1)->value == static_cast<CConstUInt*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacNotEqual_t: {
+                    TInt value =
+                        static_cast<CConstUInt*>(constant_1)->value != static_cast<CConstUInt*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessThan_t: {
+                    TInt value =
+                        static_cast<CConstUInt*>(constant_1)->value < static_cast<CConstUInt*>(constant_2)->value ? 1 :
+                                                                                                                    0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstUInt*>(constant_1)->value <= static_cast<CConstUInt*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterThan_t: {
+                    TInt value =
+                        static_cast<CConstUInt*>(constant_1)->value > static_cast<CConstUInt*>(constant_2)->value ? 1 :
+                                                                                                                    0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstUInt*>(constant_1)->value >= static_cast<CConstUInt*>(constant_2)->value ? 1 :
+                                                                                                                     0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         case AST_T::CConstULong_t: {
-            TULong value = fold_constants_binary_ulong_value(
-                node, static_cast<CConstULong*>(constant_1)->value, static_cast<CConstULong*>(constant_2)->value);
-            fold_constant = std::make_shared<CConstULong>(std::move(value));
+            switch (node->type()) {
+                case AST_T::TacAdd_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value + static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacSubtract_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value - static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacMultiply_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value * static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacDivide_t: {
+                    TULong value = static_cast<CConstULong*>(constant_2)->value;
+                    if (value != 0ul) {
+                        value = static_cast<CConstULong*>(constant_1)->value / value;
+                    }
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacRemainder_t: {
+                    TULong value = static_cast<CConstULong*>(constant_2)->value;
+                    if (value != 0ul) {
+                        value = static_cast<CConstULong*>(constant_1)->value % value;
+                    }
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                }
+                case AST_T::TacBitAnd_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value & static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitOr_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value | static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitXor_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value ^ static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftLeft_t: {
+                    TULong value = static_cast<CConstULong*>(constant_1)->value
+                                   << static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacBitShiftRight_t:
+                case AST_T::TacBitShrArithmetic_t: {
+                    TULong value =
+                        static_cast<CConstULong*>(constant_1)->value >> static_cast<CConstULong*>(constant_2)->value;
+                    fold_constant = std::make_shared<CConstULong>(std::move(value));
+                    break;
+                };
+                case AST_T::TacEqual_t: {
+                    TInt value =
+                        static_cast<CConstULong*>(constant_1)->value == static_cast<CConstULong*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacNotEqual_t: {
+                    TInt value =
+                        static_cast<CConstULong*>(constant_1)->value != static_cast<CConstULong*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessThan_t: {
+                    TInt value =
+                        static_cast<CConstULong*>(constant_1)->value < static_cast<CConstULong*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacLessOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstULong*>(constant_1)->value <= static_cast<CConstULong*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterThan_t: {
+                    TInt value =
+                        static_cast<CConstULong*>(constant_1)->value > static_cast<CConstULong*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                case AST_T::TacGreaterOrEqual_t: {
+                    TInt value =
+                        static_cast<CConstULong*>(constant_1)->value >= static_cast<CConstULong*>(constant_2)->value ?
+                            1 :
+                            0;
+                    fold_constant = std::make_shared<CConstInt>(std::move(value));
+                    break;
+                };
+                default:
+                    RAISE_INTERNAL_ERROR;
+            }
             break;
         }
         default:
