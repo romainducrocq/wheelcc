@@ -1,4 +1,6 @@
+#include <inttypes.h>
 #include <memory>
+#include <vector>
 
 #include "util/throw.hpp"
 
