@@ -89,7 +89,13 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
 }
 
 static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* node) {
-    return generate_double_static_constant_operand(node->value, double_to_binary(node->value), 8);
+    TULong binary = double_to_binary(node->value);
+    if (binary == 9223372036854775808ul) {
+        return generate_double_static_constant_operand(-0.0, 9223372036854775808ul, 16);
+    }
+    else {
+        return generate_double_static_constant_operand(node->value, binary, 8);
+    }
 }
 
 static std::shared_ptr<AsmOperand> generate_constant_operand(TacConstant* node) {
