@@ -20,7 +20,7 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
         (optim_1_mask & (static_cast<uint8_t>(1) << 1)) > 0, // Enable copy propagation
         (optim_1_mask & (static_cast<uint8_t>(1) << 2)) > 0, // Enable unreachable code elimination
         (optim_1_mask & (static_cast<uint8_t>(1) << 3)) > 0, // Enable dead store elimination
-        (optim_1_mask & ~(static_cast<uint8_t>(1) << 0)) > 0 // Optimize with control flow graph
+        (optim_1_mask & ~(static_cast<uint8_t>(1) << 0)) > 0 // Optimize with data flow analysis
     }) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -989,14 +989,13 @@ static void fold_constants_instructions(TacInstruction* node) {
     }
 }
 
-static void fold_constants_list_instructions(std::vector<std::unique_ptr<TacInstruction>>& list_node) {
-    context->p_instructions = &list_node;
-    for (context->instruction_index = 0; context->instruction_index < list_node.size(); ++context->instruction_index) {
+static void fold_constants_list_instructions() {
+    for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
+         ++context->instruction_index) {
         if ((*context->p_instructions)[context->instruction_index]) {
             fold_constants_instructions((*context->p_instructions)[context->instruction_index].get());
         }
     }
-    context->p_instructions = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1013,21 +1012,78 @@ static void fold_constants_list_instructions(std::vector<std::unique_ptr<TacInst
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static void data_flow_analysis_initialize() {
+    context->data_flow_analysis->control_flow_graph.entry_id = context->p_instructions->size();
+    context->data_flow_analysis->control_flow_graph.exit_id = context->p_instructions->size() + 1;
+    context->data_flow_analysis->control_flow_graph.entry_sucessor_ids.clear();
+    context->data_flow_analysis->control_flow_graph.exit_predecessor_ids.clear();
+    context->data_flow_analysis->control_flow_graph.blocks.clear();
+
+    size_t null_id = context->data_flow_analysis->control_flow_graph.exit_id + 1;
+    for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
+         ++context->instruction_index) {
+        if ((*context->p_instructions)[context->instruction_index]) {
+            ControlFlowBlock block = {context->instruction_index, null_id, {}, {}};
+            context->data_flow_analysis->control_flow_graph.blocks.emplace_back(std::move(block));
+            goto Lelse;
+        }
+    }
+    RAISE_INTERNAL_ERROR;
+Lelse:
+
+    for (; context->instruction_index < context->p_instructions->size(); ++context->instruction_index) {
+        if ((*context->p_instructions)[context->instruction_index]) {
+            switch ((*context->p_instructions)[context->instruction_index]->type()) {
+                case AST_T::TacLabel_t: {
+                    ControlFlowBlock block = {context->instruction_index, null_id, {}, {}};
+                    context->data_flow_analysis->control_flow_graph.blocks.emplace_back(std::move(block));
+                    break;
+                }
+                case AST_T::TacReturn_t:
+                case AST_T::TacJump_t:
+                case AST_T::TacJumpIfZero_t:
+                case AST_T::TacJumpIfNotZero_t: {
+                    context->data_flow_analysis->control_flow_graph.blocks.back().instructions_size =
+                        context->instruction_index
+                        - context->data_flow_analysis->control_flow_graph.blocks.back().instructions_front_index;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+
+    if (context->data_flow_analysis->control_flow_graph.blocks.back().instructions_size == null_id) {
+        for (context->instruction_index = context->p_instructions->size(); context->instruction_index-- > 0;) {
+            if ((*context->p_instructions)[context->instruction_index]) {
+                context->data_flow_analysis->control_flow_graph.blocks.back().instructions_size =
+                    context->instruction_index
+                    - context->data_flow_analysis->control_flow_graph.blocks.back().instructions_front_index;
+                break;
+            }
+        }
+    }
+}
+
 #define CONSTANT_FOLDING 0
 #define COPY_PROPAGATION 1
 #define UNREACHABLE_CODE_ELIMINATION 2
 #define DEAD_STORE_ELMININATION 3
-#define CONTROL_FLOW_GRAPH 4
+#define DATA_FLOW_ANALYSIS 4
 
 // #include <stdio.h> // TODO rm
 static void optimize_function_top_level(TacFunction* node) {
+    context->p_instructions = &node->body;
     do {
         context->is_fixed_point = true;
         if (context->enabled_optimizations[CONSTANT_FOLDING]) {
             // printf("--fold-constants\n"); // TODO rm
-            fold_constants_list_instructions(node->body);
+            fold_constants_list_instructions();
         }
-        if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
+        if (context->enabled_optimizations[DATA_FLOW_ANALYSIS]) {
+            data_flow_analysis_initialize();
+
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
                 // printf("--propagate-copies\n"); // TODO rm
             }
@@ -1040,6 +1096,7 @@ static void optimize_function_top_level(TacFunction* node) {
         }
     }
     while (!context->is_fixed_point);
+    context->p_instructions = nullptr;
 }
 
 static void optimize_top_level(TacTopLevel* node) {
@@ -1062,6 +1119,9 @@ static void optimize_program(TacProgram* node) {
 
 void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(optim_1_mask);
+    if (context->enabled_optimizations[DATA_FLOW_ANALYSIS]) {
+        context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
+    }
     optimize_program(node);
     context.reset();
 }
