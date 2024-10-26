@@ -1012,19 +1012,29 @@ static void fold_constants_list_instructions() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_id) {
+    if (predecessor_id == context->control_flow_graph->entry_id) {
+        // TODO
+        // context->control_flow_graph->entry_sucessor_ids.push_back(successor_id);
+        // context->control_flow_graph->blocks[successor_id].predecessor_ids.push_back(predecessor_id);
+    }
+    else if (successor_id == context->control_flow_graph->exit_id) {
+        // TODO
+    }
+    else {
+        // TODO
+    }
+}
+
 static void control_flow_graph_initialize() {
-    context->control_flow_graph->entry_id = context->p_instructions->size();
-    context->control_flow_graph->exit_id = context->p_instructions->size() + 1;
-    context->control_flow_graph->entry_sucessor_ids.clear();
-    context->control_flow_graph->exit_predecessor_ids.clear();
     context->control_flow_graph->blocks.clear();
     context->control_flow_graph->label_id_map.clear();
 
-    size_t instructions_back_index = context->control_flow_graph->exit_id;
+    size_t instructions_back_index = context->p_instructions->size();
     for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
          ++context->instruction_index) {
         if ((*context->p_instructions)[context->instruction_index]) {
-            if (instructions_back_index == context->control_flow_graph->exit_id) {
+            if (instructions_back_index == context->p_instructions->size()) {
                 ControlFlowBlock block {context->instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
@@ -1035,7 +1045,7 @@ static void control_flow_graph_initialize() {
                     //     finished_blocks.append(current_block)
                     // current_block = []
                     // current_block = [instruction]
-                    if (instructions_back_index != context->control_flow_graph->exit_id) {
+                    if (instructions_back_index != context->p_instructions->size()) {
                         context->control_flow_graph->blocks.back().instructions_size =
                             instructions_back_index
                             - context->control_flow_graph->blocks.back().instructions_front_index + 1;
@@ -1059,7 +1069,7 @@ static void control_flow_graph_initialize() {
                     context->control_flow_graph->blocks.back().instructions_size =
                         context->instruction_index - context->control_flow_graph->blocks.back().instructions_front_index
                         + 1;
-                    instructions_back_index = context->control_flow_graph->exit_id;
+                    instructions_back_index = context->p_instructions->size();
                     break;
                 }
                 default: {
@@ -1069,9 +1079,18 @@ static void control_flow_graph_initialize() {
             }
         }
     }
-    if (instructions_back_index != context->control_flow_graph->exit_id) {
+    if (instructions_back_index != context->p_instructions->size()) {
         context->control_flow_graph->blocks.back().instructions_size =
             instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+    }
+
+    context->control_flow_graph->entry_id = context->control_flow_graph->blocks.size();
+    context->control_flow_graph->exit_id = context->control_flow_graph->blocks.size() + 1;
+    context->control_flow_graph->null_id = context->control_flow_graph->blocks.size() + 2;
+    context->control_flow_graph->entry_sucessor_ids.clear();
+    context->control_flow_graph->exit_predecessor_ids.clear();
+    for (size_t i = 0; i < context->control_flow_graph->blocks.size(); ++i) {
+        // TODO
     }
 }
 

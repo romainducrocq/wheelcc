@@ -30,6 +30,7 @@ struct ControlFlowBlock {
 struct ControlFlowGraph {
     size_t entry_id;
     size_t exit_id;
+    size_t null_id;
     std::vector<size_t> entry_sucessor_ids;
     std::vector<size_t> exit_predecessor_ids;
     std::vector<ControlFlowBlock> blocks;
