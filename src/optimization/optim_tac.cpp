@@ -1029,59 +1029,61 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
 static void control_flow_graph_initialize() {
     context->control_flow_graph->blocks.clear();
     context->control_flow_graph->label_id_map.clear();
-
-    size_t instructions_back_index = context->p_instructions->size();
-    for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
-         ++context->instruction_index) {
-        if ((*context->p_instructions)[context->instruction_index]) {
-            if (instructions_back_index == context->p_instructions->size()) {
-                ControlFlowBlock block {context->instruction_index, 0, {}, {}};
-                context->control_flow_graph->blocks.emplace_back(std::move(block));
-            }
-            switch ((*context->p_instructions)[context->instruction_index]->type()) {
-                case AST_T::TacLabel_t: {
-                    // TODO rm
-                    // if current_block is not empty:
-                    //     finished_blocks.append(current_block)
-                    // current_block = []
-                    // current_block = [instruction]
-                    if (instructions_back_index != context->p_instructions->size()) {
-                        context->control_flow_graph->blocks.back().instructions_size =
-                            instructions_back_index
-                            - context->control_flow_graph->blocks.back().instructions_front_index + 1;
-                        ControlFlowBlock block {context->instruction_index, 0, {}, {}};
-                        context->control_flow_graph->blocks.emplace_back(std::move(block));
+    {
+        size_t instructions_back_index = context->p_instructions->size();
+        for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
+             ++context->instruction_index) {
+            if ((*context->p_instructions)[context->instruction_index]) {
+                if (instructions_back_index == context->p_instructions->size()) {
+                    ControlFlowBlock block {context->instruction_index, 0, {}, {}};
+                    context->control_flow_graph->blocks.emplace_back(std::move(block));
+                }
+                switch ((*context->p_instructions)[context->instruction_index]->type()) {
+                    case AST_T::TacLabel_t: {
+                        // TODO rm
+                        // if current_block is not empty:
+                        //     finished_blocks.append(current_block)
+                        // current_block = []
+                        // current_block = [instruction]
+                        if (instructions_back_index != context->p_instructions->size()) {
+                            context->control_flow_graph->blocks.back().instructions_size =
+                                instructions_back_index
+                                - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+                            ControlFlowBlock block {context->instruction_index, 0, {}, {}};
+                            context->control_flow_graph->blocks.emplace_back(std::move(block));
+                        }
+                        TacLabel* node =
+                            static_cast<TacLabel*>((*context->p_instructions)[context->instruction_index].get());
+                        context->control_flow_graph->label_id_map[node->name] =
+                            context->control_flow_graph->blocks.size() - 1;
+                        instructions_back_index = context->instruction_index;
+                        break;
                     }
-                    context->control_flow_graph->label_id_map
-                        [static_cast<TacLabel*>((*context->p_instructions)[context->instruction_index].get())->name] =
-                        context->control_flow_graph->blocks.size() - 1;
-                    instructions_back_index = context->instruction_index;
-                    break;
-                }
-                case AST_T::TacReturn_t:
-                case AST_T::TacJump_t:
-                case AST_T::TacJumpIfZero_t:
-                case AST_T::TacJumpIfNotZero_t: {
-                    // TODO rm
-                    // current_block.append(instruction)
-                    // finished_blocks.append(current_block)
-                    // current_block = []
-                    context->control_flow_graph->blocks.back().instructions_size =
-                        context->instruction_index - context->control_flow_graph->blocks.back().instructions_front_index
-                        + 1;
-                    instructions_back_index = context->p_instructions->size();
-                    break;
-                }
-                default: {
-                    instructions_back_index = context->instruction_index;
-                    break;
+                    case AST_T::TacReturn_t:
+                    case AST_T::TacJump_t:
+                    case AST_T::TacJumpIfZero_t:
+                    case AST_T::TacJumpIfNotZero_t: {
+                        // TODO rm
+                        // current_block.append(instruction)
+                        // finished_blocks.append(current_block)
+                        // current_block = []
+                        context->control_flow_graph->blocks.back().instructions_size =
+                            context->instruction_index
+                            - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+                        instructions_back_index = context->p_instructions->size();
+                        break;
+                    }
+                    default: {
+                        instructions_back_index = context->instruction_index;
+                        break;
+                    }
                 }
             }
         }
-    }
-    if (instructions_back_index != context->p_instructions->size()) {
-        context->control_flow_graph->blocks.back().instructions_size =
-            instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+        if (instructions_back_index != context->p_instructions->size()) {
+            context->control_flow_graph->blocks.back().instructions_size =
+                instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+        }
     }
 
     context->control_flow_graph->entry_id = context->control_flow_graph->blocks.size();
