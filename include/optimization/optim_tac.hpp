@@ -4,6 +4,7 @@
 #include <array>
 #include <inttypes.h>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "ast/interm_ast.hpp"
@@ -32,10 +33,7 @@ struct ControlFlowGraph {
     std::vector<size_t> entry_sucessor_ids;
     std::vector<size_t> exit_predecessor_ids;
     std::vector<ControlFlowBlock> blocks;
-};
-
-struct DataFlowAnalysis {
-    ControlFlowGraph control_flow_graph;
+    std::unordered_map<std::string, size_t> label_id_map;
 };
 
 struct OptimTacContext {
@@ -49,7 +47,7 @@ struct OptimTacContext {
     // Copy propagation
     // Unreachable code elimination
     // Dead store elimination
-    std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
+    std::unique_ptr<ControlFlowGraph> control_flow_graph;
 };
 
 void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask);

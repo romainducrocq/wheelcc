@@ -20,7 +20,7 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
         (optim_1_mask & (static_cast<uint8_t>(1) << 1)) > 0, // Enable copy propagation
         (optim_1_mask & (static_cast<uint8_t>(1) << 2)) > 0, // Enable unreachable code elimination
         (optim_1_mask & (static_cast<uint8_t>(1) << 3)) > 0, // Enable dead store elimination
-        (optim_1_mask & ~(static_cast<uint8_t>(1) << 0)) > 0 // Optimize with data flow analysis
+        (optim_1_mask & ~(static_cast<uint8_t>(1) << 0)) > 0 // Optimize with control flow graph
     }) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1012,57 +1012,66 @@ static void fold_constants_list_instructions() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void data_flow_analysis_initialize() {
-    context->data_flow_analysis->control_flow_graph.entry_id = context->p_instructions->size();
-    context->data_flow_analysis->control_flow_graph.exit_id = context->p_instructions->size() + 1;
-    context->data_flow_analysis->control_flow_graph.entry_sucessor_ids.clear();
-    context->data_flow_analysis->control_flow_graph.exit_predecessor_ids.clear();
-    context->data_flow_analysis->control_flow_graph.blocks.clear();
+static void control_flow_graph_initialize() {
+    context->control_flow_graph->entry_id = context->p_instructions->size();
+    context->control_flow_graph->exit_id = context->p_instructions->size() + 1;
+    context->control_flow_graph->entry_sucessor_ids.clear();
+    context->control_flow_graph->exit_predecessor_ids.clear();
+    context->control_flow_graph->blocks.clear();
+    context->control_flow_graph->label_id_map.clear();
 
-    size_t null_id = context->data_flow_analysis->control_flow_graph.exit_id + 1;
+    size_t instructions_back_index = context->control_flow_graph->exit_id;
     for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
          ++context->instruction_index) {
         if ((*context->p_instructions)[context->instruction_index]) {
-            ControlFlowBlock block = {context->instruction_index, null_id, {}, {}};
-            context->data_flow_analysis->control_flow_graph.blocks.emplace_back(std::move(block));
-            goto Lelse;
-        }
-    }
-    RAISE_INTERNAL_ERROR;
-Lelse:
-
-    for (; context->instruction_index < context->p_instructions->size(); ++context->instruction_index) {
-        if ((*context->p_instructions)[context->instruction_index]) {
+            if (instructions_back_index == context->control_flow_graph->exit_id) {
+                ControlFlowBlock block {context->instruction_index, 0, {}, {}};
+                context->control_flow_graph->blocks.emplace_back(std::move(block));
+            }
             switch ((*context->p_instructions)[context->instruction_index]->type()) {
                 case AST_T::TacLabel_t: {
-                    ControlFlowBlock block = {context->instruction_index, null_id, {}, {}};
-                    context->data_flow_analysis->control_flow_graph.blocks.emplace_back(std::move(block));
+                    // TODO rm
+                    // if current_block is not empty:
+                    //     finished_blocks.append(current_block)
+                    // current_block = []
+                    // current_block = [instruction]
+                    if (instructions_back_index != context->control_flow_graph->exit_id) {
+                        context->control_flow_graph->blocks.back().instructions_size =
+                            instructions_back_index
+                            - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+                        ControlFlowBlock block {context->instruction_index, 0, {}, {}};
+                        context->control_flow_graph->blocks.emplace_back(std::move(block));
+                    }
+                    context->control_flow_graph->label_id_map
+                        [static_cast<TacLabel*>((*context->p_instructions)[context->instruction_index].get())->name] =
+                        context->control_flow_graph->blocks.size() - 1;
+                    instructions_back_index = context->instruction_index;
                     break;
                 }
                 case AST_T::TacReturn_t:
                 case AST_T::TacJump_t:
                 case AST_T::TacJumpIfZero_t:
                 case AST_T::TacJumpIfNotZero_t: {
-                    context->data_flow_analysis->control_flow_graph.blocks.back().instructions_size =
-                        context->instruction_index
-                        - context->data_flow_analysis->control_flow_graph.blocks.back().instructions_front_index;
+                    // TODO rm
+                    // current_block.append(instruction)
+                    // finished_blocks.append(current_block)
+                    // current_block = []
+                    context->control_flow_graph->blocks.back().instructions_size =
+                        context->instruction_index - context->control_flow_graph->blocks.back().instructions_front_index
+                        + 1;
+                    instructions_back_index = context->control_flow_graph->exit_id;
                     break;
                 }
-                default:
+                default: {
+                    instructions_back_index = context->instruction_index;
                     break;
+                }
             }
         }
     }
-
-    if (context->data_flow_analysis->control_flow_graph.blocks.back().instructions_size == null_id) {
-        for (context->instruction_index = context->p_instructions->size(); context->instruction_index-- > 0;) {
-            if ((*context->p_instructions)[context->instruction_index]) {
-                context->data_flow_analysis->control_flow_graph.blocks.back().instructions_size =
-                    context->instruction_index
-                    - context->data_flow_analysis->control_flow_graph.blocks.back().instructions_front_index;
-                break;
-            }
-        }
+    if (instructions_back_index != context->control_flow_graph->exit_id) {
+        context->control_flow_graph->blocks.back().instructions_size =
+            instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
     }
 }
 
@@ -1070,7 +1079,7 @@ Lelse:
 #define COPY_PROPAGATION 1
 #define UNREACHABLE_CODE_ELIMINATION 2
 #define DEAD_STORE_ELMININATION 3
-#define DATA_FLOW_ANALYSIS 4
+#define CONTROL_FLOW_GRAPH 4
 
 // #include <stdio.h> // TODO rm
 static void optimize_function_top_level(TacFunction* node) {
@@ -1081,8 +1090,8 @@ static void optimize_function_top_level(TacFunction* node) {
             // printf("--fold-constants\n"); // TODO rm
             fold_constants_list_instructions();
         }
-        if (context->enabled_optimizations[DATA_FLOW_ANALYSIS]) {
-            data_flow_analysis_initialize();
+        if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
+            control_flow_graph_initialize();
 
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
                 // printf("--propagate-copies\n"); // TODO rm
@@ -1119,8 +1128,8 @@ static void optimize_program(TacProgram* node) {
 
 void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(optim_1_mask);
-    if (context->enabled_optimizations[DATA_FLOW_ANALYSIS]) {
-        context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
+    if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
+        context->control_flow_graph = std::make_unique<ControlFlowGraph>();
     }
     optimize_program(node);
     context.reset();
