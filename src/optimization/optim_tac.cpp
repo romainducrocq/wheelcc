@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <inttypes.h>
 #include <memory>
 #include <vector>
@@ -1013,16 +1014,25 @@ static void fold_constants_list_instructions() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_id) {
+    std::vector<size_t>* successor_ids;
+    std::vector<size_t>* predecessor_ids;
     if (predecessor_id == context->control_flow_graph->entry_id) {
-        // TODO
-        // context->control_flow_graph->entry_sucessor_ids.push_back(successor_id);
-        // context->control_flow_graph->blocks[successor_id].predecessor_ids.push_back(predecessor_id);
+        successor_ids = &context->control_flow_graph->entry_sucessor_ids;
+        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
     }
     else if (successor_id == context->control_flow_graph->exit_id) {
-        // TODO
+        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
     }
     else {
-        // TODO
+        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+    }
+    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) != successor_ids->end()) {
+        successor_ids->push_back(successor_id);
+    }
+    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) != predecessor_ids->end()) {
+        predecessor_ids->push_back(predecessor_id);
     }
 }
 
