@@ -1035,7 +1035,7 @@ static void control_flow_graph_initialize() {
              ++context->instruction_index) {
             if ((*context->p_instructions)[context->instruction_index]) {
                 if (instructions_back_index == context->p_instructions->size()) {
-                    ControlFlowBlock block {context->instruction_index, 0, {}, {}};
+                    ControlFlowBlock block {false, context->instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
                 }
                 switch ((*context->p_instructions)[context->instruction_index]->type()) {
@@ -1049,7 +1049,7 @@ static void control_flow_graph_initialize() {
                             context->control_flow_graph->blocks.back().instructions_size =
                                 instructions_back_index
                                 - context->control_flow_graph->blocks.back().instructions_front_index + 1;
-                            ControlFlowBlock block {context->instruction_index, 0, {}, {}};
+                            ControlFlowBlock block {false, context->instruction_index, 0, {}, {}};
                             context->control_flow_graph->blocks.emplace_back(std::move(block));
                         }
                         TacLabel* node =
@@ -1087,8 +1087,7 @@ static void control_flow_graph_initialize() {
     }
 
     context->control_flow_graph->entry_id = context->control_flow_graph->blocks.size();
-    context->control_flow_graph->exit_id = context->control_flow_graph->blocks.size() + 1;
-    context->control_flow_graph->null_id = context->control_flow_graph->blocks.size() + 2;
+    context->control_flow_graph->exit_id = context->control_flow_graph->entry_id + 1;
     context->control_flow_graph->entry_sucessor_ids.clear();
     context->control_flow_graph->exit_predecessor_ids.clear();
     for (size_t i = 0; i < context->control_flow_graph->blocks.size(); ++i) {
