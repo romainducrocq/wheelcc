@@ -9,8 +9,7 @@
 
 // Abstract syntax tree
 
-enum AST_T
-{
+enum AST_T {
     // Frontend symbol table
     Type_t,
     Char_t,

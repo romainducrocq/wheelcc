@@ -5,15 +5,13 @@
 
 // Errors
 
-enum ERROR_MESSAGE_LEXER
-{
+enum ERROR_MESSAGE_LEXER {
     unhandled_lexer_error = 300,
     invalid_token,
     failed_to_include_header_file
 };
 
-enum ERROR_MESSAGE_PARSER
-{
+enum ERROR_MESSAGE_PARSER {
     unhandled_parser_error = 400,
     unexpected_next_token,
     reached_end_of_file,

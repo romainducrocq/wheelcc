@@ -1054,7 +1054,7 @@ static void eliminate_unreachable_control_flow_block() {
         eliminate_unreachable_entry_block();
     }
     else if (context->control_flow_graph->block_index != context->control_flow_graph->exit_id
-             && !current_control_flow_block().size > 0) {
+             && current_control_flow_block().size > 0) {
         eliminate_unreachable_basic_block();
     }
 }
