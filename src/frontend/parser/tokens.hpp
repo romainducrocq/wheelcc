@@ -5,7 +5,8 @@
 
 // Lexer
 
-enum TOKEN_KIND {
+enum TOKEN_KIND
+{
     skip,
 
     assignment_bitshiftleft,

@@ -48,6 +48,7 @@ struct OptimTacContext {
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Copy propagation
     // Unreachable code elimination
+    std::unique_ptr<std::vector<bool>> reachable_blocks;
     // Dead store elimination
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
 };

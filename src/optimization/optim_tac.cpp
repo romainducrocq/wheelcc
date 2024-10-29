@@ -1054,7 +1054,7 @@ static void eliminate_unreachable_control_flow_block() {
         eliminate_unreachable_entry_block();
     }
     else if (context->control_flow_graph->block_index != context->control_flow_graph->exit_id
-             && !current_control_flow_block().size > 0) { // TODO keep instructions_empty or check size > 0 ?
+             && !current_control_flow_block().size > 0) {
         eliminate_unreachable_basic_block();
     }
 }
@@ -1229,13 +1229,12 @@ static void optimize_function_top_level(TacFunction* node) {
         }
         if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
             control_flow_graph_initialize();
-
+            if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
+                eliminate_unreachable_control_flow_graph();
+                // printf("--eliminate-unreachable-code\n"); // TODO rm
+            }
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
                 // printf("--propagate-copies\n"); // TODO rm
-                eliminate_unreachable_control_flow_graph();
-            }
-            if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
-                // printf("--eliminate-unreachable-code\n"); // TODO rm
             }
             if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
                 // printf("--eliminate-dead-stores\n"); // TODO rm
@@ -1268,6 +1267,13 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(optim_1_mask);
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
+        if (context->enabled_optimizations[COPY_PROPAGATION]) {
+        }
+        if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
+            context->reachable_blocks = std::make_unique<std::vector<bool>>();
+        }
+        if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
+        }
     }
     optimize_program(node);
     context.reset();

@@ -20,7 +20,8 @@
 
 // Errors
 
-enum ERROR_MESSAGE_ARGUMENT {
+enum ERROR_MESSAGE_ARGUMENT
+{
     unhandled_argument_error = 100,
     no_debug_code_in_argument,
     invalid_debug_code_in_argument,
@@ -32,7 +33,8 @@ enum ERROR_MESSAGE_ARGUMENT {
     no_include_directories_in_argument
 };
 
-enum ERROR_MESSAGE_UTIL {
+enum ERROR_MESSAGE_UTIL
+{
     unhandled_util_error = 200,
     failed_to_read_input_file,
     failed_to_write_to_output_file,
@@ -41,7 +43,8 @@ enum ERROR_MESSAGE_UTIL {
     failed_to_interpret_string_to_float
 };
 
-enum ERROR_MESSAGE_SEMANTIC {
+enum ERROR_MESSAGE_SEMANTIC
+{
     unhandled_semantic_error = 500,
     array_of_incomplete_type,
     joint_pointer_type_mismatch,
