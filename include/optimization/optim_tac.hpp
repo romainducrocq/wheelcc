@@ -21,7 +21,7 @@
 // Dead store elimination
 
 struct ControlFlowBlock {
-    bool instructions_empty;
+    size_t size;
     size_t instructions_front_index;
     size_t instructions_size;
     std::vector<size_t> predecessor_ids;

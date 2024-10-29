@@ -1054,7 +1054,7 @@ static void eliminate_unreachable_control_flow_block() {
         eliminate_unreachable_entry_block();
     }
     else if (context->control_flow_graph->block_index != context->control_flow_graph->exit_id
-             && !current_control_flow_block().instructions_empty) { // TODO keep instructions_empty or check size > 0 ?
+             && !current_control_flow_block().size > 0) { // TODO keep instructions_empty or check size > 0 ?
         eliminate_unreachable_basic_block();
     }
 }
@@ -1105,7 +1105,7 @@ static void control_flow_graph_initialize_basic_blocks(TacInstruction* node, siz
             if (instructions_back_index != context->p_instructions->size()) {
                 context->control_flow_graph->blocks.back().instructions_size =
                     instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
-                ControlFlowBlock block {false, context->instruction_index, 0, {}, {}};
+                ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
             control_flow_graph_initialize_label_blocks(static_cast<TacLabel*>(node));
@@ -1136,10 +1136,11 @@ static void control_flow_graph_initialize_blocks() {
          ++context->instruction_index) {
         if (current_instruction()) {
             if (instructions_back_index == context->p_instructions->size()) {
-                ControlFlowBlock block {false, context->instruction_index, 0, {}, {}};
+                ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
             control_flow_graph_initialize_basic_blocks(current_instruction().get(), instructions_back_index);
+            context->control_flow_graph->blocks.back().size++;
         }
     }
     if (instructions_back_index != context->p_instructions->size()) {
