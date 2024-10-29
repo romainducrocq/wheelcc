@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <inttypes.h>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "util/throw.hpp"
@@ -32,12 +33,16 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Constant folding
 
+static std::unique_ptr<TacInstruction>& current_instruction() {
+    return (*context->p_instructions)[context->instruction_index];
+}
+
 static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
     if (instruction) {
-        (*context->p_instructions)[context->instruction_index] = std::move(instruction);
+        current_instruction() = std::move(instruction);
     }
     else {
-        (*context->p_instructions)[context->instruction_index].reset();
+        current_instruction().reset();
     }
     context->is_fixed_point = false;
 }
@@ -993,8 +998,8 @@ static void fold_constants_instructions(TacInstruction* node) {
 static void fold_constants_list_instructions() {
     for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
          ++context->instruction_index) {
-        if ((*context->p_instructions)[context->instruction_index]) {
-            fold_constants_instructions((*context->p_instructions)[context->instruction_index].get());
+        if (current_instruction()) {
+            fold_constants_instructions(current_instruction().get());
         }
     }
 }
@@ -1017,7 +1022,7 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
     std::vector<size_t>* successor_ids;
     std::vector<size_t>* predecessor_ids;
     if (predecessor_id == context->control_flow_graph->entry_id) {
-        successor_ids = &context->control_flow_graph->entry_sucessor_ids;
+        successor_ids = &context->control_flow_graph->entry_successor_ids;
         predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
     }
     else if (successor_id == context->control_flow_graph->exit_id) {
@@ -1036,25 +1041,35 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
     }
 }
 
+static ControlFlowBlock& current_control_flow_block() {
+    return context->control_flow_graph->blocks[context->control_flow_graph->block_index];
+}
+
+static std::unique_ptr<TacInstruction>& current_block_instructions_front() {
+    context->instruction_index = current_control_flow_block().instructions_front_index;
+    return current_instruction();
+}
+
+static std::unique_ptr<TacInstruction>& current_block_instructions_back() {
+    context->instruction_index =
+        current_control_flow_block().instructions_front_index + current_control_flow_block().instructions_size - 1;
+    return current_instruction();
+}
+
 static void control_flow_graph_initialize() {
     context->control_flow_graph->blocks.clear();
-    context->control_flow_graph->label_id_map.clear();
+    std::unordered_map<std::string, size_t> label_id_map;
     {
         size_t instructions_back_index = context->p_instructions->size();
         for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
              ++context->instruction_index) {
-            if ((*context->p_instructions)[context->instruction_index]) {
+            if (current_instruction()) {
                 if (instructions_back_index == context->p_instructions->size()) {
                     ControlFlowBlock block {false, context->instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
                 }
-                switch ((*context->p_instructions)[context->instruction_index]->type()) {
+                switch (current_instruction()->type()) {
                     case AST_T::TacLabel_t: {
-                        // TODO rm
-                        // if current_block is not empty:
-                        //     finished_blocks.append(current_block)
-                        // current_block = []
-                        // current_block = [instruction]
                         if (instructions_back_index != context->p_instructions->size()) {
                             context->control_flow_graph->blocks.back().instructions_size =
                                 instructions_back_index
@@ -1062,10 +1077,8 @@ static void control_flow_graph_initialize() {
                             ControlFlowBlock block {false, context->instruction_index, 0, {}, {}};
                             context->control_flow_graph->blocks.emplace_back(std::move(block));
                         }
-                        TacLabel* node =
-                            static_cast<TacLabel*>((*context->p_instructions)[context->instruction_index].get());
-                        context->control_flow_graph->label_id_map[node->name] =
-                            context->control_flow_graph->blocks.size() - 1;
+                        TacLabel* node = static_cast<TacLabel*>(current_instruction().get());
+                        label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
                         instructions_back_index = context->instruction_index;
                         break;
                     }
@@ -1073,10 +1086,6 @@ static void control_flow_graph_initialize() {
                     case AST_T::TacJump_t:
                     case AST_T::TacJumpIfZero_t:
                     case AST_T::TacJumpIfNotZero_t: {
-                        // TODO rm
-                        // current_block.append(instruction)
-                        // finished_blocks.append(current_block)
-                        // current_block = []
                         context->control_flow_graph->blocks.back().instructions_size =
                             context->instruction_index
                             - context->control_flow_graph->blocks.back().instructions_front_index + 1;
@@ -1096,12 +1105,47 @@ static void control_flow_graph_initialize() {
         }
     }
 
-    context->control_flow_graph->entry_id = context->control_flow_graph->blocks.size();
-    context->control_flow_graph->exit_id = context->control_flow_graph->entry_id + 1;
-    context->control_flow_graph->entry_sucessor_ids.clear();
+    context->control_flow_graph->exit_id = context->control_flow_graph->blocks.size();
+    context->control_flow_graph->entry_id = context->control_flow_graph->exit_id + 1;
+    context->control_flow_graph->entry_successor_ids.clear();
     context->control_flow_graph->exit_predecessor_ids.clear();
-    for (size_t i = 0; i < context->control_flow_graph->blocks.size(); ++i) {
-        // TODO
+    if (!context->control_flow_graph->blocks.empty()) {
+        control_flow_graph_add_edge(context->control_flow_graph->entry_id, 0);
+        for (context->control_flow_graph->block_index = 0;
+             context->control_flow_graph->block_index < context->control_flow_graph->blocks.size();
+             ++context->control_flow_graph->block_index) {
+            switch (current_block_instructions_back()->type()) {
+                case AST_T::TacReturn_t: {
+                    control_flow_graph_add_edge(
+                        context->control_flow_graph->block_index, context->control_flow_graph->exit_id);
+                    break;
+                }
+                case AST_T::TacJump_t: {
+                    TacJump* node = static_cast<TacJump*>(current_instruction().get());
+                    control_flow_graph_add_edge(context->control_flow_graph->block_index, label_id_map[node->target]);
+                    break;
+                }
+                case AST_T::TacJumpIfZero_t: {
+                    TacJumpIfZero* node = static_cast<TacJumpIfZero*>(current_instruction().get());
+                    control_flow_graph_add_edge(context->control_flow_graph->block_index, label_id_map[node->target]);
+                    control_flow_graph_add_edge(
+                        context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
+                    break;
+                }
+                case AST_T::TacJumpIfNotZero_t: {
+                    TacJumpIfNotZero* node = static_cast<TacJumpIfNotZero*>(current_instruction().get());
+                    control_flow_graph_add_edge(context->control_flow_graph->block_index, label_id_map[node->target]);
+                    control_flow_graph_add_edge(
+                        context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
+                    break;
+                }
+                default: {
+                    control_flow_graph_add_edge(
+                        context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
+                    break;
+                }
+            }
+        }
     }
 }
 
