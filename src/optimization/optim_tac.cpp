@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <inttypes.h>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "util/throw.hpp"
@@ -1012,6 +1011,61 @@ static void fold_constants_list_instructions() {
 
 // Unreachable code elimination
 
+static ControlFlowBlock& current_control_flow_block() {
+    return context->control_flow_graph->blocks[context->control_flow_graph->block_index];
+}
+
+// static std::unique_ptr<TacInstruction>& current_block_instructions_front() {
+//     context->instruction_index = current_control_flow_block().instructions_front_index;
+//     return current_instruction();
+// }
+
+static std::unique_ptr<TacInstruction>& current_block_instructions_back() {
+    context->instruction_index =
+        current_control_flow_block().instructions_front_index + current_control_flow_block().instructions_size - 1;
+    return current_instruction();
+}
+
+// static void eliminate_unreachable_block_instructions() {
+//     switch (current_block_instructions_back()->type()) {
+//         default:
+//             break;
+//     }
+// }
+
+static void eliminate_unreachable_control_flow_block();
+
+static void eliminate_unreachable_entry_block() {
+    for (const auto successor_id : context->control_flow_graph->entry_successor_ids) {
+        context->control_flow_graph->block_index = successor_id;
+        eliminate_unreachable_control_flow_block();
+    }
+}
+
+static void eliminate_unreachable_basic_block() {
+    for (const auto successor_id : current_control_flow_block().successor_ids) {
+        context->control_flow_graph->block_index = successor_id;
+        eliminate_unreachable_control_flow_block();
+    }
+}
+
+static void eliminate_unreachable_control_flow_block() {
+    if (context->control_flow_graph->block_index == context->control_flow_graph->entry_id) {
+        eliminate_unreachable_entry_block();
+    }
+    else if (context->control_flow_graph->block_index != context->control_flow_graph->exit_id
+             && !current_control_flow_block().is_null) {
+        eliminate_unreachable_basic_block();
+    }
+}
+
+static void eliminate_unreachable_control_flow_graph() {
+    context->control_flow_graph->block_index = context->control_flow_graph->entry_id;
+    eliminate_unreachable_entry_block();
+
+    // eliminate_unreachable_block_instructions();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Dead store elimination
@@ -1041,24 +1095,9 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
     }
 }
 
-static ControlFlowBlock& current_control_flow_block() {
-    return context->control_flow_graph->blocks[context->control_flow_graph->block_index];
-}
-
-static std::unique_ptr<TacInstruction>& current_block_instructions_front() {
-    context->instruction_index = current_control_flow_block().instructions_front_index;
-    return current_instruction();
-}
-
-static std::unique_ptr<TacInstruction>& current_block_instructions_back() {
-    context->instruction_index =
-        current_control_flow_block().instructions_front_index + current_control_flow_block().instructions_size - 1;
-    return current_instruction();
-}
-
 static void control_flow_graph_initialize() {
     context->control_flow_graph->blocks.clear();
-    std::unordered_map<std::string, size_t> label_id_map;
+    context->control_flow_graph->label_id_map.clear();
     {
         size_t instructions_back_index = context->p_instructions->size();
         for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
@@ -1078,7 +1117,8 @@ static void control_flow_graph_initialize() {
                             context->control_flow_graph->blocks.emplace_back(std::move(block));
                         }
                         TacLabel* node = static_cast<TacLabel*>(current_instruction().get());
-                        label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
+                        context->control_flow_graph->label_id_map[node->name] =
+                            context->control_flow_graph->blocks.size() - 1;
                         instructions_back_index = context->instruction_index;
                         break;
                     }
@@ -1122,19 +1162,22 @@ static void control_flow_graph_initialize() {
                 }
                 case AST_T::TacJump_t: {
                     TacJump* node = static_cast<TacJump*>(current_instruction().get());
-                    control_flow_graph_add_edge(context->control_flow_graph->block_index, label_id_map[node->target]);
+                    control_flow_graph_add_edge(context->control_flow_graph->block_index,
+                        context->control_flow_graph->label_id_map[node->target]);
                     break;
                 }
                 case AST_T::TacJumpIfZero_t: {
                     TacJumpIfZero* node = static_cast<TacJumpIfZero*>(current_instruction().get());
-                    control_flow_graph_add_edge(context->control_flow_graph->block_index, label_id_map[node->target]);
+                    control_flow_graph_add_edge(context->control_flow_graph->block_index,
+                        context->control_flow_graph->label_id_map[node->target]);
                     control_flow_graph_add_edge(
                         context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
                     break;
                 }
                 case AST_T::TacJumpIfNotZero_t: {
                     TacJumpIfNotZero* node = static_cast<TacJumpIfNotZero*>(current_instruction().get());
-                    control_flow_graph_add_edge(context->control_flow_graph->block_index, label_id_map[node->target]);
+                    control_flow_graph_add_edge(context->control_flow_graph->block_index,
+                        context->control_flow_graph->label_id_map[node->target]);
                     control_flow_graph_add_edge(
                         context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
                     break;
@@ -1169,6 +1212,7 @@ static void optimize_function_top_level(TacFunction* node) {
 
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
                 // printf("--propagate-copies\n"); // TODO rm
+                eliminate_unreachable_control_flow_graph();
             }
             if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
                 // printf("--eliminate-unreachable-code\n"); // TODO rm

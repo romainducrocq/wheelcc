@@ -4,6 +4,7 @@
 #include <array>
 #include <inttypes.h>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "ast/interm_ast.hpp"
@@ -34,6 +35,7 @@ struct ControlFlowGraph {
     std::vector<size_t> entry_successor_ids;
     std::vector<size_t> exit_predecessor_ids;
     std::vector<ControlFlowBlock> blocks;
+    std::unordered_map<std::string, size_t> label_id_map;
 };
 
 struct OptimTacContext {
