@@ -1095,11 +1095,11 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
     }
 }
 
-static void control_flow_graph_initialize_label_blocks(TacLabel* node) {
+static void control_flow_graph_initialize_label_block(TacLabel* node) {
     context->control_flow_graph->label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
 
-static void control_flow_graph_initialize_basic_blocks(TacInstruction* node, size_t& instructions_back_index) {
+static void control_flow_graph_initialize_block(TacInstruction* node, size_t& instructions_back_index) {
     switch (node->type()) {
         case AST_T::TacLabel_t: {
             if (instructions_back_index != context->p_instructions->size()) {
@@ -1108,7 +1108,7 @@ static void control_flow_graph_initialize_basic_blocks(TacInstruction* node, siz
                 ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
-            control_flow_graph_initialize_label_blocks(static_cast<TacLabel*>(node));
+            control_flow_graph_initialize_label_block(static_cast<TacLabel*>(node));
             instructions_back_index = context->instruction_index;
             break;
         }
@@ -1125,27 +1125,6 @@ static void control_flow_graph_initialize_basic_blocks(TacInstruction* node, siz
             instructions_back_index = context->instruction_index;
             break;
         }
-    }
-}
-
-static void control_flow_graph_initialize_blocks() {
-    context->control_flow_graph->blocks.clear();
-    context->control_flow_graph->label_id_map.clear();
-    size_t instructions_back_index = context->p_instructions->size();
-    for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
-         ++context->instruction_index) {
-        if (current_instruction()) {
-            if (instructions_back_index == context->p_instructions->size()) {
-                ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
-                context->control_flow_graph->blocks.emplace_back(std::move(block));
-            }
-            control_flow_graph_initialize_basic_blocks(current_instruction().get(), instructions_back_index);
-            context->control_flow_graph->blocks.back().size++;
-        }
-    }
-    if (instructions_back_index != context->p_instructions->size()) {
-        context->control_flow_graph->blocks.back().instructions_size =
-            instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
     }
 }
 
@@ -1166,33 +1145,47 @@ static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZer
     control_flow_graph_add_edge(context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
 }
 
-static void control_flow_graph_initialize_block_edges(TacInstruction* node) {
+static void control_flow_graph_initialize_edges(TacInstruction* node) {
     switch (node->type()) {
-        case AST_T::TacReturn_t: {
+        case AST_T::TacReturn_t:
             control_flow_graph_add_edge(context->control_flow_graph->block_index, context->control_flow_graph->exit_id);
             break;
-        }
-        case AST_T::TacJump_t: {
+        case AST_T::TacJump_t:
             control_flow_graph_initialize_jump_edges(static_cast<TacJump*>(node));
             break;
-        }
-        case AST_T::TacJumpIfZero_t: {
+        case AST_T::TacJumpIfZero_t:
             control_flow_graph_initialize_jump_if_zero_edges(static_cast<TacJumpIfZero*>(node));
             break;
-        }
-        case AST_T::TacJumpIfNotZero_t: {
+        case AST_T::TacJumpIfNotZero_t:
             control_flow_graph_initialize_jump_if_not_zero_edges(static_cast<TacJumpIfNotZero*>(node));
             break;
-        }
-        default: {
+        default:
             control_flow_graph_add_edge(
                 context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
             break;
-        }
     }
 }
 
-static void control_flow_graph_initialize_edges() {
+static void control_flow_graph_initialize() {
+    context->control_flow_graph->blocks.clear();
+    context->control_flow_graph->label_id_map.clear();
+    size_t instructions_back_index = context->p_instructions->size();
+    for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
+         ++context->instruction_index) {
+        if (current_instruction()) {
+            if (instructions_back_index == context->p_instructions->size()) {
+                ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
+                context->control_flow_graph->blocks.emplace_back(std::move(block));
+            }
+            control_flow_graph_initialize_block(current_instruction().get(), instructions_back_index);
+            context->control_flow_graph->blocks.back().size++;
+        }
+    }
+    if (instructions_back_index != context->p_instructions->size()) {
+        context->control_flow_graph->blocks.back().instructions_size =
+            instructions_back_index - context->control_flow_graph->blocks.back().instructions_front_index + 1;
+    }
+
     context->control_flow_graph->exit_id = context->control_flow_graph->blocks.size();
     context->control_flow_graph->entry_id = context->control_flow_graph->exit_id + 1;
     context->control_flow_graph->entry_successor_ids.clear();
@@ -1202,14 +1195,9 @@ static void control_flow_graph_initialize_edges() {
         for (context->control_flow_graph->block_index = 0;
              context->control_flow_graph->block_index < context->control_flow_graph->blocks.size();
              ++context->control_flow_graph->block_index) {
-            control_flow_graph_initialize_block_edges(current_block_instructions_back().get());
+            control_flow_graph_initialize_edges(current_block_instructions_back().get());
         }
     }
-}
-
-static void control_flow_graph_initialize() {
-    control_flow_graph_initialize_blocks();
-    control_flow_graph_initialize_edges();
 }
 
 #define CONSTANT_FOLDING 0
