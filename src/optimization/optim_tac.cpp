@@ -1025,23 +1025,10 @@ static std::unique_ptr<TacInstruction>& current_block_instructions_back() {
     return current_instruction();
 }
 
-// static void eliminate_unreachable_block_instructions() {
-//     switch (current_block_instructions_back()->type()) {
-//         default:
-//             break;
-//     }
-// }
-
 static void eliminate_unreachable_control_flow_block();
 
-static void eliminate_unreachable_entry_block() {
-    for (const auto successor_id : context->control_flow_graph->entry_successor_ids) {
-        context->control_flow_graph->block_index = successor_id;
-        eliminate_unreachable_control_flow_block();
-    }
-}
-
-static void eliminate_unreachable_basic_block() {
+static void eliminate_unreachable_set_reachable_block() {
+    (*context->reachable_blocks)[context->control_flow_graph->block_index] = true;
     for (const auto successor_id : current_control_flow_block().successor_ids) {
         context->control_flow_graph->block_index = successor_id;
         eliminate_unreachable_control_flow_block();
@@ -1049,19 +1036,18 @@ static void eliminate_unreachable_basic_block() {
 }
 
 static void eliminate_unreachable_control_flow_block() {
-    if (context->control_flow_graph->block_index == context->control_flow_graph->entry_id) {
-        eliminate_unreachable_entry_block();
-    }
-    else if (context->control_flow_graph->block_index != context->control_flow_graph->exit_id
-             && current_control_flow_block().size > 0) {
-        eliminate_unreachable_basic_block();
+    if (context->control_flow_graph->block_index < context->control_flow_graph->exit_id
+        && !(*context->reachable_blocks)[context->control_flow_graph->block_index]) {
+        eliminate_unreachable_set_reachable_block();
     }
 }
 
 static void eliminate_unreachable_control_flow_graph() {
-    context->reachable_blocks->resize(context->control_flow_graph->blocks.size());
-    context->control_flow_graph->block_index = context->control_flow_graph->entry_id;
-    eliminate_unreachable_entry_block();
+    context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
+    for (const auto successor_id : context->control_flow_graph->entry_successor_ids) {
+        context->control_flow_graph->block_index = successor_id;
+        eliminate_unreachable_control_flow_block();
+    }
 
     // eliminate_unreachable_block_instructions();
 }
@@ -1087,10 +1073,10 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
         successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
         predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
     }
-    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) != successor_ids->end()) {
+    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) == successor_ids->end()) {
         successor_ids->push_back(successor_id);
     }
-    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) != predecessor_ids->end()) {
+    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) == predecessor_ids->end()) {
         predecessor_ids->push_back(predecessor_id);
     }
 }
