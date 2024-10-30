@@ -23,7 +23,7 @@
 struct ControlFlowBlock {
     size_t size;
     size_t instructions_front_index;
-    size_t instructions_size;
+    size_t instructions_back_index;
     std::vector<size_t> predecessor_ids;
     std::vector<size_t> successor_ids;
 };
