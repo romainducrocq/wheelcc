@@ -32,16 +32,20 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Constant folding
 
-static std::unique_ptr<TacInstruction>& current_instruction() {
-    return (*context->p_instructions)[context->instruction_index];
+static std::unique_ptr<TacInstruction>& get_instruction(size_t instruction_index) {
+    return (*context->p_instructions)[instruction_index];
 }
 
-static void set_instruction(std::unique_ptr<TacInstruction>&& instruction) {
+// static std::unique_ptr<TacInstruction>& current_instruction() {
+//     return (*context->p_instructions)[context->instruction_index];
+// }
+
+static void set_instruction(std::unique_ptr<TacInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
-        current_instruction() = std::move(instruction);
+        get_instruction(instruction_index) = std::move(instruction);
     }
     else {
-        current_instruction().reset();
+        get_instruction(instruction_index).reset();
     }
     context->is_fixed_point = false;
 }
@@ -75,7 +79,7 @@ static std::shared_ptr<TacConstant> fold_constants_sign_extend_constant_value(Ta
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_sign_extend_instructions(TacSignExtend* node) {
+static void fold_constants_sign_extend_instructions(TacSignExtend* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -83,7 +87,7 @@ static void fold_constants_sign_extend_instructions(TacSignExtend* node) {
         std::shared_ptr<TacValue> src = fold_constants_sign_extend_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -192,7 +196,7 @@ static std::shared_ptr<TacConstant> fold_constants_truncate_constant_value(TacVa
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_truncate_instructions(TacTruncate* node) {
+static void fold_constants_truncate_instructions(TacTruncate* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -200,7 +204,7 @@ static void fold_constants_truncate_instructions(TacTruncate* node) {
         std::shared_ptr<TacValue> src = fold_constants_truncate_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -233,7 +237,7 @@ static std::shared_ptr<TacConstant> fold_constants_zero_extend_constant_value(Ta
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_zero_extend_instructions(TacZeroExtend* node) {
+static void fold_constants_zero_extend_instructions(TacZeroExtend* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -241,7 +245,7 @@ static void fold_constants_zero_extend_instructions(TacZeroExtend* node) {
         std::shared_ptr<TacValue> src = fold_constants_zero_extend_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -274,7 +278,7 @@ static std::shared_ptr<TacConstant> fold_constants_double_to_signed_constant_val
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_double_to_signed_instructions(TacDoubleToInt* node) {
+static void fold_constants_double_to_signed_instructions(TacDoubleToInt* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -282,7 +286,7 @@ static void fold_constants_double_to_signed_instructions(TacDoubleToInt* node) {
         std::shared_ptr<TacValue> src = fold_constants_double_to_signed_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -314,7 +318,7 @@ static std::shared_ptr<TacConstant> fold_constants_double_to_unsigned_constant_v
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_double_to_unsigned_instructions(TacDoubleToUInt* node) {
+static void fold_constants_double_to_unsigned_instructions(TacDoubleToUInt* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -322,7 +326,7 @@ static void fold_constants_double_to_unsigned_instructions(TacDoubleToUInt* node
         std::shared_ptr<TacValue> src = fold_constants_double_to_unsigned_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -349,7 +353,7 @@ static std::shared_ptr<TacConstant> fold_constants_signed_to_double_constant_val
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_signed_to_double_instructions(TacIntToDouble* node) {
+static void fold_constants_signed_to_double_instructions(TacIntToDouble* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -357,7 +361,7 @@ static void fold_constants_signed_to_double_instructions(TacIntToDouble* node) {
         std::shared_ptr<TacValue> src = fold_constants_signed_to_double_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -384,7 +388,7 @@ static std::shared_ptr<TacConstant> fold_constants_unsigned_to_double_constant_v
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_unsigned_to_double_instructions(TacUIntToDouble* node) {
+static void fold_constants_unsigned_to_double_instructions(TacUIntToDouble* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         if (node->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
@@ -392,7 +396,7 @@ static void fold_constants_unsigned_to_double_instructions(TacUIntToDouble* node
         std::shared_ptr<TacValue> src = fold_constants_unsigned_to_double_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -516,12 +520,12 @@ static std::shared_ptr<TacConstant> fold_constants_unary_constant_value(TacUnary
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_unary_instructions(TacUnary* node) {
+static void fold_constants_unary_instructions(TacUnary* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacConstant_t) {
         std::shared_ptr<TacValue> src = fold_constants_unary_constant_value(
             node->unary_op.get(), static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -903,13 +907,13 @@ static std::shared_ptr<TacConstant> fold_constants_binary_constant_value(
     return std::make_shared<TacConstant>(std::move(fold_constant));
 }
 
-static void fold_constants_binary_instructions(TacBinary* node) {
+static void fold_constants_binary_instructions(TacBinary* node, size_t instruction_index) {
     if (node->src1->type() == AST_T::TacConstant_t && node->src2->type() == AST_T::TacConstant_t) {
         std::shared_ptr<TacValue> src = fold_constants_binary_constant_value(node->binary_op.get(),
             static_cast<TacConstant*>(node->src1.get())->constant.get(),
             static_cast<TacConstant*>(node->src2.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
-        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+        set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
     }
 }
 
@@ -930,64 +934,64 @@ static bool fold_constants_is_zero_constant_value(CConst* constant) {
     }
 }
 
-static void fold_constants_jump_if_zero_instructions(TacJumpIfZero* node) {
+static void fold_constants_jump_if_zero_instructions(TacJumpIfZero* node, size_t instruction_index) {
     if (node->condition->type() == AST_T::TacConstant_t) {
         if (fold_constants_is_zero_constant_value(static_cast<TacConstant*>(node->condition.get())->constant.get())) {
             TIdentifier target = node->target;
-            set_instruction(std::make_unique<TacJump>(std::move(target)));
+            set_instruction(std::make_unique<TacJump>(std::move(target)), instruction_index);
         }
         else {
-            set_instruction(nullptr);
+            set_instruction(nullptr, instruction_index);
         }
     }
 }
 
-static void fold_constants_jump_if_not_zero_instructions(TacJumpIfNotZero* node) {
+static void fold_constants_jump_if_not_zero_instructions(TacJumpIfNotZero* node, size_t instruction_index) {
     if (node->condition->type() == AST_T::TacConstant_t) {
         if (fold_constants_is_zero_constant_value(static_cast<TacConstant*>(node->condition.get())->constant.get())) {
-            set_instruction(nullptr);
+            set_instruction(nullptr, instruction_index);
         }
         else {
             TIdentifier target = node->target;
-            set_instruction(std::make_unique<TacJump>(std::move(target)));
+            set_instruction(std::make_unique<TacJump>(std::move(target)), instruction_index);
         }
     }
 }
 
-static void fold_constants_instructions(TacInstruction* node) {
+static void fold_constants_instructions(TacInstruction* node, size_t instruction_index) {
     switch (node->type()) {
         case AST_T::TacSignExtend_t:
-            fold_constants_sign_extend_instructions(static_cast<TacSignExtend*>(node));
+            fold_constants_sign_extend_instructions(static_cast<TacSignExtend*>(node), instruction_index);
             break;
         case AST_T::TacTruncate_t:
-            fold_constants_truncate_instructions(static_cast<TacTruncate*>(node));
+            fold_constants_truncate_instructions(static_cast<TacTruncate*>(node), instruction_index);
             break;
         case AST_T::TacZeroExtend_t:
-            fold_constants_zero_extend_instructions(static_cast<TacZeroExtend*>(node));
+            fold_constants_zero_extend_instructions(static_cast<TacZeroExtend*>(node), instruction_index);
             break;
         case AST_T::TacDoubleToInt_t:
-            fold_constants_double_to_signed_instructions(static_cast<TacDoubleToInt*>(node));
+            fold_constants_double_to_signed_instructions(static_cast<TacDoubleToInt*>(node), instruction_index);
             break;
         case AST_T::TacDoubleToUInt_t:
-            fold_constants_double_to_unsigned_instructions(static_cast<TacDoubleToUInt*>(node));
+            fold_constants_double_to_unsigned_instructions(static_cast<TacDoubleToUInt*>(node), instruction_index);
             break;
         case AST_T::TacIntToDouble_t:
-            fold_constants_signed_to_double_instructions(static_cast<TacIntToDouble*>(node));
+            fold_constants_signed_to_double_instructions(static_cast<TacIntToDouble*>(node), instruction_index);
             break;
         case AST_T::TacUIntToDouble_t:
-            fold_constants_unsigned_to_double_instructions(static_cast<TacUIntToDouble*>(node));
+            fold_constants_unsigned_to_double_instructions(static_cast<TacUIntToDouble*>(node), instruction_index);
             break;
         case AST_T::TacUnary_t:
-            fold_constants_unary_instructions(static_cast<TacUnary*>(node));
+            fold_constants_unary_instructions(static_cast<TacUnary*>(node), instruction_index);
             break;
         case AST_T::TacBinary_t:
-            fold_constants_binary_instructions(static_cast<TacBinary*>(node));
+            fold_constants_binary_instructions(static_cast<TacBinary*>(node), instruction_index);
             break;
         case AST_T::TacJumpIfZero_t:
-            fold_constants_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node));
+            fold_constants_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node), instruction_index);
             break;
         case AST_T::TacJumpIfNotZero_t:
-            fold_constants_jump_if_not_zero_instructions(static_cast<TacJumpIfNotZero*>(node));
+            fold_constants_jump_if_not_zero_instructions(static_cast<TacJumpIfNotZero*>(node), instruction_index);
             break;
         default:
             break;
@@ -995,10 +999,9 @@ static void fold_constants_instructions(TacInstruction* node) {
 }
 
 static void fold_constants_list_instructions() {
-    for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
-         ++context->instruction_index) {
-        if (current_instruction()) {
-            fold_constants_instructions(current_instruction().get());
+    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        if (get_instruction(instruction_index)) {
+            fold_constants_instructions(get_instruction(instruction_index).get(), instruction_index);
         }
     }
 }
@@ -1011,118 +1014,115 @@ static void fold_constants_list_instructions() {
 
 // Unreachable code elimination
 
-static void control_flow_graph_remove_edge(size_t predecessor_id, size_t successor_id) {
-    std::vector<size_t>* successor_ids;
-    std::vector<size_t>* predecessor_ids;
-    if (successor_id == context->control_flow_graph->exit_id) {
-        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
-        predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
-    }
-    else if (predecessor_id != context->control_flow_graph->entry_id) {
-        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
-    }
-    else {
-        successor_ids = &context->control_flow_graph->entry_successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
-    }
-    for (size_t i = successor_ids->size(); i-- > 0;) {
-        if ((*successor_ids)[i] == successor_id) {
-            std::swap((*successor_ids)[i], successor_ids->back());
-            successor_ids->pop_back();
-            break;
-        }
-    }
-    for (size_t i = predecessor_ids->size(); i-- > 0;) {
-        if ((*predecessor_ids)[i] == predecessor_id) {
-            std::swap((*predecessor_ids)[i], predecessor_ids->back());
-            predecessor_ids->pop_back();
-            break;
-        }
-    }
-}
-
-static ControlFlowBlock& current_control_flow_block() {
-    return context->control_flow_graph->blocks[context->control_flow_graph->block_index];
-}
-
-// static std::unique_ptr<TacInstruction>& current_block_instructions_front() {
-//     context->instruction_index = current_control_flow_block().instructions_front_index;
-//     return current_instruction();
+// static void control_flow_graph_remove_edge(size_t predecessor_id, size_t successor_id) {
+//     std::vector<size_t>* successor_ids;
+//     std::vector<size_t>* predecessor_ids;
+//     if (successor_id == context->control_flow_graph->exit_id) {
+//         successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+//         predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
+//     }
+//     else if (predecessor_id != context->control_flow_graph->entry_id) {
+//         successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+//         predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+//     }
+//     else {
+//         successor_ids = &context->control_flow_graph->entry_successor_ids;
+//         predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+//     }
+//     for (size_t i = successor_ids->size(); i-- > 0;) {
+//         if ((*successor_ids)[i] == successor_id) {
+//             std::swap((*successor_ids)[i], successor_ids->back());
+//             successor_ids->pop_back();
+//             break;
+//         }
+//     }
+//     for (size_t i = predecessor_ids->size(); i-- > 0;) {
+//         if ((*predecessor_ids)[i] == predecessor_id) {
+//             std::swap((*predecessor_ids)[i], predecessor_ids->back());
+//             predecessor_ids->pop_back();
+//             break;
+//         }
+//     }
 // }
 
-static std::unique_ptr<TacInstruction>& current_block_instructions_back() {
-    context->instruction_index = current_control_flow_block().instructions_back_index;
-    return current_instruction();
+// static ControlFlowBlock& current_control_flow_block() {
+//     return context->control_flow_graph->blocks[context->control_flow_graph->block_index];
+// }
+
+// // static std::unique_ptr<TacInstruction>& current_block_instructions_front() {
+// //     context->instruction_index = current_control_flow_block().instructions_front_index;
+// //     return current_instruction();
+// // }
+
+// // static std::unique_ptr<TacInstruction>& current_block_instructions_back() {
+// //     context->instruction_index = current_control_flow_block().instructions_back_index;
+// //     return current_instruction();
+// // }
+
+static void eliminate_unreachable_control_flow_block(size_t block_index);
+
+static void eliminate_unreachable_set_reachable_block(ControlFlowBlock& block) {
+    for (size_t successor_id : block.successor_ids) {
+        eliminate_unreachable_control_flow_block(successor_id);
+    }
 }
 
-static void eliminate_unreachable_control_flow_block();
-
-static void eliminate_unreachable_set_reachable_block() {
-    (*context->reachable_blocks)[context->control_flow_graph->block_index] = true;
-    for (const auto successor_id : current_control_flow_block().successor_ids) {
-        context->control_flow_graph->block_index = successor_id;
-        eliminate_unreachable_control_flow_block();
+static void eliminate_unreachable_control_flow_block(size_t block_index) {
+    if (block_index < context->control_flow_graph->exit_id && !(*context->reachable_blocks)[block_index]) {
+        (*context->reachable_blocks)[block_index] = true;
+        eliminate_unreachable_set_reachable_block(context->control_flow_graph->blocks[block_index]);
     }
 }
 
-static void eliminate_unreachable_control_flow_block() {
-    if (context->control_flow_graph->block_index < context->control_flow_graph->exit_id
-        && !(*context->reachable_blocks)[context->control_flow_graph->block_index]) {
-        eliminate_unreachable_set_reachable_block();
-    }
-}
-
-static void eliminate_unreachable_remove_block() {
-    for (context->instruction_index = current_control_flow_block().instructions_front_index;
-         context->instruction_index <= current_control_flow_block().instructions_back_index;
-         ++context->instruction_index) {
-        if (current_instruction()) {
-            set_instruction(nullptr);
-        }
-    }
-    for (const auto successor_id : current_control_flow_block().successor_ids) {
-        control_flow_graph_remove_edge(context->control_flow_graph->block_index, successor_id);
-    }
-    for (const auto predecessor_id : current_control_flow_block().predecessor_ids) {
-        control_flow_graph_remove_edge(predecessor_id, context->control_flow_graph->block_index);
-    }
-    current_control_flow_block().size = 0;
-    current_control_flow_block().instructions_front_index = context->control_flow_graph->exit_id;
-    current_control_flow_block().instructions_back_index = context->control_flow_graph->exit_id;
-}
+// static void eliminate_unreachable_remove_block() {
+//     for (context->instruction_index = current_control_flow_block().instructions_front_index;
+//          context->instruction_index <= current_control_flow_block().instructions_back_index;
+//          ++context->instruction_index) {
+//         if (current_instruction()) {
+//             set_instruction(nullptr);
+//         }
+//     }
+//     for (const auto successor_id : current_control_flow_block().successor_ids) {
+//         control_flow_graph_remove_edge(context->control_flow_graph->block_index, successor_id);
+//     }
+//     for (const auto predecessor_id : current_control_flow_block().predecessor_ids) {
+//         control_flow_graph_remove_edge(predecessor_id, context->control_flow_graph->block_index);
+//     }
+//     current_control_flow_block().size = 0;
+//     current_control_flow_block().instructions_front_index = context->control_flow_graph->exit_id;
+//     current_control_flow_block().instructions_back_index = context->control_flow_graph->exit_id;
+// }
 
 static void eliminate_unreachable_control_flow_graph() {
     context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
-    for (const auto successor_id : context->control_flow_graph->entry_successor_ids) {
-        context->control_flow_graph->block_index = successor_id;
-        eliminate_unreachable_control_flow_block();
+    for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
+        eliminate_unreachable_control_flow_block(successor_id);
     }
 
-    for (context->control_flow_graph->block_index = context->control_flow_graph->blocks.size();
-         context->control_flow_graph->block_index-- > 0;) {
-        if ((*context->reachable_blocks)[context->control_flow_graph->block_index]) {
-            break;
-        }
-        else {
-            eliminate_unreachable_remove_block();
-        }
-    }
-    if (context->control_flow_graph->block_index > 0) {
-        for (; context->control_flow_graph->block_index-- > 0;) {
-            if ((*context->reachable_blocks)[context->control_flow_graph->block_index]) {
-                // check if jump to next non null block only
-            }
-            else {
-                eliminate_unreachable_remove_block();
-            }
-        }
-    }
+    // for (context->control_flow_graph->block_index = context->control_flow_graph->blocks.size();
+    //      context->control_flow_graph->block_index-- > 0;) {
+    //     if ((*context->reachable_blocks)[context->control_flow_graph->block_index]) {
+    //         break;
+    //     }
+    //     else {
+    //         eliminate_unreachable_remove_block();
+    //     }
+    // }
+    // if (context->control_flow_graph->block_index > 0) {
+    //     for (; context->control_flow_graph->block_index-- > 0;) {
+    //         if ((*context->reachable_blocks)[context->control_flow_graph->block_index]) {
+    //             // check if jump to next non null block only
+    //         }
+    //         else {
+    //             eliminate_unreachable_remove_block();
+    //         }
+    //     }
+    // }
 
-    for (const auto& label_id : context->control_flow_graph->label_id_map) {
-        context->control_flow_graph->block_index = label_id.second;
-        // check if label to previous non null block
-    }
+    // for (const auto& label_id : context->control_flow_graph->label_id_map) {
+    //     context->control_flow_graph->block_index = label_id.second;
+    //     // check if label to previous non null block
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1158,67 +1158,64 @@ static void control_flow_graph_initialize_label_block(TacLabel* node) {
     context->control_flow_graph->label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
 
-static void control_flow_graph_initialize_block(TacInstruction* node, size_t& instructions_back_index) {
+static void control_flow_graph_initialize_block(
+    TacInstruction* node, size_t instruction_index, size_t& instructions_back_index) {
     switch (node->type()) {
         case AST_T::TacLabel_t: {
             if (instructions_back_index != context->p_instructions->size()) {
                 context->control_flow_graph->blocks.back().instructions_back_index = instructions_back_index;
-                ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
+                ControlFlowBlock block {0, instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
             control_flow_graph_initialize_label_block(static_cast<TacLabel*>(node));
-            instructions_back_index = context->instruction_index;
+            instructions_back_index = instruction_index;
             break;
         }
         case AST_T::TacReturn_t:
         case AST_T::TacJump_t:
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t: {
-            context->control_flow_graph->blocks.back().instructions_back_index = context->instruction_index;
+            context->control_flow_graph->blocks.back().instructions_back_index = instruction_index;
             instructions_back_index = context->p_instructions->size();
             break;
         }
         default: {
-            instructions_back_index = context->instruction_index;
+            instructions_back_index = instruction_index;
             break;
         }
     }
 }
 
-static void control_flow_graph_initialize_jump_edges(TacJump* node) {
-    control_flow_graph_add_edge(
-        context->control_flow_graph->block_index, context->control_flow_graph->label_id_map[node->target]);
+static void control_flow_graph_initialize_jump_edges(TacJump* node, size_t block_index) {
+    control_flow_graph_add_edge(block_index, context->control_flow_graph->label_id_map[node->target]);
 }
 
-static void control_flow_graph_initialize_jump_if_zero_edges(TacJumpIfZero* node) {
-    control_flow_graph_add_edge(
-        context->control_flow_graph->block_index, context->control_flow_graph->label_id_map[node->target]);
-    control_flow_graph_add_edge(context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
+static void control_flow_graph_initialize_jump_if_zero_edges(TacJumpIfZero* node, size_t block_index) {
+    control_flow_graph_add_edge(block_index, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_edge(block_index, block_index + 1);
 }
 
-static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZero* node) {
-    control_flow_graph_add_edge(
-        context->control_flow_graph->block_index, context->control_flow_graph->label_id_map[node->target]);
-    control_flow_graph_add_edge(context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
+static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZero* node, size_t block_index) {
+    control_flow_graph_add_edge(block_index, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_edge(block_index, block_index + 1);
 }
 
-static void control_flow_graph_initialize_edges(TacInstruction* node) {
+static void control_flow_graph_initialize_edges(TacInstruction* node, size_t block_index) {
     switch (node->type()) {
         case AST_T::TacReturn_t:
-            control_flow_graph_add_edge(context->control_flow_graph->block_index, context->control_flow_graph->exit_id);
+            control_flow_graph_add_edge(block_index, context->control_flow_graph->exit_id);
             break;
         case AST_T::TacJump_t:
-            control_flow_graph_initialize_jump_edges(static_cast<TacJump*>(node));
+            control_flow_graph_initialize_jump_edges(static_cast<TacJump*>(node), block_index);
             break;
         case AST_T::TacJumpIfZero_t:
-            control_flow_graph_initialize_jump_if_zero_edges(static_cast<TacJumpIfZero*>(node));
+            control_flow_graph_initialize_jump_if_zero_edges(static_cast<TacJumpIfZero*>(node), block_index);
             break;
         case AST_T::TacJumpIfNotZero_t:
-            control_flow_graph_initialize_jump_if_not_zero_edges(static_cast<TacJumpIfNotZero*>(node));
+            control_flow_graph_initialize_jump_if_not_zero_edges(static_cast<TacJumpIfNotZero*>(node), block_index);
             break;
         default:
-            control_flow_graph_add_edge(
-                context->control_flow_graph->block_index, context->control_flow_graph->block_index + 1);
+            control_flow_graph_add_edge(block_index, block_index + 1);
             break;
     }
 }
@@ -1228,14 +1225,14 @@ static void control_flow_graph_initialize() {
     context->control_flow_graph->label_id_map.clear();
     {
         size_t instructions_back_index = context->p_instructions->size();
-        for (context->instruction_index = 0; context->instruction_index < context->p_instructions->size();
-             ++context->instruction_index) {
-            if (current_instruction()) {
+        for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+            if (get_instruction(instruction_index)) {
                 if (instructions_back_index == context->p_instructions->size()) {
-                    ControlFlowBlock block {0, context->instruction_index, 0, {}, {}};
+                    ControlFlowBlock block {0, instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
                 }
-                control_flow_graph_initialize_block(current_instruction().get(), instructions_back_index);
+                control_flow_graph_initialize_block(
+                    get_instruction(instruction_index).get(), instruction_index, instructions_back_index);
                 context->control_flow_graph->blocks.back().size++;
             }
         }
@@ -1250,10 +1247,10 @@ static void control_flow_graph_initialize() {
     context->control_flow_graph->exit_predecessor_ids.clear();
     if (!context->control_flow_graph->blocks.empty()) {
         control_flow_graph_add_edge(context->control_flow_graph->entry_id, 0);
-        for (context->control_flow_graph->block_index = 0;
-             context->control_flow_graph->block_index < context->control_flow_graph->blocks.size();
-             ++context->control_flow_graph->block_index) {
-            control_flow_graph_initialize_edges(current_block_instructions_back().get());
+        for (size_t block_index = 0; block_index < context->control_flow_graph->blocks.size(); ++block_index) {
+            control_flow_graph_initialize_edges(
+                get_instruction(context->control_flow_graph->blocks[block_index].instructions_back_index).get(),
+                block_index);
         }
     }
 }
