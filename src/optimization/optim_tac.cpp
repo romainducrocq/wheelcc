@@ -1147,35 +1147,37 @@ static void eliminate_unreachable_code_control_flow_graph() {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
 
-    {
-        size_t block_id = context->control_flow_graph->blocks.size();
-        size_t next_block_id = context->control_flow_graph->exit_id;
-        while (block_id-- > 0) {
-            if ((*context->reachable_blocks)[block_id]) {
-                next_block_id = block_id;
-                break;
-            }
-            else {
-                eliminate_unreachable_code_empty_block(block_id);
-            }
+    size_t block_id = context->control_flow_graph->blocks.size();
+    size_t next_block_id = context->control_flow_graph->exit_id;
+    while (block_id-- > 0) {
+        if ((*context->reachable_blocks)[block_id]) {
+            next_block_id = block_id;
+            break;
         }
-        if (block_id > 0) {
-            while (block_id-- > 0) {
-                if ((*context->reachable_blocks)[block_id]) {
-                    eliminate_unreachable_code_jump_block(block_id, next_block_id);
-                    next_block_id = block_id;
-                }
-                else {
-                    eliminate_unreachable_code_empty_block(block_id);
-                }
-            }
+        else {
+            eliminate_unreachable_code_empty_block(block_id);
+        }
+    }
+    while (block_id-- > 0) {
+        if ((*context->reachable_blocks)[block_id]) {
+            eliminate_unreachable_code_jump_block(block_id, next_block_id);
+            next_block_id = block_id;
+        }
+        else {
+            eliminate_unreachable_code_empty_block(block_id);
         }
     }
 
     for (auto& label_id : context->control_flow_graph->label_id_map) {
         if ((*context->reachable_blocks)[label_id.second]) {
-            size_t previous_block_id = 0; // TODO
-            eliminate_unreachable_code_label_block(label_id.second, previous_block_id);
+            next_block_id = context->control_flow_graph->entry_id;
+            for (block_id = label_id.second; block_id-- > 0;) {
+                if ((*context->reachable_blocks)[block_id]) {
+                    next_block_id = block_id;
+                    break;
+                }
+            }
+            eliminate_unreachable_code_label_block(label_id.second, next_block_id);
         }
         else {
             label_id.second = context->control_flow_graph->exit_id;
