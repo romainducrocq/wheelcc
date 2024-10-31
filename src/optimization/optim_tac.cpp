@@ -1142,7 +1142,12 @@ static void eliminate_unreachable_code_label_block(size_t block_id, size_t previ
 }
 
 static void eliminate_unreachable_code_control_flow_graph() {
-    context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
+    if (context->reachable_blocks->size() < context->control_flow_graph->blocks.size()) {
+        context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
+    }
+    else {
+        context->reachable_blocks->assign(context->control_flow_graph->blocks.size(), false);
+    }
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
