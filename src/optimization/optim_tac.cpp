@@ -1038,21 +1038,20 @@ static void control_flow_graph_remove_edge(size_t predecessor_id, size_t success
 }
 
 static void control_flow_graph_remove_empty_block(size_t block_id) {
-    ControlFlowBlock& block = context->control_flow_graph->blocks[block_id];
-    for (size_t successor_id : block.successor_ids) {
+    for (size_t successor_id : context->control_flow_graph->blocks[block_id].successor_ids) {
         control_flow_graph_remove_edge(block_id, successor_id);
     }
-    for (size_t predecessor_id : block.predecessor_ids) {
+    for (size_t predecessor_id : context->control_flow_graph->blocks[block_id].predecessor_ids) {
         control_flow_graph_remove_edge(predecessor_id, block_id);
     }
-    block.instructions_front_index = context->control_flow_graph->exit_id;
-    block.instructions_back_index = context->control_flow_graph->exit_id;
+    context->control_flow_graph->blocks[block_id].instructions_front_index = context->control_flow_graph->exit_id;
+    context->control_flow_graph->blocks[block_id].instructions_back_index = context->control_flow_graph->exit_id;
 }
 
 static void eliminate_unreachable_code_reachable_block(size_t block_id);
 
-static void eliminate_unreachable_code_successor_reachable_blocks(ControlFlowBlock& block) {
-    for (size_t successor_id : block.successor_ids) {
+static void eliminate_unreachable_code_successor_reachable_blocks(size_t block_id) {
+    for (size_t successor_id : context->control_flow_graph->blocks[block_id].successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
 }
@@ -1060,28 +1059,28 @@ static void eliminate_unreachable_code_successor_reachable_blocks(ControlFlowBlo
 static void eliminate_unreachable_code_reachable_block(size_t block_id) {
     if (block_id < context->control_flow_graph->exit_id && !(*context->reachable_blocks)[block_id]) {
         (*context->reachable_blocks)[block_id] = true;
-        eliminate_unreachable_code_successor_reachable_blocks(context->control_flow_graph->blocks[block_id]);
+        eliminate_unreachable_code_successor_reachable_blocks(block_id);
     }
 }
 
 static void eliminate_unreachable_code_empty_block(size_t block_id) {
-    ControlFlowBlock& block = context->control_flow_graph->blocks[block_id];
-    for (size_t instruction_index = block.instructions_front_index; instruction_index <= block.instructions_back_index;
+    for (size_t instruction_index = context->control_flow_graph->blocks[block_id].instructions_front_index;
+         instruction_index <= context->control_flow_graph->blocks[block_id].instructions_back_index;
          ++instruction_index) {
         if ((*context->p_instructions)[instruction_index]) {
             set_instruction(nullptr, instruction_index);
         }
     }
-    block.size = 0;
+    context->control_flow_graph->blocks[block_id].size = 0;
     control_flow_graph_remove_empty_block(block_id);
 }
 
 static void control_flow_graph_remove_block_instruction(size_t instruction_index, size_t block_id) {
-    ControlFlowBlock& block = context->control_flow_graph->blocks[block_id];
     if ((*context->p_instructions)[instruction_index]) {
-        if (instruction_index == block.instructions_front_index) {
+        if (instruction_index == context->control_flow_graph->blocks[block_id].instructions_front_index) {
+            // TODO
         }
-        block.size--;
+        context->control_flow_graph->blocks[block_id].size--;
     }
     // TODO
 }
