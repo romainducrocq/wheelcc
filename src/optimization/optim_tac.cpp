@@ -32,12 +32,14 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Constant folding
 
+#define GET_INSTRUCTION(X) (*context->p_instructions)[X]
+
 static void set_instruction(std::unique_ptr<TacInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
-        (*context->p_instructions)[instruction_index] = std::move(instruction);
+        GET_INSTRUCTION(instruction_index) = std::move(instruction);
     }
     else {
-        (*context->p_instructions)[instruction_index].reset();
+        GET_INSTRUCTION(instruction_index).reset();
     }
     context->is_fixed_point = false;
 }
@@ -992,8 +994,8 @@ static void fold_constants_instructions(TacInstruction* node, size_t instruction
 
 static void fold_constants_list_instructions() {
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-        if ((*context->p_instructions)[instruction_index]) {
-            fold_constants_instructions((*context->p_instructions)[instruction_index].get(), instruction_index);
+        if (GET_INSTRUCTION(instruction_index)) {
+            fold_constants_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
         }
     }
 }
@@ -1006,20 +1008,22 @@ static void fold_constants_list_instructions() {
 
 // Unreachable code elimination
 
+#define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
+
 static void control_flow_graph_remove_edge(size_t predecessor_id, size_t successor_id) {
     std::vector<size_t>* successor_ids;
     std::vector<size_t>* predecessor_ids;
     if (successor_id == context->control_flow_graph->exit_id) {
-        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
         predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
     }
     else if (predecessor_id != context->control_flow_graph->entry_id) {
-        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
+        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
     }
     else {
         successor_ids = &context->control_flow_graph->entry_successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
     }
     for (size_t i = successor_ids->size(); i-- > 0;) {
         if ((*successor_ids)[i] == successor_id) {
@@ -1038,20 +1042,20 @@ static void control_flow_graph_remove_edge(size_t predecessor_id, size_t success
 }
 
 static void control_flow_graph_remove_empty_block(size_t block_id) {
-    for (size_t successor_id : context->control_flow_graph->blocks[block_id].successor_ids) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
         control_flow_graph_remove_edge(block_id, successor_id);
     }
-    for (size_t predecessor_id : context->control_flow_graph->blocks[block_id].predecessor_ids) {
+    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         control_flow_graph_remove_edge(predecessor_id, block_id);
     }
-    context->control_flow_graph->blocks[block_id].instructions_front_index = context->control_flow_graph->exit_id;
-    context->control_flow_graph->blocks[block_id].instructions_back_index = context->control_flow_graph->exit_id;
+    GET_CFG_BLOCK(block_id).instructions_front_index = context->control_flow_graph->exit_id;
+    GET_CFG_BLOCK(block_id).instructions_back_index = context->control_flow_graph->exit_id;
 }
 
 static void eliminate_unreachable_code_reachable_block(size_t block_id);
 
 static void eliminate_unreachable_code_successor_reachable_blocks(size_t block_id) {
-    for (size_t successor_id : context->control_flow_graph->blocks[block_id].successor_ids) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
 }
@@ -1064,36 +1068,33 @@ static void eliminate_unreachable_code_reachable_block(size_t block_id) {
 }
 
 static void eliminate_unreachable_code_empty_block(size_t block_id) {
-    for (size_t instruction_index = context->control_flow_graph->blocks[block_id].instructions_front_index;
-         instruction_index <= context->control_flow_graph->blocks[block_id].instructions_back_index;
-         ++instruction_index) {
-        if ((*context->p_instructions)[instruction_index]) {
+    for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+         instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index)) {
             set_instruction(nullptr, instruction_index);
         }
     }
-    context->control_flow_graph->blocks[block_id].size = 0;
+    GET_CFG_BLOCK(block_id).size = 0;
     control_flow_graph_remove_empty_block(block_id);
 }
 
 static void control_flow_graph_remove_block_instruction(size_t instruction_index, size_t block_id) {
-    if ((*context->p_instructions)[instruction_index]) {
-        if (instruction_index == context->control_flow_graph->blocks[block_id].instructions_front_index) {
+    if (GET_INSTRUCTION(instruction_index)) {
+        if (instruction_index == GET_CFG_BLOCK(block_id).instructions_front_index) {
             // TODO
         }
-        context->control_flow_graph->blocks[block_id].size--;
+        GET_CFG_BLOCK(block_id).size--;
     }
     // TODO
 }
 
 static void eliminate_unreachable_code_jump_instructions(size_t block_id) {
-    TacInstruction* node =
-        (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get();
+    TacInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
         case AST_T::TacJump_t:
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t:
-            control_flow_graph_remove_block_instruction(
-                context->control_flow_graph->blocks[block_id].instructions_back_index, block_id);
+            control_flow_graph_remove_block_instruction(GET_CFG_BLOCK(block_id).instructions_back_index, block_id);
             break;
         default:
             break;
@@ -1101,8 +1102,8 @@ static void eliminate_unreachable_code_jump_instructions(size_t block_id) {
 }
 
 static void eliminate_unreachable_code_jump_block(size_t block_id, size_t next_block_id) {
-    if (context->control_flow_graph->blocks[block_id].successor_ids.size() == 1
-        && context->control_flow_graph->blocks[block_id].successor_ids[0] == next_block_id) {
+    if (GET_CFG_BLOCK(block_id).successor_ids.size() == 1
+        && GET_CFG_BLOCK(block_id).successor_ids[0] == next_block_id) {
         eliminate_unreachable_code_jump_instructions(block_id);
     }
 }
@@ -1153,16 +1154,16 @@ static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_
     std::vector<size_t>* successor_ids;
     std::vector<size_t>* predecessor_ids;
     if (successor_id == context->control_flow_graph->exit_id) {
-        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
         predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
     }
     else if (predecessor_id != context->control_flow_graph->entry_id) {
-        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
+        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
     }
     else {
         successor_ids = &context->control_flow_graph->entry_successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
     }
     if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) == successor_ids->end()) {
         successor_ids->push_back(successor_id);
@@ -1177,7 +1178,7 @@ static void control_flow_graph_initialize_label_block(TacLabel* node) {
 }
 
 static void control_flow_graph_initialize_block(size_t instruction_index, size_t& instructions_back_index) {
-    TacInstruction* node = (*context->p_instructions)[instruction_index].get();
+    TacInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::TacLabel_t: {
             if (instructions_back_index != context->p_instructions->size()) {
@@ -1219,8 +1220,7 @@ static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZer
 }
 
 static void control_flow_graph_initialize_edges(size_t block_id) {
-    TacInstruction* node =
-        (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get();
+    TacInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
         case AST_T::TacReturn_t:
             control_flow_graph_add_edge(block_id, context->control_flow_graph->exit_id);
@@ -1246,7 +1246,7 @@ static void control_flow_graph_initialize() {
     {
         size_t instructions_back_index = context->p_instructions->size();
         for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-            if ((*context->p_instructions)[instruction_index]) {
+            if (GET_INSTRUCTION(instruction_index)) {
                 if (instructions_back_index == context->p_instructions->size()) {
                     ControlFlowBlock block {0, instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
