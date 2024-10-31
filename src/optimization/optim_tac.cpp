@@ -1010,6 +1010,7 @@ static void fold_constants_list_instructions() {
 
 #define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
 
+// TODO split into remove successor and predecessor
 static void control_flow_graph_remove_edge(size_t predecessor_id, size_t successor_id) {
     std::vector<size_t>* successor_ids;
     std::vector<size_t>* predecessor_ids;
@@ -1052,6 +1053,33 @@ static void control_flow_graph_remove_empty_block(size_t block_id) {
     GET_CFG_BLOCK(block_id).instructions_back_index = context->control_flow_graph->exit_id;
 }
 
+static void control_flow_graph_remove_block_instruction(size_t instruction_index, size_t block_id) {
+    if (GET_INSTRUCTION(instruction_index)) {
+        set_instruction(nullptr, instruction_index);
+        GET_CFG_BLOCK(block_id).size--;
+        if (GET_CFG_BLOCK(block_id).size == 0) {
+            control_flow_graph_remove_empty_block(block_id);
+        }
+        else if (instruction_index == GET_CFG_BLOCK(block_id).instructions_front_index) {
+            for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+                if (GET_INSTRUCTION(instruction_index)) {
+                    GET_CFG_BLOCK(block_id).instructions_front_index = instruction_index;
+                    break;
+                }
+            }
+        }
+        else if (instruction_index == GET_CFG_BLOCK(block_id).instructions_back_index) {
+            instruction_index++;
+            for (; instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
+                if (GET_INSTRUCTION(instruction_index)) {
+                    GET_CFG_BLOCK(block_id).instructions_back_index = instruction_index;
+                    break;
+                }
+            }
+        }
+    }
+}
+
 static void eliminate_unreachable_code_reachable_block(size_t block_id);
 
 static void eliminate_unreachable_code_successor_reachable_blocks(size_t block_id) {
@@ -1078,16 +1106,6 @@ static void eliminate_unreachable_code_empty_block(size_t block_id) {
     control_flow_graph_remove_empty_block(block_id);
 }
 
-static void control_flow_graph_remove_block_instruction(size_t instruction_index, size_t block_id) {
-    if (GET_INSTRUCTION(instruction_index)) {
-        if (instruction_index == GET_CFG_BLOCK(block_id).instructions_front_index) {
-            // TODO
-        }
-        GET_CFG_BLOCK(block_id).size--;
-    }
-    // TODO
-}
-
 static void eliminate_unreachable_code_jump_instructions(size_t block_id) {
     TacInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
@@ -1105,6 +1123,21 @@ static void eliminate_unreachable_code_jump_block(size_t block_id, size_t next_b
     if (GET_CFG_BLOCK(block_id).successor_ids.size() == 1
         && GET_CFG_BLOCK(block_id).successor_ids[0] == next_block_id) {
         eliminate_unreachable_code_jump_instructions(block_id);
+    }
+}
+
+static void eliminate_unreachable_code_label_instructions(size_t block_id) {
+    TacInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_front_index).get();
+    if (node->type() != AST_T::TacLabel_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    control_flow_graph_remove_block_instruction(GET_CFG_BLOCK(block_id).instructions_front_index, block_id);
+}
+
+static void eliminate_unreachable_code_label_block(size_t block_id, size_t previous_block_id) {
+    if (GET_CFG_BLOCK(block_id).predecessor_ids.size() == 1
+        && GET_CFG_BLOCK(block_id).predecessor_ids[0] == previous_block_id) {
+        eliminate_unreachable_code_label_instructions(block_id);
     }
 }
 
@@ -1139,8 +1172,14 @@ static void eliminate_unreachable_code_control_flow_graph() {
         }
     }
 
-    for (const auto& label_id : context->control_flow_graph->label_id_map) {
-        // check if label to previous non null block
+    for (auto& label_id : context->control_flow_graph->label_id_map) {
+        if ((*context->reachable_blocks)[label_id.second]) {
+            size_t previous_block_id = 0; // TODO
+            eliminate_unreachable_code_label_block(label_id.second, previous_block_id);
+        }
+        else {
+            label_id.second = context->control_flow_graph->exit_id;
+        }
     }
 }
 
@@ -1150,6 +1189,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO split into add successor and predecessor
 static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_id) {
     std::vector<size_t>* successor_ids;
     std::vector<size_t>* predecessor_ids;
