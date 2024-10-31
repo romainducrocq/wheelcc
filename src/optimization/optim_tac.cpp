@@ -1048,22 +1048,22 @@ static void control_flow_graph_remove_empty_block(ControlFlowBlock& block, size_
     block.instructions_back_index = context->control_flow_graph->exit_id;
 }
 
-static void eliminate_unreachable_control_flow_block(size_t block_id);
+static void eliminate_unreachable_code_reachable_block(size_t block_id);
 
-static void eliminate_unreachable_set_reachable_block(ControlFlowBlock& block) { // TODO rename
+static void eliminate_unreachable_code_successor_reachable_blocks(ControlFlowBlock& block) {
     for (size_t successor_id : block.successor_ids) {
-        eliminate_unreachable_control_flow_block(successor_id);
+        eliminate_unreachable_code_reachable_block(successor_id);
     }
 }
 
-static void eliminate_unreachable_control_flow_block(size_t block_id) {
+static void eliminate_unreachable_code_reachable_block(size_t block_id) {
     if (block_id < context->control_flow_graph->exit_id && !(*context->reachable_blocks)[block_id]) {
         (*context->reachable_blocks)[block_id] = true;
-        eliminate_unreachable_set_reachable_block(context->control_flow_graph->blocks[block_id]);
+        eliminate_unreachable_code_successor_reachable_blocks(context->control_flow_graph->blocks[block_id]);
     }
 }
 
-static void eliminate_unreachable_remove_block(ControlFlowBlock& block, size_t block_id) { // TODO rename
+static void eliminate_unreachable_code_empty_block(ControlFlowBlock& block, size_t block_id) {
     for (size_t instruction_index = block.instructions_front_index; instruction_index <= block.instructions_back_index;
          ++instruction_index) {
         if ((*context->p_instructions)[instruction_index]) {
@@ -1074,10 +1074,10 @@ static void eliminate_unreachable_remove_block(ControlFlowBlock& block, size_t b
     control_flow_graph_remove_empty_block(block, block_id);
 }
 
-static void eliminate_unreachable_control_flow_graph() {
+static void eliminate_unreachable_code_control_flow_graph() {
     context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
-        eliminate_unreachable_control_flow_block(successor_id);
+        eliminate_unreachable_code_reachable_block(successor_id);
     }
 
     {
@@ -1087,7 +1087,7 @@ static void eliminate_unreachable_control_flow_graph() {
                 break;
             }
             else {
-                eliminate_unreachable_remove_block(context->control_flow_graph->blocks[block_id], block_id);
+                eliminate_unreachable_code_empty_block(context->control_flow_graph->blocks[block_id], block_id);
             }
         }
         if (block_id > 0) {
@@ -1096,7 +1096,7 @@ static void eliminate_unreachable_control_flow_graph() {
                     // check if jump to next non null block only
                 }
                 else {
-                    eliminate_unreachable_remove_block(context->control_flow_graph->blocks[block_id], block_id);
+                    eliminate_unreachable_code_empty_block(context->control_flow_graph->blocks[block_id], block_id);
                 }
             }
         }
@@ -1255,7 +1255,7 @@ static void optimize_function_top_level(TacFunction* node) {
         if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
             control_flow_graph_initialize();
             if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
-                eliminate_unreachable_control_flow_graph();
+                eliminate_unreachable_code_control_flow_graph();
                 // printf("--eliminate-unreachable-code\n"); // TODO rm
             }
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
