@@ -1011,6 +1011,37 @@ static void fold_constants_list_instructions() {
 
 // Unreachable code elimination
 
+static void control_flow_graph_remove_edge(size_t predecessor_id, size_t successor_id) {
+    std::vector<size_t>* successor_ids;
+    std::vector<size_t>* predecessor_ids;
+    if (successor_id == context->control_flow_graph->exit_id) {
+        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
+    }
+    else if (predecessor_id != context->control_flow_graph->entry_id) {
+        successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+    }
+    else {
+        successor_ids = &context->control_flow_graph->entry_successor_ids;
+        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+    }
+    for (size_t i = successor_ids->size(); i-- > 0;) {
+        if ((*successor_ids)[i] == successor_id) {
+            std::swap((*successor_ids)[i], successor_ids->back());
+            successor_ids->pop_back();
+            break;
+        }
+    }
+    for (size_t i = predecessor_ids->size(); i-- > 0;) {
+        if ((*predecessor_ids)[i] == predecessor_id) {
+            std::swap((*predecessor_ids)[i], predecessor_ids->back());
+            predecessor_ids->pop_back();
+            break;
+        }
+    }
+}
+
 static ControlFlowBlock& current_control_flow_block() {
     return context->control_flow_graph->blocks[context->control_flow_graph->block_index];
 }
@@ -1042,6 +1073,25 @@ static void eliminate_unreachable_control_flow_block() {
     }
 }
 
+static void eliminate_unreachable_remove_block() {
+    for (context->instruction_index = current_control_flow_block().instructions_front_index;
+         context->instruction_index <= current_control_flow_block().instructions_back_index;
+         ++context->instruction_index) {
+        if (current_instruction()) {
+            set_instruction(nullptr);
+        }
+    }
+    for (const auto successor_id : current_control_flow_block().successor_ids) {
+        control_flow_graph_remove_edge(context->control_flow_graph->block_index, successor_id);
+    }
+    for (const auto predecessor_id : current_control_flow_block().predecessor_ids) {
+        control_flow_graph_remove_edge(predecessor_id, context->control_flow_graph->block_index);
+    }
+    current_control_flow_block().size = 0;
+    current_control_flow_block().instructions_front_index = context->control_flow_graph->exit_id;
+    current_control_flow_block().instructions_back_index = context->control_flow_graph->exit_id;
+}
+
 static void eliminate_unreachable_control_flow_graph() {
     context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
     for (const auto successor_id : context->control_flow_graph->entry_successor_ids) {
@@ -1055,7 +1105,7 @@ static void eliminate_unreachable_control_flow_graph() {
             break;
         }
         else {
-            // TODO erase block
+            eliminate_unreachable_remove_block();
         }
     }
     if (context->control_flow_graph->block_index > 0) {
@@ -1064,7 +1114,7 @@ static void eliminate_unreachable_control_flow_graph() {
                 // check if jump to next non null block only
             }
             else {
-                // TODO erase block
+                eliminate_unreachable_remove_block();
             }
         }
     }
