@@ -1074,6 +1074,38 @@ static void eliminate_unreachable_code_empty_block(ControlFlowBlock& block, size
     control_flow_graph_remove_empty_block(block, block_id);
 }
 
+static void control_flow_graph_remove_block_instruction(
+    ControlFlowBlock& block, size_t instruction_index, size_t block_id) {
+    if ((*context->p_instructions)[instruction_index]) {
+        if (instruction_index == block.instructions_front_index) {
+        }
+        block.size--;
+    }
+    // TODO
+}
+
+static void eliminate_unreachable_code_jump_instructions(TacInstruction* node, size_t block_id) {
+    switch (node->type()) {
+        case AST_T::TacJump_t:
+        case AST_T::TacJumpIfZero_t:
+        case AST_T::TacJumpIfNotZero_t:
+            control_flow_graph_remove_block_instruction(context->control_flow_graph->blocks[block_id],
+                context->control_flow_graph->blocks[block_id].instructions_back_index, block_id);
+            break;
+        default:
+            break;
+    }
+}
+
+static void eliminate_unreachable_code_jump_block(size_t block_id, size_t next_block_id) {
+    if (context->control_flow_graph->blocks[block_id].successor_ids.size() == 1
+        && context->control_flow_graph->blocks[block_id].successor_ids[0] == next_block_id) {
+        eliminate_unreachable_code_jump_instructions(
+            (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get(),
+            block_id);
+    }
+}
+
 static void eliminate_unreachable_code_control_flow_graph() {
     context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
@@ -1082,8 +1114,10 @@ static void eliminate_unreachable_code_control_flow_graph() {
 
     {
         size_t block_id = context->control_flow_graph->blocks.size();
+        size_t next_block_id = context->control_flow_graph->exit_id;
         while (block_id-- > 0) {
             if ((*context->reachable_blocks)[block_id]) {
+                next_block_id = block_id;
                 break;
             }
             else {
@@ -1093,7 +1127,8 @@ static void eliminate_unreachable_code_control_flow_graph() {
         if (block_id > 0) {
             while (block_id-- > 0) {
                 if ((*context->reachable_blocks)[block_id]) {
-                    // check if jump to next non null block only
+                    eliminate_unreachable_code_jump_block(block_id, next_block_id);
+                    next_block_id = block_id;
                 }
                 else {
                     eliminate_unreachable_code_empty_block(context->control_flow_graph->blocks[block_id], block_id);
