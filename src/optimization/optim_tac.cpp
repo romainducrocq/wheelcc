@@ -1037,7 +1037,8 @@ static void control_flow_graph_remove_edge(size_t predecessor_id, size_t success
     }
 }
 
-static void control_flow_graph_remove_empty_block(ControlFlowBlock& block, size_t block_id) {
+static void control_flow_graph_remove_empty_block(size_t block_id) {
+    ControlFlowBlock& block = context->control_flow_graph->blocks[block_id];
     for (size_t successor_id : block.successor_ids) {
         control_flow_graph_remove_edge(block_id, successor_id);
     }
@@ -1063,7 +1064,8 @@ static void eliminate_unreachable_code_reachable_block(size_t block_id) {
     }
 }
 
-static void eliminate_unreachable_code_empty_block(ControlFlowBlock& block, size_t block_id) {
+static void eliminate_unreachable_code_empty_block(size_t block_id) {
+    ControlFlowBlock& block = context->control_flow_graph->blocks[block_id];
     for (size_t instruction_index = block.instructions_front_index; instruction_index <= block.instructions_back_index;
          ++instruction_index) {
         if ((*context->p_instructions)[instruction_index]) {
@@ -1071,11 +1073,11 @@ static void eliminate_unreachable_code_empty_block(ControlFlowBlock& block, size
         }
     }
     block.size = 0;
-    control_flow_graph_remove_empty_block(block, block_id);
+    control_flow_graph_remove_empty_block(block_id);
 }
 
-static void control_flow_graph_remove_block_instruction(
-    ControlFlowBlock& block, size_t instruction_index, size_t block_id) {
+static void control_flow_graph_remove_block_instruction(size_t instruction_index, size_t block_id) {
+    ControlFlowBlock& block = context->control_flow_graph->blocks[block_id];
     if ((*context->p_instructions)[instruction_index]) {
         if (instruction_index == block.instructions_front_index) {
         }
@@ -1084,12 +1086,14 @@ static void control_flow_graph_remove_block_instruction(
     // TODO
 }
 
-static void eliminate_unreachable_code_jump_instructions(TacInstruction* node, size_t block_id) {
+static void eliminate_unreachable_code_jump_instructions(size_t block_id) {
+    TacInstruction* node =
+        (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get();
     switch (node->type()) {
         case AST_T::TacJump_t:
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t:
-            control_flow_graph_remove_block_instruction(context->control_flow_graph->blocks[block_id],
+            control_flow_graph_remove_block_instruction(
                 context->control_flow_graph->blocks[block_id].instructions_back_index, block_id);
             break;
         default:
@@ -1100,9 +1104,7 @@ static void eliminate_unreachable_code_jump_instructions(TacInstruction* node, s
 static void eliminate_unreachable_code_jump_block(size_t block_id, size_t next_block_id) {
     if (context->control_flow_graph->blocks[block_id].successor_ids.size() == 1
         && context->control_flow_graph->blocks[block_id].successor_ids[0] == next_block_id) {
-        eliminate_unreachable_code_jump_instructions(
-            (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get(),
-            block_id);
+        eliminate_unreachable_code_jump_instructions(block_id);
     }
 }
 
@@ -1121,7 +1123,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
                 break;
             }
             else {
-                eliminate_unreachable_code_empty_block(context->control_flow_graph->blocks[block_id], block_id);
+                eliminate_unreachable_code_empty_block(block_id);
             }
         }
         if (block_id > 0) {
@@ -1131,7 +1133,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
                     next_block_id = block_id;
                 }
                 else {
-                    eliminate_unreachable_code_empty_block(context->control_flow_graph->blocks[block_id], block_id);
+                    eliminate_unreachable_code_empty_block(block_id);
                 }
             }
         }
@@ -1175,8 +1177,8 @@ static void control_flow_graph_initialize_label_block(TacLabel* node) {
     context->control_flow_graph->label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
 
-static void control_flow_graph_initialize_block(
-    TacInstruction* node, size_t instruction_index, size_t& instructions_back_index) {
+static void control_flow_graph_initialize_block(size_t instruction_index, size_t& instructions_back_index) {
+    TacInstruction* node = (*context->p_instructions)[instruction_index].get();
     switch (node->type()) {
         case AST_T::TacLabel_t: {
             if (instructions_back_index != context->p_instructions->size()) {
@@ -1217,7 +1219,9 @@ static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZer
     control_flow_graph_add_edge(block_id, block_id + 1);
 }
 
-static void control_flow_graph_initialize_edges(TacInstruction* node, size_t block_id) {
+static void control_flow_graph_initialize_edges(size_t block_id) {
+    TacInstruction* node =
+        (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get();
     switch (node->type()) {
         case AST_T::TacReturn_t:
             control_flow_graph_add_edge(block_id, context->control_flow_graph->exit_id);
@@ -1248,8 +1252,7 @@ static void control_flow_graph_initialize() {
                     ControlFlowBlock block {0, instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
                 }
-                control_flow_graph_initialize_block(
-                    (*context->p_instructions)[instruction_index].get(), instruction_index, instructions_back_index);
+                control_flow_graph_initialize_block(instruction_index, instructions_back_index);
                 context->control_flow_graph->blocks.back().size++;
             }
         }
@@ -1265,9 +1268,7 @@ static void control_flow_graph_initialize() {
     if (!context->control_flow_graph->blocks.empty()) {
         control_flow_graph_add_edge(context->control_flow_graph->entry_id, 0);
         for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
-            control_flow_graph_initialize_edges(
-                (*context->p_instructions)[context->control_flow_graph->blocks[block_id].instructions_back_index].get(),
-                block_id);
+            control_flow_graph_initialize_edges(block_id);
         }
     }
 }
