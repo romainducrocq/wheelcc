@@ -1049,7 +1049,30 @@ static void eliminate_unreachable_control_flow_graph() {
         eliminate_unreachable_control_flow_block();
     }
 
-    // eliminate_unreachable_block_instructions();
+    for (context->control_flow_graph->block_index = context->control_flow_graph->blocks.size();
+         context->control_flow_graph->block_index-- > 0;) {
+        if ((*context->reachable_blocks)[context->control_flow_graph->block_index]) {
+            break;
+        }
+        else {
+            // TODO erase block
+        }
+    }
+    if (context->control_flow_graph->block_index > 0) {
+        for (; context->control_flow_graph->block_index-- > 0;) {
+            if ((*context->reachable_blocks)[context->control_flow_graph->block_index]) {
+                // check if jump to next non null block only
+            }
+            else {
+                // TODO erase block
+            }
+        }
+    }
+
+    for (const auto& label_id : context->control_flow_graph->label_id_map) {
+        context->control_flow_graph->block_index = label_id.second;
+        // check if label to previous non null block
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1061,16 +1084,16 @@ static void eliminate_unreachable_control_flow_graph() {
 static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_id) {
     std::vector<size_t>* successor_ids;
     std::vector<size_t>* predecessor_ids;
-    if (predecessor_id == context->control_flow_graph->entry_id) {
-        successor_ids = &context->control_flow_graph->entry_successor_ids;
-        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
-    }
-    else if (successor_id == context->control_flow_graph->exit_id) {
+    if (successor_id == context->control_flow_graph->exit_id) {
         successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
         predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
     }
-    else {
+    else if (predecessor_id != context->control_flow_graph->entry_id) {
         successor_ids = &context->control_flow_graph->blocks[predecessor_id].successor_ids;
+        predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
+    }
+    else {
+        successor_ids = &context->control_flow_graph->entry_successor_ids;
         predecessor_ids = &context->control_flow_graph->blocks[successor_id].predecessor_ids;
     }
     if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) == successor_ids->end()) {
