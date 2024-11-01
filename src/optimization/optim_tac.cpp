@@ -1197,28 +1197,46 @@ static void eliminate_unreachable_code_control_flow_graph() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO split into add successor and predecessor
-static void control_flow_graph_add_edge(size_t predecessor_id, size_t successor_id) {
-    std::vector<size_t>* successor_ids;
+static void control_flow_graph_add_successor_edge(size_t block_id, size_t successor_id) {
+    std::vector<size_t>* successor_ids = &GET_CFG_BLOCK(block_id).successor_ids;
     std::vector<size_t>* predecessor_ids;
-    if (successor_id == context->control_flow_graph->exit_id) {
-        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
+    if (successor_id < context->control_flow_graph->exit_id) {
+        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
+    }
+    else if (successor_id == context->control_flow_graph->exit_id) {
         predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
     }
-    else if (predecessor_id != context->control_flow_graph->entry_id) {
+    else {
+        RAISE_INTERNAL_ERROR;
+    }
+    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) != successor_ids->end()
+        || std::find(predecessor_ids->begin(), predecessor_ids->end(), block_id)
+               == predecessor_ids->end()) { // TODO rm ?
+        RAISE_INTERNAL_ERROR;
+    }
+    successor_ids->push_back(successor_id);
+    predecessor_ids->push_back(block_id);
+}
+
+static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t predecessor_id) {
+    std::vector<size_t>* successor_ids;
+    std::vector<size_t>* predecessor_ids = &GET_CFG_BLOCK(block_id).predecessor_ids;
+    if (predecessor_id < context->control_flow_graph->exit_id) {
         successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
-        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
+    }
+    else if (predecessor_id == context->control_flow_graph->entry_id) {
+        successor_ids = &context->control_flow_graph->entry_successor_ids;
     }
     else {
-        successor_ids = &context->control_flow_graph->entry_successor_ids;
-        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
+        RAISE_INTERNAL_ERROR;
     }
-    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) == successor_ids->end()) {
-        successor_ids->push_back(successor_id);
+    if (std::find(successor_ids->begin(), successor_ids->end(), block_id) != successor_ids->end()
+        || std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id)
+               == predecessor_ids->end()) { // TODO rm ?
+        RAISE_INTERNAL_ERROR;
     }
-    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) == predecessor_ids->end()) {
-        predecessor_ids->push_back(predecessor_id);
-    }
+    successor_ids->push_back(block_id);
+    predecessor_ids->push_back(predecessor_id);
 }
 
 static void control_flow_graph_initialize_label_block(TacLabel* node) {
@@ -1254,24 +1272,24 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
 }
 
 static void control_flow_graph_initialize_jump_edges(TacJump* node, size_t block_id) {
-    control_flow_graph_add_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
 }
 
 static void control_flow_graph_initialize_jump_if_zero_edges(TacJumpIfZero* node, size_t block_id) {
-    control_flow_graph_add_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
-    control_flow_graph_add_edge(block_id, block_id + 1);
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, block_id + 1);
 }
 
 static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZero* node, size_t block_id) {
-    control_flow_graph_add_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
-    control_flow_graph_add_edge(block_id, block_id + 1);
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, block_id + 1);
 }
 
 static void control_flow_graph_initialize_edges(size_t block_id) {
     TacInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
         case AST_T::TacReturn_t:
-            control_flow_graph_add_edge(block_id, context->control_flow_graph->exit_id);
+            control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->exit_id);
             break;
         case AST_T::TacJump_t:
             control_flow_graph_initialize_jump_edges(static_cast<TacJump*>(node), block_id);
@@ -1283,7 +1301,7 @@ static void control_flow_graph_initialize_edges(size_t block_id) {
             control_flow_graph_initialize_jump_if_not_zero_edges(static_cast<TacJumpIfNotZero*>(node), block_id);
             break;
         default:
-            control_flow_graph_add_edge(block_id, block_id + 1);
+            control_flow_graph_add_successor_edge(block_id, block_id + 1);
             break;
     }
 }
@@ -1313,7 +1331,7 @@ static void control_flow_graph_initialize() {
     context->control_flow_graph->entry_successor_ids.clear();
     context->control_flow_graph->exit_predecessor_ids.clear();
     if (!context->control_flow_graph->blocks.empty()) {
-        control_flow_graph_add_edge(context->control_flow_graph->entry_id, 0);
+        control_flow_graph_add_predecessor_edge(0, context->control_flow_graph->entry_id);
         for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
             control_flow_graph_initialize_edges(block_id);
         }
