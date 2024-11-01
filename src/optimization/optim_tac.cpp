@@ -1209,13 +1209,12 @@ static void control_flow_graph_add_successor_edge(size_t block_id, size_t succes
     else {
         RAISE_INTERNAL_ERROR;
     }
-    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) != successor_ids->end()
-        || std::find(predecessor_ids->begin(), predecessor_ids->end(), block_id)
-               == predecessor_ids->end()) { // TODO rm ?
-        RAISE_INTERNAL_ERROR;
+    if (std::find(successor_ids->begin(), successor_ids->end(), successor_id) == successor_ids->end()) {
+        successor_ids->push_back(successor_id);
     }
-    successor_ids->push_back(successor_id);
-    predecessor_ids->push_back(block_id);
+    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), block_id) == predecessor_ids->end()) {
+        predecessor_ids->push_back(block_id);
+    }
 }
 
 static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t predecessor_id) {
@@ -1230,13 +1229,12 @@ static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t pred
     else {
         RAISE_INTERNAL_ERROR;
     }
-    if (std::find(successor_ids->begin(), successor_ids->end(), block_id) != successor_ids->end()
-        || std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id)
-               == predecessor_ids->end()) { // TODO rm ?
-        RAISE_INTERNAL_ERROR;
+    if (std::find(successor_ids->begin(), successor_ids->end(), block_id) == successor_ids->end()) {
+        successor_ids->push_back(block_id);
     }
-    successor_ids->push_back(block_id);
-    predecessor_ids->push_back(predecessor_id);
+    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) == predecessor_ids->end()) {
+        predecessor_ids->push_back(predecessor_id);
+    }
 }
 
 static void control_flow_graph_initialize_label_block(TacLabel* node) {
