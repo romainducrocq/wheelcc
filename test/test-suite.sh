@@ -21,6 +21,7 @@ else
             test --chapter ${i} --latest-only --extra-credit
         fi
         test --chapter ${i} --latest-only --fold-constants --extra-credit
+        test --chapter ${i} --latest-only --eliminate-unreachable-code --extra-credit
     done
 fi
 
