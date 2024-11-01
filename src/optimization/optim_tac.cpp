@@ -1175,13 +1175,14 @@ static void eliminate_unreachable_code_control_flow_graph() {
 
     for (auto& label_id : context->control_flow_graph->label_id_map) {
         if ((*context->reachable_blocks)[label_id.second]) {
-            next_block_id = context->control_flow_graph->entry_id;
             for (block_id = label_id.second; block_id-- > 0;) {
                 if ((*context->reachable_blocks)[block_id]) {
                     next_block_id = block_id;
-                    break;
+                    goto Lelse;
                 }
             }
+            next_block_id = context->control_flow_graph->entry_id;
+        Lelse:
             eliminate_unreachable_code_label_block(label_id.second, next_block_id);
         }
         else {
