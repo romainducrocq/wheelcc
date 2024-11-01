@@ -31,6 +31,96 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 #define GET_INSTRUCTION(X) (*context->p_instructions)[X]
 #define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
 
+// // TODO rm
+// #include "util/pprint.hpp"
+// static void print_control_flow_graph() {
+//     printf("\n\n----------------------------------------\nControlFlowGraph[%lu]:\n",
+//     context->control_flow_graph->blocks.size()); printf("entry_id: %lu\n"
+//            "exit_id: %lu\n"
+//            "entry_successor_ids: ",
+//         context->control_flow_graph->entry_id, context->control_flow_graph->exit_id);
+//     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
+//         if (successor_id == context->control_flow_graph->entry_id) {
+//             printf("ENTRY, ");
+//         }
+//         else if (successor_id == context->control_flow_graph->exit_id) {
+//             printf("EXIT, ");
+//         }
+//         else {
+//             printf("%lu, ", successor_id);
+//         }
+//     }
+//     printf("\nexit_predecessor_ids: ");
+//     for (size_t predecessor_id : context->control_flow_graph->exit_predecessor_ids) {
+//         if (predecessor_id == context->control_flow_graph->entry_id) {
+//             printf("ENTRY, ");
+//         }
+//         else if (predecessor_id == context->control_flow_graph->exit_id) {
+//             printf("EXIT, ");
+//         }
+//         else {
+//             printf("%lu, ", predecessor_id);
+//         }
+//     }
+//     printf("\nblocks: \n");
+//     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+//         printf("\n--- ControlFlowBlock[%lu]\n"
+//                "    size: %lu\n"
+//                "    instructions_front_index: %lu\n"
+//                "    instructions_back_index: %lu\n"
+//                "    predecessor_ids: ",
+//             block_id, GET_CFG_BLOCK(block_id).size, GET_CFG_BLOCK(block_id).instructions_front_index,
+//             GET_CFG_BLOCK(block_id).instructions_back_index);
+//         for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+//             if (predecessor_id == context->control_flow_graph->entry_id) {
+//                 printf("ENTRY, ");
+//             }
+//             else if (predecessor_id == context->control_flow_graph->exit_id) {
+//                 printf("EXIT, ");
+//             }
+//             else {
+//                 printf("%lu, ", predecessor_id);
+//             }
+//         }
+//         printf("\n    successor_ids: ");
+//         for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+//             if (successor_id == context->control_flow_graph->entry_id) {
+//                 printf("ENTRY, ");
+//             }
+//             else if (successor_id == context->control_flow_graph->exit_id) {
+//                 printf("EXIT, ");
+//             }
+//             else {
+//                 printf("%lu, ", successor_id);
+//             }
+//         }
+//         printf("\n    instructions: \n");
+//         std::unique_ptr<TacTopLevel> print_ast;
+//         {
+//             std::vector<std::unique_ptr<TacInstruction>> print_instructions;
+//             print_instructions.reserve(
+//                 GET_CFG_BLOCK(block_id).instructions_back_index - GET_CFG_BLOCK(block_id).instructions_front_index +
+//                 1);
+//             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+//                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+//                 print_instructions.push_back(std::move(GET_INSTRUCTION(instruction_index)));
+//             }
+//             print_ast = std::make_unique<TacFunction>("CFG BLOCK ID " + std::to_string(block_id), false,
+//                 std::vector<std::string>(0), std::move(print_instructions));
+//         }
+//         pretty_print_ast(print_ast.get(), std::to_string(block_id));
+//         {
+//             std::vector<std::unique_ptr<TacInstruction>>& print_instructions =
+//                 static_cast<TacFunction*>(print_ast.get())->body;
+//             for (size_t instruction_index = 0; instruction_index < print_instructions.size(); ++instruction_index) {
+//                 GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_front_index + instruction_index) =
+//                     std::move(print_instructions[instruction_index]);
+//             }
+//         }
+//     }
+//     // RAISE_INTERNAL_ERROR;
+// }
+
 static void set_instruction(std::unique_ptr<TacInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
         GET_INSTRUCTION(instruction_index) = std::move(instruction);
