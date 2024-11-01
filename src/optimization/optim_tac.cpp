@@ -35,7 +35,8 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 // #include "util/pprint.hpp"
 // static void print_control_flow_graph() {
 //     printf("\n\n----------------------------------------\nControlFlowGraph[%lu]:\n",
-//     context->control_flow_graph->blocks.size()); printf("entry_id: %lu\n"
+//         context->control_flow_graph->blocks.size());
+//     printf("entry_id: %lu\n"
 //            "exit_id: %lu\n"
 //            "entry_successor_ids: ",
 //         context->control_flow_graph->entry_id, context->control_flow_graph->exit_id);
@@ -99,8 +100,7 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 //         {
 //             std::vector<std::unique_ptr<TacInstruction>> print_instructions;
 //             print_instructions.reserve(
-//                 GET_CFG_BLOCK(block_id).instructions_back_index - GET_CFG_BLOCK(block_id).instructions_front_index +
-//                 1);
+//                 GET_CFG_BLOCK(block_id).instructions_back_index - GET_CFG_BLOCK(block_id).instructions_front_index + 1);
 //             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
 //                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
 //                 print_instructions.push_back(std::move(GET_INSTRUCTION(instruction_index)));
@@ -1300,11 +1300,10 @@ static void eliminate_unreachable_code_label_block(size_t block_id, size_t previ
 
 static void eliminate_unreachable_code_control_flow_graph() {
     if (context->reachable_blocks->size() < context->control_flow_graph->blocks.size()) {
-        context->reachable_blocks->resize(context->control_flow_graph->blocks.size(), false);
+        context->reachable_blocks->resize(context->control_flow_graph->blocks.size());
     }
-    else {
-        context->reachable_blocks->assign(context->control_flow_graph->blocks.size(), false);
-    }
+    std::fill(context->reachable_blocks->begin(),
+        context->reachable_blocks->begin() + context->control_flow_graph->blocks.size(), false);
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
