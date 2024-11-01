@@ -1010,26 +1010,6 @@ static void fold_constants_list_instructions() {
 
 #define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
 
-static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t predecessor_id) {
-    std::vector<size_t>* successor_ids;
-    std::vector<size_t>* predecessor_ids = &GET_CFG_BLOCK(block_id).predecessor_ids;
-    if (predecessor_id < context->control_flow_graph->exit_id) {
-        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
-    }
-    else if (predecessor_id == context->control_flow_graph->entry_id) {
-        successor_ids = &context->control_flow_graph->entry_successor_ids;
-    }
-    else {
-        RAISE_INTERNAL_ERROR;
-    }
-    if (std::find(successor_ids->begin(), successor_ids->end(), block_id) == successor_ids->end()) {
-        successor_ids->push_back(block_id);
-    }
-    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) == predecessor_ids->end()) {
-        predecessor_ids->push_back(predecessor_id);
-    }
-}
-
 static void control_flow_graph_add_successor_edge(size_t block_id, size_t successor_id) {
     std::vector<size_t>* successor_ids = &GET_CFG_BLOCK(block_id).successor_ids;
     std::vector<size_t>* predecessor_ids;
@@ -1050,24 +1030,70 @@ static void control_flow_graph_add_successor_edge(size_t block_id, size_t succes
     }
 }
 
-// TODO split into remove successor and predecessor
-static void control_flow_graph_remove_edge(size_t predecessor_id, size_t successor_id) {
+static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t predecessor_id) {
     std::vector<size_t>* successor_ids;
-    std::vector<size_t>* predecessor_ids;
-    if (successor_id == context->control_flow_graph->exit_id) {
+    std::vector<size_t>* predecessor_ids = &GET_CFG_BLOCK(block_id).predecessor_ids;
+    if (predecessor_id < context->control_flow_graph->exit_id) {
         successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
-        predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
     }
-    else if (predecessor_id != context->control_flow_graph->entry_id) {
-        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
-        predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
+    else if (predecessor_id == context->control_flow_graph->entry_id) {
+        successor_ids = &context->control_flow_graph->entry_successor_ids;
     }
     else {
-        successor_ids = &context->control_flow_graph->entry_successor_ids;
+        RAISE_INTERNAL_ERROR;
+    }
+    if (std::find(successor_ids->begin(), successor_ids->end(), block_id) == successor_ids->end()) {
+        successor_ids->push_back(block_id);
+    }
+    if (std::find(predecessor_ids->begin(), predecessor_ids->end(), predecessor_id) == predecessor_ids->end()) {
+        predecessor_ids->push_back(predecessor_id);
+    }
+}
+
+static void control_flow_graph_remove_successor_edge(size_t block_id, size_t successor_id, bool is_reachable) {
+    std::vector<size_t>* successor_ids = &GET_CFG_BLOCK(block_id).successor_ids;
+    std::vector<size_t>* predecessor_ids;
+    if (successor_id < context->control_flow_graph->exit_id) {
         predecessor_ids = &GET_CFG_BLOCK(successor_id).predecessor_ids;
     }
+    else if (successor_id == context->control_flow_graph->exit_id) {
+        predecessor_ids = &context->control_flow_graph->exit_predecessor_ids;
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
+    }
+    if (is_reachable) {
+        for (size_t i = successor_ids->size(); i-- > 0;) {
+            if ((*successor_ids)[i] == successor_id) {
+                std::swap((*successor_ids)[i], successor_ids->back());
+                successor_ids->pop_back();
+                break;
+            }
+        }
+    }
+    for (size_t i = predecessor_ids->size(); i-- > 0;) {
+        if ((*predecessor_ids)[i] == block_id) {
+            std::swap((*predecessor_ids)[i], predecessor_ids->back());
+            predecessor_ids->pop_back();
+            break;
+        }
+    }
+}
+
+static void control_flow_graph_remove_predecessor_edge(size_t block_id, size_t predecessor_id) {
+    std::vector<size_t>* successor_ids;
+    std::vector<size_t>* predecessor_ids = &GET_CFG_BLOCK(block_id).predecessor_ids;
+    if (predecessor_id < context->control_flow_graph->exit_id) {
+        successor_ids = &GET_CFG_BLOCK(predecessor_id).successor_ids;
+    }
+    else if (predecessor_id == context->control_flow_graph->entry_id) {
+        successor_ids = &context->control_flow_graph->entry_successor_ids;
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
+    }
     for (size_t i = successor_ids->size(); i-- > 0;) {
-        if ((*successor_ids)[i] == successor_id) {
+        if ((*successor_ids)[i] == block_id) {
             std::swap((*successor_ids)[i], successor_ids->back());
             successor_ids->pop_back();
             break;
@@ -1094,10 +1120,12 @@ static void control_flow_graph_remove_empty_block(size_t block_id, bool is_reach
                 }
             }
         }
-        control_flow_graph_remove_edge(block_id, successor_id);
+        control_flow_graph_remove_successor_edge(block_id, successor_id, is_reachable);
     }
-    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-        control_flow_graph_remove_edge(predecessor_id, block_id);
+    if (is_reachable) {
+        for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+            control_flow_graph_remove_predecessor_edge(block_id, predecessor_id);
+        }
     }
     GET_CFG_BLOCK(block_id).instructions_front_index = context->control_flow_graph->exit_id;
     GET_CFG_BLOCK(block_id).instructions_back_index = context->control_flow_graph->exit_id;
@@ -1154,6 +1182,8 @@ static void eliminate_unreachable_code_empty_block(size_t block_id) {
     }
     GET_CFG_BLOCK(block_id).size = 0;
     control_flow_graph_remove_empty_block(block_id, false);
+    GET_CFG_BLOCK(block_id).successor_ids.clear();
+    GET_CFG_BLOCK(block_id).predecessor_ids.clear();
 }
 
 static void eliminate_unreachable_code_jump_instructions(size_t block_id) {
