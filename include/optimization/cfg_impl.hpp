@@ -1,18 +1,15 @@
-#if defined(__LEVEL_1__) && defined(__LEVEL_2__)
-#define _OPTIMIZATION_CFG_IMPL_HPP
-#endif
-
 #ifndef _OPTIMIZATION_CFG_IMPL_HPP
 #define _OPTIMIZATION_CFG_IMPL_HPP
 
-#if defined(__LEVEL_1__) || defined(__LEVEL_2__)
+#ifdef __OPTIM_LEVEL__
+#if __OPTIM_LEVEL__ >= 1 && __OPTIM_LEVEL__ <= 2
 
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
 #define GET_INSTRUCTION(X) (*context->p_instructions)[X]
 #define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
 #endif
 
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
 #define AST_INSTRUCTION TacInstruction
 #endif
 
@@ -154,7 +151,7 @@ static void control_flow_graph_remove_block_instruction(size_t instruction_index
     }
 }
 
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
 static void control_flow_graph_initialize_label_block(TacLabel* node) {
     context->control_flow_graph->label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
@@ -163,7 +160,7 @@ static void control_flow_graph_initialize_label_block(TacLabel* node) {
 static void control_flow_graph_initialize_block(size_t instruction_index, size_t& instructions_back_index) {
     AST_INSTRUCTION* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
         case AST_T::TacLabel_t:
 #endif
         {
@@ -172,13 +169,13 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
                 ControlFlowBlock block {0, instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
             control_flow_graph_initialize_label_block(static_cast<TacLabel*>(node));
 #endif
             instructions_back_index = instruction_index;
             break;
         }
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
         case AST_T::TacReturn_t:
         case AST_T::TacJump_t:
         case AST_T::TacJumpIfZero_t:
@@ -196,7 +193,7 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
     }
 }
 
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
 static void control_flow_graph_initialize_jump_edges(TacJump* node, size_t block_id) {
     control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
 }
@@ -215,12 +212,12 @@ static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZer
 static void control_flow_graph_initialize_edges(size_t block_id) {
     AST_INSTRUCTION* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
         case AST_T::TacReturn_t:
 #endif
             control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->exit_id);
             break;
-#ifdef __LEVEL_1__
+#if __OPTIM_LEVEL__ == 1
         case AST_T::TacJump_t:
             control_flow_graph_initialize_jump_edges(static_cast<TacJump*>(node), block_id);
             break;
@@ -269,5 +266,6 @@ static void control_flow_graph_initialize() {
     }
 }
 
+#endif
 #endif
 #endif

@@ -28,11 +28,11 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Three address code optimization
 
-#ifndef __LEVEL_1__
-#define __LEVEL_1__
+#ifndef __OPTIM_LEVEL__
+#define __OPTIM_LEVEL__ 1
 #undef _OPTIMIZATION_CFG_IMPL_HPP
 #include "optimization/cfg_impl.hpp"
-#undef __LEVEL_1__
+#undef __OPTIM_LEVEL__
 #endif
 
 static void set_instruction(std::unique_ptr<TacInstruction>&& instruction, size_t instruction_index) {
