@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <inttypes.h>
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 #include "util/throw.hpp"
@@ -1101,6 +1102,75 @@ static void fold_constants_list_instructions() {
 
 // Copy propagation
 
+// TODO
+
+static void propagate_copies_control_flow_graph() {
+    if (!context->copy_instruction_index_set->empty()) {
+        context->copy_instruction_index_set->clear();
+    }
+    if (context->copy_open_list_block_ids->size() < context->control_flow_graph->blocks.size()) {
+        context->copy_open_list_block_ids->resize(context->control_flow_graph->blocks.size());
+    }
+    std::fill(context->copy_open_list_block_ids->begin(),
+        context->copy_open_list_block_ids->begin() + context->control_flow_graph->blocks.size(),
+        context->control_flow_graph->exit_id);
+    // TODO fill copy_open_list_block_ids in reverse postorder
+    for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+        if (GET_CFG_BLOCK(block_id).size > 0) {
+            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+                if (GET_INSTRUCTION(instruction_index)
+                    && GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
+                    context->copy_instruction_index_set->insert(instruction_index);
+                }
+            }
+            (*context->copy_open_list_block_ids)[block_id] = block_id;
+        }
+    }
+    size_t copy_open_list_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
+
+    // TODO annotate all blocks with all copies
+    for (size_t copy_open_list_block_ids_index = 0;
+         copy_open_list_block_ids_index <= copy_open_list_block_ids_back_index; ++copy_open_list_block_ids_index) {
+        if (copy_open_list_block_ids_index == context->control_flow_graph->exit_id) {
+            continue;
+        }
+        // block = take_first(worklist)
+        size_t block_id = (*context->copy_open_list_block_ids)[copy_open_list_block_ids_index];
+        bool is_fixed_point = false;
+        //  old_annotation = get_block_annotation(block.id)
+        //  incoming_copies = meet(block, all_copies)
+        //  transfer(block, incoming_copies)
+        if (!is_fixed_point) {
+            for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+                if (successor_id < context->control_flow_graph->exit_id) {
+                    for (size_t copy_open_list_successor_ids_index = copy_open_list_block_ids_index;
+                         copy_open_list_successor_ids_index <= copy_open_list_block_ids_back_index;
+                         ++copy_open_list_successor_ids_index) {
+                        if (successor_id == (*context->copy_open_list_block_ids)[copy_open_list_successor_ids_index]) {
+                            goto Lelse;
+                        }
+                    }
+                    copy_open_list_block_ids_back_index++;
+                    if (copy_open_list_block_ids_back_index == context->copy_open_list_block_ids->size()) {
+                        context->copy_open_list_block_ids->push_back(successor_id);
+                    }
+                    else {
+                        (*context->copy_open_list_block_ids)[copy_open_list_block_ids_back_index] = successor_id;
+                    }
+                Lelse:;
+                }
+                else if (successor_id == context->control_flow_graph->exit_id) {
+                    continue;
+                }
+                else {
+                    RAISE_INTERNAL_ERROR;
+                }
+            }
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Unreachable code elimination
@@ -1246,6 +1316,7 @@ static void optimize_function_top_level(TacFunction* node) {
             }
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
                 // printf("--propagate-copies\n"); // TODO rm
+                propagate_copies_control_flow_graph();
             }
             if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
                 // printf("--eliminate-dead-stores\n"); // TODO rm
@@ -1257,12 +1328,11 @@ static void optimize_function_top_level(TacFunction* node) {
 }
 
 static void optimize_top_level(TacTopLevel* node) {
-    switch (node->type()) {
-        case AST_T::TacFunction_t:
-            optimize_function_top_level(static_cast<TacFunction*>(node));
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (node->type() == AST_T::TacFunction_t) {
+        optimize_function_top_level(static_cast<TacFunction*>(node));
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1279,6 +1349,8 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
         if (context->enabled_optimizations[COPY_PROPAGATION]) {
+            context->copy_open_list_block_ids = std::make_unique<std::vector<size_t>>();
+            context->copy_instruction_index_set = std::make_unique<std::unordered_set<size_t>>();
         }
         if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
             context->reachable_blocks = std::make_unique<std::vector<bool>>();

@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "ast/interm_ast.hpp"
@@ -46,6 +47,8 @@ struct OptimTacContext {
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Constant folding
     // Copy propagation
+    std::unique_ptr<std::vector<size_t>> copy_open_list_block_ids;
+    std::unique_ptr<std::unordered_set<size_t>> copy_instruction_index_set;
     // Unreachable code elimination
     std::unique_ptr<std::vector<bool>> reachable_blocks;
     // Dead store elimination
