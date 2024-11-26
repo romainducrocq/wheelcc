@@ -38,6 +38,17 @@ struct ControlFlowGraph {
     std::unordered_map<std::string, size_t> label_id_map;
 };
 
+struct UnreachableCode {
+    std::vector<bool> reachable_blocks;
+};
+
+struct CopyPropagation {
+    std::vector<size_t> open_block_ids;
+    std::unordered_set<size_t> all_copy_index_set;
+    std::vector<std::unordered_set<size_t>> reaching_index_set_blocks;
+    std::vector<std::unordered_set<size_t>> reaching_index_set_instructions;
+};
+
 struct OptimTacContext {
     OptimTacContext(uint8_t optim_1_mask);
 
@@ -47,10 +58,9 @@ struct OptimTacContext {
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Constant folding
     // Copy propagation
-    std::unique_ptr<std::vector<size_t>> copy_open_list_block_ids;
-    std::unique_ptr<std::unordered_set<size_t>> copy_instruction_index_set;
+    std::unique_ptr<CopyPropagation> copy_propagation;
     // Unreachable code elimination
-    std::unique_ptr<std::vector<bool>> reachable_blocks;
+    std::unique_ptr<UnreachableCode> unreachable_code;
     // Dead store elimination
 };
 

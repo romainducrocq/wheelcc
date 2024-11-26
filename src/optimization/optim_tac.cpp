@@ -1104,15 +1104,57 @@ static void fold_constants_list_instructions() {
 
 // TODO
 
+// transfer(block, initial_reaching_copies):
+//     current_reaching_copies = initial_reaching_copies
+//     for instruction in block.instructions:
+//         annotate_instruction(instruction, current_reaching_copies)
+//         match instruction with
+//         | Copy(src, dst) ->
+//             if Copy(dst, src) is in current_reaching_copies:
+//                 continue
+//             for copy in current_reaching_copies:
+//                 if copy.src == dst || copy.dst == dst:
+//                     current_reaching_copies.remove(copy)
+//             current_reaching_copies.add(instruction)
+//         | FunCall(fun_name, args, dst) ->
+//             for copy in current_reaching_copies:
+//                 if copy.src is static || copy.dst is static
+//                     || copy.src == dst || copy.dst == dst:
+//                     current_reaching_copies.remove(copy)
+//         | Unary(operator, src, dst) ->
+//             for copy in current_reaching_copies:
+//                 if copy.src == dst || copy.dst == dst:
+//                     current_reaching_copies.remove(copy)
+//         | Binary(operator, src1, src2, dst) ->
+//             --same as Unary--
+//         | _ -> continue
+//     annotate_block(block.id, current_reaching_copies)
+
+// meet(block, all_copies):
+//     incoming_copies = all_copies
+//     for pred_id in block.predecessors:
+//         match pred_id with
+//         | ENTRY -> return {}
+//         | BlockId(id) ->
+//             pred_out_copies = get_block_annotation(pred_id)
+//             incoming_copies = intersection(incoming_copies, pred_out_copies)
+//         | EXIT -> fail("Malformed control-flow graph")
+//     return incoming_copies
+
+// old_annotation = get_block_annotation(block.id)
+// incoming_copies = meet(block, all_copies)
+// transfer(block, incoming_copies)
+// if old_annotation != get_block_annotation(block.id):
+
 static void propagate_copies_control_flow_graph() {
-    if (!context->copy_instruction_index_set->empty()) {
-        context->copy_instruction_index_set->clear();
+    if (!context->copy_propagation->all_copy_index_set.empty()) {
+        context->copy_propagation->all_copy_index_set.clear();
     }
-    if (context->copy_open_list_block_ids->size() < context->control_flow_graph->blocks.size()) {
-        context->copy_open_list_block_ids->resize(context->control_flow_graph->blocks.size());
+    if (context->copy_propagation->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
+        context->copy_propagation->open_block_ids.resize(context->control_flow_graph->blocks.size());
     }
-    std::fill(context->copy_open_list_block_ids->begin(),
-        context->copy_open_list_block_ids->begin() + context->control_flow_graph->blocks.size(),
+    std::fill(context->copy_propagation->open_block_ids.begin(),
+        context->copy_propagation->open_block_ids.begin() + context->control_flow_graph->blocks.size(),
         context->control_flow_graph->exit_id);
     // TODO fill copy_open_list_block_ids in reverse postorder
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
@@ -1121,22 +1163,21 @@ static void propagate_copies_control_flow_graph() {
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)
                     && GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
-                    context->copy_instruction_index_set->insert(instruction_index);
+                    context->copy_propagation->all_copy_index_set.insert(instruction_index);
                 }
             }
-            (*context->copy_open_list_block_ids)[block_id] = block_id;
+            context->copy_propagation->open_block_ids[block_id] = block_id;
         }
     }
-    size_t copy_open_list_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
+    size_t open_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
 
     // TODO annotate all blocks with all copies
-    for (size_t copy_open_list_block_ids_index = 0;
-         copy_open_list_block_ids_index <= copy_open_list_block_ids_back_index; ++copy_open_list_block_ids_index) {
-        if (copy_open_list_block_ids_index == context->control_flow_graph->exit_id) {
+    for (size_t i = 0; i <= open_block_ids_back_index; ++i) {
+        size_t block_id = context->copy_propagation->open_block_ids[i];
+        if (block_id == context->control_flow_graph->exit_id) {
             continue;
         }
         // block = take_first(worklist)
-        size_t block_id = (*context->copy_open_list_block_ids)[copy_open_list_block_ids_index];
         bool is_fixed_point = false;
         //  old_annotation = get_block_annotation(block.id)
         //  incoming_copies = meet(block, all_copies)
@@ -1144,26 +1185,21 @@ static void propagate_copies_control_flow_graph() {
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
-                    for (size_t copy_open_list_successor_ids_index = copy_open_list_block_ids_index;
-                         copy_open_list_successor_ids_index <= copy_open_list_block_ids_back_index;
-                         ++copy_open_list_successor_ids_index) {
-                        if (successor_id == (*context->copy_open_list_block_ids)[copy_open_list_successor_ids_index]) {
+                    for (size_t j = i; j <= open_block_ids_back_index; ++j) {
+                        if (successor_id == context->copy_propagation->open_block_ids[j]) {
                             goto Lelse;
                         }
                     }
-                    copy_open_list_block_ids_back_index++;
-                    if (copy_open_list_block_ids_back_index == context->copy_open_list_block_ids->size()) {
-                        context->copy_open_list_block_ids->push_back(successor_id);
+                    open_block_ids_back_index++;
+                    if (open_block_ids_back_index == context->copy_propagation->open_block_ids.size()) {
+                        context->copy_propagation->open_block_ids.push_back(successor_id);
                     }
                     else {
-                        (*context->copy_open_list_block_ids)[copy_open_list_block_ids_back_index] = successor_id;
+                        context->copy_propagation->open_block_ids[open_block_ids_back_index] = successor_id;
                     }
                 Lelse:;
                 }
-                else if (successor_id == context->control_flow_graph->exit_id) {
-                    continue;
-                }
-                else {
+                else if (successor_id != context->control_flow_graph->exit_id) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
@@ -1184,8 +1220,8 @@ static void eliminate_unreachable_code_successor_reachable_blocks(size_t block_i
 }
 
 static void eliminate_unreachable_code_reachable_block(size_t block_id) {
-    if (block_id < context->control_flow_graph->exit_id && !(*context->reachable_blocks)[block_id]) {
-        (*context->reachable_blocks)[block_id] = true;
+    if (block_id < context->control_flow_graph->exit_id && !context->unreachable_code->reachable_blocks[block_id]) {
+        context->unreachable_code->reachable_blocks[block_id] = true;
         eliminate_unreachable_code_successor_reachable_blocks(block_id);
     }
 }
@@ -1239,11 +1275,11 @@ static void eliminate_unreachable_code_label_block(size_t block_id, size_t previ
 }
 
 static void eliminate_unreachable_code_control_flow_graph() {
-    if (context->reachable_blocks->size() < context->control_flow_graph->blocks.size()) {
-        context->reachable_blocks->resize(context->control_flow_graph->blocks.size());
+    if (context->unreachable_code->reachable_blocks.size() < context->control_flow_graph->blocks.size()) {
+        context->unreachable_code->reachable_blocks.resize(context->control_flow_graph->blocks.size());
     }
-    std::fill(context->reachable_blocks->begin(),
-        context->reachable_blocks->begin() + context->control_flow_graph->blocks.size(), false);
+    std::fill(context->unreachable_code->reachable_blocks.begin(),
+        context->unreachable_code->reachable_blocks.begin() + context->control_flow_graph->blocks.size(), false);
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
@@ -1251,7 +1287,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
     size_t block_id = context->control_flow_graph->blocks.size();
     size_t next_block_id = context->control_flow_graph->exit_id;
     while (block_id-- > 0) {
-        if ((*context->reachable_blocks)[block_id]) {
+        if (context->unreachable_code->reachable_blocks[block_id]) {
             next_block_id = block_id;
             break;
         }
@@ -1260,7 +1296,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
         }
     }
     while (block_id-- > 0) {
-        if ((*context->reachable_blocks)[block_id]) {
+        if (context->unreachable_code->reachable_blocks[block_id]) {
             eliminate_unreachable_code_jump_block(block_id, next_block_id);
             next_block_id = block_id;
         }
@@ -1270,9 +1306,9 @@ static void eliminate_unreachable_code_control_flow_graph() {
     }
 
     for (auto& label_id : context->control_flow_graph->label_id_map) {
-        if ((*context->reachable_blocks)[label_id.second]) {
+        if (context->unreachable_code->reachable_blocks[label_id.second]) {
             for (block_id = label_id.second; block_id-- > 0;) {
-                if ((*context->reachable_blocks)[block_id]) {
+                if (context->unreachable_code->reachable_blocks[block_id]) {
                     next_block_id = block_id;
                     goto Lelse;
                 }
@@ -1349,11 +1385,10 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
         if (context->enabled_optimizations[COPY_PROPAGATION]) {
-            context->copy_open_list_block_ids = std::make_unique<std::vector<size_t>>();
-            context->copy_instruction_index_set = std::make_unique<std::unordered_set<size_t>>();
+            context->copy_propagation = std::make_unique<CopyPropagation>();
         }
         if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
-            context->reachable_blocks = std::make_unique<std::vector<bool>>();
+            context->unreachable_code = std::make_unique<UnreachableCode>();
         }
         if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
         }
