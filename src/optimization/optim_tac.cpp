@@ -1147,29 +1147,58 @@ static void fold_constants_list_instructions() {
 // if old_annotation != get_block_annotation(block.id):
 
 static void propagate_copies_control_flow_graph() {
-    if (!context->copy_propagation->all_copy_index_set.empty()) {
-        context->copy_propagation->all_copy_index_set.clear();
-    }
     if (context->copy_propagation->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->copy_propagation->open_block_ids.resize(context->control_flow_graph->blocks.size());
     }
-    std::fill(context->copy_propagation->open_block_ids.begin(),
-        context->copy_propagation->open_block_ids.begin() + context->control_flow_graph->blocks.size(),
-        context->control_flow_graph->exit_id);
-    // TODO fill copy_open_list_block_ids in reverse postorder
+    if (context->copy_propagation->reaching_copy_index_set_blocks.size() < context->control_flow_graph->blocks.size()) {
+        context->copy_propagation->reaching_copy_index_set_blocks.resize(context->control_flow_graph->blocks.size());
+    }
+    if (context->copy_propagation->reaching_copy_index_set_instructions.size() < context->p_instructions->size()) {
+        context->copy_propagation->reaching_copy_index_set_instructions.resize(context->p_instructions->size());
+    }
+    context->copy_propagation->all_copy_index_set.clear();
+    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index)) {
+            if (GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
+                context->copy_propagation->all_copy_index_set.insert(instruction_index);
+            }
+            context->copy_propagation->reaching_copy_index_set_instructions[instruction_index].clear();
+        }
+    }
+    // TODO fill copy_propagation->open_block_ids in reverse postorder
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
-            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
-                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
-                if (GET_INSTRUCTION(instruction_index)
-                    && GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
-                    context->copy_propagation->all_copy_index_set.insert(instruction_index);
-                }
-            }
             context->copy_propagation->open_block_ids[block_id] = block_id;
+            {
+                context->copy_propagation->reaching_copy_index_set_blocks[block_id].clear();
+                std::unordered_set<size_t> reaching_index_set_block(
+                    context->copy_propagation->all_copy_index_set.begin(),
+                    context->copy_propagation->all_copy_index_set.end());
+                
+            }
+        }
+        else {
+            context->copy_propagation->open_block_ids[block_id] = context->control_flow_graph->exit_id;
         }
     }
     size_t open_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
+
+
+    // for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+    //     if (GET_CFG_BLOCK(block_id).size > 0) {
+    //         for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+    //              instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+    //             if (GET_INSTRUCTION(instruction_index)
+    //                 && GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
+    //                 context->copy_propagation->all_copy_index_set.insert(instruction_index);
+    //                 // context->copy_propagation->reaching_index_set_instructions[instruction_index].clear();
+    //             }
+    //         }
+    //         // context->copy_propagation->open_block_ids[block_id] = block_id;
+    //         // context->copy_propagation->reaching_index_set_blocks[block_id].clear();
+    //     }
+    // }
+    // size_t open_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
 
     // TODO annotate all blocks with all copies
     for (size_t i = 0; i <= open_block_ids_back_index; ++i) {

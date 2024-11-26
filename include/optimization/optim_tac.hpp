@@ -45,8 +45,8 @@ struct UnreachableCode {
 struct CopyPropagation {
     std::vector<size_t> open_block_ids;
     std::unordered_set<size_t> all_copy_index_set;
-    std::vector<std::unordered_set<size_t>> reaching_index_set_blocks;
-    std::vector<std::unordered_set<size_t>> reaching_index_set_instructions;
+    std::vector<std::unordered_set<size_t>> reaching_copy_index_set_blocks;
+    std::vector<std::unordered_set<size_t>> reaching_copy_index_set_instructions;
 };
 
 struct OptimTacContext {
