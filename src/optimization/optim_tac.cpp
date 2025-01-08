@@ -1151,6 +1151,21 @@ static void fold_constants_list_instructions() {
 //// transfer(block_id, incoming_copies)
 // if old_annotation != get_block_annotation(block.id):
 
+// while worklist is not empty:
+//     block = take_first(worklist)
+//     old_annotation = get_block_annotation(block.id)
+//     incoming_copies = meet(block, all_copies)
+//     transfer(block, incoming_copies)
+//     if old_annotation != get_block_annotation(block.id):
+//         for successor_id in block.successors:
+//             match successor_id with
+//             | EXIT -> continue
+//             | ENTRY -> fail("Malformed control-flow graph")
+//             | BlockId(id) ->
+//                 successor = get_block_by_id(successor_id)
+//                 if successor is not in worklist:
+//                     worklist.append(successor)
+
 /*
 all_copy_indices
 = vector of indices of copy instructions
@@ -1232,6 +1247,41 @@ static void propagate_copies_control_flow_graph() {
             context->copy_propagation->reaching_copy_instruction_sets.begin() + reaching_copy_instruction_size, false);
     }
     size_t open_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
+
+    for (size_t i = 0; i <= open_block_ids_back_index; ++i) {
+        //     // block = take_first(worklist)
+        size_t block_id = context->copy_propagation->open_block_ids[i];
+        if (block_id == context->control_flow_graph->exit_id) {
+            continue;
+        }
+        bool is_fixed_point = false;
+        //     //  old_annotation = get_block_annotation(block.id)
+        //     //  incoming_copies = meet(block, all_copies)
+        //     //  transfer(block, incoming_copies)
+        if (!is_fixed_point) {
+            for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+                if (successor_id < context->control_flow_graph->exit_id) {
+                    for (size_t j = i; j <= open_block_ids_back_index; ++j) {
+                        if (successor_id == context->copy_propagation->open_block_ids[j]) {
+                            goto Lelse;
+                        }
+                    }
+                    open_block_ids_back_index++;
+                    if (open_block_ids_back_index < context->copy_propagation->open_block_ids.size()) {
+                        context->copy_propagation->open_block_ids[open_block_ids_back_index] = successor_id;
+                    }
+                    else {
+                        context->copy_propagation->open_block_ids.push_back(successor_id);
+                    }
+                Lelse:;
+                }
+                else if (successor_id != context->control_flow_graph->exit_id) {
+                    RAISE_INTERNAL_ERROR;
+                }
+            }
+        }
+    }
+
 
     // size_t all_copy_size = 0;
     // size_t all_reaching_copy_instruction_indices_size = 0;
