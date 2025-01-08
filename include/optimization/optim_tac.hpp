@@ -49,10 +49,10 @@ struct CopyPropagation {
     // size = (all copies)
     // list of copy instruction indices
     std::vector<size_t> all_copy_indices;
-    // number of blocks that can be modified by a reaching copy (all except removed)
-    size_t reaching_copy_block_set_size;
-    // number of instructions that can be modified by a reaching copy (part 1 = copy, unary, binary)
-    size_t reaching_copy_instruction_set_size;
+    // // number of blocks that can be modified by a reaching copy (all except removed)
+    // size_t reaching_copy_block_set_size;
+    // // number of instructions that can be modified by a reaching copy (part 1 = copy, unary, binary)
+    // size_t reaching_copy_instruction_set_size;
     // size = context->control_flow_graph->bloks.size()
     // indices of 1D reaching copy block flat mask by block indices
     std::vector<size_t> reaching_copy_block_by_indices;

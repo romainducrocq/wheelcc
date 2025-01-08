@@ -1168,6 +1168,74 @@ static void propagate_copies_control_flow_graph() {
     if (context->copy_propagation->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->copy_propagation->open_block_ids.resize(context->control_flow_graph->blocks.size());
     }
+    if (context->copy_propagation->reaching_copy_block_by_indices.size() < context->control_flow_graph->blocks.size()) {
+        context->copy_propagation->reaching_copy_block_by_indices.resize(context->control_flow_graph->blocks.size());
+    }
+    if (context->copy_propagation->reaching_copy_instruction_by_indices.size() < context->p_instructions->size()) {
+        context->copy_propagation->reaching_copy_instruction_by_indices.resize(context->p_instructions->size());
+    }
+    size_t all_copy_indices_size = 0;
+    {
+        size_t all_reaching_copy_block_size = 0;
+        size_t all_reaching_copy_instruction_size = 0;
+        // TODO fill copy_propagation->open_block_ids in reverse postorder
+        for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+            if (GET_CFG_BLOCK(block_id).size > 0) {
+                context->copy_propagation->open_block_ids[block_id] = block_id; // TODO
+                for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+                     instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+                    if (GET_INSTRUCTION(instruction_index)) {
+                        switch (GET_INSTRUCTION(instruction_index)->type()) {
+                            case AST_T::TacCopy_t: {
+                                if (all_copy_indices_size < context->copy_propagation->all_copy_indices.size()) {
+                                    context->copy_propagation->all_copy_indices[all_copy_indices_size] =
+                                        instruction_index;
+                                }
+                                else {
+                                    context->copy_propagation->all_copy_indices.push_back(instruction_index);
+                                }
+                                context->copy_propagation->reaching_copy_instruction_by_indices[instruction_index] =
+                                    all_reaching_copy_instruction_size;
+                                all_copy_indices_size++;
+                                all_reaching_copy_instruction_size++;
+                                break;
+                            }
+                            case AST_T::TacUnary_t:
+                            case AST_T::TacBinary_t: {
+                                context->copy_propagation->reaching_copy_instruction_by_indices[instruction_index] =
+                                    all_reaching_copy_instruction_size;
+                                all_reaching_copy_instruction_size++;
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                }
+                context->copy_propagation->reaching_copy_block_by_indices[block_id] = all_reaching_copy_block_size;
+                all_reaching_copy_block_size++;
+            }
+            else {
+                context->copy_propagation->open_block_ids[block_id] = context->control_flow_graph->exit_id; // TODO
+            }
+        }
+        all_reaching_copy_block_size *= all_copy_indices_size;
+        all_reaching_copy_instruction_size *= all_copy_indices_size;
+        if (context->copy_propagation->reaching_copy_block_flat_sets.size() < all_reaching_copy_block_size) {
+            context->copy_propagation->reaching_copy_block_flat_sets.resize(all_reaching_copy_block_size);
+        }
+        if (context->copy_propagation->reaching_copy_instruction_flat_sets.size()
+            < all_reaching_copy_instruction_size) {
+            context->copy_propagation->reaching_copy_instruction_flat_sets.resize(all_reaching_copy_instruction_size);
+        }
+        std::fill(context->copy_propagation->reaching_copy_block_flat_sets.begin(),
+            context->copy_propagation->reaching_copy_block_flat_sets.begin() + all_reaching_copy_block_size, true);
+        std::fill(context->copy_propagation->reaching_copy_instruction_flat_sets.begin(),
+            context->copy_propagation->reaching_copy_instruction_flat_sets.begin() + all_reaching_copy_instruction_size,
+            false);
+    }
+    size_t open_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
+
     // size_t all_copy_indices_size = 0;
     // size_t all_reaching_copy_instruction_indices_size = 0;
     // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
