@@ -55,22 +55,22 @@ struct CopyPropagation {
     // size_t reaching_copy_instruction_set_size;
     // size = context->control_flow_graph->bloks.size()
     // indices of 1D reaching copy block flat mask by block indices
-    std::vector<size_t> reaching_copy_block_by_indices;
+    std::vector<size_t> reaching_copy_block_by_is;
     // size = context->p_instructions->size()
     // indices of 1D reaching copy instruction flat mask by instruction indices
-    std::vector<size_t> reaching_copy_instruction_by_indices;
+    std::vector<size_t> reaching_copy_instruction_by_is;
     // size = (reaching_copy_block_set_size) * (all_copy_indices.size())
     // flat array of boolean masks on all copy indices for all blocks that can be modified by a reaching copy
     // example: reaching_copy_block_flatmasks[j * n + i]:
     //   i element of mask array for block j = reaching_copy_block_by_indices[instruction_index],
     //    with n = size of all_copy_indices and i in [0, reaching_copy_block_set_size[
-    std::vector<bool> reaching_copy_block_flat_sets;
+    std::vector<bool> reaching_copy_block_sets;
     // size = (reaching_copy_instruction_set_size) * (all_copy_indices.size())
     // flat array of boolean masks on all copy indices for all instructions that can be modified by a reaching copy
     // example: reaching_copy_instruction_flatmasks[j * n + i]
     //   i element of mask array for instruction j = reaching_copy_instruction_by_indices[instruction_index],
     //   with n = size of all_copy_indices and i in [0, reaching_copy_instruction_set_size[
-    std::vector<bool> reaching_copy_instruction_flat_sets;
+    std::vector<bool> reaching_copy_instruction_sets;
 };
 
 struct OptimTacContext {
