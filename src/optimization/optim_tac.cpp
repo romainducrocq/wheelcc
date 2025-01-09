@@ -1179,6 +1179,20 @@ reaching_copy_instruction_masks
 reaching_copy_instruction_masks)
 */
 
+static void propagate_copies_meet_operator(size_t block_id) {
+    for (;;) {
+        if (block_id < context->control_flow_graph->exit_id) {
+            // TODO
+        }
+        else if (block_id == context->control_flow_graph->entry_id) {
+            // TODO
+        }
+        else {
+            RAISE_INTERNAL_ERROR;
+        }
+    }
+}
+
 static void propagate_copies_control_flow_graph() {
     if (context->copy_propagation->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->copy_propagation->open_block_ids.resize(context->control_flow_graph->blocks.size());
@@ -1246,33 +1260,35 @@ static void propagate_copies_control_flow_graph() {
         std::fill(context->copy_propagation->reaching_copy_instruction_sets.begin(),
             context->copy_propagation->reaching_copy_instruction_sets.begin() + reaching_copy_instruction_size, false);
     }
-    size_t open_block_ids_back_index = context->control_flow_graph->blocks.size() - 1;
+    size_t open_block_ids_size = context->control_flow_graph->blocks.size();
 
-    for (size_t i = 0; i <= open_block_ids_back_index; ++i) {
+    for (size_t i = 0; i < open_block_ids_size; ++i) {
         //     // block = take_first(worklist)
         size_t block_id = context->copy_propagation->open_block_ids[i];
         if (block_id == context->control_flow_graph->exit_id) {
             continue;
         }
-        bool is_fixed_point = false;
         //     //  old_annotation = get_block_annotation(block.id)
+        propagate_copies_meet_operator(block_id);
+        bool is_fixed_point = false;
+        // bool is_fixed_point = propagate_copies_transfer_function(block_id);
         //     //  incoming_copies = meet(block, all_copies)
         //     //  transfer(block, incoming_copies)
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
-                    for (size_t j = i; j <= open_block_ids_back_index; ++j) {
+                    for (size_t j = i; j < open_block_ids_size; ++j) {
                         if (successor_id == context->copy_propagation->open_block_ids[j]) {
                             goto Lelse;
                         }
                     }
-                    open_block_ids_back_index++;
-                    if (open_block_ids_back_index < context->copy_propagation->open_block_ids.size()) {
-                        context->copy_propagation->open_block_ids[open_block_ids_back_index] = successor_id;
+                    if (open_block_ids_size < context->copy_propagation->open_block_ids.size()) {
+                        context->copy_propagation->open_block_ids[open_block_ids_size] = successor_id;
                     }
                     else {
                         context->copy_propagation->open_block_ids.push_back(successor_id);
                     }
+                    open_block_ids_size++;
                 Lelse:;
                 }
                 else if (successor_id != context->control_flow_graph->exit_id) {
