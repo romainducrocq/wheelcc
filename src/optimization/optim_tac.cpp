@@ -1179,19 +1179,57 @@ reaching_copy_instruction_masks
 reaching_copy_instruction_masks)
 */
 
-static void propagate_copies_meet_operator(size_t block_id) {
-    for (;;) {
-        if (block_id < context->control_flow_graph->exit_id) {
+static size_t get_reaching_copy_block_index(size_t block_id) {
+    return context->copy_propagation->reaching_copy_block_by_is[block_id];
+}
+
+static size_t get_reaching_copy_instruction_index(size_t instruction_index) {
+    return context->copy_propagation->reaching_copy_instruction_by_is[instruction_index];
+}
+
+// meet(block, all_copies):
+static void propagate_copies_meet_operator(size_t block_id, size_t set_size) {
+    //     incoming_copies = all_copies
+    size_t instruction_set_front_index =
+        get_reaching_copy_instruction_index(GET_CFG_BLOCK(block_id).instructions_front_index) * set_size;
+    size_t instruction_set_size = instruction_set_front_index + set_size;
+    std::fill(context->copy_propagation->reaching_copy_instruction_sets.begin() + instruction_set_front_index,
+        context->copy_propagation->reaching_copy_instruction_sets.begin() + instruction_set_size, true);
+    //     for pred_id in block.predecessors:
+    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+        //         match pred_id with
+        if (predecessor_id < context->control_flow_graph->exit_id) {
             // TODO
+            //         | BlockId(id) ->
+            //             pred_out_copies = get_block_annotation(pred_id)
+            size_t block_set_front_index = get_reaching_copy_block_index(predecessor_id) * set_size;
+            //             incoming_copies = intersection(incoming_copies, pred_out_copies)
+            for (size_t i = 0; i < set_size; ++i) {
+                //                 block[n-1] instruction[block[n][0]]
+                //                 N false      false = false
+                //                 N true       false  = false
+                //                 Y false      true  = false
+                //                 N true       true   = true
+                if (!context->copy_propagation->reaching_copy_block_sets[block_set_front_index + i]
+                    && context->copy_propagation->reaching_copy_instruction_sets[instruction_set_front_index + i]) {
+                    context->copy_propagation->reaching_copy_instruction_sets[instruction_set_front_index + i] = false;
+                }
+            }
         }
-        else if (block_id == context->control_flow_graph->entry_id) {
-            // TODO
+        else if (predecessor_id == context->control_flow_graph->entry_id) {
+            std::fill(context->copy_propagation->reaching_copy_instruction_sets.begin() + instruction_set_front_index,
+                context->copy_propagation->reaching_copy_instruction_sets.begin() + instruction_set_size, false);
+            break;
         }
         else {
+            //         | EXIT -> fail("Malformed control-flow graph")
             RAISE_INTERNAL_ERROR;
         }
     }
+    //     return incoming_copies
 }
+
+static bool propagate_copies_transfer_function(size_t /*block_id*/) { return false; }
 
 static void propagate_copies_control_flow_graph() {
     if (context->copy_propagation->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
@@ -1257,8 +1295,10 @@ static void propagate_copies_control_flow_graph() {
         }
         std::fill(context->copy_propagation->reaching_copy_block_sets.begin(),
             context->copy_propagation->reaching_copy_block_sets.begin() + reaching_copy_block_size, true);
-        std::fill(context->copy_propagation->reaching_copy_instruction_sets.begin(),
-            context->copy_propagation->reaching_copy_instruction_sets.begin() + reaching_copy_instruction_size, false);
+        // TODO not needed ?
+        // std::fill(context->copy_propagation->reaching_copy_instruction_sets.begin(),
+        //     context->copy_propagation->reaching_copy_instruction_sets.begin() + reaching_copy_instruction_size,
+        //     false);
     }
     size_t open_block_ids_size = context->control_flow_graph->blocks.size();
 
@@ -1269,11 +1309,10 @@ static void propagate_copies_control_flow_graph() {
             continue;
         }
         //     //  old_annotation = get_block_annotation(block.id)
-        propagate_copies_meet_operator(block_id);
-        bool is_fixed_point = false;
-        // bool is_fixed_point = propagate_copies_transfer_function(block_id);
         //     //  incoming_copies = meet(block, all_copies)
+        propagate_copies_meet_operator(block_id, all_copy_size);
         //     //  transfer(block, incoming_copies)
+        bool is_fixed_point = propagate_copies_transfer_function(block_id);
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
