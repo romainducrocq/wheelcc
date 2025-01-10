@@ -1327,12 +1327,14 @@ reaching_copy_instruction_masks)
 // // meet(block, all_copies):
 static void data_flow_analysis_meet_block(size_t block_id) {
     //     incoming_copies = all_copies
-    size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
-    size_t instruction_set_front_index =
-        GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
-    size_t instruction_set_size = instruction_set_front_index + context->data_flow_analysis->set_size;
-    std::fill(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
-        context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size, true);
+    // size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+    // size_t instruction_set_front_index =
+    //     GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
+    // size_t instruction_set_size = instruction_set_front_index + context->data_flow_analysis->set_size;
+    // std::fill(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
+    //     context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size, true);
+    std::fill(context->data_flow_analysis->incoming_set.begin(),
+        context->data_flow_analysis->incoming_set.begin() + context->data_flow_analysis->set_size, true);
     //     for pred_id in block.predecessors:
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         //         match pred_id with
@@ -1348,15 +1350,15 @@ static void data_flow_analysis_meet_block(size_t block_id) {
                 //                 //                 N true       false  = false
                 //                 //                 Y false      true  = false
                 //                 //                 N true       true   = true
-                if (!context->data_flow_analysis->blocks_flat_sets[block_set_front_index + i]
-                    && context->data_flow_analysis->instructions_flat_sets[instruction_set_front_index + i]) {
-                    context->data_flow_analysis->instructions_flat_sets[instruction_set_front_index + i] = false;
+                if (context->data_flow_analysis->incoming_set[i]
+                    && !context->data_flow_analysis->blocks_flat_sets[block_set_front_index + i]) {
+                    context->data_flow_analysis->incoming_set[i] = false;
                 }
             }
         }
         else if (predecessor_id == context->control_flow_graph->entry_id) {
-            std::fill(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
-                context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size, false);
+            std::fill(context->data_flow_analysis->incoming_set.begin(),
+                context->data_flow_analysis->incoming_set.begin() + context->data_flow_analysis->set_size, false);
             break;
         }
         else {
@@ -1464,6 +1466,9 @@ static void data_flow_analysis_initialize() {
     }
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
+    if (context->data_flow_analysis->incoming_set.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->incoming_set.resize(context->data_flow_analysis->set_size);
+    }
     if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
         context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);
     }
