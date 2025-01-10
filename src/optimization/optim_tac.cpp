@@ -1324,8 +1324,12 @@ reaching_copy_instruction_masks)
 #define GET_DFA_BLOCK_INDEX(X) context->data_flow_analysis->block_index_map[X]
 #define GET_DFA_INSTRUCTION_INDEX(X) context->data_flow_analysis->instruction_index_map[X]
 
+static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t block_id) {
+    return 0;
+}
+
 // // meet(block, all_copies):
-static void data_flow_analysis_meet_block(size_t block_id) {
+static bool data_flow_analysis_meet_block(size_t block_id) {
     //     incoming_copies = all_copies
     // size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     // size_t instruction_set_front_index =
@@ -1333,8 +1337,34 @@ static void data_flow_analysis_meet_block(size_t block_id) {
     // size_t instruction_set_size = instruction_set_front_index + context->data_flow_analysis->set_size;
     // std::fill(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
     //     context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size, true);
-    std::fill(context->data_flow_analysis->incoming_set.begin(),
-        context->data_flow_analysis->incoming_set.begin() + context->data_flow_analysis->set_size, true);
+
+    bool is_fixed_point = true;
+    size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+    size_t flat_set_front_index = 0;
+    std::vector<bool>* flat_sets = &context->data_flow_analysis->placeholder_set;
+    for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index)) {
+            // incoming -> instruction 1
+            switch (GET_INSTRUCTION(instruction_index)->type()) {
+                case AST_T::TacCopy_t:
+                case AST_T::TacFunCall_t:
+                case AST_T::TacUnary_t:
+                case AST_T::TacBinary_t: {
+                    flat_set_front_index =
+                        GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
+                    flat_sets = &context->data_flow_analysis->instructions_flat_sets;
+                    is_fixed_point = false;
+                    goto Lelse;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+Lelse:
+    size_t flat_set_size = flat_set_front_index + context->data_flow_analysis->set_size;
+    std::fill(flat_sets->begin() + flat_set_front_index, flat_sets->begin() + flat_set_size, true);
+
     //     for pred_id in block.predecessors:
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         //         match pred_id with
@@ -1350,15 +1380,14 @@ static void data_flow_analysis_meet_block(size_t block_id) {
                 //                 //                 N true       false  = false
                 //                 //                 Y false      true  = false
                 //                 //                 N true       true   = true
-                if (context->data_flow_analysis->incoming_set[i]
+                if ((*flat_sets)[flat_set_front_index + i]
                     && !context->data_flow_analysis->blocks_flat_sets[block_set_front_index + i]) {
-                    context->data_flow_analysis->incoming_set[i] = false;
+                    (*flat_sets)[flat_set_front_index + i] = false;
                 }
             }
         }
         else if (predecessor_id == context->control_flow_graph->entry_id) {
-            std::fill(context->data_flow_analysis->incoming_set.begin(),
-                context->data_flow_analysis->incoming_set.begin() + context->data_flow_analysis->set_size, false);
+            std::fill(flat_sets->begin() + flat_set_front_index, flat_sets->begin() + flat_set_size, false);
             break;
         }
         else {
@@ -1366,8 +1395,118 @@ static void data_flow_analysis_meet_block(size_t block_id) {
             RAISE_INTERNAL_ERROR;
         }
     }
+
+    if (!is_fixed_point) {
+        instruction_index = data_flow_analysis_transfer_block(instruction_index, block_id);
+        flat_set_front_index = GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
+    }
+
+    is_fixed_point = true;
+    size_t block_set_front_index = GET_DFA_BLOCK_INDEX(block_id) * context->data_flow_analysis->set_size;
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if ((*flat_sets)[flat_set_front_index + i]
+            != context->data_flow_analysis->blocks_flat_sets[block_set_front_index + i]) {
+            is_fixed_point = false;
+            break;
+        }
+    }
+    return is_fixed_point;
     //     return incoming_copies
 }
+
+// static bool data_flow_analysis_transfer_instructions(size_t data_index) {}
+
+// static bool data_flow_analysis_transfer_block(size_t block_id) {
+    //     //     // from instruction front -> instruction back - 1: // modify reaching copy instruction + 1
+    //     bool is_fixed_point = true;
+    //     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+    //     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+    //         if (GET_INSTRUCTION(instruction_index)) {
+    //             // incoming -> instruction 1
+    //             switch (GET_INSTRUCTION(instruction_index)->type()) {
+    //                 case AST_T::TacCopy_t:
+    //                 case AST_T::TacFunCall_t:
+    //                 case AST_T::TacUnary_t:
+    //                 case AST_T::TacBinary_t: {
+    //                     size_t set_front_index =
+    //                         GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
+    //                     std::copy(context->data_flow_analysis->incoming_set.begin(),
+    //                         context->data_flow_analysis->incoming_set.begin() +
+    //                         context->data_flow_analysis->set_size,
+    //                         context->data_flow_analysis->instructions_flat_sets.begin() + set_front_index);
+    //                     goto Lelse;
+    //                 }
+    //                 default:
+    //                     break;
+    //             }
+    //         }
+    //     }
+    // Lelse:
+    //     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+    //         if (GET_INSTRUCTION(instruction_index)) {
+    //             // instruction 1 -> instruction n
+    //         }
+    //     }
+    //     {
+    //         // instruction n or incoming -> block id
+    //     }
+
+
+    //     for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+    //          instruction_index < GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+    //         if (GET_INSTRUCTION(instruction_index)) {
+    //             size_t set_front_index_1 = get_reaching_copy_instruction_index(instruction_index) * set_size;
+    //             size_t set_front_index_2 = get_reaching_copy_instruction_index(instruction_index + 1) * set_size;
+    //             // size_t set_size_1 = set_front_index_1 + set_size;
+    //             // size_t set_size_2 = set_front_index_2 + set_size;
+    //             propagate_copies_transfer_instructions(GET_INSTRUCTION(instruction_index).get(),
+    //                 context->copy_propagation->reaching_copy_instruction_sets,
+    //                 context->copy_propagation->reaching_copy_instruction_sets, set_front_index_1, set_front_index_2,
+    //                 set_size, false);
+    //         }
+    //     }
+    //     // instruction back: modify reaching copy block
+    //     bool is_fixed_point;
+    //     {
+    //         size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index;
+    //         size_t set_front_index_1 = get_reaching_copy_instruction_index(instruction_index) * set_size;
+    //         size_t set_front_index_2 = get_reaching_copy_block_index(block_id) * set_size;
+    //         // size_t set_size_1 = set_front_index_1 + set_size;
+    //         // size_t set_size_2 = set_front_index_2 + set_size;
+    //         is_fixed_point = propagate_copies_transfer_instructions(GET_INSTRUCTION(instruction_index).get(),
+    //             context->copy_propagation->reaching_copy_instruction_sets,
+    //             context->copy_propagation->reaching_copy_block_sets, set_front_index_1, set_front_index_2, set_size,
+    //             true);
+    //     }
+    //     return is_fixed_point;
+    // return false;
+
+    //     // transfer(block, initial_reaching_copies):
+    //     //     current_reaching_copies = initial_reaching_copies
+    //     //     for instruction in block.instructions:
+    //     //         annotate_instruction(instruction, current_reaching_copies)
+    //     //         match instruction with
+    //     //         | Copy(src, dst) ->
+    //     //             if Copy(dst, src) is in current_reaching_copies:
+    //     //                 continue
+    //     //             for copy in current_reaching_copies:
+    //     //                 if copy.src == dst || copy.dst == dst:
+    //     //                     current_reaching_copies.remove(copy)
+    //     //             current_reaching_copies.add(instruction)
+    //     //         | FunCall(fun_name, args, dst) ->
+    //     //             for copy in current_reaching_copies:
+    //     //                 if copy.src is static || copy.dst is static
+    //     //                     || copy.src == dst || copy.dst == dst:
+    //     //                     current_reaching_copies.remove(copy)
+    //     //         | Unary(operator, src, dst) ->
+    //     //             for copy in current_reaching_copies:
+    //     //                 if copy.src == dst || copy.dst == dst:
+    //     //                     current_reaching_copies.remove(copy)
+    //     //         | Binary(operator, src1, src2, dst) ->
+    //     //             --same as Unary--
+    //     //         | _ -> continue
+    //     //     annotate_block(block.id, current_reaching_copies)
+// }
 
 static void data_flow_analysis_iterative_algorithm() {
     size_t open_block_ids_size = context->control_flow_graph->blocks.size();
@@ -1379,10 +1518,10 @@ static void data_flow_analysis_iterative_algorithm() {
         }
         // //     //  old_annotation = get_block_annotation(block.id)
         // //     //  incoming_copies = meet(block, all_copies)
-        data_flow_analysis_meet_block(block_id);
+        // data_flow_analysis_meet_block(block_id);
         // //     //  transfer(block, incoming_copies)
-        // bool is_fixed_point = propagate_copies_transfer_block(block_id, all_copy_size);
-        bool is_fixed_point = false;
+        // bool is_fixed_point = data_flow_analysis_transfer_block(block_id);
+        bool is_fixed_point = data_flow_analysis_meet_block(block_id);
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
@@ -1466,8 +1605,8 @@ static void data_flow_analysis_initialize() {
     }
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
-    if (context->data_flow_analysis->incoming_set.size() < context->data_flow_analysis->set_size) {
-        context->data_flow_analysis->incoming_set.resize(context->data_flow_analysis->set_size);
+    if (context->data_flow_analysis->placeholder_set.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->placeholder_set.resize(context->data_flow_analysis->set_size);
     }
     if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
         context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);

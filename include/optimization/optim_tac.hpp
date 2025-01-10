@@ -52,7 +52,7 @@ struct DataFlowAnalysis {
     std::vector<size_t> block_index_map;
     // std::vector<size_t> set_to_instruction_index_map;
     std::vector<size_t> instruction_index_map;
-    std::vector<bool> incoming_set;
+    std::vector<bool> placeholder_set; // TODO rename ? // can even be same as reachable_blocks?
     std::vector<bool> blocks_flat_sets;
     std::vector<bool> instructions_flat_sets;
 };
