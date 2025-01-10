@@ -1321,6 +1321,91 @@ reaching_copy_instruction_masks)
 //     //     annotate_block(block.id, current_reaching_copies)
 // }
 
+#define GET_DFA_BLOCK_INDEX(X) context->data_flow_analysis->block_index_map[X]
+#define GET_DFA_INSTRUCTION_INDEX(X) context->data_flow_analysis->instruction_index_map[X]
+
+// // meet(block, all_copies):
+static void data_flow_analysis_meet_block(size_t block_id) {
+    //     incoming_copies = all_copies
+    size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+    size_t instruction_set_front_index =
+        GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
+    size_t instruction_set_size = instruction_set_front_index + context->data_flow_analysis->set_size;
+    std::fill(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
+        context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size, true);
+    //     for pred_id in block.predecessors:
+    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+        //         match pred_id with
+        if (predecessor_id < context->control_flow_graph->exit_id) {
+            // TODO
+            //         | BlockId(id) ->
+            //             pred_out_copies = get_block_annotation(pred_id)
+            size_t block_set_front_index = GET_DFA_BLOCK_INDEX(predecessor_id) * context->data_flow_analysis->set_size;
+            //             incoming_copies = intersection(incoming_copies, pred_out_copies)
+            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+                //                 //                 block[n-1] instruction[block[n][0]]
+                //                 //                 N false      false = false
+                //                 //                 N true       false  = false
+                //                 //                 Y false      true  = false
+                //                 //                 N true       true   = true
+                if (!context->data_flow_analysis->blocks_flat_sets[block_set_front_index + i]
+                    && context->data_flow_analysis->instructions_flat_sets[instruction_set_front_index + i]) {
+                    context->data_flow_analysis->instructions_flat_sets[instruction_set_front_index + i] = false;
+                }
+            }
+        }
+        else if (predecessor_id == context->control_flow_graph->entry_id) {
+            std::fill(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
+                context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size, false);
+            break;
+        }
+        else {
+            //         | EXIT -> fail("Malformed control-flow graph")
+            RAISE_INTERNAL_ERROR;
+        }
+    }
+    //     return incoming_copies
+}
+
+static void data_flow_analysis_iterative_algorithm() {
+    size_t open_block_ids_size = context->control_flow_graph->blocks.size();
+    for (size_t i = 0; i < open_block_ids_size; ++i) {
+        //     // block = take_first(worklist)
+        size_t block_id = context->data_flow_analysis->open_block_ids[i];
+        if (block_id == context->control_flow_graph->exit_id) {
+            continue;
+        }
+        // //     //  old_annotation = get_block_annotation(block.id)
+        // //     //  incoming_copies = meet(block, all_copies)
+        data_flow_analysis_meet_block(block_id);
+        // //     //  transfer(block, incoming_copies)
+        // bool is_fixed_point = propagate_copies_transfer_block(block_id, all_copy_size);
+        bool is_fixed_point = false;
+        if (!is_fixed_point) {
+            for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+                if (successor_id < context->control_flow_graph->exit_id) {
+                    for (size_t j = i; j < open_block_ids_size; ++j) {
+                        if (successor_id == context->data_flow_analysis->open_block_ids[j]) {
+                            goto Lelse;
+                        }
+                    }
+                    if (open_block_ids_size < context->data_flow_analysis->open_block_ids.size()) {
+                        context->data_flow_analysis->open_block_ids[open_block_ids_size] = successor_id;
+                    }
+                    else {
+                        context->data_flow_analysis->open_block_ids.push_back(successor_id);
+                    }
+                    open_block_ids_size++;
+                Lelse:;
+                }
+                else if (successor_id != context->control_flow_graph->exit_id) {
+                    RAISE_INTERNAL_ERROR;
+                }
+            }
+        }
+    }
+}
+
 static void data_flow_analysis_initialize() {
     if (context->data_flow_analysis->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->data_flow_analysis->open_block_ids.resize(context->control_flow_graph->blocks.size());
@@ -1333,7 +1418,7 @@ static void data_flow_analysis_initialize() {
     }
     context->data_flow_analysis->set_size = 0;
     size_t blocks_flat_sets_size = 0;
-    size_t instruction_flat_sets_size = 0;
+    size_t instructions_flat_sets_size = 0;
     // TODO fill copy_propagation->open_block_ids in reverse postorder
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
@@ -1357,6 +1442,7 @@ static void data_flow_analysis_initialize() {
                             instructions_flat_sets_size++;
                             break;
                         }
+                        case AST_T::TacFunCall_t:
                         case AST_T::TacUnary_t:
                         case AST_T::TacBinary_t: {
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
@@ -1391,9 +1477,12 @@ static void data_flow_analysis_initialize() {
     //     context->data_flow_analysis->instructions_flat_sets.begin() + instructions_flat_sets_size, false);
 }
 
-static void data_flow_analysis_iterative_analysis() {}
+static void propagate_copies_control_flow_graph() {
+    data_flow_analysis_initialize();
+    data_flow_analysis_iterative_algorithm();
 
-static void propagate_copies_control_flow_graph() {}
+    // TODO propagate_copies_list_instructions();
+}
 
 // static void propagate_copies_control_flow_graph() {
 //     if (context->copy_propagation->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
