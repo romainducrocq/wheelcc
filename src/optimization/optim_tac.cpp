@@ -1112,7 +1112,7 @@ static void fold_constants_list_instructions() {
 #define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
 #define GET_DFA_INSTRUCTION_SET_AT(X, Y) \
     context->data_flow_analysis->instructions_flat_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
-#define GET_DFA_INSTRUCTION_IT_RANGE(X)                                                                   \
+#define GET_DFA_INSTRUCTION_SET_RANGE(X)                                                                  \
     context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
             + context->data_flow_analysis->set_size
@@ -1216,7 +1216,7 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
     }
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
-    std::fill(GET_DFA_INSTRUCTION_IT_RANGE(instruction_index), true);
+    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
 
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         if (predecessor_id < context->control_flow_graph->exit_id) {
@@ -1227,7 +1227,7 @@ Lelse:
             }
         }
         else if (predecessor_id == context->control_flow_graph->entry_id) {
-            std::fill(GET_DFA_INSTRUCTION_IT_RANGE(instruction_index), false);
+            std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
             break;
         }
         else {
