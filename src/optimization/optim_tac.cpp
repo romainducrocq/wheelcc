@@ -1104,14 +1104,17 @@ static void fold_constants_list_instructions() {
 
 // TODO
 
-#define GET_DFA_DATA_INDEX(X) context->data_flow_analysis->data_index_map[X]
-#define GET_DFA_BLOCK_INDEX(X) context->data_flow_analysis->block_index_map[X]
-#define GET_DFA_INSTRUCTION_INDEX(X) context->data_flow_analysis->instruction_index_map[X]
-#define GET_DFA_BLOCK_SET_INDEX(X, Y) GET_DFA_BLOCK_INDEX(X) * context->data_flow_analysis->set_size + (Y)
-#define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) GET_DFA_INSTRUCTION_INDEX(X) * context->data_flow_analysis->set_size + (Y)
+#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
+
+#define GET_DFA_BLOCK_SET_INDEX(X, Y) \
+    context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
+#define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
+    context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->set_size + (Y)
+
 #define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
 #define GET_DFA_INSTRUCTION_SET_AT(X, Y) \
     context->data_flow_analysis->instructions_flat_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
+
 #define GET_DFA_INSTRUCTION_SET_RANGE(X)                                                                  \
     context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
