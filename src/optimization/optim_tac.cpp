@@ -1122,34 +1122,58 @@ static void fold_constants_list_instructions() {
 
 static void copy_propagation_transfer_fun_call_reaching_copies(
     TacFunCall* node, size_t instruction_index, size_t next_instruction_index) {
-    // TODO
-    // static_cast<StaticAttr*>(frontend->symbol_table[node->name]->attrs.get());
+    TacVariable* dst = nullptr;
+    if (node->dst) {
+        if (node->dst->type() != AST_T::TacVariable_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        dst = static_cast<TacVariable*>(node->dst.get());
+    }
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+        TacVariable* copy_src = nullptr;
+        if (copy->src->type() == AST_T::TacVariable_t) {
+            copy_src = static_cast<TacVariable*>(copy->src.get());
+        }
+        if (copy->dst->type() != AST_T::TacVariable_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
+        if ((copy_src && frontend->symbol_table[copy_src->name]->attrs->type() == AST_T::StaticAttr_t)
+            || frontend->symbol_table[copy_dst->name]->attrs->type() == AST_T::StaticAttr_t
+            || (dst
+                && ((copy_src && dst->name.compare(copy_src->name) == 0) || dst->name.compare(copy_dst->name) == 0))) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+        else {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
+        }
+    }
 }
 
 static void copy_propagation_transfer_dst_value_reaching_copies(
-    TacValue* dst, size_t instruction_index, size_t next_instruction_index) {
-    if (dst->type() == AST_T::TacVariable_t) {
-        const TIdentifier& dst_name = static_cast<TacVariable*>(dst)->name;
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            if ((copy->src->type() == AST_T::TacVariable_t
-                    && dst_name.compare(static_cast<TacVariable*>(copy->src.get())->name) == 0)
-                || (copy->dst->type() == AST_T::TacVariable_t
-                    && dst_name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0)) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-            }
-            else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) =
-                    GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
-            }
-        }
+    TacValue* node, size_t instruction_index, size_t next_instruction_index) {
+    if (node->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
     }
-    else {
-        // TBD? : copy range instruction_index -> next_instruction_index
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+    TacVariable* dst = static_cast<TacVariable*>(node);
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+        if (copy->dst->type() != AST_T::TacVariable_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        if ((copy->src->type() == AST_T::TacVariable_t
+                && dst->name.compare(static_cast<TacVariable*>(copy->src.get())->name) == 0)
+            || dst->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+        else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
         }
     }
@@ -1158,6 +1182,13 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
 static void copy_propagation_transfer_copy_reaching_copies(
     TacCopy* node, size_t instruction_index, size_t next_instruction_index) {
     // TODO
+    // Copy(src, dst) ->
+    //     if Copy(dst, src) is in current_reaching_copies:
+    //         continue
+    //     for copy in current_reaching_copies:
+    //         if copy.src == dst || copy.dst == dst:
+    //             current_reaching_copies.remove(copy)
+    //     current_reaching_copies.add(instruction)
 }
 
 static void copy_propagation_transfer_reaching_copies(
@@ -1256,6 +1287,9 @@ Lelse:
         if (GET_DFA_BLOCK_SET_AT(block_id, i)
             != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
             // TBD? : after first difference copy range instruction_index -> next_instruction_index, and break
+            // memcpy = std::copy
+            // memset = std::fill
+            // memcmp = std::equal
             GET_DFA_BLOCK_SET_AT(block_id, i) =
                 GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
             is_fixed_point = false;
