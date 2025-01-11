@@ -1321,12 +1321,20 @@ reaching_copy_instruction_masks)
 //     //     annotate_block(block.id, current_reaching_copies)
 // }
 
+#define GET_DFA_DATA_INDEX(X) context->data_flow_analysis->data_index_map[X]
 #define GET_DFA_BLOCK_INDEX(X) context->data_flow_analysis->block_index_map[X]
 #define GET_DFA_INSTRUCTION_INDEX(X) (context->data_flow_analysis->instruction_index_map[X] + 1)
 
 static void copy_propagation_transfer_fun_call_instructions(
     TacFunCall* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
-    // TODO
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        size_t instruction_index = GET_DFA_DATA_INDEX(i);
+        if (GET_INSTRUCTION(instruction_index)->type() != AST_T::TacCopy_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacCopy* reaching_copy = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
+        // TODO
+    }
 }
 
 static void copy_propagation_transfer_unary_instructions(
