@@ -1324,17 +1324,44 @@ reaching_copy_instruction_masks)
 #define GET_DFA_BLOCK_INDEX(X) context->data_flow_analysis->block_index_map[X]
 #define GET_DFA_INSTRUCTION_INDEX(X) (context->data_flow_analysis->instruction_index_map[X] + 1)
 
-static void data_flow_analysis_transfer_instructions(
-    TacInstruction* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
+static void copy_propagation_transfer_fun_call_instructions(
+    TacFunCall* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
     // TODO
+}
+
+static void copy_propagation_transfer_unary_instructions(
+    TacUnary* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
+    // TODO
+}
+
+static void copy_propagation_transfer_binary_instructions(
+    TacBinary* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
+    // TODO
+}
+
+static void copy_propagation_transfer_copy_instructions(
+    TacCopy* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
+    // TODO
+}
+
+static void copy_propagation_transfer_instructions(
+    TacInstruction* node, size_t instruction_set_front_index, size_t next_instruction_set_front_index) {
     switch (node->type()) {
-        case AST_T::TacCopy_t:
-            break;
         case AST_T::TacFunCall_t:
+            copy_propagation_transfer_fun_call_instructions(
+                static_cast<TacFunCall*>(node), instruction_set_front_index, next_instruction_set_front_index);
             break;
         case AST_T::TacUnary_t:
+            copy_propagation_transfer_unary_instructions(
+                static_cast<TacUnary*>(node), instruction_set_front_index, next_instruction_set_front_index);
             break;
         case AST_T::TacBinary_t:
+            copy_propagation_transfer_binary_instructions(
+                static_cast<TacBinary*>(node), instruction_set_front_index, next_instruction_set_front_index);
+            break;
+        case AST_T::TacCopy_t:
+            copy_propagation_transfer_copy_instructions(
+                static_cast<TacCopy*>(node), instruction_set_front_index, next_instruction_set_front_index);
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -1346,10 +1373,10 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
         if (GET_INSTRUCTION(next_instruction_index)) {
             switch (GET_INSTRUCTION(next_instruction_index)->type()) {
-                case AST_T::TacCopy_t:
                 case AST_T::TacFunCall_t:
                 case AST_T::TacUnary_t:
-                case AST_T::TacBinary_t: {
+                case AST_T::TacBinary_t:
+                case AST_T::TacCopy_t: {
                     size_t instruction_set_front_index =
                         GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
                     size_t next_instruction_set_front_index =
@@ -1365,7 +1392,7 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
                     //         + instruction_set_size, context->data_flow_analysis->instructions_flat_sets.begin()
                     //             + next_instruction_set_front_index);
                     // }
-                    data_flow_analysis_transfer_instructions(GET_INSTRUCTION(instruction_index).get(),
+                    copy_propagation_transfer_instructions(GET_INSTRUCTION(instruction_index).get(),
                         instruction_set_front_index, next_instruction_set_front_index);
                     instruction_index = next_instruction_index;
                     break;
@@ -1382,7 +1409,7 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
         // std::copy(context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_front_index,
         //     context->data_flow_analysis->instructions_flat_sets.begin() + instruction_set_size,
         //     context->data_flow_analysis->incoming_set.begin());
-        data_flow_analysis_transfer_instructions(
+        copy_propagation_transfer_instructions(
             GET_INSTRUCTION(instruction_index).get(), instruction_set_front_index, 0);
     }
     return instruction_index;
@@ -1405,10 +1432,10 @@ static void data_flow_analysis_meet_block(size_t block_id) {
         if (GET_INSTRUCTION(instruction_index)) {
             // incoming -> instruction 1
             switch (GET_INSTRUCTION(instruction_index)->type()) {
-                case AST_T::TacCopy_t:
                 case AST_T::TacFunCall_t:
                 case AST_T::TacUnary_t:
-                case AST_T::TacBinary_t: {
+                case AST_T::TacBinary_t:
+                case AST_T::TacCopy_t: {
                     instruction_set_front_index =
                         GET_DFA_INSTRUCTION_INDEX(instruction_index) * context->data_flow_analysis->set_size;
                     is_fixed_point = false;
@@ -1629,6 +1656,14 @@ static void data_flow_analysis_initialize() {
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
                     switch (GET_INSTRUCTION(instruction_index)->type()) {
+                        case AST_T::TacFunCall_t:
+                        case AST_T::TacUnary_t:
+                        case AST_T::TacBinary_t: {
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
                         case AST_T::TacCopy_t: {
                             if (context->data_flow_analysis->set_size
                                 < context->data_flow_analysis->data_index_map.size()) {
@@ -1641,14 +1676,6 @@ static void data_flow_analysis_initialize() {
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
                             context->data_flow_analysis->set_size++;
-                            instructions_flat_sets_size++;
-                            break;
-                        }
-                        case AST_T::TacFunCall_t:
-                        case AST_T::TacUnary_t:
-                        case AST_T::TacBinary_t: {
-                            context->data_flow_analysis->instruction_index_map[instruction_index] =
-                                instructions_flat_sets_size;
                             instructions_flat_sets_size++;
                             break;
                         }
