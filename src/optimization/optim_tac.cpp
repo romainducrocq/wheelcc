@@ -1106,7 +1106,7 @@ static void fold_constants_list_instructions() {
 
 #define GET_DFA_DATA_INDEX(X) context->data_flow_analysis->data_index_map[X]
 #define GET_DFA_BLOCK_INDEX(X) context->data_flow_analysis->block_index_map[X]
-#define GET_DFA_INSTRUCTION_INDEX(X) (context->data_flow_analysis->instruction_index_map[X] + 1) // TODO incoming set
+#define GET_DFA_INSTRUCTION_INDEX(X) context->data_flow_analysis->instruction_index_map[X]
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) GET_DFA_BLOCK_INDEX(X) * context->data_flow_analysis->set_size + (Y)
 #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) GET_DFA_INSTRUCTION_INDEX(X) * context->data_flow_analysis->set_size + (Y)
 #define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
@@ -1195,7 +1195,7 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
         }
     }
     copy_propagation_transfer_instructions(
-        GET_INSTRUCTION(instruction_index).get(), instruction_index, 0); // TODO incoming set
+        GET_INSTRUCTION(instruction_index).get(), instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
 }
 
@@ -1214,7 +1214,7 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
             }
         }
     }
-    instruction_index = 0; // TODO incoming set
+    instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
     std::fill(GET_DFA_INSTRUCTION_IT_RANGE(instruction_index), true);
 
@@ -1235,14 +1235,19 @@ Lelse:
         }
     }
 
-    if (instruction_index > 0) {
+    if (instruction_index < context->data_flow_analysis->incoming_index) {
         data_flow_analysis_transfer_block(instruction_index, block_id);
+    }
+    else if (instruction_index != context->data_flow_analysis->incoming_index) {
+        RAISE_INTERNAL_ERROR;
     }
 
     bool is_fixed_point = true;
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_BLOCK_SET_AT(block_id, i) != GET_DFA_INSTRUCTION_SET_AT(0, i)) { // TODO incoming set
-            GET_DFA_BLOCK_SET_AT(block_id, i) = GET_DFA_INSTRUCTION_SET_AT(0, i);    // TODO incoming set
+        if (GET_DFA_BLOCK_SET_AT(block_id, i)
+            != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+            GET_DFA_BLOCK_SET_AT(block_id, i) =
+                GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
             is_fixed_point = false;
         }
     }
@@ -1284,20 +1289,21 @@ static void data_flow_analysis_iterative_algorithm() {
 }
 
 static void data_flow_analysis_initialize() {
+    context->data_flow_analysis->set_size = 0;
+    context->data_flow_analysis->incoming_index = context->p_instructions->size();
+
     if (context->data_flow_analysis->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->data_flow_analysis->open_block_ids.resize(context->control_flow_graph->blocks.size());
     }
     if (context->data_flow_analysis->block_index_map.size() < context->control_flow_graph->blocks.size()) {
         context->data_flow_analysis->block_index_map.resize(context->control_flow_graph->blocks.size());
     }
-    if (context->data_flow_analysis->instruction_index_map.size()
-        < context->p_instructions->size()) {                                                        // TODO incoming set
-        context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size()); // TODO incoming set
+    if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + 1) {
+        context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + 1);
     }
 
-    context->data_flow_analysis->set_size = 0;
     size_t blocks_flat_sets_size = 0;
-    size_t instructions_flat_sets_size = 1; // TODO incoming set
+    size_t instructions_flat_sets_size = 0;
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             context->data_flow_analysis->open_block_ids[block_id] = block_id; // TODO
@@ -1340,7 +1346,9 @@ static void data_flow_analysis_initialize() {
             context->data_flow_analysis->open_block_ids[block_id] = context->control_flow_graph->exit_id; // TODO
         }
     }
-    // TODO incoming set
+    context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
+        instructions_flat_sets_size;
+    instructions_flat_sets_size++;
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
 
