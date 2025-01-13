@@ -1181,14 +1181,48 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
 
 static void copy_propagation_transfer_copy_reaching_copies(
     TacCopy* node, size_t instruction_index, size_t next_instruction_index) {
-    // TODO
-    // Copy(src, dst) ->
-    //     if Copy(dst, src) is in current_reaching_copies:
-    //         continue
-    //     for copy in current_reaching_copies:
-    //         if copy.src == dst || copy.dst == dst:
-    //             current_reaching_copies.remove(copy)
-    //     current_reaching_copies.add(instruction)
+    TacVariable* src = nullptr;
+    if (node->src->type() == AST_T::TacVariable_t) {
+        src = static_cast<TacVariable*>(node->src.get());
+    }
+    if (node->dst->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    TacVariable* dst = static_cast<TacVariable*>(node->dst.get());
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+        TacVariable* copy_src = nullptr;
+        if (copy->src->type() == AST_T::TacVariable_t) {
+            copy_src = static_cast<TacVariable*>(copy->src.get());
+        }
+        if (copy->dst->type() != AST_T::TacVariable_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
+        if (copy_src && dst->name.compare(copy_src->name) == 0) {
+            if (src && src->name.compare(copy_dst->name) == 0) {
+                for (size_t j = 0; j < i; ++j) {
+                    // TBD? : copy range [j, i[
+                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, j) =
+                        GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
+                }
+                return;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            }
+        }
+        else if (dst->name.compare(copy_dst->name) == 0) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+        else {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
+        }
+    }
+    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, instruction_index) = true;
 }
 
 static void copy_propagation_transfer_reaching_copies(
