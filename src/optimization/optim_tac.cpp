@@ -1443,11 +1443,72 @@ static void data_flow_analysis_initialize() {
     //     context->data_flow_analysis->instructions_flat_sets.begin() + instructions_flat_sets_size, false);
 }
 
+/*
+replace_operand(op, reaching_copies):
+    if op is a constant:
+        return op
+    for copy in reaching_copies:
+        if copy.dst == op:
+            return copy.src
+    return op
+*/
+
+static void propagate_copies_unary_instructions(TacUnary* node, size_t instruction_index) {
+    // TODO
+    /*
+    Unary(operator, src, dst) ->
+        new_src = replace_operand(src, reaching_copies)
+        return Unary(operator, new_src, dst)
+    */
+}
+
+static void propagate_copies_binary_instructions(TacBinary* node, size_t instruction_index) {
+    // TODO
+    /*
+    Binary(operator, src1, src2, dst) ->
+        new_src1 = replace_operand(src1, reaching_copies)
+        new_src2 = replace_operand(src2, reaching_copies)
+        return Binary(operator, new_src1, new_src2, dst)
+    */
+}
+
+static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction_index) {
+    // TODO
+    /*
+    Copy(src, dst) ->
+        for copy in reaching_copies:
+            if (copy == instr) || (copy.src == dst && copy.dst == src):
+                return null
+        new_src = replace_operand(src, reaching_copies)
+        return Copy(new_src, dst)
+    */
+}
+
+static void propagate_copies_instructions(TacInstruction* node, size_t instruction_index) {
+    switch (node->type()) {
+        case AST_T::TacUnary_t:
+            propagate_copies_unary_instructions(static_cast<TacUnary*>(node), instruction_index);
+            break;
+        case AST_T::TacBinary_t:
+            propagate_copies_binary_instructions(static_cast<TacBinary*>(node), instruction_index);
+            break;
+        case AST_T::TacCopy_t:
+            propagate_copies_copy_instructions(static_cast<TacCopy*>(node), instruction_index);
+            break;
+        default:
+            break;
+    }
+}
+
 static void propagate_copies_control_flow_graph() {
     data_flow_analysis_initialize();
     data_flow_analysis_iterative_algorithm();
 
-    // TODO propagate_copies_list_instructions();
+    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index)) {
+            propagate_copies_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
