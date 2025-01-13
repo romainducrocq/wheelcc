@@ -1491,28 +1491,41 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
 }
 
 static void propagate_copies_binary_instructions(TacBinary* node, size_t instruction_index) {
-    // TODO
-    /*
-    Binary(operator, src1, src2, dst) ->
-        new_src1 = replace_operand(src1, reaching_copies)
-        new_src2 = replace_operand(src2, reaching_copies)
-        return Binary(operator, new_src1, new_src2, dst)
-    */
-    // if (node->src->type() == AST_T::TacVariable_t) {
-    //     TacVariable* src = static_cast<TacVariable*>(node->src.get());
-    //     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-    //         if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-    //             if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-    //                 RAISE_INTERNAL_ERROR;
-    //             }
-    //             TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-    //             if (copy->dst->type() != AST_T::TacVariable_t) {
-    //                 RAISE_INTERNAL_ERROR;
-    //             }
-    //             // TODO
-    //         }
-    //     }
-    // }
+    TacVariable* src1 = nullptr;
+    if (node->src1->type() == AST_T::TacVariable_t) {
+        src1 = static_cast<TacVariable*>(node->src1.get());
+    }
+    TacVariable* src2 = nullptr;
+    if (node->src2->type() == AST_T::TacVariable_t) {
+        src2 = static_cast<TacVariable*>(node->src2.get());
+    }
+    if (src1 || src2) {
+        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+                if (copy->dst->type() != AST_T::TacVariable_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                if (src1->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                    node->src1 = copy->src;
+                    src1 = nullptr;
+                    if (!src2) {
+                        break;
+                    }
+                }
+                if (src2->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                    node->src2 = copy->src;
+                    src2 = nullptr;
+                    if (!src1) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction_index) {
