@@ -1596,7 +1596,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                     RAISE_INTERNAL_ERROR;
                 }
                 TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-                if (src1->name.compare(copy_dst->name) == 0) {
+                if (src1 && src1->name.compare(copy_dst->name) == 0) {
                     node->src1 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     src1 = nullptr;
@@ -1604,7 +1604,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                         break;
                     }
                 }
-                if (src2->name.compare(copy_dst->name) == 0) {
+                if (src2 && src2->name.compare(copy_dst->name) == 0) {
                     node->src2 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     src2 = nullptr;
@@ -1632,6 +1632,7 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
             // in case the copy propagation changed the instruction already ?
             // too see after testing
             if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
+                // TODO replace with control_flow_graph_remove_block_instruction
                 set_instruction(nullptr, instruction_index);
                 break;
             }
@@ -1646,6 +1647,7 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                 TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
                 if (copy->src->type() == AST_T::TacVariable_t && src->name.compare(copy_dst->name) == 0
                     && dst->name.compare(static_cast<TacVariable*>(copy->src.get())->name) == 0) {
+                    // TODO replace with control_flow_graph_remove_block_instruction
                     set_instruction(nullptr, instruction_index);
                     break;
                 }
@@ -1666,6 +1668,10 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
 // we need the last reaching copies at that point also for TacReturn, which is not in instruction_flat_sets
 static void propagate_copies_instructions(TacInstruction* node, size_t instruction_index) {
     switch (node->type()) {
+        case AST_T::TacReturn_t:
+            break; // TODO
+        case AST_T::TacFunCall_t:
+            break; // TODO
         case AST_T::TacUnary_t:
             propagate_copies_unary_instructions(static_cast<TacUnary*>(node), instruction_index);
             break;
@@ -1684,11 +1690,11 @@ static void propagate_copies_control_flow_graph() {
     data_flow_analysis_initialize();
     data_flow_analysis_iterative_algorithm();
 
-    // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-    //     if (GET_INSTRUCTION(instruction_index)) {
-    //         propagate_copies_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
-    //     }
-    // }
+    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index)) {
+            propagate_copies_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
