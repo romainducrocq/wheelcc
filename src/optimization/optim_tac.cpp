@@ -1554,19 +1554,59 @@ static void data_flow_analysis_initialize() {
     //     context->data_flow_analysis->instructions_flat_sets.begin() + instructions_flat_sets_size, false);
 }
 
-static void propagate_copies_return_instructions(TacReturn* /*node*/, size_t /*incoming_index*/, bool /*enter_block*/) {
-    // TODO
+static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, bool enter_block) {
+    if (node->val->type() == AST_T::TacVariable_t) {
+        TacVariable* val = static_cast<TacVariable*>(node->val.get());
+        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+            if (GET_DFA_INSTRUCTION(i)
+                && ((enter_block && GET_DFA_BLOCK_SET_AT(incoming_index, i))
+                    || (!enter_block && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
+                if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+                if (copy->dst->type() != AST_T::TacVariable_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                if (val->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                    node->val = copy->src;
+                    context->is_fixed_point = false; // TBD refactor
+                    break;
+                }
+            }
+        }
+    }
 }
 
-static void propagate_copies_fun_call_instructions(TacFunCall* /*node*/, size_t /*instruction_index*/) {
-    // TODO
+static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t instruction_index) {
+    for (size_t i = 0; i < node->args.size(); ++i) {
+        if (node->args[i]->type() == AST_T::TacVariable_t) {
+            TacVariable* arg = static_cast<TacVariable*>(node->args[i].get());
+            for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
+                if (GET_DFA_INSTRUCTION(j) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
+                    if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(j).get());
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    if (arg->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                        node->args[i] = copy->src;
+                        context->is_fixed_point = false; // TBD refactor
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 static void propagate_copies_unary_instructions(TacUnary* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
         TacVariable* src = static_cast<TacVariable*>(node->src.get());
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+            if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1595,7 +1635,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
     }
     if (src1 || src2) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+            if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1635,7 +1675,7 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
     }
     TacVariable* dst = static_cast<TacVariable*>(node->dst.get());
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+        if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             // check src==src and dst==dst instead of instruction_index ?
             // in case the copy propagation changed the instruction already ?
             // too see after testing
