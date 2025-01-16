@@ -1330,8 +1330,10 @@ static void copy_propagation_transfer_copy_reaching_copies(
         else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
         }
+        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+        }
     }
-    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, instruction_index) = true;
 }
 
 static void copy_propagation_transfer_reaching_copies(
@@ -1629,7 +1631,7 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
             // check src==src and dst==dst instead of instruction_index ?
             // in case the copy propagation changed the instruction already ?
             // too see after testing
-            if (instruction_index == context->data_flow_analysis->instruction_index_map[i]) {
+            if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
                 set_instruction(nullptr, instruction_index);
                 break;
             }
@@ -1682,11 +1684,11 @@ static void propagate_copies_control_flow_graph() {
     data_flow_analysis_initialize();
     data_flow_analysis_iterative_algorithm();
 
-    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index)) {
-            propagate_copies_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
-        }
-    }
+    // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+    //     if (GET_INSTRUCTION(instruction_index)) {
+    //         propagate_copies_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
+    //     }
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
