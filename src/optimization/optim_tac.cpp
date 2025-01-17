@@ -1554,13 +1554,13 @@ static void data_flow_analysis_initialize() {
     //     context->data_flow_analysis->instructions_flat_sets.begin() + instructions_flat_sets_size, false);
 }
 
-static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, bool enter_block) {
+static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, bool exit_block) {
     if (node->val->type() == AST_T::TacVariable_t) {
         TacVariable* val = static_cast<TacVariable*>(node->val.get());
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (GET_DFA_INSTRUCTION(i)
-                && ((enter_block && GET_DFA_BLOCK_SET_AT(incoming_index, i))
-                    || (!enter_block && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
+                && ((exit_block && GET_DFA_BLOCK_SET_AT(incoming_index, i))
+                    || (!exit_block && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1738,15 +1738,15 @@ static void propagate_copies_control_flow_graph() {
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             size_t incoming_index = block_id;
-            bool enter_block = true;
-            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
-                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+            bool exit_block = true;
+            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index + 1;
+                 instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
                 if (GET_INSTRUCTION(instruction_index)) {
                     switch (GET_INSTRUCTION(instruction_index)->type()) {
                         case AST_T::TacReturn_t:
                             propagate_copies_return_instructions(
                                 static_cast<TacReturn*>(GET_INSTRUCTION(instruction_index).get()), incoming_index,
-                                enter_block);
+                                exit_block);
                             break;
                         case AST_T::TacFunCall_t:
                         case AST_T::TacUnary_t:
@@ -1755,7 +1755,7 @@ static void propagate_copies_control_flow_graph() {
                             propagate_copies_instructions(
                                 GET_INSTRUCTION(instruction_index).get(), instruction_index, block_id);
                             incoming_index = instruction_index;
-                            enter_block = false;
+                            exit_block = false;
                         }
                         default:
                             break;
