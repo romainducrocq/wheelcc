@@ -1676,13 +1676,6 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
     TacVariable* dst = static_cast<TacVariable*>(node->dst.get());
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            // check src==src and dst==dst instead of instruction_index ?
-            // in case the copy propagation changed the instruction already ?
-            // too see after testing
-            if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
-                control_flow_graph_remove_block_instruction(instruction_index, block_id);
-                break;
-            }
             if (src) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
@@ -1692,12 +1685,16 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                     RAISE_INTERNAL_ERROR;
                 }
                 TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-                if (copy->src->type() == AST_T::TacVariable_t && src->name.compare(copy_dst->name) == 0
-                    && dst->name.compare(static_cast<TacVariable*>(copy->src.get())->name) == 0) {
-                    control_flow_graph_remove_block_instruction(instruction_index, block_id);
-                    break;
+                if (copy->src->type() == AST_T::TacVariable_t) {
+                    // TBD for check src==src and dst==dst, also check if src is constant ?
+                    TacVariable* copy_src = static_cast<TacVariable*>(copy->src.get());
+                    if ((src->name.compare(copy_src->name) == 0 && dst->name.compare(copy_dst->name) == 0)
+                        || (src->name.compare(copy_dst->name) == 0 && dst->name.compare(copy_src->name) == 0)) {
+                        control_flow_graph_remove_block_instruction(instruction_index, block_id);
+                        break;
+                    }
                 }
-                else if (src->name.compare(copy_dst->name) == 0) {
+                if (src->name.compare(copy_dst->name) == 0) {
                     node->src = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
@@ -1735,6 +1732,7 @@ static void propagate_copies_control_flow_graph() {
     data_flow_analysis_initialize();
     data_flow_analysis_iterative_algorithm();
 
+    // TODO traverse in front order, but get next_instruction_block every time for return instructions
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             size_t incoming_index = block_id;
