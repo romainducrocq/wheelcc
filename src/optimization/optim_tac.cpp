@@ -1356,8 +1356,8 @@ static void copy_propagation_transfer_copy_reaching_copies(
                 RAISE_INTERNAL_ERROR;
             }
             TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-            if (copy_src && dst->name.compare(copy_src->name) == 0) {
-                if (src && src->name.compare(copy_dst->name) == 0) {
+            if (copy_src && is_variable_same_value(dst, copy_src)) {
+                if (src && is_variable_same_value(src, copy_dst)) {
                     for (i = 0; i < context->data_flow_analysis->set_size; ++i) {
                         // TBD? : copy range
                         GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) =
@@ -1369,7 +1369,8 @@ static void copy_propagation_transfer_copy_reaching_copies(
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
                 }
             }
-            else if (dst->name.compare(copy_dst->name) == 0) {
+            else if (is_variable_same_value(dst, copy_dst)) {
+                // TODO
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1737,13 +1738,13 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                 if (copy->src->type() == AST_T::TacVariable_t) {
                     // TBD for check src==src and dst==dst, also check if src is constant ?
                     TacVariable* copy_src = static_cast<TacVariable*>(copy->src.get());
-                    if ((src->name.compare(copy_src->name) == 0 && dst->name.compare(copy_dst->name) == 0)
-                        || (src->name.compare(copy_dst->name) == 0 && dst->name.compare(copy_src->name) == 0)) {
+                    if ((is_variable_same_value(src, copy_src) && is_variable_same_value(dst, copy_dst))
+                        || (is_variable_same_value(src, copy_dst) && is_variable_same_value(dst, copy_src))) {
                         control_flow_graph_remove_block_instruction(instruction_index, block_id);
                         break;
                     }
                 }
-                if (src->name.compare(copy_dst->name) == 0) {
+                if (is_variable_same_value(src, copy_dst)) {
                     node->src = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
