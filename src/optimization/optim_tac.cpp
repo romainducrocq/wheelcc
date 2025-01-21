@@ -1214,38 +1214,34 @@ static void fold_constants_list_instructions() {
 // }
 
 static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
-    switch (node_1->constant->type()) {
-        case AST_T::CConstInt_t:
-            return node_2->constant->type() == AST_T::CConstInt_t
-                   && static_cast<CConstInt*>(node_1->constant.get())->value
-                          == static_cast<CConstInt*>(node_2->constant.get())->value;
-        case AST_T::CConstLong_t:
-            return node_2->constant->type() == AST_T::CConstLong_t
-                   && static_cast<CConstLong*>(node_1->constant.get())->value
-                          == static_cast<CConstLong*>(node_2->constant.get())->value;
-        case AST_T::CConstUInt_t:
-            return node_2->constant->type() == AST_T::CConstUInt_t
-                   && static_cast<CConstUInt*>(node_1->constant.get())->value
-                          == static_cast<CConstUInt*>(node_2->constant.get())->value;
-        case AST_T::CConstULong_t:
-            return node_2->constant->type() == AST_T::CConstULong_t
-                   && static_cast<CConstULong*>(node_1->constant.get())->value
-                          == static_cast<CConstULong*>(node_2->constant.get())->value;
-        case AST_T::CConstDouble_t:
-            return node_2->constant->type() == AST_T::CConstDouble_t
-                   && static_cast<CConstDouble*>(node_1->constant.get())->value
-                          == static_cast<CConstDouble*>(node_2->constant.get())->value;
-        case AST_T::CConstChar_t:
-            return node_2->constant->type() == AST_T::CConstChar_t
-                   && static_cast<CConstChar*>(node_1->constant.get())->value
-                          == static_cast<CConstChar*>(node_2->constant.get())->value;
-        case AST_T::CConstUChar_t:
-            return node_2->constant->type() == AST_T::CConstUChar_t
-                   && static_cast<CConstUChar*>(node_1->constant.get())->value
-                          == static_cast<CConstUChar*>(node_2->constant.get())->value;
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (node_1->constant->type() == node_2->constant->type()) {
+        switch (node_1->constant->type()) {
+            case AST_T::CConstInt_t:
+                return static_cast<CConstInt*>(node_1->constant.get())->value
+                       == static_cast<CConstInt*>(node_2->constant.get())->value;
+            case AST_T::CConstLong_t:
+                return static_cast<CConstLong*>(node_1->constant.get())->value
+                       == static_cast<CConstLong*>(node_2->constant.get())->value;
+            case AST_T::CConstUInt_t:
+                return static_cast<CConstUInt*>(node_1->constant.get())->value
+                       == static_cast<CConstUInt*>(node_2->constant.get())->value;
+            case AST_T::CConstULong_t:
+                return static_cast<CConstULong*>(node_1->constant.get())->value
+                       == static_cast<CConstULong*>(node_2->constant.get())->value;
+            case AST_T::CConstDouble_t:
+                return static_cast<CConstDouble*>(node_1->constant.get())->value
+                       == static_cast<CConstDouble*>(node_2->constant.get())->value;
+            case AST_T::CConstChar_t:
+                return static_cast<CConstChar*>(node_1->constant.get())->value
+                       == static_cast<CConstChar*>(node_2->constant.get())->value;
+            case AST_T::CConstUChar_t:
+                return static_cast<CConstUChar*>(node_1->constant.get())->value
+                       == static_cast<CConstUChar*>(node_2->constant.get())->value;
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
     }
+    return false;
 }
 
 static bool is_variable_same_value(TacVariable* node_1, TacVariable* node_2) {
