@@ -1288,8 +1288,8 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
             if ((copy_src && frontend->symbol_table[copy_src->name]->attrs->type() == AST_T::StaticAttr_t)
                 || frontend->symbol_table[copy_dst->name]->attrs->type() == AST_T::StaticAttr_t
                 || (dst
-                    && ((copy_src && dst->name.compare(copy_src->name) == 0)
-                        || dst->name.compare(copy_dst->name) == 0))) {
+                    && ((copy_src && is_variable_same_value(dst, copy_src))
+                        || is_variable_same_value(dst, copy_dst)))) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1318,8 +1318,8 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
                 RAISE_INTERNAL_ERROR;
             }
             if ((copy->src->type() == AST_T::TacVariable_t
-                    && dst->name.compare(static_cast<TacVariable*>(copy->src.get())->name) == 0)
-                || dst->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                    && is_variable_same_value(dst, static_cast<TacVariable*>(copy->src.get())))
+                || is_variable_same_value(dst, static_cast<TacVariable*>(copy->dst.get()))) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1617,7 +1617,7 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (val->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                if (is_variable_same_value(val, static_cast<TacVariable*>(copy->dst.get()))) {
                     node->val = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
@@ -1640,7 +1640,7 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
                     if (copy->dst->type() != AST_T::TacVariable_t) {
                         RAISE_INTERNAL_ERROR;
                     }
-                    if (arg->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                    if (is_variable_same_value(arg, static_cast<TacVariable*>(copy->dst.get()))) {
                         node->args[i] = copy->src;
                         context->is_fixed_point = false; // TBD refactor
                         break;
@@ -1663,7 +1663,7 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (src->name.compare(static_cast<TacVariable*>(copy->dst.get())->name) == 0) {
+                if (is_variable_same_value(src, static_cast<TacVariable*>(copy->dst.get()))) {
                     node->src = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
@@ -1693,7 +1693,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                     RAISE_INTERNAL_ERROR;
                 }
                 TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-                if (src1 && src1->name.compare(copy_dst->name) == 0) {
+                if (src1 && is_variable_same_value(src1, copy_dst)) {
                     node->src1 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     src1 = nullptr;
@@ -1701,7 +1701,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                         break;
                     }
                 }
-                if (src2 && src2->name.compare(copy_dst->name) == 0) {
+                if (src2 && is_variable_same_value(src2, copy_dst)) {
                     node->src2 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     src2 = nullptr;
