@@ -1360,7 +1360,8 @@ static void copy_propagation_transfer_copy_reaching_copies(
                 }
             }
             else if (is_same_value(node->dst.get(), copy->dst.get())) {
-                if (is_same_value(node->src.get(), copy->src.get())) {
+                // TODO why only for constant ?
+                if (node->src->type() == AST_T::TacConstant_t && is_same_value(node->src.get(), copy->src.get())) {
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
                 }
                 else {
@@ -1371,7 +1372,8 @@ static void copy_propagation_transfer_copy_reaching_copies(
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
         }
-        else if (is_same_copy(node, copy)) {
+        // TODO why only for constant ?
+        else if (node->src->type() == AST_T::TacConstant_t && is_same_copy(node, copy)) {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
         }
         else {
@@ -1721,13 +1723,13 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                          && is_same_value(node->dst.get(), copy->src.get()))) {
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
                 // TODO ? because there can be more than 1 ?
-                break;
+                // break;
             }
             else if (is_same_value(node->src.get(), copy->dst.get())) {
                 node->src = copy->src;
                 context->is_fixed_point = false; // TBD refactor
                 // TODO ? because there can be more than 1 ?
-                break;
+                // break;
             }
         }
     }
