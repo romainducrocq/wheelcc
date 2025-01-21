@@ -1285,10 +1285,10 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            if (is_static_value(copy->src.get()) || is_static_value(copy->dst.get())
-                || (node->dst
-                    && (is_same_value(node->dst.get(), copy->src.get())
-                        || is_same_value(node->dst.get(), copy->dst.get())))) {
+            else if (is_static_value(copy->src.get()) || is_static_value(copy->dst.get())
+                     || (node->dst
+                         && (is_same_value(node->dst.get(), copy->src.get())
+                             || is_same_value(node->dst.get(), copy->dst.get())))) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1315,7 +1315,7 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
+            else if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1334,14 +1334,18 @@ static void copy_propagation_transfer_copy_reaching_copies(
         RAISE_INTERNAL_ERROR;
     }
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            if (copy->dst->type() != AST_T::TacVariable_t) {
-                RAISE_INTERNAL_ERROR;
-            }
+        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            continue;
+        }
+        else if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+        if (copy->dst->type() != AST_T::TacVariable_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        else if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             if (is_same_value(node->dst.get(), copy->src.get())) {
                 if (is_same_value(node->src.get(), copy->dst.get())) {
                     for (i = 0; i < context->data_flow_analysis->set_size; ++i) {
@@ -1365,10 +1369,10 @@ static void copy_propagation_transfer_copy_reaching_copies(
         else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
         }
-        // TODO
-        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-        }
+        // // TODO
+        // if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
+        //     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+        // }
     }
 }
 
@@ -1603,7 +1607,7 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (is_same_value(node->val.get(), copy->dst.get())) {
+                else if (is_same_value(node->val.get(), copy->dst.get())) {
                     node->val = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
@@ -1625,7 +1629,7 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
                     if (copy->dst->type() != AST_T::TacVariable_t) {
                         RAISE_INTERNAL_ERROR;
                     }
-                    if (is_same_value(node->args[i].get(), copy->dst.get())) {
+                    else if (is_same_value(node->args[i].get(), copy->dst.get())) {
                         node->args[i] = copy->src;
                         context->is_fixed_point = false; // TBD refactor
                         break;
@@ -1647,7 +1651,7 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (is_same_value(node->src.get(), copy->dst.get())) {
+                else if (is_same_value(node->src.get(), copy->dst.get())) {
                     node->src = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
@@ -1670,7 +1674,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (is_same_value(node->src1.get(), copy->dst.get())) {
+                else if (is_same_value(node->src1.get(), copy->dst.get())) {
                     node->src1 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     is_src1 = true;
@@ -1704,16 +1708,16 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            if (is_same_copy(node, copy)
-                || (is_same_value(node->src.get(), copy->dst.get())
-                    && is_same_value(node->dst.get(), copy->src.get()))) {
+            else if (is_same_copy(node, copy)
+                     || (is_same_value(node->src.get(), copy->dst.get())
+                         && is_same_value(node->dst.get(), copy->src.get()))) {
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
-                break;
+                // break; // TODO ? because there can be more than 1 ?
             }
-            if (is_same_value(node->src.get(), copy->dst.get())) {
+            else if (is_same_value(node->src.get(), copy->dst.get())) {
                 node->src = copy->src;
                 context->is_fixed_point = false; // TBD refactor
-                break;
+                // break; // TODO ? because there can be more than 1 ?
             }
         }
     }
