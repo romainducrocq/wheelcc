@@ -1326,30 +1326,20 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
 
 static void copy_propagation_transfer_copy_reaching_copies(
     TacCopy* node, size_t instruction_index, size_t next_instruction_index) {
-    TacVariable* src = nullptr;
-    if (node->src->type() == AST_T::TacVariable_t) {
-        src = static_cast<TacVariable*>(node->src.get());
-    }
     if (node->dst->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
-    TacVariable* dst = static_cast<TacVariable*>(node->dst.get());
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                 RAISE_INTERNAL_ERROR;
             }
             TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            TacVariable* copy_src = nullptr;
-            if (copy->src->type() == AST_T::TacVariable_t) {
-                copy_src = static_cast<TacVariable*>(copy->src.get());
-            }
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-            if (copy_src && is_variable_same_value(dst, copy_src)) {
-                if (src && is_variable_same_value(src, copy_dst)) {
+            if (is_same_value(node->dst.get(), copy->src.get())) {
+                if (is_same_value(node->src.get(), copy->dst.get())) {
                     for (i = 0; i < context->data_flow_analysis->set_size; ++i) {
                         // TBD? : copy range
                         GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) =
@@ -1361,8 +1351,7 @@ static void copy_propagation_transfer_copy_reaching_copies(
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
                 }
             }
-            else if (is_variable_same_value(dst, copy_dst)) {
-                // TODO
+            else if (is_same_value(node->dst.get(), copy->dst.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1372,6 +1361,7 @@ static void copy_propagation_transfer_copy_reaching_copies(
         else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
         }
+        // TODO
         if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
         }
