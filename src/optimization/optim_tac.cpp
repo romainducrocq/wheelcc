@@ -1267,6 +1267,10 @@ static bool is_same_value(TacValue* node_1, TacValue* node_2) {
     return false;
 }
 
+static bool is_same_copy(TacCopy* node_1, TacCopy* node_2) {
+    return is_same_value(node_1->src.get(), node_2->src.get()) && is_same_value(node_1->dst.get(), node_2->dst.get());
+}
+
 static void copy_propagation_transfer_fun_call_reaching_copies(
     TacFunCall* node, size_t instruction_index, size_t next_instruction_index) {
     if (node->dst && node->dst->type() != AST_T::TacVariable_t) {
@@ -1688,39 +1692,28 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
 }
 
 static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction_index, size_t block_id) {
-    TacVariable* src = nullptr;
-    if (node->src->type() == AST_T::TacVariable_t) {
-        src = static_cast<TacVariable*>(node->src.get());
-    }
     if (node->dst->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
-    TacVariable* dst = static_cast<TacVariable*>(node->dst.get());
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            if (src) {
-                if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-                if (copy->src->type() == AST_T::TacVariable_t) {
-                    // TBD for check src==src and dst==dst, also check if src is constant ?
-                    TacVariable* copy_src = static_cast<TacVariable*>(copy->src.get());
-                    if ((is_variable_same_value(src, copy_src) && is_variable_same_value(dst, copy_dst))
-                        || (is_variable_same_value(src, copy_dst) && is_variable_same_value(dst, copy_src))) {
-                        control_flow_graph_remove_block_instruction(instruction_index, block_id);
-                        break;
-                    }
-                }
-                if (is_variable_same_value(src, copy_dst)) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false; // TBD refactor
-                    break;
-                }
+            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+            if (copy->dst->type() != AST_T::TacVariable_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            if (is_same_copy(node, copy)
+                || (is_same_value(node->src.get(), copy->dst.get())
+                    && is_same_value(node->dst.get(), copy->src.get()))) {
+                control_flow_graph_remove_block_instruction(instruction_index, block_id);
+                break;
+            }
+            if (is_same_value(node->src.get(), copy->dst.get())) {
+                node->src = copy->src;
+                context->is_fixed_point = false; // TBD refactor
+                break;
             }
         }
     }
