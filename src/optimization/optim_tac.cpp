@@ -1722,14 +1722,12 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                      || (is_same_value(node->src.get(), copy->dst.get())
                          && is_same_value(node->dst.get(), copy->src.get()))) {
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
-                // TODO ? because there can be more than 1 ?
-                // break;
+                break;
             }
             else if (is_same_value(node->src.get(), copy->dst.get())) {
                 node->src = copy->src;
                 context->is_fixed_point = false; // TBD refactor
-                // TODO ? because there can be more than 1 ?
-                // break;
+                break;
             }
         }
     }
