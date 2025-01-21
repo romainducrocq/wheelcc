@@ -1302,7 +1302,6 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
     if (node->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
-    TacVariable* dst = static_cast<TacVariable*>(node);
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
@@ -1312,9 +1311,7 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            if ((copy->src->type() == AST_T::TacVariable_t
-                    && is_variable_same_value(dst, static_cast<TacVariable*>(copy->src.get())))
-                || is_variable_same_value(dst, static_cast<TacVariable*>(copy->dst.get()))) {
+            if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1601,7 +1598,6 @@ static void data_flow_analysis_initialize() {
 
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, bool exit_block) {
     if (node->val->type() == AST_T::TacVariable_t) {
-        TacVariable* val = static_cast<TacVariable*>(node->val.get());
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (GET_DFA_INSTRUCTION(i)
                 && ((exit_block && GET_DFA_BLOCK_SET_AT(incoming_index, i))
@@ -1613,7 +1609,7 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (is_variable_same_value(val, static_cast<TacVariable*>(copy->dst.get()))) {
+                if (is_same_value(node->val.get(), copy->dst.get())) {
                     node->val = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
@@ -1626,7 +1622,6 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
 static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t instruction_index) {
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (node->args[i]->type() == AST_T::TacVariable_t) {
-            TacVariable* arg = static_cast<TacVariable*>(node->args[i].get());
             for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
                 if (GET_DFA_INSTRUCTION(j) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
                     if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
@@ -1636,7 +1631,7 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
                     if (copy->dst->type() != AST_T::TacVariable_t) {
                         RAISE_INTERNAL_ERROR;
                     }
-                    if (is_variable_same_value(arg, static_cast<TacVariable*>(copy->dst.get()))) {
+                    if (is_same_value(node->args[i].get(), copy->dst.get())) {
                         node->args[i] = copy->src;
                         context->is_fixed_point = false; // TBD refactor
                         break;
@@ -1649,7 +1644,6 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
 
 static void propagate_copies_unary_instructions(TacUnary* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        TacVariable* src = static_cast<TacVariable*>(node->src.get());
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
@@ -1659,7 +1653,7 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                if (is_variable_same_value(src, static_cast<TacVariable*>(copy->dst.get()))) {
+                if (is_same_value(node->src.get(), copy->dst.get())) {
                     node->src = copy->src;
                     context->is_fixed_point = false; // TBD refactor
                     break;
