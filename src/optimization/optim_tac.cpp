@@ -1213,6 +1213,11 @@ static void fold_constants_list_instructions() {
 //     //         context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index]);
 // }
 
+static bool is_static_value(TacValue* node) {
+    return node->type() == AST_T::TacVariable_t
+           && frontend->symbol_table[static_cast<TacVariable*>(node)->name]->attrs->type() == AST_T::StaticAttr_t;
+}
+
 static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
     if (node_1->constant->type() == node_2->constant->type()) {
         switch (node_1->constant->type()) {
@@ -1264,12 +1269,8 @@ static bool is_same_value(TacValue* node_1, TacValue* node_2) {
 
 static void copy_propagation_transfer_fun_call_reaching_copies(
     TacFunCall* node, size_t instruction_index, size_t next_instruction_index) {
-    TacVariable* dst = nullptr;
-    if (node->dst) {
-        if (node->dst->type() != AST_T::TacVariable_t) {
-            RAISE_INTERNAL_ERROR;
-        }
-        dst = static_cast<TacVariable*>(node->dst.get());
+    if (node->dst && node->dst->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
     }
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
@@ -1277,19 +1278,13 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
                 RAISE_INTERNAL_ERROR;
             }
             TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            TacVariable* copy_src = nullptr;
-            if (copy->src->type() == AST_T::TacVariable_t) {
-                copy_src = static_cast<TacVariable*>(copy->src.get());
-            }
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-            if ((copy_src && frontend->symbol_table[copy_src->name]->attrs->type() == AST_T::StaticAttr_t)
-                || frontend->symbol_table[copy_dst->name]->attrs->type() == AST_T::StaticAttr_t
-                || (dst
-                    && ((copy_src && is_variable_same_value(dst, copy_src))
-                        || is_variable_same_value(dst, copy_dst)))) {
+            if (is_static_value(copy->src.get()) || is_static_value(copy->dst.get())
+                || (node->dst
+                    && (is_same_value(node->dst.get(), copy->src.get())
+                        || is_same_value(node->dst.get(), copy->dst.get())))) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
