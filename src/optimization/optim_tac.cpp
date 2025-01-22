@@ -1672,9 +1672,9 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
 }
 
 static void propagate_copies_binary_instructions(TacBinary* node, size_t instruction_index) {
-    bool is_src1 = false;
-    bool is_src2 = false;
-    if (node->src1->type() == AST_T::TacVariable_t || node->src2->type() == AST_T::TacVariable_t) {
+    bool is_src1 = node->src1->type() == AST_T::TacVariable_t;
+    bool is_src2 = node->src2->type() == AST_T::TacVariable_t;
+    if (is_src1 || is_src2) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
@@ -1684,19 +1684,19 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                else if (is_same_value(node->src1.get(), copy->dst.get())) {
+                else if (is_src1 && is_same_value(node->src1.get(), copy->dst.get())) {
                     node->src1 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
-                    is_src1 = true;
-                    if (is_src2) {
+                    is_src1 = false;
+                    if (!is_src2) {
                         break;
                     }
                 }
-                if (is_same_value(node->src2.get(), copy->dst.get())) {
+                if (is_src2 && is_same_value(node->src2.get(), copy->dst.get())) {
                     node->src2 = copy->src;
                     context->is_fixed_point = false; // TBD refactor
-                    is_src2 = true;
-                    if (is_src1) {
+                    is_src2 = false;
+                    if (!is_src1) {
                         break;
                     }
                 }
