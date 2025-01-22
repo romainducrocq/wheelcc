@@ -1360,22 +1360,21 @@ static void copy_propagation_transfer_copy_reaching_copies(
                 }
             }
             else if (is_same_value(node->dst.get(), copy->dst.get())) {
-                // TODO why only for constant ?
-                if (node->src->type() == AST_T::TacConstant_t && is_same_value(node->src.get(), copy->src.get())) {
-                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-                }
-                else {
+                // TODO keep to not disable same copy? or does it matter ?
+                // if (node->src->type() == AST_T::TacConstant_t && is_same_value(node->src.get(), copy->src.get())) {
+                //     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                // }
+                // else {
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-                }
+                // }
             }
             else {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
         }
-        // TODO why only for constant ?
-        else if (node->src->type() == AST_T::TacConstant_t && is_same_copy(node, copy)) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-        }
+        // else if (node->src->type() == AST_T::TacConstant_t && is_same_copy(node, copy)) {
+        //     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+        // }
         else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
         }
@@ -1452,6 +1451,8 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
     std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
+
+    // TODO handling of redundant copies should be done here at intersection
 
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         if (predecessor_id < context->control_flow_graph->exit_id) {
