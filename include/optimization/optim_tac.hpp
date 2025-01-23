@@ -44,8 +44,8 @@ struct UnreachableCode {
 
 struct DataFlowAnalysis {
     size_t set_size;
-    size_t not_intersect;
     size_t not_redundant;
+    size_t not_intersect;
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
     std::vector<size_t> redundant_data;

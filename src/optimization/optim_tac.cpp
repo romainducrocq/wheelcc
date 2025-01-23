@@ -1476,16 +1476,20 @@ Lelse:
             RAISE_INTERNAL_ERROR;
         }
     }
-    if (is_redundant) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-                context->data_flow_analysis->redundant_data[i] = i;
-            }
-            else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_redundant) {
-                // TODO
-            }
-        }
-    }
+    // if (is_redundant) {
+    //     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+    //         if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+    //             context->data_flow_analysis->redundant_data[i] = i;
+    //         }
+    //         else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_redundant) {
+    //             size_t j = context->data_flow_analysis->redundant_data[i];
+    //             GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
+    //         }
+    //         else if (context->data_flow_analysis->redundant_data[i] != context->data_flow_analysis->not_redundant) {
+    //             RAISE_INTERNAL_ERROR;
+    //         }
+    //     }
+    // }
 
     if (instruction_index < context->data_flow_analysis->incoming_index) {
         data_flow_analysis_transfer_block(instruction_index, block_id);
@@ -1562,12 +1566,12 @@ static void propagate_copies_set_redundant_copies() {
                         context->data_flow_analysis->redundant_data[j] = i;
                     }
                 }
-                else if (context->data_flow_analysis->redundant_data[j] > context->data_flow_analysis->not_redundant) {
+                else if (context->data_flow_analysis->redundant_data[j] >= context->data_flow_analysis->not_intersect) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
         }
-        else if (context->data_flow_analysis->redundant_data[i] > context->data_flow_analysis->not_redundant) {
+        else if (context->data_flow_analysis->redundant_data[i] >= context->data_flow_analysis->not_intersect) {
             RAISE_INTERNAL_ERROR;
         }
     }
@@ -1637,8 +1641,8 @@ static void data_flow_analysis_initialize() {
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
 
-    context->data_flow_analysis->not_redundant = context->data_flow_analysis->set_size;
-    context->data_flow_analysis->not_intersect = context->data_flow_analysis->not_redundant + 1;
+    context->data_flow_analysis->not_intersect = context->data_flow_analysis->set_size;
+    context->data_flow_analysis->not_redundant = context->data_flow_analysis->not_intersect + 1;
     if (context->data_flow_analysis->redundant_data.size() < context->data_flow_analysis->set_size) {
         context->data_flow_analysis->redundant_data.resize(context->data_flow_analysis->set_size);
     }
