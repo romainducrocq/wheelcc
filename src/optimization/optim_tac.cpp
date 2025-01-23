@@ -1828,7 +1828,7 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            else if (is_same_copy(node, copy)
+            else if (context->data_flow_analysis->data_index_map[i] == instruction_index
                      || (is_same_value(node->src.get(), copy->dst.get())
                          && is_same_value(node->dst.get(), copy->src.get()))) {
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
