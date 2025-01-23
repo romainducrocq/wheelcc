@@ -1433,6 +1433,30 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
     return instruction_index;
 }
 
+// static void print_redundant_copies() {
+//     if (func_name.compare("target") == 0) {
+//         printf("redundant copies: ");
+//         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+//             if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+//                 printf("[%zu not intersect]", i);
+//             }
+//             else if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_redundant) {
+//                 printf("[%zu not redundant]", i);
+//             }
+//             else if (context->data_flow_analysis->redundant_data[i] == i) {
+//                 printf("[%zu]", i);
+//             }
+//             else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_intersect) {
+//                 printf("[%zu copy of %zu]", i, context->data_flow_analysis->redundant_data[i]);
+//             }
+//             else {
+//                 RAISE_INTERNAL_ERROR;
+//             }
+//         }
+//         printf("\n");
+//     }
+// }
+
 static void data_flow_analysis_intersection_block(size_t instruction_index, size_t block_id) {
     std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
 
@@ -1448,15 +1472,12 @@ static void data_flow_analysis_intersection_block(size_t instruction_index, size
                 else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_intersect
                          && context->data_flow_analysis->redundant_data[context->data_flow_analysis->redundant_data[i]]
                                 < context->data_flow_analysis->not_intersect) {
-                    if (context->data_flow_analysis->redundant_data[i] == i
-                        && !GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    size_t j = context->data_flow_analysis->redundant_data[i];
+                    if (j == i && !GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                         context->data_flow_analysis->redundant_data[i] = context->data_flow_analysis->not_intersect;
                     }
-                    else {
-                        size_t j = context->data_flow_analysis->redundant_data[i];
-                        if (!GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
-                            GET_DFA_INSTRUCTION_SET_AT(instruction_index, j) = GET_DFA_BLOCK_SET_AT(predecessor_id, i);
-                        }
+                    else if (j == i || !GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
+                        GET_DFA_INSTRUCTION_SET_AT(instruction_index, j) = GET_DFA_BLOCK_SET_AT(predecessor_id, i);
                     }
                     is_redundant = true;
                 }
@@ -1467,12 +1488,6 @@ static void data_flow_analysis_intersection_block(size_t instruction_index, size
         }
         else if (predecessor_id == context->control_flow_graph->entry_id) {
             std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
-            // TODO if is_redundant:
-            /*
-            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-                context->data_flow_analysis->redundant_data[i] = i;
-            }
-            */
             if (is_redundant) {
                 for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
                     if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
@@ -1505,6 +1520,8 @@ static void data_flow_analysis_intersection_block(size_t instruction_index, size
             }
         }
     }
+
+    // print_redundant_copies();
 }
 
 static bool data_flow_analysis_meet_block(size_t block_id) {
@@ -2018,6 +2035,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
 // #include <stdio.h> // TODO rm
 static void optimize_function_top_level(TacFunction* node) {
     context->p_instructions = &node->body;
+    // func_name = node->name;
     do {
         context->is_fixed_point = true;
         if (context->enabled_optimizations[CONSTANT_FOLDING]) {
