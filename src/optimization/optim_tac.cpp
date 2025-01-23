@@ -1452,6 +1452,8 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
 Lelse:
     std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
 
+    bool is_redundant = false;
+
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         if (predecessor_id < context->control_flow_graph->exit_id) {
             for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
@@ -1462,10 +1464,26 @@ Lelse:
         }
         else if (predecessor_id == context->control_flow_graph->entry_id) {
             std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+            // TODO if is_redundant:
+            /*
+            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+                context->data_flow_analysis->redundant_data[i] = i;
+            }
+            */
             break;
         }
         else {
             RAISE_INTERNAL_ERROR;
+        }
+    }
+    if (is_redundant) {
+        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+                context->data_flow_analysis->redundant_data[i] = i;
+            }
+            else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_redundant) {
+                // TODO
+            }
         }
     }
 
@@ -1528,13 +1546,13 @@ static void data_flow_analysis_iterative_algorithm() {
 
 static void propagate_copies_set_redundant_copies() {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->set_size) {
+        if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_redundant) {
             if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                 RAISE_INTERNAL_ERROR;
             }
             TacCopy* copy_1 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
             for (size_t j = i + 1; j < context->data_flow_analysis->set_size; ++j) {
-                if (context->data_flow_analysis->redundant_data[j] == context->data_flow_analysis->set_size) {
+                if (context->data_flow_analysis->redundant_data[j] == context->data_flow_analysis->not_redundant) {
                     if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
                         RAISE_INTERNAL_ERROR;
                     }
@@ -1544,12 +1562,12 @@ static void propagate_copies_set_redundant_copies() {
                         context->data_flow_analysis->redundant_data[j] = i;
                     }
                 }
-                else if (context->data_flow_analysis->redundant_data[j] > context->data_flow_analysis->set_size) {
+                else if (context->data_flow_analysis->redundant_data[j] > context->data_flow_analysis->not_redundant) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
         }
-        else if (context->data_flow_analysis->redundant_data[i] > context->data_flow_analysis->set_size) {
+        else if (context->data_flow_analysis->redundant_data[i] > context->data_flow_analysis->not_redundant) {
             RAISE_INTERNAL_ERROR;
         }
     }
@@ -1619,6 +1637,8 @@ static void data_flow_analysis_initialize() {
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
 
+    context->data_flow_analysis->not_redundant = context->data_flow_analysis->set_size;
+    context->data_flow_analysis->not_intersect = context->data_flow_analysis->not_redundant + 1;
     if (context->data_flow_analysis->redundant_data.size() < context->data_flow_analysis->set_size) {
         context->data_flow_analysis->redundant_data.resize(context->data_flow_analysis->set_size);
     }
@@ -1630,7 +1650,7 @@ static void data_flow_analysis_initialize() {
     }
     std::fill(context->data_flow_analysis->redundant_data.begin(),
         context->data_flow_analysis->redundant_data.begin() + context->data_flow_analysis->set_size,
-        context->data_flow_analysis->set_size);
+        context->data_flow_analysis->not_redundant);
     std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
         context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
     // TODO not needed ?
