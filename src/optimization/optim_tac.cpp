@@ -1433,35 +1433,6 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
     return instruction_index;
 }
 
-static void data_flow_analysis_redundant_copies() {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->set_size) {
-            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            TacCopy* copy_1 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            for (size_t j = i + 1; j < context->data_flow_analysis->set_size; ++j) {
-                if (context->data_flow_analysis->redundant_data[j] == context->data_flow_analysis->set_size) {
-                    if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
-                        RAISE_INTERNAL_ERROR;
-                    }
-                    TacCopy* copy_2 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(j).get());
-                    if (is_same_copy(copy_1, copy_2)) {
-                        context->data_flow_analysis->redundant_data[i] = i;
-                        context->data_flow_analysis->redundant_data[j] = i;
-                    }
-                }
-                else if (context->data_flow_analysis->redundant_data[j] > context->data_flow_analysis->set_size) {
-                    RAISE_INTERNAL_ERROR;
-                }
-            }
-        }
-        else if (context->data_flow_analysis->redundant_data[i] > context->data_flow_analysis->set_size) {
-            RAISE_INTERNAL_ERROR;
-        }
-    }
-}
-
 static bool data_flow_analysis_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -1480,11 +1451,6 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
     std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        context->data_flow_analysis->redundant_data[i] = context->data_flow_analysis->set_size;
-    }
-    // TODO handling of redundant copies should be done here at intersection
-    data_flow_analysis_redundant_copies();
 
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         if (predecessor_id < context->control_flow_graph->exit_id) {
@@ -1556,6 +1522,35 @@ static void data_flow_analysis_iterative_algorithm() {
                     RAISE_INTERNAL_ERROR;
                 }
             }
+        }
+    }
+}
+
+static void propagate_copies_set_redundant_copies() {
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->set_size) {
+            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            TacCopy* copy_1 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+            for (size_t j = i + 1; j < context->data_flow_analysis->set_size; ++j) {
+                if (context->data_flow_analysis->redundant_data[j] == context->data_flow_analysis->set_size) {
+                    if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    TacCopy* copy_2 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(j).get());
+                    if (is_same_copy(copy_1, copy_2)) {
+                        context->data_flow_analysis->redundant_data[i] = i;
+                        context->data_flow_analysis->redundant_data[j] = i;
+                    }
+                }
+                else if (context->data_flow_analysis->redundant_data[j] > context->data_flow_analysis->set_size) {
+                    RAISE_INTERNAL_ERROR;
+                }
+            }
+        }
+        else if (context->data_flow_analysis->redundant_data[i] > context->data_flow_analysis->set_size) {
+            RAISE_INTERNAL_ERROR;
         }
     }
 }
@@ -1633,6 +1628,9 @@ static void data_flow_analysis_initialize() {
     if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
         context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
     }
+    std::fill(context->data_flow_analysis->redundant_data.begin(),
+        context->data_flow_analysis->redundant_data.begin() + context->data_flow_analysis->set_size,
+        context->data_flow_analysis->set_size);
     std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
         context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
     // TODO not needed ?
@@ -1795,6 +1793,7 @@ static void propagate_copies_instructions(TacInstruction* node, size_t instructi
 
 static void propagate_copies_control_flow_graph() {
     data_flow_analysis_initialize();
+    propagate_copies_set_redundant_copies();
     data_flow_analysis_iterative_algorithm();
 
     // TODO traverse in front order, but get next_instruction_block every time for return instructions
