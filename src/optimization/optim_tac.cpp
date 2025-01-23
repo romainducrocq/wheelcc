@@ -1433,6 +1433,80 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
     return instruction_index;
 }
 
+static void data_flow_analysis_intersection_block(size_t instruction_index, size_t block_id) {
+    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
+
+    bool is_redundant = false;
+    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+        if (predecessor_id < context->control_flow_graph->exit_id) {
+            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+                if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_redundant) {
+                    if (!GET_DFA_BLOCK_SET_AT(predecessor_id, i)) {
+                        GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = false;
+                    }
+                }
+                else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_intersect
+                         && context->data_flow_analysis->redundant_data[context->data_flow_analysis->redundant_data[i]]
+                                < context->data_flow_analysis->not_intersect) {
+                    if (context->data_flow_analysis->redundant_data[i] == i
+                        && !GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                        context->data_flow_analysis->redundant_data[i] = context->data_flow_analysis->not_intersect;
+                    }
+                    else {
+                        size_t j = context->data_flow_analysis->redundant_data[i];
+                        if (!GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
+                            GET_DFA_INSTRUCTION_SET_AT(instruction_index, j) = GET_DFA_BLOCK_SET_AT(predecessor_id, i);
+                        }
+                    }
+                    is_redundant = true;
+                }
+                else if (context->data_flow_analysis->redundant_data[i] != context->data_flow_analysis->not_intersect) {
+                    RAISE_INTERNAL_ERROR;
+                }
+            }
+        }
+        else if (predecessor_id == context->control_flow_graph->entry_id) {
+            std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+            // TODO if is_redundant:
+            /*
+            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+                context->data_flow_analysis->redundant_data[i] = i;
+            }
+            */
+            if (is_redundant) {
+                for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+                    if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+                        context->data_flow_analysis->redundant_data[i] = i;
+                    }
+                    else if (context->data_flow_analysis->redundant_data[i]
+                             > context->data_flow_analysis->not_redundant) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                }
+                is_redundant = false;
+            }
+            break;
+        }
+        else {
+            RAISE_INTERNAL_ERROR;
+        }
+    }
+    if (is_redundant) {
+        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
+                context->data_flow_analysis->redundant_data[i] = i;
+            }
+            else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_redundant) {
+                size_t j = context->data_flow_analysis->redundant_data[i];
+                GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
+            }
+            else if (context->data_flow_analysis->redundant_data[i] != context->data_flow_analysis->not_redundant) {
+                RAISE_INTERNAL_ERROR;
+            }
+        }
+    }
+}
+
 static bool data_flow_analysis_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -1450,46 +1524,7 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
     }
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
-    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
-
-    bool is_redundant = false;
-
-    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-        if (predecessor_id < context->control_flow_graph->exit_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                if (!GET_DFA_BLOCK_SET_AT(predecessor_id, i)) {
-                    GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = false;
-                }
-            }
-        }
-        else if (predecessor_id == context->control_flow_graph->entry_id) {
-            std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
-            // TODO if is_redundant:
-            /*
-            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-                context->data_flow_analysis->redundant_data[i] = i;
-            }
-            */
-            break;
-        }
-        else {
-            RAISE_INTERNAL_ERROR;
-        }
-    }
-    // if (is_redundant) {
-    //     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-    //         if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-    //             context->data_flow_analysis->redundant_data[i] = i;
-    //         }
-    //         else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_redundant) {
-    //             size_t j = context->data_flow_analysis->redundant_data[i];
-    //             GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
-    //         }
-    //         else if (context->data_flow_analysis->redundant_data[i] != context->data_flow_analysis->not_redundant) {
-    //             RAISE_INTERNAL_ERROR;
-    //         }
-    //     }
-    // }
+    data_flow_analysis_intersection_block(instruction_index, block_id);
 
     if (instruction_index < context->data_flow_analysis->incoming_index) {
         data_flow_analysis_transfer_block(instruction_index, block_id);
