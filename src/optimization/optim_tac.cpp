@@ -1347,6 +1347,14 @@ static void copy_propagation_transfer_copy_reaching_copies(
         if (copy->dst->type() != AST_T::TacVariable_t) {
             RAISE_INTERNAL_ERROR;
         }
+        else if (is_same_value(node->dst.get(), copy->dst.get())) {
+            if (is_same_value(node->src.get(), copy->src.get())) {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            }
+        }
         else if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             if (is_same_value(node->dst.get(), copy->src.get())) {
                 if (is_same_value(node->src.get(), copy->dst.get())) {
@@ -1361,20 +1369,9 @@ static void copy_propagation_transfer_copy_reaching_copies(
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
                 }
             }
-            else if (is_same_value(node->dst.get(), copy->dst.get())) {
-                if (is_same_value(node->src.get(), copy->src.get())) {
-                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-                }
-                else {
-                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-                }
-            }
             else {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
-        }
-        else if (is_same_copy(node, copy)) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
         }
         else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
