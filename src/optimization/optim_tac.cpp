@@ -1175,44 +1175,40 @@ static void fold_constants_list_instructions() {
 //         printf("\n");
 //     }
 
-//     //     printf("data_index_map\n");
-//     //     for(size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-//     //         printf("%zu ", context->data_flow_analysis->data_index_map[i]);
-//     //     }
-//     //     printf("\n\n");
+//     // printf("data_index_map\n");
+//     // for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+//     //     printf("%zu ", context->data_flow_analysis->data_index_map[i]);
+//     // }
+//     // printf("\n\n");
 
-//     //     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size();
-//     ++instruction_index)
-//     //     {
-//     //         if (GET_INSTRUCTION(instruction_index)) {
-//     //             if(GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
-//     //                 printf("Copy %zu\n", instruction_index);
-//     //             }
+//     // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+//     //     if (GET_INSTRUCTION(instruction_index)) {
+//     //         if (GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
+//     //             printf("Copy %zu\n", instruction_index);
 //     //         }
 //     //     }
-//     //     printf("\n\n");
+//     // }
+//     // printf("\n\n");
 
-//     //     printf("instruction_index_map\n");
-//     //     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size();
-//     ++instruction_index)
-//     //     {
-//     //         if (GET_INSTRUCTION(instruction_index)) {
-//     //             switch (GET_INSTRUCTION(instruction_index)->type()) {
-//     //                 case AST_T::TacFunCall_t:
-//     //                 case AST_T::TacUnary_t:
-//     //                 case AST_T::TacBinary_t:
-//     //                 case AST_T::TacCopy_t: {
-//     //                     printf("%zu, %zu\n", instruction_index,
-//     //                         context->data_flow_analysis->instruction_index_map[instruction_index]);
-//     //                     break;
-//     //                 }
-//     //                 default:
-//     //                     break;
+//     // printf("instruction_index_map\n");
+//     // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+//     //     if (GET_INSTRUCTION(instruction_index)) {
+//     //         switch (GET_INSTRUCTION(instruction_index)->type()) {
+//     //             case AST_T::TacFunCall_t:
+//     //             case AST_T::TacUnary_t:
+//     //             case AST_T::TacBinary_t:
+//     //             case AST_T::TacCopy_t: {
+//     //                 printf("%zu, %zu\n", instruction_index,
+//     //                     context->data_flow_analysis->instruction_index_map[instruction_index]);
+//     //                 break;
 //     //             }
+//     //             default:
+//     //                 break;
 //     //         }
 //     //     }
-//     //     printf("%zu, %zu\n", context->data_flow_analysis->incoming_index,
-//     //         context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index]);
+//     // }
+//     // printf("%zu, %zu\n", context->data_flow_analysis->incoming_index,
+//     //     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index]);
 // }
 
 static bool is_static_value(TacValue* node) {
@@ -1431,16 +1427,10 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
 //     if (func_name.compare("target") == 0) {
 //         printf("redundant copies: ");
 //         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-//             if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-//                 printf("[%zu not intersect]", i);
-//             }
-//             else if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_redundant) {
-//                 printf("[%zu not redundant]", i);
-//             }
-//             else if (context->data_flow_analysis->redundant_data[i] == i) {
+//             if (context->data_flow_analysis->redundant_data[i] == i) {
 //                 printf("[%zu]", i);
 //             }
-//             else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_intersect) {
+//             else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->set_size) {
 //                 printf("[%zu copy of %zu]", i, context->data_flow_analysis->redundant_data[i]);
 //             }
 //             else {
@@ -1817,7 +1807,9 @@ static void propagate_copies_control_flow_graph() {
         return;
     }
     propagate_copies_set_redundant_copies();
+    // print_redundant_copies();
     data_flow_analysis_iterative_algorithm();
+    // print_copy_propagation();
 
     // TODO traverse in front order, but get next_instruction_block every time for return instructions
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
