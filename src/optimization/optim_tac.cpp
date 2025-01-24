@@ -1106,10 +1106,12 @@ static void fold_constants_list_instructions() {
 
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 
-#define GET_DFA_BLOCK_SET_INDEX(X, Y) \
-    context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
-#define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
-    context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->set_size + (Y)
+#define GET_DFA_BLOCK_SET_INDEX(X, Y)                                                       \
+    context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size \
+        + context->data_flow_analysis->redundant_data[Y]
+#define GET_DFA_INSTRUCTION_SET_INDEX(X, Y)                                                       \
+    context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->set_size \
+        + context->data_flow_analysis->redundant_data[Y]
 
 #define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
 #define GET_DFA_INSTRUCTION_SET_AT(X, Y) \
@@ -1360,28 +1362,23 @@ static void copy_propagation_transfer_copy_reaching_copies(
                 }
             }
             else if (is_same_value(node->dst.get(), copy->dst.get())) {
-                // TODO keep to not disable same copy? or does it matter ?
-                // if (node->src->type() == AST_T::TacConstant_t && is_same_value(node->src.get(), copy->src.get())) {
-                //     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-                // }
-                // else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-                // }
+                if (is_same_value(node->src.get(), copy->src.get())) {
+                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                }
+                else {
+                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                }
             }
             else {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
         }
-        // else if (node->src->type() == AST_T::TacConstant_t && is_same_copy(node, copy)) {
-        //     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-        // }
+        else if (is_same_copy(node, copy)) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+        }
         else {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
         }
-        // // TODO
-        // if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
-        //     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-        // }
     }
 }
 
@@ -1457,73 +1454,6 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
 //     }
 // }
 
-static void data_flow_analysis_intersection_block(size_t instruction_index, size_t block_id) {
-    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
-
-    bool is_redundant = false;
-    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-        if (predecessor_id < context->control_flow_graph->exit_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_redundant) {
-                    if (!GET_DFA_BLOCK_SET_AT(predecessor_id, i)) {
-                        GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = false;
-                    }
-                }
-                else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_intersect
-                         && context->data_flow_analysis->redundant_data[context->data_flow_analysis->redundant_data[i]]
-                                < context->data_flow_analysis->not_intersect) {
-                    size_t j = context->data_flow_analysis->redundant_data[i];
-                    if (j == i && !GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                        context->data_flow_analysis->redundant_data[i] = context->data_flow_analysis->not_intersect;
-                    }
-                    else if (j == i || !GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
-                        GET_DFA_INSTRUCTION_SET_AT(instruction_index, j) = GET_DFA_BLOCK_SET_AT(predecessor_id, i);
-                    }
-                    is_redundant = true;
-                }
-                else if (context->data_flow_analysis->redundant_data[i] != context->data_flow_analysis->not_intersect) {
-                    RAISE_INTERNAL_ERROR;
-                }
-            }
-        }
-        else if (predecessor_id == context->control_flow_graph->entry_id) {
-            std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
-            if (is_redundant) {
-                for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                    if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-                        context->data_flow_analysis->redundant_data[i] = i;
-                    }
-                    else if (context->data_flow_analysis->redundant_data[i]
-                             > context->data_flow_analysis->not_redundant) {
-                        RAISE_INTERNAL_ERROR;
-                    }
-                }
-                is_redundant = false;
-            }
-            break;
-        }
-        else {
-            RAISE_INTERNAL_ERROR;
-        }
-    }
-    if (is_redundant) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_intersect) {
-                context->data_flow_analysis->redundant_data[i] = i;
-            }
-            else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->not_redundant) {
-                size_t j = context->data_flow_analysis->redundant_data[i];
-                GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
-            }
-            else if (context->data_flow_analysis->redundant_data[i] != context->data_flow_analysis->not_redundant) {
-                RAISE_INTERNAL_ERROR;
-            }
-        }
-    }
-
-    // print_redundant_copies();
-}
-
 static bool data_flow_analysis_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -1541,7 +1471,24 @@ static bool data_flow_analysis_meet_block(size_t block_id) {
     }
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
-    data_flow_analysis_intersection_block(instruction_index, block_id);
+    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
+
+    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+        if (predecessor_id < context->control_flow_graph->exit_id) {
+            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+                if (!GET_DFA_BLOCK_SET_AT(predecessor_id, i)) {
+                    GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = false;
+                }
+            }
+        }
+        else if (predecessor_id == context->control_flow_graph->entry_id) {
+            std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+            break;
+        }
+        else {
+            RAISE_INTERNAL_ERROR;
+        }
+    }
 
     if (instruction_index < context->data_flow_analysis->incoming_index) {
         data_flow_analysis_transfer_block(instruction_index, block_id);
@@ -1602,34 +1549,33 @@ static void data_flow_analysis_iterative_algorithm() {
 
 static void propagate_copies_set_redundant_copies() {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->redundant_data[i] == context->data_flow_analysis->not_redundant) {
+        if (context->data_flow_analysis->redundant_data[i] == i) {
             if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                 RAISE_INTERNAL_ERROR;
             }
             TacCopy* copy_1 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
             for (size_t j = i + 1; j < context->data_flow_analysis->set_size; ++j) {
-                if (context->data_flow_analysis->redundant_data[j] == context->data_flow_analysis->not_redundant) {
+                if (context->data_flow_analysis->redundant_data[j] == j) {
                     if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
                         RAISE_INTERNAL_ERROR;
                     }
                     TacCopy* copy_2 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(j).get());
                     if (is_same_copy(copy_1, copy_2)) {
-                        context->data_flow_analysis->redundant_data[i] = i;
                         context->data_flow_analysis->redundant_data[j] = i;
                     }
                 }
-                else if (context->data_flow_analysis->redundant_data[j] >= context->data_flow_analysis->not_intersect) {
+                else if (context->data_flow_analysis->redundant_data[j] >= context->data_flow_analysis->set_size) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
         }
-        else if (context->data_flow_analysis->redundant_data[i] >= context->data_flow_analysis->not_intersect) {
+        else if (context->data_flow_analysis->redundant_data[i] >= context->data_flow_analysis->set_size) {
             RAISE_INTERNAL_ERROR;
         }
     }
 }
 
-static void data_flow_analysis_initialize() {
+static bool data_flow_analysis_initialize() {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
 
@@ -1687,14 +1633,15 @@ static void data_flow_analysis_initialize() {
             context->data_flow_analysis->open_block_ids[block_id] = context->control_flow_graph->exit_id; // TODO
         }
     }
+    if (context->data_flow_analysis->set_size == 0) {
+        return false;
+    }
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
         instructions_flat_sets_size;
     instructions_flat_sets_size++;
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
 
-    context->data_flow_analysis->not_intersect = context->data_flow_analysis->set_size;
-    context->data_flow_analysis->not_redundant = context->data_flow_analysis->not_intersect + 1;
     if (context->data_flow_analysis->redundant_data.size() < context->data_flow_analysis->set_size) {
         context->data_flow_analysis->redundant_data.resize(context->data_flow_analysis->set_size);
     }
@@ -1704,14 +1651,15 @@ static void data_flow_analysis_initialize() {
     if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
         context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
     }
-    std::fill(context->data_flow_analysis->redundant_data.begin(),
-        context->data_flow_analysis->redundant_data.begin() + context->data_flow_analysis->set_size,
-        context->data_flow_analysis->not_redundant);
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        context->data_flow_analysis->redundant_data[i] = i;
+    }
     std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
         context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
     // TODO not needed ?
     // std::fill(context->data_flow_analysis->instructions_flat_sets.begin(),
     //     context->data_flow_analysis->instructions_flat_sets.begin() + instructions_flat_sets_size, false);
+    return true;
 }
 
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, bool exit_block) {
@@ -1868,7 +1816,9 @@ static void propagate_copies_instructions(TacInstruction* node, size_t instructi
 }
 
 static void propagate_copies_control_flow_graph() {
-    data_flow_analysis_initialize();
+    if (!data_flow_analysis_initialize()) {
+        return;
+    }
     propagate_copies_set_redundant_copies();
     data_flow_analysis_iterative_algorithm();
 
