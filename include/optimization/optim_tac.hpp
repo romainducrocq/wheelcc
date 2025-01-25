@@ -46,7 +46,7 @@ struct DataFlowAnalysis {
     size_t set_size;
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
-    std::vector<size_t> redundant_data;
+    // std::vector<size_t> redundant_data;
     std::vector<size_t> data_index_map;
     std::vector<size_t> block_index_map;
     std::vector<size_t> instruction_index_map;
