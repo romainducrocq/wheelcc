@@ -38,10 +38,6 @@ struct ControlFlowGraph {
     std::unordered_map<std::string, size_t> label_id_map;
 };
 
-struct UnreachableCode {
-    std::vector<bool> reachable_blocks;
-};
-
 struct DataFlowAnalysis {
     size_t set_size;
     size_t incoming_index;
@@ -64,8 +60,9 @@ struct OptimTacContext {
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Constant folding
     // Copy propagation
+    std::unique_ptr<std::vector<std::unique_ptr<TacInstruction>>> bak_instructions;
     // Unreachable code elimination
-    std::unique_ptr<UnreachableCode> unreachable_code;
+    std::unique_ptr<std::vector<bool>> reaching_code;
     // Dead store elimination
 };
 

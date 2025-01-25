@@ -1933,8 +1933,8 @@ static void eliminate_unreachable_code_successor_reachable_blocks(size_t block_i
 }
 
 static void eliminate_unreachable_code_reachable_block(size_t block_id) {
-    if (block_id < context->control_flow_graph->exit_id && !context->unreachable_code->reachable_blocks[block_id]) {
-        context->unreachable_code->reachable_blocks[block_id] = true;
+    if (block_id < context->control_flow_graph->exit_id && !(*context->reaching_code)[block_id]) {
+        (*context->reaching_code)[block_id] = true;
         eliminate_unreachable_code_successor_reachable_blocks(block_id);
     }
 }
@@ -1988,11 +1988,11 @@ static void eliminate_unreachable_code_label_block(size_t block_id, size_t previ
 }
 
 static void eliminate_unreachable_code_control_flow_graph() {
-    if (context->unreachable_code->reachable_blocks.size() < context->control_flow_graph->blocks.size()) {
-        context->unreachable_code->reachable_blocks.resize(context->control_flow_graph->blocks.size());
+    if (context->reaching_code->size() < context->control_flow_graph->blocks.size()) {
+        context->reaching_code->resize(context->control_flow_graph->blocks.size());
     }
-    std::fill(context->unreachable_code->reachable_blocks.begin(),
-        context->unreachable_code->reachable_blocks.begin() + context->control_flow_graph->blocks.size(), false);
+    std::fill(context->reaching_code->begin(),
+        context->reaching_code->begin() + context->control_flow_graph->blocks.size(), false);
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
@@ -2000,7 +2000,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
     size_t block_id = context->control_flow_graph->blocks.size();
     size_t next_block_id = context->control_flow_graph->exit_id;
     while (block_id-- > 0) {
-        if (context->unreachable_code->reachable_blocks[block_id]) {
+        if ((*context->reaching_code)[block_id]) {
             next_block_id = block_id;
             break;
         }
@@ -2009,7 +2009,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
         }
     }
     while (block_id-- > 0) {
-        if (context->unreachable_code->reachable_blocks[block_id]) {
+        if ((*context->reaching_code)[block_id]) {
             eliminate_unreachable_code_jump_block(block_id, next_block_id);
             next_block_id = block_id;
         }
@@ -2019,9 +2019,9 @@ static void eliminate_unreachable_code_control_flow_graph() {
     }
 
     for (auto& label_id : context->control_flow_graph->label_id_map) {
-        if (context->unreachable_code->reachable_blocks[label_id.second]) {
+        if ((*context->reaching_code)[label_id.second]) {
             for (block_id = label_id.second; block_id-- > 0;) {
-                if (context->unreachable_code->reachable_blocks[block_id]) {
+                if ((*context->reaching_code)[block_id]) {
                     next_block_id = block_id;
                     goto Lelse;
                 }
@@ -2098,13 +2098,11 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(optim_1_mask);
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
-        if (context->enabled_optimizations[COPY_PROPAGATION]) {
+        context->reaching_code = std::make_unique<std::vector<bool>>();
+        if (context->enabled_optimizations[COPY_PROPAGATION]
+            || context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
             context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
-        }
-        if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
-            context->unreachable_code = std::make_unique<UnreachableCode>();
-        }
-        if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
+            context->bak_instructions = std::make_unique<std::vector<std::unique_ptr<TacInstruction>>>();
         }
     }
     optimize_program(node);
