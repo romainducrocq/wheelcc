@@ -34,6 +34,7 @@ struct ControlFlowGraph {
     size_t exit_id;
     std::vector<size_t> entry_successor_ids;
     std::vector<size_t> exit_predecessor_ids;
+    std::vector<bool> reaching_code; // should it be in dfa ?
     std::vector<ControlFlowBlock> blocks;
     std::unordered_map<std::string, size_t> label_id_map;
 };
@@ -42,13 +43,11 @@ struct DataFlowAnalysis {
     size_t set_size;
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
-    // std::vector<size_t> redundant_data;
     std::vector<size_t> data_index_map;
     std::vector<size_t> block_index_map;
     std::vector<size_t> instruction_index_map;
     std::vector<bool> blocks_flat_sets;
     std::vector<bool> instructions_flat_sets;
-    std::vector<bool> reaching_code;
     std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
 };
 
@@ -63,7 +62,6 @@ struct OptimTacContext {
     // Constant folding
     // Copy propagation
     // Unreachable code elimination
-    std::unique_ptr<std::vector<bool>> reachable_blocks;
     // Dead store elimination
 };
 

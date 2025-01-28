@@ -1108,10 +1108,8 @@ static void fold_constants_list_instructions() {
 
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
     context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
-// + context->data_flow_analysis->redundant_data[Y]
 #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
     context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->set_size + (Y)
-// + context->data_flow_analysis->redundant_data[Y]
 
 #define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
 #define GET_DFA_INSTRUCTION_SET_AT(X, Y) \
@@ -1264,11 +1262,6 @@ static bool is_same_value(TacValue* node_1, TacValue* node_2) {
     }
     return false;
 }
-
-// static bool is_same_copy(TacCopy* node_1, TacCopy* node_2) {
-//     return is_same_value(node_1->src.get(), node_2->src.get()) && is_same_value(node_1->dst.get(),
-//     node_2->dst.get());
-// }
 
 static void copy_propagation_transfer_fun_call_reaching_copies(
     TacFunCall* node, size_t instruction_index, size_t next_instruction_index) {
@@ -1424,24 +1417,6 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
     return instruction_index;
 }
 
-// static void print_redundant_copies() {
-//     if (func_name.compare("target") == 0) {
-//         printf("redundant copies: ");
-//         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-//             if (context->data_flow_analysis->redundant_data[i] == i) {
-//                 printf("[%zu]", i);
-//             }
-//             else if (context->data_flow_analysis->redundant_data[i] < context->data_flow_analysis->set_size) {
-//                 printf("[%zu copy of %zu]", i, context->data_flow_analysis->redundant_data[i]);
-//             }
-//             else {
-//                 RAISE_INTERNAL_ERROR;
-//             }
-//         }
-//         printf("\n");
-//     }
-// }
-
 static bool data_flow_analysis_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -1535,34 +1510,6 @@ static void data_flow_analysis_iterative_algorithm() {
     }
 }
 
-// static void propagate_copies_set_redundant_copies() {
-//     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-//         if (context->data_flow_analysis->redundant_data[i] == i) {
-//             if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-//                 RAISE_INTERNAL_ERROR;
-//             }
-//             TacCopy* copy_1 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-//             for (size_t j = i + 1; j < context->data_flow_analysis->set_size; ++j) {
-//                 if (context->data_flow_analysis->redundant_data[j] == j) {
-//                     if (GET_DFA_INSTRUCTION(j)->type() != AST_T::TacCopy_t) {
-//                         RAISE_INTERNAL_ERROR;
-//                     }
-//                     TacCopy* copy_2 = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(j).get());
-//                     if (is_same_copy(copy_1, copy_2)) {
-//                         context->data_flow_analysis->redundant_data[j] = i;
-//                     }
-//                 }
-//                 else if (context->data_flow_analysis->redundant_data[j] >= context->data_flow_analysis->set_size) {
-//                     RAISE_INTERNAL_ERROR;
-//                 }
-//             }
-//         }
-//         else if (context->data_flow_analysis->redundant_data[i] >= context->data_flow_analysis->set_size) {
-//             RAISE_INTERNAL_ERROR;
-//         }
-//     }
-// }
-
 static bool data_flow_analysis_initialize() {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
@@ -1630,31 +1577,23 @@ static bool data_flow_analysis_initialize() {
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
 
-    if (context->data_flow_analysis->reaching_code.size() < context->data_flow_analysis->set_size) {
-        context->data_flow_analysis->reaching_code.resize(context->data_flow_analysis->set_size);
+    if (context->control_flow_graph->reaching_code.size() < context->data_flow_analysis->set_size) {
+        context->control_flow_graph->reaching_code.resize(context->data_flow_analysis->set_size);
     }
     if (context->data_flow_analysis->bak_instructions.size() < context->data_flow_analysis->set_size) {
         context->data_flow_analysis->bak_instructions.resize(context->data_flow_analysis->set_size);
     }
-    // if (context->data_flow_analysis->redundant_data.size() < context->data_flow_analysis->set_size) {
-    //     context->data_flow_analysis->redundant_data.resize(context->data_flow_analysis->set_size);
-    // }
     if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
         context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);
     }
     if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
         context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
     }
-    // for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-    //     context->data_flow_analysis->redundant_data[i] = i;
-    // }
-    std::fill(context->data_flow_analysis->reaching_code.begin(),
-        context->data_flow_analysis->reaching_code.begin() + context->data_flow_analysis->set_size, false);
+    std::fill(context->control_flow_graph->reaching_code.begin(),
+        context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
     std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
         context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
-    // TODO not needed ?
-    // std::fill(context->data_flow_analysis->instructions_flat_sets.begin(),
-    //     context->data_flow_analysis->instructions_flat_sets.begin() + instructions_flat_sets_size, false);
+
     return true;
 }
 
@@ -1668,7 +1607,7 @@ static size_t get_data_index_at(size_t instruction_index) {
 }
 
 static TacInstruction* get_bak_instruction_at(size_t i) {
-    if (context->data_flow_analysis->reaching_code[i]) {
+    if (context->control_flow_graph->reaching_code[i]) {
         if (context->data_flow_analysis->bak_instructions[i]) {
             return context->data_flow_analysis->bak_instructions[i].get();
         }
@@ -1697,7 +1636,7 @@ static void set_bak_reaching_copy_at(TacCopy* node, size_t instruction_index) {
     std::shared_ptr<TacValue> src = node->src;
     std::shared_ptr<TacValue> dst = node->dst;
     context->data_flow_analysis->bak_instructions[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
-    context->data_flow_analysis->reaching_code[i] = true;
+    context->control_flow_graph->reaching_code[i] = true;
 }
 
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, size_t exit_block) {
@@ -1788,9 +1727,6 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
     }
 }
 
-// TODO:
-// For copies only -> do not change the values during processing
-// Keep a list of copies to modify and do it after copy propagation ???
 static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction_index, size_t block_id) {
     if (node->dst->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
@@ -1804,14 +1740,14 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
             else if (context->data_flow_analysis->data_index_map[i] == instruction_index
                      || (is_same_value(node->src.get(), copy->dst.get())
                          && is_same_value(node->dst.get(), copy->src.get()))) {
-                if (!context->data_flow_analysis->reaching_code[i]) {
+                if (!context->control_flow_graph->reaching_code[i]) {
                     set_bak_reaching_copy_at(node, instruction_index);
                 }
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
                 break;
             }
             else if (is_same_value(node->src.get(), copy->dst.get())) {
-                if (!context->data_flow_analysis->reaching_code[i]) {
+                if (!context->control_flow_graph->reaching_code[i]) {
                     set_bak_reaching_copy_at(node, instruction_index);
                 }
                 node->src = copy->src;
@@ -1861,11 +1797,6 @@ static void propagate_copies_jump_if_not_zero_instructions(
     }
 }
 
-// TODO
-// replace src operand also for TacReturn.val
-// and TacFunCall.args (? probably yes, confirm after testing)
-// also keep track of correct instruction_index for GET_DFA_INSTRUCTION_SET_AT
-// we need the last reaching copies at that point also for TacReturn, which is not in instruction_flat_sets
 static void propagate_copies_instructions(TacInstruction* node, size_t instruction_index, size_t block_id) {
     switch (node->type()) {
         case AST_T::TacReturn_t:
@@ -1899,12 +1830,9 @@ static void propagate_copies_control_flow_graph() {
     if (!data_flow_analysis_initialize()) {
         return;
     }
-    // propagate_copies_set_redundant_copies();
-    // print_redundant_copies();
     data_flow_analysis_iterative_algorithm();
     // print_copy_propagation();
 
-    // TODO traverse in front order, but get next_instruction_block every time for return instructions
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             size_t incoming_index = block_id;
@@ -1950,8 +1878,8 @@ static void eliminate_unreachable_code_successor_reachable_blocks(size_t block_i
 }
 
 static void eliminate_unreachable_code_reachable_block(size_t block_id) {
-    if (block_id < context->control_flow_graph->exit_id && !(*context->reachable_blocks)[block_id]) {
-        (*context->reachable_blocks)[block_id] = true;
+    if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
+        context->control_flow_graph->reaching_code[block_id] = true;
         eliminate_unreachable_code_successor_reachable_blocks(block_id);
     }
 }
@@ -2005,11 +1933,11 @@ static void eliminate_unreachable_code_label_block(size_t block_id, size_t previ
 }
 
 static void eliminate_unreachable_code_control_flow_graph() {
-    if (context->reachable_blocks->size() < context->control_flow_graph->blocks.size()) {
-        context->reachable_blocks->resize(context->control_flow_graph->blocks.size());
+    if (context->control_flow_graph->reaching_code.size() < context->control_flow_graph->blocks.size()) {
+        context->control_flow_graph->reaching_code.resize(context->control_flow_graph->blocks.size());
     }
-    std::fill(context->reachable_blocks->begin(),
-        context->reachable_blocks->begin() + context->control_flow_graph->blocks.size(), false);
+    std::fill(context->control_flow_graph->reaching_code.begin(),
+        context->control_flow_graph->reaching_code.begin() + context->control_flow_graph->blocks.size(), false);
     for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
         eliminate_unreachable_code_reachable_block(successor_id);
     }
@@ -2017,7 +1945,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
     size_t block_id = context->control_flow_graph->blocks.size();
     size_t next_block_id = context->control_flow_graph->exit_id;
     while (block_id-- > 0) {
-        if ((*context->reachable_blocks)[block_id]) {
+        if (context->control_flow_graph->reaching_code[block_id]) {
             next_block_id = block_id;
             break;
         }
@@ -2026,7 +1954,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
         }
     }
     while (block_id-- > 0) {
-        if ((*context->reachable_blocks)[block_id]) {
+        if (context->control_flow_graph->reaching_code[block_id]) {
             eliminate_unreachable_code_jump_block(block_id, next_block_id);
             next_block_id = block_id;
         }
@@ -2036,9 +1964,9 @@ static void eliminate_unreachable_code_control_flow_graph() {
     }
 
     for (auto& label_id : context->control_flow_graph->label_id_map) {
-        if ((*context->reachable_blocks)[label_id.second]) {
+        if (context->control_flow_graph->reaching_code[label_id.second]) {
             for (block_id = label_id.second; block_id-- > 0;) {
-                if ((*context->reachable_blocks)[block_id]) {
+                if (context->control_flow_graph->reaching_code[block_id]) {
                     next_block_id = block_id;
                     goto Lelse;
                 }
@@ -2115,7 +2043,6 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(optim_1_mask);
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
-        context->reachable_blocks = std::make_unique<std::vector<bool>>();
         if (context->enabled_optimizations[COPY_PROPAGATION]
             || context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
             context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
