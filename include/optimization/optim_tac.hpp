@@ -48,6 +48,8 @@ struct DataFlowAnalysis {
     std::vector<size_t> instruction_index_map;
     std::vector<bool> blocks_flat_sets;
     std::vector<bool> instructions_flat_sets;
+    std::vector<bool> reaching_code;
+    std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
 };
 
 struct OptimTacContext {
@@ -60,8 +62,6 @@ struct OptimTacContext {
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Constant folding
     // Copy propagation
-    std::unique_ptr<std::vector<bool>> reaching_code;
-    std::unique_ptr<std::vector<std::unique_ptr<TacInstruction>>> bak_instructions;
     // Unreachable code elimination
     std::unique_ptr<std::vector<bool>> reachable_blocks;
     // Dead store elimination

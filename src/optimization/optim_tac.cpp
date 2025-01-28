@@ -1630,6 +1630,12 @@ static bool data_flow_analysis_initialize() {
     blocks_flat_sets_size *= context->data_flow_analysis->set_size;
     instructions_flat_sets_size *= context->data_flow_analysis->set_size;
 
+    if (context->data_flow_analysis->reaching_code.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->reaching_code.resize(context->data_flow_analysis->set_size);
+    }
+    if (context->data_flow_analysis->bak_instructions.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->bak_instructions.resize(context->data_flow_analysis->set_size);
+    }
     // if (context->data_flow_analysis->redundant_data.size() < context->data_flow_analysis->set_size) {
     //     context->data_flow_analysis->redundant_data.resize(context->data_flow_analysis->set_size);
     // }
@@ -1642,6 +1648,8 @@ static bool data_flow_analysis_initialize() {
     // for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
     //     context->data_flow_analysis->redundant_data[i] = i;
     // }
+    std::fill(context->data_flow_analysis->reaching_code.begin(),
+        context->data_flow_analysis->reaching_code.begin() + context->data_flow_analysis->set_size, false);
     std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
         context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
     // TODO not needed ?
@@ -1650,34 +1658,46 @@ static bool data_flow_analysis_initialize() {
     return true;
 }
 
-static TacCopy* get_bak_reaching_copy_at(size_t i) {
-    if ((*context->reaching_code)[i]) {
-        if ((*context->bak_instructions)[i] && (*context->bak_instructions)[i]->type() == AST_T::TacCopy_t) {
-            return static_cast<TacCopy*>((*context->bak_instructions)[i].get());
+static size_t get_data_index_at(size_t instruction_index) {
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
+            return i;
+        }
+    }
+    RAISE_INTERNAL_ERROR;
+}
+
+static TacInstruction* get_bak_instruction_at(size_t i) {
+    if (context->data_flow_analysis->reaching_code[i]) {
+        if (context->data_flow_analysis->bak_instructions[i]) {
+            return context->data_flow_analysis->bak_instructions[i].get();
         }
         else {
             RAISE_INTERNAL_ERROR;
         }
     }
-    else if (GET_DFA_INSTRUCTION(i) && GET_DFA_INSTRUCTION(i)->type() == AST_T::TacCopy_t) {
-        return static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+    else if (GET_DFA_INSTRUCTION(i)) {
+        return GET_DFA_INSTRUCTION(i).get();
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void set_bak_reaching_copy_at(TacCopy* node, size_t instruction_index) {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
-            std::shared_ptr<TacValue> src = node->src;
-            std::shared_ptr<TacValue> dst = node->dst;
-            (*context->bak_instructions)[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
-            (*context->reaching_code)[i] = true;
-            return;
-        }
+static TacCopy* get_bak_reaching_copy_at(size_t i) {
+    TacInstruction* node = get_bak_instruction_at(i);
+    if (node->type() != AST_T::TacCopy_t) {
+        RAISE_INTERNAL_ERROR;
     }
-    RAISE_INTERNAL_ERROR;
+    return static_cast<TacCopy*>(node);
+}
+
+static void set_bak_reaching_copy_at(TacCopy* node, size_t instruction_index) {
+    size_t i = get_data_index_at(instruction_index);
+    std::shared_ptr<TacValue> src = node->src;
+    std::shared_ptr<TacValue> dst = node->dst;
+    context->data_flow_analysis->bak_instructions[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
+    context->data_flow_analysis->reaching_code[i] = true;
 }
 
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, size_t exit_block) {
@@ -1784,14 +1804,14 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
             else if (context->data_flow_analysis->data_index_map[i] == instruction_index
                      || (is_same_value(node->src.get(), copy->dst.get())
                          && is_same_value(node->dst.get(), copy->src.get()))) {
-                if (!(*context->reaching_code)[i]) {
+                if (!context->data_flow_analysis->reaching_code[i]) {
                     set_bak_reaching_copy_at(node, instruction_index);
                 }
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
                 break;
             }
             else if (is_same_value(node->src.get(), copy->dst.get())) {
-                if (!(*context->reaching_code)[i]) {
+                if (!context->data_flow_analysis->reaching_code[i]) {
                     set_bak_reaching_copy_at(node, instruction_index);
                 }
                 node->src = copy->src;
@@ -1883,15 +1903,6 @@ static void propagate_copies_control_flow_graph() {
     // print_redundant_copies();
     data_flow_analysis_iterative_algorithm();
     // print_copy_propagation();
-
-    if (context->reaching_code->size() < context->data_flow_analysis->set_size) {
-        context->reaching_code->resize(context->data_flow_analysis->set_size);
-    }
-    if (context->bak_instructions->size() < context->data_flow_analysis->set_size) {
-        context->bak_instructions->resize(context->data_flow_analysis->set_size);
-    }
-    std::fill(context->reaching_code->begin(), context->reaching_code->begin() + context->data_flow_analysis->set_size,
-        false);
 
     // TODO traverse in front order, but get next_instruction_block every time for return instructions
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
@@ -2108,8 +2119,6 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
         if (context->enabled_optimizations[COPY_PROPAGATION]
             || context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
             context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
-            context->reaching_code = std::make_unique<std::vector<bool>>();
-            context->bak_instructions = std::make_unique<std::vector<std::unique_ptr<TacInstruction>>>();
         }
     }
     optimize_program(node);
