@@ -1650,67 +1650,6 @@ static bool data_flow_analysis_initialize() {
     return true;
 }
 
-static std::shared_ptr<TacConstant> set_copy_constant_value(TacConstant* node) {
-    std::shared_ptr<CConst> constant;
-    switch (node->constant->type()) {
-        case AST_T::CConstInt_t: {
-            TInt value = static_cast<CConstInt*>(node->constant.get())->value;
-            constant = std::make_shared<CConstInt>(std::move(value));
-            break;
-        }
-        case AST_T::CConstLong_t: {
-            TLong value = static_cast<CConstLong*>(node->constant.get())->value;
-            constant = std::make_shared<CConstLong>(std::move(value));
-            break;
-        }
-        case AST_T::CConstUInt_t: {
-            TUInt value = static_cast<CConstUInt*>(node->constant.get())->value;
-            constant = std::make_shared<CConstUInt>(std::move(value));
-            break;
-        }
-        case AST_T::CConstULong_t: {
-            TULong value = static_cast<CConstULong*>(node->constant.get())->value;
-            constant = std::make_shared<CConstULong>(std::move(value));
-            break;
-        }
-        case AST_T::CConstDouble_t: {
-            TDouble value = static_cast<CConstDouble*>(node->constant.get())->value;
-            constant = std::make_shared<CConstDouble>(std::move(value));
-            break;
-        }
-        case AST_T::CConstChar_t: {
-            TChar value = static_cast<CConstChar*>(node->constant.get())->value;
-            constant = std::make_shared<CConstChar>(std::move(value));
-            break;
-        }
-        case AST_T::CConstUChar_t: {
-            TUChar value = static_cast<CConstUChar*>(node->constant.get())->value;
-            constant = std::make_shared<CConstUChar>(std::move(value));
-            break;
-        }
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-    return std::make_shared<TacConstant>(std::move(constant));
-}
-
-static std::shared_ptr<TacVariable> set_copy_variable_value(TacVariable* node) {
-    TIdentifier name = node->name;
-    return std::make_shared<TacVariable>(std::move(name));
-}
-
-static std::shared_ptr<TacValue> set_copy_value(TacValue* node) {
-    context->is_fixed_point = false;
-    switch (node->type()) {
-        case AST_T::TacConstant_t:
-            return set_copy_constant_value(static_cast<TacConstant*>(node));
-        case AST_T::TacVariable_t:
-            return set_copy_variable_value(static_cast<TacVariable*>(node));
-        default:
-            RAISE_INTERNAL_ERROR;
-    }
-}
-
 static TacCopy* get_bak_reaching_copy_at(size_t i) {
     if ((*context->reaching_code)[i]) {
         if ((*context->bak_instructions)[i] && (*context->bak_instructions)[i]->type() == AST_T::TacCopy_t) {
@@ -1731,10 +1670,8 @@ static TacCopy* get_bak_reaching_copy_at(size_t i) {
 static void set_bak_reaching_copy_at(TacCopy* node, size_t instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
-            bool is_fixed_point = context->is_fixed_point; // TODO rm
-            std::shared_ptr<TacValue> src = set_copy_value(node->src.get());
-            std::shared_ptr<TacValue> dst = set_copy_value(node->dst.get());
-            context->is_fixed_point = is_fixed_point; // TODO rm
+            std::shared_ptr<TacValue> src = node->src;
+            std::shared_ptr<TacValue> dst = node->dst;
             (*context->bak_instructions)[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
             (*context->reaching_code)[i] = true;
             return;
@@ -1753,10 +1690,8 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
                     RAISE_INTERNAL_ERROR;
                 }
                 else if (is_same_value(node->val.get(), copy->dst.get())) {
-                    // TBD ? shallow or deep copy ?
-                    // node->val = copy->src;
-                    // context->is_fixed_point = false;
-                    node->val = set_copy_value(copy->src.get());
+                    node->val = copy->src;
+                    context->is_fixed_point = false;
                     break;
                 }
             }
@@ -1774,10 +1709,8 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
                         RAISE_INTERNAL_ERROR;
                     }
                     else if (is_same_value(node->args[i].get(), copy->dst.get())) {
-                        // TBD ? shallow or deep copy ?
-                        // node->args[i] = copy->src;
-                        // context->is_fixed_point = false;
-                        node->args[i] = set_copy_value(copy->src.get());
+                        node->args[i] = copy->src;
+                        context->is_fixed_point = false;
                         break;
                     }
                 }
@@ -1795,10 +1728,8 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
                     RAISE_INTERNAL_ERROR;
                 }
                 else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    // TBD ? shallow or deep copy ?
-                    // node->src = copy->src;
-                    // context->is_fixed_point = false;
-                    node->src = set_copy_value(copy->src.get());
+                    node->src = copy->src;
+                    context->is_fixed_point = false;
                     break;
                 }
             }
@@ -1817,20 +1748,16 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
                     RAISE_INTERNAL_ERROR;
                 }
                 else if (is_src1 && is_same_value(node->src1.get(), copy->dst.get())) {
-                    // TBD ? shallow or deep copy ?
-                    // node->src1 = copy->src;
-                    // context->is_fixed_point = false;
-                    node->src1 = set_copy_value(copy->src.get());
+                    node->src1 = copy->src;
+                    context->is_fixed_point = false;
                     is_src1 = false;
                     if (!is_src2) {
                         break;
                     }
                 }
                 if (is_src2 && is_same_value(node->src2.get(), copy->dst.get())) {
-                    // TBD ? shallow or deep copy ?
-                    // node->src2 = copy->src;
-                    // context->is_fixed_point = false;
-                    node->src2 = set_copy_value(copy->src.get());
+                    node->src2 = copy->src;
+                    context->is_fixed_point = false;
                     is_src2 = false;
                     if (!is_src1) {
                         break;
@@ -1864,13 +1791,11 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                 break;
             }
             else if (is_same_value(node->src.get(), copy->dst.get())) {
-                // TBD ? shallow or deep copy ?
-                // node->src = copy->src;
-                // context->is_fixed_point = false;
                 if (!(*context->reaching_code)[i]) {
                     set_bak_reaching_copy_at(node, instruction_index);
                 }
-                node->src = set_copy_value(copy->src.get());
+                node->src = copy->src;
+                context->is_fixed_point = false;
                 break;
             }
         }
@@ -1887,10 +1812,8 @@ static void propagate_copies_jump_if_zero_instructions(TacJumpIfZero* node, size
                     RAISE_INTERNAL_ERROR;
                 }
                 else if (is_same_value(node->condition.get(), copy->dst.get())) {
-                    // TBD ? shallow or deep copy ?
-                    // node->val = copy->src;
-                    // context->is_fixed_point = false;
-                    node->condition = set_copy_value(copy->src.get());
+                    node->condition = copy->src;
+                    context->is_fixed_point = false;
                     break;
                 }
             }
@@ -1909,10 +1832,8 @@ static void propagate_copies_jump_if_not_zero_instructions(
                     RAISE_INTERNAL_ERROR;
                 }
                 else if (is_same_value(node->condition.get(), copy->dst.get())) {
-                    // TBD ? shallow or deep copy ?
-                    // node->val = copy->src;
-                    // context->is_fixed_point = false;
-                    node->condition = set_copy_value(copy->src.get());
+                    node->condition = copy->src;
+                    context->is_fixed_point = false;
                     break;
                 }
             }
