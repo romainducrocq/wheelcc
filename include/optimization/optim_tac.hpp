@@ -17,8 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Constant folding
-// Copy propagation
 // Unreachable code elimination
+// Copy propagation
 // Dead store elimination
 
 struct ControlFlowBlock {
@@ -60,8 +60,8 @@ struct OptimTacContext {
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     // Constant folding
-    // Copy propagation
     // Unreachable code elimination
+    // Copy propagation
     // Dead store elimination
 };
 
