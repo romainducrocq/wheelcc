@@ -1713,7 +1713,7 @@ static bool data_flow_analysis_initialize() {
     return true;
 }
 
-static size_t get_data_index_at(size_t instruction_index) {
+static size_t get_dfa_data_index(size_t instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
             return i;
@@ -1722,7 +1722,7 @@ static size_t get_data_index_at(size_t instruction_index) {
     RAISE_INTERNAL_ERROR;
 }
 
-static TacInstruction* get_bak_instruction_at(size_t i) {
+static TacInstruction* get_dfa_bak_instruction(size_t i) {
     if (context->control_flow_graph->reaching_code[i]) {
         if (context->data_flow_analysis->bak_instructions[i]) {
             return context->data_flow_analysis->bak_instructions[i].get();
@@ -1739,20 +1739,32 @@ static TacInstruction* get_bak_instruction_at(size_t i) {
     }
 }
 
-static TacCopy* get_bak_reaching_copy_at(size_t i) {
-    TacInstruction* node = get_bak_instruction_at(i);
+static TacCopy* get_dfa_bak_copy_instruction(size_t i) {
+    TacInstruction* node = get_dfa_bak_instruction(i);
     if (node->type() != AST_T::TacCopy_t) {
         RAISE_INTERNAL_ERROR;
     }
     return static_cast<TacCopy*>(node);
 }
 
-static void set_bak_reaching_copy_at(TacCopy* node, size_t instruction_index) {
-    size_t i = get_data_index_at(instruction_index);
-    std::shared_ptr<TacValue> src = node->src;
-    std::shared_ptr<TacValue> dst = node->dst;
-    context->data_flow_analysis->bak_instructions[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
-    context->control_flow_graph->reaching_code[i] = true;
+static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
+    i = get_dfa_data_index(instruction_index);
+    if (!context->control_flow_graph->reaching_code[i]) {
+        context->control_flow_graph->reaching_code[i] = true;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+static void set_dfa_bak_copy_instruction(TacCopy* node, size_t instruction_index) {
+    size_t i;
+    if (set_dfa_bak_instruction(instruction_index, i)) {
+        std::shared_ptr<TacValue> src = node->src;
+        std::shared_ptr<TacValue> dst = node->dst;
+        context->data_flow_analysis->bak_instructions[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
+    }
 }
 
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, size_t exit_block) {
@@ -1760,7 +1772,7 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (((exit_block != 0 && GET_DFA_BLOCK_SET_AT(incoming_index, i))
                     || (exit_block == 0 && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
-                TacCopy* copy = get_bak_reaching_copy_at(i);
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1779,7 +1791,7 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
         if (node->args[i]->type() == AST_T::TacVariable_t) {
             for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, j)) {
-                    TacCopy* copy = get_bak_reaching_copy_at(j);
+                    TacCopy* copy = get_dfa_bak_copy_instruction(j);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
                         RAISE_INTERNAL_ERROR;
                     }
@@ -1798,7 +1810,7 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
     if (node->src->type() == AST_T::TacVariable_t) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_bak_reaching_copy_at(i);
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1818,7 +1830,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
     if (is_src1 || is_src2) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_bak_reaching_copy_at(i);
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1849,23 +1861,19 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
     }
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            TacCopy* copy = get_bak_reaching_copy_at(i);
+            TacCopy* copy = get_dfa_bak_copy_instruction(i);
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
             else if (context->data_flow_analysis->data_index_map[i] == instruction_index
                      || (is_same_value(node->src.get(), copy->dst.get())
                          && is_same_value(node->dst.get(), copy->src.get()))) {
-                if (!context->control_flow_graph->reaching_code[i]) {
-                    set_bak_reaching_copy_at(node, instruction_index);
-                }
+                set_dfa_bak_copy_instruction(node, instruction_index);
                 control_flow_graph_remove_block_instruction(instruction_index, block_id);
                 break;
             }
             else if (is_same_value(node->src.get(), copy->dst.get())) {
-                if (!context->control_flow_graph->reaching_code[i]) {
-                    set_bak_reaching_copy_at(node, instruction_index);
-                }
+                set_dfa_bak_copy_instruction(node, instruction_index);
                 node->src = copy->src;
                 context->is_fixed_point = false;
                 break;
@@ -1879,7 +1887,7 @@ static void propagate_copies_jump_if_zero_instructions(TacJumpIfZero* node, size
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (((exit_block != 0 && GET_DFA_BLOCK_SET_AT(incoming_index, i))
                     || (exit_block == 0 && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
-                TacCopy* copy = get_bak_reaching_copy_at(i);
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
@@ -1899,7 +1907,7 @@ static void propagate_copies_jump_if_not_zero_instructions(
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (((exit_block != 0 && GET_DFA_BLOCK_SET_AT(incoming_index, i))
                     || (exit_block == 0 && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
-                TacCopy* copy = get_bak_reaching_copy_at(i);
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
