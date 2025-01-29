@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ast/ast.hpp"
 #include "ast/interm_ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +37,7 @@ struct ControlFlowGraph {
     std::vector<size_t> exit_predecessor_ids;
     std::vector<bool> reaching_code; // should it be in dfa ?
     std::vector<ControlFlowBlock> blocks;
-    std::unordered_map<std::string, size_t> label_id_map;
+    std::unordered_map<TIdentifier, size_t> label_id_map;
 };
 
 struct DataFlowAnalysis {
@@ -49,6 +50,7 @@ struct DataFlowAnalysis {
     std::vector<bool> blocks_flat_sets;
     std::vector<bool> instructions_flat_sets;
     std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
+    std::unordered_set<TIdentifier> alias_set;
 };
 
 struct OptimTacContext {

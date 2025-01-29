@@ -1642,6 +1642,8 @@ static bool data_flow_analysis_initialize() {
 
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
+    bool is_aliased = true;                         // TODO
+    context->data_flow_analysis->alias_set.clear(); // TODO
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             context->data_flow_analysis->open_block_ids[block_id] = block_id; // TODO
@@ -1668,8 +1670,35 @@ static bool data_flow_analysis_initialize() {
                             }
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
+                            if (is_aliased) {
+                                TacCopy* copy = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
+                                if (copy->dst->type() != AST_T::TacVariable_t) {
+                                    RAISE_INTERNAL_ERROR;
+                                }
+                                if (copy->src->type() == AST_T::TacVariable_t) {
+                                    TacVariable* copy_src = static_cast<TacVariable*>(copy->src.get());
+                                    if (frontend->symbol_table[copy_src->name]->attrs->type() == AST_T::StaticAttr_t) {
+                                        context->data_flow_analysis->alias_set.insert(copy_src->name);
+                                    }
+                                }
+                                TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
+                                if (frontend->symbol_table[copy_dst->name]->attrs->type() == AST_T::StaticAttr_t) {
+                                    context->data_flow_analysis->alias_set.insert(copy_dst->name);
+                                }
+                            }
                             context->data_flow_analysis->set_size++;
                             instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacGetAddress_t: {
+                            if (is_aliased) {
+                                TacGetAddress* get_address =
+                                    static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
+                                if (get_address->src->type() == AST_T::TacVariable_t) {
+                                    context->data_flow_analysis->alias_set.insert(
+                                        static_cast<TacVariable*>(get_address->src.get())->name);
+                                }
+                            }
                             break;
                         }
                         default:
