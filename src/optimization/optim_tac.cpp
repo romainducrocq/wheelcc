@@ -1325,9 +1325,10 @@ static void eliminate_unreachable_code_control_flow_graph() {
 //     //     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index]);
 // }
 
-static bool is_static_value(TacValue* node) {
+static bool is_aliased_value(TacValue* node) {
     return node->type() == AST_T::TacVariable_t
-           && frontend->symbol_table[static_cast<TacVariable*>(node)->name]->attrs->type() == AST_T::StaticAttr_t;
+           && context->data_flow_analysis->alias_set.find(static_cast<TacVariable*>(node)->name)
+                  != context->data_flow_analysis->alias_set.end();
 }
 
 static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
@@ -1393,7 +1394,7 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
             if (copy->dst->type() != AST_T::TacVariable_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            else if (is_static_value(copy->src.get()) || is_static_value(copy->dst.get())
+            else if (is_aliased_value(copy->src.get()) || is_aliased_value(copy->dst.get())
                      || (node->dst
                          && (is_same_value(node->dst.get(), copy->src.get())
                              || is_same_value(node->dst.get(), copy->dst.get())))) {
@@ -1642,8 +1643,8 @@ static bool data_flow_analysis_initialize() {
 
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
-    bool is_aliased = true;                         // TODO
-    context->data_flow_analysis->alias_set.clear(); // TODO
+    bool is_aliased = true;                         // TODO based on optim stage
+    context->data_flow_analysis->alias_set.clear(); // TODO based on optim stage
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             context->data_flow_analysis->open_block_ids[block_id] = block_id; // TODO
