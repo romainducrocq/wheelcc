@@ -1966,7 +1966,7 @@ static void set_dfa_bak_copy_instruction(TacCopy* node, size_t instruction_index
 }
 
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, size_t exit_block) {
-    if (node->val->type() == AST_T::TacVariable_t) {
+    if (node->val && node->val->type() == AST_T::TacVariable_t) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
             if (((exit_block != 0 && GET_DFA_BLOCK_SET_AT(incoming_index, i))
                     || (exit_block == 0 && GET_DFA_INSTRUCTION_SET_AT(incoming_index, i)))) {
