@@ -1430,6 +1430,31 @@ static bool is_name_same_value(TacValue* node, const TIdentifier& name) {
     }
 }
 
+static bool is_transfer_instruction(size_t instruction_index) {
+    switch (GET_INSTRUCTION(instruction_index)->type()) {
+        case AST_T::TacSignExtend_t:
+        case AST_T::TacTruncate_t:
+        case AST_T::TacZeroExtend_t:
+        case AST_T::TacDoubleToInt_t:
+        case AST_T::TacDoubleToUInt_t:
+        case AST_T::TacIntToDouble_t:
+        case AST_T::TacUIntToDouble_t:
+        case AST_T::TacFunCall_t:
+        case AST_T::TacUnary_t:
+        case AST_T::TacBinary_t:
+        case AST_T::TacCopy_t:
+        case AST_T::TacGetAddress_t:
+        case AST_T::TacLoad_t:
+        case AST_T::TacStore_t:
+        case AST_T::TacAddPtr_t:
+        case AST_T::TacCopyToOffset_t:
+        case AST_T::TacCopyFromOffset_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static void copy_propagation_transfer_dst_value_reaching_copies(
     TacValue* node, size_t instruction_index, size_t next_instruction_index) {
     if (node->type() != AST_T::TacVariable_t) {
@@ -1659,20 +1684,10 @@ static void copy_propagation_transfer_reaching_copies(
 static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
-        if (GET_INSTRUCTION(next_instruction_index)) {
-            switch (GET_INSTRUCTION(next_instruction_index)->type()) {
-                case AST_T::TacFunCall_t:
-                case AST_T::TacUnary_t:
-                case AST_T::TacBinary_t:
-                case AST_T::TacCopy_t: {
-                    copy_propagation_transfer_reaching_copies(
-                        GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
-                    instruction_index = next_instruction_index;
-                    break;
-                }
-                default:
-                    break;
-            }
+        if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index)) {
+            copy_propagation_transfer_reaching_copies(
+                GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
+            instruction_index = next_instruction_index;
         }
     }
     copy_propagation_transfer_reaching_copies(
@@ -1683,16 +1698,8 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
 static bool data_flow_analysis_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index)) {
-            switch (GET_INSTRUCTION(instruction_index)->type()) {
-                case AST_T::TacFunCall_t:
-                case AST_T::TacUnary_t:
-                case AST_T::TacBinary_t:
-                case AST_T::TacCopy_t:
-                    goto Lelse;
-                default:
-                    break;
-            }
+        if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index)) {
+            goto Lelse;
         }
     }
     instruction_index = context->data_flow_analysis->incoming_index;
