@@ -1331,6 +1331,41 @@ static bool is_aliased_value(TacValue* node) {
                   != context->data_flow_analysis->alias_set.end();
 }
 
+static bool is_constant_value_signed(TacConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstChar_t:
+        case AST_T::CConstInt_t:
+        case AST_T::CConstLong_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_variable_value_signed(TacVariable* node) {
+    switch (frontend->symbol_table[node->name]->type_t->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::Int_t:
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool is_value_signed(TacValue* node) {
+    switch (node->type()) {
+        case AST_T::TacConstant_t:
+            return is_constant_value_signed(static_cast<TacConstant*>(node));
+        case AST_T::TacVariable_t:
+            return is_variable_value_signed(static_cast<TacVariable*>(node));
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
     if (node_1->constant->type() == node_2->constant->type()) {
         switch (node_1->constant->type()) {
@@ -1410,6 +1445,17 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
     }
 }
 
+/*
+| Store(src, dst_ptr) ->
+    for copy in current_reaching_copies:
+        if copy.src is in aliased_vars || copy.dst is in aliased_vars:
+            current_reaching_copies.remove(copy)
+*/
+
+/*
+| Unary(operator, src, dst) or any other instruction with dst field
+*/
+
 static void copy_propagation_transfer_dst_value_reaching_copies(
     TacValue* node, size_t instruction_index, size_t next_instruction_index) {
     if (node->type() != AST_T::TacVariable_t) {
@@ -1443,11 +1489,7 @@ static void copy_propagation_transfer_copy_reaching_copies(
         RAISE_INTERNAL_ERROR;
     }
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-            continue;
-        }
-        else if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+        if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
             RAISE_INTERNAL_ERROR;
         }
         TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
@@ -1455,7 +1497,8 @@ static void copy_propagation_transfer_copy_reaching_copies(
             RAISE_INTERNAL_ERROR;
         }
         else if (is_same_value(node->dst.get(), copy->dst.get())) {
-            if (is_same_value(node->src.get(), copy->src.get())) {
+            if (is_value_signed(copy->src.get()) == is_value_signed(copy->dst.get())
+                && is_same_value(node->src.get(), copy->src.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
             else {
@@ -1470,14 +1513,17 @@ static void copy_propagation_transfer_copy_reaching_copies(
                         GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) =
                             GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
                     }
-                    return;
+                    return; // TODO return or break ?
                 }
                 else {
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
                 }
             }
-            else {
+            else if (is_value_signed(copy->src.get()) == is_value_signed(copy->dst.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
         }
         else {
