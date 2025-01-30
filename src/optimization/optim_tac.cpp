@@ -1415,6 +1415,48 @@ static bool is_same_value(TacValue* node_1, TacValue* node_2) {
     return false;
 }
 
+static bool is_variable_name_same_value(TacVariable* node, const TIdentifier& name) {
+    return node->name.compare(name) == 0;
+}
+
+static bool is_name_same_value(TacValue* node, const TIdentifier& name) {
+    switch (node->type()) {
+        case AST_T::TacConstant_t:
+            return false;
+        case AST_T::TacVariable_t:
+            return is_variable_name_same_value(static_cast<TacVariable*>(node), name);
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
+static void copy_propagation_transfer_dst_value_reaching_copies(
+    TacValue* node, size_t instruction_index, size_t next_instruction_index) {
+    if (node->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+            if (copy->dst->type() != AST_T::TacVariable_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            else if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            }
+        }
+        else {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+    }
+}
+
 static void copy_propagation_transfer_fun_call_reaching_copies(
     TacFunCall* node, size_t instruction_index, size_t next_instruction_index) {
     if (node->dst && node->dst->type() != AST_T::TacVariable_t) {
@@ -1433,60 +1475,6 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
                      || (node->dst
                          && (is_same_value(node->dst.get(), copy->src.get())
                              || is_same_value(node->dst.get(), copy->dst.get())))) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-            }
-            else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-            }
-        }
-        else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-        }
-    }
-}
-
-static void copy_propagation_transfer_store_reaching_copies(size_t instruction_index, size_t next_instruction_index) {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            if (copy->dst->type() != AST_T::TacVariable_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            else if (is_aliased_value(copy->src.get()) || is_aliased_value(copy->dst.get())) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-            }
-            else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-            }
-        }
-        else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-        }
-    }
-}
-
-/*
-| Unary(operator, src, dst) or any other instruction with dst field
-*/
-
-static void copy_propagation_transfer_dst_value_reaching_copies(
-    TacValue* node, size_t instruction_index, size_t next_instruction_index) {
-    if (node->type() != AST_T::TacVariable_t) {
-        RAISE_INTERNAL_ERROR;
-    }
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
-            if (copy->dst->type() != AST_T::TacVariable_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            else if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
             }
             else {
@@ -1545,9 +1533,85 @@ static void copy_propagation_transfer_copy_reaching_copies(
     }
 }
 
+static void copy_propagation_transfer_store_reaching_copies(size_t instruction_index, size_t next_instruction_index) {
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+            if (copy->dst->type() != AST_T::TacVariable_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            else if (is_aliased_value(copy->src.get()) || is_aliased_value(copy->dst.get())) {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            }
+        }
+        else {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+    }
+}
+
+static void copy_propagation_transfer_copy_to_offset_reaching_copies(
+    TacCopyToOffset* node, size_t instruction_index, size_t next_instruction_index) {
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+            if (copy->dst->type() != AST_T::TacVariable_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            else if (is_name_same_value(copy->src.get(), node->dst_name)
+                     || is_name_same_value(copy->dst.get(), node->dst_name)) {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            }
+        }
+        else {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+    }
+}
+
 static void copy_propagation_transfer_reaching_copies(
     TacInstruction* node, size_t instruction_index, size_t next_instruction_index) {
     switch (node->type()) {
+        case AST_T::TacSignExtend_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacSignExtend*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacTruncate_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacTruncate*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacZeroExtend_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacZeroExtend*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacDoubleToInt_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacDoubleToInt*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacDoubleToUInt_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacDoubleToUInt*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacIntToDouble_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacIntToDouble*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacUIntToDouble_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacUIntToDouble*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
         case AST_T::TacFunCall_t:
             copy_propagation_transfer_fun_call_reaching_copies(
                 static_cast<TacFunCall*>(node), instruction_index, next_instruction_index);
@@ -1564,8 +1628,28 @@ static void copy_propagation_transfer_reaching_copies(
             copy_propagation_transfer_copy_reaching_copies(
                 static_cast<TacCopy*>(node), instruction_index, next_instruction_index);
             break;
+        case AST_T::TacGetAddress_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacGetAddress*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacLoad_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacLoad*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
         case AST_T::TacStore_t:
             copy_propagation_transfer_store_reaching_copies(instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacAddPtr_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacAddPtr*>(node)->dst.get(), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacCopyToOffset_t:
+            copy_propagation_transfer_copy_to_offset_reaching_copies(
+                static_cast<TacCopyToOffset*>(node), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacCopyFromOffset_t:
+            copy_propagation_transfer_dst_value_reaching_copies(
+                static_cast<TacCopyFromOffset*>(node)->dst.get(), instruction_index, next_instruction_index);
             break;
         default:
             RAISE_INTERNAL_ERROR;
