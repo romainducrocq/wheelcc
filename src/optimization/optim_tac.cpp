@@ -142,6 +142,21 @@ static void set_instruction(std::unique_ptr<TacInstruction>&& instruction, size_
 
 // Constant folding
 
+static std::shared_ptr<CConst> fold_constants_sign_extend_char_constant(TacVariable* node, CConstChar* constant) {
+    switch (frontend->symbol_table[node->name]->type_t->type()) {
+        case AST_T::Int_t: {
+            TInt value = static_cast<TInt>(constant->value);
+            return std::make_shared<CConstInt>(std::move(value));
+        }
+        case AST_T::UInt_t: {
+            TUInt value = static_cast<TUInt>(constant->value);
+            return std::make_shared<CConstUInt>(std::move(value));
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::shared_ptr<CConst> fold_constants_sign_extend_int_constant(TacVariable* node, CConstInt* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Long_t:
@@ -161,6 +176,10 @@ static std::shared_ptr<CConst> fold_constants_sign_extend_int_constant(TacVariab
 static std::shared_ptr<TacConstant> fold_constants_sign_extend_constant_value(TacVariable* node, CConst* constant) {
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
+        case AST_T::CConstChar_t: {
+            fold_constant = fold_constants_sign_extend_char_constant(node, static_cast<CConstChar*>(constant));
+            break;
+        }
         case AST_T::CConstInt_t: {
             fold_constant = fold_constants_sign_extend_int_constant(node, static_cast<CConstInt*>(constant));
             break;
@@ -300,6 +319,21 @@ static void fold_constants_truncate_instructions(TacTruncate* node, size_t instr
     }
 }
 
+static std::shared_ptr<CConst> fold_constants_zero_extend_uchar_constant(TacVariable* node, CConstUChar* constant) {
+    switch (frontend->symbol_table[node->name]->type_t->type()) {
+        case AST_T::Int_t: {
+            TInt value = static_cast<TInt>(constant->value);
+            return std::make_shared<CConstInt>(std::move(value));
+        }
+        case AST_T::UInt_t: {
+            TUInt value = static_cast<TUInt>(constant->value);
+            return std::make_shared<CConstUInt>(std::move(value));
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::shared_ptr<CConst> fold_constants_zero_extend_uint_constant(TacVariable* node, CConstUInt* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Long_t:
@@ -319,6 +353,10 @@ static std::shared_ptr<CConst> fold_constants_zero_extend_uint_constant(TacVaria
 static std::shared_ptr<TacConstant> fold_constants_zero_extend_constant_value(TacVariable* node, CConst* constant) {
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
+        case AST_T::CConstUChar_t: {
+            fold_constant = fold_constants_zero_extend_uchar_constant(node, static_cast<CConstUChar*>(constant));
+            break;
+        }
         case AST_T::CConstUInt_t: {
             fold_constant = fold_constants_zero_extend_uint_constant(node, static_cast<CConstUInt*>(constant));
             break;
@@ -429,6 +467,11 @@ static std::shared_ptr<TacConstant> fold_constants_signed_to_double_constant_val
     }
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
+        case AST_T::CConstChar_t: {
+            TDouble value = static_cast<TDouble>(static_cast<CConstChar*>(constant)->value);
+            fold_constant = std::make_shared<CConstDouble>(std::move(value));
+            break;
+        }
         case AST_T::CConstInt_t: {
             TDouble value = static_cast<TDouble>(static_cast<CConstInt*>(constant)->value);
             fold_constant = std::make_shared<CConstDouble>(std::move(value));
