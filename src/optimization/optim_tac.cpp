@@ -1805,9 +1805,21 @@ static bool data_flow_analysis_initialize() {
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
                     switch (GET_INSTRUCTION(instruction_index)->type()) {
+                        case AST_T::TacSignExtend_t:
+                        case AST_T::TacTruncate_t:
+                        case AST_T::TacZeroExtend_t:
+                        case AST_T::TacDoubleToInt_t:
+                        case AST_T::TacDoubleToUInt_t:
+                        case AST_T::TacIntToDouble_t:
+                        case AST_T::TacUIntToDouble_t:
                         case AST_T::TacFunCall_t:
                         case AST_T::TacUnary_t:
-                        case AST_T::TacBinary_t: {
+                        case AST_T::TacBinary_t:
+                        case AST_T::TacLoad_t:
+                        case AST_T::TacStore_t:
+                        case AST_T::TacAddPtr_t:
+                        case AST_T::TacCopyToOffset_t:
+                        case AST_T::TacCopyFromOffset_t: {
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
                             instructions_flat_sets_size++;
@@ -1845,6 +1857,8 @@ static bool data_flow_analysis_initialize() {
                             break;
                         }
                         case AST_T::TacGetAddress_t: {
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
                             if (is_aliased) {
                                 TacGetAddress* get_address =
                                     static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
@@ -1853,6 +1867,7 @@ static bool data_flow_analysis_initialize() {
                                         static_cast<TacVariable*>(get_address->src.get())->name);
                                 }
                             }
+                            instructions_flat_sets_size++;
                             break;
                         }
                         default:
@@ -1969,6 +1984,34 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
     }
 }
 
+static void propagate_copies_sign_extend_instructions(TacSignExtend* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_truncate_instructions(TacTruncate* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_zero_extend_instructions(TacZeroExtend* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_double_to_int_instructions(TacDoubleToInt* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_double_to_uint_instructions(TacDoubleToUInt* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_int_to_double_instructions(TacIntToDouble* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_uint_to_double_instructions(TacUIntToDouble* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
 static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t instruction_index) {
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (node->args[i]->type() == AST_T::TacVariable_t) {
@@ -2065,6 +2108,26 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
     }
 }
 
+static void propagate_copies_load_instructions(TacLoad* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_store_instructions(TacStore* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_add_ptr_instructions(TacAddPtr* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_copy_to_offset_instructions(TacCopyToOffset* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
+static void propagate_copies_copy_from_offset_instructions(TacCopyFromOffset* /*node*/, size_t /*instruction_index*/) {
+    // TODO
+}
+
 static void propagate_copies_jump_if_zero_instructions(TacJumpIfZero* node, size_t incoming_index, size_t exit_block) {
     if (node->condition->type() == AST_T::TacVariable_t) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
@@ -2109,6 +2172,27 @@ static void propagate_copies_instructions(TacInstruction* node, size_t instructi
         case AST_T::TacReturn_t:
             propagate_copies_return_instructions(static_cast<TacReturn*>(node), instruction_index, block_id);
             break;
+        case AST_T::TacSignExtend_t:
+            propagate_copies_sign_extend_instructions(static_cast<TacSignExtend*>(node), instruction_index);
+            break;
+        case AST_T::TacTruncate_t:
+            propagate_copies_truncate_instructions(static_cast<TacTruncate*>(node), instruction_index);
+            break;
+        case AST_T::TacZeroExtend_t:
+            propagate_copies_zero_extend_instructions(static_cast<TacZeroExtend*>(node), instruction_index);
+            break;
+        case AST_T::TacDoubleToInt_t:
+            propagate_copies_double_to_int_instructions(static_cast<TacDoubleToInt*>(node), instruction_index);
+            break;
+        case AST_T::TacDoubleToUInt_t:
+            propagate_copies_double_to_uint_instructions(static_cast<TacDoubleToUInt*>(node), instruction_index);
+            break;
+        case AST_T::TacIntToDouble_t:
+            propagate_copies_int_to_double_instructions(static_cast<TacIntToDouble*>(node), instruction_index);
+            break;
+        case AST_T::TacUIntToDouble_t:
+            propagate_copies_uint_to_double_instructions(static_cast<TacUIntToDouble*>(node), instruction_index);
+            break;
         case AST_T::TacFunCall_t:
             propagate_copies_fun_call_instructions(static_cast<TacFunCall*>(node), instruction_index);
             break;
@@ -2120,6 +2204,21 @@ static void propagate_copies_instructions(TacInstruction* node, size_t instructi
             break;
         case AST_T::TacCopy_t:
             propagate_copies_copy_instructions(static_cast<TacCopy*>(node), instruction_index, block_id);
+            break;
+        case AST_T::TacLoad_t:
+            propagate_copies_load_instructions(static_cast<TacLoad*>(node), instruction_index);
+            break;
+        case AST_T::TacStore_t:
+            propagate_copies_store_instructions(static_cast<TacStore*>(node), instruction_index);
+            break;
+        case AST_T::TacAddPtr_t:
+            propagate_copies_add_ptr_instructions(static_cast<TacAddPtr*>(node), instruction_index);
+            break;
+        case AST_T::TacCopyToOffset_t:
+            propagate_copies_copy_to_offset_instructions(static_cast<TacCopyToOffset*>(node), instruction_index);
+            break;
+        case AST_T::TacCopyFromOffset_t:
+            propagate_copies_copy_from_offset_instructions(static_cast<TacCopyFromOffset*>(node), instruction_index);
             break;
         case AST_T::TacJumpIfZero_t:
             propagate_copies_jump_if_zero_instructions(static_cast<TacJumpIfZero*>(node), instruction_index, block_id);
@@ -2154,14 +2253,32 @@ static void propagate_copies_control_flow_graph() {
                             propagate_copies_instructions(
                                 GET_INSTRUCTION(instruction_index).get(), incoming_index, exit_block);
                             break;
+                        case AST_T::TacSignExtend_t:
+                        case AST_T::TacTruncate_t:
+                        case AST_T::TacZeroExtend_t:
+                        case AST_T::TacDoubleToInt_t:
+                        case AST_T::TacDoubleToUInt_t:
+                        case AST_T::TacIntToDouble_t:
+                        case AST_T::TacUIntToDouble_t:
                         case AST_T::TacFunCall_t:
                         case AST_T::TacUnary_t:
                         case AST_T::TacBinary_t:
-                        case AST_T::TacCopy_t: {
+                        case AST_T::TacCopy_t:
+                        case AST_T::TacLoad_t:
+                        case AST_T::TacStore_t:
+                        case AST_T::TacAddPtr_t:
+                        case AST_T::TacCopyToOffset_t:
+                        case AST_T::TacCopyFromOffset_t: {
                             propagate_copies_instructions(
                                 GET_INSTRUCTION(instruction_index).get(), instruction_index, block_id);
                             incoming_index = instruction_index;
                             exit_block = 0;
+                            break;
+                        }
+                        case AST_T::TacGetAddress_t: {
+                            incoming_index = instruction_index;
+                            exit_block = 0;
+                            break;
                         }
                         default:
                             break;
