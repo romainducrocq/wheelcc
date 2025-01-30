@@ -507,6 +507,12 @@ static std::shared_ptr<TacConstant> fold_constants_unsigned_to_double_constant_v
     }
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
+        // TODO remove ?
+        case AST_T::CConstUChar_t: {
+            TDouble value = static_cast<TDouble>(static_cast<CConstUChar*>(constant)->value);
+            fold_constant = std::make_shared<CConstDouble>(std::move(value));
+            break;
+        }
         case AST_T::CConstUInt_t: {
             TDouble value = static_cast<TDouble>(static_cast<CConstUInt*>(constant)->value);
             fold_constant = std::make_shared<CConstDouble>(std::move(value));
