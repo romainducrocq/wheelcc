@@ -1445,12 +1445,28 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
     }
 }
 
-/*
-| Store(src, dst_ptr) ->
-    for copy in current_reaching_copies:
-        if copy.src is in aliased_vars || copy.dst is in aliased_vars:
-            current_reaching_copies.remove(copy)
-*/
+static void copy_propagation_transfer_store_reaching_copies(size_t instruction_index, size_t next_instruction_index) {
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+            if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTRUCTION(i).get());
+            if (copy->dst->type() != AST_T::TacVariable_t) {
+                RAISE_INTERNAL_ERROR;
+            }
+            else if (is_aliased_value(copy->src.get()) || is_aliased_value(copy->dst.get())) {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            }
+            else {
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+            }
+        }
+        else {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+        }
+    }
+}
 
 /*
 | Unary(operator, src, dst) or any other instruction with dst field
@@ -1550,6 +1566,9 @@ static void copy_propagation_transfer_reaching_copies(
         case AST_T::TacCopy_t:
             copy_propagation_transfer_copy_reaching_copies(
                 static_cast<TacCopy*>(node), instruction_index, next_instruction_index);
+            break;
+        case AST_T::TacStore_t:
+            copy_propagation_transfer_store_reaching_copies(instruction_index, next_instruction_index);
             break;
         default:
             RAISE_INTERNAL_ERROR;
