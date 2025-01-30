@@ -1397,7 +1397,6 @@ static bool is_variable_value_signed(TacVariable* node) {
         case AST_T::SChar_t:
         case AST_T::Int_t:
         case AST_T::Long_t:
-        case AST_T::Double_t:
             return true;
         default:
             return false;
@@ -1418,27 +1417,27 @@ static bool is_value_signed(TacValue* node) {
 static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
     if (node_1->constant->type() == node_2->constant->type()) {
         switch (node_1->constant->type()) {
+            case AST_T::CConstChar_t:
+                return static_cast<CConstChar*>(node_1->constant.get())->value
+                       == static_cast<CConstChar*>(node_2->constant.get())->value;
             case AST_T::CConstInt_t:
                 return static_cast<CConstInt*>(node_1->constant.get())->value
                        == static_cast<CConstInt*>(node_2->constant.get())->value;
             case AST_T::CConstLong_t:
                 return static_cast<CConstLong*>(node_1->constant.get())->value
                        == static_cast<CConstLong*>(node_2->constant.get())->value;
+            case AST_T::CConstDouble_t:
+                return static_cast<CConstDouble*>(node_1->constant.get())->value
+                       == static_cast<CConstDouble*>(node_2->constant.get())->value;
+            case AST_T::CConstUChar_t:
+                return static_cast<CConstUChar*>(node_1->constant.get())->value
+                       == static_cast<CConstUChar*>(node_2->constant.get())->value;
             case AST_T::CConstUInt_t:
                 return static_cast<CConstUInt*>(node_1->constant.get())->value
                        == static_cast<CConstUInt*>(node_2->constant.get())->value;
             case AST_T::CConstULong_t:
                 return static_cast<CConstULong*>(node_1->constant.get())->value
                        == static_cast<CConstULong*>(node_2->constant.get())->value;
-            case AST_T::CConstDouble_t:
-                return static_cast<CConstDouble*>(node_1->constant.get())->value
-                       == static_cast<CConstDouble*>(node_2->constant.get())->value;
-            case AST_T::CConstChar_t:
-                return static_cast<CConstChar*>(node_1->constant.get())->value
-                       == static_cast<CConstChar*>(node_2->constant.get())->value;
-            case AST_T::CConstUChar_t:
-                return static_cast<CConstUChar*>(node_1->constant.get())->value
-                       == static_cast<CConstUChar*>(node_2->constant.get())->value;
             default:
                 RAISE_INTERNAL_ERROR;
         }
