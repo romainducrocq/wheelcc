@@ -1535,11 +1535,8 @@ static void copy_propagation_transfer_copy_reaching_copies(
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
                 }
             }
-            else if (is_value_signed(copy->src.get()) == is_value_signed(copy->dst.get())) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
-            }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
         }
         else {
