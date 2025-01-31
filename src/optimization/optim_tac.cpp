@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "util/str2t.hpp"
 #include "util/throw.hpp"
 
 #include "ast/ast.hpp"
@@ -1414,6 +1415,23 @@ static bool is_value_signed(TacValue* node) {
     }
 }
 
+static bool is_double_constant_same_value(CConstDouble* constant_1, CConstDouble* constant_2) {
+    if (constant_1->value == constant_2->value) {
+        if (constant_1->value == 0.0) {
+            return double_to_binary(constant_1->value) == double_to_binary(constant_2->value);
+        }
+        else {
+            return true;
+        }
+    }
+    else if (constant_1->value != constant_1->value && constant_2->value != constant_2->value) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
     if (node_1->constant->type() == node_2->constant->type()) {
         switch (node_1->constant->type()) {
@@ -1427,8 +1445,8 @@ static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
                 return static_cast<CConstLong*>(node_1->constant.get())->value
                        == static_cast<CConstLong*>(node_2->constant.get())->value;
             case AST_T::CConstDouble_t:
-                return static_cast<CConstDouble*>(node_1->constant.get())->value
-                       == static_cast<CConstDouble*>(node_2->constant.get())->value;
+                return is_double_constant_same_value(static_cast<CConstDouble*>(node_1->constant.get()),
+                    static_cast<CConstDouble*>(node_2->constant.get()));
             case AST_T::CConstUChar_t:
                 return static_cast<CConstUChar*>(node_1->constant.get())->value
                        == static_cast<CConstUChar*>(node_2->constant.get())->value;
