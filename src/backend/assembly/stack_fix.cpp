@@ -463,8 +463,7 @@ std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte) {
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
-        // bool is_byte = byte <= 127l && byte >= -128l; // TODO
-        bool is_byte = byte <= 255l;
+        bool is_byte = byte <= 127l && byte >= -128l;
         bool is_quad = byte > 2147483647l || byte < -2147483648l;
         TIdentifier value = std::to_string(byte);
         src = std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
@@ -478,8 +477,7 @@ std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte) {
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
-        // bool is_byte = byte <= 127l && byte >= -128l; // TODO
-        bool is_byte = byte <= 255l;
+        bool is_byte = byte <= 127l && byte >= -128l;
         bool is_quad = byte > 2147483647l || byte < -2147483648l;
         TIdentifier value = std::to_string(byte);
         src = std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));

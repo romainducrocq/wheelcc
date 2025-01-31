@@ -36,15 +36,13 @@ static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
 }
 
 static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
-    // bool is_byte = node->value <= 127 && node->value >= -128; // TODO
-    bool is_byte = node->value <= 255;
+    bool is_byte = node->value <= 127 && node->value >= -128;
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(std::move(is_byte), false, std::move(value));
 }
 
 static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
-    // bool is_byte = node->value <= 127l && node->value >= -128l; // TODO
-    bool is_byte = node->value <= 255l;
+    bool is_byte = node->value <= 127l && node->value >= -128l;
     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
@@ -1880,8 +1878,7 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
         push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
     }
     {
-        // bool is_byte = node->scale <= 127l && node->scale >= -128l; // TODO
-        bool is_byte = node->scale <= 255l;
+        bool is_byte = node->scale <= 127l && node->scale >= -128l;
         bool is_quad = node->scale > 2147483647l || node->scale < -2147483648l;
         TIdentifier value = std::to_string(node->scale);
         std::shared_ptr<AsmOperand> src =
