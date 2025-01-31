@@ -1904,6 +1904,23 @@ static void data_flow_analysis_iterative_algorithm() {
     }
 }
 
+static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i);
+
+static void data_flow_analysis_forward_successor_open_block(size_t block_id, size_t& i) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+        data_flow_analysis_forward_open_block(successor_id, i);
+    }
+}
+
+static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
+    if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
+        i--;
+        context->data_flow_analysis->open_block_ids[i] = block_id;
+        context->control_flow_graph->reaching_code[block_id] = true;
+        data_flow_analysis_forward_successor_open_block(block_id, i);
+    }
+}
+
 static bool data_flow_analysis_initialize() {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
@@ -1917,6 +1934,11 @@ static bool data_flow_analysis_initialize() {
     if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + 1) {
         context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + 1);
     }
+    if (context->control_flow_graph->reaching_code.size() < context->control_flow_graph->blocks.size()) {
+        context->control_flow_graph->reaching_code.resize(context->control_flow_graph->blocks.size());
+    }
+    std::fill(context->control_flow_graph->reaching_code.begin(),
+        context->control_flow_graph->reaching_code.begin() + context->control_flow_graph->blocks.size(), false);
 
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
@@ -1924,7 +1946,6 @@ static bool data_flow_analysis_initialize() {
     context->data_flow_analysis->alias_set.clear(); // TODO based on optim stage
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
-            context->data_flow_analysis->open_block_ids[block_id] = block_id; // TODO
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
@@ -2003,7 +2024,7 @@ static bool data_flow_analysis_initialize() {
             blocks_flat_sets_size++;
         }
         else {
-            context->data_flow_analysis->open_block_ids[block_id] = context->control_flow_graph->exit_id; // TODO
+            context->control_flow_graph->reaching_code[block_id] = true;
         }
     }
     if (context->data_flow_analysis->set_size == 0) {
@@ -2027,6 +2048,20 @@ static bool data_flow_analysis_initialize() {
     if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
         context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
     }
+
+    {
+        size_t i = context->control_flow_graph->blocks.size();
+        for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
+            if (!context->control_flow_graph->reaching_code[successor_id]) {
+                data_flow_analysis_forward_open_block(successor_id, i);
+            }
+        }
+        while (i > 0) {
+            i--;
+            context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
+        }
+    }
+
     std::fill(context->control_flow_graph->reaching_code.begin(),
         context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
     std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
