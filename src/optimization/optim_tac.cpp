@@ -149,9 +149,18 @@ static std::shared_ptr<CConst> fold_constants_sign_extend_char_constant(TacVaria
             TInt value = static_cast<TInt>(constant->value);
             return std::make_shared<CConstInt>(std::move(value));
         }
+        case AST_T::Long_t:
+        case AST_T::Pointer_t: {
+            TLong value = static_cast<TLong>(constant->value);
+            return std::make_shared<CConstLong>(std::move(value));
+        }
         case AST_T::UInt_t: {
             TUInt value = static_cast<TUInt>(constant->value);
             return std::make_shared<CConstUInt>(std::move(value));
+        }
+        case AST_T::ULong_t: {
+            TULong value = static_cast<TULong>(constant->value);
+            return std::make_shared<CConstULong>(std::move(value));
         }
         default:
             RAISE_INTERNAL_ERROR;
@@ -326,9 +335,18 @@ static std::shared_ptr<CConst> fold_constants_zero_extend_uchar_constant(TacVari
             TInt value = static_cast<TInt>(constant->value);
             return std::make_shared<CConstInt>(std::move(value));
         }
+        case AST_T::Long_t:
+        case AST_T::Pointer_t: {
+            TLong value = static_cast<TLong>(constant->value);
+            return std::make_shared<CConstLong>(std::move(value));
+        }
         case AST_T::UInt_t: {
             TUInt value = static_cast<TUInt>(constant->value);
             return std::make_shared<CConstUInt>(std::move(value));
+        }
+        case AST_T::ULong_t: {
+            TULong value = static_cast<TULong>(constant->value);
+            return std::make_shared<CConstULong>(std::move(value));
         }
         default:
             RAISE_INTERNAL_ERROR;
@@ -1067,12 +1085,16 @@ static void fold_constants_binary_instructions(TacBinary* node, size_t instructi
 
 static bool fold_constants_is_zero_constant_value(CConst* constant) {
     switch (constant->type()) {
+        case AST_T::CConstChar_t:
+            return static_cast<CConstChar*>(constant)->value == 0;
         case AST_T::CConstInt_t:
             return static_cast<CConstInt*>(constant)->value == 0;
         case AST_T::CConstLong_t:
             return static_cast<CConstLong*>(constant)->value == 0l;
         case AST_T::CConstDouble_t:
             return static_cast<CConstDouble*>(constant)->value == 0.0;
+        case AST_T::CConstUChar_t:
+            return static_cast<CConstUChar*>(constant)->value == 0;
         case AST_T::CConstUInt_t:
             return static_cast<CConstUInt*>(constant)->value == 0u;
         case AST_T::CConstULong_t:
