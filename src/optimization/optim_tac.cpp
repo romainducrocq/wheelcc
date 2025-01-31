@@ -1855,16 +1855,18 @@ Lelse:
     }
 
     bool is_fixed_point = true;
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_BLOCK_SET_AT(block_id, i)
-            != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
-            // TBD? : after first difference copy range instruction_index -> next_instruction_index, and break
-            // memcpy = std::copy
-            // memset = std::fill
-            // memcmp = std::equal
+    {
+        size_t i = 0;
+        for (; i < context->data_flow_analysis->set_size; ++i) {
+            if (GET_DFA_BLOCK_SET_AT(block_id, i)
+                != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+                is_fixed_point = false;
+                break;
+            }
+        }
+        for (; i < context->data_flow_analysis->set_size; ++i) {
             GET_DFA_BLOCK_SET_AT(block_id, i) =
                 GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
-            is_fixed_point = false;
         }
     }
     return is_fixed_point;
