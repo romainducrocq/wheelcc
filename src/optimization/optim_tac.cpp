@@ -526,7 +526,6 @@ static std::shared_ptr<TacConstant> fold_constants_unsigned_to_double_constant_v
     }
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
-        // TODO remove ?
         case AST_T::CConstUChar_t: {
             TDouble value = static_cast<TDouble>(static_cast<CConstUChar*>(constant)->value);
             fold_constant = std::make_shared<CConstDouble>(std::move(value));
@@ -1296,8 +1295,6 @@ static void eliminate_unreachable_code_control_flow_graph() {
 
 // Copy propagation
 
-// TODO
-
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
@@ -1314,30 +1311,35 @@ static void eliminate_unreachable_code_control_flow_graph() {
         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
             + context->data_flow_analysis->set_size
 
-// TODO remove
-// static TIdentifier func_name = "";
-
+// // TODO rm
+// #include <stdio.h>
 // static void print_copy_propagation() {
-//     if (func_name.compare("target") != 0) {
-//         return;
-//     }
 //     size_t blocks_flat_sets_size = 0;
 //     size_t instructions_flat_sets_size = 0;
 //     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
 //         if (GET_CFG_BLOCK(block_id).size > 0) {
 //             blocks_flat_sets_size++;
-
 //             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
 //                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
 //                 if (GET_INSTRUCTION(instruction_index)) {
 //                     switch (GET_INSTRUCTION(instruction_index)->type()) {
+//                         case AST_T::TacSignExtend_t:
+//                         case AST_T::TacTruncate_t:
+//                         case AST_T::TacZeroExtend_t:
+//                         case AST_T::TacDoubleToInt_t:
+//                         case AST_T::TacDoubleToUInt_t:
+//                         case AST_T::TacIntToDouble_t:
+//                         case AST_T::TacUIntToDouble_t:
 //                         case AST_T::TacFunCall_t:
 //                         case AST_T::TacUnary_t:
-//                         case AST_T::TacBinary_t: {
-//                             instructions_flat_sets_size++;
-//                             break;
-//                         }
-//                         case AST_T::TacCopy_t: {
+//                         case AST_T::TacBinary_t:
+//                         case AST_T::TacCopy_t:
+//                         case AST_T::TacGetAddress_t:
+//                         case AST_T::TacLoad_t:
+//                         case AST_T::TacStore_t:
+//                         case AST_T::TacAddPtr_t:
+//                         case AST_T::TacCopyToOffset_t:
+//                         case AST_T::TacCopyFromOffset_t: {
 //                             instructions_flat_sets_size++;
 //                             break;
 //                         }
@@ -1348,59 +1350,28 @@ static void eliminate_unreachable_code_control_flow_graph() {
 //             }
 //         }
 //     }
-//     instructions_flat_sets_size++;
 
+//     printf("\n\n----------------------------------------\nDataFlowAnalysis:\n");
 //     printf("blocks_flat_sets_size: (%zu, %zu)\n", blocks_flat_sets_size, context->data_flow_analysis->set_size);
 //     for (size_t i = 0; i < blocks_flat_sets_size; ++i) {
 //         for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
-//             printf("%i ", GET_DFA_BLOCK_SET_AT(i, j) ? 1 : 0);
+//             printf("%i ",
+//                 context->data_flow_analysis->blocks_flat_sets[i * context->data_flow_analysis->set_size + j] ? 1 :
+//                 0);
 //         }
 //         printf("\n");
 //     }
-
 //     printf("instructions_flat_sets_size: (%zu, %zu)\n", instructions_flat_sets_size,
 //         context->data_flow_analysis->set_size);
 //     for (size_t i = 0; i < instructions_flat_sets_size; ++i) {
 //         for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
-//             printf("%i ", GET_DFA_INSTRUCTION_SET_AT(i, j) ? 1 : 0);
+//             printf("%i ",
+//                 context->data_flow_analysis->instructions_flat_sets[i * context->data_flow_analysis->set_size + j] ?
+//                 1 :
+//                                                                                                                      0);
 //         }
 //         printf("\n");
 //     }
-
-//     // printf("data_index_map\n");
-//     // for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-//     //     printf("%zu ", context->data_flow_analysis->data_index_map[i]);
-//     // }
-//     // printf("\n\n");
-
-//     // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-//     //     if (GET_INSTRUCTION(instruction_index)) {
-//     //         if (GET_INSTRUCTION(instruction_index)->type() == AST_T::TacCopy_t) {
-//     //             printf("Copy %zu\n", instruction_index);
-//     //         }
-//     //     }
-//     // }
-//     // printf("\n\n");
-
-//     // printf("instruction_index_map\n");
-//     // for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-//     //     if (GET_INSTRUCTION(instruction_index)) {
-//     //         switch (GET_INSTRUCTION(instruction_index)->type()) {
-//     //             case AST_T::TacFunCall_t:
-//     //             case AST_T::TacUnary_t:
-//     //             case AST_T::TacBinary_t:
-//     //             case AST_T::TacCopy_t: {
-//     //                 printf("%zu, %zu\n", instruction_index,
-//     //                     context->data_flow_analysis->instruction_index_map[instruction_index]);
-//     //                 break;
-//     //             }
-//     //             default:
-//     //                 break;
-//     //         }
-//     //     }
-//     // }
-//     // printf("%zu, %zu\n", context->data_flow_analysis->incoming_index,
-//     //     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index]);
 // }
 
 static bool is_aliased_value(TacValue* node) {
@@ -2579,7 +2550,6 @@ static void propagate_copies_control_flow_graph() {
         return;
     }
     data_flow_analysis_iterative_algorithm();
-    // print_copy_propagation();
 
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
@@ -2643,10 +2613,10 @@ static void propagate_copies_control_flow_graph() {
 #define DEAD_STORE_ELMININATION 3
 #define CONTROL_FLOW_GRAPH 4
 
-// #include <stdio.h> // TODO rm
+// // TODO rm
+// #include <stdio.h>
 static void optimize_function_top_level(TacFunction* node) {
     context->p_instructions = &node->body;
-    // func_name = node->name;
     do {
         context->is_fixed_point = true;
         if (context->enabled_optimizations[CONSTANT_FOLDING]) {

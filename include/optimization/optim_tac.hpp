@@ -35,7 +35,7 @@ struct ControlFlowGraph {
     size_t exit_id;
     std::vector<size_t> entry_successor_ids;
     std::vector<size_t> exit_predecessor_ids;
-    std::vector<bool> reaching_code; // should it be in dfa ?
+    std::vector<bool> reaching_code;
     std::vector<ControlFlowBlock> blocks;
     std::unordered_map<TIdentifier, size_t> label_id_map;
 };
@@ -56,15 +56,15 @@ struct DataFlowAnalysis {
 struct OptimTacContext {
     OptimTacContext(uint8_t optim_1_mask);
 
+    // Constant folding
+    // Unreachable code elimination
+    // Copy propagation
+    // Dead store elimination
     bool is_fixed_point;
     std::array<bool, 5> enabled_optimizations;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
-    // Constant folding
-    // Unreachable code elimination
-    // Copy propagation
-    // Dead store elimination
 };
 
 void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask);
