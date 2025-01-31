@@ -1421,6 +1421,21 @@ static bool is_value_signed(TacValue* node) {
     }
 }
 
+static bool is_constant_null_pointer(TacConstant* node) {
+    switch (node->constant->type()) {
+        case AST_T::CConstInt_t:
+            return static_cast<CConstInt*>(node->constant.get())->value == 0;
+        case AST_T::CConstLong_t:
+            return static_cast<CConstLong*>(node->constant.get())->value == 0l;
+        case AST_T::CConstUInt_t:
+            return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
+        case AST_T::CConstULong_t:
+            return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
+        default:
+            return false;
+    }
+}
+
 static bool is_double_constant_same_value(CConstDouble* constant_1, CConstDouble* constant_2) {
     if (constant_1->value == constant_2->value) {
         if (constant_1->value != 0.0) {
@@ -1499,6 +1514,21 @@ static bool is_name_same_value(TacValue* node, const TIdentifier& name) {
             return is_variable_name_same_value(static_cast<TacVariable*>(node), name);
         default:
             RAISE_INTERNAL_ERROR;
+    }
+}
+
+static bool is_copy_same_sign(TacCopy* node) {
+    return is_value_signed(node->src.get()) == is_value_signed(node->dst.get());
+}
+
+static bool is_copy_null_pointer(TacCopy* node) {
+    if (node->src->type() == AST_T::TacConstant_t && node->dst->type() == AST_T::TacVariable_t
+        && frontend->symbol_table[static_cast<TacVariable*>(node->dst.get())->name]->type_t->type()
+               == AST_T::Pointer_t) {
+        return is_constant_null_pointer(static_cast<TacConstant*>(node->src.get()));
+    }
+    else {
+        return false;
     }
 }
 
@@ -1598,7 +1628,7 @@ static void copy_propagation_transfer_copy_reaching_copies(
             RAISE_INTERNAL_ERROR;
         }
         else if (is_same_value(node->dst.get(), copy->dst.get())) {
-            if (is_value_signed(copy->src.get()) == is_value_signed(copy->dst.get())
+            if ((is_copy_same_sign(copy) || is_copy_null_pointer(copy))
                 && is_same_value(node->src.get(), copy->src.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
