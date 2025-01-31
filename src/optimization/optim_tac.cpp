@@ -1661,10 +1661,9 @@ static void copy_propagation_transfer_copy_reaching_copies(
         else if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             if (is_same_value(node->dst.get(), copy->src.get())) {
                 if (is_same_value(node->src.get(), copy->dst.get())) {
-                    for (i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                        // TBD? : copy range
-                        GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) =
-                            GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
+                    for (size_t j = 0; j < i; ++j) {
+                        GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, j) =
+                            GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
                     }
                     break;
                 }
