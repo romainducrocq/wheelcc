@@ -1539,7 +1539,7 @@ static bool is_name_same_value(TacValue* node, const TIdentifier& name) {
     }
 }
 
-static bool is_copy_same_sign(TacCopy* node) {
+static bool is_copy_signedness(TacCopy* node) {
     return is_value_signed(node->src.get()) == is_value_signed(node->dst.get());
 }
 
@@ -1650,7 +1650,7 @@ static void copy_propagation_transfer_copy_reaching_copies(
             RAISE_INTERNAL_ERROR;
         }
         else if (is_same_value(node->dst.get(), copy->dst.get())) {
-            if ((is_copy_same_sign(copy) || is_copy_null_pointer(copy))
+            if ((is_copy_signedness(copy) || is_copy_null_pointer(copy))
                 && is_same_value(node->src.get(), copy->src.get())) {
                 GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
             }
@@ -1666,7 +1666,7 @@ static void copy_propagation_transfer_copy_reaching_copies(
                         GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) =
                             GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
                     }
-                    return; // TODO return or break ?
+                    break;
                 }
                 else {
                     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
