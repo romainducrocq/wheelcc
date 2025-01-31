@@ -1914,10 +1914,10 @@ static void data_flow_analysis_forward_successor_open_block(size_t block_id, siz
 
 static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
     if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
-        i--;
-        context->data_flow_analysis->open_block_ids[i] = block_id;
         context->control_flow_graph->reaching_code[block_id] = true;
         data_flow_analysis_forward_successor_open_block(block_id, i);
+        i--;
+        context->data_flow_analysis->open_block_ids[i] = block_id;
     }
 }
 
