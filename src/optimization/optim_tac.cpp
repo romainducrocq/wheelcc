@@ -833,7 +833,13 @@ static std::shared_ptr<CConst> fold_constants_binary_double_constant(
             return std::make_shared<CConstDouble>(std::move(value));
         }
         case AST_T::TacDivide_t: {
-            TDouble value = constant_2->value != 0.0 ? constant_1->value / constant_2->value : 0.0 / 0.0;
+            TDouble value;
+            if (constant_2->value != 0.0) {
+                value = constant_1->value / constant_2->value;
+            }
+            else {
+                value = constant_1->value != 0.0 ? 0.0 : 0.0 / 0.0;
+            }
             return std::make_shared<CConstDouble>(std::move(value));
         }
         case AST_T::TacEqual_t: {
@@ -1417,11 +1423,11 @@ static bool is_value_signed(TacValue* node) {
 
 static bool is_double_constant_same_value(CConstDouble* constant_1, CConstDouble* constant_2) {
     if (constant_1->value == constant_2->value) {
-        if (constant_1->value == 0.0) {
-            return double_to_binary(constant_1->value) == double_to_binary(constant_2->value);
+        if (constant_1->value != 0.0) {
+            return true;
         }
         else {
-            return true;
+            return double_to_binary(constant_1->value) == double_to_binary(constant_2->value);
         }
     }
     else if (constant_1->value != constant_1->value && constant_2->value != constant_2->value) {
