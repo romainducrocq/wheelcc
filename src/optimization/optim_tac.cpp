@@ -1883,10 +1883,17 @@ static void data_flow_analysis_iterative_algorithm() {
 }
 
 static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i);
+static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i);
 
 static void data_flow_analysis_forward_successor_open_block(size_t block_id, size_t& i) {
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
         data_flow_analysis_forward_open_block(successor_id, i);
+    }
+}
+
+static void data_flow_analysis_backward_successor_open_block(size_t block_id, size_t& i) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+        data_flow_analysis_backward_open_block(successor_id, i);
     }
 }
 
@@ -1896,6 +1903,15 @@ static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
         data_flow_analysis_forward_successor_open_block(block_id, i);
         i--;
         context->data_flow_analysis->open_block_ids[i] = block_id;
+    }
+}
+
+static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
+    if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
+        context->control_flow_graph->reaching_code[block_id] = true;
+        data_flow_analysis_backward_successor_open_block(block_id, i);
+        context->data_flow_analysis->open_block_ids[i] = block_id;
+        i++;
     }
 }
 
@@ -1920,7 +1936,7 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
 
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
-    bool is_eliminate_dead_store = !is_copy_propagation;
+    bool is_dead_store_elimination = !is_copy_propagation;
     bool initialize_alias_set;
     if (is_copy_propagation || !context->enabled_optimizations[COPY_PROPAGATION]) {
         initialize_alias_set = true;
@@ -1967,6 +1983,9 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                                 }
                                 context->data_flow_analysis->set_size++;
                             }
+                            else {
+                                // TODO
+                            }
                             if (initialize_alias_set) {
                                 TacCopy* copy = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
                                 if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -1989,6 +2008,9 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             break;
                         }
                         case AST_T::TacGetAddress_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
                             if (initialize_alias_set) {
                                 TacGetAddress* get_address =
                                     static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
@@ -2025,8 +2047,7 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                 data_flow_analysis_forward_open_block(successor_id, i);
             }
         }
-        while (i > 0) {
-            i--;
+        while (i-- > 0) {
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
@@ -2039,6 +2060,17 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
 
         std::fill(context->control_flow_graph->reaching_code.begin(),
             context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
+    }
+    else {
+        size_t i = 0;
+        for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
+            if (!context->control_flow_graph->reaching_code[successor_id]) {
+                data_flow_analysis_backward_open_block(successor_id, i);
+            }
+        }
+        for (; i < context->control_flow_graph->blocks.size(); i++) {
+            context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
+        }
     }
 
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
