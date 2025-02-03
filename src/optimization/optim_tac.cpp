@@ -1501,16 +1501,12 @@ static bool is_same_value(TacValue* node_1, TacValue* node_2) {
     return false;
 }
 
-static bool is_variable_name_same_value(TacVariable* node, const TIdentifier& name) {
-    return node->name.compare(name) == 0;
-}
-
 static bool is_name_same_value(TacValue* node, const TIdentifier& name) {
     switch (node->type()) {
         case AST_T::TacConstant_t:
             return false;
         case AST_T::TacVariable_t:
-            return is_variable_name_same_value(static_cast<TacVariable*>(node), name);
+            return static_cast<TacVariable*>(node)->name.compare(name) == 0;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -1915,6 +1911,21 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     }
 }
 
+static void data_flow_analysis_add_static_alias(TacValue* node) {
+    if (node->type() == AST_T::TacVariable_t) {
+        TacVariable* p_node = static_cast<TacVariable*>(node);
+        if (frontend->symbol_table[p_node->name]->attrs->type() == AST_T::StaticAttr_t) {
+            context->data_flow_analysis->alias_set.insert(p_node->name);
+        }
+    }
+}
+
+static void data_flow_analysis_add_pointer_alias(TacValue* node) {
+    if (node->type() == AST_T::TacVariable_t) {
+        context->data_flow_analysis->alias_set.insert(static_cast<TacVariable*>(node)->name);
+    }
+}
+
 static bool data_flow_analysis_initialize(bool is_copy_propagation) {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
@@ -1972,6 +1983,7 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             break;
                         }
                         case AST_T::TacCopy_t: {
+                            TacCopy* p_node = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
                             if (is_copy_propagation) {
                                 if (context->data_flow_analysis->set_size
                                     < context->data_flow_analysis->data_index_map.size()) {
@@ -1987,20 +1999,8 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                                 // TODO
                             }
                             if (initialize_alias_set) {
-                                TacCopy* copy = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
-                                if (copy->dst->type() != AST_T::TacVariable_t) {
-                                    RAISE_INTERNAL_ERROR;
-                                }
-                                if (copy->src->type() == AST_T::TacVariable_t) {
-                                    TacVariable* copy_src = static_cast<TacVariable*>(copy->src.get());
-                                    if (frontend->symbol_table[copy_src->name]->attrs->type() == AST_T::StaticAttr_t) {
-                                        context->data_flow_analysis->alias_set.insert(copy_src->name);
-                                    }
-                                }
-                                TacVariable* copy_dst = static_cast<TacVariable*>(copy->dst.get());
-                                if (frontend->symbol_table[copy_dst->name]->attrs->type() == AST_T::StaticAttr_t) {
-                                    context->data_flow_analysis->alias_set.insert(copy_dst->name);
-                                }
+                                data_flow_analysis_add_static_alias(p_node->src.get());
+                                data_flow_analysis_add_static_alias(p_node->dst.get());
                             }
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
@@ -2008,16 +2008,13 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             break;
                         }
                         case AST_T::TacGetAddress_t: {
+                            TacGetAddress* p_node =
+                                static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
                             if (is_dead_store_elimination) {
                                 // TODO
                             }
                             if (initialize_alias_set) {
-                                TacGetAddress* get_address =
-                                    static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
-                                if (get_address->src->type() == AST_T::TacVariable_t) {
-                                    context->data_flow_analysis->alias_set.insert(
-                                        static_cast<TacVariable*>(get_address->src.get())->name);
-                                }
+                                data_flow_analysis_add_pointer_alias(p_node->src.get());
                             }
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
