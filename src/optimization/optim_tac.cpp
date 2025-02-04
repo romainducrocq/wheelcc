@@ -1534,7 +1534,7 @@ static bool is_copy_null_pointer(TacCopy* node) {
     }
 }
 
-static bool is_transfer_instruction(size_t instruction_index) {
+static bool is_transfer_instruction(size_t instruction_index, bool is_dead_store_elimination) {
     switch (GET_INSTRUCTION(instruction_index)->type()) {
         case AST_T::TacSignExtend_t:
         case AST_T::TacTruncate_t:
@@ -1554,6 +1554,10 @@ static bool is_transfer_instruction(size_t instruction_index) {
         case AST_T::TacCopyToOffset_t:
         case AST_T::TacCopyFromOffset_t:
             return true;
+        case AST_T::TacReturn_t:
+        case AST_T::TacJumpIfZero_t:
+        case AST_T::TacJumpIfNotZero_t:
+            return is_dead_store_elimination;
         default:
             return false;
     }
@@ -1787,7 +1791,7 @@ static void copy_propagation_transfer_reaching_copies(
 static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
-        if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index)) {
+        if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, false)) {
             copy_propagation_transfer_reaching_copies(
                 GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
             instruction_index = next_instruction_index;
@@ -1801,7 +1805,7 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
 static bool data_flow_analysis_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index)) {
+        if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index, false)) {
             goto Lelse;
         }
     }
@@ -1947,7 +1951,7 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 
-static bool data_flow_analysis_initialize(bool is_copy_propagation) {
+static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
 
@@ -1968,7 +1972,7 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
 
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
-    bool is_dead_store_elimination = !is_copy_propagation;
+    bool is_copy_propagation = !is_dead_store_elimination;
     bool initialize_alias_set;
     if (is_copy_propagation || !context->enabled_optimizations[COPY_PROPAGATION]) {
         initialize_alias_set = true;
@@ -2750,7 +2754,7 @@ static void propagate_copies_instructions(TacInstruction* node, size_t instructi
 }
 
 static void propagate_copies_control_flow_graph() {
-    if (!data_flow_analysis_initialize(true)) {
+    if (!data_flow_analysis_initialize(false)) {
         return;
     }
     data_flow_analysis_iterative_algorithm();
