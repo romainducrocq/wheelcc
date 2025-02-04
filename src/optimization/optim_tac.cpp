@@ -2895,9 +2895,76 @@ static void propagate_copies_control_flow_graph() {
 
 // Dead store elimination
 
+// src
+// src dst
+// src src dst
+
 static void eliminate_dead_store_transfer_live_values(
-    TacInstruction* /*node*/, size_t /*instruction_index*/, size_t /*next_instruction_index*/) {
-    // TODO
+    TacInstruction* node, size_t /*instruction_index*/, size_t /*next_instruction_index*/) {
+    switch (node->type()) {
+        case AST_T::TacReturn_t:
+            // TODO
+            break;
+        // case AST_T::TacSignExtend_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacTruncate_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacZeroExtend_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacDoubleToInt_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacDoubleToUInt_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacIntToDouble_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacUIntToDouble_t:
+        //     // TODO
+        //     break;
+        case AST_T::TacFunCall_t:
+            // TODO
+            break;
+        case AST_T::TacUnary_t:
+            // TODO
+            break;
+        case AST_T::TacBinary_t:
+            // TODO
+            break;
+        case AST_T::TacCopy_t:
+            // TODO
+            break;
+        // case AST_T::TacGetAddress_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacLoad_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacStore_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacAddPtr_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacCopyToOffset_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacCopyFromOffset_t:
+        //     // TODO
+        //     break;
+        case AST_T::TacJumpIfZero_t:
+            // TODO
+            break;
+        case AST_T::TacJumpIfNotZero_t:
+            // TODO
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
 }
 
 static void eliminate_dead_store_control_flow_graph(bool initialize_alias_set) {
