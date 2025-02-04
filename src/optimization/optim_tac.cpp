@@ -1243,6 +1243,9 @@ static void eliminate_unreachable_code_label_block(size_t block_id, size_t previ
 }
 
 static void eliminate_unreachable_code_control_flow_graph() {
+    if (context->control_flow_graph->blocks.empty()) {
+        return;
+    }
     if (context->control_flow_graph->reaching_code.size() < context->control_flow_graph->blocks.size()) {
         context->control_flow_graph->reaching_code.resize(context->control_flow_graph->blocks.size());
     }
