@@ -1858,9 +1858,44 @@ Lelse:
     return data_flow_analysis_after_meet_block(block_id);
 }
 
-static bool data_flow_analysis_backward_meet_block(size_t /*block_id*/) {
-    // TODO
-    return false;
+static bool data_flow_analysis_backward_meet_block(size_t block_id) {
+    size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index + 1;
+    while (instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index) {
+        if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index, true)) {
+            goto Lelse;
+        }
+    }
+    instruction_index = context->data_flow_analysis->incoming_index;
+Lelse:
+    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+        if (successor_id < context->control_flow_graph->exit_id) {
+            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+                if (GET_DFA_BLOCK_SET_AT(successor_id, i)) {
+                    GET_DFA_INSTRUCTION_SET_AT(successor_id, i) = true;
+                }
+            }
+        }
+        else if (successor_id == context->control_flow_graph->exit_id) {
+            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+                GET_DFA_INSTRUCTION_SET_AT(successor_id, i) = context->data_flow_analysis->data_index_map[i];
+            }
+            break;
+        }
+        else {
+            RAISE_INTERNAL_ERROR;
+        }
+    }
+
+    if (instruction_index < context->data_flow_analysis->incoming_index) {
+        data_flow_analysis_backward_transfer_block(instruction_index, block_id);
+    }
+    else if (instruction_index != context->data_flow_analysis->incoming_index) {
+        RAISE_INTERNAL_ERROR;
+    }
+
+    return data_flow_analysis_after_meet_block(block_id);
 }
 
 static void data_flow_analysis_forward_iterative_algorithm() {
