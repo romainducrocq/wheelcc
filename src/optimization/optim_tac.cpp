@@ -1989,12 +1989,13 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
-                    switch (GET_INSTRUCTION(instruction_index)->type()) {
+                    TacInstruction* node = GET_INSTRUCTION(instruction_index).get();
+                    switch (node->type()) {
                         case AST_T::TacReturn_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            TacReturn* p_node = static_cast<TacReturn*>(GET_INSTRUCTION(instruction_index).get());
+                            TacReturn* p_node = static_cast<TacReturn*>(node);
                             if (p_node->val) {
                                 eliminate_dead_store_add_data_value(p_node->val.get());
                             }
@@ -2002,8 +2003,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacSignExtend_t: {
                             if (is_dead_store_elimination) {
-                                TacSignExtend* p_node =
-                                    static_cast<TacSignExtend*>(GET_INSTRUCTION(instruction_index).get());
+                                TacSignExtend* p_node = static_cast<TacSignExtend*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2011,8 +2011,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacTruncate_t: {
                             if (is_dead_store_elimination) {
-                                TacTruncate* p_node =
-                                    static_cast<TacTruncate*>(GET_INSTRUCTION(instruction_index).get());
+                                TacTruncate* p_node = static_cast<TacTruncate*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2020,8 +2019,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacZeroExtend_t: {
                             if (is_dead_store_elimination) {
-                                TacZeroExtend* p_node =
-                                    static_cast<TacZeroExtend*>(GET_INSTRUCTION(instruction_index).get());
+                                TacZeroExtend* p_node = static_cast<TacZeroExtend*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2029,8 +2027,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacDoubleToInt_t: {
                             if (is_dead_store_elimination) {
-                                TacDoubleToInt* p_node =
-                                    static_cast<TacDoubleToInt*>(GET_INSTRUCTION(instruction_index).get());
+                                TacDoubleToInt* p_node = static_cast<TacDoubleToInt*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2038,8 +2035,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacDoubleToUInt_t: {
                             if (is_dead_store_elimination) {
-                                TacDoubleToUInt* p_node =
-                                    static_cast<TacDoubleToUInt*>(GET_INSTRUCTION(instruction_index).get());
+                                TacDoubleToUInt* p_node = static_cast<TacDoubleToUInt*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2047,8 +2043,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacIntToDouble_t: {
                             if (is_dead_store_elimination) {
-                                TacIntToDouble* p_node =
-                                    static_cast<TacIntToDouble*>(GET_INSTRUCTION(instruction_index).get());
+                                TacIntToDouble* p_node = static_cast<TacIntToDouble*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2056,8 +2051,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacUIntToDouble_t: {
                             if (is_dead_store_elimination) {
-                                TacUIntToDouble* p_node =
-                                    static_cast<TacUIntToDouble*>(GET_INSTRUCTION(instruction_index).get());
+                                TacUIntToDouble* p_node = static_cast<TacUIntToDouble*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2065,7 +2059,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacFunCall_t: {
                             if (is_dead_store_elimination) {
-                                TacFunCall* p_node = static_cast<TacFunCall*>(GET_INSTRUCTION(instruction_index).get());
+                                TacFunCall* p_node = static_cast<TacFunCall*>(node);
                                 for (const auto& arg : p_node->args) {
                                     eliminate_dead_store_add_data_value(arg.get());
                                 }
@@ -2075,7 +2069,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacUnary_t: {
                             if (is_dead_store_elimination) {
-                                TacUnary* p_node = static_cast<TacUnary*>(GET_INSTRUCTION(instruction_index).get());
+                                TacUnary* p_node = static_cast<TacUnary*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2083,7 +2077,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacBinary_t: {
                             if (is_dead_store_elimination) {
-                                TacBinary* p_node = static_cast<TacBinary*>(GET_INSTRUCTION(instruction_index).get());
+                                TacBinary* p_node = static_cast<TacBinary*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src1.get());
                                 eliminate_dead_store_add_data_value(p_node->src2.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
@@ -2091,7 +2085,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                             break;
                         }
                         case AST_T::TacCopy_t: {
-                            TacCopy* p_node = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
+                            TacCopy* p_node = static_cast<TacCopy*>(node);
                             if (is_copy_propagation) {
                                 propagate_copies_add_data_index(instruction_index);
                             }
@@ -2102,8 +2096,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                             break;
                         }
                         case AST_T::TacGetAddress_t: {
-                            TacGetAddress* p_node =
-                                static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
+                            TacGetAddress* p_node = static_cast<TacGetAddress*>(node);
                             if (is_dead_store_elimination) {
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
@@ -2115,7 +2108,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacLoad_t: {
                             if (is_dead_store_elimination) {
-                                TacLoad* p_node = static_cast<TacLoad*>(GET_INSTRUCTION(instruction_index).get());
+                                TacLoad* p_node = static_cast<TacLoad*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src_ptr.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2123,7 +2116,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacStore_t: {
                             if (is_dead_store_elimination) {
-                                TacStore* p_node = static_cast<TacStore*>(GET_INSTRUCTION(instruction_index).get());
+                                TacStore* p_node = static_cast<TacStore*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst_ptr.get());
                             }
@@ -2131,7 +2124,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacAddPtr_t: {
                             if (is_dead_store_elimination) {
-                                TacAddPtr* p_node = static_cast<TacAddPtr*>(GET_INSTRUCTION(instruction_index).get());
+                                TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src_ptr.get());
                                 eliminate_dead_store_add_data_value(p_node->index.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
@@ -2140,8 +2133,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacCopyToOffset_t: {
                             if (is_dead_store_elimination) {
-                                TacCopyToOffset* p_node =
-                                    static_cast<TacCopyToOffset*>(GET_INSTRUCTION(instruction_index).get());
+                                TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
                                 eliminate_dead_store_add_data_name(p_node->dst_name);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                             }
@@ -2149,8 +2141,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                         }
                         case AST_T::TacCopyFromOffset_t: {
                             if (is_dead_store_elimination) {
-                                TacCopyFromOffset* p_node =
-                                    static_cast<TacCopyFromOffset*>(GET_INSTRUCTION(instruction_index).get());
+                                TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
                                 eliminate_dead_store_add_data_name(p_node->src_name);
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2160,18 +2151,14 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            TacJumpIfZero* p_node =
-                                static_cast<TacJumpIfZero*>(GET_INSTRUCTION(instruction_index).get());
-                            eliminate_dead_store_add_data_value(p_node->condition.get());
+                            eliminate_dead_store_add_data_value(static_cast<TacJumpIfZero*>(node)->condition.get());
                             break;
                         }
                         case AST_T::TacJumpIfNotZero_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            TacJumpIfNotZero* p_node =
-                                static_cast<TacJumpIfNotZero*>(GET_INSTRUCTION(instruction_index).get());
-                            eliminate_dead_store_add_data_value(p_node->condition.get());
+                            eliminate_dead_store_add_data_value(static_cast<TacJumpIfNotZero*>(node)->condition.get());
                             break;
                         }
                         default:
