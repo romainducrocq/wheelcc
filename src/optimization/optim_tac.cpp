@@ -1982,7 +1982,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
         initialize_alias_set = false;
     }
     if (is_dead_store_elimination) {
-        context->control_flow_graph->label_id_map.clear();
+        context->control_flow_graph->label_id_map.clear(); // TODO rename to identifier_id_map
     }
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
@@ -2228,7 +2228,11 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
         if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
             context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
         }
-        // TODO
+
+        for (const auto& name_id : context->control_flow_graph->label_id_map) {
+            context->data_flow_analysis->data_index_map[name_id.second] =
+                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
+        }
     }
 
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
