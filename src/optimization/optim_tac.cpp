@@ -1785,6 +1785,11 @@ static void copy_propagation_transfer_reaching_copies(
     }
 }
 
+static void copy_propagation_transfer_reaching_copies(
+    TacInstruction* node, size_t instruction_index, size_t next_instruction_index);
+static void eliminate_dead_store_transfer_live_values(
+    TacInstruction* node, size_t instruction_index, size_t next_instruction_index);
+
 static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
@@ -1799,9 +1804,20 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
     return instruction_index;
 }
 
-static size_t data_flow_analysis_backward_transfer_block(size_t /*instruction_index*/, size_t /*block_id*/) {
-    // TODO
-    return 0;
+static size_t data_flow_analysis_backward_transfer_block(size_t instruction_index, size_t block_id) {
+    if (instruction_index > 0) {
+        for (size_t next_instruction_index = instruction_index;
+             next_instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
+            if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, true)) {
+                eliminate_dead_store_transfer_live_values(
+                    GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
+                instruction_index = next_instruction_index;
+            }
+        }
+    }
+    eliminate_dead_store_transfer_live_values(
+        GET_INSTRUCTION(instruction_index).get(), instruction_index, context->data_flow_analysis->incoming_index);
+    return instruction_index;
 }
 
 static bool data_flow_analysis_after_meet_block(size_t block_id) {
@@ -2878,6 +2894,11 @@ static void propagate_copies_control_flow_graph() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Dead store elimination
+
+static void eliminate_dead_store_transfer_live_values(
+    TacInstruction* /*node*/, size_t /*instruction_index*/, size_t /*next_instruction_index*/) {
+    // TODO
+}
 
 static void eliminate_dead_store_control_flow_graph(bool initialize_alias_set) {
     if (!data_flow_analysis_initialize(true, initialize_alias_set)) {
