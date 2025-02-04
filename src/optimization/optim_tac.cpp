@@ -30,12 +30,6 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
 
 // Three address code optimization
 
-#define CONSTANT_FOLDING 0
-#define COPY_PROPAGATION 1
-#define UNREACHABLE_CODE_ELIMINATION 2
-#define DEAD_STORE_ELMININATION 3
-#define CONTROL_FLOW_GRAPH 4
-
 #ifndef __OPTIM_LEVEL__
 #define __OPTIM_LEVEL__ 1
 #undef _OPTIMIZATION_CFG_IMPL_HPP
@@ -1951,7 +1945,7 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 
-static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
+static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool initialize_alias_set) {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
 
@@ -1973,16 +1967,11 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination) {
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
     bool is_copy_propagation = !is_dead_store_elimination;
-    bool initialize_alias_set;
-    if (is_copy_propagation || !context->enabled_optimizations[COPY_PROPAGATION]) {
-        initialize_alias_set = true;
-        context->data_flow_analysis->alias_set.clear();
-    }
-    else {
-        initialize_alias_set = false;
-    }
     if (is_dead_store_elimination) {
         context->control_flow_graph->label_id_map.clear(); // TODO rename to identifier_id_map
+    }
+    if (initialize_alias_set) {
+        context->data_flow_analysis->alias_set.clear();
     }
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
@@ -2745,7 +2734,7 @@ static void propagate_copies_instructions(TacInstruction* node, size_t instructi
 }
 
 static void propagate_copies_control_flow_graph() {
-    if (!data_flow_analysis_initialize(false)) {
+    if (!data_flow_analysis_initialize(false, true)) {
         return;
     }
     data_flow_analysis_iterative_algorithm();
@@ -2804,9 +2793,15 @@ static void propagate_copies_control_flow_graph() {
 
 // Dead store elimination
 
-static void eliminate_dead_store_control_flow_graph() {}
+static void eliminate_dead_store_control_flow_graph(bool /*initialize_alias_set*/) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define CONSTANT_FOLDING 0
+#define COPY_PROPAGATION 1
+#define UNREACHABLE_CODE_ELIMINATION 2
+#define DEAD_STORE_ELMININATION 3
+#define CONTROL_FLOW_GRAPH 4
 
 // // TODO rm
 // #include <stdio.h>
@@ -2830,7 +2825,7 @@ static void optimize_function_top_level(TacFunction* node) {
             }
             if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
                 // printf("--eliminate-dead-stores\n"); // TODO rm
-                eliminate_dead_store_control_flow_graph();
+                eliminate_dead_store_control_flow_graph(!context->enabled_optimizations[COPY_PROPAGATION]);
             }
         }
     }
