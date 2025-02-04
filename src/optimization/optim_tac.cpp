@@ -1782,7 +1782,7 @@ static void copy_propagation_transfer_reaching_copies(
     }
 }
 
-static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t block_id) {
+static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
         if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, false)) {
@@ -1796,7 +1796,7 @@ static size_t data_flow_analysis_transfer_block(size_t instruction_index, size_t
     return instruction_index;
 }
 
-static bool data_flow_analysis_meet_block(size_t block_id) {
+static bool data_flow_analysis_forward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index, false)) {
@@ -1825,7 +1825,7 @@ Lelse:
     }
 
     if (instruction_index < context->data_flow_analysis->incoming_index) {
-        data_flow_analysis_transfer_block(instruction_index, block_id);
+        data_flow_analysis_forward_transfer_block(instruction_index, block_id);
     }
     else if (instruction_index != context->data_flow_analysis->incoming_index) {
         RAISE_INTERNAL_ERROR;
@@ -1849,7 +1849,7 @@ Lelse:
     return is_fixed_point;
 }
 
-static void data_flow_analysis_iterative_algorithm() {
+static void data_flow_analysis_forward_iterative_algorithm() {
     size_t open_block_ids_size = context->control_flow_graph->blocks.size();
     for (size_t i = 0; i < open_block_ids_size; ++i) {
         size_t block_id = context->data_flow_analysis->open_block_ids[i];
@@ -1857,7 +1857,7 @@ static void data_flow_analysis_iterative_algorithm() {
             continue;
         }
 
-        bool is_fixed_point = data_flow_analysis_meet_block(block_id);
+        bool is_fixed_point = data_flow_analysis_forward_meet_block(block_id);
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
@@ -2737,7 +2737,7 @@ static void propagate_copies_control_flow_graph() {
     if (!data_flow_analysis_initialize(false, true)) {
         return;
     }
-    data_flow_analysis_iterative_algorithm();
+    data_flow_analysis_forward_iterative_algorithm();
 
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
