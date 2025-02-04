@@ -1992,7 +1992,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            // TacReturn(std::shared_ptr<TacValue> val);
                             TacReturn* p_node = static_cast<TacReturn*>(GET_INSTRUCTION(instruction_index).get());
                             if (p_node->val) {
                                 eliminate_dead_store_add_data_value(p_node->val.get());
@@ -2001,8 +2000,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacSignExtend_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacSignExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 TacSignExtend* p_node =
                                     static_cast<TacSignExtend*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2012,8 +2009,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacTruncate_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacTruncate(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 TacTruncate* p_node =
                                     static_cast<TacTruncate*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2023,8 +2018,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacZeroExtend_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacZeroExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 TacZeroExtend* p_node =
                                     static_cast<TacZeroExtend*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2034,8 +2027,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacDoubleToInt_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacDoubleToInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 TacDoubleToInt* p_node =
                                     static_cast<TacDoubleToInt*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2045,8 +2036,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacDoubleToUInt_t: {
                             if (is_dead_store_elimination) {
-                                // TacDoubleToUInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
-                                // TODO
                                 TacDoubleToUInt* p_node =
                                     static_cast<TacDoubleToUInt*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2056,8 +2045,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacIntToDouble_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 TacIntToDouble* p_node =
                                     static_cast<TacIntToDouble*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2067,8 +2054,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacUIntToDouble_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 TacUIntToDouble* p_node =
                                     static_cast<TacUIntToDouble*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2078,9 +2063,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacFunCall_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args,
-                                //     std::shared_ptr<TacValue> dst);
                                 TacFunCall* p_node = static_cast<TacFunCall*>(GET_INSTRUCTION(instruction_index).get());
                                 for (const auto& arg : p_node->args) {
                                     eliminate_dead_store_add_data_value(arg.get());
@@ -2091,9 +2073,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacUnary_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::shared_ptr<TacValue> src,
-                                //     std::shared_ptr<TacValue> dst);
                                 TacUnary* p_node = static_cast<TacUnary*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
@@ -2102,9 +2081,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacBinary_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1,
-                                //     std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst);
                                 TacBinary* p_node = static_cast<TacBinary*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src1.get());
                                 eliminate_dead_store_add_data_value(p_node->src2.get());
@@ -2120,8 +2096,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                                 propagate_copies_add_static_alias(p_node->dst.get());
                             }
                             else {
-                                // TODO
-                                // TacCopy(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2131,8 +2105,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             TacGetAddress* p_node =
                                 static_cast<TacGetAddress*>(GET_INSTRUCTION(instruction_index).get());
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacGetAddress(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -2143,8 +2115,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacLoad_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> dst);
                                 TacLoad* p_node = static_cast<TacLoad*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src_ptr.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
@@ -2153,8 +2123,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacStore_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr);
                                 TacStore* p_node = static_cast<TacStore*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst_ptr.get());
@@ -2163,10 +2131,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacAddPtr_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacAddPtr(TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue>
-                                // index,
-                                //     std::shared_ptr<TacValue> dst);
                                 TacAddPtr* p_node = static_cast<TacAddPtr*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_value(p_node->src_ptr.get());
                                 eliminate_dead_store_add_data_value(p_node->index.get());
@@ -2176,8 +2140,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacCopyToOffset_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src);
                                 TacCopyToOffset* p_node =
                                     static_cast<TacCopyToOffset*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_name(p_node->dst_name);
@@ -2187,8 +2149,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                         }
                         case AST_T::TacCopyFromOffset_t: {
                             if (is_dead_store_elimination) {
-                                // TODO
-                                // TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue> dst);
                                 TacCopyFromOffset* p_node =
                                     static_cast<TacCopyFromOffset*>(GET_INSTRUCTION(instruction_index).get());
                                 eliminate_dead_store_add_data_name(p_node->src_name);
@@ -2200,8 +2160,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            // TODO
-                            // TacJumpIfZero(TIdentifier target, std::shared_ptr<TacValue> condition);
                             TacJumpIfZero* p_node =
                                 static_cast<TacJumpIfZero*>(GET_INSTRUCTION(instruction_index).get());
                             eliminate_dead_store_add_data_value(p_node->condition.get());
@@ -2211,16 +2169,12 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            // TODO
-                            // TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue> condition);
                             TacJumpIfNotZero* p_node =
                                 static_cast<TacJumpIfNotZero*>(GET_INSTRUCTION(instruction_index).get());
                             eliminate_dead_store_add_data_value(p_node->condition.get());
                             break;
                         }
                         default:
-                            // TacJump(TIdentifier target);
-                            // TacLabel(TIdentifier name);
                             goto Lcontinue;
                     }
                     context->data_flow_analysis->instruction_index_map[instruction_index] = instructions_flat_sets_size;
