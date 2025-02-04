@@ -1380,11 +1380,18 @@ static void eliminate_unreachable_code_control_flow_graph() {
 //     }
 // }
 
-static bool is_aliased_value(TacValue* node) {
+static bool is_static_value(TacValue* node) {
+    return node->type() == AST_T::TacVariable_t
+           && frontend->symbol_table[static_cast<TacVariable*>(node)->name]->attrs->type() == AST_T::StaticAttr_t;
+}
+
+static bool is_addressed_value(TacValue* node) {
     return node->type() == AST_T::TacVariable_t
            && context->data_flow_analysis->alias_set.find(static_cast<TacVariable*>(node)->name)
                   != context->data_flow_analysis->alias_set.end();
 }
+
+static bool is_aliased_value(TacValue* node) { return is_static_value(node) || is_addressed_value(node); }
 
 static bool is_constant_value_signed(TacConstant* node) {
     switch (node->constant->type()) {
@@ -1911,16 +1918,7 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     }
 }
 
-static void propagate_copies_add_static_alias(TacValue* node) {
-    if (node->type() == AST_T::TacVariable_t) {
-        TacVariable* p_node = static_cast<TacVariable*>(node);
-        if (frontend->symbol_table[p_node->name]->attrs->type() == AST_T::StaticAttr_t) {
-            context->data_flow_analysis->alias_set.insert(p_node->name);
-        }
-    }
-}
-
-static void data_flow_analysis_add_pointer_alias(TacValue* node) {
+static void data_flow_analysis_add_alias_value(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
         context->data_flow_analysis->alias_set.insert(static_cast<TacVariable*>(node)->name);
     }
@@ -2092,8 +2090,6 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             TacCopy* p_node = static_cast<TacCopy*>(GET_INSTRUCTION(instruction_index).get());
                             if (is_copy_propagation) {
                                 propagate_copies_add_data_index(instruction_index);
-                                propagate_copies_add_static_alias(p_node->src.get());
-                                propagate_copies_add_static_alias(p_node->dst.get());
                             }
                             else {
                                 eliminate_dead_store_add_data_value(p_node->src.get());
@@ -2109,7 +2105,7 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
                             if (initialize_alias_set) {
-                                data_flow_analysis_add_pointer_alias(p_node->src.get());
+                                data_flow_analysis_add_alias_value(p_node->src.get());
                             }
                             break;
                         }
