@@ -1911,7 +1911,7 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     }
 }
 
-static void data_flow_analysis_add_static_alias(TacValue* node) {
+static void propagate_copies_add_static_alias(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
         TacVariable* p_node = static_cast<TacVariable*>(node);
         if (frontend->symbol_table[p_node->name]->attrs->type() == AST_T::StaticAttr_t) {
@@ -1925,6 +1925,34 @@ static void data_flow_analysis_add_pointer_alias(TacValue* node) {
         context->data_flow_analysis->alias_set.insert(static_cast<TacVariable*>(node)->name);
     }
 }
+
+// TacReturn(std::shared_ptr<TacValue> val);
+// TacSignExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacTruncate(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacZeroExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacDoubleToInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacDoubleToUInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args,
+// std::shared_ptr<TacValue> dst); TacUnary(std::unique_ptr<TacUnaryOp> unary_op,
+// std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1,
+// std::shared_ptr<TacValue> src2,
+//     std::shared_ptr<TacValue> dst);
+// TacCopy(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacGetAddress(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+// TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> dst);
+// TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr);
+// TacAddPtr(
+//     TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index,
+//     std::shared_ptr<TacValue> dst);
+// TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src);
+// TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue> dst);
+// // TacJump(TIdentifier target);
+// TacJumpIfZero(TIdentifier target, std::shared_ptr<TacValue> condition);
+// TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue> condition);
+// // TacLabel(TIdentifier name);
 
 static bool data_flow_analysis_initialize(bool is_copy_propagation) {
     context->data_flow_analysis->set_size = 0;
@@ -1956,27 +1984,109 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
     else {
         initialize_alias_set = false;
     }
+    if (is_dead_store_elimination) {
+        context->control_flow_graph->label_id_map.clear();
+    }
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
                     switch (GET_INSTRUCTION(instruction_index)->type()) {
-                        case AST_T::TacSignExtend_t:
-                        case AST_T::TacTruncate_t:
-                        case AST_T::TacZeroExtend_t:
-                        case AST_T::TacDoubleToInt_t:
-                        case AST_T::TacDoubleToUInt_t:
-                        case AST_T::TacIntToDouble_t:
-                        case AST_T::TacUIntToDouble_t:
-                        case AST_T::TacFunCall_t:
-                        case AST_T::TacUnary_t:
-                        case AST_T::TacBinary_t:
-                        case AST_T::TacLoad_t:
-                        case AST_T::TacStore_t:
-                        case AST_T::TacAddPtr_t:
-                        case AST_T::TacCopyToOffset_t:
-                        case AST_T::TacCopyFromOffset_t: {
+                        case AST_T::TacReturn_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                                context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                    instructions_flat_sets_size;
+                                instructions_flat_sets_size++;
+                            }
+                            break;
+                        }
+                        case AST_T::TacSignExtend_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacTruncate_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacZeroExtend_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacDoubleToInt_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacDoubleToUInt_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacIntToDouble_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacUIntToDouble_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacFunCall_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacUnary_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacBinary_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
                             instructions_flat_sets_size++;
@@ -1994,13 +2104,13 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                                     context->data_flow_analysis->data_index_map.push_back(instruction_index);
                                 }
                                 context->data_flow_analysis->set_size++;
+                                if (initialize_alias_set) {
+                                    propagate_copies_add_static_alias(p_node->src.get());
+                                    propagate_copies_add_static_alias(p_node->dst.get());
+                                }
                             }
                             else {
                                 // TODO
-                            }
-                            if (initialize_alias_set) {
-                                data_flow_analysis_add_static_alias(p_node->src.get());
-                                data_flow_analysis_add_static_alias(p_node->dst.get());
                             }
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
@@ -2019,6 +2129,69 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
                             context->data_flow_analysis->instruction_index_map[instruction_index] =
                                 instructions_flat_sets_size;
                             instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacLoad_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacStore_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacAddPtr_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacCopyToOffset_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacCopyFromOffset_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                            }
+                            context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                instructions_flat_sets_size;
+                            instructions_flat_sets_size++;
+                            break;
+                        }
+                        case AST_T::TacJumpIfZero_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                                context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                    instructions_flat_sets_size;
+                                instructions_flat_sets_size++;
+                            }
+                            break;
+                        }
+                        case AST_T::TacJumpIfNotZero_t: {
+                            if (is_dead_store_elimination) {
+                                // TODO
+                                context->data_flow_analysis->instruction_index_map[instruction_index] =
+                                    instructions_flat_sets_size;
+                                instructions_flat_sets_size++;
+                            }
                             break;
                         }
                         default:
@@ -2068,6 +2241,11 @@ static bool data_flow_analysis_initialize(bool is_copy_propagation) {
         for (; i < context->control_flow_graph->blocks.size(); i++) {
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
+
+        if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
+            context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
+        }
+        // TODO
     }
 
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
