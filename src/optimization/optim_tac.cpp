@@ -2074,11 +2074,11 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                             break;
                         }
                         case AST_T::TacCopy_t: {
-                            TacCopy* p_node = static_cast<TacCopy*>(node);
                             if (is_copy_propagation) {
                                 propagate_copies_add_data_index(instruction_index);
                             }
                             else {
+                                TacCopy* p_node = static_cast<TacCopy*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
