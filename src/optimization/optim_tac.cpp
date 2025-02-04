@@ -1801,6 +1801,25 @@ static size_t data_flow_analysis_backward_transfer_block(size_t /*instruction_in
     return 0;
 }
 
+static bool data_flow_analysis_after_meet_block(size_t block_id) {
+    bool is_fixed_point = true;
+    {
+        size_t i = 0;
+        for (; i < context->data_flow_analysis->set_size; ++i) {
+            if (GET_DFA_BLOCK_SET_AT(block_id, i)
+                != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+                is_fixed_point = false;
+                break;
+            }
+        }
+        for (; i < context->data_flow_analysis->set_size; ++i) {
+            GET_DFA_BLOCK_SET_AT(block_id, i) =
+                GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
+        }
+    }
+    return is_fixed_point;
+}
+
 static bool data_flow_analysis_forward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -1836,22 +1855,7 @@ Lelse:
         RAISE_INTERNAL_ERROR;
     }
 
-    bool is_fixed_point = true;
-    {
-        size_t i = 0;
-        for (; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_BLOCK_SET_AT(block_id, i)
-                != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
-                is_fixed_point = false;
-                break;
-            }
-        }
-        for (; i < context->data_flow_analysis->set_size; ++i) {
-            GET_DFA_BLOCK_SET_AT(block_id, i) =
-                GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
-        }
-    }
-    return is_fixed_point;
+    return data_flow_analysis_after_meet_block(block_id);
 }
 
 static bool data_flow_analysis_backward_meet_block(size_t /*block_id*/) {
@@ -2837,7 +2841,12 @@ static void propagate_copies_control_flow_graph() {
 
 // Dead store elimination
 
-static void eliminate_dead_store_control_flow_graph(bool /*initialize_alias_set*/) {}
+static void eliminate_dead_store_control_flow_graph(bool initialize_alias_set) {
+    if (!data_flow_analysis_initialize(true, initialize_alias_set)) {
+        return;
+    }
+    data_flow_analysis_backward_iterative_algorithm();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
