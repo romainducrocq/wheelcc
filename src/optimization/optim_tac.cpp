@@ -1796,6 +1796,11 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
     return instruction_index;
 }
 
+static size_t data_flow_analysis_backward_transfer_block(size_t /*instruction_index*/, size_t /*block_id*/) {
+    // TODO
+    return 0;
+}
+
 static bool data_flow_analysis_forward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -1849,6 +1854,11 @@ Lelse:
     return is_fixed_point;
 }
 
+static bool data_flow_analysis_backward_meet_block(size_t /*block_id*/) {
+    // TODO
+    return false;
+}
+
 static void data_flow_analysis_forward_iterative_algorithm() {
     size_t open_block_ids_size = context->control_flow_graph->blocks.size();
     for (size_t i = 0; i < open_block_ids_size; ++i) {
@@ -1876,6 +1886,40 @@ static void data_flow_analysis_forward_iterative_algorithm() {
                 Lelse:;
                 }
                 else if (successor_id != context->control_flow_graph->exit_id) {
+                    RAISE_INTERNAL_ERROR;
+                }
+            }
+        }
+    }
+}
+
+static void data_flow_analysis_backward_iterative_algorithm() {
+    size_t open_block_ids_size = context->control_flow_graph->blocks.size();
+    for (size_t i = 0; i < open_block_ids_size; ++i) {
+        size_t block_id = context->data_flow_analysis->open_block_ids[i];
+        if (block_id == context->control_flow_graph->exit_id) {
+            continue;
+        }
+
+        bool is_fixed_point = data_flow_analysis_backward_meet_block(block_id);
+        if (!is_fixed_point) {
+            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+                if (predecessor_id < context->control_flow_graph->exit_id) {
+                    for (size_t j = i + 1; j < open_block_ids_size; ++j) {
+                        if (predecessor_id == context->data_flow_analysis->open_block_ids[j]) {
+                            goto Lelse;
+                        }
+                    }
+                    if (open_block_ids_size < context->data_flow_analysis->open_block_ids.size()) {
+                        context->data_flow_analysis->open_block_ids[open_block_ids_size] = predecessor_id;
+                    }
+                    else {
+                        context->data_flow_analysis->open_block_ids.push_back(predecessor_id);
+                    }
+                    open_block_ids_size++;
+                Lelse:;
+                }
+                else if (predecessor_id != context->control_flow_graph->entry_id) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
