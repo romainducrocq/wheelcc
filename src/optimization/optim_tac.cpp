@@ -1348,7 +1348,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
 //                         case AST_T::TacReturn_t:
 //                         case AST_T::TacJumpIfZero_t:
 //                         case AST_T::TacJumpIfNotZero_t: {
-//                             if(is_dead_store_elimination) {
+//                             if (is_dead_store_elimination) {
 //                                 instructions_flat_sets_size++;
 //                             }
 //                             break;
@@ -1938,6 +1938,19 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
         return false;
     }
 
+    context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
+        instructions_flat_sets_size;
+    instructions_flat_sets_size++;
+    blocks_flat_sets_size *= context->data_flow_analysis->set_size;
+    instructions_flat_sets_size *= context->data_flow_analysis->set_size;
+
+    if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
+        context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);
+    }
+    if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
+        context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
+    }
+
     if (is_copy_propagation) {
         size_t i = context->control_flow_graph->blocks.size();
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
@@ -1958,8 +1971,19 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
 
         std::fill(context->control_flow_graph->reaching_code.begin(),
             context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
+        std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
+            context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
     }
     else {
+        if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
+            context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
+        }
+
+        for (const auto& name_id : context->control_flow_graph->label_id_map) {
+            context->data_flow_analysis->data_index_map[name_id.second] =
+                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
+        }
+
         size_t i = 0;
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
             if (!context->control_flow_graph->reaching_code[successor_id]) {
@@ -1970,31 +1994,9 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
-            context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
-        }
-
-        for (const auto& name_id : context->control_flow_graph->label_id_map) {
-            context->data_flow_analysis->data_index_map[name_id.second] =
-                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
-        }
+        std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
+            context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, false);
     }
-
-    context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
-        instructions_flat_sets_size;
-    instructions_flat_sets_size++;
-    blocks_flat_sets_size *= context->data_flow_analysis->set_size;
-    instructions_flat_sets_size *= context->data_flow_analysis->set_size;
-
-    if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
-        context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);
-    }
-    if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
-        context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
-    }
-
-    std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
-        context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
 
     return true;
 }
