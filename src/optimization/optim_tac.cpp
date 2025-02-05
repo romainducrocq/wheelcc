@@ -2047,7 +2047,7 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 
-static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool initialize_alias_set) {
+static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool init_alias_set) {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
 
@@ -2072,7 +2072,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
     if (is_dead_store_elimination) {
         context->control_flow_graph->label_id_map.clear(); // TODO rename to identifier_id_map
     }
-    if (initialize_alias_set) {
+    if (init_alias_set) {
         context->data_flow_analysis->alias_set.clear();
     }
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
@@ -2192,7 +2192,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
-                            if (initialize_alias_set) {
+                            if (init_alias_set) {
                                 data_flow_analysis_add_alias_value(p_node->src.get());
                             }
                             break;
@@ -3011,8 +3011,8 @@ static void eliminate_dead_store_transfer_live_values(
     }
 }
 
-static void eliminate_dead_store_control_flow_graph(bool initialize_alias_set) {
-    if (!data_flow_analysis_initialize(true, initialize_alias_set)) {
+static void eliminate_dead_store_control_flow_graph(bool init_alias_set) {
+    if (!data_flow_analysis_initialize(true, init_alias_set)) {
         return;
     }
     data_flow_analysis_backward_iterative_algorithm();
