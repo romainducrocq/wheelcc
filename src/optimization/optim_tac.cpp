@@ -2154,7 +2154,9 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                                 for (const auto& arg : p_node->args) {
                                     eliminate_dead_store_add_data_value(arg.get());
                                 }
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                if (p_node->dst) {
+                                    eliminate_dead_store_add_data_value(p_node->dst.get());
+                                }
                             }
                             break;
                         }
@@ -2954,7 +2956,9 @@ static void eliminate_dead_store_transfer_live_values(
         //     break;
         case AST_T::TacFunCall_t: {
             TacFunCall* p_node = static_cast<TacFunCall*>(node);
-            eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
+            if (p_node->dst) {
+                eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
+            }
             for (const auto& arg : p_node->args) {
                 eliminate_dead_store_transfer_src_value_live_values(arg.get(), next_instruction_index);
             }
