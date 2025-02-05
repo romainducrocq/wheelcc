@@ -3015,11 +3015,87 @@ static void eliminate_dead_store_transfer_live_values(
     }
 }
 
+static void eliminate_dead_store_dst_value_instructions(TacValue* node, size_t instruction_index) {
+    if (node->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    size_t i = context->control_flow_graph->label_id_map[static_cast<TacVariable*>(node)->name];
+    if (!GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+        set_instruction(nullptr, instruction_index);
+    }
+}
+
+static void eliminate_dead_store_instructions(TacInstruction* node, size_t instruction_index) {
+    switch (node->type()) {
+        // case AST_T::TacSignExtend_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacTruncate_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacZeroExtend_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacDoubleToInt_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacDoubleToUInt_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacIntToDouble_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacUIntToDouble_t:
+        //     // TODO
+        //     break;
+        case AST_T::TacUnary_t:
+            eliminate_dead_store_dst_value_instructions(static_cast<TacUnary*>(node)->dst.get(), instruction_index);
+            break;
+        case AST_T::TacBinary_t:
+            eliminate_dead_store_dst_value_instructions(static_cast<TacBinary*>(node)->dst.get(), instruction_index);
+            break;
+        case AST_T::TacCopy_t:
+            eliminate_dead_store_dst_value_instructions(static_cast<TacCopy*>(node)->dst.get(), instruction_index);
+            break;
+        // case AST_T::TacGetAddress_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacLoad_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacStore_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacAddPtr_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacCopyToOffset_t:
+        //     // TODO
+        //     break;
+        // case AST_T::TacCopyFromOffset_t:
+        //     // TODO
+        //     break;
+        default:
+            break;
+    }
+}
+
 static void eliminate_dead_store_control_flow_graph(bool init_alias_set) {
     if (!data_flow_analysis_initialize(true, init_alias_set)) {
         return;
     }
     data_flow_analysis_backward_iterative_algorithm();
+
+    for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+        if (GET_CFG_BLOCK(block_id).size > 0) {
+            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+                if (GET_INSTRUCTION(instruction_index)) {
+                    eliminate_dead_store_instructions(GET_INSTRUCTION(instruction_index).get(), instruction_index);
+                }
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
