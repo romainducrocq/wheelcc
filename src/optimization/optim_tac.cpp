@@ -1557,13 +1557,13 @@ Lelse:
         if (successor_id < context->control_flow_graph->exit_id) {
             for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
                 if (GET_DFA_BLOCK_SET_AT(successor_id, i)) {
-                    GET_DFA_INSTRUCTION_SET_AT(successor_id, i) = true;
+                    GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = true;
                 }
             }
         }
         else if (successor_id == context->control_flow_graph->exit_id) {
             for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                GET_DFA_INSTRUCTION_SET_AT(successor_id, i) = context->data_flow_analysis->data_index_map[i];
+                GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = context->data_flow_analysis->data_index_map[i];
             }
             break;
         }
