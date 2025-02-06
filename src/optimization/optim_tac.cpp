@@ -1689,14 +1689,26 @@ static void data_flow_analysis_add_alias_value(TacValue* node) {
     }
 }
 
-static void propagate_copies_add_data_index(size_t instruction_index) {
-    if (context->data_flow_analysis->set_size < context->data_flow_analysis->data_index_map.size()) {
-        context->data_flow_analysis->data_index_map[context->data_flow_analysis->set_size] = instruction_index;
+static bool is_same_value(TacValue* node_1, TacValue* node_2);
+
+static bool propagate_copies_add_data_index(TacCopy* node, size_t instruction_index, size_t block_id) {
+    if (node->dst->type() != AST_T::TacVariable_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    else if (is_same_value(node->src.get(), node->dst.get())) {
+        control_flow_graph_remove_block_instruction(instruction_index, block_id);
+        return false;
     }
     else {
-        context->data_flow_analysis->data_index_map.push_back(instruction_index);
+        if (context->data_flow_analysis->set_size < context->data_flow_analysis->data_index_map.size()) {
+            context->data_flow_analysis->data_index_map[context->data_flow_analysis->set_size] = instruction_index;
+        }
+        else {
+            context->data_flow_analysis->data_index_map.push_back(instruction_index);
+        }
+        context->data_flow_analysis->set_size++;
+        return true;
     }
-    context->data_flow_analysis->set_size++;
 }
 
 static void eliminate_dead_store_add_data_name(const TIdentifier& name) {
@@ -1843,11 +1855,13 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                             break;
                         }
                         case AST_T::TacCopy_t: {
+                            TacCopy* p_node = static_cast<TacCopy*>(node);
                             if (is_copy_propagation) {
-                                propagate_copies_add_data_index(instruction_index);
+                                if (!propagate_copies_add_data_index(p_node, instruction_index, block_id)) {
+                                    goto Lcontinue;
+                                }
                             }
                             else {
-                                TacCopy* p_node = static_cast<TacCopy*>(node);
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
@@ -1927,8 +1941,10 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                 Lcontinue:;
                 }
             }
-            context->data_flow_analysis->block_index_map[block_id] = blocks_flat_sets_size;
-            blocks_flat_sets_size++;
+            if (GET_CFG_BLOCK(block_id).size > 0) {
+                context->data_flow_analysis->block_index_map[block_id] = blocks_flat_sets_size;
+                blocks_flat_sets_size++;
+            }
         }
         else {
             context->control_flow_graph->reaching_code[block_id] = true;
