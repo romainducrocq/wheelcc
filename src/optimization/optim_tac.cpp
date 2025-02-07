@@ -1166,11 +1166,8 @@ static std::shared_ptr<CConst> fold_constants_copy_int_constant(TacVariable* nod
 static std::shared_ptr<CConst> fold_constants_copy_long_constant(TacVariable* node, CConstLong* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Long_t:
+        case AST_T::Pointer_t:
             return nullptr;
-        case AST_T::Pointer_t: {
-            TLong value = static_cast<TLong>(constant->value);
-            return std::make_shared<CConstLong>(std::move(value));
-        }
         case AST_T::Double_t: {
             TDouble value = static_cast<TDouble>(constant->value);
             return std::make_shared<CConstDouble>(std::move(value));
@@ -1230,8 +1227,7 @@ static std::shared_ptr<CConst> fold_constants_copy_uint_constant(TacVariable* no
 
 static std::shared_ptr<CConst> fold_constants_copy_ulong_constant(TacVariable* node, CConstULong* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
-        case AST_T::Long_t:
-        case AST_T::Pointer_t: {
+        case AST_T::Long_t: {
             TLong value = static_cast<TLong>(constant->value);
             return std::make_shared<CConstLong>(std::move(value));
         }
@@ -1239,6 +1235,7 @@ static std::shared_ptr<CConst> fold_constants_copy_ulong_constant(TacVariable* n
             TDouble value = static_cast<TDouble>(constant->value);
             return std::make_shared<CConstDouble>(std::move(value));
         }
+        case AST_T::Pointer_t:
         case AST_T::ULong_t:
             return nullptr;
         default:
