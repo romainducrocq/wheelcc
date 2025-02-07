@@ -3061,10 +3061,12 @@ static void eliminate_dead_store_transfer_live_values(
             eliminate_dead_store_transfer_addressed_live_values(next_instruction_index);
             break;
         }
-        case AST_T::TacStore_t:
-            eliminate_dead_store_transfer_src_value_live_values(
-                static_cast<TacStore*>(node)->src.get(), next_instruction_index);
+        case AST_T::TacStore_t: {
+            TacStore* p_node = static_cast<TacStore*>(node);
+            eliminate_dead_store_transfer_src_value_live_values(p_node->src.get(), next_instruction_index);
+            eliminate_dead_store_transfer_src_value_live_values(p_node->dst_ptr.get(), next_instruction_index);
             break;
+        }
         case AST_T::TacAddPtr_t: {
             TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
             eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
@@ -3154,9 +3156,6 @@ static void eliminate_dead_store_instructions(TacInstruction* node, size_t instr
         case AST_T::TacLoad_t:
             eliminate_dead_store_dst_value_instructions(static_cast<TacLoad*>(node)->dst.get(), instruction_index);
             break;
-        // case AST_T::TacStore_t:
-        // eliminate_dead_store_dst_value_instructions(static_cast<TacStore*>(node)->dst.get(), instruction_index);
-        //     break;
         case AST_T::TacAddPtr_t:
             eliminate_dead_store_dst_value_instructions(static_cast<TacAddPtr*>(node)->dst.get(), instruction_index);
             break;
