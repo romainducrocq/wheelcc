@@ -1112,8 +1112,6 @@ static void fold_constants_binary_instructions(TacBinary* node, size_t instructi
     }
 }
 
-// TODO
-
 static std::shared_ptr<CConst> fold_constants_copy_char_constant(TacVariable* node, CConstChar* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Char_t:
@@ -1276,8 +1274,6 @@ static void fold_constants_copy_instructions(TacCopy* node) {
         }
     }
 }
-
-// END TODO
 
 static bool fold_constants_is_zero_constant_value(CConst* constant) {
     switch (constant->type()) {

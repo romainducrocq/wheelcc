@@ -549,7 +549,8 @@ static void fix_mov_instruction(AsmMov* node) {
         }
     }
     else {
-        if (is_type_imm(node->src.get()) && static_cast<AsmImm*>(node->src.get())->is_quad) {
+        if (node->dst->type() != AST_T::AsmRegister_t && is_type_imm(node->src.get())
+            && static_cast<AsmImm*>(node->src.get())->is_quad) {
             fix_mov_from_quad_word_imm_to_any_instruction(node);
         }
         if (is_type_addr(node->src.get()) && is_type_addr(node->dst.get())) {
