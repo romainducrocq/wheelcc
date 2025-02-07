@@ -559,6 +559,17 @@ static void fold_constants_unsigned_to_double_instructions(TacUIntToDouble* node
     }
 }
 
+static std::shared_ptr<CConst> fold_constants_unary_char_constant(TacUnaryOp* node, CConstChar* constant) {
+    switch (node->type()) {
+        case AST_T::TacNot_t: {
+            TInt value = !constant->value ? 1 : 0;
+            return std::make_shared<CConstInt>(std::move(value));
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::shared_ptr<CConst> fold_constants_unary_int_constant(TacUnaryOp* node, CConstInt* constant) {
     switch (node->type()) {
         case AST_T::TacComplement_t: {
@@ -612,6 +623,17 @@ static std::shared_ptr<CConst> fold_constants_unary_double_constant(TacUnaryOp* 
     }
 }
 
+static std::shared_ptr<CConst> fold_constants_unary_uchar_constant(TacUnaryOp* node, CConstUChar* constant) {
+    switch (node->type()) {
+        case AST_T::TacNot_t: {
+            TInt value = !constant->value ? 1 : 0;
+            return std::make_shared<CConstInt>(std::move(value));
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 static std::shared_ptr<CConst> fold_constants_unary_uint_constant(TacUnaryOp* node, CConstUInt* constant) {
     switch (node->type()) {
         case AST_T::TacComplement_t: {
@@ -653,6 +675,10 @@ static std::shared_ptr<CConst> fold_constants_unary_ulong_constant(TacUnaryOp* n
 static std::shared_ptr<TacConstant> fold_constants_unary_constant_value(TacUnaryOp* node, CConst* constant) {
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
+        case AST_T::CConstChar_t: {
+            fold_constant = fold_constants_unary_char_constant(node, static_cast<CConstChar*>(constant));
+            break;
+        }
         case AST_T::CConstInt_t: {
             fold_constant = fold_constants_unary_int_constant(node, static_cast<CConstInt*>(constant));
             break;
@@ -663,6 +689,10 @@ static std::shared_ptr<TacConstant> fold_constants_unary_constant_value(TacUnary
         }
         case AST_T::CConstDouble_t: {
             fold_constant = fold_constants_unary_double_constant(node, static_cast<CConstDouble*>(constant));
+            break;
+        }
+        case AST_T::CConstUChar_t: {
+            fold_constant = fold_constants_unary_uchar_constant(node, static_cast<CConstUChar*>(constant));
             break;
         }
         case AST_T::CConstUInt_t: {
