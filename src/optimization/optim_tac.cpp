@@ -2926,10 +2926,21 @@ static void propagate_copies_control_flow_graph() {
 
 // Dead store elimination
 
-static void eliminate_dead_store_transfer_static_live_values(size_t next_instruction_index) {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->data_index_map[i]) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+static void eliminate_dead_store_transfer_addressed_live_values(size_t next_instruction_index) {
+    for (const auto& name_id : context->control_flow_graph->label_id_map) {
+        if (context->data_flow_analysis->alias_set.find(name_id.first)
+            != context->data_flow_analysis->alias_set.end()) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
+        }
+    }
+}
+
+static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instruction_index) {
+    for (const auto& name_id : context->control_flow_graph->label_id_map) {
+        if (context->data_flow_analysis->data_index_map[name_id.second]
+            || context->data_flow_analysis->alias_set.find(name_id.first)
+                   != context->data_flow_analysis->alias_set.end()) {
+            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
         }
     }
 }
@@ -2946,16 +2957,12 @@ static void eliminate_dead_store_transfer_src_value_live_values(TacValue* node, 
     }
 }
 
-static void eliminate_dead_store_transfer_dst_name_live_values(const TIdentifier& name, size_t next_instruction_index) {
-    size_t i = context->control_flow_graph->label_id_map[name];
-    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
-}
-
 static void eliminate_dead_store_transfer_dst_value_live_values(TacValue* node, size_t next_instruction_index) {
     if (node->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
-    eliminate_dead_store_transfer_dst_name_live_values(static_cast<TacVariable*>(node)->name, next_instruction_index);
+    size_t i = context->control_flow_graph->label_id_map[static_cast<TacVariable*>(node)->name];
+    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
 }
 
 static void eliminate_dead_store_transfer_live_values(
@@ -3021,7 +3028,7 @@ static void eliminate_dead_store_transfer_live_values(
             for (const auto& arg : p_node->args) {
                 eliminate_dead_store_transfer_src_value_live_values(arg.get(), next_instruction_index);
             }
-            eliminate_dead_store_transfer_static_live_values(next_instruction_index);
+            eliminate_dead_store_transfer_aliased_live_values(next_instruction_index);
             break;
         }
         case AST_T::TacUnary_t: {
@@ -3043,24 +3050,21 @@ static void eliminate_dead_store_transfer_live_values(
             eliminate_dead_store_transfer_src_value_live_values(p_node->src.get(), next_instruction_index);
             break;
         }
-        case AST_T::TacGetAddress_t: {
-            TacGetAddress* p_node = static_cast<TacGetAddress*>(node);
-            eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
-            eliminate_dead_store_transfer_src_value_live_values(p_node->src.get(), next_instruction_index);
+        case AST_T::TacGetAddress_t:
+            eliminate_dead_store_transfer_dst_value_live_values(
+                static_cast<TacGetAddress*>(node)->dst.get(), next_instruction_index);
             break;
-        }
         case AST_T::TacLoad_t: {
             TacLoad* p_node = static_cast<TacLoad*>(node);
             eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
             eliminate_dead_store_transfer_src_value_live_values(p_node->src_ptr.get(), next_instruction_index);
+            eliminate_dead_store_transfer_addressed_live_values(next_instruction_index);
             break;
         }
-        case AST_T::TacStore_t: {
-            TacStore* p_node = static_cast<TacStore*>(node);
-            eliminate_dead_store_transfer_dst_value_live_values(p_node->dst_ptr.get(), next_instruction_index);
-            eliminate_dead_store_transfer_src_value_live_values(p_node->src.get(), next_instruction_index);
+        case AST_T::TacStore_t:
+            eliminate_dead_store_transfer_src_value_live_values(
+                static_cast<TacStore*>(node)->src.get(), next_instruction_index);
             break;
-        }
         case AST_T::TacAddPtr_t: {
             TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
             eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
@@ -3068,12 +3072,10 @@ static void eliminate_dead_store_transfer_live_values(
             eliminate_dead_store_transfer_src_value_live_values(p_node->index.get(), next_instruction_index);
             break;
         }
-        case AST_T::TacCopyToOffset_t: {
-            TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
-            eliminate_dead_store_transfer_dst_name_live_values(p_node->dst_name, next_instruction_index);
-            eliminate_dead_store_transfer_src_value_live_values(p_node->src.get(), next_instruction_index);
+        case AST_T::TacCopyToOffset_t:
+            eliminate_dead_store_transfer_src_value_live_values(
+                static_cast<TacCopyToOffset*>(node)->src.get(), next_instruction_index);
             break;
-        }
         case AST_T::TacCopyFromOffset_t: {
             TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
             eliminate_dead_store_transfer_dst_value_live_values(p_node->dst.get(), next_instruction_index);
