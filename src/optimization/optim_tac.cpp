@@ -1084,58 +1084,6 @@ static void fold_constants_binary_instructions(TacBinary* node, size_t instructi
 
 // TODO
 
-// static TInt get_scalar_type_size(Type* type) {
-//     switch (type->type()) {
-//         case AST_T::Char_t:
-//         case AST_T::SChar_t:
-//         case AST_T::UChar_t:
-//             return 1;
-//         case AST_T::Int_t:
-//         case AST_T::UInt_t:
-//             return 4;
-//         case AST_T::Long_t:
-//         case AST_T::Double_t:
-//         case AST_T::ULong_t:
-//         case AST_T::Pointer_t:
-//             return 8;
-//         default:
-//             RAISE_INTERNAL_ERROR;
-//     }
-// }
-
-// size 1:
-//   CConstChar_t
-//     Char_t -> SChar_t
-//            -> UChar_t
-//     SChar_t -> Char_t
-//             -> UChar_t
-//   CConstUChar_t
-//     UChar_t -> Char_t
-//             -> SChar_t
-
-// size 4:
-//   CConstInt_t
-//     Int_t -> UInt_t
-//   CConstUInt_t
-//     UInt_t -> Int_t
-
-// size 8:
-//   CConstLong_t
-//     Long_t -> Double_t
-//            -> ULong_t
-//            -> Pointer_t
-//     Pointer_t -> Long_t
-//               -> Double_t
-//               -> ULong_t
-//   CConstDouble_t
-//     Double_t -> Long_t
-//              -> ULong_t
-//              -> Pointer_t
-//   CConstULong_t
-//     ULong_t -> Long_t
-//             -> Double_t
-//             -> Pointer_t
-
 static std::shared_ptr<CConst> fold_constants_copy_char_constant(TacVariable* node, CConstChar* constant) {
     switch (frontend->symbol_table[node->name]->type_t->type()) {
         case AST_T::Char_t:
@@ -1298,77 +1246,6 @@ static void fold_constants_copy_instructions(TacCopy* node) {
         }
     }
 }
-
-
-// static std::shared_ptr<CConst> fold_constants_zero_extend_uchar_constant(TacVariable* node, CConstUChar* constant) {
-//     switch (frontend->symbol_table[node->name]->type_t->type()) {
-//         case AST_T::Int_t: {
-//             TInt value = static_cast<TInt>(constant->value);
-//             return std::make_shared<CConstInt>(std::move(value));
-//         }
-//         case AST_T::Long_t:
-//         case AST_T::Pointer_t: {
-//             TLong value = static_cast<TLong>(constant->value);
-//             return std::make_shared<CConstLong>(std::move(value));
-//         }
-//         case AST_T::UInt_t: {
-//             TUInt value = static_cast<TUInt>(constant->value);
-//             return std::make_shared<CConstUInt>(std::move(value));
-//         }
-//         case AST_T::ULong_t: {
-//             TULong value = static_cast<TULong>(constant->value);
-//             return std::make_shared<CConstULong>(std::move(value));
-//         }
-//         default:
-//             RAISE_INTERNAL_ERROR;
-//     }
-// }
-
-// static std::shared_ptr<CConst> fold_constants_zero_extend_uint_constant(TacVariable* node, CConstUInt* constant) {
-//     switch (frontend->symbol_table[node->name]->type_t->type()) {
-//         case AST_T::Long_t:
-//         case AST_T::Pointer_t: {
-//             TLong value = static_cast<TLong>(constant->value);
-//             return std::make_shared<CConstLong>(std::move(value));
-//         }
-//         case AST_T::ULong_t: {
-//             TULong value = static_cast<TULong>(constant->value);
-//             return std::make_shared<CConstULong>(std::move(value));
-//         }
-//         default:
-//             RAISE_INTERNAL_ERROR;
-//     }
-// }
-
-// static std::shared_ptr<TacConstant> fold_constants_zero_extend_constant_value(TacVariable* node, CConst* constant) {
-//     std::shared_ptr<CConst> fold_constant;
-//     switch (constant->type()) {
-//         case AST_T::CConstUChar_t: {
-//             fold_constant = fold_constants_zero_extend_uchar_constant(node, static_cast<CConstUChar*>(constant));
-//             break;
-//         }
-//         case AST_T::CConstUInt_t: {
-//             fold_constant = fold_constants_zero_extend_uint_constant(node, static_cast<CConstUInt*>(constant));
-//             break;
-//         }
-//         default:
-//             RAISE_INTERNAL_ERROR;
-//     }
-//     return std::make_shared<TacConstant>(std::move(fold_constant));
-// }
-
-// static void fold_constants_zero_extend_instructions(TacZeroExtend* node, size_t instruction_index) {
-//     if (node->src->type() == AST_T::TacConstant_t) {
-//         if (node->dst->type() != AST_T::TacVariable_t) {
-//             RAISE_INTERNAL_ERROR;
-//         }
-//         std::shared_ptr<TacValue> src = fold_constants_zero_extend_constant_value(
-//             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
-//         std::shared_ptr<TacValue> dst = node->dst;
-//         set_instruction(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instruction_index);
-//     }
-// }
-
 
 // END TODO
 
