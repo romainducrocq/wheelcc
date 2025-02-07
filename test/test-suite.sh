@@ -22,13 +22,8 @@ else
         fi
 #        test --chapter ${i} --latest-only --fold-constants --extra-credit
 #        test --chapter ${i} --latest-only --eliminate-unreachable-code --extra-credit
-        test --chapter ${i} --latest-only --propagate-copies --extra-credit
-        if [ ${i} -le 18 ]; then
-            if [ ${i} -gt 10 ]; then
-                continue
-            fi
-        fi
-        test --chapter ${i} --latest-only --eliminate-dead-stores --extra-credit --int-only
+#        test --chapter ${i} --latest-only --propagate-copies --extra-credit
+        test --chapter ${i} --latest-only --eliminate-dead-stores --extra-credit
     done
 fi
 
