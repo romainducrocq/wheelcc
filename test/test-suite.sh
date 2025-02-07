@@ -16,14 +16,11 @@ cd ${TEST_SUITE}
 if [ ${#} -ne 0 ]; then
     test ${@}
 else
-    for i in $(seq 1 19); do
-        if [ ${i} -le 18 ]; then
-            test --chapter ${i} --latest-only --extra-credit
-        fi
-#        test --chapter ${i} --latest-only --fold-constants --extra-credit
-#        test --chapter ${i} --latest-only --eliminate-unreachable-code --extra-credit
-#        test --chapter ${i} --latest-only --propagate-copies --extra-credit
-        test --chapter ${i} --latest-only --eliminate-dead-stores --extra-credit
+    for i in $(seq 1 18); do
+        test --chapter ${i} --latest-only --extra-credit
+    done
+    for i in $(seq 19 19); do
+        test --chapter ${i} --extra-credit
     done
 fi
 
