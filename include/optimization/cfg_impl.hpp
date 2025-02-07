@@ -153,7 +153,7 @@ static void control_flow_graph_remove_block_instruction(size_t instruction_index
 
 #if __OPTIM_LEVEL__ == 1
 static void control_flow_graph_initialize_label_block(TacLabel* node) {
-    context->control_flow_graph->label_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
+    context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
 #endif
 
@@ -195,16 +195,16 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
 
 #if __OPTIM_LEVEL__ == 1
 static void control_flow_graph_initialize_jump_edges(TacJump* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
 }
 
 static void control_flow_graph_initialize_jump_if_zero_edges(TacJumpIfZero* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
     control_flow_graph_add_successor_edge(block_id, block_id + 1);
 }
 
 static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZero* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->label_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
     control_flow_graph_add_successor_edge(block_id, block_id + 1);
 }
 #endif
@@ -236,7 +236,7 @@ static void control_flow_graph_initialize_edges(size_t block_id) {
 
 static void control_flow_graph_initialize() {
     context->control_flow_graph->blocks.clear();
-    context->control_flow_graph->label_id_map.clear();
+    context->control_flow_graph->identifier_id_map.clear();
     {
         size_t instructions_back_index = context->p_instructions->size();
         for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {

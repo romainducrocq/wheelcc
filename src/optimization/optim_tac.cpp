@@ -1276,7 +1276,7 @@ static void eliminate_unreachable_code_control_flow_graph() {
         }
     }
 
-    for (auto& label_id : context->control_flow_graph->label_id_map) {
+    for (auto& label_id : context->control_flow_graph->identifier_id_map) {
         if (context->control_flow_graph->reaching_code[label_id.second]) {
             for (block_id = label_id.second; block_id-- > 0;) {
                 if (context->control_flow_graph->reaching_code[block_id]) {
@@ -1712,8 +1712,9 @@ static bool propagate_copies_add_data_index(TacCopy* node, size_t instruction_in
 }
 
 static void eliminate_dead_store_add_data_name(const TIdentifier& name) {
-    if (context->control_flow_graph->label_id_map.find(name) == context->control_flow_graph->label_id_map.end()) {
-        context->control_flow_graph->label_id_map[name] = context->data_flow_analysis->set_size;
+    if (context->control_flow_graph->identifier_id_map.find(name)
+        == context->control_flow_graph->identifier_id_map.end()) {
+        context->control_flow_graph->identifier_id_map[name] = context->data_flow_analysis->set_size;
         context->data_flow_analysis->set_size++;
     }
 }
@@ -1747,7 +1748,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
     size_t instructions_flat_sets_size = 0;
     bool is_copy_propagation = !is_dead_store_elimination;
     if (is_dead_store_elimination) {
-        context->control_flow_graph->label_id_map.clear(); // TODO rename to identifier_id_map
+        context->control_flow_graph->identifier_id_map.clear();
     }
     if (init_alias_set) {
         context->data_flow_analysis->alias_set.clear();
@@ -1995,7 +1996,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
             context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
         }
 
-        for (const auto& name_id : context->control_flow_graph->label_id_map) {
+        for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
             context->data_flow_analysis->data_index_map[name_id.second] =
                 frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
         }
@@ -2927,7 +2928,7 @@ static void propagate_copies_control_flow_graph() {
 // Dead store elimination
 
 static void eliminate_dead_store_transfer_addressed_live_values(size_t next_instruction_index) {
-    for (const auto& name_id : context->control_flow_graph->label_id_map) {
+    for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
         if (context->data_flow_analysis->alias_set.find(name_id.first)
             != context->data_flow_analysis->alias_set.end()) {
             GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
@@ -2936,7 +2937,7 @@ static void eliminate_dead_store_transfer_addressed_live_values(size_t next_inst
 }
 
 static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instruction_index) {
-    for (const auto& name_id : context->control_flow_graph->label_id_map) {
+    for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
         if (context->data_flow_analysis->data_index_map[name_id.second]
             || context->data_flow_analysis->alias_set.find(name_id.first)
                    != context->data_flow_analysis->alias_set.end()) {
@@ -2946,7 +2947,7 @@ static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instru
 }
 
 static void eliminate_dead_store_transfer_src_name_live_values(const TIdentifier& name, size_t next_instruction_index) {
-    size_t i = context->control_flow_graph->label_id_map[name];
+    size_t i = context->control_flow_graph->identifier_id_map[name];
     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
 }
 
@@ -2961,7 +2962,7 @@ static void eliminate_dead_store_transfer_dst_value_live_values(TacValue* node, 
     if (node->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
-    size_t i = context->control_flow_graph->label_id_map[static_cast<TacVariable*>(node)->name];
+    size_t i = context->control_flow_graph->identifier_id_map[static_cast<TacVariable*>(node)->name];
     GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
 }
 
@@ -3098,7 +3099,7 @@ static void eliminate_dead_store_transfer_live_values(
 }
 
 static void eliminate_dead_store_dst_name_instructions(const TIdentifier& name, size_t instruction_index) {
-    size_t i = context->control_flow_graph->label_id_map[name];
+    size_t i = context->control_flow_graph->identifier_id_map[name];
     if (!GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
         set_instruction(nullptr, instruction_index);
     }

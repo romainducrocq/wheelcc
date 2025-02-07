@@ -37,7 +37,7 @@ struct ControlFlowGraph {
     std::vector<size_t> exit_predecessor_ids;
     std::vector<bool> reaching_code;
     std::vector<ControlFlowBlock> blocks;
-    std::unordered_map<TIdentifier, size_t> label_id_map;
+    std::unordered_map<TIdentifier, size_t> identifier_id_map;
 };
 
 struct DataFlowAnalysis {
