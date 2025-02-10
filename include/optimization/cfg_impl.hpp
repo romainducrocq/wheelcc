@@ -365,6 +365,7 @@ static void control_flow_graph_initialize() {
 
 // Data flow analysis
 
+#if __OPTIM_LEVEL__ == 1
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
@@ -380,9 +381,15 @@ static void control_flow_graph_initialize() {
     context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
             + context->data_flow_analysis->set_size
+#endif
 
-static bool is_transfer_instruction(size_t instruction_index, bool is_dead_store_elimination) {
+static bool is_transfer_instruction(size_t instruction_index,
+#if __OPTIM_LEVEL__ == 1
+    bool is_dead_store_elimination
+#endif
+) {
     switch (GET_INSTRUCTION(instruction_index)->type()) {
+#if __OPTIM_LEVEL__ == 1
         case AST_T::TacSignExtend_t:
         case AST_T::TacTruncate_t:
         case AST_T::TacZeroExtend_t:
@@ -405,11 +412,13 @@ static bool is_transfer_instruction(size_t instruction_index, bool is_dead_store
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t:
             return is_dead_store_elimination;
+#endif
         default:
             return false;
     }
 }
 
+#if __OPTIM_LEVEL__ == 1
 static size_t get_dfa_data_index(size_t instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
@@ -446,12 +455,16 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
         return false;
     }
 }
+#endif
 
+#if __OPTIM_LEVEL__ == 1
 static void copy_propagation_transfer_reaching_copies(
     TacInstruction* node, size_t instruction_index, size_t next_instruction_index);
 static void eliminate_dead_store_transfer_live_values(
     TacInstruction* node, size_t instruction_index, size_t next_instruction_index);
+#endif
 
+#if __OPTIM_LEVEL__ == 1
 static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
@@ -465,20 +478,25 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
         GET_INSTRUCTION(instruction_index).get(), instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
 }
+#endif
 
 static size_t data_flow_analysis_backward_transfer_block(size_t instruction_index, size_t block_id) {
     if (instruction_index > 0) {
         for (size_t next_instruction_index = instruction_index;
              next_instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
             if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, true)) {
-                eliminate_dead_store_transfer_live_values(
-                    GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
+#if __OPTIM_LEVEL__ == 1
+                eliminate_dead_store_transfer_live_values
+#endif
+                    (GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
                 instruction_index = next_instruction_index;
             }
         }
     }
-    eliminate_dead_store_transfer_live_values(
-        GET_INSTRUCTION(instruction_index).get(), instruction_index, context->data_flow_analysis->incoming_index);
+#if __OPTIM_LEVEL__ == 1
+    eliminate_dead_store_transfer_live_values
+#endif
+        (GET_INSTRUCTION(instruction_index).get(), instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
 }
 
@@ -501,6 +519,7 @@ static bool data_flow_analysis_after_meet_block(size_t block_id) {
     return is_fixed_point;
 }
 
+#if __OPTIM_LEVEL__ == 1
 static bool data_flow_analysis_forward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -538,6 +557,7 @@ Lelse:
 
     return data_flow_analysis_after_meet_block(block_id);
 }
+#endif
 
 static bool data_flow_analysis_backward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index + 1;
@@ -579,6 +599,7 @@ Lelse:
     return data_flow_analysis_after_meet_block(block_id);
 }
 
+#if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_forward_iterative_algorithm() {
     size_t open_block_ids_size = context->control_flow_graph->blocks.size();
     for (size_t i = 0; i < open_block_ids_size; ++i) {
@@ -612,6 +633,7 @@ static void data_flow_analysis_forward_iterative_algorithm() {
         }
     }
 }
+#endif
 
 static void data_flow_analysis_backward_iterative_algorithm() {
     size_t open_block_ids_size = context->control_flow_graph->blocks.size();
@@ -647,14 +669,18 @@ static void data_flow_analysis_backward_iterative_algorithm() {
     }
 }
 
+#if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i);
+#endif
 static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i);
 
+#if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_forward_successor_open_block(size_t block_id, size_t& i) {
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
         data_flow_analysis_forward_open_block(successor_id, i);
     }
 }
+#endif
 
 static void data_flow_analysis_backward_successor_open_block(size_t block_id, size_t& i) {
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
@@ -662,6 +688,7 @@ static void data_flow_analysis_backward_successor_open_block(size_t block_id, si
     }
 }
 
+#if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
     if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
         context->control_flow_graph->reaching_code[block_id] = true;
@@ -670,6 +697,7 @@ static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
         context->data_flow_analysis->open_block_ids[i] = block_id;
     }
 }
+#endif
 
 static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
@@ -680,6 +708,7 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     }
 }
 
+#if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_add_alias_value(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
         context->data_flow_analysis->alias_set.insert(static_cast<TacVariable*>(node)->name);
@@ -721,6 +750,7 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
         eliminate_dead_store_add_data_name(static_cast<TacVariable*>(node)->name);
     }
 }
+#endif
 
 static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool init_alias_set) {
     context->data_flow_analysis->set_size = 0;
