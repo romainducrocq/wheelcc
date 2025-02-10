@@ -1598,8 +1598,6 @@ static void generate_binary_operator_conditional_double_instructions(TacBinary* 
             push_instruction(std::make_unique<AsmLabel>(std::move(target_nan_ne)));
         }
         else {
-            std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
-            push_instruction(std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
             push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
             push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
         }
