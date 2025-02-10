@@ -880,13 +880,7 @@ static std::shared_ptr<CConst> fold_constants_binary_double_constant(
             return std::make_shared<CConstDouble>(std::move(value));
         }
         case AST_T::TacDivide_t: {
-            TDouble value;
-            if (constant_2->value != 0.0) {
-                value = constant_1->value / constant_2->value;
-            }
-            else {
-                value = constant_1->value != 0.0 ? 0.0 : 0.0 / 0.0;
-            }
+            TDouble value = constant_1->value / constant_2->value;
             return std::make_shared<CConstDouble>(std::move(value));
         }
         case AST_T::TacEqual_t: {
