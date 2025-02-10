@@ -752,7 +752,11 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
 }
 #endif
 
-static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool init_alias_set) {
+static bool data_flow_analysis_initialize(
+#if __OPTIM_LEVEL__ == 1
+    bool is_dead_store_elimination, bool init_alias_set
+#endif
+) {
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
 
@@ -773,6 +777,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
 
     size_t blocks_flat_sets_size = 0;
     size_t instructions_flat_sets_size = 0;
+#if __OPTIM_LEVEL__ == 1
     bool is_copy_propagation = !is_dead_store_elimination;
     if (is_dead_store_elimination) {
         context->control_flow_graph->identifier_id_map.clear();
@@ -780,6 +785,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
     if (init_alias_set) {
         context->data_flow_analysis->alias_set.clear();
     }
+#endif
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
@@ -787,6 +793,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                 if (GET_INSTRUCTION(instruction_index)) {
                     AST_INSTRUCTION* node = GET_INSTRUCTION(instruction_index).get();
                     switch (node->type()) {
+#if __OPTIM_LEVEL__ == 1
                         case AST_T::TacReturn_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
@@ -961,6 +968,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
                             eliminate_dead_store_add_data_value(static_cast<TacJumpIfNotZero*>(node)->condition.get());
                             break;
                         }
+#endif
                         default:
                             goto Lcontinue;
                     }
@@ -995,6 +1003,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
         context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
     }
 
+#if __OPTIM_LEVEL__ == 1
     if (is_copy_propagation) {
         size_t i = context->control_flow_graph->blocks.size();
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
@@ -1027,7 +1036,7 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
             context->data_flow_analysis->data_index_map[name_id.second] =
                 frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
         }
-
+#endif
         size_t i = 0;
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
             if (!context->control_flow_graph->reaching_code[successor_id]) {
@@ -1040,7 +1049,9 @@ static bool data_flow_analysis_initialize(bool is_dead_store_elimination, bool i
 
         std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
             context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, false);
+#if __OPTIM_LEVEL__ == 1
     }
+#endif
 
     return true;
 }
