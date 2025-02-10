@@ -23,6 +23,7 @@ TEST_SRCS=(
 "16_characters_and_strings"
 "17_supporting_dynamic_memory_allocation"
 "18_structures"
+"19_optimizing_three_address_code_programs"
 )
 
 # Get all tests
@@ -58,5 +59,8 @@ mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/validate_return_poin
 
 gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 rm -rv ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/
+gcc -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/unreachable_code_elimination/infinite_loop_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+gcc -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/dead_store_elimination/int_only/static_not_always_live_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+rm -rv ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/
 
 exit 0
