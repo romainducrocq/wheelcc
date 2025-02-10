@@ -1376,6 +1376,7 @@ static void generate_unary_operator_conditional_integer_instructions(TacUnary* n
 }
 
 static void generate_unary_operator_conditional_double_instructions(TacUnary* node) {
+    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
     generate_zero_out_xmm_reg_instructions();
     {
@@ -1390,9 +1391,14 @@ static void generate_unary_operator_conditional_double_instructions(TacUnary* no
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
+        std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
+        push_instruction(std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
+    }
+    {
         std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
         push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
     }
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
 }
 
 static void generate_unary_operator_conditional_instructions(TacUnary* node) {
