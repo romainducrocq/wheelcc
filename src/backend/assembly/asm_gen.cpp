@@ -1590,11 +1590,13 @@ static void generate_binary_operator_conditional_double_instructions(TacBinary* 
         std::unique_ptr<AsmCondCode> cond_code = generate_unsigned_condition_code(node->binary_op.get());
         if (cond_code->type() == AST_T::AsmNE_t) {
             TIdentifier target_nan_ne = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
-            std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
             push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
             push_instruction(std::make_unique<AsmJmp>(target_nan_ne));
             push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
-            push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
+            {
+                std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+                push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
+            }
             push_instruction(std::make_unique<AsmLabel>(std::move(target_nan_ne)));
         }
         else {
@@ -2100,6 +2102,9 @@ static void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero* nod
 }
 
 static void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero* node) {
+    TIdentifier target = node->target;
+    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan_ne = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
     generate_zero_out_xmm_reg_instructions();
     {
         std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
@@ -2109,10 +2114,20 @@ static void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero* node
             std::make_unique<AsmCmp>(std::move(assembly_type_cond), std::move(condition), std::move(reg_zero)));
     }
     {
-        TIdentifier target = node->target;
-        std::unique_ptr<AsmCondCode> cond_code_ne = std::make_unique<AsmNE>();
-        push_instruction(std::make_unique<AsmJmpCC>(std::move(target), std::move(cond_code_ne)));
+        std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
+        push_instruction(std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
     }
+    {
+        std::unique_ptr<AsmCondCode> cond_code_ne = std::make_unique<AsmNE>();
+        push_instruction(std::make_unique<AsmJmpCC>(target, std::move(cond_code_ne)));
+    }
+    push_instruction(std::make_unique<AsmJmp>(target_nan_ne));
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
+    {
+        std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
+        push_instruction(std::make_unique<AsmJmpCC>(std::move(target), std::move(cond_code_e)));
+    }
+    push_instruction(std::make_unique<AsmLabel>(std::move(target_nan_ne)));
 }
 
 static void generate_jump_if_not_zero_instructions(TacJumpIfNotZero* node) {
