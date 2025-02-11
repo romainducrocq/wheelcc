@@ -7,7 +7,7 @@ NQCC2="${ROOT}/../nqcc2"
 
 TEST_DIR="${PWD}/tests/compiler"
 TEST_SRCS=()
-for i in $(seq 1 18); do
+for i in $(seq 1 19); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
 done
 
@@ -17,16 +17,16 @@ function performance () {
     echo "--chapter ${1}"
     echo "----------------------------------------------------------------------"
     echo ""
-    echo "${PACKAGE_NAME}"
+    echo "${PACKAGE_NAME} ${OPTIM}"
     { time for FILE in ${FILES}
     do
-        ${PACKAGE_NAME} -s ${FILE} > /dev/null 2>&1
+        ${PACKAGE_NAME} ${OPTIM} -s ${FILE} > /dev/null 2>&1
     done } 2>&1
     echo ""
-    echo "nqcc2"
+    echo "nqcc2 ${OPTIM_NQCC2}"
     { time for FILE in ${FILES}
     do
-        ${NQCC2}/_build/default/bin/main.exe -S $(readlink -f ${FILE}) > /dev/null 2>&1
+        ${NQCC2}/_build/default/bin/main.exe ${OPTIM_NQCC2} -S $(readlink -f ${FILE}) > /dev/null 2>&1
     done } 2>&1
     for FILE in ${FILES}
     do
@@ -57,10 +57,30 @@ function time_total () {
     performance "1-${#TEST_SRCS[@]}"
 }
 
+ARG=${1}
+
+OPTIM="-O0"
+OPTIM_NQCC2=""
+if [ "${1}" = "-O0" ]; then
+    ARG=${2}
+elif [ "${1}" = "-O1" ]; then
+    OPTIM="-O0 -O1"
+    OPTIM_NQCC2="--optimize"
+    ARG=${2}
+elif [ "${1}" = "-O2" ]; then
+    OPTIM="-O0 -O2"
+    OPTIM_NQCC2=""
+    ARG=${2}
+elif [ "${1}" = "-O3" ]; then
+    OPTIM="-O3"
+    OPTIM_NQCC2="--optimize"
+    ARG=${2}
+fi
+
 cd ${TEST_DIR}
-if [ ! "${1}" = "--total" ]; then
-    if [ ! -z "${1}" ]; then
-        time_src ${TEST_SRCS["$((${1} - 1))"]} ${1}
+if [ ! "${ARG}" = "--total" ]; then
+    if [ ! -z "${ARG}" ]; then
+        time_src ${TEST_SRCS["$((${ARG} - 1))"]} ${ARG}
     else
         time_all
     fi

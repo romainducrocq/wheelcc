@@ -28,7 +28,7 @@ fi
 if [ ! -z "${ARG}" ]; then
     print_errors ${ARG}
 else
-    for i in $(seq 1 18); do
+    for i in $(seq 1 19); do
         print_errors ${i}
     done
 fi
