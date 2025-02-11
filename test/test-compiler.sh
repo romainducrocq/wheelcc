@@ -35,7 +35,7 @@ function indent () {
 }
 
 function print_check () {
-    echo " - check ${1} -> ${2}"
+    echo " ${OPTIM} check ${1} -> ${2}"
 }
 
 function print_fail () {
@@ -79,7 +79,7 @@ function print_client () {
 }
 
 function check_fail () {
-    ${PACKAGE_NAME} ${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} ${LIBS} ${FILE}.c > /dev/null 2>&1
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -ne 0 ]; then
@@ -131,7 +131,7 @@ function check_single () {
     RETURN_GCC=${?}
     rm ${FILE}
 
-    ${PACKAGE_NAME} ${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} ${LIBS} ${FILE}.c > /dev/null 2>&1
     RETURN_THIS=${?}
 
     check_pass 0
@@ -152,7 +152,7 @@ function check_data () {
 
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
 
-    ${PACKAGE_NAME} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
@@ -172,7 +172,7 @@ function check_data () {
 }
 
 function compile_client () {
-    ${PACKAGE_NAME} -c ${LIBS} ${1} > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${1} > /dev/null 2>&1
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
@@ -217,7 +217,7 @@ function check_client () {
         return
     fi
 
-    ${PACKAGE_NAME} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
     compile_client ${FILE}_client.c
     check_pass 0
     RETURN_PASS=${?}
@@ -279,9 +279,26 @@ function test_all () {
 LIBS=""
 PASS=0
 TOTAL=0
+
+ARG=${1}
+
+OPTIM="-O0"
+if [ "${1}" = "-O0" ]; then
+    ARG=${2}
+elif [ "${1}" = "-O1" ]; then
+    OPTIM="-O0 -O1"
+    ARG=${2}
+elif [ "${1}" = "-O2" ]; then
+    OPTIM="-O0 -O2"
+    ARG=${2}
+elif [ "${1}" = "-O3" ]; then
+    OPTIM="-O3"
+    ARG=${2}
+fi
+
 cd ${TEST_DIR}
-if [ ! -z "${1}" ]; then
-    test_src ${TEST_SRCS["$((${1} - 1))"]}
+if [ ! -z "${ARG}" ]; then
+    test_src ${TEST_SRCS["$((${ARG} - 1))"]}
 else
     test_all
 fi
