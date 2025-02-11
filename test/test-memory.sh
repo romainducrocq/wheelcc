@@ -8,7 +8,7 @@ NC='\033[0m'
 
 TEST_DIR="${PWD}/tests/compiler"
 TEST_SRCS=()
-for i in $(seq 1 18); do
+for i in $(seq 1 19); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
 done
 
@@ -30,7 +30,7 @@ function total () {
 }
 
 function print_check () {
-    echo " - check ${1} -> ${2}"
+    echo " -(${OPTIM}) check ${1} -> ${2}"
 }
 
 function print_memory () {
@@ -41,7 +41,7 @@ function print_memory () {
 
 function check_memory () {
     INCLUDE_DIR="$(dirname ${TEST_DIR}/${FILE}.c)/"
-    if ! ( ./${PACKAGE_NAME} 0 15 2 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR} || false ) > /dev/null 2>&1; then
+    if ! ( ./${PACKAGE_NAME} 0 ${OPTIM} ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR} || false ) > /dev/null 2>&1; then
         return
     fi
 
@@ -52,7 +52,7 @@ function check_memory () {
              --track-origins=yes \
              --verbose \
              --log-file=valgrind.out.1 \
-             ./${PACKAGE_NAME} 0 15 2 ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR}
+             ./${PACKAGE_NAME} 0 ${OPTIM} ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR}
 
     SUMMARY=$(cat valgrind.out.1 | grep "ERROR SUMMARY")
     echo "${SUMMARY}" | grep -q "ERROR SUMMARY: 0 errors"
@@ -99,9 +99,26 @@ esac
 
 PASS=0
 TOTAL=0
+
+ARG=${1}
+
+OPTIM="0 0"
+if [ "${1}" = "-O0" ]; then
+    ARG=${2}
+elif [ "${1}" = "-O1" ]; then
+    OPTIM="15 0"
+    ARG=${2}
+elif [ "${1}" = "-O2" ]; then
+    OPTIM="0 2"
+    ARG=${2}
+elif [ "${1}" = "-O3" ]; then
+    OPTIM="15 2"
+    ARG=${2}
+fi
+
 cd ${TEST_DIR}
-if [ ! -z "${1}" ]; then
-    test_src ${TEST_SRCS["$((${1} - 1))"]}
+if [ ! -z "${ARG}" ]; then
+    test_src ${TEST_SRCS["$((${ARG} - 1))"]}
 else
     test_all
 fi
