@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CC="gcc -pedantic-errors -std=c17"
+
 ROOT="${PWD}/.."
 TEST_SUITE="${ROOT}/../writing-a-c-compiler-tests"
 
@@ -60,12 +62,12 @@ mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_space_address
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/big_data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_big_struct_on_page_boundary_data.s
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/validate_return_pointer_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_pointer_in_rax_data.s
 
-gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
-gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/fold_nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
-gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/return_nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
-gcc -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
-gcc -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/unreachable_code_elimination/infinite_loop_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
-gcc -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/dead_store_elimination/int_only/static_not_always_live_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/fold_nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/return_nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/unreachable_code_elimination/infinite_loop_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/dead_store_elimination/int_only/static_not_always_live_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 rm -rv ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/
 rm -rv ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/
 

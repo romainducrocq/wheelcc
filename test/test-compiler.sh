@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+CC="gcc -pedantic-errors -std=c17"
 
 LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
@@ -118,7 +119,7 @@ function check_pass () {
 }
 
 function check_single () {
-    gcc -pedantic-errors ${FILE}.c ${LIBS} -o ${FILE} > /dev/null 2>&1
+    ${CC} ${FILE}.c ${LIBS} -o ${FILE} > /dev/null 2>&1
     RETURN_GCC=${?}
 
     if [ ${RETURN_GCC} -ne 0 ]; then
@@ -142,9 +143,9 @@ function check_single () {
 }
 
 function check_data () {
-    gcc -pedantic-errors -c ${FILE}_data.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
-    gcc -pedantic-errors -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
-    gcc -pedantic-errors ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
+    ${CC} -c ${FILE}_data.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
+    ${CC} -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
+    ${CC} ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
     STDOUT_GCC=$(${FILE})
     RETURN_GCC=${?}
     rm ${FILE}
@@ -155,7 +156,7 @@ function check_data () {
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
-        gcc -pedantic-errors ${FILE}.o ${FILE}_data.s ${LIBS} -o ${FILE} > /dev/null 2>&1
+        ${CC} ${FILE}.o ${FILE}_data.s ${LIBS} -o ${FILE} > /dev/null 2>&1
         RETURN_THIS=${?}
     fi
 
@@ -175,7 +176,7 @@ function compile_client () {
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
-        gcc -pedantic-errors ${FILE}.o ${FILE}_client.o ${LIBS} -o ${FILE} > /dev/null 2>&1
+        ${CC} ${FILE}.o ${FILE}_client.o ${LIBS} -o ${FILE} > /dev/null 2>&1
         RETURN_THIS=${?}
     fi
 
@@ -184,7 +185,7 @@ function compile_client () {
 }
 
 function check_client () {
-    gcc -pedantic-errors ${FILE}.c ${FILE}_client.c ${LIBS} -o ${FILE} > /dev/null 2>&1
+    ${CC} ${FILE}.c ${FILE}_client.c ${LIBS} -o ${FILE} > /dev/null 2>&1
     STDOUT_GCC=$(${FILE})
     RETURN_GCC=${?}
     rm ${FILE}
@@ -192,7 +193,7 @@ function check_client () {
     if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
     if [ -f "${FILE}_client.o" ]; then rm ${FILE}_client.o; fi
 
-    gcc -pedantic-errors -c ${FILE}_client.c ${LIBS} -o ${FILE}_client.o > /dev/null 2>&1
+    ${CC} -c ${FILE}_client.c ${LIBS} -o ${FILE}_client.o > /dev/null 2>&1
     compile_client ${FILE}.c
     check_pass 1
     RETURN_PASS=${?}
@@ -204,7 +205,7 @@ function check_client () {
         return
     fi
 
-    gcc -pedantic-errors -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
+    ${CC} -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
     compile_client ${FILE}_client.c
     check_pass 1
     RETURN_PASS=${?}

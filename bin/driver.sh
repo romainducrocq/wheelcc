@@ -2,6 +2,7 @@
 
 PACKAGE_DIR="$(echo $(dirname $(readlink -f ${0})))"
 PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
+CC="gcc -pedantic-errors -std=c17"
 
 ARGC=${#}
 ARGV=(${@})
@@ -451,7 +452,7 @@ function preprocess () {
     if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess -> ${FILE}.i"
-            gcc -E -P ${FILE}.c -o ${FILE}.i
+            ${CC} -E -P ${FILE}.c -o ${FILE}.i
             if [ ${?} -ne 0 ]; then
                 raise_error "preprocessing failed"
             fi
@@ -493,7 +494,7 @@ function link () {
                     FILES_OUT="$(echo "${FILES_OUT}" |\
                         sed "s/ /.${EXT_OUT} /g")"
                 fi
-                gcc ${FILES_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
+                ${CC} ${FILES_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
                 if [ ${?} -ne 0 ]; then
                     raise_error "linking failed"
                 fi
@@ -503,7 +504,7 @@ function link () {
                 ;;
             2)
                 for FILE in ${FILES}; do
-                    gcc -c ${FILE}.${EXT_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${FILE}.o
+                    ${CC} -c ${FILE}.${EXT_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${FILE}.o
                     if [ ${?} -ne 0 ]; then
                         raise_error "assembling failed"
                     fi
