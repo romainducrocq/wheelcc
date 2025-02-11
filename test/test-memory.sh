@@ -54,9 +54,24 @@ function check_memory () {
              --log-file=valgrind.out.1 \
              ./${PACKAGE_NAME} 0 ${OPTIM} ${TEST_DIR}/${FILE}.c ${INCLUDE_DIR}
 
-    SUMMARY=$(cat valgrind.out.1 | grep "ERROR SUMMARY")
-    echo "${SUMMARY}" | grep -q "ERROR SUMMARY: 0 errors"
+    SUMMARY=$(cat valgrind.out.1 | \
+        grep -e "ERROR SUMMARY" \
+             -e "HEAP SUMMARY" \
+             -e "in use at exit" \
+             -e "total heap usage" \
+             -e "All heap blocks were freed -- no leaks are possible")
+    MEMCHECK=1
+    echo "${SUMMARY}" | grep -q "ERROR SUMMARY: 0 errors from 0 contexts"
     if [ ${?} -eq 0 ]; then
+        echo "${SUMMARY}" | grep -q "in use at exit: 0 bytes in 0 blocks"
+        if [ ${?} -eq 0 ]; then
+            echo "${SUMMARY}" | grep -q "All heap blocks were freed -- no leaks are possible"
+            if [ ${?} -eq 0 ]; then
+                MEMCHECK=0
+            fi
+        fi
+    fi
+    if [ ${MEMCHECK} -eq 0 ]; then
         RESULT="${LIGHT_GREEN}[y]"
         let PASS+=1
     else
