@@ -46,6 +46,8 @@ rm -rv $(find ${TEST_DIR} -name "*.s" -type f | grep --invert-match linux)
 # Process special files
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/function_calls/standard_library_call.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/function_calls/standard_library_call__+lm.c
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm.c
+mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan_compound_assign.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan_compound_assign__+lm.c
+mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan_incr_and_decr.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan_incr_and_decr__+lm.c
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/libraries/double_params_and_result.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/libraries/double_params_and_result__+lm.c
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/libraries/double_params_and_result_client.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/libraries/double_params_and_result__+lm_client.c
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/special_values/negative_zero.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/special_values/negative_zero__+lm.c
@@ -63,6 +65,8 @@ mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/big_data_on_page_bou
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/validate_return_pointer_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_pointer_in_rax_data.s
 
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan_compound_assign__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan_incr_and_decr__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/fold_nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/return_nan__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy__+lm_data.s 2>&1 | grep COLLECT_GCC_OPTIONS
