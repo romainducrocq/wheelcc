@@ -73,8 +73,9 @@ Hello, World!
 ```
 
 - Usage  
+
 All command-line arguments are optional, except for one `.c` source file to compile.
-> **Warning**: <ins>The order of command-line arguments matters!</ins> They are parsed in the order shown by `--help` (and only in this order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
+> **Warning**: <ins>The order of command-line arguments matters!</ins> They are parsed in the order shown by `--help` (and only in that order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
