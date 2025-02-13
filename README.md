@@ -17,7 +17,7 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is written in C++, and builds to a standalone executable + a bash driver.
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
 
 ## Usage
 
@@ -37,7 +37,7 @@ $ ./configure.sh
 $ ./make.sh
 ```
 - Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`)  
-    > Or as an alternative, do not install and use `bin/driver.sh` instead  
+    > Or, do not install system-wide and use `bin/driver.sh` directly instead  
 ```
 $ ./install.sh
 $ . ~/.bashrc
@@ -150,7 +150,7 @@ $ ./get-dependencies.sh
 
 - Test the compiler  
 ```
-$ ./test-compiler.sh
+$ ./test-compiler.sh [-O0 | -O1 | -O2 | -O3]
 ```
 
 - Test the preprocessor  
@@ -160,10 +160,10 @@ $ ./test-preprocessor.sh
 
 - Test memory leaks  
 ```
-$ ./test-memory.sh
+$ ./test-memory.sh [-O0 | -O1 | -O2 | -O3]
 ```
 
-The latest master branch of wheelcc is tested on these distributions (x86-64):  
+The latest master branch of wheelcc is tested for these GNU/Linux distributions (x86-64):  
 Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
