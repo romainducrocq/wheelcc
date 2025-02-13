@@ -17,7 +17,7 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 ([International Standard ISO/IEC 9899:2018](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf)), for which it has it's own built-in preprocessor, frontend, IR and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is entirely written in C++17, and builds to a standalone executable plus a driver in bash. wheelcc is overall designed after Nora Sandler's [Writing a C Compiler](https://nostarch.com/writing-c-compiler), and was tested against it's [test suite](https://github.com/nlsandler/writing-a-c-compiler-tests).
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. The project is written in C++, and builds to a standalone executable + a bash driver.
 
 ## Usage
 
@@ -298,6 +298,16 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 <ulong> ::= ? An unsigned int or unsigned long token ?
 <double> ::= ? A floating-point constant token ?
 ```
+
+## References
+
+- Writing a C Compiler, _Nora Sandler_: https://nostarch.com/writing-c-compiler/
+- C17 standard: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf
+<!---->
+  
+- System V x86-64 ABI: https://gitlab.com/x86-psABIs/x86-64-ABI/
+- x86-64 instruction reference: https://www.felixcloutier.com/x86/
+- Compiler explorer online: https://godbolt.org/
 
 ****
 
