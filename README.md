@@ -75,7 +75,7 @@ Hello, World!
 - Usage  
 
 All command-line arguments are optional, except for one `.c` source file to compile.
-> **Warning**: <ins>The order of command-line arguments matters!</ins> They are parsed in the order shown by `--help` (and only in that order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
+> **Warning**: <ins>The order of command-line options matters!</ins> They are parsed in the order shown by `--help` (and only in that order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
@@ -178,18 +178,18 @@ $ ./test-memory.sh [-O0 | -O1 | -O2 | -O3]
 
 ### Preprocessor
 
-wheelcc has a minimal built-in preprocessor that supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out.  
+A minimal built-in preprocessor supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out.  
 The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc.
 
 ### Compiler
 
 wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features). (TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)  
-The `-S` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
+The `-s` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
 wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line and explanation for the compile error to stderr.
 
 ### Optimization
 
-(TBD)
+wheelcc can perform multiple compiler performance optimizations for smaller and faster assembly outputs. The level 1 `-O1` command-line option enables all IR optimizations: constant folding, unreachable code elimination, copy propagation and dead store elimination. The level 2 `-O2` (TBD) command-line option enables backend register allocation with coalescing (but it does not enable level 1 optimizations). The `-O3` option enables all optimizations (level 1 and 2) and the `-O0` option disables them all. By default, only `-O2` is enabled.
 
 ### Linker
 
