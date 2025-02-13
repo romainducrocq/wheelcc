@@ -202,24 +202,15 @@ wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by 
 
 ### Dependencies
 
-wheelcc is mostly self-contained and aims to be as less bloated as possible. It simply depends on the C and C++ standard libraries and some header-only dependencies ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [boost::regex](https://github.com/boostorg/regex), [tinydir](https://github.com/cxong/tinydir)). The build/runtime only requires bash, gcc/g++ and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
-
-### Coding style
-
-wheelcc is implemented entirely in a restricted subset of C++17 with a C-like procedural design/style. Each compilation stage is a single translation unit, with state context data grouped into structures and modified by local functions. The code effectively resembles mostly C plus some C\++ sugar for:  
-- smart pointers with reference counting to manage the lifetime of AST datatypes.  
-- single inheritance/polymorphism to emulate pattern matching on algebraic datatypes.  
-- standard containers, collections, string manipulation and move semantics.  
-
-Very few other C++ features are used, and only when doing so provides a real advantage (template, constexpr, ...). This is to make the code cleaner without adding too much complexity.  
+wheelcc aims to be self-contained and as less bloated as possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [boost::regex](https://github.com/boostorg/regex), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, gcc/g++ (>= 8.1.0) and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
 
 ### Limitations
 
-wheelcc supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+The compiler supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
 ## Implementation reference
 
-This is what the wheelcc compiler supports of C17 so far. For code examples, see:
+Here's everything the wheelcc compiler supports from the C17 language (so far). For code examples, see:
 - `test/tests/compiler/`  
 - `test/tests/preprocessor/`  
 
