@@ -258,6 +258,16 @@ This is what the wheelcc compiler supports of C17 so far. For code examples, see
 - [x] [Structures](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/18_structures)
 - [x] [Unions](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/18_structures/valid/extra_credit)
 
+**Optimization**
+
+- [x] [IR optimization pipeline](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/whole_pipeline)
+- [x] [Constant folding](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/constant_folding)
+- [x] [Unreachable code elimination](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/unreachable_code_elimination)
+- [x] [Copy propagation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/copy_propagation)
+- [x] [Dead store elimination](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/dead_store_elimination)
+- [ ] Register allocation
+- [ ] Register allocation with coalescing
+
 ### Language grammar
 
 ```
