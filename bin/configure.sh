@@ -101,6 +101,16 @@ INSTALL_PKGS=(
 gcc --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
     INSTALL_PKGS[${INSTALL_GCC}]=1
+else
+    GCC_MAJOR_VERSION=$(gcc -dumpversion | cut -d"." -f1)
+    if [ ${GCC_MAJOR_VERSION} -lt 8 ]; then
+        INSTALL_PKGS[${INSTALL_GCC}]=1
+    elif [ ${GCC_MAJOR_VERSION} -eq 8 ]; then
+        GCC_MINOR_VERSION=$(gcc -dumpfullversion | cut -d"." -f2)
+        if [ ${GCC_MINOR_VERSION} -eq 0 ]; then
+            INSTALL_PKGS[${INSTALL_GCC}]=1
+        fi
+    fi
 fi
 
 g++ --help > /dev/null 2>&1

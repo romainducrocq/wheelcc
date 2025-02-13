@@ -41,7 +41,6 @@ Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Roc
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
-
 ### Install
 
 - Get the repo, cd to the bin directory  
@@ -78,7 +77,6 @@ int main(void) {
 ```
 
 - Compile and run  
-    > requires `$ gcc -dumpfullversion` >= 8.1.0
 ```
 $ wheelcc main.c
 $ ./main
@@ -173,6 +171,7 @@ $ ./get-dependencies.sh
 ```
 
 - Test the compiler  
+    > requires `$ gcc -dumpfullversion` >= 8.1.0
 ```
 $ ./test-compiler.sh [-O0 | -O1 | -O2 | -O3]
 ```
