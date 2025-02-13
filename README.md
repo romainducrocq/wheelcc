@@ -21,16 +21,16 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 ## Migrating to C
 
-A C compiler should be written in C, right? wheelcc was written from the start with the final goal to be written in plain C (at some point (maybe (?))). C++ was used for development mostly for its very handy STD (especially containers and smart pointers), that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C!
+A C compiler should be written in C, right? wheelcc was written from the start with the final goal to be written in plain C (at some point (maybe (?))). C++ was used for development mostly for its very handy std (especially containers and smart pointers), that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C!
 
 ### Some big steps
 
-- [] (~90% done) {All} Remove easely removable C++ features (classes, templates, namespaces, ...)
-- [] {Lexer} Replace C++ regex library with a C alternative (either POSIX regex or regexp9)
-- [] (POC done) {Error handler} Replace exceptions thrown with error code propagation
-- [] (POC done) {Algebraic datatypes} Replace single inheritance data structures with tagged unions
-- [] (POC done) {Polymorphism} Replace smart pointers with manual reference count managed memory
-- [] (POC done) {STD containers} Replace collections and strings with C alternatives (stb_sd, sds)
+- [ ] (~90ish% done) `all` Remove easely removable C++ features (classes, templates, namespaces, ...)
+- [ ] `lexer` Replace C++ regex library with a C alternative (either POSIX regex or regexp9)
+- [ ] (POC done) `error handler` Replace exception throwing with error code propagation
+- [ ] (POC done) `algebraic datatypes` Replace single inheritance data structures with tagged unions
+- [ ] (POC done) `polymorphism` Replace smart pointers with manual memory management and reference count
+- [ ] (POC done) `std containers` Replace collections and strings with C alternatives (stb_sd and sds)
 
 ## Usage
 
