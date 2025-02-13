@@ -23,7 +23,7 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 ### Distros
 
-The tip of master branch is validated at each update for these GNU/Linux distributions (x86-64):  
+The tip of master branch has passed all tests and validation for these GNU/Linux distributions (x86-64):  
 Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
 :---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
@@ -37,11 +37,11 @@ $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.g
 $ cd wheelcc/bin/
 ```
 - Configure the repo and install the build/runtime dependencies: `gcc g++ make cmake`  
-    > requires `$(gcc -dumpfullversion) >= 8.1.0`
 ```
 $ ./configure.sh
 ```
 - Build the compiler in Release mode  
+    > requires `$(gcc -dumpfullversion) >= 8.1.0`
 ```
 $ ./make.sh
 ```
@@ -65,6 +65,7 @@ int main(void) {
 ```
 
 - Compile and run  
+    > requires `$(gcc -dumpfullversion) >= 8.1.0`
 ```
 $ wheelcc main.c
 $ ./main
@@ -72,8 +73,8 @@ Hello, World!
 ```
 
 - Usage  
-> **Note**: Except for one source file to compile, all other command-line arguments are optional.  
-However, <ins>the order of arguments passed matters</ins>: they are parsed only in this order, any other order will fail!  
+All command-line arguments are optional, except for one `.c` source file to compile.
+> **Warning**: <ins>The order of command-line arguments matters!</ins> They are parsed in the order shown by `--help` (and only in this order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
