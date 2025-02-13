@@ -21,6 +21,14 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 ## Usage
 
+### Distros
+
+The tip of master branch is validated at each update for these GNU/Linux distributions (x86-64):  
+Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
+:---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
+:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
+
+
 ### Install
 
 - Get the repo, cd to the bin directory  
@@ -29,6 +37,7 @@ $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.g
 $ cd wheelcc/bin/
 ```
 - Configure the repo and install the build/runtime dependencies: `gcc g++ make cmake`  
+    > requires `$(gcc -dumpfullversion) >= 8.1.0`
 ```
 $ ./configure.sh
 ```
@@ -37,7 +46,7 @@ $ ./configure.sh
 $ ./make.sh
 ```
 - Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`)  
-    > Or, do not install system-wide and use `bin/driver.sh` directly instead  
+    > or, do not install system-wide and use `bin/driver.sh` directly instead  
 ```
 $ ./install.sh
 $ . ~/.bashrc
@@ -162,11 +171,6 @@ $ ./test-preprocessor.sh
 ```
 $ ./test-memory.sh [-O0 | -O1 | -O2 | -O3]
 ```
-
-The latest master branch of wheelcc is tested for these GNU/Linux distributions (x86-64):  
-Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
-:---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
-:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
 ## Compiler overview
 
