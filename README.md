@@ -19,6 +19,19 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
 
+## Migrating to C
+
+A C compiler should be written in C, right? wheelcc was written from the start with the final goal to be written in plain C (at some point (maybe (?))). C++ was used for development mostly for its very handy STD (especially containers and smart pointers), that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C!
+
+### Some big steps
+
+- [] (~90% done) {All} Remove easely removable C++ features (classes, templates, namespaces, ...)
+- [] {Lexer} Replace C++ regex library with a C alternative (either POSIX regex or regexp9)
+- [] (POC done) {Error handler} Replace exceptions thrown with error code propagation
+- [] (POC done) {Algebraic datatypes} Replace single inheritance data structures with tagged unions
+- [] (POC done) {Polymorphism} Replace smart pointers with manual reference count managed memory
+- [] (POC done) {STD containers} Replace collections and strings with C alternatives (stb_sd, sds)
+
 ## Usage
 
 ### Distros
@@ -75,7 +88,7 @@ Hello, World!
 - Usage  
 
 All command-line arguments are optional, except for one `.c` source file to compile.
-> **Warning**: <ins>The order of command-line options matters!</ins> They are parsed in the order shown by `--help` (and only in that order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
+> **Warning**: <ins>The order of command-line arguments matters!</ins> They are parsed in the order shown by `--help` (and only in that order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
 ```
 $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
