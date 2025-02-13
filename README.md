@@ -41,7 +41,7 @@ $ cd wheelcc/bin/
 $ ./configure.sh
 ```
 - Build the compiler in Release mode  
-    > requires `$(gcc -dumpfullversion) >= 8.1.0`
+    > requires `$ gcc -dumpfullversion` >= 8.1.0
 ```
 $ ./make.sh
 ```
@@ -65,7 +65,7 @@ int main(void) {
 ```
 
 - Compile and run  
-    > requires `$(gcc -dumpfullversion) >= 8.1.0`
+    > requires `$ gcc -dumpfullversion` >= 8.1.0
 ```
 $ wheelcc main.c
 $ ./main
@@ -193,7 +193,7 @@ wheelcc also has comprehensive compile error handling, and outputs error message
 
 ### Linker
 
-wheelcc has no built-in linker: gcc/ld is used to link the assembly outputed by the compiler. It complies with the System-V ABI, such that libraries already compiled with gcc or other compilers can be linked with the `-L` and `-l` command-line options and used at runtime in a program compiled by wheelcc. This also allows to link the C standard library APIs which signatures are compatible with the current implementation of wheelcc.  
+There is no built-in linker, the compiler outputs assembly that is then linked with gcc/ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.  
 (TBD, it is planned to support fasm as an alternative linker to produce very small executables.)
 
 ### Standard library
