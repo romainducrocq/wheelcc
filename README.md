@@ -21,9 +21,9 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 ## Migrating to C
 
-A C compiler should be written in C, right? wheelcc was written from the start with the final goal to be written in plain C (at some point (maybe (?))). C++ was used for development mostly for its very handy std (especially containers and smart pointers), that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C!
+A C compiler should be written in C, right? wheelcc was implemented from the start with the goal to switch to plain C at some point. C++ was used for development for its very handy std that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C! The migration is done on branch `cpp2c/dev` until complete.
 
-### Some big steps
+### Progress
 
 - [ ] (~90ish% done) `all` Remove easely removable C++ features (classes, templates, namespaces, ...)
 - [ ] `lexer` Replace C++ regex library with a C alternative (either POSIX regex or regexp9)
