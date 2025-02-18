@@ -543,18 +543,16 @@ static bool data_flow_analysis_after_meet_block(size_t block_id) {
     bool is_fixed_point = true;
     {
         size_t i = 0;
-        for (; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_BLOCK_SET_AT(block_id, i)
-                != GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+        for (; i < context->data_flow_analysis->mask_size; ++i) {
+            if (GET_DFA_BLOCK_SET_MASK(block_id, i)
+                != GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i)) {
                 is_fixed_point = false;
                 break;
             }
         }
-        for (; i < context->data_flow_analysis->set_size; ++i) {
-            // GET_DFA_BLOCK_SET_AT(block_id, i) =
-            //     GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
-            SET_DFA_BLOCK_SET_AT(
-                block_id, i, GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i));
+        for (; i < context->data_flow_analysis->mask_size; ++i) {
+            GET_DFA_BLOCK_SET_MASK(block_id, i) =
+                GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i);
         }
     }
     return is_fixed_point;
