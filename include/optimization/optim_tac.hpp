@@ -48,8 +48,8 @@ struct DataFlowAnalysis {
     std::vector<size_t> data_index_map;
     std::vector<size_t> block_index_map;
     std::vector<size_t> instruction_index_map;
-    std::vector<bool> blocks_flat_sets;
-    std::vector<bool> instructions_flat_sets;
+    std::vector<uint64_t> blocks_flat_sets;       // TODO blocks_mask_sets
+    std::vector<uint64_t> instructions_flat_sets; // TODO instructions_mask_sets
     std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
     std::unordered_set<TIdentifier> alias_set;
 };

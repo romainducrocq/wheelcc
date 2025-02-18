@@ -367,7 +367,7 @@ static void control_flow_graph_initialize() {
 
 #if __OPTIM_LEVEL__ == 1
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
-
+/*
 // #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
 //     context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
 // #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
@@ -381,6 +381,7 @@ static void control_flow_graph_initialize() {
 //     context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
 //         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
 //             + context->data_flow_analysis->set_size
+*/
 #endif
 
 bool mask_get(uint64_t mask, uint64_t bit) {
@@ -550,8 +551,10 @@ static bool data_flow_analysis_after_meet_block(size_t block_id) {
             }
         }
         for (; i < context->data_flow_analysis->set_size; ++i) {
-            GET_DFA_BLOCK_SET_AT(block_id, i) =
-                GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
+            // GET_DFA_BLOCK_SET_AT(block_id, i) =
+            //     GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i);
+            SET_DFA_BLOCK_SET_AT(
+                block_id, i, GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i));
         }
     }
     return is_fixed_point;
@@ -567,18 +570,25 @@ static bool data_flow_analysis_forward_meet_block(size_t block_id) {
     }
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
-    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
+    // std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), true);
+    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+        GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i) = MASK_TRUE;
+    }
 
     for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
         if (predecessor_id < context->control_flow_graph->exit_id) {
             for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
                 if (!GET_DFA_BLOCK_SET_AT(predecessor_id, i)) {
-                    GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = false;
+                    // GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = false;
+                    SET_DFA_INSTRUCTION_SET_AT(instruction_index, i, false);
                 }
             }
         }
         else if (predecessor_id == context->control_flow_graph->entry_id) {
-            std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+            // std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+                GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i) = MASK_FALSE;
+            }
             break;
         }
         else {
@@ -606,19 +616,22 @@ static bool data_flow_analysis_backward_meet_block(size_t block_id) {
     }
     instruction_index = context->data_flow_analysis->incoming_index;
 Lelse:
-    std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
+    // TODO
+    // std::fill(GET_DFA_INSTRUCTION_SET_RANGE(instruction_index), false);
 
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
         if (successor_id < context->control_flow_graph->exit_id) {
             for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
                 if (GET_DFA_BLOCK_SET_AT(successor_id, i)) {
-                    GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = true;
+                    // TODO
+                    // GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = true;
                 }
             }
         }
         else if (successor_id == context->control_flow_graph->exit_id) {
             for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = context->data_flow_analysis->data_index_map[i];
+                // TODO
+                // GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) = context->data_flow_analysis->data_index_map[i];
             }
             break;
         }
@@ -1064,7 +1077,7 @@ static bool data_flow_analysis_initialize(
         std::fill(context->control_flow_graph->reaching_code.begin(),
             context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
         std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
-            context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, true);
+            context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, MASK_TRUE);
     }
     else {
         if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {

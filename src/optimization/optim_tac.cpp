@@ -1565,14 +1565,14 @@ static void copy_propagation_transfer_dst_value_reaching_copies(
                 RAISE_INTERNAL_ERROR;
             }
             else if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
             }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
             }
         }
         else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
         }
     }
 }
@@ -1595,14 +1595,14 @@ static void copy_propagation_transfer_fun_call_reaching_copies(
                      || (node->dst
                          && (is_same_value(node->dst.get(), copy->src.get())
                              || is_same_value(node->dst.get(), copy->dst.get())))) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
             }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
             }
         }
         else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
         }
     }
 }
@@ -1623,31 +1623,31 @@ static void copy_propagation_transfer_copy_reaching_copies(
         else if (is_same_value(node->dst.get(), copy->dst.get())) {
             if ((is_copy_signedness(copy) || is_copy_null_pointer(copy))
                 && is_same_value(node->src.get(), copy->src.get())) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
             }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
             }
         }
         else if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
             if (is_same_value(node->dst.get(), copy->src.get())) {
                 if (is_same_value(node->src.get(), copy->dst.get())) {
                     for (size_t j = 0; j < i; ++j) {
-                        GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, j) =
-                            GET_DFA_INSTRUCTION_SET_AT(instruction_index, j);
+                        SET_DFA_INSTRUCTION_SET_AT(
+                            next_instruction_index, j, GET_DFA_INSTRUCTION_SET_AT(instruction_index, j));
                     }
                     break;
                 }
                 else {
-                    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
                 }
             }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
             }
         }
         else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
         }
     }
 }
@@ -1663,14 +1663,14 @@ static void copy_propagation_transfer_store_reaching_copies(size_t instruction_i
                 RAISE_INTERNAL_ERROR;
             }
             else if (is_aliased_value(copy->src.get()) || is_aliased_value(copy->dst.get())) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
             }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
             }
         }
         else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
         }
     }
 }
@@ -1688,14 +1688,14 @@ static void copy_propagation_transfer_copy_to_offset_reaching_copies(
             }
             else if (is_name_same_value(copy->src.get(), node->dst_name)
                      || is_name_same_value(copy->dst.get(), node->dst_name)) {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
             }
             else {
-                GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+                SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
             }
         }
         else {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
         }
     }
 }
@@ -2305,7 +2305,8 @@ static void eliminate_dead_store_transfer_addressed_live_values(size_t next_inst
     for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
         if (context->data_flow_analysis->alias_set.find(name_id.first)
             != context->data_flow_analysis->alias_set.end()) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
+            // TODO
+            // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
         }
     }
 }
@@ -2315,14 +2316,16 @@ static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instru
         if (context->data_flow_analysis->data_index_map[name_id.second]
             || context->data_flow_analysis->alias_set.find(name_id.first)
                    != context->data_flow_analysis->alias_set.end()) {
-            GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
+            // TODO
+            // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
         }
     }
 }
 
 static void eliminate_dead_store_transfer_src_name_live_values(const TIdentifier& name, size_t next_instruction_index) {
     size_t i = context->control_flow_graph->identifier_id_map[name];
-    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+    // TODO
+    // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
 }
 
 static void eliminate_dead_store_transfer_src_value_live_values(TacValue* node, size_t next_instruction_index) {
@@ -2337,13 +2340,15 @@ static void eliminate_dead_store_transfer_dst_value_live_values(TacValue* node, 
         RAISE_INTERNAL_ERROR;
     }
     size_t i = context->control_flow_graph->identifier_id_map[static_cast<TacVariable*>(node)->name];
-    GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+    // TODO
+    // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
 }
 
 static void eliminate_dead_store_transfer_live_values(
     TacInstruction* node, size_t instruction_index, size_t next_instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
+        // TODO
+        // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
     }
     switch (node->type()) {
         case AST_T::TacReturn_t: {
