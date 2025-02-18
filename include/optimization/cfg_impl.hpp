@@ -365,8 +365,8 @@ static void control_flow_graph_initialize() {
 
 // Data flow analysis
 
-// #if __OPTIM_LEVEL__ == 1
-// #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
+#if __OPTIM_LEVEL__ == 1
+#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 
 // #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
 //     context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
@@ -381,7 +381,7 @@ static void control_flow_graph_initialize() {
 //     context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
 //         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
 //             + context->data_flow_analysis->set_size
-// #endif
+#endif
 
 bool mask_get(uint64_t mask, uint64_t bit) {
     if (bit > 63ul) {
@@ -402,6 +402,8 @@ void mask_set(uint64_t& mask, uint64_t bit, bool value) {
     }
 }
 
+#define MASK_FALSE 0ul
+#define MASK_TRUE 18446744073709551615ul
 #define MASK_OFFSET(X) X > 63 ? X / 64 : 0
 
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
@@ -413,11 +415,11 @@ void mask_set(uint64_t& mask, uint64_t bit, bool value) {
 #define GET_DFA_INSTRUCTION_SET_MASK(X, Y) \
     context->data_flow_analysis->instructions_flat_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
 
-#define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y);
-#define GET_DFA_INSTRUCTION_SET_AT(X, Y) mask_get(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y);
+#define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y)
+#define GET_DFA_INSTRUCTION_SET_AT(X, Y) mask_get(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y)
 
-#define SET_DFA_BLOCK_SET_AT(X, Y, Z) mask_set(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y, Z);
-#define SET_DFA_INSTRUCTION_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y, Z);
+#define SET_DFA_BLOCK_SET_AT(X, Y, Z) mask_set(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
+#define SET_DFA_INSTRUCTION_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
 static bool is_transfer_instruction(size_t instruction_index,
 #if __OPTIM_LEVEL__ == 1
