@@ -1067,6 +1067,14 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
+        context->data_flow_analysis->mask_lt_true = MASK_TRUE;
+        i = context->data_flow_analysis->set_size - (context->data_flow_analysis->mask_size - 1) * 64;
+        if (i > 0) {
+            for (; i < 64; ++i) {
+                mask_set(context->data_flow_analysis->mask_lt_true, i, false);
+            }
+        }
+
         if (context->control_flow_graph->reaching_code.size() < context->data_flow_analysis->set_size) {
             context->control_flow_graph->reaching_code.resize(context->data_flow_analysis->set_size);
         }
@@ -1076,8 +1084,24 @@ static bool data_flow_analysis_initialize(
 
         std::fill(context->control_flow_graph->reaching_code.begin(),
             context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
-        std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
-            context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, MASK_TRUE);
+
+        if (context->data_flow_analysis->mask_size > 1) {
+            i = 0;
+            do {
+                for (size_t j = context->data_flow_analysis->mask_size - 1; j-- > 0;) {
+                    context->data_flow_analysis->blocks_flat_sets[i] = MASK_TRUE;
+                    i++;
+                }
+                context->data_flow_analysis->blocks_flat_sets[i] = context->data_flow_analysis->mask_lt_true;
+                i++;
+            }
+            while (i < blocks_flat_sets_size);
+        }
+        else {
+            std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
+                context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size,
+                context->data_flow_analysis->mask_lt_true);
+        }
     }
     else {
         if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
