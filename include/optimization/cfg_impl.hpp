@@ -384,16 +384,16 @@ static void control_flow_graph_initialize() {
 */
 #endif
 
-bool mask_get(uint64_t mask, uint64_t bit) {
-    if (bit > 63ul) {
-        bit %= 64ul;
+bool mask_get(uint64_t mask, size_t bit) {
+    if (bit > 63) {
+        bit %= 64;
     }
     return (mask & (static_cast<uint64_t>(1ul) << bit)) > 0;
 }
 
-void mask_set(uint64_t& mask, uint64_t bit, bool value) {
-    if (bit > 63ul) {
-        bit %= 64ul;
+void mask_set(uint64_t& mask, size_t bit, bool value) {
+    if (bit > 63) {
+        bit %= 64;
     }
     if (value) {
         mask |= static_cast<uint64_t>(1ul) << bit;
