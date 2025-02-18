@@ -2305,8 +2305,8 @@ static void eliminate_dead_store_transfer_addressed_live_values(size_t next_inst
     for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
         if (context->data_flow_analysis->alias_set.find(name_id.first)
             != context->data_flow_analysis->alias_set.end()) {
-            // TODO
             // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second, true);
         }
     }
 }
@@ -2316,16 +2316,16 @@ static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instru
         if (context->data_flow_analysis->data_index_map[name_id.second]
             || context->data_flow_analysis->alias_set.find(name_id.first)
                    != context->data_flow_analysis->alias_set.end()) {
-            // TODO
             // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second) = true;
+            SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, name_id.second, true);
         }
     }
 }
 
 static void eliminate_dead_store_transfer_src_name_live_values(const TIdentifier& name, size_t next_instruction_index) {
     size_t i = context->control_flow_graph->identifier_id_map[name];
-    // TODO
     // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = true;
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
 }
 
 static void eliminate_dead_store_transfer_src_value_live_values(TacValue* node, size_t next_instruction_index) {
@@ -2340,15 +2340,15 @@ static void eliminate_dead_store_transfer_dst_value_live_values(TacValue* node, 
         RAISE_INTERNAL_ERROR;
     }
     size_t i = context->control_flow_graph->identifier_id_map[static_cast<TacVariable*>(node)->name];
-    // TODO
     // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = false;
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
 }
 
 static void eliminate_dead_store_transfer_live_values(
     TacInstruction* node, size_t instruction_index, size_t next_instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        // TODO
         // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
+        SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, GET_DFA_INSTRUCTION_SET_AT(instruction_index, i));
     }
     switch (node->type()) {
         case AST_T::TacReturn_t: {
