@@ -365,23 +365,59 @@ static void control_flow_graph_initialize() {
 
 // Data flow analysis
 
-#if __OPTIM_LEVEL__ == 1
-#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
+// #if __OPTIM_LEVEL__ == 1
+// #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
+
+// #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
+//     context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
+// #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
+//     context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->set_size + (Y)
+
+// #define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
+// #define GET_DFA_INSTRUCTION_SET_AT(X, Y) \
+//     context->data_flow_analysis->instructions_flat_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
+
+// #define GET_DFA_INSTRUCTION_SET_RANGE(X)                                                                  \
+//     context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
+//         context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
+//             + context->data_flow_analysis->set_size
+// #endif
+
+bool mask_get(uint64_t mask, uint64_t bit) {
+    if (bit > 63ul) {
+        bit %= 64ul;
+    }
+    return (mask & (static_cast<uint64_t>(1ul) << bit)) > 0;
+}
+
+void mask_set(uint64_t& mask, uint64_t bit, bool value) {
+    if (bit > 63ul) {
+        bit %= 64ul;
+    }
+    if (value) {
+        mask |= static_cast<uint64_t>(1ul) << bit;
+    }
+    else {
+        mask &= ~(static_cast<uint64_t>(1ul) << bit);
+    }
+}
+
+#define MASK_OFFSET(X) X > 63 ? X / 64 : 0
 
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
-    context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->set_size + (Y)
+    context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->mask_size + (Y)
 #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
-    context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->set_size + (Y)
+    context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->mask_size + (Y)
 
-#define GET_DFA_BLOCK_SET_AT(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
-#define GET_DFA_INSTRUCTION_SET_AT(X, Y) \
+#define GET_DFA_BLOCK_SET_MASK(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
+#define GET_DFA_INSTRUCTION_SET_MASK(X, Y) \
     context->data_flow_analysis->instructions_flat_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
 
-#define GET_DFA_INSTRUCTION_SET_RANGE(X)                                                                  \
-    context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0),    \
-        context->data_flow_analysis->instructions_flat_sets.begin() + GET_DFA_INSTRUCTION_SET_INDEX(X, 0) \
-            + context->data_flow_analysis->set_size
-#endif
+#define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y);
+#define GET_DFA_INSTRUCTION_SET_AT(X, Y) mask_get(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y);
+
+#define SET_DFA_BLOCK_SET_AT(X, Y, Z) mask_set(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y, Z);
+#define SET_DFA_INSTRUCTION_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y, Z);
 
 static bool is_transfer_instruction(size_t instruction_index,
 #if __OPTIM_LEVEL__ == 1
@@ -993,8 +1029,9 @@ static bool data_flow_analysis_initialize(
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
         instructions_flat_sets_size;
     instructions_flat_sets_size++;
-    blocks_flat_sets_size *= context->data_flow_analysis->set_size;
-    instructions_flat_sets_size *= context->data_flow_analysis->set_size;
+    context->data_flow_analysis->mask_size = (context->data_flow_analysis->set_size + 63) / 64;
+    blocks_flat_sets_size *= context->data_flow_analysis->mask_size;
+    instructions_flat_sets_size *= context->data_flow_analysis->mask_size;
 
     if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
         context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);

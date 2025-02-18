@@ -19,11 +19,11 @@ static std::unique_ptr<OptimTacContext> context;
 OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
     is_fixed_point(true),
     enabled_optimizations({
-        (optim_1_mask & (static_cast<uint8_t>(1) << 0)) > 0, // Enable constant folding
-        (optim_1_mask & (static_cast<uint8_t>(1) << 1)) > 0, // Enable copy propagation
-        (optim_1_mask & (static_cast<uint8_t>(1) << 2)) > 0, // Enable unreachable code elimination
-        (optim_1_mask & (static_cast<uint8_t>(1) << 3)) > 0, // Enable dead store elimination
-        (optim_1_mask & ~(static_cast<uint8_t>(1) << 0)) > 0 // Optimize with control flow graph
+        (optim_1_mask & (static_cast<uint8_t>(1u) << 0u)) > 0, // Enable constant folding
+        (optim_1_mask & (static_cast<uint8_t>(1u) << 1u)) > 0, // Enable copy propagation
+        (optim_1_mask & (static_cast<uint8_t>(1u) << 2u)) > 0, // Enable unreachable code elimination
+        (optim_1_mask & (static_cast<uint8_t>(1u) << 3u)) > 0, // Enable dead store elimination
+        (optim_1_mask & ~(static_cast<uint8_t>(1u) << 0u)) > 0 // Optimize with control flow graph
     }) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
