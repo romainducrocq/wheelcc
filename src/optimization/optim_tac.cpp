@@ -1560,11 +1560,11 @@ static void copy_propagation_transfer_dst_value_reaching_copies(TacValue* node, 
             i += 64;
             continue;
         }
-        size_t k = i + 64;
-        if (k > context->data_flow_analysis->set_size) {
-            k = context->data_flow_analysis->set_size;
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
         }
-        for (; i < k; ++i) {
+        for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
@@ -1576,7 +1576,7 @@ static void copy_propagation_transfer_dst_value_reaching_copies(TacValue* node, 
                 else if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
                     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
                     if (GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, j) == MASK_FALSE) {
-                        i = k;
+                        i = mask_set_size;
                     }
                 }
             }
@@ -1594,11 +1594,11 @@ static void copy_propagation_transfer_fun_call_reaching_copies(TacFunCall* node,
             i += 64;
             continue;
         }
-        size_t k = i + 64;
-        if (k > context->data_flow_analysis->set_size) {
-            k = context->data_flow_analysis->set_size;
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
         }
-        for (; i < k; ++i) {
+        for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
@@ -1613,7 +1613,7 @@ static void copy_propagation_transfer_fun_call_reaching_copies(TacFunCall* node,
                                  || is_same_value(node->dst.get(), copy->dst.get())))) {
                     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
                     if (GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, j) == MASK_FALSE) {
-                        i = k;
+                        i = mask_set_size;
                     }
                 }
             }
@@ -1663,11 +1663,11 @@ static void copy_propagation_transfer_store_reaching_copies(size_t next_instruct
             i += 64;
             continue;
         }
-        size_t k = i + 64;
-        if (k > context->data_flow_analysis->set_size) {
-            k = context->data_flow_analysis->set_size;
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
         }
-        for (; i < k; ++i) {
+        for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
@@ -1679,7 +1679,7 @@ static void copy_propagation_transfer_store_reaching_copies(size_t next_instruct
                 else if (is_aliased_value(copy->src.get()) || is_aliased_value(copy->dst.get())) {
                     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
                     if (GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, j) == MASK_FALSE) {
-                        i = k;
+                        i = mask_set_size;
                     }
                 }
             }
@@ -1695,11 +1695,11 @@ static void copy_propagation_transfer_copy_to_offset_reaching_copies(
             i += 64;
             continue;
         }
-        size_t k = i + 64;
-        if (k > context->data_flow_analysis->set_size) {
-            k = context->data_flow_analysis->set_size;
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
         }
-        for (; i < k; ++i) {
+        for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i)) {
                 if (GET_DFA_INSTRUCTION(i)->type() != AST_T::TacCopy_t) {
                     RAISE_INTERNAL_ERROR;
@@ -1712,7 +1712,7 @@ static void copy_propagation_transfer_copy_to_offset_reaching_copies(
                          || is_name_same_value(copy->dst.get(), node->dst_name)) {
                     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
                     if (GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, j) == MASK_FALSE) {
-                        i = k;
+                        i = mask_set_size;
                     }
                 }
             }
@@ -1837,11 +1837,11 @@ static void propagate_copies_sign_extend_instructions(TacSignExtend* node, size_
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -1866,11 +1866,11 @@ static void propagate_copies_truncate_instructions(TacTruncate* node, size_t ins
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -1895,11 +1895,11 @@ static void propagate_copies_zero_extend_instructions(TacZeroExtend* node, size_
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -1924,11 +1924,11 @@ static void propagate_copies_double_to_int_instructions(TacDoubleToInt* node, si
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -1953,11 +1953,11 @@ static void propagate_copies_double_to_uint_instructions(TacDoubleToUInt* node, 
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -1982,11 +1982,11 @@ static void propagate_copies_int_to_double_instructions(TacIntToDouble* node, si
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -2011,11 +2011,11 @@ static void propagate_copies_uint_to_double_instructions(TacUIntToDouble* node, 
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -2061,11 +2061,11 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -2150,11 +2150,11 @@ static void propagate_copies_load_instructions(TacLoad* node, size_t instruction
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -2179,11 +2179,11 @@ static void propagate_copies_store_instructions(TacStore* node, size_t instructi
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -2240,11 +2240,11 @@ static void propagate_copies_copy_to_offset_instructions(TacCopyToOffset* node, 
                 i += 64;
                 continue;
             }
-            size_t k = i + 64;
-            if (k > context->data_flow_analysis->set_size) {
-                k = context->data_flow_analysis->set_size;
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
             }
-            for (; i < k; ++i) {
+            for (; i < mask_set_size; ++i) {
                 if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                     TacCopy* copy = get_dfa_bak_copy_instruction(i);
                     if (copy->dst->type() != AST_T::TacVariable_t) {
@@ -2268,11 +2268,11 @@ static void propagate_copies_copy_from_offset_instructions(TacCopyFromOffset* no
             i += 64;
             continue;
         }
-        size_t k = i + 64;
-        if (k > context->data_flow_analysis->set_size) {
-            k = context->data_flow_analysis->set_size;
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
         }
-        for (; i < k; ++i) {
+        for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
                 TacCopy* copy = get_dfa_bak_copy_instruction(i);
                 if (copy->dst->type() != AST_T::TacVariable_t) {
