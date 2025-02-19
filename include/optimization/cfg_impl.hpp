@@ -817,8 +817,8 @@ static bool data_flow_analysis_initialize(
     if (context->data_flow_analysis->block_index_map.size() < context->control_flow_graph->blocks.size()) {
         context->data_flow_analysis->block_index_map.resize(context->control_flow_graph->blocks.size());
     }
-    if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + 1) {
-        context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + 1);
+    if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + 3) {
+        context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + 3);
     }
     if (context->control_flow_graph->reaching_code.size() < context->control_flow_graph->blocks.size()) {
         context->control_flow_graph->reaching_code.resize(context->control_flow_graph->blocks.size());
@@ -831,10 +831,16 @@ static bool data_flow_analysis_initialize(
 #if __OPTIM_LEVEL__ == 1
     bool is_copy_propagation = !is_dead_store_elimination;
     if (is_dead_store_elimination) {
+#endif
         context->control_flow_graph->identifier_id_map.clear();
+        context->data_flow_analysis->static_index = context->data_flow_analysis->incoming_index + 1;
+        context->data_flow_analysis->addressed_index = context->data_flow_analysis->static_index + 1;
+#if __OPTIM_LEVEL__ == 1
     }
     if (init_alias_set) {
+#endif
         context->data_flow_analysis->alias_set.clear();
+#if __OPTIM_LEVEL__ == 1
     }
 #endif
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
@@ -1044,6 +1050,18 @@ static bool data_flow_analysis_initialize(
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
         instructions_mask_sets_size;
     instructions_mask_sets_size++;
+#if __OPTIM_LEVEL__ == 1
+    if (is_dead_store_elimination) {
+#endif
+        context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->static_index] =
+            instructions_mask_sets_size;
+        instructions_mask_sets_size++;
+        context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->addressed_index] =
+            instructions_mask_sets_size;
+        instructions_mask_sets_size++;
+#if __OPTIM_LEVEL__ == 1
+    }
+#endif
     context->data_flow_analysis->mask_size = (context->data_flow_analysis->set_size + 63) / 64;
     blocks_mask_sets_size *= context->data_flow_analysis->mask_size;
     instructions_mask_sets_size *= context->data_flow_analysis->mask_size;
@@ -1103,14 +1121,6 @@ static bool data_flow_analysis_initialize(
         }
     }
     else {
-        if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
-            context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
-        }
-
-        for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
-            context->data_flow_analysis->data_index_map[name_id.second] =
-                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
-        }
 #endif
         size_t i = 0;
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
@@ -1120,6 +1130,35 @@ static bool data_flow_analysis_initialize(
         }
         for (; i < context->control_flow_graph->blocks.size(); i++) {
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
+        }
+
+        // TODO rm
+        if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
+            context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
+        }
+        //
+
+        for (i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i) = MASK_FALSE;
+            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i) = MASK_FALSE;
+        }
+
+        for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
+            // TOOD rm
+            context->data_flow_analysis->data_index_map[name_id.second] =
+                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
+            //
+            if (
+#if __OPTIM_LEVEL__ == 1
+                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t
+#endif
+            ) {
+                SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
+            }
+            if (context->data_flow_analysis->alias_set.find(name_id.first)
+                != context->data_flow_analysis->alias_set.end()) {
+                SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->addressed_index, name_id.second, true);
+            }
         }
 
         std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
