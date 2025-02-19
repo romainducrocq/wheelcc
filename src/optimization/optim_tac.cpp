@@ -1809,6 +1809,7 @@ static void set_dfa_bak_copy_instruction(TacCopy* node, size_t instruction_index
     }
 }
 
+// TODO
 static void propagate_copies_return_instructions(TacReturn* node, size_t incoming_index, size_t exit_block) {
     if (node->val && node->val->type() == AST_T::TacVariable_t) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
@@ -1830,16 +1831,27 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
 
 static void propagate_copies_sign_extend_instructions(TacSignExtend* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -1848,16 +1860,27 @@ static void propagate_copies_sign_extend_instructions(TacSignExtend* node, size_
 
 static void propagate_copies_truncate_instructions(TacTruncate* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -1866,16 +1889,27 @@ static void propagate_copies_truncate_instructions(TacTruncate* node, size_t ins
 
 static void propagate_copies_zero_extend_instructions(TacZeroExtend* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -1884,16 +1918,27 @@ static void propagate_copies_zero_extend_instructions(TacZeroExtend* node, size_
 
 static void propagate_copies_double_to_int_instructions(TacDoubleToInt* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -1902,16 +1947,27 @@ static void propagate_copies_double_to_int_instructions(TacDoubleToInt* node, si
 
 static void propagate_copies_double_to_uint_instructions(TacDoubleToUInt* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -1920,16 +1976,27 @@ static void propagate_copies_double_to_uint_instructions(TacDoubleToUInt* node, 
 
 static void propagate_copies_int_to_double_instructions(TacIntToDouble* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -1938,22 +2005,34 @@ static void propagate_copies_int_to_double_instructions(TacIntToDouble* node, si
 
 static void propagate_copies_uint_to_double_instructions(TacUIntToDouble* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
     }
 }
 
+// TODO
 static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t instruction_index) {
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (node->args[i]->type() == AST_T::TacVariable_t) {
@@ -1976,22 +2055,34 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
 
 static void propagate_copies_unary_instructions(TacUnary* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
     }
 }
 
+// TODO
 static void propagate_copies_binary_instructions(TacBinary* node, size_t instruction_index) {
     bool is_src1 = node->src1->type() == AST_T::TacVariable_t;
     bool is_src2 = node->src2->type() == AST_T::TacVariable_t;
@@ -2023,6 +2114,7 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
     }
 }
 
+// TODO
 static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction_index, size_t block_id) {
     if (node->dst->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
@@ -2052,16 +2144,27 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
 
 static void propagate_copies_load_instructions(TacLoad* node, size_t instruction_index) {
     if (node->src_ptr->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src_ptr.get(), copy->dst.get())) {
-                    node->src_ptr = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src_ptr.get(), copy->dst.get())) {
+                        node->src_ptr = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -2070,22 +2173,34 @@ static void propagate_copies_load_instructions(TacLoad* node, size_t instruction
 
 static void propagate_copies_store_instructions(TacStore* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
     }
 }
 
+// TODO
 static void propagate_copies_add_ptr_instructions(TacAddPtr* node, size_t instruction_index) {
     bool is_src_ptr = node->src_ptr->type() == AST_T::TacVariable_t;
     bool is_index = node->index->type() == AST_T::TacVariable_t;
@@ -2119,16 +2234,27 @@ static void propagate_copies_add_ptr_instructions(TacAddPtr* node, size_t instru
 
 static void propagate_copies_copy_to_offset_instructions(TacCopyToOffset* node, size_t instruction_index) {
     if (node->src->type() == AST_T::TacVariable_t) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_same_value(node->src.get(), copy->dst.get())) {
-                    node->src = copy->src;
-                    context->is_fixed_point = false;
-                    break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t k = i + 64;
+            if (k > context->data_flow_analysis->set_size) {
+                k = context->data_flow_analysis->set_size;
+            }
+            for (; i < k; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    else if (is_same_value(node->src.get(), copy->dst.get())) {
+                        node->src = copy->src;
+                        context->is_fixed_point = false;
+                        return;
+                    }
                 }
             }
         }
@@ -2136,24 +2262,36 @@ static void propagate_copies_copy_to_offset_instructions(TacCopyToOffset* node, 
 }
 
 static void propagate_copies_copy_from_offset_instructions(TacCopyFromOffset* node, size_t instruction_index) {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            TacCopy* copy = get_dfa_bak_copy_instruction(i);
-            if (copy->dst->type() != AST_T::TacVariable_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            else if (is_name_same_value(copy->dst.get(), node->src_name)) {
-                if (copy->src->type() != AST_T::TacVariable_t) {
+    size_t i = 0;
+    for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t k = i + 64;
+        if (k > context->data_flow_analysis->set_size) {
+            k = context->data_flow_analysis->set_size;
+        }
+        for (; i < k; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                node->src_name = static_cast<TacVariable*>(copy->src.get())->name;
-                context->is_fixed_point = false;
-                break;
+                else if (is_name_same_value(copy->dst.get(), node->src_name)) {
+                    if (copy->src->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
+                    }
+                    node->src_name = static_cast<TacVariable*>(copy->src.get())->name;
+                    context->is_fixed_point = false;
+                    return;
+                }
             }
         }
     }
 }
 
+// TODO
 static void propagate_copies_jump_if_zero_instructions(TacJumpIfZero* node, size_t incoming_index, size_t exit_block) {
     if (node->condition->type() == AST_T::TacVariable_t) {
         for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
@@ -2173,6 +2311,7 @@ static void propagate_copies_jump_if_zero_instructions(TacJumpIfZero* node, size
     }
 }
 
+// TODO
 static void propagate_copies_jump_if_not_zero_instructions(
     TacJumpIfNotZero* node, size_t incoming_index, size_t exit_block) {
     if (node->condition->type() == AST_T::TacVariable_t) {
