@@ -385,7 +385,9 @@ void mask_set(uint64_t& mask, size_t bit, bool value) {
 }
 
 #define MASK_FALSE 0ul
+#if __OPTIM_LEVEL__ == 1
 #define MASK_TRUE 18446744073709551615ul
+#endif
 #define MASK_OFFSET(X) X > 63 ? X / 64 : 0
 
 #define GET_DFA_BLOCK_SET_INDEX(X, Y) \
@@ -400,7 +402,6 @@ void mask_set(uint64_t& mask, size_t bit, bool value) {
 #define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y)
 #define GET_DFA_INSTRUCTION_SET_AT(X, Y) mask_get(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y)
 
-#define SET_DFA_BLOCK_SET_AT(X, Y, Z) mask_set(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 #define SET_DFA_INSTRUCTION_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
 #if __OPTIM_LEVEL__ == 1
