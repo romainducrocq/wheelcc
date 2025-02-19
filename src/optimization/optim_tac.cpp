@@ -2344,12 +2344,7 @@ static void eliminate_dead_store_transfer_dst_value_live_values(TacValue* node, 
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
 }
 
-static void eliminate_dead_store_transfer_live_values(
-    TacInstruction* node, size_t instruction_index, size_t next_instruction_index) {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        // GET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i) = GET_DFA_INSTRUCTION_SET_AT(instruction_index, i);
-        SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, GET_DFA_INSTRUCTION_SET_AT(instruction_index, i));
-    }
+static void eliminate_dead_store_transfer_live_values(TacInstruction* node, size_t next_instruction_index) {
     switch (node->type()) {
         case AST_T::TacReturn_t: {
             TacReturn* p_node = static_cast<TacReturn*>(node);

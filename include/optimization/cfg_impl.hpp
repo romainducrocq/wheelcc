@@ -484,8 +484,7 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
 #if __OPTIM_LEVEL__ == 1
 static void copy_propagation_transfer_reaching_copies(
     TacInstruction* node, size_t instruction_index, size_t next_instruction_index);
-static void eliminate_dead_store_transfer_live_values(
-    TacInstruction* node, size_t instruction_index, size_t next_instruction_index);
+static void eliminate_dead_store_transfer_live_values(TacInstruction* node, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -509,18 +508,26 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
         for (size_t next_instruction_index = instruction_index;
              next_instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
             if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, true)) {
+                for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+                    GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
+                        GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
+                }
 #if __OPTIM_LEVEL__ == 1
                 eliminate_dead_store_transfer_live_values
 #endif
-                    (GET_INSTRUCTION(instruction_index).get(), instruction_index, next_instruction_index);
+                    (GET_INSTRUCTION(instruction_index).get(), next_instruction_index);
                 instruction_index = next_instruction_index;
             }
         }
     }
+    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
+            GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
+    }
 #if __OPTIM_LEVEL__ == 1
     eliminate_dead_store_transfer_live_values
 #endif
-        (GET_INSTRUCTION(instruction_index).get(), instruction_index, context->data_flow_analysis->incoming_index);
+        (GET_INSTRUCTION(instruction_index).get(), context->data_flow_analysis->incoming_index);
     return instruction_index;
 }
 
