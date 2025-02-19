@@ -1813,8 +1813,8 @@ static void propagate_copies_return_instructions(TacReturn* node, size_t incomin
     if (node->val && node->val->type() == AST_T::TacVariable_t) {
         size_t i = 0;
         for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
-            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_index, i) == MASK_FALSE)
-                || (!exit_block && GET_DFA_INSTRUCTION_SET_MASK(incoming_index, i) == MASK_FALSE)) {
+            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_index, j) == MASK_FALSE)
+                || (!exit_block && GET_DFA_INSTRUCTION_SET_MASK(incoming_index, j) == MASK_FALSE)) {
                 i += 64;
                 continue;
             }
@@ -2048,7 +2048,7 @@ static void propagate_copies_fun_call_instructions(TacFunCall* node, size_t inst
         if (node->args[i]->type() == AST_T::TacVariable_t) {
             size_t j = 0;
             for (size_t k = 0; k < context->data_flow_analysis->mask_size; ++k) {
-                if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, k) == MASK_FALSE) {
                     j += 64;
                     continue;
                 }
@@ -2347,8 +2347,8 @@ static void propagate_copies_jump_if_zero_instructions(TacJumpIfZero* node, size
     if (node->condition->type() == AST_T::TacVariable_t) {
         size_t i = 0;
         for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
-            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_index, i) == MASK_FALSE)
-                || (!exit_block && GET_DFA_INSTRUCTION_SET_MASK(incoming_index, i) == MASK_FALSE)) {
+            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_index, j) == MASK_FALSE)
+                || (!exit_block && GET_DFA_INSTRUCTION_SET_MASK(incoming_index, j) == MASK_FALSE)) {
                 i += 64;
                 continue;
             }
@@ -2379,8 +2379,8 @@ static void propagate_copies_jump_if_not_zero_instructions(
     if (node->condition->type() == AST_T::TacVariable_t) {
         size_t i = 0;
         for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
-            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_index, i) == MASK_FALSE)
-                || (!exit_block && GET_DFA_INSTRUCTION_SET_MASK(incoming_index, i) == MASK_FALSE)) {
+            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_index, j) == MASK_FALSE)
+                || (!exit_block && GET_DFA_INSTRUCTION_SET_MASK(incoming_index, j) == MASK_FALSE)) {
                 i += 64;
                 continue;
             }

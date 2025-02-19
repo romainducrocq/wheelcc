@@ -629,9 +629,9 @@ Lelse:
             }
         }
         else if (successor_id == context->control_flow_graph->exit_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-                // TODO
-                SET_DFA_INSTRUCTION_SET_AT(instruction_index, i, context->data_flow_analysis->data_index_map[i]);
+            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+                GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i) =
+                    GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i);
             }
             break;
         }
