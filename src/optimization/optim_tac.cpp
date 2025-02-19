@@ -2104,31 +2104,41 @@ static void propagate_copies_unary_instructions(TacUnary* node, size_t instructi
     }
 }
 
-// TODO
 static void propagate_copies_binary_instructions(TacBinary* node, size_t instruction_index) {
     bool is_src1 = node->src1->type() == AST_T::TacVariable_t;
     bool is_src2 = node->src2->type() == AST_T::TacVariable_t;
     if (is_src1 || is_src2) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_src1 && is_same_value(node->src1.get(), copy->dst.get())) {
-                    node->src1 = copy->src;
-                    context->is_fixed_point = false;
-                    is_src1 = false;
-                    if (!is_src2) {
-                        break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
                     }
-                }
-                if (is_src2 && is_same_value(node->src2.get(), copy->dst.get())) {
-                    node->src2 = copy->src;
-                    context->is_fixed_point = false;
-                    is_src2 = false;
-                    if (!is_src1) {
-                        break;
+                    else if (is_src1 && is_same_value(node->src1.get(), copy->dst.get())) {
+                        node->src1 = copy->src;
+                        context->is_fixed_point = false;
+                        is_src1 = false;
+                        if (!is_src2) {
+                            return;
+                        }
+                    }
+                    if (is_src2 && is_same_value(node->src2.get(), copy->dst.get())) {
+                        node->src2 = copy->src;
+                        context->is_fixed_point = false;
+                        is_src2 = false;
+                        if (!is_src1) {
+                            return;
+                        }
                     }
                 }
             }
@@ -2136,29 +2146,39 @@ static void propagate_copies_binary_instructions(TacBinary* node, size_t instruc
     }
 }
 
-// TODO
 static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction_index, size_t block_id) {
     if (node->dst->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-            TacCopy* copy = get_dfa_bak_copy_instruction(i);
-            if (copy->dst->type() != AST_T::TacVariable_t) {
-                RAISE_INTERNAL_ERROR;
-            }
-            else if (context->data_flow_analysis->data_index_map[i] == instruction_index
-                     || (is_same_value(node->src.get(), copy->dst.get())
-                         && is_same_value(node->dst.get(), copy->src.get()))) {
-                set_dfa_bak_copy_instruction(node, instruction_index);
-                control_flow_graph_remove_block_instruction(instruction_index, block_id);
-                break;
-            }
-            else if (is_same_value(node->src.get(), copy->dst.get())) {
-                set_dfa_bak_copy_instruction(node, instruction_index);
-                node->src = copy->src;
-                context->is_fixed_point = false;
-                break;
+    size_t i = 0;
+    for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                if (copy->dst->type() != AST_T::TacVariable_t) {
+                    RAISE_INTERNAL_ERROR;
+                }
+                else if (context->data_flow_analysis->data_index_map[i] == instruction_index
+                         || (is_same_value(node->src.get(), copy->dst.get())
+                             && is_same_value(node->dst.get(), copy->src.get()))) {
+                    set_dfa_bak_copy_instruction(node, instruction_index);
+                    control_flow_graph_remove_block_instruction(instruction_index, block_id);
+                    return;
+                }
+                else if (is_same_value(node->src.get(), copy->dst.get())) {
+                    set_dfa_bak_copy_instruction(node, instruction_index);
+                    node->src = copy->src;
+                    context->is_fixed_point = false;
+                    return;
+                }
             }
         }
     }
@@ -2222,31 +2242,41 @@ static void propagate_copies_store_instructions(TacStore* node, size_t instructi
     }
 }
 
-// TODO
 static void propagate_copies_add_ptr_instructions(TacAddPtr* node, size_t instruction_index) {
     bool is_src_ptr = node->src_ptr->type() == AST_T::TacVariable_t;
     bool is_index = node->index->type() == AST_T::TacVariable_t;
     if (is_src_ptr || is_index) {
-        for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TacCopy* copy = get_dfa_bak_copy_instruction(i);
-                if (copy->dst->type() != AST_T::TacVariable_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
-                else if (is_src_ptr && is_same_value(node->src_ptr.get(), copy->dst.get())) {
-                    node->src_ptr = copy->src;
-                    context->is_fixed_point = false;
-                    is_src_ptr = false;
-                    if (!is_index) {
-                        break;
+        size_t i = 0;
+        for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+            if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > context->data_flow_analysis->set_size) {
+                mask_set_size = context->data_flow_analysis->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instruction(i);
+                    if (copy->dst->type() != AST_T::TacVariable_t) {
+                        RAISE_INTERNAL_ERROR;
                     }
-                }
-                if (is_index && is_same_value(node->index.get(), copy->dst.get())) {
-                    node->index = copy->src;
-                    context->is_fixed_point = false;
-                    is_index = false;
-                    if (!is_src_ptr) {
-                        break;
+                    else if (is_src_ptr && is_same_value(node->src_ptr.get(), copy->dst.get())) {
+                        node->src_ptr = copy->src;
+                        context->is_fixed_point = false;
+                        is_src_ptr = false;
+                        if (!is_index) {
+                            return;
+                        }
+                    }
+                    if (is_index && is_same_value(node->index.get(), copy->dst.get())) {
+                        node->index = copy->src;
+                        context->is_fixed_point = false;
+                        is_index = false;
+                        if (!is_src_ptr) {
+                            return;
+                        }
                     }
                 }
             }
