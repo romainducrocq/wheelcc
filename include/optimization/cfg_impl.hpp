@@ -1086,11 +1086,11 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        uint64_t mask_true_le64 = MASK_TRUE;
+        uint64_t mask_true_back = MASK_TRUE;
         i = context->data_flow_analysis->set_size - (context->data_flow_analysis->mask_size - 1) * 64;
         if (i > 0) {
             for (; i < 64; ++i) {
-                mask_set(mask_true_le64, i, false);
+                mask_set(mask_true_back, i, false);
             }
         }
 
@@ -1111,14 +1111,14 @@ static bool data_flow_analysis_initialize(
                     context->data_flow_analysis->blocks_mask_sets[i] = MASK_TRUE;
                     i++;
                 }
-                context->data_flow_analysis->blocks_mask_sets[i] = mask_true_le64;
+                context->data_flow_analysis->blocks_mask_sets[i] = mask_true_back;
                 i++;
             }
             while (i < blocks_mask_sets_size);
         }
         else {
             std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
-                context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, mask_true_le64);
+                context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, mask_true_back);
         }
     }
     else {

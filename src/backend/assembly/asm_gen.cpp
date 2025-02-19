@@ -706,7 +706,7 @@ static void generate_sign_extend_instructions(TacSignExtend* node) {
 
 static void generate_imm_byte_truncate_instructions(AsmImm* node) {
     if (!node->is_byte) {
-        node->value = std::to_string(string_to_uint64(std::move(node->value)) % 256l); // TODO 256ul
+        node->value = std::to_string(string_to_uint64(std::move(node->value)) % 256ul);
     }
 }
 
