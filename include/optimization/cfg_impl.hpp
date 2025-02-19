@@ -365,10 +365,6 @@ static void control_flow_graph_initialize() {
 
 // Data flow analysis
 
-#if __OPTIM_LEVEL__ == 1
-#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
-#endif
-
 bool mask_get(uint64_t mask, size_t bit) {
     if (bit > 63) {
         bit %= 64;
@@ -397,15 +393,19 @@ void mask_set(uint64_t& mask, size_t bit, bool value) {
 #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
     context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->mask_size + (Y)
 
-#define GET_DFA_BLOCK_SET_MASK(X, Y) context->data_flow_analysis->blocks_flat_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
+#define GET_DFA_BLOCK_SET_MASK(X, Y) context->data_flow_analysis->blocks_mask_sets[GET_DFA_BLOCK_SET_INDEX(X, Y)]
 #define GET_DFA_INSTRUCTION_SET_MASK(X, Y) \
-    context->data_flow_analysis->instructions_flat_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
+    context->data_flow_analysis->instructions_mask_sets[GET_DFA_INSTRUCTION_SET_INDEX(X, Y)]
 
 #define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y)
 #define GET_DFA_INSTRUCTION_SET_AT(X, Y) mask_get(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y)
 
 #define SET_DFA_BLOCK_SET_AT(X, Y, Z) mask_set(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 #define SET_DFA_INSTRUCTION_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
+
+#if __OPTIM_LEVEL__ == 1
+#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
+#endif
 
 static bool is_transfer_instruction(size_t instruction_index,
 #if __OPTIM_LEVEL__ == 1
@@ -826,8 +826,8 @@ static bool data_flow_analysis_initialize(
     std::fill(context->control_flow_graph->reaching_code.begin(),
         context->control_flow_graph->reaching_code.begin() + context->control_flow_graph->blocks.size(), false);
 
-    size_t blocks_flat_sets_size = 0;
-    size_t instructions_flat_sets_size = 0;
+    size_t blocks_mask_sets_size = 0;
+    size_t instructions_mask_sets_size = 0;
 #if __OPTIM_LEVEL__ == 1
     bool is_copy_propagation = !is_dead_store_elimination;
     if (is_dead_store_elimination) {
@@ -1023,14 +1023,14 @@ static bool data_flow_analysis_initialize(
                         default:
                             goto Lcontinue;
                     }
-                    context->data_flow_analysis->instruction_index_map[instruction_index] = instructions_flat_sets_size;
-                    instructions_flat_sets_size++;
+                    context->data_flow_analysis->instruction_index_map[instruction_index] = instructions_mask_sets_size;
+                    instructions_mask_sets_size++;
                 Lcontinue:;
                 }
             }
             if (GET_CFG_BLOCK(block_id).size > 0) {
-                context->data_flow_analysis->block_index_map[block_id] = blocks_flat_sets_size;
-                blocks_flat_sets_size++;
+                context->data_flow_analysis->block_index_map[block_id] = blocks_mask_sets_size;
+                blocks_mask_sets_size++;
             }
         }
         else {
@@ -1042,17 +1042,17 @@ static bool data_flow_analysis_initialize(
     }
 
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
-        instructions_flat_sets_size;
-    instructions_flat_sets_size++;
+        instructions_mask_sets_size;
+    instructions_mask_sets_size++;
     context->data_flow_analysis->mask_size = (context->data_flow_analysis->set_size + 63) / 64;
-    blocks_flat_sets_size *= context->data_flow_analysis->mask_size;
-    instructions_flat_sets_size *= context->data_flow_analysis->mask_size;
+    blocks_mask_sets_size *= context->data_flow_analysis->mask_size;
+    instructions_mask_sets_size *= context->data_flow_analysis->mask_size;
 
-    if (context->data_flow_analysis->blocks_flat_sets.size() < blocks_flat_sets_size) {
-        context->data_flow_analysis->blocks_flat_sets.resize(blocks_flat_sets_size);
+    if (context->data_flow_analysis->blocks_mask_sets.size() < blocks_mask_sets_size) {
+        context->data_flow_analysis->blocks_mask_sets.resize(blocks_mask_sets_size);
     }
-    if (context->data_flow_analysis->instructions_flat_sets.size() < instructions_flat_sets_size) {
-        context->data_flow_analysis->instructions_flat_sets.resize(instructions_flat_sets_size);
+    if (context->data_flow_analysis->instructions_mask_sets.size() < instructions_mask_sets_size) {
+        context->data_flow_analysis->instructions_mask_sets.resize(instructions_mask_sets_size);
     }
 
 #if __OPTIM_LEVEL__ == 1
@@ -1089,17 +1089,17 @@ static bool data_flow_analysis_initialize(
             i = 0;
             do {
                 for (size_t j = context->data_flow_analysis->mask_size - 1; j-- > 0;) {
-                    context->data_flow_analysis->blocks_flat_sets[i] = MASK_TRUE;
+                    context->data_flow_analysis->blocks_mask_sets[i] = MASK_TRUE;
                     i++;
                 }
-                context->data_flow_analysis->blocks_flat_sets[i] = mask_true_le64;
+                context->data_flow_analysis->blocks_mask_sets[i] = mask_true_le64;
                 i++;
             }
-            while (i < blocks_flat_sets_size);
+            while (i < blocks_mask_sets_size);
         }
         else {
-            std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
-                context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, mask_true_le64);
+            std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
+                context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, mask_true_le64);
         }
     }
     else {
@@ -1122,8 +1122,8 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        std::fill(context->data_flow_analysis->blocks_flat_sets.begin(),
-            context->data_flow_analysis->blocks_flat_sets.begin() + blocks_flat_sets_size, MASK_FALSE);
+        std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
+            context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, MASK_FALSE);
 #if __OPTIM_LEVEL__ == 1
     }
 #endif
@@ -1134,11 +1134,11 @@ static bool data_flow_analysis_initialize(
 // // TODO rm
 // #include <stdio.h>
 // static void print_data_flow_analysis(bool is_dead_store_elimination) {
-//     size_t blocks_flat_sets_size = 0;
-//     size_t instructions_flat_sets_size = 0;
+//     size_t blocks_mask_sets_size = 0;
+//     size_t instructions_mask_sets_size = 0;
 //     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
 //         if (GET_CFG_BLOCK(block_id).size > 0) {
-//             blocks_flat_sets_size++;
+//             blocks_mask_sets_size++;
 //             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
 //                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
 //                 if (GET_INSTRUCTION(instruction_index)) {
@@ -1160,13 +1160,13 @@ static bool data_flow_analysis_initialize(
 //                         case AST_T::TacAddPtr_t:
 //                         case AST_T::TacCopyToOffset_t:
 //                         case AST_T::TacCopyFromOffset_t:
-//                             instructions_flat_sets_size++;
+//                             instructions_mask_sets_size++;
 //                             break;
 //                         case AST_T::TacReturn_t:
 //                         case AST_T::TacJumpIfZero_t:
 //                         case AST_T::TacJumpIfNotZero_t: {
 //                             if (is_dead_store_elimination) {
-//                                 instructions_flat_sets_size++;
+//                                 instructions_mask_sets_size++;
 //                             }
 //                             break;
 //                         }
@@ -1179,23 +1179,28 @@ static bool data_flow_analysis_initialize(
 //     }
 
 //     printf("\n\n----------------------------------------\nDataFlowAnalysis:\n");
-//     printf("blocks_flat_sets_size: (%zu, %zu)\n", blocks_flat_sets_size, context->data_flow_analysis->set_size);
-//     for (size_t i = 0; i < blocks_flat_sets_size; ++i) {
+//     printf("blocks_mask_sets_size: (%zu, %zu)\n", blocks_mask_sets_size, context->data_flow_analysis->set_size);
+//     for (size_t i = 0; i < blocks_mask_sets_size; ++i) {
 //         for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
-//             printf("%i ",
-//                 context->data_flow_analysis->blocks_flat_sets[i * context->data_flow_analysis->set_size + j] ? 1 :
-//                 0);
+//             printf("%i ", mask_get(context->data_flow_analysis
+//                                        ->blocks_mask_sets[i * context->data_flow_analysis->mask_size +
+//                                        MASK_OFFSET(j)],
+//                               j) ?
+//                               1 :
+//                               0);
 //         }
 //         printf("\n");
 //     }
-//     printf("instructions_flat_sets_size: (%zu, %zu)\n", instructions_flat_sets_size,
+//     printf("instructions_mask_sets_size: (%zu, %zu)\n", instructions_mask_sets_size,
 //         context->data_flow_analysis->set_size);
-//     for (size_t i = 0; i < instructions_flat_sets_size; ++i) {
+//     for (size_t i = 0; i < instructions_mask_sets_size; ++i) {
 //         for (size_t j = 0; j < context->data_flow_analysis->set_size; ++j) {
 //             printf("%i ",
-//                 context->data_flow_analysis->instructions_flat_sets[i * context->data_flow_analysis->set_size + j] ?
-//                 1 :
-//                                                                                                                      0);
+//                 mask_get(context->data_flow_analysis
+//                              ->instructions_mask_sets[i * context->data_flow_analysis->mask_size + MASK_OFFSET(j)],
+//                     j) ?
+//                     1 :
+//                     0);
 //         }
 //         printf("\n");
 //     }

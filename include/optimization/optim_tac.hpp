@@ -45,13 +45,17 @@ struct DataFlowAnalysis {
     size_t mask_size;
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
-    std::vector<size_t> data_index_map;
     std::vector<size_t> block_index_map;
     std::vector<size_t> instruction_index_map;
-    std::vector<uint64_t> blocks_flat_sets;       // TODO blocks_mask_sets
-    std::vector<uint64_t> instructions_flat_sets; // TODO instructions_mask_sets
-    std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
+    std::vector<uint64_t> blocks_mask_sets;
+    std::vector<uint64_t> instructions_mask_sets;
     std::unordered_set<TIdentifier> alias_set;
+    // Copy propagation
+    std::vector<size_t> data_index_map;
+    std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
+    // Dead store elimination
+    size_t static_index;
+    size_t addressed_index;
 };
 
 struct OptimTacContext {
