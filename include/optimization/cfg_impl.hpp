@@ -1133,22 +1133,12 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        // TODO rm
-        if (context->data_flow_analysis->data_index_map.size() < context->data_flow_analysis->set_size) {
-            context->data_flow_analysis->data_index_map.resize(context->data_flow_analysis->set_size);
-        }
-        //
-
         for (i = 0; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i) = MASK_FALSE;
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i) = MASK_FALSE;
         }
 
         for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
-            // TOOD rm
-            context->data_flow_analysis->data_index_map[name_id.second] =
-                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t;
-            //
             if (
 #if __OPTIM_LEVEL__ == 1
                 frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t
