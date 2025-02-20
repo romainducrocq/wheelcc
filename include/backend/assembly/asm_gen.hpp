@@ -26,6 +26,7 @@ struct AsmGenContext {
 
     std::array<REGISTER_KIND, 6> ARG_REGISTERS;
     std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS;
+    std::unordered_map<TIdentifier, TIdentifier> double_constant_table;
     std::unordered_map<TIdentifier, std::vector<STRUCT_8B_CLS>> struct_8b_cls_map;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
     std::vector<std::unique_ptr<AsmTopLevel>>* p_static_constant_top_levels;

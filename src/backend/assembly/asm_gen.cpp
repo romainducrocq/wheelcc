@@ -71,19 +71,19 @@ static void generate_double_static_constant_top_level(
     const TIdentifier& identifier, TDouble value, TULong binary, TInt byte);
 
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
-    TIdentifier static_constant_label;
+    TIdentifier double_constant_label;
     {
-        TIdentifier static_constant_hash = std::to_string(binary);
-        if (frontend->static_constant_table.find(static_constant_hash) != frontend->static_constant_table.end()) {
-            static_constant_label = frontend->static_constant_table[static_constant_hash];
+        TIdentifier double_constant_hash = std::to_string(binary);
+        if (context->double_constant_table.find(double_constant_hash) != context->double_constant_table.end()) {
+            double_constant_label = context->double_constant_table[double_constant_hash];
         }
         else {
-            static_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
-            frontend->static_constant_table[static_constant_hash] = static_constant_label;
-            generate_double_static_constant_top_level(static_constant_label, value, binary, byte);
+            double_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
+            context->double_constant_table[double_constant_hash] = double_constant_label;
+            generate_double_static_constant_top_level(double_constant_label, value, binary, byte);
         }
     }
-    return std::make_shared<AsmData>(std::move(static_constant_label), 0l);
+    return std::make_shared<AsmData>(std::move(double_constant_label), 0l);
 }
 
 static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* node) {
