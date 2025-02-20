@@ -15,6 +15,8 @@
 
 // String to type
 
+size_t string_to_hash(const std::string& string) { return std::hash<std::string> {}(string); }
+
 intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     std::vector<char> buffer(s_int.begin(), s_int.end());
     buffer.push_back('\0');

@@ -115,6 +115,8 @@ static void compile() {
     }
 #endif
 
+    INIT_IDENTIFIER_CONTEXT;
+
     verbose("-- Parsing ... ", false);
     std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
     verbose("OK", true);
@@ -197,6 +199,8 @@ static void compile() {
 #endif
 
     FREE_BACK_END_CONTEXT;
+
+    FREE_IDENTIFIER_CONTEXT;
 
     FREE_UTIL_CONTEXT;
 }
