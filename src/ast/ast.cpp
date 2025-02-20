@@ -1,3 +1,4 @@
+#include <memory>
 #include <vector>
 
 #include "ast/ast.hpp"
@@ -33,3 +34,7 @@ CConstChar::CConstChar(TChar value) : value(value) {}
 CConstUChar::CConstUChar(TUChar value) : value(value) {}
 
 CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value)) {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::unique_ptr<IdentifierContext> identifiers;

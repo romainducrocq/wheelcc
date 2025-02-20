@@ -2,7 +2,9 @@
 #define _AST_AST_HPP
 
 #include <inttypes.h>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,5 +408,15 @@ struct CStringLiteral : Ast {
 struct Dummy : Ast {
 };
 */
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct IdentifierContext {
+    std::unordered_map<TIdentifier, std::string> hash_table;
+};
+
+extern std::unique_ptr<IdentifierContext> identifiers;
+#define INIT_IDENTIFIER_CONTEXT identifiers = std::make_unique<IdentifierContext>()
+#define FREE_IDENTIFIER_CONTEXT identifiers.reset()
 
 #endif
