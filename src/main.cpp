@@ -18,7 +18,7 @@
 #include "ast/interm_ast.hpp"
 
 #include "frontend/parser/errors.hpp"
-// #include "frontend/parser/lexer.hpp"
+#include "frontend/parser/lexer.hpp"
 // #include "frontend/parser/parser.hpp"
 
 // #include "frontend/intermediate/semantic.hpp"
@@ -49,11 +49,11 @@ static void verbose(const std::string& out, bool end) {
 }
 
 #ifndef __NDEBUG__
-// static void debug_tokens(const std::vector<Token>& tokens) {
-//     if (context->is_verbose) {
-//         pretty_print_tokens(tokens);
-//     }
-// }
+static void debug_tokens(const std::vector<Token>& tokens) {
+    if (context->is_verbose) {
+        //         pretty_print_tokens(tokens);
+    }
+}
 
 static void debug_ast(Ast* node, const std::string& name) {
     if (context->is_verbose) {
@@ -105,15 +105,15 @@ static void compile() {
 
     INIT_ERRORS_CONTEXT;
 
-    //     verbose("-- Lexing ... ", false);
-    //     std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename, std::move(context->includedirs));
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 255) {
-    //         debug_tokens(*tokens);
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Lexing ... ", false);
+    std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename, std::move(context->includedirs));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 255) {
+        debug_tokens(*tokens);
+        return;
+    }
+#endif
 
     INIT_IDENTIFIER_CONTEXT;
 
