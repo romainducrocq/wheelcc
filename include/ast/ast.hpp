@@ -314,7 +314,7 @@ struct Ast {
     virtual AST_T type() = 0;
 };
 
-using TIdentifier = std::string;
+using TIdentifier = size_t;
 using TChar = int8_t;
 using TInt = int32_t;
 using TLong = int64_t;

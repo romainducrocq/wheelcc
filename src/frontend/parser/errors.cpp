@@ -172,9 +172,11 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
     }
 }
 
-std::string get_name_hr(const TIdentifier& name) { return name.substr(0, name.find('.')); }
+std::string get_name_hr(TIdentifier name) {
+    return identifiers->hash_table[name].substr(0, identifiers->hash_table[name].find('.'));
+}
 
-std::string get_struct_name_hr(const TIdentifier& name, bool is_union) {
+std::string get_struct_name_hr(TIdentifier name, bool is_union) {
     std::string type_hr = is_union ? "union " : "struct ";
     type_hr += get_name_hr(name);
     return type_hr;
