@@ -23,7 +23,7 @@ set(BIN_DIR "${PROJECT_SOURCE_DIR}/../bin/")
 
 list(APPEND SOURCE_FILES "${SOURCE_DIR}/util/throw.cpp")
 list(APPEND SOURCE_FILES "${SOURCE_DIR}/util/str2t.cpp")
-# list(APPEND SOURCE_FILES "${SOURCE_DIR}/util/pprint.cpp")
+list(APPEND SOURCE_FILES "${SOURCE_DIR}/util/pprint.cpp")
 list(APPEND SOURCE_FILES "${SOURCE_DIR}/util/util.cpp")
 list(APPEND SOURCE_FILES "${SOURCE_DIR}/util/fileio.cpp")
 list(APPEND SOURCE_FILES "${SOURCE_DIR}/backend/emitter/gas_code.cpp")

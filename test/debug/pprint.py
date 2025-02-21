@@ -16,7 +16,7 @@ class AstNode:
 
 def to_string(field_type, field_name):
     if field_type in ["TIdentifier"]:
-        return field_name
+        return f"identifiers->hash_table[{field_name}]"
     else:
         return f"std::to_string({field_name})"
 
@@ -46,7 +46,7 @@ def print_ast_case(node):
         elif child[0] == "(":
             print(f"            field(\"Dict[\" + std::to_string(p_node->{child[1:]}.size()) + \"]\", \"\", t+1);")
             print(f"            for(const auto& item: p_node->{child[1:]}) {{")
-            print(f"                field(\"[\" + item.first + \"]\", \"\", t+2);")
+            print(f"                field(\"[\" + identifiers->hash_table[item.first] + \"]\", \"\", t+2);")
             print(f"                print_ast(item.second.get(), t+2);")
             print(f"            }}")
         else:
@@ -130,7 +130,7 @@ void pretty_print_symbol_table() {
     header_string("Symbol Table");
     std::cout << "\nDict(" << std::to_string(frontend->symbol_table.size()) << "):";
     for(const auto& symbol: frontend->symbol_table) {
-        field("[" + symbol.first + "]", "", 2);
+        field("[" + identifiers->hash_table[symbol.first] + "]", "", 2);
         print_ast(symbol.second.get(), 2);
     }
     std::cout << std::endl;
@@ -140,7 +140,7 @@ void pretty_print_static_constant_table() {
     header_string("Static Constant Table");
     std::cout << "\nDict(" << std::to_string(frontend->static_constant_table.size()) << "):";
     for(const auto& static_constant: frontend->static_constant_table) {
-        field("[" + static_constant.first + "]", "", 2);
+        field("[" + identifiers->hash_table[static_constant.first] + "]", "", 2);
         if(frontend->symbol_table.find(static_constant.second) != frontend->symbol_table.end() &&
            frontend->symbol_table[static_constant.second]->attrs->type() == AST_T::ConstantAttr_t) {
             ConstantAttr* constant_attr = static_cast<ConstantAttr*>(frontend->symbol_table[static_constant.second]->attrs.get());
@@ -196,7 +196,7 @@ void pretty_print_static_constant_table() {
             if(backend_obj->is_constant &&
                backend_obj->assembly_type->type() == AST_T::BackendDouble_t) {
                 double decimal;
-                uint64_t binary = string_to_uint64(static_constant.first);
+                uint64_t binary = string_to_uint64(identifiers->hash_table[static_constant.first]);
                 std::memcpy(&decimal, &binary, sizeof(double));
                 std::cout << "\n    double: " << std::to_string(decimal);
                 continue;
@@ -211,7 +211,7 @@ void pretty_print_struct_typedef_table() {
     header_string("Structure Typedef Table");
     std::cout << "\nDict(" << std::to_string(frontend->struct_typedef_table.size()) << "):";
     for(const auto& struct_typedef: frontend->struct_typedef_table) {
-        field("[" + struct_typedef.first + "]", "", 2);
+        field("[" + identifiers->hash_table[struct_typedef.first] + "]", "", 2);
         print_ast(struct_typedef.second.get(), 2);
     }
     std::cout << std::endl;
@@ -221,7 +221,7 @@ void pretty_print_backend_symbol_table() {
     header_string("Backend Symbol Table");
     std::cout << "\nDict(" << std::to_string(backend->backend_symbol_table.size()) << "):";
     for(const auto& backend_symbol: backend->backend_symbol_table) {
-        field("[" + backend_symbol.first + "]", "", 2);
+        field("[" + identifiers->hash_table[backend_symbol.first] + "]", "", 2);
         print_ast(backend_symbol.second.get(), 2);
     }
     std::cout << std::endl;

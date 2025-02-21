@@ -1,5 +1,5 @@
 #ifndef __NDEBUG__
-// #include "util/pprint.hpp"
+#include "util/pprint.hpp"
 #endif
 #include <inttypes.h>
 #include <iostream>
@@ -51,43 +51,43 @@ static void verbose(const std::string& out, bool end) {
 #ifndef __NDEBUG__
 static void debug_tokens(const std::vector<Token>& tokens) {
     if (context->is_verbose) {
-        //         pretty_print_tokens(tokens);
+        pretty_print_tokens(tokens);
     }
 }
 
 static void debug_ast(Ast* node, const std::string& name) {
     if (context->is_verbose) {
-        // pretty_print_ast(node, name);
+        pretty_print_ast(node, name);
     }
 }
 
 static void debug_symbol_table() {
     if (context->is_verbose) {
-        // pretty_print_symbol_table();
+        pretty_print_symbol_table();
     }
 }
 
 static void debug_static_constant_table() {
     if (context->is_verbose) {
-        // pretty_print_static_constant_table();
+        pretty_print_static_constant_table();
     }
 }
 
 static void debug_struct_typedef_table() {
     if (context->is_verbose) {
-        // pretty_print_struct_typedef_table();
+        pretty_print_struct_typedef_table();
     }
 }
 
 static void debug_backend_symbol_table() {
     if (context->is_verbose) {
-        // pretty_print_backend_symbol_table();
+        pretty_print_backend_symbol_table();
     }
 }
 
 static void debug_asm_code() {
     if (context->is_verbose) {
-        // pretty_print_asm_code();
+        pretty_print_asm_code();
     }
 }
 #endif
