@@ -16,10 +16,10 @@
 // Gnu assembler code emission
 
 // identifier -> $ identifier
-static const std::string& emit_identifier(const TIdentifier& identifier) { return identifier; }
+static const std::string& emit_identifier(TIdentifier identifier) { return identifiers->hash_table[identifier]; }
 
 // string -> $ string
-static const std::string& emit_string(const TIdentifier& string_constant) { return string_constant; }
+static const std::string& emit_string(TIdentifier string_constant) { return identifiers->hash_table[string_constant]; }
 
 // char -> $ char
 static std::string emit_char(TChar value) { return std::to_string(value); }

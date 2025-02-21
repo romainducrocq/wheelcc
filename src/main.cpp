@@ -28,7 +28,7 @@
 // #include "backend/assembly/stack_fix.hpp"
 // #include "backend/assembly/symt_cvt.hpp"
 
-// #include "backend/emitter/gas_code.hpp"
+#include "backend/emitter/gas_code.hpp"
 
 // #include "optimization/optim_tac.hpp"
 // #include "optimization/reg_alloc.hpp"
