@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "util/str2t.hpp"
+
 #include "tokens.hpp" // frontend
 
 #ifdef __WITH_CTRE__
@@ -48,7 +50,7 @@ struct LexerContext {
     std::vector<Token>* p_tokens;
     std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;
-    std::unordered_set<std::string> filename_include_set;
+    std::unordered_set<hash_t> filename_include_set;
     size_t total_line_number;
 };
 
