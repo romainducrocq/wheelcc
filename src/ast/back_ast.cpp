@@ -93,18 +93,17 @@ AST_T AsmStaticVariable::type() { return AST_T::AsmStaticVariable_t; }
 AST_T AsmStaticConstant::type() { return AST_T::AsmStaticConstant_t; }
 AST_T AsmProgram::type() { return AST_T::AsmProgram_t; }
 
-AsmImm::AsmImm(bool is_byte, bool is_quad, TIdentifier value) :
-    is_byte(is_byte), is_quad(is_quad), value(std::move(value)) {}
+AsmImm::AsmImm(bool is_byte, bool is_quad, TIdentifier value) : is_byte(is_byte), is_quad(is_quad), value(value) {}
 
 AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg) : reg(std::move(reg)) {}
 
-AsmPseudo::AsmPseudo(TIdentifier name) : name(std::move(name)) {}
+AsmPseudo::AsmPseudo(TIdentifier name) : name(name) {}
 
 AsmMemory::AsmMemory(TLong value, std::unique_ptr<AsmReg> reg) : value(value), reg(std::move(reg)) {}
 
-AsmData::AsmData(TIdentifier name, TLong offset) : name(std::move(name)), offset(offset) {}
+AsmData::AsmData(TIdentifier name, TLong offset) : name(name), offset(offset) {}
 
-AsmPseudoMem::AsmPseudoMem(TIdentifier name, TLong offset) : name(std::move(name)), offset(offset) {}
+AsmPseudoMem::AsmPseudoMem(TIdentifier name, TLong offset) : name(name), offset(offset) {}
 
 AsmIndexed::AsmIndexed(TLong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index) :
     scale(scale), reg_base(std::move(reg_base)), reg_index(std::move(reg_index)) {}
@@ -160,32 +159,32 @@ AsmDiv::AsmDiv(std::shared_ptr<AssemblyType> assembly_type, std::shared_ptr<AsmO
 
 AsmCdq::AsmCdq(std::shared_ptr<AssemblyType> assembly_type) : assembly_type(std::move(assembly_type)) {}
 
-AsmJmp::AsmJmp(TIdentifier target) : target(std::move(target)) {}
+AsmJmp::AsmJmp(TIdentifier target) : target(target) {}
 
 AsmJmpCC::AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode> cond_code) :
-    target(std::move(target)), cond_code(std::move(cond_code)) {}
+    target(target), cond_code(std::move(cond_code)) {}
 
 AsmSetCC::AsmSetCC(std::unique_ptr<AsmCondCode> cond_code, std::shared_ptr<AsmOperand> dst) :
     cond_code(std::move(cond_code)), dst(std::move(dst)) {}
 
-AsmLabel::AsmLabel(TIdentifier name) : name(std::move(name)) {}
+AsmLabel::AsmLabel(TIdentifier name) : name(name) {}
 
 AsmPush::AsmPush(std::shared_ptr<AsmOperand> src) : src(std::move(src)) {}
 
-AsmCall::AsmCall(TIdentifier name) : name(std::move(name)) {}
+AsmCall::AsmCall(TIdentifier name) : name(name) {}
 
 AsmFunction::AsmFunction(TIdentifier name, bool is_global, bool is_return_memory,
     std::vector<std::unique_ptr<AsmInstruction>> instructions) :
-    name(std::move(name)),
+    name(name),
     is_global(is_global), is_return_memory(is_return_memory), instructions(std::move(instructions)) {}
 
 AsmStaticVariable::AsmStaticVariable(
     TIdentifier name, TInt alignment, bool is_global, std::vector<std::shared_ptr<StaticInit>> static_inits) :
-    name(std::move(name)),
+    name(name),
     alignment(alignment), is_global(is_global), static_inits(std::move(static_inits)) {}
 
 AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> static_init) :
-    name(std::move(name)), alignment(alignment), static_init(std::move(static_init)) {}
+    name(name), alignment(alignment), static_init(std::move(static_init)) {}
 
 AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels) :

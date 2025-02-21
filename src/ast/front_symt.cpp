@@ -54,7 +54,7 @@ Pointer::Pointer(std::shared_ptr<Type> ref_type) : ref_type(std::move(ref_type))
 
 Array::Array(TLong size, std::shared_ptr<Type> elem_type) : size(size), elem_type(std::move(elem_type)) {}
 
-Structure::Structure(TIdentifier tag, bool is_union) : tag(std::move(tag)), is_union(is_union) {}
+Structure::Structure(TIdentifier tag, bool is_union) : tag(tag), is_union(is_union) {}
 
 IntInit::IntInit(TInt value) : value(value) {}
 
@@ -73,9 +73,9 @@ DoubleInit::DoubleInit(TDouble value, TULong binary) : value(value), binary(bina
 ZeroInit::ZeroInit(TLong byte) : byte(byte) {}
 
 StringInit::StringInit(bool is_null_terminated, TIdentifier string_constant, std::shared_ptr<CStringLiteral> literal) :
-    is_null_terminated(is_null_terminated), string_constant(std::move(string_constant)), literal(std::move(literal)) {}
+    is_null_terminated(is_null_terminated), string_constant(string_constant), literal(std::move(literal)) {}
 
-PointerInit::PointerInit(TIdentifier name) : name(std::move(name)) {}
+PointerInit::PointerInit(TIdentifier name) : name(name) {}
 
 Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits) : static_inits(std::move(static_inits)) {}
 
