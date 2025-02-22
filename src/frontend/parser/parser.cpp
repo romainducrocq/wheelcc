@@ -92,9 +92,7 @@ static const Token& peek_next_i(size_t i) {
 static TIdentifier parse_identifier(size_t i) {
     const Token& token = pop_next_i(i);
     TIdentifier identifier = string_to_hash(token.token);
-    if (identifiers->hash_table.find(identifier) == identifiers->hash_table.end()) {
-        identifiers->hash_table[identifier] = std::move(token.token);
-    }
+    identifiers->hash_table[identifier] = std::move(token.token);
     return identifier;
 }
 
