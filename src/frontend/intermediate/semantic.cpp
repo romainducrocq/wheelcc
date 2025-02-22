@@ -1810,13 +1810,10 @@ static void checktype_string_initializer_array_static_init(CString* node, Array*
     TLong byte = static_arr_type->size - static_cast<TLong>(node->literal->value.size()) - 1l;
     {
         bool is_null_terminated = byte >= 0l;
-        TIdentifier string_constant_hash;
         // TODO clean
-        {
-            std::string string_constant = string_literal_to_string_constant(node->literal->value);
-            string_constant_hash = string_to_hash(string_constant);
-            identifiers->hash_table[string_constant_hash] = std::move(string_constant);
-        }
+        std::string string_constant = string_literal_to_string_constant(node->literal->value);
+        TIdentifier string_constant_hash = string_to_hash(string_constant);
+        identifiers->hash_table[string_constant_hash] = std::move(string_constant);
         std::shared_ptr<CStringLiteral> literal = node->literal;
         push_static_init(std::make_shared<StringInit>(
             std::move(is_null_terminated), std::move(string_constant_hash), std::move(literal)));
@@ -2208,7 +2205,7 @@ static void annotate_case_jump(CCase* node) {
             GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::case_outside_of_switch), node->value->line);
     }
     std::string target = std::to_string(context->p_switch_statement->cases.size());
-    target += context->p_switch_statement->target;
+    target += identifiers->hash_table[context->p_switch_statement->target];
     node->target = string_to_hash(target);
     identifiers->hash_table[node->target] = std::move(target);
 }
