@@ -19,7 +19,7 @@
 
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
-// #include "frontend/parser/parser.hpp"
+#include "frontend/parser/parser.hpp"
 
 // #include "frontend/intermediate/semantic.hpp"
 // #include "frontend/intermediate/tac_repr.hpp"
@@ -117,15 +117,15 @@ static void compile() {
 
     INIT_IDENTIFIER_CONTEXT;
 
-    //     verbose("-- Parsing ... ", false);
-    //     std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 254) {
-    //         debug_ast(c_ast.get(), "C AST");
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Parsing ... ", false);
+    std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 254) {
+        debug_ast(c_ast.get(), "C AST");
+        return;
+    }
+#endif
 
     INIT_FRONT_END_CONTEXT;
 

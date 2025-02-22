@@ -89,7 +89,14 @@ static const Token& peek_next_i(size_t i) {
 }
 
 // <identifier> ::= ? An identifier token ?
-static void parse_identifier(TIdentifier& identifier, size_t i) { identifier = std::move(pop_next_i(i).token); }
+static TIdentifier parse_identifier(size_t i) {
+    const Token& token = pop_next_i(i);
+    TIdentifier identifier = string_to_hash(token.token);
+    if (identifiers->hash_table.find(identifier) == identifiers->hash_table.end()) {
+        identifiers->hash_table[identifier] = std::move(token.token);
+    }
+    return identifier;
+}
 
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
@@ -456,15 +463,13 @@ static std::unique_ptr<CString> parse_string_literal_factor() {
 
 static std::unique_ptr<CVar> parse_var_factor() {
     size_t line = context->peek_token->line;
-    TIdentifier name;
-    parse_identifier(name, 0);
+    TIdentifier name = parse_identifier(0);
     return std::make_unique<CVar>(std::move(name), std::move(line));
 }
 
 static std::unique_ptr<CFunctionCall> parse_function_call_factor() {
     size_t line = context->peek_token->line;
-    TIdentifier name;
-    parse_identifier(name, 0);
+    TIdentifier name = parse_identifier(0);
     pop_next();
     std::vector<std::unique_ptr<CExp>> args;
     if (peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
@@ -493,8 +498,7 @@ static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
     size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
-    TIdentifier member;
-    parse_identifier(member, 0);
+    TIdentifier member = parse_identifier(0);
     return std::make_unique<CDot>(std::move(member), std::move(structure), std::move(line));
 }
 
@@ -502,8 +506,7 @@ static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer)
     size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
-    TIdentifier member;
-    parse_identifier(member, 0);
+    TIdentifier member = parse_identifier(0);
     return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
 
@@ -923,16 +926,14 @@ static std::unique_ptr<CGoto> parse_goto_statement() {
     size_t line = context->peek_token->line;
     pop_next();
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
-    TIdentifier target;
-    parse_identifier(target, 0);
+    TIdentifier target = parse_identifier(0);
     expect_next_is(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CGoto>(std::move(target), std::move(line));
 }
 
 static std::unique_ptr<CLabel> parse_label_statement() {
     size_t line = context->peek_token->line;
-    TIdentifier target;
-    parse_identifier(target, 0);
+    TIdentifier target = parse_identifier(0);
     pop_next();
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
@@ -1110,8 +1111,8 @@ static std::unique_ptr<CInitDecl> parse_decl_for_init() {
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
     if (declarator.derived_type->type() == AST_T::FunType_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::function_declared_in_for_initial, declarator.name),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::function_declared_in_for_initial,
+                                        identifiers->hash_table[declarator.name]),
             context->next_token->line);
     }
     std::unique_ptr<CVariableDeclaration> init =
@@ -1265,13 +1266,11 @@ Lbreak:
                 case TOKEN_KIND::key_void:
                     return std::make_shared<Void>();
                 case TOKEN_KIND::key_struct: {
-                    TIdentifier tag;
-                    parse_identifier(tag, i);
+                    TIdentifier tag = parse_identifier(i);
                     return std::make_shared<Structure>(std::move(tag), false);
                 }
                 case TOKEN_KIND::key_union: {
-                    TIdentifier tag;
-                    parse_identifier(tag, i);
+                    TIdentifier tag = parse_identifier(i);
                     return std::make_shared<Structure>(std::move(tag), true);
                 }
                 default:
@@ -1410,7 +1409,7 @@ static std::unique_ptr<CDeclarator> parse_declarator();
 static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator);
 
 static void parse_process_ident_declarator(CIdent* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
-    declarator.name = std::move(node->name);
+    declarator.name = node->name;
     declarator.derived_type = std::move(base_type);
 }
 
@@ -1444,12 +1443,12 @@ static void parse_process_fun_declarator(
         if (param_declarator.derived_type->type() == AST_T::FunType_t) {
             RAISE_INTERNAL_ERROR;
         }
-        params.push_back(std::move(param_declarator.name));
+        params.push_back(param_declarator.name);
         param_types.push_back(std::move(param_declarator.derived_type));
     }
     TIdentifier name = static_cast<CIdent*>(node->declarator.get())->name;
     std::shared_ptr<Type> derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
-    declarator.name = std::move(name);
+    declarator.name = name;
     declarator.derived_type = std::move(derived_type);
     declarator.params = std::move(params);
 }
@@ -1474,8 +1473,7 @@ static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> ba
 }
 
 static std::unique_ptr<CIdent> parse_ident_simple_declarator() {
-    TIdentifier name;
-    parse_identifier(name, 0);
+    TIdentifier name = parse_identifier(0);
     return std::make_unique<CIdent>(std::move(name));
 }
 
@@ -1647,14 +1645,14 @@ static std::unique_ptr<CMemberDeclaration> parse_member_declaration() {
         std::unique_ptr<CStorageClass> storage_class = parse_declarator_declaration(declarator);
         if (storage_class) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage, declarator.name,
-                    get_storage_class_hr(storage_class.get())),
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage,
+                    identifiers->hash_table[declarator.name], get_storage_class_hr(storage_class.get())),
                 context->next_token->line);
         }
     }
     if (declarator.derived_type->type() == AST_T::FunType_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::member_declared_as_function, declarator.name),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::member_declared_as_function,
+                                        identifiers->hash_table[declarator.name]),
             context->next_token->line);
     }
     size_t line = context->next_token->line;
@@ -1669,8 +1667,7 @@ static std::unique_ptr<CStructDeclaration> parse_structure_declaration() {
     size_t line = context->peek_token->line;
     bool is_union = pop_next().token_kind == TOKEN_KIND::key_union;
     expect_next_is(peek_next(), TOKEN_KIND::identifier);
-    TIdentifier tag;
-    parse_identifier(tag, 0);
+    TIdentifier tag = parse_identifier(0);
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
     if (pop_next().token_kind == TOKEN_KIND::brace_open) {
         do {
