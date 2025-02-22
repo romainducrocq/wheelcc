@@ -124,7 +124,7 @@ struct FileOpenLine {
 
 struct ErrorsContext {
     size_t line_buffer;
-    std::unordered_map<std::string, size_t> line_buffer_map;
+    std::unordered_map<TIdentifier, size_t> line_buffer_map;
     std::vector<FileOpenLine> file_open_lines;
 };
 

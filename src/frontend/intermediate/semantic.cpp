@@ -37,7 +37,7 @@ static bool is_array_same_type(Array* arr_type_1, Array* arr_type_2) {
 }
 
 static bool is_structure_same_type(Structure* struct_type_1, Structure* struct_type_2) {
-    return struct_type_1->tag.compare(struct_type_2->tag) == 0;
+    return struct_type_1->tag == struct_type_2->tag;
 }
 
 static bool is_same_type(Type* type_1, Type* type_2) {
@@ -1770,14 +1770,16 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
             node->line);
     }
 
+    // TODO clean
     TIdentifier static_constant_label;
     {
-        TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
-        TIdentifier static_constant_hash = std::to_string(std::hash<std::string> {}(string_constant));
+        std::string string_constant = string_literal_to_string_constant(node->literal->value);
+        TIdentifier static_constant_hash = string_to_hash(string_constant);
         if (frontend->static_constant_table.find(static_constant_hash) != frontend->static_constant_table.end()) {
             static_constant_label = frontend->static_constant_table[static_constant_hash];
         }
         else {
+            identifiers->hash_table[static_constant_hash] = std::move(string_constant);
             static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
             frontend->static_constant_table[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
@@ -1790,9 +1792,9 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
             {
                 std::shared_ptr<StaticInit> static_init;
                 {
-                    TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
                     std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init = std::make_shared<StringInit>(true, std::move(string_constant), std::move(literal));
+                    static_init =
+                        std::make_shared<StringInit>(true, std::move(static_constant_hash), std::move(literal));
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
@@ -1808,10 +1810,16 @@ static void checktype_string_initializer_array_static_init(CString* node, Array*
     TLong byte = static_arr_type->size - static_cast<TLong>(node->literal->value.size()) - 1l;
     {
         bool is_null_terminated = byte >= 0l;
-        TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
+        TIdentifier string_constant_hash;
+        // TODO clean
+        {
+            std::string string_constant = string_literal_to_string_constant(node->literal->value);
+            string_constant_hash = string_to_hash(string_constant);
+            identifiers->hash_table[string_constant_hash] = std::move(string_constant);
+        }
         std::shared_ptr<CStringLiteral> literal = node->literal;
         push_static_init(std::make_shared<StringInit>(
-            std::move(is_null_terminated), std::move(string_constant), std::move(literal)));
+            std::move(is_null_terminated), std::move(string_constant_hash), std::move(literal)));
     }
     if (byte > 0l) {
         push_zero_init_static_init(std::move(byte));
@@ -2084,7 +2092,7 @@ static void checktype_block_scope_variable_declaration(CVariableDeclaration* nod
 static void checktype_members_structure_declaration(CStructDeclaration* node) {
     for (size_t i = 0; i < node->members.size(); ++i) {
         for (size_t j = i + 1; j < node->members.size(); ++j) {
-            if (node->members[i]->member_name.compare(node->members[j]->member_name) == 0) {
+            if (node->members[i]->member_name == node->members[j]->member_name) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
                     GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member,
                         get_struct_name_hr(node->tag, node->is_union), get_name_hr(node->members[i]->member_name)),
@@ -2122,7 +2130,7 @@ static void checktype_structure_declaration(CStructDeclaration* node) {
     for (const auto& member : node->members) {
         {
             TIdentifier name = member->member_name;
-            member_names.push_back(std::move(name));
+            member_names.push_back(name);
         }
         TInt member_alignment = get_type_alignment(member->member_type.get());
         TLong member_size = get_type_scale(member->member_type.get());
@@ -2199,8 +2207,10 @@ static void annotate_case_jump(CCase* node) {
         RAISE_RUNTIME_ERROR_AT_LINE(
             GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::case_outside_of_switch), node->value->line);
     }
-    node->target = std::to_string(context->p_switch_statement->cases.size());
-    node->target += context->p_switch_statement->target;
+    std::string target = std::to_string(context->p_switch_statement->cases.size());
+    target += context->p_switch_statement->target;
+    node->target = string_to_hash(target);
+    identifiers->hash_table[node->target] = std::move(target);
 }
 
 static void annotate_default_jump(CDefault* node) {
@@ -2774,7 +2784,7 @@ static void resolve_initializer(CInitializer* node, std::shared_ptr<Type>& init_
 }
 
 static void resolve_params_function_declaration(CFunctionDeclaration* node) {
-    for (auto& param : node->params) {
+    for (TIdentifier& param : node->params) {
         if (context->scoped_identifier_maps.back().find(param) != context->scoped_identifier_maps.back().end()) {
             RAISE_RUNTIME_ERROR_AT_LINE(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::variable_redeclared_in_scope, get_name_hr(param)),

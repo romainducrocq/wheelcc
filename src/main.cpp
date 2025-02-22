@@ -21,7 +21,7 @@
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
 
-// #include "frontend/intermediate/semantic.hpp"
+#include "frontend/intermediate/semantic.hpp"
 // #include "frontend/intermediate/tac_repr.hpp"
 
 // #include "backend/assembly/asm_gen.hpp"
@@ -129,18 +129,18 @@ static void compile() {
 
     INIT_FRONT_END_CONTEXT;
 
-    //     verbose("-- Semantic analysis ... ", false);
-    //     analyze_semantic(c_ast.get());
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 253) {
-    //         debug_ast(c_ast.get(), "C AST");
-    //         debug_symbol_table();
-    //         debug_static_constant_table();
-    //         debug_struct_typedef_table();
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Semantic analysis ... ", false);
+    analyze_semantic(c_ast.get());
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 253) {
+        debug_ast(c_ast.get(), "C AST");
+        debug_symbol_table();
+        debug_static_constant_table();
+        debug_struct_typedef_table();
+        return;
+    }
+#endif
 
     FREE_ERRORS_CONTEXT;
 
