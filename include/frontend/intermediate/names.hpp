@@ -32,9 +32,9 @@ enum LABEL_KIND {
     Lwhile
 };
 
-TIdentifier resolve_label_identifier(const TIdentifier& label);
-TIdentifier resolve_variable_identifier(const TIdentifier& variable);
-TIdentifier resolve_structure_tag(const TIdentifier& structure);
+TIdentifier resolve_label_identifier(TIdentifier label);
+TIdentifier resolve_variable_identifier(TIdentifier variable);
+TIdentifier resolve_structure_tag(TIdentifier structure);
 TIdentifier represent_label_identifier(LABEL_KIND label_kind);
 TIdentifier represent_variable_identifier(CExp* node);
 

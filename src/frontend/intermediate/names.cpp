@@ -1,5 +1,6 @@
 #include <string>
 
+#include "util/str2t.hpp"
 #include "util/throw.hpp"
 
 #include "ast/ast.hpp"
@@ -12,32 +13,38 @@
 
 // Names
 
-TIdentifier resolve_label_identifier(const TIdentifier& label) {
-    TIdentifier name = label;
+TIdentifier resolve_label_identifier(TIdentifier label) {
+    std::string name = identifiers->hash_table[label];
     name += ".";
     name += std::to_string(frontend->label_counter);
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
     frontend->label_counter++;
-    return name;
+    return identifier;
 }
 
-TIdentifier resolve_variable_identifier(const TIdentifier& variable) {
-    TIdentifier name = variable;
+TIdentifier resolve_variable_identifier(TIdentifier variable) {
+    std::string name = identifiers->hash_table[variable];
     name += ".";
     name += std::to_string(frontend->variable_counter);
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
     frontend->variable_counter++;
-    return name;
+    return identifier;
 }
 
-TIdentifier resolve_structure_tag(const TIdentifier& structure) {
-    TIdentifier name = structure;
+TIdentifier resolve_structure_tag(TIdentifier structure) {
+    std::string name = identifiers->hash_table[structure];
     name += ".";
     name += std::to_string(frontend->structure_counter);
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
     frontend->structure_counter++;
-    return name;
+    return identifier;
 }
 
 TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
-    TIdentifier name;
+    std::string name;
     switch (label_kind) {
         case LABEL_KIND::Land_false: {
             name = "and_false";
@@ -128,12 +135,14 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
     }
     name += ".";
     name += std::to_string(frontend->label_counter);
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
     frontend->label_counter++;
-    return name;
+    return identifier;
 }
 
 TIdentifier represent_variable_identifier(CExp* node) {
-    TIdentifier name;
+    std::string name;
     switch (node->type()) {
         case AST_T::CConstant_t: {
             name = "const";
@@ -196,6 +205,8 @@ TIdentifier represent_variable_identifier(CExp* node) {
     }
     name += ".";
     name += std::to_string(frontend->variable_counter);
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
     frontend->variable_counter++;
-    return name;
+    return identifier;
 }
