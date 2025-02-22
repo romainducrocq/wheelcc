@@ -22,7 +22,7 @@
 #include "frontend/parser/parser.hpp"
 
 #include "frontend/intermediate/semantic.hpp"
-// #include "frontend/intermediate/tac_repr.hpp"
+#include "frontend/intermediate/tac_repr.hpp"
 
 // #include "backend/assembly/asm_gen.hpp"
 // #include "backend/assembly/stack_fix.hpp"
@@ -144,23 +144,23 @@ static void compile() {
 
     FREE_ERRORS_CONTEXT;
 
-    //     verbose("-- TAC representation ... ", false);
-    //     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
-    //     if (context->optim_1_mask > 0) {
-    //         verbose("OK", true);
-    //         verbose("-- Level 1 optimization ... ", false);
-    //         three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
-    //     }
+    verbose("-- TAC representation ... ", false);
+    std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
+    // if (context->optim_1_mask > 0) {
     //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 252) {
-    //         debug_ast(tac_ast.get(), "TAC AST");
-    //         debug_symbol_table();
-    //         debug_static_constant_table();
-    //         debug_struct_typedef_table();
-    //         return;
-    //     }
-    // #endif
+    //     verbose("-- Level 1 optimization ... ", false);
+    //     three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
+    // }
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 252) {
+        debug_ast(tac_ast.get(), "TAC AST");
+        debug_symbol_table();
+        debug_static_constant_table();
+        debug_struct_typedef_table();
+        return;
+    }
+#endif
 
     INIT_BACK_END_CONTEXT;
 

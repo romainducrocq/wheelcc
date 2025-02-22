@@ -130,14 +130,16 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_constant_instructio
 }
 
 static std::unique_ptr<TacPlainOperand> represent_exp_result_string_instructions(CString* node) {
+    // TODO clean
     TIdentifier static_constant_label;
     {
-        TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
-        TIdentifier static_constant_hash = std::to_string(std::hash<std::string> {}(string_constant));
+        std::string string_constant = string_literal_to_string_constant(node->literal->value);
+        TIdentifier static_constant_hash = string_to_hash(string_constant);
         if (frontend->static_constant_table.find(static_constant_hash) != frontend->static_constant_table.end()) {
             static_constant_label = frontend->static_constant_table[static_constant_hash];
         }
         else {
+            identifiers->hash_table[static_constant_hash] = std::move(string_constant);
             static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
             frontend->static_constant_table[static_constant_hash] = static_constant_label;
             std::shared_ptr<Type> constant_type;
@@ -150,9 +152,9 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_string_instructions
             {
                 std::shared_ptr<StaticInit> static_init;
                 {
-                    TIdentifier string_constant = string_literal_to_string_constant(node->literal->value);
                     std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init = std::make_shared<StringInit>(true, std::move(string_constant), std::move(literal));
+                    static_init =
+                        std::make_shared<StringInit>(true, std::move(static_constant_hash), std::move(literal));
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
@@ -489,7 +491,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_dereference_pointer
 
 static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignment_instructions(
     TacSubObject* res, std::shared_ptr<TacValue> src) {
-    TIdentifier dst_name = std::move(res->base_name);
+    TIdentifier dst_name = res->base_name;
     TLong offset = std::move(res->offset);
     push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), src));
     return std::make_unique<TacPlainOperand>(std::move(src));
@@ -671,7 +673,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_addrof_i
     TacSubObject* res, CAddrOf* node) {
     std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     {
-        TIdentifier name = std::move(res->base_name);
+        TIdentifier name = res->base_name;
         std::shared_ptr<TacValue> src = std::make_shared<TacVariable>(std::move(name));
         push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
     }
@@ -969,10 +971,20 @@ static void represent_statement_label_instructions(CLabel* node) {
 static void represent_statement_compound_instructions(CCompound* node) { represent_block(node->block.get()); }
 
 static void represent_statement_while_instructions(CWhile* node) {
-    TIdentifier target_break = "break_";
-    target_break += node->target;
-    TIdentifier target_continue = "continue_";
-    target_continue += node->target;
+    TIdentifier target_break;
+    {
+        std::string target = "break_";
+        target += identifiers->hash_table[node->target];
+        target_break = string_to_hash(target);
+        identifiers->hash_table[target_break] = std::move(target);
+    }
+    TIdentifier target_continue;
+    {
+        std::string target = "continue_";
+        target += identifiers->hash_table[node->target];
+        target_continue = string_to_hash(target);
+        identifiers->hash_table[target_continue] = std::move(target);
+    }
     push_instruction(std::make_unique<TacLabel>(target_continue));
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
@@ -985,10 +997,20 @@ static void represent_statement_while_instructions(CWhile* node) {
 
 static void represent_statement_do_while_instructions(CDoWhile* node) {
     TIdentifier target_do_while_start = represent_label_identifier(LABEL_KIND::Ldo_while_start);
-    TIdentifier target_break = "break_";
-    target_break += node->target;
-    TIdentifier target_continue = "continue_";
-    target_continue += node->target;
+    TIdentifier target_break;
+    {
+        std::string target = "break_";
+        target += identifiers->hash_table[node->target];
+        target_break = string_to_hash(target);
+        identifiers->hash_table[target_break] = std::move(target);
+    }
+    TIdentifier target_continue;
+    {
+        std::string target = "continue_";
+        target += identifiers->hash_table[node->target];
+        target_continue = string_to_hash(target);
+        identifiers->hash_table[target_continue] = std::move(target);
+    }
     push_instruction(std::make_unique<TacLabel>(target_do_while_start));
     represent_statement_instructions(node->body.get());
     push_instruction(std::make_unique<TacLabel>(std::move(target_continue)));
@@ -1024,10 +1046,20 @@ static void represent_statement_for_init_instructions(CForInit* node) {
 
 static void represent_statement_for_instructions(CFor* node) {
     TIdentifier target_for_start = represent_label_identifier(LABEL_KIND::Lfor_start);
-    TIdentifier target_break = "break_";
-    target_break += node->target;
-    TIdentifier target_continue = "continue_";
-    target_continue += node->target;
+    TIdentifier target_break;
+    {
+        std::string target = "break_";
+        target += identifiers->hash_table[node->target];
+        target_break = string_to_hash(target);
+        identifiers->hash_table[target_break] = std::move(target);
+    }
+    TIdentifier target_continue;
+    {
+        std::string target = "continue_";
+        target += identifiers->hash_table[node->target];
+        target_continue = string_to_hash(target);
+        identifiers->hash_table[target_continue] = std::move(target);
+    }
     represent_statement_for_init_instructions(node->init.get());
     push_instruction(std::make_unique<TacLabel>(target_for_start));
     if (node->condition) {
@@ -1044,14 +1076,24 @@ static void represent_statement_for_instructions(CFor* node) {
 }
 
 static void represent_statement_switch_instructions(CSwitch* node) {
-    TIdentifier target_break = "break_";
-    target_break += node->target;
+    TIdentifier target_break;
+    {
+        std::string target = "break_";
+        target += identifiers->hash_table[node->target];
+        target_break = string_to_hash(target);
+        identifiers->hash_table[target_break] = std::move(target);
+    }
     {
         std::shared_ptr<TacValue> match = represent_exp_instructions(node->match.get());
         for (size_t i = 0; i < node->cases.size(); ++i) {
-            TIdentifier target_case = "case_";
-            target_case += std::to_string(i);
-            target_case += node->target;
+            TIdentifier target_case;
+            {
+                std::string target = "case_";
+                target += std::to_string(i);
+                target += identifiers->hash_table[node->target];
+                target_case = string_to_hash(target);
+                identifiers->hash_table[target_case] = std::move(target);
+            }
             std::shared_ptr<TacValue> case_match;
             {
                 std::shared_ptr<TacValue> esac = represent_exp_instructions(node->cases[i].get());
@@ -1063,8 +1105,13 @@ static void represent_statement_switch_instructions(CSwitch* node) {
         }
     }
     if (node->is_default) {
-        TIdentifier target_default = "default_";
-        target_default += node->target;
+        TIdentifier target_default;
+        {
+            std::string target = "default_";
+            target += identifiers->hash_table[node->target];
+            target_default = string_to_hash(target);
+            identifiers->hash_table[target_default] = std::move(target);
+        }
         push_instruction(std::make_unique<TacJump>(std::move(target_default)));
         represent_statement_instructions(node->body.get());
     }
@@ -1076,28 +1123,48 @@ static void represent_statement_switch_instructions(CSwitch* node) {
 }
 
 static void represent_statement_case_instructions(CCase* node) {
-    TIdentifier target_case = "case_";
-    target_case += node->target;
+    TIdentifier target_case;
+    {
+        std::string target = "case_";
+        target += identifiers->hash_table[node->target];
+        target_case = string_to_hash(target);
+        identifiers->hash_table[target_case] = std::move(target);
+    }
     push_instruction(std::make_unique<TacLabel>(std::move(target_case)));
     represent_statement_instructions(node->jump_to.get());
 }
 
 static void represent_statement_default_instructions(CDefault* node) {
-    TIdentifier target_default = "default_";
-    target_default += node->target;
+    TIdentifier target_default;
+    {
+        std::string target = "default_";
+        target += identifiers->hash_table[node->target];
+        target_default = string_to_hash(target);
+        identifiers->hash_table[target_default] = std::move(target);
+    }
     push_instruction(std::make_unique<TacLabel>(std::move(target_default)));
     represent_statement_instructions(node->jump_to.get());
 }
 
 static void represent_statement_break_instructions(CBreak* node) {
-    TIdentifier target_break = "break_";
-    target_break += node->target;
+    TIdentifier target_break;
+    {
+        std::string target = "break_";
+        target += identifiers->hash_table[node->target];
+        target_break = string_to_hash(target);
+        identifiers->hash_table[target_break] = std::move(target);
+    }
     push_instruction(std::make_unique<TacJump>(std::move(target_break)));
 }
 
 static void represent_statement_continue_instructions(CContinue* node) {
-    TIdentifier target_continue = "continue_";
-    target_continue += node->target;
+    TIdentifier target_continue;
+    {
+        std::string target = "continue_";
+        target += identifiers->hash_table[node->target];
+        target_continue = string_to_hash(target);
+        identifiers->hash_table[target_continue] = std::move(target);
+    }
     push_instruction(std::make_unique<TacJump>(std::move(target_continue)));
 }
 
@@ -1152,11 +1219,10 @@ static void represent_statement_instructions(CStatement* node) {
     }
 }
 
-static void represent_compound_init_instructions(
-    CInitializer* node, Type* init_type, const TIdentifier& symbol, TLong& size);
+static void represent_compound_init_instructions(CInitializer* node, Type* init_type, TIdentifier symbol, TLong& size);
 
 static void represent_array_single_init_string_instructions(
-    CString* node, Array* arr_type, const TIdentifier& symbol, TLong size) {
+    CString* node, Array* arr_type, TIdentifier symbol, TLong size) {
     size_t byte_at = 0;
 
     size_t bytes_size = static_cast<size_t>(arr_type->size);
@@ -1219,7 +1285,7 @@ static void represent_array_single_init_string_instructions(
     }
 }
 
-static void represent_single_init_instructions(CSingleInit* node, Type* init_type, const TIdentifier& symbol) {
+static void represent_single_init_instructions(CSingleInit* node, Type* init_type, TIdentifier symbol) {
     if (node->exp->type() == AST_T::CString_t && init_type->type() == AST_T::Array_t) {
         represent_array_single_init_string_instructions(
             static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, 0l);
@@ -1237,7 +1303,7 @@ static void represent_single_init_instructions(CSingleInit* node, Type* init_typ
 }
 
 static void represent_scalar_compound_init_instructions(
-    CSingleInit* node, Type* init_type, const TIdentifier& symbol, TLong& size) {
+    CSingleInit* node, Type* init_type, TIdentifier symbol, TLong& size) {
     if (node->exp->type() == AST_T::CString_t && init_type->type() == AST_T::Array_t) {
         represent_array_single_init_string_instructions(
             static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, size);
@@ -1251,7 +1317,7 @@ static void represent_scalar_compound_init_instructions(
 }
 
 static void represent_array_compound_init_instructions(
-    CCompoundInit* node, Array* arr_type, const TIdentifier& symbol, TLong& size) {
+    CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong& size) {
     for (const auto& initializer : node->initializers) {
         represent_compound_init_instructions(initializer.get(), arr_type->elem_type.get(), symbol, size);
         if (initializer->type() == AST_T::CSingleInit_t) {
@@ -1261,7 +1327,7 @@ static void represent_array_compound_init_instructions(
 }
 
 static void represent_structure_compound_init_instructions(
-    CCompoundInit* node, Structure* struct_type, const TIdentifier& symbol, TLong& size) {
+    CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong& size) {
     for (size_t i = node->initializers.size(); i-- > 0;) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         TLong offset = size + member->offset;
@@ -1271,7 +1337,7 @@ static void represent_structure_compound_init_instructions(
 }
 
 static void represent_aggregate_compound_init_instructions(
-    CCompoundInit* node, Type* init_type, const TIdentifier& symbol, TLong& size) {
+    CCompoundInit* node, Type* init_type, TIdentifier symbol, TLong& size) {
     switch (init_type->type()) {
         case AST_T::Array_t:
             represent_array_compound_init_instructions(node, static_cast<Array*>(init_type), symbol, size);
@@ -1284,8 +1350,7 @@ static void represent_aggregate_compound_init_instructions(
     }
 }
 
-static void represent_compound_init_instructions(
-    CInitializer* node, Type* init_type, const TIdentifier& symbol, TLong& size) {
+static void represent_compound_init_instructions(CInitializer* node, Type* init_type, TIdentifier symbol, TLong& size) {
     switch (node->type()) {
         case AST_T::CSingleInit_t:
             represent_scalar_compound_init_instructions(static_cast<CSingleInit*>(node), init_type, symbol, size);
@@ -1429,7 +1494,7 @@ static std::vector<std::shared_ptr<StaticInit>> represent_initial_static_variabl
     return static_inits;
 }
 
-static void represent_static_variable_top_level(Symbol* node, const TIdentifier& symbol) {
+static void represent_static_variable_top_level(Symbol* node, TIdentifier symbol) {
     StaticAttr* static_attr = static_cast<StaticAttr*>(node->attrs.get());
     if (static_attr->init->type() == AST_T::NoInitializer_t) {
         return;
@@ -1458,7 +1523,7 @@ static void push_static_constant_top_levels(std::unique_ptr<TacTopLevel>&& stati
     context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
-static void represent_static_constant_top_level(Symbol* node, const TIdentifier& symbol) {
+static void represent_static_constant_top_level(Symbol* node, TIdentifier symbol) {
     TIdentifier name = symbol;
     std::shared_ptr<Type> static_init_type = node->type_t;
     std::shared_ptr<StaticInit> static_init = static_cast<ConstantAttr*>(node->attrs.get())->static_init;
@@ -1468,7 +1533,7 @@ static void represent_static_constant_top_level(Symbol* node, const TIdentifier&
 
 // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
 // (static constant) top_level = StaticConstant(identifier, type, static_init)
-static void represent_symbol_top_level(Symbol* node, const TIdentifier& symbol) {
+static void represent_symbol_top_level(Symbol* node, TIdentifier symbol) {
     switch (node->attrs->type()) {
         case AST_T::StaticAttr_t:
             represent_static_variable_top_level(node, symbol);
