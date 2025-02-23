@@ -11,12 +11,15 @@
 enum LABEL_KIND {
     Land_false,
     Land_true,
+    Lbreak,
+    Lcase,
     Lcomisd_nan,
+    Lcontinue,
+    Ldefault,
     Ldouble,
     Ldo_while,
     Ldo_while_start,
     Lfor,
-    Lswitch,
     Lfor_start,
     Lif_else,
     Lif_false,
@@ -27,6 +30,7 @@ enum LABEL_KIND {
     Lsi2sd_after,
     Lsi2sd_out_of_range,
     Lstring,
+    Lswitch,
     Lternary_else,
     Lternary_false,
     Lwhile
@@ -36,6 +40,8 @@ TIdentifier resolve_label_identifier(TIdentifier label);
 TIdentifier resolve_variable_identifier(TIdentifier variable);
 TIdentifier resolve_structure_tag(TIdentifier structure);
 TIdentifier represent_label_identifier(LABEL_KIND label_kind);
+TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target);
+TIdentifier represent_case_identifier(TIdentifier target, bool is_label, size_t i);
 TIdentifier represent_variable_identifier(CExp* node);
 
 #endif

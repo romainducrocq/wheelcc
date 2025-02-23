@@ -971,20 +971,8 @@ static void represent_statement_label_instructions(CLabel* node) {
 static void represent_statement_compound_instructions(CCompound* node) { represent_block(node->block.get()); }
 
 static void represent_statement_while_instructions(CWhile* node) {
-    TIdentifier target_break;
-    {
-        std::string target = "break_";
-        target += identifiers->hash_table[node->target];
-        target_break = string_to_hash(target);
-        identifiers->hash_table[target_break] = std::move(target);
-    }
-    TIdentifier target_continue;
-    {
-        std::string target = "continue_";
-        target += identifiers->hash_table[node->target];
-        target_continue = string_to_hash(target);
-        identifiers->hash_table[target_continue] = std::move(target);
-    }
+    TIdentifier target_break = represent_loop_identifier(LABEL_KIND::Lbreak, node->target);
+    TIdentifier target_continue = represent_loop_identifier(LABEL_KIND::Lcontinue, node->target);
     push_instruction(std::make_unique<TacLabel>(target_continue));
     {
         std::shared_ptr<TacValue> condition = represent_exp_instructions(node->condition.get());
@@ -997,20 +985,8 @@ static void represent_statement_while_instructions(CWhile* node) {
 
 static void represent_statement_do_while_instructions(CDoWhile* node) {
     TIdentifier target_do_while_start = represent_label_identifier(LABEL_KIND::Ldo_while_start);
-    TIdentifier target_break;
-    {
-        std::string target = "break_";
-        target += identifiers->hash_table[node->target];
-        target_break = string_to_hash(target);
-        identifiers->hash_table[target_break] = std::move(target);
-    }
-    TIdentifier target_continue;
-    {
-        std::string target = "continue_";
-        target += identifiers->hash_table[node->target];
-        target_continue = string_to_hash(target);
-        identifiers->hash_table[target_continue] = std::move(target);
-    }
+    TIdentifier target_break = represent_loop_identifier(LABEL_KIND::Lbreak, node->target);
+    TIdentifier target_continue = represent_loop_identifier(LABEL_KIND::Lcontinue, node->target);
     push_instruction(std::make_unique<TacLabel>(target_do_while_start));
     represent_statement_instructions(node->body.get());
     push_instruction(std::make_unique<TacLabel>(std::move(target_continue)));
@@ -1046,20 +1022,8 @@ static void represent_statement_for_init_instructions(CForInit* node) {
 
 static void represent_statement_for_instructions(CFor* node) {
     TIdentifier target_for_start = represent_label_identifier(LABEL_KIND::Lfor_start);
-    TIdentifier target_break;
-    {
-        std::string target = "break_";
-        target += identifiers->hash_table[node->target];
-        target_break = string_to_hash(target);
-        identifiers->hash_table[target_break] = std::move(target);
-    }
-    TIdentifier target_continue;
-    {
-        std::string target = "continue_";
-        target += identifiers->hash_table[node->target];
-        target_continue = string_to_hash(target);
-        identifiers->hash_table[target_continue] = std::move(target);
-    }
+    TIdentifier target_break = represent_loop_identifier(LABEL_KIND::Lbreak, node->target);
+    TIdentifier target_continue = represent_loop_identifier(LABEL_KIND::Lcontinue, node->target);
     represent_statement_for_init_instructions(node->init.get());
     push_instruction(std::make_unique<TacLabel>(target_for_start));
     if (node->condition) {
@@ -1076,24 +1040,11 @@ static void represent_statement_for_instructions(CFor* node) {
 }
 
 static void represent_statement_switch_instructions(CSwitch* node) {
-    TIdentifier target_break;
-    {
-        std::string target = "break_";
-        target += identifiers->hash_table[node->target];
-        target_break = string_to_hash(target);
-        identifiers->hash_table[target_break] = std::move(target);
-    }
+    TIdentifier target_break = represent_loop_identifier(LABEL_KIND::Lbreak, node->target);
     {
         std::shared_ptr<TacValue> match = represent_exp_instructions(node->match.get());
         for (size_t i = 0; i < node->cases.size(); ++i) {
-            TIdentifier target_case;
-            {
-                std::string target = "case_";
-                target += std::to_string(i);
-                target += identifiers->hash_table[node->target];
-                target_case = string_to_hash(target);
-                identifiers->hash_table[target_case] = std::move(target);
-            }
+            TIdentifier target_case = represent_case_identifier(node->target, true, i);
             std::shared_ptr<TacValue> case_match;
             {
                 std::shared_ptr<TacValue> esac = represent_exp_instructions(node->cases[i].get());
@@ -1105,13 +1056,7 @@ static void represent_statement_switch_instructions(CSwitch* node) {
         }
     }
     if (node->is_default) {
-        TIdentifier target_default;
-        {
-            std::string target = "default_";
-            target += identifiers->hash_table[node->target];
-            target_default = string_to_hash(target);
-            identifiers->hash_table[target_default] = std::move(target);
-        }
+        TIdentifier target_default = represent_loop_identifier(LABEL_KIND::Ldefault, node->target);
         push_instruction(std::make_unique<TacJump>(std::move(target_default)));
         represent_statement_instructions(node->body.get());
     }
@@ -1123,48 +1068,24 @@ static void represent_statement_switch_instructions(CSwitch* node) {
 }
 
 static void represent_statement_case_instructions(CCase* node) {
-    TIdentifier target_case;
-    {
-        std::string target = "case_";
-        target += identifiers->hash_table[node->target];
-        target_case = string_to_hash(target);
-        identifiers->hash_table[target_case] = std::move(target);
-    }
+    TIdentifier target_case = represent_loop_identifier(LABEL_KIND::Lcase, node->target);
     push_instruction(std::make_unique<TacLabel>(std::move(target_case)));
     represent_statement_instructions(node->jump_to.get());
 }
 
 static void represent_statement_default_instructions(CDefault* node) {
-    TIdentifier target_default;
-    {
-        std::string target = "default_";
-        target += identifiers->hash_table[node->target];
-        target_default = string_to_hash(target);
-        identifiers->hash_table[target_default] = std::move(target);
-    }
+    TIdentifier target_default = represent_loop_identifier(LABEL_KIND::Ldefault, node->target);
     push_instruction(std::make_unique<TacLabel>(std::move(target_default)));
     represent_statement_instructions(node->jump_to.get());
 }
 
 static void represent_statement_break_instructions(CBreak* node) {
-    TIdentifier target_break;
-    {
-        std::string target = "break_";
-        target += identifiers->hash_table[node->target];
-        target_break = string_to_hash(target);
-        identifiers->hash_table[target_break] = std::move(target);
-    }
+    TIdentifier target_break = represent_loop_identifier(LABEL_KIND::Lbreak, node->target);
     push_instruction(std::make_unique<TacJump>(std::move(target_break)));
 }
 
 static void represent_statement_continue_instructions(CContinue* node) {
-    TIdentifier target_continue;
-    {
-        std::string target = "continue_";
-        target += identifiers->hash_table[node->target];
-        target_continue = string_to_hash(target);
-        identifiers->hash_table[target_continue] = std::move(target);
-    }
+    TIdentifier target_continue = represent_loop_identifier(LABEL_KIND::Lcontinue, node->target);
     push_instruction(std::make_unique<TacJump>(std::move(target_continue)));
 }
 

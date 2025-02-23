@@ -30,17 +30,20 @@ AsmGenContext::AsmGenContext() :
 
 // Assembly generation
 
+// TODO
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(true, false, std::move(value));
 }
 
+// TODO
 static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
     bool is_byte = node->value <= 127 && node->value >= -128;
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(std::move(is_byte), false, std::move(value));
 }
 
+// TODO
 static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
     bool is_byte = node->value <= 127l && node->value >= -128l;
     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
@@ -48,11 +51,13 @@ static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
 }
 
+// TODO
 static std::shared_ptr<AsmImm> generate_uchar_imm_operand(CConstUChar* node) {
     TIdentifier value = std::to_string(node->value);
     return std::make_shared<AsmImm>(true, false, std::move(value));
 }
 
+// TODO
 static std::shared_ptr<AsmImm> generate_uint_imm_operand(CConstUInt* node) {
     bool is_byte = node->value <= 255u;
     bool is_quad = node->value > 2147483647u;
@@ -60,6 +65,7 @@ static std::shared_ptr<AsmImm> generate_uint_imm_operand(CConstUInt* node) {
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
 }
 
+// TODO
 static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     bool is_byte = node->value <= 255ul;
     bool is_quad = node->value > 2147483647ul;
@@ -70,6 +76,7 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
 static void generate_double_static_constant_top_level(
     const TIdentifier& identifier, TDouble value, TULong binary, TInt byte);
 
+// TODO
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
     TIdentifier double_constant_label;
     {

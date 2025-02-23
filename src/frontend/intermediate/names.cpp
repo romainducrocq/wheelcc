@@ -141,6 +141,43 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
     return identifier;
 }
 
+TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
+    std::string name;
+    switch (label_kind) {
+        case LABEL_KIND::Lbreak: {
+            name = "break_";
+            break;
+        }
+        case LABEL_KIND::Lcase: {
+            name = "case_";
+            break;
+        }
+        case LABEL_KIND::Lcontinue: {
+            name = "continue_";
+            break;
+        }
+        case LABEL_KIND::Ldefault: {
+            name = "default_";
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    name += identifiers->hash_table[target];
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
+    return identifier;
+}
+
+TIdentifier represent_case_identifier(TIdentifier target, bool is_label, size_t i) {
+    std::string name = is_label ? "case_" : "";
+    name += std::to_string(i);
+    name += identifiers->hash_table[target];
+    TIdentifier identifier = string_to_hash(name);
+    identifiers->hash_table[identifier] = std::move(name);
+    return identifier;
+}
+
 TIdentifier represent_variable_identifier(CExp* node) {
     std::string name;
     switch (node->type()) {

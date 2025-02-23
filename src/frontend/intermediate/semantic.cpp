@@ -2204,10 +2204,8 @@ static void annotate_case_jump(CCase* node) {
         RAISE_RUNTIME_ERROR_AT_LINE(
             GET_ERROR_MESSAGE(ERROR_MESSAGE_SEMANTIC::case_outside_of_switch), node->value->line);
     }
-    std::string target = std::to_string(context->p_switch_statement->cases.size());
-    target += identifiers->hash_table[context->p_switch_statement->target];
-    node->target = string_to_hash(target);
-    identifiers->hash_table[node->target] = std::move(target);
+    node->target = represent_case_identifier(
+        context->p_switch_statement->target, false, context->p_switch_statement->cases.size());
 }
 
 static void annotate_default_jump(CDefault* node) {
