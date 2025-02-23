@@ -491,7 +491,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_dereference_pointer
 
 static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_assignment_instructions(
     TacSubObject* res, std::shared_ptr<TacValue> src) {
-    TIdentifier dst_name = res->base_name;
+    TIdentifier dst_name = std::move(res->base_name);
     TLong offset = std::move(res->offset);
     push_instruction(std::make_unique<TacCopyToOffset>(std::move(dst_name), std::move(offset), src));
     return std::make_unique<TacPlainOperand>(std::move(src));
@@ -673,7 +673,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_addrof_i
     TacSubObject* res, CAddrOf* node) {
     std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     {
-        TIdentifier name = res->base_name;
+        TIdentifier name = std::move(res->base_name);
         std::shared_ptr<TacValue> src = std::make_shared<TacVariable>(std::move(name));
         push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
     }

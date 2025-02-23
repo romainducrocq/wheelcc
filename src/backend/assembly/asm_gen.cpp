@@ -711,6 +711,7 @@ static void generate_sign_extend_instructions(TacSignExtend* node) {
         std::move(assembly_type_src), std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
+// TODO
 static void generate_imm_byte_truncate_instructions(AsmImm* node) {
     if (!node->is_byte) {
         node->value = std::to_string(string_to_uint64(std::move(node->value)) % 256ul);
@@ -727,6 +728,7 @@ static void generate_byte_truncate_instructions(TacTruncate* node) {
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
+// TODO
 static void generate_imm_long_truncate_instructions(AsmImm* node) {
     if (node->is_quad) {
         node->value = std::to_string(string_to_uint64(std::move(node->value)) - 4294967296ul);

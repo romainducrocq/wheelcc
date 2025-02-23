@@ -1407,7 +1407,7 @@ static std::unique_ptr<CDeclarator> parse_declarator();
 static void parse_process_declarator(CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator);
 
 static void parse_process_ident_declarator(CIdent* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
-    declarator.name = node->name;
+    declarator.name = std::move(node->name);
     declarator.derived_type = std::move(base_type);
 }
 
@@ -1441,12 +1441,12 @@ static void parse_process_fun_declarator(
         if (param_declarator.derived_type->type() == AST_T::FunType_t) {
             RAISE_INTERNAL_ERROR;
         }
-        params.push_back(param_declarator.name);
+        params.push_back(std::move(param_declarator.name));
         param_types.push_back(std::move(param_declarator.derived_type));
     }
     TIdentifier name = static_cast<CIdent*>(node->declarator.get())->name;
     std::shared_ptr<Type> derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
-    declarator.name = name;
+    declarator.name = std::move(name);
     declarator.derived_type = std::move(derived_type);
     declarator.params = std::move(params);
 }
