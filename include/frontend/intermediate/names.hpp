@@ -36,6 +36,7 @@ enum LABEL_KIND {
     Lwhile
 };
 
+TIdentifier make_string_identifier(std::string&& value);
 TIdentifier resolve_label_identifier(TIdentifier label);
 TIdentifier resolve_variable_identifier(TIdentifier variable);
 TIdentifier resolve_structure_tag(TIdentifier structure);

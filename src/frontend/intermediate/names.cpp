@@ -13,34 +13,34 @@
 
 // Names
 
+TIdentifier make_string_identifier(std::string&& value) {
+    TIdentifier identifier = string_to_hash(value);
+    identifiers->hash_table[identifier] = std::move(value);
+    return identifier;
+}
+
 TIdentifier resolve_label_identifier(TIdentifier label) {
     std::string name = identifiers->hash_table[label];
     name += ".";
     name += std::to_string(frontend->label_counter);
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
     frontend->label_counter++;
-    return identifier;
+    return make_string_identifier(std::move(name));
 }
 
 TIdentifier resolve_variable_identifier(TIdentifier variable) {
     std::string name = identifiers->hash_table[variable];
     name += ".";
     name += std::to_string(frontend->variable_counter);
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
     frontend->variable_counter++;
-    return identifier;
+    return make_string_identifier(std::move(name));
 }
 
 TIdentifier resolve_structure_tag(TIdentifier structure) {
     std::string name = identifiers->hash_table[structure];
     name += ".";
     name += std::to_string(frontend->structure_counter);
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
     frontend->structure_counter++;
-    return identifier;
+    return make_string_identifier(std::move(name));
 }
 
 TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
@@ -135,10 +135,8 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
     }
     name += ".";
     name += std::to_string(frontend->label_counter);
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
     frontend->label_counter++;
-    return identifier;
+    return make_string_identifier(std::move(name));
 }
 
 TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
@@ -164,18 +162,14 @@ TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target)
             RAISE_INTERNAL_ERROR;
     }
     name += identifiers->hash_table[target];
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
-    return identifier;
+    return make_string_identifier(std::move(name));
 }
 
 TIdentifier represent_case_identifier(TIdentifier target, bool is_label, size_t i) {
     std::string name = is_label ? "case_" : "";
     name += std::to_string(i);
     name += identifiers->hash_table[target];
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
-    return identifier;
+    return make_string_identifier(std::move(name));
 }
 
 TIdentifier represent_variable_identifier(CExp* node) {
@@ -242,8 +236,6 @@ TIdentifier represent_variable_identifier(CExp* node) {
     }
     name += ".";
     name += std::to_string(frontend->variable_counter);
-    TIdentifier identifier = string_to_hash(name);
-    identifiers->hash_table[identifier] = std::move(name);
     frontend->variable_counter++;
-    return identifier;
+    return make_string_identifier(std::move(name));
 }

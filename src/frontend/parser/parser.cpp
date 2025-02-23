@@ -16,6 +16,8 @@
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
 
+#include "frontend/intermediate/names.hpp"
+
 static std::unique_ptr<ParserContext> context;
 
 ParserContext::ParserContext(std::vector<Token>* p_tokens) : p_tokens(p_tokens), pop_index(0) {}
@@ -32,7 +34,7 @@ static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token
     }
 }
 
-static const Token& pop_next() {
+static Token& pop_next() {
     if (context->pop_index >= context->p_tokens->size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
             GET_ERROR_MESSAGE(ERROR_MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
@@ -43,7 +45,7 @@ static const Token& pop_next() {
     return *context->next_token;
 }
 
-static const Token& pop_next_i(size_t i) {
+static Token& pop_next_i(size_t i) {
     if (i == 0) {
         return pop_next();
     }
@@ -89,12 +91,7 @@ static const Token& peek_next_i(size_t i) {
 }
 
 // <identifier> ::= ? An identifier token ?
-static TIdentifier parse_identifier(size_t i) {
-    const Token& token = pop_next_i(i);
-    TIdentifier identifier = string_to_hash(token.token);
-    identifiers->hash_table[identifier] = std::move(token.token);
-    return identifier;
-}
+static TIdentifier parse_identifier(size_t i) { return make_string_identifier(std::move(pop_next_i(i).token)); }
 
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
