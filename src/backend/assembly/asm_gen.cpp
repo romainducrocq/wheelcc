@@ -30,57 +30,50 @@ AsmGenContext::AsmGenContext() :
 
 // Assembly generation
 
-// TODO
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
-    TIdentifier value = std::to_string(node->value);
+    TIdentifier value = make_string_identifier(std::to_string(node->value));
     return std::make_shared<AsmImm>(true, false, std::move(value));
 }
 
-// TODO
 static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
     bool is_byte = node->value <= 127 && node->value >= -128;
-    TIdentifier value = std::to_string(node->value);
+    TIdentifier value = make_string_identifier(std::to_string(node->value));
     return std::make_shared<AsmImm>(std::move(is_byte), false, std::move(value));
 }
 
-// TODO
 static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
     bool is_byte = node->value <= 127l && node->value >= -128l;
     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
-    TIdentifier value = std::to_string(node->value);
+    TIdentifier value = make_string_identifier(std::to_string(node->value));
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
 }
 
-// TODO
 static std::shared_ptr<AsmImm> generate_uchar_imm_operand(CConstUChar* node) {
-    TIdentifier value = std::to_string(node->value);
+    TIdentifier value = make_string_identifier(std::to_string(node->value));
     return std::make_shared<AsmImm>(true, false, std::move(value));
 }
 
-// TODO
 static std::shared_ptr<AsmImm> generate_uint_imm_operand(CConstUInt* node) {
     bool is_byte = node->value <= 255u;
     bool is_quad = node->value > 2147483647u;
-    TIdentifier value = std::to_string(node->value);
+    TIdentifier value = make_string_identifier(std::to_string(node->value));
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
 }
 
-// TODO
 static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     bool is_byte = node->value <= 255ul;
     bool is_quad = node->value > 2147483647ul;
-    TIdentifier value = std::to_string(node->value);
+    TIdentifier value = make_string_identifier(std::to_string(node->value));
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
 }
 
-static void generate_double_static_constant_top_level(
-    const TIdentifier& identifier, TDouble value, TULong binary, TInt byte);
+static void generate_double_static_constant_top_level(TIdentifier identifier, TDouble value, TULong binary, TInt byte);
 
 // TODO
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
     TIdentifier double_constant_label;
     {
-        TIdentifier double_constant_hash = std::to_string(binary);
+        TIdentifier double_constant_hash = make_string_identifier(std::to_string(binary));
         if (context->double_constant_table.find(double_constant_hash) != context->double_constant_table.end()) {
             double_constant_label = context->double_constant_table[double_constant_hash];
         }
@@ -567,7 +560,7 @@ static void generate_return_double_instructions(TacReturn* node) {
 }
 
 static void generate_8byte_return_instructions(
-    const TIdentifier& name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+    TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     TIdentifier src_name = name;
     std::shared_ptr<AsmOperand> dst = generate_register(arg_register);
     std::shared_ptr<AssemblyType> assembly_type_src =
@@ -711,10 +704,10 @@ static void generate_sign_extend_instructions(TacSignExtend* node) {
         std::move(assembly_type_src), std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
-// TODO
 static void generate_imm_byte_truncate_instructions(AsmImm* node) {
     if (!node->is_byte) {
-        node->value = std::to_string(string_to_uint64(std::move(node->value)) % 256ul);
+        const std::string& value = identifiers->hash_table[node->value];
+        node->value = make_string_identifier(std::to_string(string_to_uint64(value) % 256ul));
     }
 }
 
@@ -728,10 +721,10 @@ static void generate_byte_truncate_instructions(TacTruncate* node) {
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
-// TODO
 static void generate_imm_long_truncate_instructions(AsmImm* node) {
     if (node->is_quad) {
-        node->value = std::to_string(string_to_uint64(std::move(node->value)) - 4294967296ul);
+        const std::string& value = identifiers->hash_table[node->value];
+        node->value = make_string_identifier(std::to_string(string_to_uint64(value) - 4294967296ul));
     }
 }
 
@@ -1021,11 +1014,11 @@ static void generate_stack_arg_fun_call_instructions(TacValue* node) {
 }
 
 static void generate_8byte_reg_arg_fun_call_instructions(
-    const TIdentifier& name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+    TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     generate_8byte_return_instructions(name, offset, struct_type, arg_register);
 }
 
-static void generate_quadword_8byte_stack_arg_fun_call_instructions(const TIdentifier& name, TLong offset) {
+static void generate_quadword_8byte_stack_arg_fun_call_instructions(TIdentifier name, TLong offset) {
     std::shared_ptr<AsmOperand> src;
     {
         TIdentifier src_name = name;
@@ -1036,7 +1029,7 @@ static void generate_quadword_8byte_stack_arg_fun_call_instructions(const TIdent
 }
 
 static void generate_byte_longword_8byte_stack_arg_fun_call_instructions(
-    const TIdentifier& name, TLong offset, std::shared_ptr<AssemblyType>&& assembly_type) {
+    TIdentifier name, TLong offset, std::shared_ptr<AssemblyType>&& assembly_type) {
     std::shared_ptr<AsmOperand> src;
     {
         TIdentifier src_name = name;
@@ -1050,7 +1043,7 @@ static void generate_byte_longword_8byte_stack_arg_fun_call_instructions(
 }
 
 static void generate_bytearray_8byte_stack_arg_fun_call_instructions(
-    const TIdentifier& name, TLong offset, ByteArray* bytearray_type) {
+    TIdentifier name, TLong offset, ByteArray* bytearray_type) {
     {
         TLong to_offset = 0l;
         TLong size = bytearray_type->size;
@@ -1092,8 +1085,7 @@ static void generate_bytearray_8byte_stack_arg_fun_call_instructions(
     }
 }
 
-static void generate_8byte_stack_arg_fun_call_instructions(
-    const TIdentifier& name, TLong offset, Structure* struct_type) {
+static void generate_8byte_stack_arg_fun_call_instructions(TIdentifier name, TLong offset, Structure* struct_type) {
     std::shared_ptr<AssemblyType> assembly_type = generate_8byte_assembly_type(struct_type, offset);
     switch (assembly_type->type()) {
         case AST_T::QuadWord_t:
@@ -1205,7 +1197,7 @@ static void generate_return_fun_call_instructions(TacValue* node, REGISTER_KIND 
 }
 
 static void generate_8byte_return_fun_call_instructions(
-    const TIdentifier& name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+    TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     TIdentifier dst_name = name;
     std::shared_ptr<AsmOperand> src = generate_register(arg_register);
     std::shared_ptr<AssemblyType> assembly_type_dst =
@@ -1895,7 +1887,7 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
     {
         bool is_byte = node->scale <= 127l && node->scale >= -128l;
         bool is_quad = node->scale > 2147483647l || node->scale < -2147483648l;
-        TIdentifier value = std::to_string(node->scale);
+        TIdentifier value = make_string_identifier(std::to_string(node->scale));
         std::shared_ptr<AsmOperand> src =
             std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
         std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmMult>();
@@ -2241,7 +2233,7 @@ static void generate_list_instructions(const std::vector<std::unique_ptr<TacInst
     }
 }
 
-static void generate_reg_param_function_instructions(const TIdentifier& name, REGISTER_KIND arg_register) {
+static void generate_reg_param_function_instructions(TIdentifier name, REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = generate_register(arg_register);
     std::shared_ptr<AsmOperand> dst;
     {
@@ -2252,7 +2244,7 @@ static void generate_reg_param_function_instructions(const TIdentifier& name, RE
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
-static void generate_stack_param_function_instructions(const TIdentifier& name, TLong stack_bytes) {
+static void generate_stack_param_function_instructions(TIdentifier name, TLong stack_bytes) {
     std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, stack_bytes);
     std::shared_ptr<AsmOperand> dst;
     {
@@ -2264,12 +2256,12 @@ static void generate_stack_param_function_instructions(const TIdentifier& name, 
 }
 
 static void generate_8byte_reg_param_function_instructions(
-    const TIdentifier& name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+    TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     generate_8byte_return_fun_call_instructions(name, offset, struct_type, arg_register);
 }
 
 static void generate_8byte_stack_param_function_instructions(
-    const TIdentifier& name, TLong stack_bytes, TLong offset, Structure* struct_type) {
+    TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
     std::shared_ptr<AssemblyType> assembly_type_dst = generate_8byte_assembly_type(struct_type, offset);
     if (assembly_type_dst->type() == AST_T::ByteArray_t) {
         TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size;
@@ -2420,8 +2412,7 @@ static void push_static_constant_top_levels(std::unique_ptr<AsmTopLevel>&& stati
     context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
-static void generate_double_static_constant_top_level(
-    const TIdentifier& identifier, TDouble value, TULong binary, TInt byte) {
+static void generate_double_static_constant_top_level(TIdentifier identifier, TDouble value, TULong binary, TInt byte) {
     TIdentifier name = identifier;
     TInt alignment = byte;
     std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(value, binary);
