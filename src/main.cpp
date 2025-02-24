@@ -30,8 +30,8 @@
 
 #include "backend/emitter/gas_code.hpp"
 
-// #include "optimization/optim_tac.hpp"
-// #include "optimization/reg_alloc.hpp"
+#include "optimization/optim_tac.hpp"
+#include "optimization/reg_alloc.hpp"
 
 static std::unique_ptr<MainContext> context;
 
@@ -146,11 +146,11 @@ static void compile() {
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
-    // if (context->optim_1_mask > 0) {
-    //     verbose("OK", true);
-    //     verbose("-- Level 1 optimization ... ", false);
-    //     three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
-    // }
+    if (context->optim_1_mask > 0) {
+        verbose("OK", true);
+        verbose("-- Level 1 optimization ... ", false);
+        three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
+    }
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 252) {
@@ -166,11 +166,11 @@ static void compile() {
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
-    // if (context->optim_2_code > 0) {
-    //     verbose("OK", true);
-    //     verbose("-- Level 2 optimization ... ", false);
-    //     register_allocation(asm_ast.get(), context->optim_2_code);
-    // }
+    if (context->optim_2_code > 0) {
+        verbose("OK", true);
+        verbose("-- Level 2 optimization ... ", false);
+        register_allocation(asm_ast.get(), context->optim_2_code);
+    }
     convert_symbol_table(asm_ast.get());
     fix_stack(asm_ast.get());
     verbose("OK", true);

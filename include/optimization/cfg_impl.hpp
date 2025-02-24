@@ -789,7 +789,7 @@ static bool propagate_copies_add_data_index(TacCopy* node, size_t instruction_in
     }
 }
 
-static void eliminate_dead_store_add_data_name(const TIdentifier& name) {
+static void eliminate_dead_store_add_data_name(TIdentifier name) {
     if (context->control_flow_graph->identifier_id_map.find(name)
         == context->control_flow_graph->identifier_id_map.end()) {
         context->control_flow_graph->identifier_id_map[name] = context->data_flow_analysis->set_size;

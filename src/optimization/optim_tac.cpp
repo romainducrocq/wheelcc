@@ -1506,9 +1506,7 @@ static bool is_constant_same_value(TacConstant* node_1, TacConstant* node_2) {
     return false;
 }
 
-static bool is_variable_same_value(TacVariable* node_1, TacVariable* node_2) {
-    return node_1->name.compare(node_2->name) == 0;
-}
+static bool is_variable_same_value(TacVariable* node_1, TacVariable* node_2) { return node_1->name == node_2->name; }
 
 static bool is_same_value(TacValue* node_1, TacValue* node_2) {
     if (node_1->type() == node_2->type()) {
@@ -1524,12 +1522,12 @@ static bool is_same_value(TacValue* node_1, TacValue* node_2) {
     return false;
 }
 
-static bool is_name_same_value(TacValue* node, const TIdentifier& name) {
+static bool is_name_same_value(TacValue* node, TIdentifier name) {
     switch (node->type()) {
         case AST_T::TacConstant_t:
             return false;
         case AST_T::TacVariable_t:
-            return static_cast<TacVariable*>(node)->name.compare(name) == 0;
+            return static_cast<TacVariable*>(node)->name == name;
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -2548,7 +2546,7 @@ static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instru
     }
 }
 
-static void eliminate_dead_store_transfer_src_name_live_values(const TIdentifier& name, size_t next_instruction_index) {
+static void eliminate_dead_store_transfer_src_name_live_values(TIdentifier name, size_t next_instruction_index) {
     size_t i = context->control_flow_graph->identifier_id_map[name];
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
 }
@@ -2696,7 +2694,7 @@ static void eliminate_dead_store_transfer_live_values(TacInstruction* node, size
     }
 }
 
-static void eliminate_dead_store_dst_name_instructions(const TIdentifier& name, size_t instruction_index) {
+static void eliminate_dead_store_dst_name_instructions(TIdentifier name, size_t instruction_index) {
     size_t i = context->control_flow_graph->identifier_id_map[name];
     if (!GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
         set_instruction(nullptr, instruction_index);
