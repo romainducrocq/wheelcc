@@ -31,7 +31,7 @@ static std::string emit_int(TInt value) { return std::to_string(value); }
 static std::string emit_long(TLong value) { return std::to_string(value); }
 
 // double -> $ double
-static std::string emit_double(TULong binary) { return std::to_string(binary); }
+static std::string emit_double(TIdentifier double_constant) { return identifiers->hash_table[double_constant]; }
 
 // uchar -> $ uchar
 static std::string emit_uchar(TUChar value) { return std::to_string(value); }
@@ -781,7 +781,7 @@ static void emit_init_static_variable_top_level(StaticInit* node) {
         }
         case AST_T::DoubleInit_t: {
             directive = ".quad ";
-            directive += emit_double(static_cast<DoubleInit*>(node)->binary);
+            directive += emit_double(static_cast<DoubleInit*>(node)->double_constant);
             break;
         }
         case AST_T::UCharInit_t: {

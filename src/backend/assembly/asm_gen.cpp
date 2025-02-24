@@ -61,20 +61,20 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     return generate_imm_operand(std::to_string(node->value), is_byte, is_quad);
 }
 
-static void generate_double_static_constant_top_level(TIdentifier identifier, TDouble value, TULong binary, TInt byte);
+static void generate_double_static_constant_top_level(
+    TIdentifier identifier, TDouble value, TIdentifier double_constant, TInt byte);
 
-// TODO
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
     TIdentifier double_constant_label;
     {
-        TIdentifier double_constant_hash = make_string_identifier(std::to_string(binary));
-        if (context->double_constant_table.find(double_constant_hash) != context->double_constant_table.end()) {
-            double_constant_label = context->double_constant_table[double_constant_hash];
+        TIdentifier double_constant = make_string_identifier(std::to_string(binary));
+        if (context->double_constant_table.find(double_constant) != context->double_constant_table.end()) {
+            double_constant_label = context->double_constant_table[double_constant];
         }
         else {
             double_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
-            context->double_constant_table[double_constant_hash] = double_constant_label;
-            generate_double_static_constant_top_level(double_constant_label, value, binary, byte);
+            context->double_constant_table[double_constant] = double_constant_label;
+            generate_double_static_constant_top_level(double_constant_label, value, double_constant, byte);
         }
     }
     return std::make_shared<AsmData>(std::move(double_constant_label), 0l);
@@ -2407,10 +2407,12 @@ static void push_static_constant_top_levels(std::unique_ptr<AsmTopLevel>&& stati
     context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
-static void generate_double_static_constant_top_level(TIdentifier identifier, TDouble value, TULong binary, TInt byte) {
+static void generate_double_static_constant_top_level(
+    TIdentifier identifier, TDouble value, TIdentifier double_constant, TInt byte) {
     TIdentifier name = identifier;
     TInt alignment = byte;
-    std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(value, binary);
+    std::shared_ptr<StaticInit> static_init =
+        std::make_shared<DoubleInit>(std::move(value), std::move(double_constant));
     push_static_constant_top_levels(
         std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init)));
 }

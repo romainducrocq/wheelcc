@@ -1698,7 +1698,8 @@ static void checktype_constant_initializer_static_init(CConstant* node, Type* st
                 push_zero_init_static_init(8l);
             }
             else {
-                push_static_init(std::make_shared<DoubleInit>(std::move(value), std::move(binary)));
+                TIdentifier double_constant = make_string_identifier(std::to_string(binary));
+                push_static_init(std::make_shared<DoubleInit>(std::move(value), std::move(double_constant)));
             }
             break;
         }
