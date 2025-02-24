@@ -610,7 +610,12 @@ static void emit_push_instructions(AsmPush* node) {
 static void emit_call_instructions(AsmCall* node) {
     std::string instruction = "call ";
     instruction += emit_identifier(node->name);
-    instruction += "@PLT";
+    if (backend->backend_symbol_table[node->name]->type() != AST_T::BackendFun_t) {
+        RAISE_INTERNAL_ERROR;
+    }
+    else if (!static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get())->is_defined) {
+        instruction += "@PLT";
+    }
     emit(std::move(instruction), 2);
 }
 
