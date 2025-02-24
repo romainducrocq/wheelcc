@@ -30,41 +30,40 @@ AsmGenContext::AsmGenContext() :
 
 // Assembly generation
 
+static std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad) {
+    TIdentifier identifier = make_string_identifier(value);
+    return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(identifier));
+}
+
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
-    TIdentifier value = make_string_identifier(std::to_string(node->value));
-    return std::make_shared<AsmImm>(true, false, std::move(value));
+    return generate_imm_operand(std::to_string(node->value), true, false);
 }
 
 static std::shared_ptr<AsmImm> generate_int_imm_operand(CConstInt* node) {
     bool is_byte = node->value <= 127 && node->value >= -128;
-    TIdentifier value = make_string_identifier(std::to_string(node->value));
-    return std::make_shared<AsmImm>(std::move(is_byte), false, std::move(value));
+    return generate_imm_operand(std::to_string(node->value), is_byte, false);
 }
 
 static std::shared_ptr<AsmImm> generate_long_imm_operand(CConstLong* node) {
     bool is_byte = node->value <= 127l && node->value >= -128l;
     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
-    TIdentifier value = make_string_identifier(std::to_string(node->value));
-    return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
+    return generate_imm_operand(std::to_string(node->value), is_byte, is_quad);
 }
 
 static std::shared_ptr<AsmImm> generate_uchar_imm_operand(CConstUChar* node) {
-    TIdentifier value = make_string_identifier(std::to_string(node->value));
-    return std::make_shared<AsmImm>(true, false, std::move(value));
+    return generate_imm_operand(std::to_string(node->value), true, false);
 }
 
 static std::shared_ptr<AsmImm> generate_uint_imm_operand(CConstUInt* node) {
     bool is_byte = node->value <= 255u;
     bool is_quad = node->value > 2147483647u;
-    TIdentifier value = make_string_identifier(std::to_string(node->value));
-    return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
+    return generate_imm_operand(std::to_string(node->value), is_byte, is_quad);
 }
 
 static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     bool is_byte = node->value <= 255ul;
     bool is_quad = node->value > 2147483647ul;
-    TIdentifier value = make_string_identifier(std::to_string(node->value));
-    return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
+    return generate_imm_operand(std::to_string(node->value), is_byte, is_quad);
 }
 
 static void generate_double_static_constant_top_level(TIdentifier identifier, TDouble value, TULong binary, TInt byte);
@@ -569,7 +568,7 @@ static void generate_8byte_return_instructions(
         TLong size = offset + 2l;
         offset += static_cast<ByteArray*>(assembly_type_src.get())->size - 1l;
         assembly_type_src = std::make_shared<Byte>();
-        std::shared_ptr<AsmOperand> src_shl = std::make_shared<AsmImm>(true, false, "8");
+        std::shared_ptr<AsmOperand> src_shl = generate_imm_operand("8", true, false);
         std::shared_ptr<AssemblyType> assembly_type_shl = std::make_shared<QuadWord>();
         while (offset >= size) {
             {
@@ -841,7 +840,7 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
     }
     push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si, std::move(dst_out_of_range_sd), dst));
     {
-        std::shared_ptr<AsmOperand> upper_bound_si = std::make_shared<AsmImm>(false, true, "9223372036854775808");
+        std::shared_ptr<AsmOperand> upper_bound_si = generate_imm_operand("9223372036854775808", false, true);
         push_instruction(std::make_unique<AsmMov>(assembly_type_si, std::move(upper_bound_si), src_out_of_range_si));
     }
     {
@@ -937,7 +936,7 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
     std::shared_ptr<AsmOperand> dst_out_of_range_si_shr = generate_register(REGISTER_KIND::Dx);
     std::shared_ptr<AssemblyType> assembly_type_si = std::make_shared<QuadWord>();
     {
-        std::shared_ptr<AsmOperand> lower_bound_si = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> lower_bound_si = generate_imm_operand("0", true, false);
         push_instruction(std::make_unique<AsmCmp>(assembly_type_si, std::move(lower_bound_si), src));
     }
     {
@@ -956,7 +955,7 @@ static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node
     }
     {
         std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_si_and = std::make_unique<AsmBitAnd>();
-        std::shared_ptr<AsmOperand> set_bit_si = std::make_shared<AsmImm>(true, false, "1");
+        std::shared_ptr<AsmOperand> set_bit_si = generate_imm_operand("1", true, false);
         push_instruction(std::make_unique<AsmBinary>(
             std::move(binary_op_out_of_range_si_and), assembly_type_si, std::move(set_bit_si), dst_out_of_range_si));
     }
@@ -1077,7 +1076,7 @@ static void generate_bytearray_8byte_stack_arg_fun_call_instructions(
     }
     {
         std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
-        std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(true, false, "8");
+        std::shared_ptr<AsmOperand> src = generate_imm_operand("8", true, false);
         std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
         std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
         push_instruction(std::make_unique<AsmBinary>(
@@ -1205,7 +1204,7 @@ static void generate_8byte_return_fun_call_instructions(
     if (assembly_type_dst->type() == AST_T::ByteArray_t) {
         TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size + offset - 2l;
         assembly_type_dst = std::make_shared<Byte>();
-        std::shared_ptr<AsmOperand> src_shr2op = std::make_shared<AsmImm>(true, false, "8");
+        std::shared_ptr<AsmOperand> src_shr2op = generate_imm_operand("8", true, false);
         std::shared_ptr<AssemblyType> assembly_type_shr2op = std::make_shared<QuadWord>();
         while (offset < size) {
             {
@@ -1359,7 +1358,7 @@ static void generate_unary_operator_arithmetic_negate_instructions(TacUnary* nod
 }
 
 static void generate_unary_operator_conditional_integer_instructions(TacUnary* node) {
-    std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+    std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
     std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
@@ -1387,7 +1386,7 @@ static void generate_unary_operator_conditional_double_instructions(TacUnary* no
         push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src), std::move(reg_zero), std::move(src)));
     }
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
     }
@@ -1468,7 +1467,7 @@ static void generate_binary_operator_arithmetic_unsigned_divide_instructions(Tac
         push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1), src1_dst));
     }
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         std::shared_ptr<AsmOperand> imm_zero_dst = generate_register(REGISTER_KIND::Dx);
         push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(imm_zero), std::move(imm_zero_dst)));
     }
@@ -1522,7 +1521,7 @@ static void generate_binary_operator_arithmetic_unsigned_remainder_instructions(
         push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1), std::move(src1_dst)));
     }
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         push_instruction(std::make_unique<AsmMov>(assembly_type_src1, std::move(imm_zero), dst_src));
     }
     {
@@ -1553,7 +1552,7 @@ static void generate_binary_operator_conditional_integer_instructions(TacBinary*
         push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src1), std::move(src2), std::move(src1)));
     }
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         std::shared_ptr<AssemblyType> assembly_type_dst = generate_assembly_type(node->dst.get());
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
     }
@@ -1579,7 +1578,7 @@ static void generate_binary_operator_conditional_double_instructions(TacBinary* 
         push_instruction(std::make_unique<AsmCmp>(std::move(assembly_type_src1), std::move(src2), std::move(src1)));
     }
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
         push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
     }
@@ -1885,11 +1884,12 @@ static void generate_aggregate_scale_variable_index_add_ptr_instructions(TacAddP
         push_instruction(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
     }
     {
-        bool is_byte = node->scale <= 127l && node->scale >= -128l;
-        bool is_quad = node->scale > 2147483647l || node->scale < -2147483648l;
-        TIdentifier value = make_string_identifier(std::to_string(node->scale));
-        std::shared_ptr<AsmOperand> src =
-            std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(value));
+        std::shared_ptr<AsmOperand> src;
+        {
+            bool is_byte = node->scale <= 127l && node->scale >= -128l;
+            bool is_quad = node->scale > 2147483647l || node->scale < -2147483648l;
+            src = generate_imm_operand(std::to_string(node->scale), is_byte, is_quad);
+        }
         std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmMult>();
         push_instruction(std::make_unique<AsmBinary>(
             std::move(binary_op), std::move(assembly_type_src), std::move(src), std::move(src_dst)));
@@ -2043,7 +2043,7 @@ static void generate_jump_instructions(TacJump* node) {
 
 static void generate_jump_if_zero_integer_instructions(TacJumpIfZero* node) {
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
         std::shared_ptr<AssemblyType> assembly_type_cond = generate_assembly_type(node->condition.get());
         push_instruction(
@@ -2089,7 +2089,7 @@ static void generate_jump_if_zero_instructions(TacJumpIfZero* node) {
 
 static void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero* node) {
     {
-        std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(true, false, "0");
+        std::shared_ptr<AsmOperand> imm_zero = generate_imm_operand("0", true, false);
         std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
         std::shared_ptr<AssemblyType> assembly_type_cond = generate_assembly_type(node->condition.get());
         push_instruction(
