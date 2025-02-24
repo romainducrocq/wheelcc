@@ -244,7 +244,7 @@ static void tokenize_file() {
 }
 
 static bool find_header(std::vector<std::string>& dirnames, std::string& filename) {
-    for (auto dirname : dirnames) {
+    for (std::string dirname : dirnames) {
         dirname += filename;
         if (find_file(dirname)) {
             filename = std::move(dirname);

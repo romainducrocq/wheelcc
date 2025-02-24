@@ -1332,7 +1332,7 @@ Lbreak:
             break;
     }
     std::string type_token_kinds_string = "(";
-    for (const auto& type_token_kind : type_token_kinds) {
+    for (TOKEN_KIND type_token_kind : type_token_kinds) {
         type_token_kinds_string += get_token_kind_hr(type_token_kind);
         type_token_kinds_string += ", ";
     }

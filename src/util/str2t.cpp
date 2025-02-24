@@ -214,7 +214,7 @@ int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal,
 
 std::string string_literal_to_string_constant(const std::vector<int8_t>& string_literal) {
     std::string string_constant = "";
-    for (const auto& byte : string_literal) {
+    for (int8_t byte : string_literal) {
         switch (byte) {
             case 39:
                 string_constant += "\\047";

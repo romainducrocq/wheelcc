@@ -1468,7 +1468,7 @@ static std::unique_ptr<CCompoundInit> checktype_array_compound_init_zero_initial
 static std::unique_ptr<CCompoundInit> checktype_structure_compound_init_zero_initializer(Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_initializers;
     zero_initializers.reserve(frontend->struct_typedef_table[struct_type->tag]->member_names.size());
-    for (const auto& member_name : frontend->struct_typedef_table[struct_type->tag]->member_names) {
+    for (TIdentifier member_name : frontend->struct_typedef_table[struct_type->tag]->member_names) {
         const auto& member = frontend->struct_typedef_table[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = checktype_zero_initializer(member->member_type.get());
         zero_initializers.push_back(std::move(initializer));

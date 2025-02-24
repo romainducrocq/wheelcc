@@ -1129,7 +1129,7 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
             if (context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         struct_sse_size++;
                     }
@@ -1140,7 +1140,7 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_arg_fun_call_instructions(
                             name, offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
@@ -2288,7 +2288,7 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
     size_t reg_size = is_return_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
-    for (const auto& param : node->params) {
+    for (TIdentifier param : node->params) {
         if (frontend->symbol_table[param]->type_t->type() == AST_T::Double_t) {
             if (sse_size < 8) {
                 generate_reg_param_function_instructions(param, context->ARG_SSE_REGISTERS[sse_size]);
@@ -2317,7 +2317,7 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             if (context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         struct_sse_size++;
                     }
@@ -2328,7 +2328,7 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (const auto struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_param_function_instructions(
                             param, offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
