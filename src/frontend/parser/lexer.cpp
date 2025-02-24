@@ -258,11 +258,11 @@ static void tokenize_header(std::string filename, size_t line_number) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
         filename.pop_back();
-        hash_t filename_hash = string_to_hash(filename);
-        if (context->filename_include_set.find(filename_hash) != context->filename_include_set.end()) {
+        hash_t filename_include = string_to_hash(filename);
+        if (context->filename_include_set.find(filename_include) != context->filename_include_set.end()) {
             return;
         }
-        context->filename_include_set.insert(filename_hash);
+        context->filename_include_set.insert(filename_include);
         if (!find_header(context->stdlibdirs, filename)) {
             if (!find_header(*context->p_includedirs, filename)) {
                 raise_runtime_error_at_line(
@@ -273,11 +273,11 @@ static void tokenize_header(std::string filename, size_t line_number) {
     else {
         filename = filename.substr(filename.find('"') + 1);
         filename.pop_back();
-        hash_t filename_hash = string_to_hash(filename);
-        if (context->filename_include_set.find(filename_hash) != context->filename_include_set.end()) {
+        hash_t filename_include = string_to_hash(filename);
+        if (context->filename_include_set.find(filename_include) != context->filename_include_set.end()) {
             return;
         }
-        context->filename_include_set.insert(filename_hash);
+        context->filename_include_set.insert(filename_include);
         if (!find_header(*context->p_includedirs, filename)) {
             raise_runtime_error_at_line(
                 GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
