@@ -61,10 +61,9 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     return generate_imm_operand(std::to_string(node->value), is_byte, is_quad);
 }
 
-static void generate_double_static_constant_top_level(
-    TIdentifier identifier, TDouble value, TIdentifier double_constant, TInt byte);
+static void generate_double_static_constant_top_level(TIdentifier identifier, TIdentifier double_constant, TInt byte);
 
-static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble value, TULong binary, TInt byte) {
+static std::shared_ptr<AsmData> generate_double_static_constant_operand(TULong binary, TInt byte) {
     TIdentifier double_constant_label;
     {
         TIdentifier double_constant = make_string_identifier(std::to_string(binary));
@@ -74,7 +73,7 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
         else {
             double_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
             context->double_constant_table[double_constant] = double_constant_label;
-            generate_double_static_constant_top_level(double_constant_label, value, double_constant, byte);
+            generate_double_static_constant_top_level(double_constant_label, double_constant, byte);
         }
     }
     return std::make_shared<AsmData>(std::move(double_constant_label), 0l);
@@ -82,12 +81,8 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TDouble 
 
 static std::shared_ptr<AsmData> generate_double_constant_operand(CConstDouble* node) {
     TULong binary = double_to_binary(node->value);
-    if (binary == 9223372036854775808ul) {
-        return generate_double_static_constant_operand(-0.0, 9223372036854775808ul, 16);
-    }
-    else {
-        return generate_double_static_constant_operand(node->value, binary, 8);
-    }
+    TInt byte = binary == 9223372036854775808ul ? 16 : 8;
+    return generate_double_static_constant_operand(binary, byte);
 }
 
 static std::shared_ptr<AsmOperand> generate_constant_operand(TacConstant* node) {
@@ -811,8 +806,7 @@ static void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt* node)
 static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node) {
     TIdentifier target_out_of_range = represent_label_identifier(LABEL_KIND::Lsd2si_out_of_range);
     TIdentifier target_after = represent_label_identifier(LABEL_KIND::Lsd2si_after);
-    std::shared_ptr<AsmOperand> upper_bound_sd =
-        generate_double_static_constant_operand(9223372036854775808.0, 4890909195324358656ul, 8);
+    std::shared_ptr<AsmOperand> upper_bound_sd = generate_double_static_constant_operand(4890909195324358656ul, 8);
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AsmOperand> dst_out_of_range_sd = generate_register(REGISTER_KIND::Xmm1);
@@ -1337,7 +1331,7 @@ static void generate_unary_operator_arithmetic_double_negate_instructions(TacUna
     }
     {
         std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
-        std::shared_ptr<AsmOperand> src2 = generate_double_static_constant_operand(-0.0, 9223372036854775808ul, 16);
+        std::shared_ptr<AsmOperand> src2 = generate_double_static_constant_operand(9223372036854775808ul, 16);
         push_instruction(std::make_unique<AsmBinary>(
             std::move(binary_op), std::move(assembly_type_src1), std::move(src2), std::move(src1_dst)));
     }
@@ -2407,12 +2401,10 @@ static void push_static_constant_top_levels(std::unique_ptr<AsmTopLevel>&& stati
     context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
-static void generate_double_static_constant_top_level(
-    TIdentifier identifier, TDouble value, TIdentifier double_constant, TInt byte) {
+static void generate_double_static_constant_top_level(TIdentifier identifier, TIdentifier double_constant, TInt byte) {
     TIdentifier name = identifier;
     TInt alignment = byte;
-    std::shared_ptr<StaticInit> static_init =
-        std::make_shared<DoubleInit>(std::move(value), std::move(double_constant));
+    std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(std::move(double_constant));
     push_static_constant_top_levels(
         std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init)));
 }

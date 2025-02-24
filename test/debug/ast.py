@@ -48,7 +48,7 @@ ast = [
     ["ULongInit", [(TULong, "value")], []],
     ["CharInit", [(TChar, "value")], []],
     ["UCharInit", [(TUChar, "value")], []],
-    ["DoubleInit", [(TDouble, "value"), (TIdentifier, "double_constant")], []],
+    ["DoubleInit", [(TIdentifier, "double_constant")], []],
     ["ZeroInit", [(TLong, "byte")], []],
     ["StringInit", [(Bool, "is_null_terminated"), (TIdentifier, "string_constant")], ["literal"]],
     ["PointerInit", [(TIdentifier, "name")], []],

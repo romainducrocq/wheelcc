@@ -222,7 +222,6 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::DoubleInit_t: {
             field("DoubleInit", "", ++t);
             DoubleInit* p_node = static_cast<DoubleInit*>(node);
-            field("TDouble", std::to_string(p_node->value), t + 1);
             field("TIdentifier", identifiers->hash_table[p_node->double_constant], t + 1);
             break;
         }

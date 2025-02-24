@@ -68,7 +68,7 @@ CharInit::CharInit(TChar value) : value(value) {}
 
 UCharInit::UCharInit(TUChar value) : value(value) {}
 
-DoubleInit::DoubleInit(TDouble value, TIdentifier double_constant) : value(value), double_constant(double_constant) {}
+DoubleInit::DoubleInit(TIdentifier double_constant) : double_constant(double_constant) {}
 
 ZeroInit::ZeroInit(TLong byte) : byte(byte) {}
 

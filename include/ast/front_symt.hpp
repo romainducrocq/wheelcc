@@ -110,7 +110,7 @@ struct Structure : Type {
 //             | ULongInit(int)
 //             | CharInit(int)
 //             | UCharInit(int)
-//             | DoubleInit(double, string)
+//             | DoubleInit(string)
 //             | ZeroInit(int)
 //             | StringInit(bool, identifier, string)
 //             | PointerInit(identifier)
@@ -169,9 +169,8 @@ struct UCharInit : StaticInit {
 struct DoubleInit : StaticInit {
     AST_T type() override;
     DoubleInit() = default;
-    DoubleInit(TDouble value, TIdentifier double_constant);
+    DoubleInit(TIdentifier double_constant);
 
-    TDouble value;
     TIdentifier double_constant;
 };
 
