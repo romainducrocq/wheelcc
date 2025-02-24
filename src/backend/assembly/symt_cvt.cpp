@@ -99,7 +99,7 @@ static std::shared_ptr<ByteArray> convert_structure_aggregate_assembly_type(Stru
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
-std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name) {
+std::shared_ptr<AssemblyType> convert_backend_assembly_type(TIdentifier name) {
     switch (frontend->symbol_table[name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
@@ -126,7 +126,7 @@ std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& n
 }
 
 static void convert_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
-    backend->backend_symbol_table[*context->p_symbol] = std::move(node);
+    backend->backend_symbol_table[context->symbol] = std::move(node);
 }
 
 static void convert_double_static_constant() {
@@ -140,7 +140,7 @@ static void convert_string_static_constant(Array* arr_type) {
 }
 
 static void convert_static_constant_top_level(AsmStaticConstant* node) {
-    context->p_symbol = &node->name;
+    context->symbol = node->name;
     switch (node->static_init->type()) {
         case AST_T::DoubleInit_t:
             convert_double_static_constant();
@@ -170,7 +170,7 @@ static void convert_fun_type(FunAttr* node) {
 
 static void convert_obj_type(IdentifierAttr* node) {
     if (node->type() != AST_T::ConstantAttr_t) {
-        std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(*context->p_symbol);
+        std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(context->symbol);
         bool is_static = node->type() == AST_T::StaticAttr_t;
         convert_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(assembly_type)));
     }
@@ -179,7 +179,7 @@ static void convert_obj_type(IdentifierAttr* node) {
 static void convert_program(AsmProgram* node) {
     backend->backend_symbol_table.reserve(frontend->symbol_table.size());
     for (const auto& symbol : frontend->symbol_table) {
-        context->p_symbol = &symbol.first;
+        context->symbol = symbol.first;
         if (symbol.second->type_t->type() == AST_T::FunType_t) {
             convert_fun_type(static_cast<FunAttr*>(symbol.second->attrs.get()));
         }
@@ -191,7 +191,6 @@ static void convert_program(AsmProgram* node) {
     for (const auto& top_level : node->static_constant_top_levels) {
         convert_top_level(top_level.get());
     }
-    context->p_symbol = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -13,11 +13,11 @@
 // Symbol table conversion
 
 struct SymtCvtContext {
-    const TIdentifier* p_symbol;
+    TIdentifier symbol;
 };
 
 TInt generate_type_alignment(Type* type);
-std::shared_ptr<AssemblyType> convert_backend_assembly_type(const TIdentifier& name);
+std::shared_ptr<AssemblyType> convert_backend_assembly_type(TIdentifier name);
 void convert_symbol_table(AsmProgram* node);
 
 #endif
