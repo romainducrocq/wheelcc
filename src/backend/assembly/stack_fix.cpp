@@ -8,6 +8,8 @@
 #include "ast/back_ast.hpp"
 #include "ast/back_symt.hpp"
 
+#include "frontend/intermediate/names.hpp"
+
 #include "backend/assembly/registers.hpp"
 #include "backend/assembly/stack_fix.hpp"
 
@@ -459,7 +461,7 @@ static void replace_pseudo_registers(AsmInstruction* node) {
 // Instruction fix up
 
 std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad) {
-    TIdentifier identifier = make_string_identifier(value);
+    TIdentifier identifier = make_string_identifier(std::move(value));
     return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(identifier));
 }
 
