@@ -130,18 +130,19 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_constant_instructio
 }
 
 static std::unique_ptr<TacPlainOperand> represent_exp_result_string_instructions(CString* node) {
-    // TODO clean
-    TIdentifier static_constant_label;
+    TIdentifier string_constant_label;
     {
-        std::string string_constant = string_literal_to_string_constant(node->literal->value);
-        TIdentifier static_constant_hash = string_to_hash(string_constant);
-        if (frontend->static_constant_table.find(static_constant_hash) != frontend->static_constant_table.end()) {
-            static_constant_label = frontend->static_constant_table[static_constant_hash];
+        TIdentifier string_constant;
+        {
+            std::string value = string_literal_to_string_constant(node->literal->value);
+            string_constant = make_string_identifier(std::move(value));
+        }
+        if (frontend->string_constant_table.find(string_constant) != frontend->string_constant_table.end()) {
+            string_constant_label = frontend->string_constant_table[string_constant];
         }
         else {
-            identifiers->hash_table[static_constant_hash] = std::move(string_constant);
-            static_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
-            frontend->static_constant_table[static_constant_hash] = static_constant_label;
+            string_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
+            frontend->string_constant_table[string_constant] = string_constant_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
@@ -153,16 +154,15 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_string_instructions
                 std::shared_ptr<StaticInit> static_init;
                 {
                     std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init =
-                        std::make_shared<StringInit>(true, std::move(static_constant_hash), std::move(literal));
+                    static_init = std::make_shared<StringInit>(true, std::move(string_constant), std::move(literal));
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
-            frontend->symbol_table[static_constant_label] =
+            frontend->symbol_table[string_constant_label] =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
         }
     }
-    std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(std::move(static_constant_label));
+    std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(std::move(string_constant_label));
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 

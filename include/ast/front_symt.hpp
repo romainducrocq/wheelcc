@@ -319,9 +319,9 @@ struct FrontEndContext {
     uint32_t variable_counter;
     uint32_t structure_counter;
     // Frontend symbol table
-    std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
-    std::unordered_map<TIdentifier, TIdentifier> static_constant_table;
+    std::unordered_map<TIdentifier, TIdentifier> string_constant_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
+    std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
 };
 
 extern std::unique_ptr<FrontEndContext> frontend;
