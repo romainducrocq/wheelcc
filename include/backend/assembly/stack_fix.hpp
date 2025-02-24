@@ -2,6 +2,7 @@
 #define _BACKEND_ASSEMBLY_STACK_FIX_HPP
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -27,6 +28,7 @@ struct StackFixContext {
     std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
 };
 
+std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad);
 std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node);

@@ -30,11 +30,6 @@ AsmGenContext::AsmGenContext() :
 
 // Assembly generation
 
-static std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad) {
-    TIdentifier identifier = make_string_identifier(value);
-    return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(identifier));
-}
-
 static std::shared_ptr<AsmImm> generate_char_imm_operand(CConstChar* node) {
     return generate_imm_operand(std::to_string(node->value), true, false);
 }
