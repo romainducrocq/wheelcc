@@ -39,7 +39,7 @@ static std::unique_ptr<MainContext> context;
 
 // Main
 
-static void verbose(const std::string& out, bool end) {
+static void verbose(std::string&& out, bool end) {
     if (context->is_verbose) {
         std::cout << out;
         if (end) {
@@ -55,7 +55,7 @@ static void debug_tokens(const std::vector<Token>& tokens) {
     }
 }
 
-static void debug_ast(Ast* node, const std::string& name) {
+static void debug_ast(Ast* node, std::string&& name) {
     if (context->is_verbose) {
         pretty_print_ast(node, name);
     }
@@ -187,16 +187,16 @@ static void compile() {
 
     FREE_FRONT_END_CONTEXT;
 
-    //     verbose("-- Code emission ... ", false);
-    //     context->filename += ".s";
-    //     gas_code_emission(std::move(asm_ast), std::move(context->filename));
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 250) {
-    //         debug_asm_code();
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Code emission ... ", false);
+    context->filename += ".s";
+    gas_code_emission(std::move(asm_ast), std::move(context->filename));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 250) {
+        debug_asm_code();
+        return;
+    }
+#endif
 
     FREE_BACK_END_CONTEXT;
 
