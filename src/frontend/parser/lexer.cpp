@@ -341,7 +341,7 @@ static void strip_filename_extension(std::string& filename) { filename = filenam
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
+std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
     file_open_read(filename);
     {
         FileOpenLine file_open_line = {1, 1, filename};
@@ -358,5 +358,5 @@ std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<st
     std::vector<std::string>().swap(includedirs);
     set_filename(filename);
     strip_filename_extension(filename);
-    return std::make_unique<std::vector<Token>>(std::move(tokens));
+    return tokens;
 }

@@ -1,7 +1,6 @@
 #ifndef _FRONTEND_PARSER_LEXER_HPP
 #define _FRONTEND_PARSER_LEXER_HPP
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,6 +16,6 @@ struct Token {
     size_t line;
 };
 
-std::unique_ptr<std::vector<Token>> lexing(std::string& filename, std::vector<std::string>&& includedirs);
+std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& includedirs);
 
 #endif

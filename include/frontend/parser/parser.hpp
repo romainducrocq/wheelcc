@@ -12,6 +12,6 @@ struct CProgram;
 
 // Parser
 
-std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens);
+std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens);
 
 #endif

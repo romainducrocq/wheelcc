@@ -1771,15 +1771,15 @@ static std::unique_ptr<CProgram> parse_program() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<CProgram> parsing(std::unique_ptr<std::vector<Token>> tokens) {
-    context = std::make_unique<ParserContext>(tokens.get());
+std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
+    context = std::make_unique<ParserContext>(&tokens);
     std::unique_ptr<CProgram> c_ast = parse_program();
-    if (context->pop_index != tokens->size()) {
+    if (context->pop_index != tokens.size()) {
         RAISE_INTERNAL_ERROR;
     }
     context.reset();
 
-    tokens.reset();
+    std::vector<Token>().swap(tokens);
     if (!c_ast) {
         RAISE_INTERNAL_ERROR;
     }

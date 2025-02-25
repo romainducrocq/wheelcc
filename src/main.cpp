@@ -120,11 +120,11 @@ static void compile() {
     INIT_ERRORS_CONTEXT;
 
     verbose("-- Lexing ... ", false);
-    std::unique_ptr<std::vector<Token>> tokens = lexing(context->filename, std::move(context->includedirs));
+    std::vector<Token> tokens = lexing(context->filename, std::move(context->includedirs));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 255) {
-        debug_tokens(*tokens);
+        debug_tokens(tokens);
         return;
     }
 #endif
