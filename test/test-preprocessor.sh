@@ -126,7 +126,7 @@ function make_test () {
 
 check_preprocess () {
     let TOTAL+=1
-    
+
     make_test
 
     ${PACKAGE_NAME} ${FILE}.c > /dev/null 2>&1
@@ -175,6 +175,8 @@ check_error () {
         rm ${FILE}
         RESULT="${LIGHT_RED}[n]"
     else
+        # TODO don't remove empty line
+        STDOUT=$(echo "${STDOUT}" | grep -P --invert-match "^$")
         diff -sq <(echo "${STDOUT}") <(
             echo -e -n "\033[1m${TEST_SRC}/"
             for i in $(seq 1 $((${ERR})))
