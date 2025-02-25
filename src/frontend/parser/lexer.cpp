@@ -1,5 +1,6 @@
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "util/fileio.hpp"
@@ -9,6 +10,12 @@
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
+#ifdef __GNUC__
+#if __cplusplus > 201703L
+#define __WITH_CTRE__
+#endif
+#endif
+
 #ifdef __WITH_CTRE__
 #include "ctre/ctre.hpp"
 #include <string_view>
@@ -16,7 +23,27 @@
 #include "boost/regex.hpp"
 #endif
 
-static std::unique_ptr<LexerContext> context;
+#ifndef __WITH_CTRE__
+#define TOKEN_KIND_SIZE TOKEN_KIND::error + 1
+#endif
+
+struct LexerContext {
+    LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
+
+    TOKEN_KIND re_match_token_kind;
+    std::string re_match_token;
+#ifdef __WITH_CTRE__
+    std::string_view re_iterator_view_slice;
+#else
+    std::string re_capture_groups[TOKEN_KIND_SIZE];
+    std::unique_ptr<const boost::regex> re_compiled_pattern;
+#endif
+    std::vector<Token>* p_tokens;
+    std::vector<std::string>* p_includedirs;
+    std::vector<std::string> stdlibdirs;
+    std::unordered_set<hash_t> filename_include_set;
+    size_t total_line_number;
+};
 
 LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
     p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
@@ -26,6 +53,8 @@ LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string
                                                       }),
     total_line_number(0) {
 }
+
+static std::unique_ptr<LexerContext> context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
