@@ -14,6 +14,12 @@
 #include "frontend/intermediate/names.hpp"
 #include "frontend/intermediate/tac_repr.hpp"
 
+struct TacReprContext {
+    std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
+    std::vector<std::unique_ptr<TacTopLevel>>* p_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>>* p_static_constant_top_levels;
+};
+
 static std::unique_ptr<TacReprContext> context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
