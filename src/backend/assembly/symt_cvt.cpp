@@ -38,8 +38,6 @@ static TInt generate_scalar_type_alignment(Type* type) {
     }
 }
 
-TInt generate_type_alignment(Type* type);
-
 static TInt generate_array_aggregate_type_alignment(Array* arr_type, TLong& size) {
     size = arr_type->size;
     while (arr_type->elem_type->type() == AST_T::Array_t) {

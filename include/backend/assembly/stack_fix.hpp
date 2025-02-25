@@ -20,8 +20,8 @@ struct AsmProgram;
 // Instruction fix up
 
 std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad);
-std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte);
+std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node);
 
 #endif

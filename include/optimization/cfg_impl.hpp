@@ -403,14 +403,14 @@ static void control_flow_graph_initialize() {
 
 // Data flow analysis
 
-bool mask_get(uint64_t mask, size_t bit) {
+static bool mask_get(uint64_t mask, size_t bit) {
     if (bit > 63) {
         bit %= 64;
     }
     return (mask & (static_cast<uint64_t>(1ul) << bit)) > 0;
 }
 
-void mask_set(uint64_t& mask, size_t bit, bool value) {
+static void mask_set(uint64_t& mask, size_t bit, bool value) {
     if (bit > 63) {
         bit %= 64;
     }

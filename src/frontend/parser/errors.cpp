@@ -184,8 +184,6 @@ std::string get_struct_name_hr(TIdentifier name, bool is_union) {
     return type_hr;
 }
 
-std::string get_type_hr(Type* type);
-
 static std::string get_function_type_hr(FunType* fun_type) {
     std::string type_hr = "(";
     type_hr += get_type_hr(fun_type->ret_type.get());
