@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_DIR="$(echo $(dirname $(readlink -f ${0})))"
+PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
 PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
 CC="gcc -pedantic-errors -std=c17"
 
@@ -470,13 +470,9 @@ function compile () {
         if [ ${?} -eq 0 ]; then
             SOURCE_DIR=""
         fi
-        STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
+        ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS}
         if [ ${?} -ne 0 ]; then
-            echo "${STDOUT}"
             raise_error "compilation failed"
-        fi
-        if [ ! -z "${STDOUT}" ]; then
-            echo "${STDOUT}"
         fi
         if [ ${DEBUG_ENUM} -eq 250 ]; then
             cat ${FILE}.${EXT_OUT}
