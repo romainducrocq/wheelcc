@@ -1,6 +1,8 @@
 #ifndef _FRONTEND_INTERMEDIATE_NAMES_HPP
 #define _FRONTEND_INTERMEDIATE_NAMES_HPP
 
+#include <string>
+
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 
