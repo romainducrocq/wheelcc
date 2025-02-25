@@ -1,5 +1,7 @@
+#include <array>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "util/str2t.hpp"
@@ -18,13 +20,30 @@
 #include "backend/assembly/stack_fix.hpp"
 #include "backend/assembly/symt_cvt.hpp"
 
-static std::unique_ptr<AsmGenContext> context;
+enum STRUCT_8B_CLS {
+    INTEGER,
+    SSE,
+    MEMORY
+};
+
+struct AsmGenContext {
+    AsmGenContext();
+
+    std::array<REGISTER_KIND, 6> ARG_REGISTERS;
+    std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS;
+    std::unordered_map<TIdentifier, TIdentifier> double_constant_table;
+    std::unordered_map<TIdentifier, std::vector<STRUCT_8B_CLS>> struct_8b_cls_map;
+    std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
+    std::vector<std::unique_ptr<AsmTopLevel>>* p_static_constant_top_levels;
+};
 
 AsmGenContext::AsmGenContext() :
     ARG_REGISTERS({REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx, REGISTER_KIND::Cx, REGISTER_KIND::R8,
         REGISTER_KIND::R9}),
     ARG_SSE_REGISTERS({REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2, REGISTER_KIND::Xmm3,
         REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7}) {}
+
+static std::unique_ptr<AsmGenContext> context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
