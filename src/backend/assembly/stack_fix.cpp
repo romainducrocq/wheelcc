@@ -9,7 +9,7 @@
 #include "ast/back_ast.hpp"
 #include "ast/back_symt.hpp"
 
-#include "frontend/intermediate/names.hpp"
+#include "frontend/intermediate/idents.hpp"
 
 #include "backend/assembly/registers.hpp"
 #include "backend/assembly/stack_fix.hpp"

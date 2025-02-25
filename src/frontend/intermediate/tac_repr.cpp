@@ -11,7 +11,7 @@
 #include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
 
-#include "frontend/intermediate/names.hpp"
+#include "frontend/intermediate/idents.hpp"
 #include "frontend/intermediate/tac_repr.hpp"
 
 struct TacReprContext {

@@ -13,7 +13,7 @@
 
 #include "frontend/parser/errors.hpp"
 
-#include "frontend/intermediate/names.hpp"
+#include "frontend/intermediate/idents.hpp"
 #include "frontend/intermediate/semantic.hpp"
 
 struct SemanticContext {

@@ -13,7 +13,7 @@
 #include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
 
-#include "frontend/intermediate/names.hpp"
+#include "frontend/intermediate/idents.hpp"
 
 #include "backend/assembly/asm_gen.hpp"
 #include "backend/assembly/registers.hpp"

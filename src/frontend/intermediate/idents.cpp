@@ -6,11 +6,11 @@
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 
-#include "frontend/intermediate/names.hpp"
+#include "frontend/intermediate/idents.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Names
+// Identifiers
 
 TIdentifier make_string_identifier(std::string&& value) {
     TIdentifier identifier = string_to_hash(value);

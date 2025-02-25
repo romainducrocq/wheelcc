@@ -1,5 +1,5 @@
-#ifndef _FRONTEND_INTERMEDIATE_NAMES_HPP
-#define _FRONTEND_INTERMEDIATE_NAMES_HPP
+#ifndef _FRONTEND_INTERMEDIATE_IDENTS_HPP
+#define _FRONTEND_INTERMEDIATE_IDENTS_HPP
 
 #include <string>
 
@@ -9,7 +9,7 @@ struct CExp;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Names
+// Identifiers
 
 enum LABEL_KIND {
     Land_false,

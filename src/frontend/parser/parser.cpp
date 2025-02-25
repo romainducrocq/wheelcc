@@ -16,7 +16,7 @@
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
 
-#include "frontend/intermediate/names.hpp"
+#include "frontend/intermediate/idents.hpp"
 
 struct AbstractDeclarator {
     std::shared_ptr<Type> derived_type;
