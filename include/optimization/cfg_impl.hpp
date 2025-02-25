@@ -208,7 +208,7 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
         {
             if (instructions_back_index != context->p_instructions->size()) {
                 context->control_flow_graph->blocks.back().instructions_back_index = instructions_back_index;
-                ControlFlowBlock block {0, instruction_index, 0, {}, {}};
+                ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
 #if __OPTIM_LEVEL__ == 1
@@ -284,7 +284,7 @@ static void control_flow_graph_initialize() {
         for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
             if (GET_INSTRUCTION(instruction_index)) {
                 if (instructions_back_index == context->p_instructions->size()) {
-                    ControlFlowBlock block {0, instruction_index, 0, {}, {}};
+                    ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
                 }
                 control_flow_graph_initialize_block(instruction_index, instructions_back_index);
