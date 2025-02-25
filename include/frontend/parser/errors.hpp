@@ -5,11 +5,15 @@
 #include <string>
 
 #include "ast/ast.hpp"
-#include "ast/front_ast.hpp"
-#include "ast/front_symt.hpp"
 
 #include "frontend/parser/lexer.hpp"
 #include "messages.hpp" // frontend
+
+struct Type;
+struct CConst;
+struct CUnaryOp;
+struct CBinaryOp;
+struct CStorageClass;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

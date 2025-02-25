@@ -1,8 +1,10 @@
 #ifndef _BACKEND_ASSEMBLY_ASM_GEN_HPP
 #define _BACKEND_ASSEMBLY_ASM_GEN_HPP
 
-#include "ast/back_ast.hpp"
-#include "ast/interm_ast.hpp"
+#include <memory>
+
+struct TacProgram;
+struct AsmProgram;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

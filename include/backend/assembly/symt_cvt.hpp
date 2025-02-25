@@ -4,9 +4,10 @@
 #include <memory>
 
 #include "ast/ast.hpp"
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
-#include "ast/front_symt.hpp"
+
+struct Type;
+struct AssemblyType;
+struct AsmProgram;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

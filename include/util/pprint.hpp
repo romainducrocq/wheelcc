@@ -2,11 +2,12 @@
 #define _UTIL_PPRINT_HPP
 
 #ifndef __NDEBUG__
+#include <string>
 #include <vector>
 
-#include "ast/ast.hpp"
-
 #include "frontend/parser/lexer.hpp"
+
+struct Ast;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
