@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "util/fileio.hpp"
 #include "util/throw.hpp"
 #include "util/util.hpp"
 
@@ -101,7 +102,7 @@ static void compile() {
         context->is_verbose = true;
     }
 
-    INIT_UTIL_CONTEXT;
+    INIT_FILEIO_CONTEXT;
 
     INIT_ERRORS_CONTEXT;
 
@@ -202,7 +203,7 @@ static void compile() {
 
     FREE_IDENTIFIER_CONTEXT;
 
-    FREE_UTIL_CONTEXT;
+    FREE_FILEIO_CONTEXT;
 }
 
 static void shift_args(std::string& arg) {

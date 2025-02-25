@@ -7,7 +7,6 @@
 
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
-#include "util/util.hpp"
 
 std::unique_ptr<ErrorsContext> errors;
 
@@ -15,8 +14,8 @@ std::unique_ptr<ErrorsContext> errors;
 
 // Throw
 
-static void free_resources() {
-    for (auto& file_read : util->file_reads) {
+static void free_fileio() {
+    for (auto& file_read : fileio->file_reads) {
         if (file_read.buffer != nullptr) {
             free(file_read.buffer);
             file_read.buffer = nullptr;
@@ -26,18 +25,18 @@ static void free_resources() {
             file_read.file_descriptor = nullptr;
         }
     }
-    if (util->file_descriptor_write != nullptr) {
-        fclose(util->file_descriptor_write);
-        util->file_descriptor_write = nullptr;
+    if (fileio->file_descriptor_write != nullptr) {
+        fclose(fileio->file_descriptor_write);
+        fileio->file_descriptor_write = nullptr;
     }
 }
 
 static const std::string& get_filename() {
-    if (!util->file_reads.empty()) {
-        return util->file_reads.back().filename;
+    if (!fileio->file_reads.empty()) {
+        return fileio->file_reads.back().filename;
     }
     else {
-        return util->filename;
+        return fileio->filename;
     }
 }
 
@@ -69,7 +68,7 @@ size_t handle_error_at_line(size_t total_line_number) {
 }
 
 [[noreturn]] void raise_runtime_error(const std::string& error_message) {
-    free_resources();
+    free_fileio();
     const std::string& filename = get_filename();
     std::string message = "\n\033[1m";
     message += filename;
@@ -83,7 +82,7 @@ size_t handle_error_at_line(size_t total_line_number) {
     if (line_number == 0) {
         raise_runtime_error(error_message);
     }
-    free_resources();
+    free_fileio();
     const std::string& filename = get_filename();
     std::string line;
     {
@@ -126,7 +125,7 @@ size_t handle_error_at_line(size_t total_line_number) {
 }
 
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
-    free_resources();
+    free_fileio();
     std::string message = "\n\033[1m";
     message += std::string(file);
     message += ":";

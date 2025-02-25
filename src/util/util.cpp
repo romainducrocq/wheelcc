@@ -1,8 +1,4 @@
-#include <memory>
-
 #include "util/util.hpp"
-
-std::unique_ptr<UtilContext> util;
 
 MainContext::MainContext() : is_verbose(false) {}
 
