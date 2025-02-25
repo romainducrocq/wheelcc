@@ -9,7 +9,6 @@
 
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
-#include "util/util.hpp"
 
 #include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
@@ -33,6 +32,20 @@
 
 #include "optimization/optim_tac.hpp"
 #include "optimization/reg_alloc.hpp"
+
+struct MainContext {
+    MainContext();
+
+    bool is_verbose;
+    uint8_t debug_code;
+    uint8_t optim_1_mask;
+    uint8_t optim_2_code;
+    std::string filename;
+    std::vector<std::string> includedirs;
+    std::vector<std::string> args;
+};
+
+MainContext::MainContext() : is_verbose(false) {}
 
 static std::unique_ptr<MainContext> context;
 
