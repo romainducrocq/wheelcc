@@ -37,4 +37,6 @@ CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+IdentifierContext::IdentifierContext() : label_counter(0), variable_counter(0), structure_counter(0) {}
+
 std::unique_ptr<IdentifierContext> identifiers;

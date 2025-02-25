@@ -80,7 +80,6 @@ struct Dummy : Ast {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct BackEndContext {
-    // Backend symbol table
     std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
 };
 

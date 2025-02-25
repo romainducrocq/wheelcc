@@ -312,13 +312,6 @@ struct Dummy : Ast {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct FrontEndContext {
-    FrontEndContext();
-
-    // Names
-    uint32_t label_counter;
-    uint32_t variable_counter;
-    uint32_t structure_counter;
-    // Frontend symbol table
     std::unordered_map<TIdentifier, TIdentifier> string_constant_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
     std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
@@ -329,8 +322,8 @@ extern std::unique_ptr<FrontEndContext> frontend;
 #define FREE_FRONT_END_CONTEXT frontend.reset()
 
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
-    frontend->struct_typedef_table[(X)]->members[frontend->struct_typedef_table[(X)]->member_names[(Y)]]
+    frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names[Y]]
 #define GET_STRUCT_TYPEDEF_MEMBER_BACK(X) \
-    frontend->struct_typedef_table[(X)]->members[frontend->struct_typedef_table[(X)]->member_names.back()]
+    frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names.back()]
 
 #endif

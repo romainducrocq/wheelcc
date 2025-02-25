@@ -5,7 +5,6 @@
 
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
-#include "ast/front_symt.hpp"
 
 #include "frontend/intermediate/names.hpp"
 
@@ -22,24 +21,24 @@ TIdentifier make_string_identifier(std::string&& value) {
 TIdentifier resolve_label_identifier(TIdentifier label) {
     std::string name = identifiers->hash_table[label];
     name += ".";
-    name += std::to_string(frontend->label_counter);
-    frontend->label_counter++;
+    name += std::to_string(identifiers->label_counter);
+    identifiers->label_counter++;
     return make_string_identifier(std::move(name));
 }
 
 TIdentifier resolve_variable_identifier(TIdentifier variable) {
     std::string name = identifiers->hash_table[variable];
     name += ".";
-    name += std::to_string(frontend->variable_counter);
-    frontend->variable_counter++;
+    name += std::to_string(identifiers->variable_counter);
+    identifiers->variable_counter++;
     return make_string_identifier(std::move(name));
 }
 
 TIdentifier resolve_structure_tag(TIdentifier structure) {
     std::string name = identifiers->hash_table[structure];
     name += ".";
-    name += std::to_string(frontend->structure_counter);
-    frontend->structure_counter++;
+    name += std::to_string(identifiers->structure_counter);
+    identifiers->structure_counter++;
     return make_string_identifier(std::move(name));
 }
 
@@ -134,8 +133,8 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
             RAISE_INTERNAL_ERROR;
     }
     name += ".";
-    name += std::to_string(frontend->label_counter);
-    frontend->label_counter++;
+    name += std::to_string(identifiers->label_counter);
+    identifiers->label_counter++;
     return make_string_identifier(std::move(name));
 }
 
@@ -235,7 +234,7 @@ TIdentifier represent_variable_identifier(CExp* node) {
             RAISE_INTERNAL_ERROR;
     }
     name += ".";
-    name += std::to_string(frontend->variable_counter);
-    frontend->variable_counter++;
+    name += std::to_string(identifiers->variable_counter);
+    identifiers->variable_counter++;
     return make_string_identifier(std::move(name));
 }

@@ -412,6 +412,11 @@ struct Dummy : Ast {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct IdentifierContext {
+    IdentifierContext();
+
+    uint32_t label_counter;
+    uint32_t variable_counter;
+    uint32_t structure_counter;
     std::unordered_map<TIdentifier, std::string> hash_table;
 };
 

@@ -100,5 +100,3 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<FrontEndContext> frontend;
-
-FrontEndContext::FrontEndContext() : label_counter(0), variable_counter(0), structure_counter(0) {}

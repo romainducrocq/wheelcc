@@ -512,19 +512,19 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
         res = represent_exp_result_instructions(node->exp_left.get());
     }
     else {
-        uint32_t label_counter_1 = frontend->label_counter;
-        uint32_t variable_counter_1 = frontend->variable_counter;
-        uint32_t structure_counter_1 = frontend->structure_counter;
+        uint32_t label_counter_1 = identifiers->label_counter;
+        uint32_t variable_counter_1 = identifiers->variable_counter;
+        uint32_t structure_counter_1 = identifiers->structure_counter;
 
         src = represent_exp_instructions(node->exp_right.get());
 
-        uint32_t label_counter_2 = frontend->label_counter;
-        uint32_t variable_counter_2 = frontend->variable_counter;
-        uint32_t structure_counter_2 = frontend->structure_counter;
+        uint32_t label_counter_2 = identifiers->label_counter;
+        uint32_t variable_counter_2 = identifiers->variable_counter;
+        uint32_t structure_counter_2 = identifiers->structure_counter;
 
-        frontend->label_counter = label_counter_1;
-        frontend->variable_counter = variable_counter_1;
-        frontend->structure_counter = structure_counter_1;
+        identifiers->label_counter = label_counter_1;
+        identifiers->variable_counter = variable_counter_1;
+        identifiers->structure_counter = structure_counter_1;
 
         {
             CExp* exp_left = node->exp_right.get();
@@ -542,9 +542,9 @@ static std::unique_ptr<TacExpResult> represent_exp_result_assignment_instruction
             res = represent_exp_result_instructions(exp_left);
             context->p_instructions = p_instructions;
 
-            frontend->label_counter = label_counter_2;
-            frontend->variable_counter = variable_counter_2;
-            frontend->structure_counter = structure_counter_2;
+            identifiers->label_counter = label_counter_2;
+            identifiers->variable_counter = variable_counter_2;
+            identifiers->structure_counter = structure_counter_2;
 
             if (node->unary_op && node->unary_op->type() == AST_T::CPostfix_t) {
                 std::shared_ptr<TacValue> dst = represent_plain_inner_value(node);
