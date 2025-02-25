@@ -5,8 +5,11 @@
 #include <stdio.h>
 #include <string>
 
+#include "util/fileio.hpp"
 #include "util/throw.hpp"
 #include "util/util.hpp"
+
+std::unique_ptr<ErrorsContext> errors;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +46,19 @@ std::string em(const std::string& text) {
     em_text += text;
     em_text += "’\033[0m";
     return em_text;
+}
+
+size_t handle_error_at_line(size_t total_line_number) {
+    for (size_t i = 0; i < errors->file_open_lines.size() - 1; ++i) {
+        if (total_line_number < errors->file_open_lines[i + 1].total_line_number) {
+            set_filename(errors->file_open_lines[i].filename);
+            return total_line_number - errors->file_open_lines[i].total_line_number
+                   + errors->file_open_lines[i].line_number;
+        }
+    }
+    set_filename(errors->file_open_lines.back().filename);
+    return total_line_number - errors->file_open_lines.back().total_line_number
+           + errors->file_open_lines.back().line_number;
 }
 
 [[noreturn]] void raise_argument_error(const std::string& error_message) {

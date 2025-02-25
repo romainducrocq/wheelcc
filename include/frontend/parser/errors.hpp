@@ -2,12 +2,7 @@
 #define _FRONTEND_PARSER_ERRORS_HPP
 
 #include <cstdio>
-#include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
-
-#include "util/throw.hpp"
 
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
@@ -116,22 +111,6 @@ enum ERROR_MESSAGE_SEMANTIC {
     function_redeclared_in_scope,
 };
 
-struct FileOpenLine {
-    size_t line_number;
-    size_t total_line_number;
-    std::string filename;
-};
-
-struct ErrorsContext {
-    size_t line_buffer;
-    std::unordered_map<TIdentifier, size_t> line_buffer_map;
-    std::vector<FileOpenLine> file_open_lines;
-};
-
-extern std::unique_ptr<ErrorsContext> errors;
-#define INIT_ERRORS_CONTEXT errors = std::make_unique<ErrorsContext>()
-#define FREE_ERRORS_CONTEXT errors.reset()
-
 std::string get_token_kind_hr(TOKEN_KIND token_kind);
 std::string get_name_hr(TIdentifier name);
 std::string get_struct_name_hr(TIdentifier name, bool is_union);
@@ -159,8 +138,6 @@ inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
     snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), em(std::forward<TArgs>(args)).c_str()...);
     return std::string(buffer);
 }
-size_t handle_error_at_line(size_t total_line_number);
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
-#define RAISE_RUNTIME_ERROR_AT_LINE(X, Y) raise_runtime_error_at_line((X), handle_error_at_line(Y))
 
 #endif

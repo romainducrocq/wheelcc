@@ -1,11 +1,13 @@
 #include <string>
 
-#include "util/fileio.hpp"
+#include "util/throw.hpp"
+
+#include "ast/ast.hpp"
+#include "ast/front_ast.hpp"
+#include "ast/front_symt.hpp"
 
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
-
-std::unique_ptr<ErrorsContext> errors;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1035,19 +1037,4 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-size_t handle_error_at_line(size_t total_line_number) {
-    for (size_t i = 0; i < errors->file_open_lines.size() - 1; ++i) {
-        if (total_line_number < errors->file_open_lines[i + 1].total_line_number) {
-            set_filename(errors->file_open_lines[i].filename);
-            return total_line_number - errors->file_open_lines[i].total_line_number
-                   + errors->file_open_lines[i].line_number;
-        }
-    }
-    set_filename(errors->file_open_lines.back().filename);
-    return total_line_number - errors->file_open_lines.back().total_line_number
-           + errors->file_open_lines.back().line_number;
 }
