@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -290,20 +291,26 @@ static void arg_parse() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
-    context = std::make_unique<MainContext>();
-    {
-        size_t i = static_cast<size_t>(argc);
-        context->args.reserve(i);
-        for (; i-- > 0;) {
-            std::string arg = argv[i];
-            context->args.emplace_back(std::move(arg));
+    try {
+        context = std::make_unique<MainContext>();
+        {
+            size_t i = static_cast<size_t>(argc);
+            context->args.reserve(i);
+            for (; i-- > 0;) {
+                std::string arg = argv[i];
+                context->args.emplace_back(std::move(arg));
+            }
         }
+
+        arg_parse();
+        compile();
+
+        context.reset();
     }
-
-    arg_parse();
-    compile();
-
-    context.reset();
+    catch (const std::runtime_error& err) {
+        std::cerr << err.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }

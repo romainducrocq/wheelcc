@@ -472,7 +472,7 @@ function compile () {
         fi
         STDOUT=$(${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS} 2>&1)
         if [ ${?} -ne 0 ]; then
-            echo "${STDOUT}" | tail -n +3 1>&2
+            echo "${STDOUT}"
             raise_error "compilation failed"
         fi
         if [ ! -z "${STDOUT}" ]; then
