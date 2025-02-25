@@ -3,8 +3,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 #include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
@@ -17,16 +15,6 @@
 
 // Pseudo register replacement
 // Instruction fix up
-
-struct StackFixContext {
-    StackFixContext();
-
-    // Pseudo register replacement
-    TLong stack_bytes;
-    std::unordered_map<TIdentifier, TLong> pseudo_stack_bytes_map;
-    // Instruction fix up
-    std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
-};
 
 std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad);
 std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);

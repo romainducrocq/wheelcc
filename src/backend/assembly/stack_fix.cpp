@@ -1,5 +1,6 @@
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "util/throw.hpp"
@@ -13,9 +14,19 @@
 #include "backend/assembly/registers.hpp"
 #include "backend/assembly/stack_fix.hpp"
 
-static std::unique_ptr<StackFixContext> context;
+struct StackFixContext {
+    StackFixContext();
+
+    // Pseudo register replacement
+    TLong stack_bytes;
+    std::unordered_map<TIdentifier, TLong> pseudo_stack_bytes_map;
+    // Instruction fix up
+    std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instructions;
+};
 
 StackFixContext::StackFixContext() : stack_bytes(0l) {}
+
+static std::unique_ptr<StackFixContext> context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
