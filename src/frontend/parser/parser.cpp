@@ -18,9 +18,28 @@
 
 #include "frontend/intermediate/names.hpp"
 
-static std::unique_ptr<ParserContext> context;
+struct AbstractDeclarator {
+    std::shared_ptr<Type> derived_type;
+};
+
+struct Declarator {
+    TIdentifier name;
+    std::shared_ptr<Type> derived_type;
+    std::vector<TIdentifier> params;
+};
+
+struct ParserContext {
+    ParserContext(std::vector<Token>* p_tokens);
+
+    std::vector<Token>* p_tokens;
+    Token* next_token;
+    Token* peek_token;
+    size_t pop_index;
+};
 
 ParserContext::ParserContext(std::vector<Token>* p_tokens) : p_tokens(p_tokens), pop_index(0) {}
+
+static std::unique_ptr<ParserContext> context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
