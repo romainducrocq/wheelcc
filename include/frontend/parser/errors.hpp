@@ -6,8 +6,8 @@
 
 #include "ast/ast.hpp"
 
-#include "frontend/parser/lexer.hpp"
 #include "messages.hpp" // frontend
+#include "tokens.hpp"   // frontend
 
 struct Type;
 struct CConst;
