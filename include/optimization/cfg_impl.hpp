@@ -13,6 +13,44 @@
 #define AST_INSTRUCTION TacInstruction
 #endif
 
+struct ControlFlowBlock {
+    size_t size;
+    size_t instructions_front_index;
+    size_t instructions_back_index;
+    std::vector<size_t> predecessor_ids;
+    std::vector<size_t> successor_ids;
+};
+
+struct ControlFlowGraph {
+    size_t entry_id;
+    size_t exit_id;
+    std::vector<size_t> entry_successor_ids;
+    std::vector<size_t> exit_predecessor_ids;
+    std::vector<bool> reaching_code;
+    std::vector<ControlFlowBlock> blocks;
+    std::unordered_map<TIdentifier, size_t> identifier_id_map;
+};
+
+struct DataFlowAnalysis {
+    size_t set_size;
+    size_t mask_size;
+    size_t incoming_index;
+    std::vector<size_t> open_block_ids;
+    std::vector<size_t> block_index_map;
+    std::vector<size_t> instruction_index_map;
+    std::vector<uint64_t> blocks_mask_sets;
+    std::vector<uint64_t> instructions_mask_sets;
+    std::unordered_set<TIdentifier> alias_set;
+#if __OPTIM_LEVEL__ == 1
+    // Copy propagation
+    std::vector<size_t> data_index_map;
+    std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
+    // Dead store elimination
+#endif
+    size_t static_index;
+    size_t addressed_index;
+};
+
 static void set_instruction(std::unique_ptr<AST_INSTRUCTION>&& instruction, size_t instruction_index);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

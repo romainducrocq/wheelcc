@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <array>
 #include <inttypes.h>
 #include <memory>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -14,7 +16,22 @@
 
 #include "optimization/optim_tac.hpp"
 
-static std::unique_ptr<OptimTacContext> context;
+struct ControlFlowGraph;
+struct DataFlowAnalysis;
+
+struct OptimTacContext {
+    OptimTacContext(uint8_t optim_1_mask);
+
+    // Constant folding
+    // Unreachable code elimination
+    // Copy propagation
+    // Dead store elimination
+    bool is_fixed_point;
+    std::array<bool, 5> enabled_optimizations;
+    std::unique_ptr<ControlFlowGraph> control_flow_graph;
+    std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
+    std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
+};
 
 OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
     is_fixed_point(true),
@@ -25,6 +42,8 @@ OptimTacContext::OptimTacContext(uint8_t optim_1_mask) :
         (optim_1_mask & (static_cast<uint8_t>(1u) << 3)) > 0, // Enable dead store elimination
         (optim_1_mask & ~(static_cast<uint8_t>(1u) << 0)) > 0 // Optimize with control flow graph
     }) {}
+
+static std::unique_ptr<OptimTacContext> context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

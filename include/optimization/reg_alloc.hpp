@@ -3,13 +3,11 @@
 
 #include <inttypes.h>
 
-#include "ast/back_ast.hpp"
+struct AsmProgram;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Register allocation
-
-struct RegAllocContext {};
 
 void register_allocation(AsmProgram* node, uint8_t optim_2_code);
 
