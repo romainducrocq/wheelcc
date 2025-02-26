@@ -139,7 +139,8 @@ template <typename TErrorMessage> inline std::string get_error_message(TErrorMes
 template <typename TErrorMessage, typename... TArgs>
 inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
     char buffer[1024];
-    snprintf(buffer, sizeof(buffer), get_error_message(message).c_str(), em(std::forward<TArgs>(args)).c_str()...);
+    snprintf(
+        buffer, sizeof(buffer), get_error_message(message).c_str(), std::string(std::forward<TArgs>(args)).c_str()...);
     return std::string(buffer);
 }
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)

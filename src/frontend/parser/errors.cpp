@@ -418,15 +418,15 @@ std::string get_what_message(ERROR_MESSAGE_ARGUMENT message) {
         case ERROR_MESSAGE_ARGUMENT::no_debug_code_in_argument:
             return "no debug code passed in first argument";
         case ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument:
-            return "invalid debug code %s passed in first argument";
+            return "invalid debug code " EM_VARG " passed in first argument";
         case ERROR_MESSAGE_ARGUMENT::no_optim_1_mask_in_argument:
             return "no level 1 optimization mask passed in second argument";
         case ERROR_MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument:
-            return "invalid level 1 optimization mask %s passed in second argument";
+            return "invalid level 1 optimization mask " EM_VARG " passed in second argument";
         case ERROR_MESSAGE_ARGUMENT::no_optim_2_code_in_argument:
             return "no level 2 optimization code passed in third argument";
         case ERROR_MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument:
-            return "invalid level 2 optimization code %s passed in third argument";
+            return "invalid level 2 optimization code " EM_VARG " passed in third argument";
         case ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument:
             return "no input file passed in fourth argument";
         case ERROR_MESSAGE_ARGUMENT::no_include_directories_in_argument:
@@ -439,15 +439,15 @@ std::string get_what_message(ERROR_MESSAGE_ARGUMENT message) {
 std::string get_what_message(ERROR_MESSAGE_UTIL message) {
     switch (message) {
         case ERROR_MESSAGE_UTIL::failed_to_read_input_file:
-            return "cannot read input file %s";
+            return "cannot read input file " EM_VARG;
         case ERROR_MESSAGE_UTIL::failed_to_write_to_output_file:
-            return "cannot write output file %s";
+            return "cannot write output file " EM_VARG;
         case ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_integer:
-            return "cannot interpret string %s to an integer value";
+            return "cannot interpret string " EM_VARG " to an integer value";
         case ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_unsigned_integer:
-            return "cannot interpret string %s to an unsigned integer value";
+            return "cannot interpret string " EM_VARG " to an unsigned integer value";
         case ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_float:
-            return "cannot interpret string %s to a floating point value";
+            return "cannot interpret string " EM_VARG " to a floating point value";
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -456,10 +456,10 @@ std::string get_what_message(ERROR_MESSAGE_UTIL message) {
 std::string get_what_message(ERROR_MESSAGE_LEXER message) {
     switch (message) {
         case ERROR_MESSAGE_LEXER::invalid_token:
-            return "found invalid token %s";
+            return "found invalid token " EM_VARG;
         case ERROR_MESSAGE_LEXER::failed_to_include_header_file: {
-            std::string what_message = "cannot find %s header file in ";
-            what_message += em("include");
+            std::string what_message = "cannot find " EM_VARG " header file in ";
+            what_message += EM_CSTR("include");
             what_message += " directive search";
             return what_message;
         }
@@ -471,254 +471,254 @@ std::string get_what_message(ERROR_MESSAGE_LEXER message) {
 std::string get_what_message(ERROR_MESSAGE_PARSER message) {
     switch (message) {
         case ERROR_MESSAGE_PARSER::unexpected_next_token:
-            return "found token %s, but expected %s next";
+            return "found token " EM_VARG ", but expected " EM_VARG " next";
         case ERROR_MESSAGE_PARSER::reached_end_of_file:
             return "reached end of file, but expected declaration or statement next";
         case ERROR_MESSAGE_PARSER::number_too_large_for_long_constant:
-            return "cannot represent %s as a 64 bits signed integer constant, very large number";
+            return "cannot represent " EM_VARG " as a 64 bits signed integer constant, very large number";
         case ERROR_MESSAGE_PARSER::number_too_large_for_unsigned_long_constant:
-            return "cannot represent %s as a 64 bits unsigned integer constant, very large number";
+            return "cannot represent " EM_VARG " as a 64 bits unsigned integer constant, very large number";
         case ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer:
-            return "illegal array size %s, requires a constant integer";
+            return "illegal array size " EM_VARG ", requires a constant integer";
         case ERROR_MESSAGE_PARSER::case_value_not_a_constant_integer: {
             std::string what_message = "illegal ";
-            what_message += em("case");
-            what_message += " value %s, requires a constant integer";
+            what_message += EM_CSTR("case");
+            what_message += " value " EM_VARG ", requires a constant integer";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_unary_operator: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_complement));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_complement));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_negation));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_not));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_not));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_binary_operator: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_addition));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_addition));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_plus));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_plus));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_increment));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_increment));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_negation));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_difference));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_difference));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_decrement));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_decrement));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_product));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_product));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_division));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_division));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_remainder));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_remainder));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitand));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitand));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_and));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_and));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_or));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_or));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_equalto));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_equalto));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_notequal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_notequal));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_abstract_declarator: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::brackets_open));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::brackets_open));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_pointer_unary_factor: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitand));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitand));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_primary_expression_factor: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::constant));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::constant));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::long_constant));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::long_constant));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::char_constant));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::char_constant));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::float_constant));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::float_constant));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unsigned_constant));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unsigned_constant));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unsigned_long_constant));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unsigned_long_constant));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::identifier));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::identifier));
             what_message += ", ";
             {
                 std::string token_kind_hr = get_token_kind_hr(TOKEN_KIND::identifier);
                 token_kind_hr += get_token_kind_hr(TOKEN_KIND::parenthesis_open);
-                what_message += em(token_kind_hr);
+                what_message += EM_CSTR(token_kind_hr);
             }
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::string_literal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::string_literal));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_expression: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_addition));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_addition));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::unop_negation));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_negation));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_division));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_division));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_remainder));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_remainder));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitand));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitand));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_equalto));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_equalto));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_notequal));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_notequal));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_and));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_and));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_or));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_or));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_simple));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_simple));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_plus));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_plus));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_difference));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_difference));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_product));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_product));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::ternary_if));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::ternary_if));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::function_declared_in_for_initial: {
-            std::string what_message = "function %s declared in ";
-            what_message += em("for");
+            std::string what_message = "function " EM_VARG " declared in ";
+            what_message += EM_CSTR("for");
             what_message += " loop initial declaration";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::identifier));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::identifier));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_close));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_close));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_char));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_char));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_int));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_int));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_long));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_long));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_double));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_double));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_unsigned));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_unsigned));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_signed));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_signed));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_void));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_void));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_struct));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_struct));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_union));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_union));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_static));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_static));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_extern));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_extern));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::brackets_open));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::brackets_open));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier_list:
-            return "found tokens %s, but expected valid list of unique type specifiers next";
+            return "found tokens " EM_VARG ", but expected valid list of unique type specifiers next";
         case ERROR_MESSAGE_PARSER::unexpected_storage_class: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_static));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_static));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_extern));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_extern));
             what_message += " next";
             return what_message;
         }
@@ -727,39 +727,39 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
         case ERROR_MESSAGE_PARSER::type_derivation_on_function_declaration:
             return "cannot apply further type derivation to function declaration";
         case ERROR_MESSAGE_PARSER::unexpected_simple_declarator: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::identifier));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::identifier));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_parameter_list: {
-            std::string what_message = "found token %s, but expected ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_void));
+            std::string what_message = "found token " EM_VARG ", but expected ";
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_void));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_char));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_char));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_int));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_int));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_long));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_long));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_double));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_double));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_unsigned));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_unsigned));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_signed));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_signed));
             what_message += ", ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_struct));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_struct));
             what_message += " or ";
-            what_message += em(get_token_kind_hr(TOKEN_KIND::key_union));
+            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_union));
             what_message += " next";
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage:
-            return "data structure type declared with member %s with %s storage class";
+            return "data structure type declared with member " EM_VARG " with " EM_VARG " storage class";
         case ERROR_MESSAGE_PARSER::member_declared_as_function:
-            return "data structure type declared with member %s as a function";
+            return "data structure type declared with member " EM_VARG " as a function";
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -768,270 +768,276 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
 std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
     switch (message) {
         case ERROR_MESSAGE_SEMANTIC::array_of_incomplete_type:
-            return "array type %s of incomplete type %s, requires a complete type";
+            return "array type " EM_VARG " of incomplete type " EM_VARG ", requires a complete type";
         case ERROR_MESSAGE_SEMANTIC::joint_pointer_type_mismatch:
-            return "pointer type mismatch %s and %s in operator";
+            return "pointer type mismatch " EM_VARG " and " EM_VARG " in operator";
         case ERROR_MESSAGE_SEMANTIC::function_used_as_variable:
-            return "function %s used as a variable";
+            return "function " EM_VARG " used as a variable";
         case ERROR_MESSAGE_SEMANTIC::illegal_conversion_from_type_to:
-            return "illegal cast, cannot convert expression from type %s to %s";
+            return "illegal cast, cannot convert expression from type " EM_VARG " to " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::unary_on_invalid_operand_type:
-            return "cannot apply unary operator %s on operand type %s";
+            return "cannot apply unary operator " EM_VARG " on operand type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_type:
-            return "cannot apply binary operator %s on operand type %s";
+            return "cannot apply binary operator " EM_VARG " on operand type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types:
-            return "cannot apply binary operator %s on operand types %s and %s";
+            return "cannot apply binary operator " EM_VARG " on operand types " EM_VARG " and " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::assignment_to_void_type: {
             std::string what_message = "cannot assign ";
-            what_message += em("=");
+            what_message += EM_CSTR("=");
             what_message += " to left operand type ";
-            what_message += em("void");
+            what_message += EM_CSTR("void");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue:
-            return "assignment %s requires lvalue left operand, but got rvalue";
+            return "assignment " EM_VARG " requires lvalue left operand, but got rvalue";
         case ERROR_MESSAGE_SEMANTIC::conditional_on_invalid_condition_type: {
             std::string what_message = "cannot apply conditional ";
-            what_message += em("?");
-            what_message += " on condition operand type %s";
+            what_message += EM_CSTR("?");
+            what_message += " on condition operand type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types: {
             std::string what_message = "cannot apply ternary operator ";
-            what_message += em(":");
-            what_message += " on operand types %s and %s";
+            what_message += EM_CSTR(":");
+            what_message += " on operand types " EM_VARG " and " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::variable_used_as_function:
-            return "variable %s used as a function";
+            return "variable " EM_VARG " used as a function";
         case ERROR_MESSAGE_SEMANTIC::function_called_with_wrong_number_of_arguments:
-            return "function %s called with %s arguments instead of %s";
+            return "function " EM_VARG " called with " EM_VARG " arguments instead of " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::dereference_non_pointer: {
             std::string what_message = "cannot apply dereference operator ";
-            what_message += em("*");
-            what_message += " on non-pointer type %s";
+            what_message += EM_CSTR("*");
+            what_message += " on non-pointer type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::address_of_rvalue: {
             std::string what_message = "addresssing ";
-            what_message += em("&");
+            what_message += EM_CSTR("&");
             what_message += " requires lvalue operand, but got rvalue";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::subscript_array_with_invalid_types:
-            return "cannot subscript array with operand types %s and %s, requires a complete pointer and an "
+            return "cannot subscript array with operand types " EM_VARG " and " EM_VARG
+                   ", requires a complete pointer and an "
                    "integer types";
         case ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type: {
             std::string what_message = "cannot get size with ";
-            what_message += em("sizeof");
-            what_message += " operator on incomplete type %s";
+            what_message += EM_CSTR("sizeof");
+            what_message += " operator on incomplete type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type: {
-            std::string what_message = "cannot access data structure member %s with dot operator ";
-            what_message += em(".");
-            what_message += " on non-data structure type %s";
+            std::string what_message = "cannot access data structure member " EM_VARG " with dot operator ";
+            what_message += EM_CSTR(".");
+            what_message += " on non-data structure type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::member_not_in_structure_type:
-            return "data structure type %s has no member named %s";
+            return "data structure type " EM_VARG " has no member named " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type: {
-            std::string what_message = "cannot access data structure member %s with arrow operator ";
-            what_message += em("->");
-            what_message += " on non-pointer-to-data structure type %s";
+            std::string what_message = "cannot access data structure member " EM_VARG " with arrow operator ";
+            what_message += EM_CSTR("->");
+            what_message += " on non-pointer-to-data structure type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type: {
-            std::string what_message = "cannot access data structure member %s with arrow operator ";
-            what_message += em("->");
-            what_message += " on incomplete data structure type %s";
+            std::string what_message = "cannot access data structure member " EM_VARG " with arrow operator ";
+            what_message += EM_CSTR("->");
+            what_message += " on incomplete data structure type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::incomplete_structure_type_in_expression:
-            return "incomplete data structure type %s in expression";
+            return "incomplete data structure type " EM_VARG " in expression";
         case ERROR_MESSAGE_SEMANTIC::return_value_in_void_function: {
             std::string what_message = "found ";
-            what_message += em("return");
-            what_message += " value in function %s returning type ";
-            what_message += em("void");
+            what_message += EM_CSTR("return");
+            what_message += " value in function " EM_VARG " returning type ";
+            what_message += EM_CSTR("void");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::no_return_value_in_non_void_function: {
             std::string what_message = "found ";
-            what_message += em("return");
-            what_message += " with no value in function %s returning type %s";
+            what_message += EM_CSTR("return");
+            what_message += " with no value in function " EM_VARG " returning type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::if_used_with_condition_type: {
             std::string what_message = "cannot use ";
-            what_message += em("if");
-            what_message += " statement with condition expression type %s";
+            what_message += EM_CSTR("if");
+            what_message += " statement with condition expression type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::while_used_with_condition_type: {
             std::string what_message = "cannot use ";
-            what_message += em("while");
-            what_message += " loop statement with condition expression type %s";
+            what_message += EM_CSTR("while");
+            what_message += " loop statement with condition expression type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::do_while_used_with_condition_type: {
             std::string what_message = "cannot use ";
-            what_message += em("do while");
-            what_message += " loop statement with condition expression type %s";
+            what_message += EM_CSTR("do while");
+            what_message += " loop statement with condition expression type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::for_used_with_condition_type: {
             std::string what_message = "cannot use ";
-            what_message += em("for");
-            what_message += " loop statement with condition expression type %s";
+            what_message += EM_CSTR("for");
+            what_message += " loop statement with condition expression type " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::switch_used_with_match_type: {
             std::string what_message = "cannot use ";
-            what_message += em("switch");
-            what_message += " statement with match expression type %s, requires an integer type";
+            what_message += EM_CSTR("switch");
+            what_message += " statement with match expression type " EM_VARG ", requires an integer type";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch: {
             std::string what_message = "found duplicate ";
-            what_message += em("case");
-            what_message += " value %s in ";
-            what_message += em("switch");
+            what_message += EM_CSTR("case");
+            what_message += " value " EM_VARG " in ";
+            what_message += EM_CSTR("switch");
             what_message += " statement";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::non_char_array_initialized_from_string:
-            return "non-character array type %s initialized from string literal";
+            return "non-character array type " EM_VARG " initialized from string literal";
         case ERROR_MESSAGE_SEMANTIC::string_initialized_with_too_many_characters:
-            return "size %s string literal initialized with %s characters";
+            return "size " EM_VARG " string literal initialized with " EM_VARG " characters";
         case ERROR_MESSAGE_SEMANTIC::array_initialized_with_too_many_initializers:
-            return "size %s array type %s initialized with %s initializers";
+            return "size " EM_VARG " array type " EM_VARG " initialized with " EM_VARG " initializers";
         case ERROR_MESSAGE_SEMANTIC::structure_initialized_with_too_many_members:
-            return "data structure type %s initialized with %s members instead of %s";
+            return "data structure type " EM_VARG " initialized with " EM_VARG " members instead of " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::function_returns_array:
-            return "function %s returns array type %s, instead of pointer type";
+            return "function " EM_VARG " returns array type " EM_VARG ", instead of pointer type";
         case ERROR_MESSAGE_SEMANTIC::function_returns_incomplete_structure_type:
-            return "function %s returns incomplete data structure type %s";
+            return "function " EM_VARG " returns incomplete data structure type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::parameter_with_type_void: {
-            std::string what_message = "function %s declared with parameter %s with type ";
-            what_message += em("void");
+            std::string what_message = "function " EM_VARG " declared with parameter " EM_VARG " with type ";
+            what_message += EM_CSTR("void");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::parameter_with_incomplete_structure_type:
-            return "function %s defined with parameter %s with incomplete data structure type %s";
+            return "function " EM_VARG " defined with parameter " EM_VARG
+                   " with incomplete data structure type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::function_redeclared_with_conflicting_type:
-            return "function %s redeclared with function type %s, but previous declaration has function type %s";
+            return "function " EM_VARG " redeclared with function type " EM_VARG
+                   ", but previous declaration has function type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::function_redefined:
-            return "function %s already defined with function type %s";
+            return "function " EM_VARG " already defined with function type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::non_static_function_redeclared_static: {
-            std::string what_message = "function %s with ";
-            what_message += em("static");
+            std::string what_message = "function " EM_VARG " with ";
+            what_message += EM_CSTR("static");
             what_message += " storage class already declared non-static";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_integer:
-            return "cannot statically initialize pointer type %s from constant %s, requires a constant integer";
+            return "cannot statically initialize pointer type " EM_VARG " from constant " EM_VARG
+                   ", requires a constant integer";
         case ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_null:
-            return "cannot statically initialize pointer type %s from non-null value %s";
+            return "cannot statically initialize pointer type " EM_VARG " from non-null value " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::aggregate_initialized_with_single_initializer:
-            return "aggregate type %s statically initialized with single initializer";
+            return "aggregate type " EM_VARG " statically initialized with single initializer";
         case ERROR_MESSAGE_SEMANTIC::static_non_char_pointer_initialized_from_string:
-            return "non-character pointer type %s statically initialized from string literal";
+            return "non-character pointer type " EM_VARG " statically initialized from string literal";
         case ERROR_MESSAGE_SEMANTIC::static_initialized_with_non_constant:
-            return "cannot statically initialize variable from non-constant type %s, requires a constant";
+            return "cannot statically initialize variable from non-constant type " EM_VARG ", requires a constant";
         case ERROR_MESSAGE_SEMANTIC::scalar_initialized_with_compound_initializer:
-            return "cannot initialize scalar type %s with compound initializer";
+            return "cannot initialize scalar type " EM_VARG " with compound initializer";
         case ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void: {
-            std::string what_message = "variable %s declared with type ";
-            what_message += em("void");
+            std::string what_message = "variable " EM_VARG " declared with type ";
+            what_message += EM_CSTR("void");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type:
-            return "variable %s declared with incomplete data structure type %s";
+            return "variable " EM_VARG " declared with incomplete data structure type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type:
-            return "variable %s redeclared with conflicting type %s, but previously declared with type %s";
+            return "variable " EM_VARG " redeclared with conflicting type " EM_VARG
+                   ", but previously declared with type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage:
-            return "variable %s redeclared with conflicting storage class";
+            return "variable " EM_VARG " redeclared with conflicting storage class";
         case ERROR_MESSAGE_SEMANTIC::extern_variable_defined: {
-            std::string what_message = "illegal initializer, can only declare variable %s with ";
-            what_message += em("extern");
+            std::string what_message = "illegal initializer, can only declare variable " EM_VARG " with ";
+            what_message += EM_CSTR("extern");
             what_message += " storage class";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member:
-            return "data structure type %s declared with duplicate member name %s";
+            return "data structure type " EM_VARG " declared with duplicate member name " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type:
-            return "data structure type %s declared with member %s with incomplete type %s";
+            return "data structure type " EM_VARG " declared with member " EM_VARG " with incomplete type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope:
-            return "data structure type %s already declared in this scope";
+            return "data structure type " EM_VARG " already declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::case_outside_of_switch: {
             std::string what_message = "found ";
-            what_message += em("case");
+            what_message += EM_CSTR("case");
             what_message += " statement outside of ";
-            what_message += em("switch");
+            what_message += EM_CSTR("switch");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::default_outside_of_switch: {
             std::string what_message = "found ";
-            what_message += em("default");
+            what_message += EM_CSTR("default");
             what_message += " statement outside of ";
-            what_message += em("switch");
+            what_message += EM_CSTR("switch");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::more_than_one_default_in_switch: {
             std::string what_message = "found more than one ";
-            what_message += em("default");
+            what_message += EM_CSTR("default");
             what_message += " statement in ";
-            what_message += em("switch");
+            what_message += EM_CSTR("switch");
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::break_outside_of_loop: {
             std::string what_message = "found ";
-            what_message += em("break");
+            what_message += EM_CSTR("break");
             what_message += " statement outside of loop";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop: {
             std::string what_message = "found ";
-            what_message += em("continue");
+            what_message += EM_CSTR("continue");
             what_message += " statement outside of loop";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label: {
             std::string what_message = "found ";
-            what_message += em("goto");
-            what_message += " statement, but target label %s not defined in function %s";
+            what_message += EM_CSTR("goto");
+            what_message += " statement, but target label " EM_VARG " not defined in function " EM_VARG;
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::structure_conflicts_with_previously_declared:
-            return "%s conflicts with data structure type %s previously declared or defined in this scope";
+            return EM_VARG " conflicts with data structure type " EM_VARG
+                           " previously declared or defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::structure_not_defined_in_scope:
-            return "data structure type %s not defined in this scope";
+            return "data structure type " EM_VARG " not defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_not_declared_in_scope:
-            return "variable %s not declared in this scope";
+            return "variable " EM_VARG " not declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::function_not_declared_in_scope:
-            return "function %s not declared in this scope";
+            return "function " EM_VARG " not declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage: {
-            std::string what_message = "variable %s declared with %s storage class in ";
-            what_message += em("for");
+            std::string what_message = "variable " EM_VARG " declared with " EM_VARG " storage class in ";
+            what_message += EM_CSTR("for");
             what_message += " loop initial declaration";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::label_redefined_in_scope:
-            return "label %s already defined in this scope";
+            return "label " EM_VARG " already defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_in_scope:
-            return "variable %s already declared in this scope";
+            return "variable " EM_VARG " already declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::nested_function_defined:
-            return "function %s defined inside another function, but nested function definition are not "
+            return "function " EM_VARG " defined inside another function, but nested function definition are not "
                    "permitted";
         case ERROR_MESSAGE_SEMANTIC::nested_static_function_declared: {
-            std::string what_message = "cannot declare nested function %s in another function with ";
-            what_message += em("static");
+            std::string what_message = "cannot declare nested function " EM_VARG " in another function with ";
+            what_message += EM_CSTR("static");
             what_message += " storage class";
             return what_message;
         }
         case ERROR_MESSAGE_SEMANTIC::function_redeclared_in_scope:
-            return "function %s already declared in this scope";
+            return "function " EM_VARG " already declared in this scope";
         default:
             RAISE_INTERNAL_ERROR;
     }

@@ -40,13 +40,6 @@ static const std::string& get_filename() {
     }
 }
 
-std::string em(const std::string& text) {
-    std::string em_text = "\033[1m‘";
-    em_text += text;
-    em_text += "’\033[0m";
-    return em_text;
-}
-
 size_t handle_error_at_line(size_t total_line_number) {
     for (size_t i = 0; i < errors->file_open_lines.size() - 1; ++i) {
         if (total_line_number < errors->file_open_lines[i + 1].total_line_number) {
