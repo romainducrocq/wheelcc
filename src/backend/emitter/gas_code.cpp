@@ -273,7 +273,12 @@ static std::string emit_type_instruction_suffix(AssemblyType* node) {
 
 static std::string emit_imm_operand(AsmImm* node) {
     std::string operand = "$";
-    operand += emit_identifier(node->value);
+    if (node->is_neg) {
+        operand += emit_long(static_cast<TLong>(node->value));
+    }
+    else {
+        operand += emit_ulong(node->value);
+    }
     return operand;
 }
 

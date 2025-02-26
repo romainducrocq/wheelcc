@@ -25,13 +25,8 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
 
     if (end_ptr == &buffer[0]) {
-        if (line > 0) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_integer, s_int), line);
-        }
-        else {
-            RAISE_INTERNAL_ERROR;
-        }
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_integer, s_int), line);
     }
 
     return intmax;
@@ -49,13 +44,8 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
     uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
 
     if (end_ptr == &buffer[0]) {
-        if (line > 0) {
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_unsigned_integer, s_uint), line);
-        }
-        else {
-            RAISE_INTERNAL_ERROR;
-        }
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_ERROR_MESSAGE(ERROR_MESSAGE_UTIL::failed_to_interpret_string_to_unsigned_integer, s_uint), line);
     }
 
     return uintmax;
@@ -64,8 +54,6 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
 uint32_t uintmax_to_uint32(uintmax_t uintmax) { return static_cast<uint32_t>(uintmax); }
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) { return static_cast<uint64_t>(uintmax); }
-
-uint64_t string_to_uint64(const std::string& s_uint) { return uintmax_to_uint64(string_to_uintmax(s_uint, 0)); }
 
 void string_to_string_literal(const std::string& s_string, std::vector<int8_t>& string_literal) {
     for (size_t byte = 1; byte < s_string.size() - 1; ++byte) {

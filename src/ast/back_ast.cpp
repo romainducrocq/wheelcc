@@ -93,7 +93,8 @@ AST_T AsmStaticVariable::type() { return AST_T::AsmStaticVariable_t; }
 AST_T AsmStaticConstant::type() { return AST_T::AsmStaticConstant_t; }
 AST_T AsmProgram::type() { return AST_T::AsmProgram_t; }
 
-AsmImm::AsmImm(TIdentifier value, bool is_byte, bool is_quad) : value(value), is_byte(is_byte), is_quad(is_quad) {}
+AsmImm::AsmImm(TULong value, bool is_byte, bool is_quad, bool is_neg) :
+    value(value), is_byte(is_byte), is_quad(is_quad), is_neg(is_neg) {}
 
 AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg) : reg(std::move(reg)) {}
 
