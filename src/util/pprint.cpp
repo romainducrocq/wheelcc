@@ -234,8 +234,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::StringInit_t: {
             field("StringInit", "", ++t);
             StringInit* p_node = static_cast<StringInit*>(node);
-            field("Bool", std::to_string(p_node->is_null_terminated), t + 1);
             field("TIdentifier", identifiers->hash_table[p_node->string_constant], t + 1);
+            field("Bool", std::to_string(p_node->is_null_terminated), t + 1);
             print_ast(p_node->literal.get(), t);
             break;
         }
@@ -1423,9 +1423,9 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmImm_t: {
             field("AsmImm", "", ++t);
             AsmImm* p_node = static_cast<AsmImm*>(node);
+            field("TIdentifier", identifiers->hash_table[p_node->value], t + 1);
             field("Bool", std::to_string(p_node->is_byte), t + 1);
             field("Bool", std::to_string(p_node->is_quad), t + 1);
-            field("TIdentifier", identifiers->hash_table[p_node->value], t + 1);
             break;
         }
         case AST_T::AsmRegister_t: {

@@ -1815,7 +1815,7 @@ static void checktype_string_initializer_pointer_static_init(CString* node, Poin
                 std::shared_ptr<StaticInit> static_init;
                 {
                     std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init = std::make_shared<StringInit>(true, std::move(string_constant), std::move(literal));
+                    static_init = std::make_shared<StringInit>(std::move(string_constant), true, std::move(literal));
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
@@ -1838,7 +1838,7 @@ static void checktype_string_initializer_array_static_init(CString* node, Array*
         }
         std::shared_ptr<CStringLiteral> literal = node->literal;
         push_static_init(std::make_shared<StringInit>(
-            std::move(is_null_terminated), std::move(string_constant), std::move(literal)));
+            std::move(string_constant), std::move(is_null_terminated), std::move(literal)));
     }
     if (byte > 0l) {
         push_zero_init_static_init(std::move(byte));

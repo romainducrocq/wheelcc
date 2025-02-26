@@ -473,7 +473,7 @@ static void replace_pseudo_registers(AsmInstruction* node) {
 
 std::shared_ptr<AsmImm> generate_imm_operand(std::string&& value, bool is_byte, bool is_quad) {
     TIdentifier identifier = make_string_identifier(std::move(value));
-    return std::make_shared<AsmImm>(std::move(is_byte), std::move(is_quad), std::move(identifier));
+    return std::make_shared<AsmImm>(std::move(identifier), std::move(is_byte), std::move(is_quad));
 }
 
 std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte) {

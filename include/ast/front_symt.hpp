@@ -112,7 +112,7 @@ struct Structure : Type {
 //             | UCharInit(int)
 //             | DoubleInit(string)
 //             | ZeroInit(int)
-//             | StringInit(bool, identifier, string)
+//             | StringInit(identifier, bool, string)
 //             | PointerInit(identifier)
 struct StaticInit : Ast {
     AST_T type() override;
@@ -185,10 +185,10 @@ struct ZeroInit : StaticInit {
 struct StringInit : StaticInit {
     AST_T type() override;
     StringInit() = default;
-    StringInit(bool is_null_terminated, TIdentifier string_constant, std::shared_ptr<CStringLiteral> literal);
+    StringInit(TIdentifier string_constant, bool is_null_terminated, std::shared_ptr<CStringLiteral> literal);
 
-    bool is_null_terminated;
     TIdentifier string_constant;
+    bool is_null_terminated;
     std::shared_ptr<CStringLiteral> literal;
 };
 

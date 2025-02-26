@@ -160,7 +160,7 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_string_instructions
                 std::shared_ptr<StaticInit> static_init;
                 {
                     std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init = std::make_shared<StringInit>(true, std::move(string_constant), std::move(literal));
+                    static_init = std::make_shared<StringInit>(std::move(string_constant), true, std::move(literal));
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }

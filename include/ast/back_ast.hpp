@@ -200,11 +200,11 @@ struct AsmOperand : Ast {
 struct AsmImm : AsmOperand {
     AST_T type() override;
     AsmImm() = default;
-    AsmImm(bool is_byte, bool is_quad, TIdentifier value);
+    AsmImm(TIdentifier value, bool is_byte, bool is_quad);
 
+    TIdentifier value;
     bool is_byte;
     bool is_quad;
-    TIdentifier value;
 };
 
 struct AsmRegister : AsmOperand {

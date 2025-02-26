@@ -72,8 +72,8 @@ DoubleInit::DoubleInit(TIdentifier double_constant) : double_constant(double_con
 
 ZeroInit::ZeroInit(TLong byte) : byte(byte) {}
 
-StringInit::StringInit(bool is_null_terminated, TIdentifier string_constant, std::shared_ptr<CStringLiteral> literal) :
-    is_null_terminated(is_null_terminated), string_constant(string_constant), literal(std::move(literal)) {}
+StringInit::StringInit(TIdentifier string_constant, bool is_null_terminated, std::shared_ptr<CStringLiteral> literal) :
+    string_constant(string_constant), is_null_terminated(is_null_terminated), literal(std::move(literal)) {}
 
 PointerInit::PointerInit(TIdentifier name) : name(name) {}
 
