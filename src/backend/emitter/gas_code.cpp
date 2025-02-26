@@ -248,11 +248,12 @@ static TInt emit_type_alignment_bytes(AssemblyType* node) {
     }
 }
 
-// Byte     -> $ b
-// LongWord -> $ l
-// QuadWord -> $ q
-// Double   -> $ sd
-static std::string emit_type_instruction_suffix(AssemblyType* node, bool c) {
+// Byte             -> $ b
+// LongWord         -> $ l
+// QuadWord         -> $ q
+// Double if packed -> $ pd
+//             else -> $ sd
+static std::string emit_type_instruction_suffix(AssemblyType* node, bool is_packed) {
     switch (node->type()) {
         case AST_T::Byte_t:
             return "b";
@@ -261,14 +262,10 @@ static std::string emit_type_instruction_suffix(AssemblyType* node, bool c) {
         case AST_T::QuadWord_t:
             return "q";
         case AST_T::BackendDouble_t:
-            return c ? "pd" : "sd";
+            return is_packed ? "pd" : "sd";
         default:
             RAISE_INTERNAL_ERROR;
     }
-}
-
-static std::string emit_type_instruction_suffix(AssemblyType* node) {
-    return emit_type_instruction_suffix(node, false);
 }
 
 static std::string emit_imm_operand(AsmImm* node) {
@@ -384,14 +381,14 @@ static std::string emit_unary_op(AsmUnaryOp* node) {
 // BitShiftLeft     -> $ shl
 // BitShiftRight    -> $ shr
 // BitShrArithmetic -> $ sar
-static std::string emit_binary_op(AsmBinaryOp* node, bool c) {
+static std::string emit_binary_op(AsmBinaryOp* node, bool is_double) {
     switch (node->type()) {
         case AST_T::AsmAdd_t:
             return "add";
         case AST_T::AsmSub_t:
             return "sub";
         case AST_T::AsmMult_t:
-            return c ? "mul" : "imul";
+            return is_double ? "mul" : "imul";
         case AST_T::AsmDivDouble_t:
             return "div";
         case AST_T::AsmBitAnd_t:
@@ -428,7 +425,7 @@ static void emit(std::string&& line, size_t t) {
 
 static void emit_mov_instructions(AsmMov* node) {
     std::string instruction = "mov";
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -441,8 +438,8 @@ static void emit_mov_instructions(AsmMov* node) {
 
 static void emit_mov_sx_instructions(AsmMovSx* node) {
     std::string instruction = "movs";
-    instruction += emit_type_instruction_suffix(node->assembly_type_src.get());
-    instruction += emit_type_instruction_suffix(node->assembly_type_dst.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type_src.get(), false);
+    instruction += emit_type_instruction_suffix(node->assembly_type_dst.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type_src.get());
@@ -458,7 +455,7 @@ static void emit_mov_sx_instructions(AsmMovSx* node) {
 
 static void emit_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
     std::string instruction = "movzb";
-    instruction += emit_type_instruction_suffix(node->assembly_type_dst.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type_dst.get(), false);
     instruction += " ";
     instruction += emit_operand(node->src.get(), 1);
     instruction += ", ";
@@ -479,7 +476,7 @@ static void emit_lea_instructions(AsmLea* node) {
 
 static void emit_cvttsd2si_instructions(AsmCvttsd2si* node) {
     std::string instruction = "cvttsd2si";
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -492,7 +489,7 @@ static void emit_cvttsd2si_instructions(AsmCvttsd2si* node) {
 
 static void emit_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
     std::string instruction = "cvtsi2sd";
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -505,7 +502,7 @@ static void emit_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
 
 static void emit_unary_instructions(AsmUnary* node) {
     std::string instruction = emit_unary_op(node->unary_op.get());
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -515,10 +512,12 @@ static void emit_unary_instructions(AsmUnary* node) {
 }
 
 static void emit_binary_instructions(AsmBinary* node) {
-    bool c = node->assembly_type->type() == AST_T::BackendDouble_t;
-    std::string instruction = emit_binary_op(node->binary_op.get(), c);
-    c = node->binary_op->type() == AST_T::AsmBitXor_t && c;
-    instruction += emit_type_instruction_suffix(node->assembly_type.get(), c);
+    bool is_double = node->assembly_type->type() == AST_T::BackendDouble_t;
+    std::string instruction = emit_binary_op(node->binary_op.get(), is_double);
+    {
+        bool is_packed = node->binary_op->type() == AST_T::AsmBitXor_t && is_double;
+        instruction += emit_type_instruction_suffix(node->assembly_type.get(), is_packed);
+    }
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -531,7 +530,7 @@ static void emit_binary_instructions(AsmBinary* node) {
 
 static void emit_cmp_instructions(AsmCmp* node) {
     std::string instruction = node->assembly_type->type() == AST_T::BackendDouble_t ? "comi" : "cmp";
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -544,7 +543,7 @@ static void emit_cmp_instructions(AsmCmp* node) {
 
 static void emit_idiv_instructions(AsmIdiv* node) {
     std::string instruction = "idiv";
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
@@ -555,7 +554,7 @@ static void emit_idiv_instructions(AsmIdiv* node) {
 
 static void emit_div_instructions(AsmDiv* node) {
     std::string instruction = "div";
-    instruction += emit_type_instruction_suffix(node->assembly_type.get());
+    instruction += emit_type_instruction_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
         TInt byte = emit_type_alignment_bytes(node->assembly_type.get());
