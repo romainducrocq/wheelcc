@@ -19,8 +19,6 @@ struct FileOpenLine {
 };
 
 struct ErrorsContext {
-    ErrorsContext();
-
     char message[1024];
     size_t line_buffer;
     std::unordered_map<hash_t, size_t> line_buffer_map;

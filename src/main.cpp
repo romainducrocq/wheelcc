@@ -107,8 +107,6 @@ static void debug_asm_code() {
 }
 #endif
 
-static void arg_parse();
-
 static void compile() {
     if (context->debug_code > 0
 #ifdef __NDEBUG__
@@ -117,10 +115,6 @@ static void compile() {
     ) {
         context->is_verbose = true;
     }
-
-    INIT_ERRORS_CONTEXT;
-
-    arg_parse();
 
     INIT_FILEIO_CONTEXT;
 
@@ -305,6 +299,10 @@ int main(int argc, char** argv) {
                 context->args.emplace_back(std::move(arg));
             }
         }
+
+        INIT_ERRORS_CONTEXT;
+
+        arg_parse();
 
         compile();
 
