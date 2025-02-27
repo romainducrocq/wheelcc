@@ -129,18 +129,11 @@ const char* get_what_message(ERROR_MESSAGE_UTIL message);
 const char* get_what_message(ERROR_MESSAGE_LEXER message);
 const char* get_what_message(ERROR_MESSAGE_PARSER message);
 const char* get_what_message(ERROR_MESSAGE_SEMANTIC message);
-template <typename TErrorMessage> inline std::string get_error_message(TErrorMessage message) {
-    std::string error_message = "(no. ";
-    error_message += std::to_string(static_cast<int>(message));
-    error_message += ") ";
-    error_message += get_what_message(message);
-    return error_message;
-}
 template <typename TErrorMessage, typename... TArgs>
 inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
     char buffer[1024];
-    snprintf(
-        buffer, sizeof(buffer), get_error_message(message).c_str(), std::string(std::forward<TArgs>(args)).c_str()...);
+    snprintf(buffer, sizeof(buffer), get_what_message(message), static_cast<int>(message),
+        std::string(std::forward<TArgs>(args)).c_str()...);
     return std::string(buffer);
 }
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
