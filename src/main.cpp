@@ -22,7 +22,7 @@
 #include "frontend/parser/lexer.hpp"
 #include "frontend/parser/parser.hpp"
 
-// #include "frontend/intermediate/semantic.hpp"
+#include "frontend/intermediate/semantic.hpp"
 // #include "frontend/intermediate/tac_repr.hpp"
 
 // #include "backend/assembly/asm_gen.hpp"
