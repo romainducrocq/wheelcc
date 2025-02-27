@@ -486,276 +486,53 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             what_message += " value " EM_VARG ", requires a constant integer";
             return what_message;
         }
-        case ERROR_MESSAGE_PARSER::unexpected_unary_operator: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_complement));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_negation));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_not));
-            what_message += " next";
-            return what_message;
-        }
-        case ERROR_MESSAGE_PARSER::unexpected_binary_operator: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_addition));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_plus));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_increment));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_negation));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_difference));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_decrement));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_product));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_division));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_remainder));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitand));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_and));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_or));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_equalto));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_notequal));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
-            what_message += " next";
-            return what_message;
-        }
-        case ERROR_MESSAGE_PARSER::unexpected_abstract_declarator: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::brackets_open));
-            what_message += " next";
-            return what_message;
-        }
-        case ERROR_MESSAGE_PARSER::unexpected_pointer_unary_factor: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitand));
-            what_message += " next";
-            return what_message;
-        }
-        case ERROR_MESSAGE_PARSER::unexpected_primary_expression_factor: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::constant));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::long_constant));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::char_constant));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::float_constant));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unsigned_constant));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unsigned_long_constant));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::identifier));
-            what_message += ", ";
-            {
-                std::string token_kind_hr = get_token_kind_hr(TOKEN_KIND::identifier);
-                token_kind_hr += get_token_kind_hr(TOKEN_KIND::parenthesis_open);
-                what_message += EM_CSTR(token_kind_hr);
-            }
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::string_literal));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
-            what_message += " next";
-            return what_message;
-        }
-        case ERROR_MESSAGE_PARSER::unexpected_expression: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_addition));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::unop_negation));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_division));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_remainder));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitand));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitxor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftleft));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_bitshiftright));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthan));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_lessthanorequal));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthan));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_greaterthanorequal));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_equalto));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_notequal));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_and));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_or));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_simple));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_plus));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_difference));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_product));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_quotient));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_remainder));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitand));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitxor));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftleft));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::assignment_bitshiftright));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::ternary_if));
-            what_message += " next";
-            return what_message;
-        }
+        case ERROR_MESSAGE_PARSER::unexpected_unary_operator:
+            return "found token " EM_VARG ", but expected " EM_CSTR("~") ", " EM_CSTR("-") " or " EM_CSTR("!") " next";
+        case ERROR_MESSAGE_PARSER::unexpected_binary_operator:
+            return "found token " EM_VARG ", but expected " EM_CSTR("+") ", " EM_CSTR("+=") ", " EM_CSTR("++") ", " EM_CSTR("-") ", " 
+                EM_CSTR("-=") ", " EM_CSTR("--") ", " EM_CSTR("*") ", " EM_CSTR("*=") ", " EM_CSTR("/") ", " EM_CSTR("/=") ", " EM_CSTR("%") ", " 
+                EM_CSTR("%=") ", " EM_CSTR("&") ", " EM_CSTR("&=") ", " EM_CSTR("|") ", " EM_CSTR("|=") ", " EM_CSTR("^") ", " EM_CSTR("^=") ", " 
+                EM_CSTR("<<") ", " EM_CSTR("<<=") ", " EM_CSTR(">>") ", " EM_CSTR(">>=") ", " EM_CSTR("&&") ", " EM_CSTR("||") ", " EM_CSTR("==") ", " 
+                EM_CSTR("!=") ", " EM_CSTR("<") ", " EM_CSTR("<=") ", " EM_CSTR(">") " or " EM_CSTR(">=") " next";
+        case ERROR_MESSAGE_PARSER::unexpected_abstract_declarator:
+            return "found token " EM_VARG ", but expected " EM_CSTR("*") ", " EM_CSTR("(") " or " EM_CSTR("[") " next";
+        case ERROR_MESSAGE_PARSER::unexpected_pointer_unary_factor:
+            return "found token " EM_VARG ", but expected " EM_CSTR("*") " or " EM_CSTR("&") " next";
+        case ERROR_MESSAGE_PARSER::unexpected_primary_expression_factor:
+            return "found token " EM_VARG ", but expected " EM_CSTR("const int") ", " EM_CSTR("const long") ", " EM_CSTR("const char") ", " 
+                EM_CSTR("const double") ", " EM_CSTR("const unsigned int") ", " EM_CSTR("const unsigned long") ", " EM_CSTR("identifier") ", " 
+                EM_CSTR("identifier(") ", " EM_CSTR("string literal") " or " EM_CSTR("(") " next";
+        case ERROR_MESSAGE_PARSER::unexpected_expression:
+            return "found token " EM_VARG ", but expected " EM_CSTR("+") ", " EM_CSTR("-") ", " EM_CSTR("*") ", " EM_CSTR("/") ", " 
+                EM_CSTR("%") ", " EM_CSTR("&") ", " EM_CSTR("|") ", " EM_CSTR("^") ", " EM_CSTR("<<") ", " EM_CSTR(">>") ", " EM_CSTR("<") ", " 
+                EM_CSTR("<=") ", " EM_CSTR(">") ", " EM_CSTR(">=") ", " EM_CSTR("==") ", " EM_CSTR("!=") ", " EM_CSTR("&&") ", " EM_CSTR("||") ", " 
+                EM_CSTR("=") ", " EM_CSTR("+=") ", " EM_CSTR("-=") ", " EM_CSTR("*=") ", " EM_CSTR("/=") ", " EM_CSTR("%=") ", " EM_CSTR("&=") ", " 
+                EM_CSTR("|=") ", " EM_CSTR("^=") ", " EM_CSTR("<<=") ", " EM_CSTR(">>=") " or " EM_CSTR("?") " next";
         case ERROR_MESSAGE_PARSER::function_declared_in_for_initial: {
             std::string what_message = "function " EM_VARG " declared in ";
             what_message += EM_CSTR("for");
             what_message += " loop initial declaration";
             return what_message;
         }
-        case ERROR_MESSAGE_PARSER::unexpected_type_specifier: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::identifier));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_close));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_char));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_int));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_long));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_double));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_unsigned));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_signed));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_void));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_struct));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_union));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_static));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_extern));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::binop_multiplication));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::brackets_open));
-            what_message += " next";
-            return what_message;
-        }
+        case ERROR_MESSAGE_PARSER::unexpected_type_specifier:
+            return "found token " EM_VARG ", but expected " EM_CSTR("identifier") ", " EM_CSTR(")") ", " EM_CSTR("char") ", " 
+                EM_CSTR("int") ", " EM_CSTR("long") ", " EM_CSTR("double") ", " EM_CSTR("unsigned") ", " EM_CSTR("signed") ", " 
+                EM_CSTR("void") ", " EM_CSTR("struct") ", " EM_CSTR("union") ", " EM_CSTR("static") ", " EM_CSTR("extern") ", " 
+                EM_CSTR("*") ", " EM_CSTR("(") " or " EM_CSTR("[") " next";
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier_list:
             return "found tokens " EM_VARG ", but expected valid list of unique type specifiers next";
-        case ERROR_MESSAGE_PARSER::unexpected_storage_class: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_static));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_extern));
-            what_message += " next";
-            return what_message;
-        }
+        case ERROR_MESSAGE_PARSER::unexpected_storage_class:
+            return "found token " EM_VARG ", but expected " EM_CSTR("static") " or " EM_CSTR("extern") " next";
         case ERROR_MESSAGE_PARSER::empty_compound_initializer:
             return "empty compound initializer requires at least one initializer";
         case ERROR_MESSAGE_PARSER::type_derivation_on_function_declaration:
             return "cannot apply further type derivation to function declaration";
-        case ERROR_MESSAGE_PARSER::unexpected_simple_declarator: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::identifier));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::parenthesis_open));
-            what_message += " next";
-            return what_message;
-        }
-        case ERROR_MESSAGE_PARSER::unexpected_parameter_list: {
-            std::string what_message = "found token " EM_VARG ", but expected ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_void));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_char));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_int));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_long));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_double));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_unsigned));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_signed));
-            what_message += ", ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_struct));
-            what_message += " or ";
-            what_message += EM_CSTR(get_token_kind_hr(TOKEN_KIND::key_union));
-            what_message += " next";
-            return what_message;
-        }
+        case ERROR_MESSAGE_PARSER::unexpected_simple_declarator:
+            return "found token " EM_VARG ", but expected " EM_CSTR("identifier") " or " EM_CSTR("(") " next";
+        case ERROR_MESSAGE_PARSER::unexpected_parameter_list:
+            return "found token " EM_VARG ", but expected " EM_CSTR("void") ", " EM_CSTR("char") ", " EM_CSTR("int") ", " 
+                EM_CSTR("long") ", " EM_CSTR("double") ", " EM_CSTR("unsigned") ", " EM_CSTR("signed") ", " EM_CSTR("struct") 
+                " or " EM_CSTR("union") " next";
         case ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage:
             return "data structure type declared with member " EM_VARG " with " EM_VARG " storage class";
         case ERROR_MESSAGE_PARSER::member_declared_as_function:
