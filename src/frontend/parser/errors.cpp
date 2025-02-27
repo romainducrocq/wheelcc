@@ -9,14 +9,6 @@
 #include "frontend/parser/errors.hpp"
 #include "tokens.hpp" // frontend
 
-char _tmp_error_message[1024] = "";
-
-const char* get_argument_message(ERROR_MESSAGE_ARGUMENT message) { return get_what_message(message); }
-const char* get_util_message(ERROR_MESSAGE_UTIL message) { return get_what_message(message); }
-const char* get_lexer_message(ERROR_MESSAGE_LEXER message) { return get_what_message(message); }
-const char* get_parser_message(ERROR_MESSAGE_PARSER message) { return get_what_message(message); }
-const char* get_semantic_message(ERROR_MESSAGE_SEMANTIC message) { return get_what_message(message); }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Errors
@@ -426,7 +418,7 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
 #define EM_VARG "\033[1m‘%s’\033[0m"
 #define RETURN_ERRNO return "(no. %i) "
 
-const char* get_what_message(ERROR_MESSAGE_ARGUMENT message) {
+const char* get_argument_message(ERROR_MESSAGE_ARGUMENT message) {
     switch (message) {
         case ERROR_MESSAGE_ARGUMENT::no_debug_code_in_argument:
             RETURN_ERRNO "no debug code passed in first argument";
@@ -449,7 +441,7 @@ const char* get_what_message(ERROR_MESSAGE_ARGUMENT message) {
     }
 }
 
-const char* get_what_message(ERROR_MESSAGE_UTIL message) {
+const char* get_util_message(ERROR_MESSAGE_UTIL message) {
     switch (message) {
         case ERROR_MESSAGE_UTIL::failed_to_read_input_file:
             RETURN_ERRNO "cannot read input file " EM_VARG;
@@ -466,7 +458,7 @@ const char* get_what_message(ERROR_MESSAGE_UTIL message) {
     }
 }
 
-const char* get_what_message(ERROR_MESSAGE_LEXER message) {
+const char* get_lexer_message(ERROR_MESSAGE_LEXER message) {
     switch (message) {
         case ERROR_MESSAGE_LEXER::invalid_token:
             RETURN_ERRNO "found invalid token " EM_VARG;
@@ -477,7 +469,7 @@ const char* get_what_message(ERROR_MESSAGE_LEXER message) {
     }
 }
 
-const char* get_what_message(ERROR_MESSAGE_PARSER message) {
+const char* get_parser_message(ERROR_MESSAGE_PARSER message) {
     switch (message) {
         case ERROR_MESSAGE_PARSER::unexpected_next_token:
             RETURN_ERRNO "found token " EM_VARG ", but expected " EM_VARG " next";
@@ -558,7 +550,7 @@ const char* get_what_message(ERROR_MESSAGE_PARSER message) {
     }
 }
 
-const char* get_what_message(ERROR_MESSAGE_SEMANTIC message) {
+const char* get_semantic_message(ERROR_MESSAGE_SEMANTIC message) {
     switch (message) {
         case ERROR_MESSAGE_SEMANTIC::array_of_incomplete_type:
             RETURN_ERRNO "array type " EM_VARG " of incomplete type " EM_VARG ", requires a complete type";

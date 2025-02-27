@@ -8,6 +8,8 @@
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
+ErrorsContext::ErrorsContext() : message("") {}
+
 std::unique_ptr<ErrorsContext> errors;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,14 +55,25 @@ size_t handle_error_at_line(size_t total_line_number) {
            + errors->file_open_lines.back().line_number;
 }
 
-[[noreturn]] void raise_argument_error(const std::string& error_message) {
+[[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
+    free_fileio();
+    std::string message = "\033[1m";
+    message += std::string(file); // TODO
+    message += ":";
+    message += std::to_string(line);
+    message += ":\033[0m\n\033[0;31minternal error:\033[0m ";
+    message += std::string(func); // TODO
+    throw std::runtime_error(message);
+}
+
+[[noreturn]] void raise_argument_error(const char* error_message) {
     std::string message = "\033[0;31merror:\033[0m ";
     message += error_message;
     message += "\n";
     throw std::runtime_error(message);
 }
 
-[[noreturn]] void raise_runtime_error(const std::string& error_message) {
+[[noreturn]] void raise_runtime_error(const char* error_message) {
     free_fileio();
     const std::string& filename = get_filename();
     std::string message = "\033[1m";
@@ -71,7 +84,7 @@ size_t handle_error_at_line(size_t total_line_number) {
     throw std::runtime_error(message);
 }
 
-[[noreturn]] void raise_runtime_error_at_line(const std::string& error_message, size_t line_number) {
+[[noreturn]] void raise_runtime_error_at_line(const char* error_message, size_t line_number) {
     if (line_number == 0) {
         raise_runtime_error(error_message);
     }
@@ -114,16 +127,5 @@ size_t handle_error_at_line(size_t total_line_number) {
     message += ": \033[1m";
     message += line;
     message += "\033[0m";
-    throw std::runtime_error(message);
-}
-
-[[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
-    free_fileio();
-    std::string message = "\033[1m";
-    message += std::string(file);
-    message += ":";
-    message += std::to_string(line);
-    message += ":\033[0m\n\033[0;31minternal error:\033[0m ";
-    message += std::string(func);
     throw std::runtime_error(message);
 }
