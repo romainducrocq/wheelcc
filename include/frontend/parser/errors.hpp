@@ -124,20 +124,6 @@ std::string get_storage_class_hr(CStorageClass* node);
 std::string get_unary_op_hr(CUnaryOp* node);
 std::string get_binary_op_hr(CBinaryOp* node);
 std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op);
-const char* get_what_message(ERROR_MESSAGE_ARGUMENT message);
-const char* get_what_message(ERROR_MESSAGE_UTIL message);
-const char* get_what_message(ERROR_MESSAGE_LEXER message);
-const char* get_what_message(ERROR_MESSAGE_PARSER message);
-const char* get_what_message(ERROR_MESSAGE_SEMANTIC message);
-template <typename TErrorMessage, typename... TArgs>
-inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
-    char buffer[1024];
-    snprintf(
-        buffer, sizeof(buffer), get_what_message(message), static_cast<int>(message), std::forward<TArgs>(args)...);
-    return std::string(buffer);
-}
-#define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
-
 #define get_token_kind_hr_c_str(X) get_token_kind_hr(X).c_str()
 #define get_name_hr_c_str(X) get_name_hr(X).c_str()
 #define get_struct_name_hr_c_str(X, Y) get_struct_name_hr(X, Y).c_str()
@@ -147,5 +133,33 @@ inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
 #define get_unary_op_hr_c_str(X) get_unary_op_hr(X).c_str()
 #define get_binary_op_hr_c_str(X) get_binary_op_hr(X).c_str()
 #define get_assignment_hr_c_str(X, Y) get_assignment_hr(X, Y).c_str()
+
+extern char _tmp_error_message[1024];
+
+const char* get_what_message(ERROR_MESSAGE_ARGUMENT message);
+const char* get_what_message(ERROR_MESSAGE_UTIL message);
+const char* get_what_message(ERROR_MESSAGE_LEXER message);
+const char* get_what_message(ERROR_MESSAGE_PARSER message);
+const char* get_what_message(ERROR_MESSAGE_SEMANTIC message);
+template <typename TErrorMessage, typename... TArgs>
+inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
+    snprintf(_tmp_error_message, sizeof(_tmp_error_message), get_what_message(message), static_cast<int>(message),
+        std::forward<TArgs>(args)...);
+    return std::string(_tmp_error_message);
+}
+#define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
+
+const char* get_argument_message(ERROR_MESSAGE_ARGUMENT message);
+const char* get_util_message(ERROR_MESSAGE_UTIL message);
+const char* get_lexer_message(ERROR_MESSAGE_LEXER message);
+const char* get_parser_message(ERROR_MESSAGE_PARSER message);
+const char* get_semantic_message(ERROR_MESSAGE_SEMANTIC message);
+#define TMP_GET_ERROR_MESSAGE(X, Y, ...) \
+    snprintf(_tmp_error_message, sizeof(_tmp_error_message), X(Y), static_cast<int>(Y), __VA_ARGS__)
+#define GET_ARGUMENT_MESSAGE(X, ...) TMP_GET_ERROR_MESSAGE(get_argument_message, X, __VA_ARGS__)
+#define GET_UTIL_MESSAGE(X, ...) TMP_GET_ERROR_MESSAGE(get_util_message, X, __VA_ARGS__)
+#define GET_LEXER_MESSAGE(X, ...) TMP_GET_ERROR_MESSAGE(get_lexer_message, X, __VA_ARGS__)
+#define GET_PARSER_MESSAGE(X, ...) TMP_GET_ERROR_MESSAGE(get_parser_message, X, __VA_ARGS__)
+#define GET_SEMANTIC_MESSAGE(X, ...) TMP_GET_ERROR_MESSAGE(get_semantic_message, X, __VA_ARGS__)
 
 #endif

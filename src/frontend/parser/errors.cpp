@@ -9,6 +9,14 @@
 #include "frontend/parser/errors.hpp"
 #include "tokens.hpp" // frontend
 
+char _tmp_error_message[1024] = "";
+
+const char* get_argument_message(ERROR_MESSAGE_ARGUMENT message) { return get_what_message(message); }
+const char* get_util_message(ERROR_MESSAGE_UTIL message) { return get_what_message(message); }
+const char* get_lexer_message(ERROR_MESSAGE_LEXER message) { return get_what_message(message); }
+const char* get_parser_message(ERROR_MESSAGE_PARSER message) { return get_what_message(message); }
+const char* get_semantic_message(ERROR_MESSAGE_SEMANTIC message) { return get_what_message(message); }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Errors
