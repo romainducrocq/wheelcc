@@ -41,5 +41,6 @@ size_t handle_error_at_line(size_t total_line_number);
 #define RAISE_RUNTIME_ERROR(X) X > 0 ? raise_runtime_error(errors->message) : RAISE_INTERNAL_ERROR
 #define RAISE_RUNTIME_ERROR_AT(X, Y) X > 0 ? raise_runtime_error_at_line(errors->message, Y) : RAISE_INTERNAL_ERROR
 #define RAISE_RUNTIME_ERROR_AT_LINE(X, Y) RAISE_RUNTIME_ERROR_AT(X, handle_error_at_line(Y))
+#define GET_ERROR_MESSAGE(X, ...) snprintf(errors->message, sizeof(char) * 1024, X, __VA_ARGS__)
 
 #endif

@@ -58,17 +58,17 @@ size_t handle_error_at_line(size_t total_line_number) {
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
     free_fileio();
     std::string message = "\033[1m";
-    message += std::string(file); // TODO
+    message += std::string(file);
     message += ":";
     message += std::to_string(line);
     message += ":\033[0m\n\033[0;31minternal error:\033[0m ";
-    message += std::string(func); // TODO
+    message += std::string(func);
     throw std::runtime_error(message);
 }
 
 [[noreturn]] void raise_argument_error(const char* error_message) {
     std::string message = "\033[0;31merror:\033[0m ";
-    message += error_message;
+    message += std::string(error_message);
     message += "\n";
     throw std::runtime_error(message);
 }
@@ -79,7 +79,7 @@ size_t handle_error_at_line(size_t total_line_number) {
     std::string message = "\033[1m";
     message += filename;
     message += ":\033[0m\n\033[0;31merror:\033[0m ";
-    message += error_message;
+    message += std::string(error_message);
     message += "\n";
     throw std::runtime_error(message);
 }
@@ -121,7 +121,7 @@ size_t handle_error_at_line(size_t total_line_number) {
     message += ":";
     message += std::to_string(line_number);
     message += ":\033[0m\n\033[0;31merror:\033[0m ";
-    message += error_message;
+    message += std::string(error_message);
     message += "\nat line ";
     message += std::to_string(line_number);
     message += ": \033[1m";

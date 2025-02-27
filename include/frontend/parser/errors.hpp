@@ -139,7 +139,6 @@ const char* get_util_message(MESSAGE_UTIL message);
 const char* get_lexer_message(MESSAGE_LEXER message);
 const char* get_parser_message(MESSAGE_PARSER message);
 const char* get_semantic_message(MESSAGE_SEMANTIC message);
-#define GET_ERROR_MESSAGE(X, ...) snprintf(errors->message, sizeof(char) * 1024, X, __VA_ARGS__)
 #define GET_ARGUMENT_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_argument_message(X), (int)X, __VA_ARGS__)
 #define GET_UTIL_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_util_message(X), (int)X, __VA_ARGS__)
 #define GET_LEXER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_lexer_message(X), (int)X, __VA_ARGS__)
