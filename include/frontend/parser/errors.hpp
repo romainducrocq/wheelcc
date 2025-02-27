@@ -146,8 +146,6 @@ const char* get_semantic_message(ERROR_MESSAGE_SEMANTIC message);
 #define GET_PARSER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_parser_message(X), (int)X, __VA_ARGS__)
 #define GET_SEMANTIC_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_semantic_message(X), (int)X, __VA_ARGS__)
 #define GET_ARGUMENT_MESSAGE_0(X) GET_ERROR_MESSAGE(get_argument_message(X), (int)X)
-#define GET_UTIL_MESSAGE_0(X) GET_ERROR_MESSAGE(get_util_message(X), (int)X)
-#define GET_LEXER_MESSAGE_0(X) GET_ERROR_MESSAGE(get_lexer_message(X), (int)X)
 #define GET_PARSER_MESSAGE_0(X) GET_ERROR_MESSAGE(get_parser_message(X), (int)X)
 #define GET_SEMANTIC_MESSAGE_0(X) GET_ERROR_MESSAGE(get_semantic_message(X), (int)X)
 

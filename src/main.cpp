@@ -19,7 +19,7 @@
 #include "ast/interm_ast.hpp"
 
 #include "frontend/parser/errors.hpp"
-// #include "frontend/parser/lexer.hpp"
+#include "frontend/parser/lexer.hpp"
 // #include "frontend/parser/parser.hpp"
 
 // #include "frontend/intermediate/semantic.hpp"
