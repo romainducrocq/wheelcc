@@ -23,16 +23,16 @@
 #include "frontend/parser/parser.hpp"
 
 #include "frontend/intermediate/semantic.hpp"
-// #include "frontend/intermediate/tac_repr.hpp"
+#include "frontend/intermediate/tac_repr.hpp"
 
-// #include "backend/assembly/asm_gen.hpp"
-// #include "backend/assembly/stack_fix.hpp"
-// #include "backend/assembly/symt_cvt.hpp"
+#include "backend/assembly/asm_gen.hpp"
+#include "backend/assembly/stack_fix.hpp"
+#include "backend/assembly/symt_cvt.hpp"
 
-// #include "backend/emitter/gas_code.hpp"
+#include "backend/emitter/gas_code.hpp"
 
-// #include "optimization/optim_tac.hpp"
-// #include "optimization/reg_alloc.hpp"
+#include "optimization/optim_tac.hpp"
+#include "optimization/reg_alloc.hpp"
 
 struct MainContext {
     MainContext();
@@ -124,104 +124,104 @@ static void compile() {
 
     INIT_FILEIO_CONTEXT;
 
-    //     verbose("-- Lexing ... ", false);
-    //     std::vector<Token> tokens = lexing(context->filename, std::move(context->includedirs));
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 255) {
-    //         debug_tokens(tokens);
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Lexing ... ", false);
+    std::vector<Token> tokens = lexing(context->filename, std::move(context->includedirs));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 255) {
+        debug_tokens(tokens);
+        return;
+    }
+#endif
 
-    //     INIT_IDENTIFIER_CONTEXT;
+    INIT_IDENTIFIER_CONTEXT;
 
-    //     verbose("-- Parsing ... ", false);
-    //     std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 254) {
-    //         debug_ast(c_ast.get(), "C AST");
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Parsing ... ", false);
+    std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 254) {
+        debug_ast(c_ast.get(), "C AST");
+        return;
+    }
+#endif
 
-    //     INIT_FRONT_END_CONTEXT;
+    INIT_FRONT_END_CONTEXT;
 
-    //     verbose("-- Semantic analysis ... ", false);
-    //     analyze_semantic(c_ast.get());
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 253) {
-    //         debug_ast(c_ast.get(), "C AST");
-    //         debug_string_constant_table();
-    //         debug_struct_typedef_table();
-    //         debug_symbol_table();
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Semantic analysis ... ", false);
+    analyze_semantic(c_ast.get());
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 253) {
+        debug_ast(c_ast.get(), "C AST");
+        debug_string_constant_table();
+        debug_struct_typedef_table();
+        debug_symbol_table();
+        return;
+    }
+#endif
 
-    //     FREE_ERRORS_CONTEXT;
+    FREE_ERRORS_CONTEXT;
 
-    //     verbose("-- TAC representation ... ", false);
-    //     std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
-    //     if (context->optim_1_mask > 0) {
-    //         verbose("OK", true);
-    //         verbose("-- Level 1 optimization ... ", false);
-    //         three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
-    //     }
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 252) {
-    //         debug_ast(tac_ast.get(), "TAC AST");
-    //         debug_string_constant_table();
-    //         debug_struct_typedef_table();
-    //         debug_symbol_table();
-    //         return;
-    //     }
-    // #endif
+    verbose("-- TAC representation ... ", false);
+    std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
+    if (context->optim_1_mask > 0) {
+        verbose("OK", true);
+        verbose("-- Level 1 optimization ... ", false);
+        three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
+    }
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 252) {
+        debug_ast(tac_ast.get(), "TAC AST");
+        debug_string_constant_table();
+        debug_struct_typedef_table();
+        debug_symbol_table();
+        return;
+    }
+#endif
 
-    //     INIT_BACK_END_CONTEXT;
+    INIT_BACK_END_CONTEXT;
 
-    //     verbose("-- Assembly generation ... ", false);
-    //     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
-    //     if (context->optim_2_code > 0) {
-    //         verbose("OK", true);
-    //         verbose("-- Level 2 optimization ... ", false);
-    //         register_allocation(asm_ast.get(), context->optim_2_code);
-    //     }
-    //     convert_symbol_table(asm_ast.get());
-    //     fix_stack(asm_ast.get());
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 251) {
-    //         debug_ast(asm_ast.get(), "ASM AST");
-    //         debug_string_constant_table();
-    //         debug_struct_typedef_table();
-    //         debug_symbol_table();
-    //         debug_backend_symbol_table();
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Assembly generation ... ", false);
+    std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
+    if (context->optim_2_code > 0) {
+        verbose("OK", true);
+        verbose("-- Level 2 optimization ... ", false);
+        register_allocation(asm_ast.get(), context->optim_2_code);
+    }
+    convert_symbol_table(asm_ast.get());
+    fix_stack(asm_ast.get());
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 251) {
+        debug_ast(asm_ast.get(), "ASM AST");
+        debug_string_constant_table();
+        debug_struct_typedef_table();
+        debug_symbol_table();
+        debug_backend_symbol_table();
+        return;
+    }
+#endif
 
-    //     FREE_FRONT_END_CONTEXT;
+    FREE_FRONT_END_CONTEXT;
 
-    //     verbose("-- Code emission ... ", false);
-    //     context->filename += ".s";
-    //     gas_code_emission(std::move(asm_ast), std::move(context->filename));
-    //     verbose("OK", true);
-    // #ifndef __NDEBUG__
-    //     if (context->debug_code == 250) {
-    //         debug_asm_code();
-    //         return;
-    //     }
-    // #endif
+    verbose("-- Code emission ... ", false);
+    context->filename += ".s";
+    gas_code_emission(std::move(asm_ast), std::move(context->filename));
+    verbose("OK", true);
+#ifndef __NDEBUG__
+    if (context->debug_code == 250) {
+        debug_asm_code();
+        return;
+    }
+#endif
 
-    //     FREE_BACK_END_CONTEXT;
+    FREE_BACK_END_CONTEXT;
 
-    //     FREE_IDENTIFIER_CONTEXT;
+    FREE_IDENTIFIER_CONTEXT;
 
-    //     FREE_FILEIO_CONTEXT;
+    FREE_FILEIO_CONTEXT;
 }
 
 static void shift_args(std::string& arg) {
