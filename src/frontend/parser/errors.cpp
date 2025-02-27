@@ -487,27 +487,35 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_unary_operator:
-            return "found token " EM_VARG ", but expected " EM_CSTR("~") ", " EM_CSTR("-") " or " EM_CSTR("!") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘~’\033[0m, \033[1m‘-’\033[0m or "
+                   "\033[1m‘!’\033[0m next";
         case ERROR_MESSAGE_PARSER::unexpected_binary_operator:
-            return "found token " EM_VARG ", but expected " EM_CSTR("+") ", " EM_CSTR("+=") ", " EM_CSTR("++") ", " EM_CSTR("-") ", " 
-                EM_CSTR("-=") ", " EM_CSTR("--") ", " EM_CSTR("*") ", " EM_CSTR("*=") ", " EM_CSTR("/") ", " EM_CSTR("/=") ", " EM_CSTR("%") ", " 
-                EM_CSTR("%=") ", " EM_CSTR("&") ", " EM_CSTR("&=") ", " EM_CSTR("|") ", " EM_CSTR("|=") ", " EM_CSTR("^") ", " EM_CSTR("^=") ", " 
-                EM_CSTR("<<") ", " EM_CSTR("<<=") ", " EM_CSTR(">>") ", " EM_CSTR(">>=") ", " EM_CSTR("&&") ", " EM_CSTR("||") ", " EM_CSTR("==") ", " 
-                EM_CSTR("!=") ", " EM_CSTR("<") ", " EM_CSTR("<=") ", " EM_CSTR(">") " or " EM_CSTR(">=") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘+’\033[0m, \033[1m‘+=’\033[0m, "
+                   "\033[1m‘++’\033[0m, \033[1m‘-’\033[0m, \033[1m‘-=’\033[0m, \033[1m‘--’\033[0m, \033[1m‘*’\033[0m, "
+                   "\033[1m‘*=’\033[0m, \033[1m‘/’\033[0m, \033[1m‘/=’\033[0m, \033[1m‘%’\033[0m, \033[1m‘%=’\033[0m, "
+                   "\033[1m‘&’\033[0m, \033[1m‘&=’\033[0m, \033[1m‘|’\033[0m, \033[1m‘|=’\033[0m, \033[1m‘^’\033[0m, "
+                   "\033[1m‘^=’\033[0m, \033[1m‘<<’\033[0m, \033[1m‘<<=’\033[0m, \033[1m‘>>’\033[0m, "
+                   "\033[1m‘>>=’\033[0m, \033[1m‘&&’\033[0m, \033[1m‘||’\033[0m, \033[1m‘==’\033[0m, "
+                   "\033[1m‘!=’\033[0m, \033[1m‘<’\033[0m, \033[1m‘<=’\033[0m, \033[1m‘>’\033[0m or \033[1m‘>=’\033[0m "
+                   "next";
         case ERROR_MESSAGE_PARSER::unexpected_abstract_declarator:
-            return "found token " EM_VARG ", but expected " EM_CSTR("*") ", " EM_CSTR("(") " or " EM_CSTR("[") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘*’\033[0m, \033[1m‘(’\033[0m or "
+                   "\033[1m‘[’\033[0m next";
         case ERROR_MESSAGE_PARSER::unexpected_pointer_unary_factor:
-            return "found token " EM_VARG ", but expected " EM_CSTR("*") " or " EM_CSTR("&") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘*’\033[0m or \033[1m‘&’\033[0m next";
         case ERROR_MESSAGE_PARSER::unexpected_primary_expression_factor:
-            return "found token " EM_VARG ", but expected " EM_CSTR("const int") ", " EM_CSTR("const long") ", " EM_CSTR("const char") ", " 
-                EM_CSTR("const double") ", " EM_CSTR("const unsigned int") ", " EM_CSTR("const unsigned long") ", " EM_CSTR("identifier") ", " 
-                EM_CSTR("identifier(") ", " EM_CSTR("string literal") " or " EM_CSTR("(") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘const int’\033[0m, \033[1m‘const "
+                   "long’\033[0m, \033[1m‘const char’\033[0m, \033[1m‘const double’\033[0m, \033[1m‘const unsigned "
+                   "int’\033[0m, \033[1m‘const unsigned long’\033[0m, \033[1m‘identifier’\033[0m, "
+                   "\033[1m‘identifier(’\033[0m, \033[1m‘string literal’\033[0m or \033[1m‘(’\033[0m next";
         case ERROR_MESSAGE_PARSER::unexpected_expression:
-            return "found token " EM_VARG ", but expected " EM_CSTR("+") ", " EM_CSTR("-") ", " EM_CSTR("*") ", " EM_CSTR("/") ", " 
-                EM_CSTR("%") ", " EM_CSTR("&") ", " EM_CSTR("|") ", " EM_CSTR("^") ", " EM_CSTR("<<") ", " EM_CSTR(">>") ", " EM_CSTR("<") ", " 
-                EM_CSTR("<=") ", " EM_CSTR(">") ", " EM_CSTR(">=") ", " EM_CSTR("==") ", " EM_CSTR("!=") ", " EM_CSTR("&&") ", " EM_CSTR("||") ", " 
-                EM_CSTR("=") ", " EM_CSTR("+=") ", " EM_CSTR("-=") ", " EM_CSTR("*=") ", " EM_CSTR("/=") ", " EM_CSTR("%=") ", " EM_CSTR("&=") ", " 
-                EM_CSTR("|=") ", " EM_CSTR("^=") ", " EM_CSTR("<<=") ", " EM_CSTR(">>=") " or " EM_CSTR("?") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘+’\033[0m, \033[1m‘-’\033[0m, "
+                   "\033[1m‘*’\033[0m, \033[1m‘/’\033[0m, \033[1m‘%’\033[0m, \033[1m‘&’\033[0m, \033[1m‘|’\033[0m, "
+                   "\033[1m‘^’\033[0m, \033[1m‘<<’\033[0m, \033[1m‘>>’\033[0m, \033[1m‘<’\033[0m, \033[1m‘<=’\033[0m, "
+                   "\033[1m‘>’\033[0m, \033[1m‘>=’\033[0m, \033[1m‘==’\033[0m, \033[1m‘!=’\033[0m, \033[1m‘&&’\033[0m, "
+                   "\033[1m‘||’\033[0m, \033[1m‘=’\033[0m, \033[1m‘+=’\033[0m, \033[1m‘-=’\033[0m, \033[1m‘*=’\033[0m, "
+                   "\033[1m‘/=’\033[0m, \033[1m‘%=’\033[0m, \033[1m‘&=’\033[0m, \033[1m‘|=’\033[0m, "
+                   "\033[1m‘^=’\033[0m, \033[1m‘<<=’\033[0m, \033[1m‘>>=’\033[0m or \033[1m‘?’\033[0m next";
         case ERROR_MESSAGE_PARSER::function_declared_in_for_initial: {
             std::string what_message = "function " EM_VARG " declared in ";
             what_message += EM_CSTR("for");
@@ -515,24 +523,25 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             return what_message;
         }
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier:
-            return "found token " EM_VARG ", but expected " EM_CSTR("identifier") ", " EM_CSTR(")") ", " EM_CSTR("char") ", " 
-                EM_CSTR("int") ", " EM_CSTR("long") ", " EM_CSTR("double") ", " EM_CSTR("unsigned") ", " EM_CSTR("signed") ", " 
-                EM_CSTR("void") ", " EM_CSTR("struct") ", " EM_CSTR("union") ", " EM_CSTR("static") ", " EM_CSTR("extern") ", " 
-                EM_CSTR("*") ", " EM_CSTR("(") " or " EM_CSTR("[") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘identifier’\033[0m, \033[1m‘)’\033[0m, "
+                   "\033[1m‘char’\033[0m, \033[1m‘int’\033[0m, \033[1m‘long’\033[0m, \033[1m‘double’\033[0m, "
+                   "\033[1m‘unsigned’\033[0m, \033[1m‘signed’\033[0m, \033[1m‘void’\033[0m, \033[1m‘struct’\033[0m, "
+                   "\033[1m‘union’\033[0m, \033[1m‘static’\033[0m, \033[1m‘extern’\033[0m, \033[1m‘*’\033[0m, "
+                   "\033[1m‘(’\033[0m or \033[1m‘[’\033[0m next";
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier_list:
             return "found tokens " EM_VARG ", but expected valid list of unique type specifiers next";
         case ERROR_MESSAGE_PARSER::unexpected_storage_class:
-            return "found token " EM_VARG ", but expected " EM_CSTR("static") " or " EM_CSTR("extern") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘static’\033[0m or \033[1m‘extern’\033[0m next";
         case ERROR_MESSAGE_PARSER::empty_compound_initializer:
             return "empty compound initializer requires at least one initializer";
         case ERROR_MESSAGE_PARSER::type_derivation_on_function_declaration:
             return "cannot apply further type derivation to function declaration";
         case ERROR_MESSAGE_PARSER::unexpected_simple_declarator:
-            return "found token " EM_VARG ", but expected " EM_CSTR("identifier") " or " EM_CSTR("(") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘identifier’\033[0m or \033[1m‘(’\033[0m next";
         case ERROR_MESSAGE_PARSER::unexpected_parameter_list:
-            return "found token " EM_VARG ", but expected " EM_CSTR("void") ", " EM_CSTR("char") ", " EM_CSTR("int") ", " 
-                EM_CSTR("long") ", " EM_CSTR("double") ", " EM_CSTR("unsigned") ", " EM_CSTR("signed") ", " EM_CSTR("struct") 
-                " or " EM_CSTR("union") " next";
+            return "found token " EM_VARG ", but expected \033[1m‘void’\033[0m, \033[1m‘char’\033[0m, "
+                   "\033[1m‘int’\033[0m, \033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
+                   "\033[1m‘signed’\033[0m, \033[1m‘struct’\033[0m or \033[1m‘union’\033[0m next";
         case ERROR_MESSAGE_PARSER::member_declared_with_non_automatic_storage:
             return "data structure type declared with member " EM_VARG " with " EM_VARG " storage class";
         case ERROR_MESSAGE_PARSER::member_declared_as_function:
