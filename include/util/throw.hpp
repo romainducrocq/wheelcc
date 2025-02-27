@@ -35,6 +35,5 @@ size_t handle_error_at_line(size_t total_line_number);
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line);
 #define RAISE_INTERNAL_ERROR raise_internal_error(__func__, __FILE__, __LINE__)
 #define RAISE_RUNTIME_ERROR_AT_LINE(X, Y) raise_runtime_error_at_line((X), handle_error_at_line(Y))
-#define EM_VARG "\033[1m‘%s’\033[0m"
 
 #endif
