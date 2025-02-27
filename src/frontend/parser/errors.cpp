@@ -457,12 +457,8 @@ std::string get_what_message(ERROR_MESSAGE_LEXER message) {
     switch (message) {
         case ERROR_MESSAGE_LEXER::invalid_token:
             return "found invalid token " EM_VARG;
-        case ERROR_MESSAGE_LEXER::failed_to_include_header_file: {
-            std::string what_message = "cannot find " EM_VARG " header file in ";
-            what_message += "\033[1m‘include’\033[0m";
-            what_message += " directive search";
-            return what_message;
-        }
+        case ERROR_MESSAGE_LEXER::failed_to_include_header_file:
+            return "cannot find " EM_VARG " header file in \033[1m‘include’\033[0m directive search";
         default:
             RAISE_INTERNAL_ERROR;
     }
@@ -480,12 +476,8 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
             return "cannot represent " EM_VARG " as a 64 bits unsigned integer constant, very large number";
         case ERROR_MESSAGE_PARSER::array_size_not_a_constant_integer:
             return "illegal array size " EM_VARG ", requires a constant integer";
-        case ERROR_MESSAGE_PARSER::case_value_not_a_constant_integer: {
-            std::string what_message = "illegal ";
-            what_message += "\033[1m‘case’\033[0m";
-            what_message += " value " EM_VARG ", requires a constant integer";
-            return what_message;
-        }
+        case ERROR_MESSAGE_PARSER::case_value_not_a_constant_integer:
+            return "illegal \033[1m‘case’\033[0m value " EM_VARG ", requires a constant integer";
         case ERROR_MESSAGE_PARSER::unexpected_unary_operator:
             return "found token " EM_VARG ", but expected \033[1m‘~’\033[0m, \033[1m‘-’\033[0m or "
                    "\033[1m‘!’\033[0m next";
@@ -516,12 +508,8 @@ std::string get_what_message(ERROR_MESSAGE_PARSER message) {
                    "\033[1m‘||’\033[0m, \033[1m‘=’\033[0m, \033[1m‘+=’\033[0m, \033[1m‘-=’\033[0m, \033[1m‘*=’\033[0m, "
                    "\033[1m‘/=’\033[0m, \033[1m‘%=’\033[0m, \033[1m‘&=’\033[0m, \033[1m‘|=’\033[0m, "
                    "\033[1m‘^=’\033[0m, \033[1m‘<<=’\033[0m, \033[1m‘>>=’\033[0m or \033[1m‘?’\033[0m next";
-        case ERROR_MESSAGE_PARSER::function_declared_in_for_initial: {
-            std::string what_message = "function " EM_VARG " declared in ";
-            what_message += "\033[1m‘for’\033[0m";
-            what_message += " loop initial declaration";
-            return what_message;
-        }
+        case ERROR_MESSAGE_PARSER::function_declared_in_for_initial:
+            return "function " EM_VARG " declared in \033[1m‘for’\033[0m loop initial declaration";
         case ERROR_MESSAGE_PARSER::unexpected_type_specifier:
             return "found token " EM_VARG ", but expected \033[1m‘identifier’\033[0m, \033[1m‘)’\033[0m, "
                    "\033[1m‘char’\033[0m, \033[1m‘int’\033[0m, \033[1m‘long’\033[0m, \033[1m‘double’\033[0m, "
@@ -567,126 +555,58 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "cannot apply binary operator " EM_VARG " on operand type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::binary_on_invalid_operand_types:
             return "cannot apply binary operator " EM_VARG " on operand types " EM_VARG " and " EM_VARG;
-        case ERROR_MESSAGE_SEMANTIC::assignment_to_void_type: {
-            std::string what_message = "cannot assign ";
-            what_message += "\033[1m‘=’\033[0m";
-            what_message += " to left operand type ";
-            what_message += "\033[1m‘void’\033[0m";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::assignment_to_void_type:
+            return "cannot assign \033[1m‘=’\033[0m to left operand type \033[1m‘void’\033[0m";
         case ERROR_MESSAGE_SEMANTIC::assignment_to_rvalue:
             return "assignment " EM_VARG " requires lvalue left operand, but got rvalue";
-        case ERROR_MESSAGE_SEMANTIC::conditional_on_invalid_condition_type: {
-            std::string what_message = "cannot apply conditional ";
-            what_message += "\033[1m‘?’\033[0m";
-            what_message += " on condition operand type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types: {
-            std::string what_message = "cannot apply ternary operator ";
-            what_message += "\033[1m‘:’\033[0m";
-            what_message += " on operand types " EM_VARG " and " EM_VARG;
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::conditional_on_invalid_condition_type:
+            return "cannot apply conditional \033[1m‘?’\033[0m on condition operand type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::ternary_on_invalid_operand_types:
+            return "cannot apply ternary operator \033[1m‘:’\033[0m on operand types " EM_VARG " and " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::variable_used_as_function:
             return "variable " EM_VARG " used as a function";
         case ERROR_MESSAGE_SEMANTIC::function_called_with_wrong_number_of_arguments:
             return "function " EM_VARG " called with " EM_VARG " arguments instead of " EM_VARG;
-        case ERROR_MESSAGE_SEMANTIC::dereference_non_pointer: {
-            std::string what_message = "cannot apply dereference operator ";
-            what_message += "\033[1m‘*’\033[0m";
-            what_message += " on non-pointer type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::address_of_rvalue: {
-            std::string what_message = "addresssing ";
-            what_message += "\033[1m‘&’\033[0m";
-            what_message += " requires lvalue operand, but got rvalue";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::dereference_non_pointer:
+            return "cannot apply dereference operator \033[1m‘*’\033[0m on non-pointer type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::address_of_rvalue:
+            return "addresssing \033[1m‘&’\033[0m requires lvalue operand, but got rvalue";
         case ERROR_MESSAGE_SEMANTIC::subscript_array_with_invalid_types:
             return "cannot subscript array with operand types " EM_VARG " and " EM_VARG
                    ", requires a complete pointer and an "
                    "integer types";
-        case ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type: {
-            std::string what_message = "cannot get size with ";
-            what_message += "\033[1m‘sizeof’\033[0m";
-            what_message += " operator on incomplete type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type: {
-            std::string what_message = "cannot access data structure member " EM_VARG " with dot operator ";
-            what_message += "\033[1m‘.’\033[0m";
-            what_message += " on non-data structure type " EM_VARG;
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::get_size_of_incomplete_type:
+            return "cannot get size with \033[1m‘sizeof’\033[0m operator on incomplete type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::dot_on_non_structure_type:
+            return "cannot access data structure member " EM_VARG
+                   " with dot operator \033[1m‘.’\033[0m on non-data structure type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::member_not_in_structure_type:
             return "data structure type " EM_VARG " has no member named " EM_VARG;
-        case ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type: {
-            std::string what_message = "cannot access data structure member " EM_VARG " with arrow operator ";
-            what_message += "\033[1m‘->’\033[0m";
-            what_message += " on non-pointer-to-data structure type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type: {
-            std::string what_message = "cannot access data structure member " EM_VARG " with arrow operator ";
-            what_message += "\033[1m‘->’\033[0m";
-            what_message += " on incomplete data structure type " EM_VARG;
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type:
+            return "cannot access data structure member " EM_VARG
+                   " with arrow operator \033[1m‘->’\033[0m on non-pointer-to-data structure type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type:
+            return "cannot access data structure member " EM_VARG
+                   " with arrow operator \033[1m‘->’\033[0m on incomplete data structure type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::incomplete_structure_type_in_expression:
             return "incomplete data structure type " EM_VARG " in expression";
-        case ERROR_MESSAGE_SEMANTIC::return_value_in_void_function: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘return’\033[0m";
-            what_message += " value in function " EM_VARG " returning type ";
-            what_message += "\033[1m‘void’\033[0m";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::no_return_value_in_non_void_function: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘return’\033[0m";
-            what_message += " with no value in function " EM_VARG " returning type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::if_used_with_condition_type: {
-            std::string what_message = "cannot use ";
-            what_message += "\033[1m‘if’\033[0m";
-            what_message += " statement with condition expression type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::while_used_with_condition_type: {
-            std::string what_message = "cannot use ";
-            what_message += "\033[1m‘while’\033[0m";
-            what_message += " loop statement with condition expression type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::do_while_used_with_condition_type: {
-            std::string what_message = "cannot use ";
-            what_message += "\033[1m‘do while’\033[0m";
-            what_message += " loop statement with condition expression type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::for_used_with_condition_type: {
-            std::string what_message = "cannot use ";
-            what_message += "\033[1m‘for’\033[0m";
-            what_message += " loop statement with condition expression type " EM_VARG;
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::switch_used_with_match_type: {
-            std::string what_message = "cannot use ";
-            what_message += "\033[1m‘switch’\033[0m";
-            what_message += " statement with match expression type " EM_VARG ", requires an integer type";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch: {
-            std::string what_message = "found duplicate ";
-            what_message += "\033[1m‘case’\033[0m";
-            what_message += " value " EM_VARG " in ";
-            what_message += "\033[1m‘switch’\033[0m";
-            what_message += " statement";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::return_value_in_void_function:
+            return "found \033[1m‘return’\033[0m value in function " EM_VARG " returning type \033[1m‘void’\033[0m";
+        case ERROR_MESSAGE_SEMANTIC::no_return_value_in_non_void_function:
+            return "found \033[1m‘return’\033[0m with no value in function " EM_VARG " returning type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::if_used_with_condition_type:
+            return "cannot use \033[1m‘if’\033[0m statement with condition expression type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::while_used_with_condition_type:
+            return "cannot use \033[1m‘while’\033[0m loop statement with condition expression type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::do_while_used_with_condition_type:
+            return "cannot use \033[1m‘do while’\033[0m loop statement with condition expression type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::for_used_with_condition_type:
+            return "cannot use \033[1m‘for’\033[0m loop statement with condition expression type " EM_VARG;
+        case ERROR_MESSAGE_SEMANTIC::switch_used_with_match_type:
+            return "cannot use \033[1m‘switch’\033[0m statement with match expression type " EM_VARG
+                   ", requires an integer type";
+        case ERROR_MESSAGE_SEMANTIC::duplicate_case_value_in_switch:
+            return "found duplicate \033[1m‘case’\033[0m value " EM_VARG " in \033[1m‘switch’\033[0m statement";
         case ERROR_MESSAGE_SEMANTIC::non_char_array_initialized_from_string:
             return "non-character array type " EM_VARG " initialized from string literal";
         case ERROR_MESSAGE_SEMANTIC::string_initialized_with_too_many_characters:
@@ -699,11 +619,8 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "function " EM_VARG " returns array type " EM_VARG ", instead of pointer type";
         case ERROR_MESSAGE_SEMANTIC::function_returns_incomplete_structure_type:
             return "function " EM_VARG " returns incomplete data structure type " EM_VARG;
-        case ERROR_MESSAGE_SEMANTIC::parameter_with_type_void: {
-            std::string what_message = "function " EM_VARG " declared with parameter " EM_VARG " with type ";
-            what_message += "\033[1m‘void’\033[0m";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::parameter_with_type_void:
+            return "function " EM_VARG " declared with parameter " EM_VARG " with type \033[1m‘void’\033[0m";
         case ERROR_MESSAGE_SEMANTIC::parameter_with_incomplete_structure_type:
             return "function " EM_VARG " defined with parameter " EM_VARG
                    " with incomplete data structure type " EM_VARG;
@@ -712,12 +629,8 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
                    ", but previous declaration has function type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::function_redefined:
             return "function " EM_VARG " already defined with function type " EM_VARG;
-        case ERROR_MESSAGE_SEMANTIC::non_static_function_redeclared_static: {
-            std::string what_message = "function " EM_VARG " with ";
-            what_message += "\033[1m‘static’\033[0m";
-            what_message += " storage class already declared non-static";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::non_static_function_redeclared_static:
+            return "function " EM_VARG " with \033[1m‘static’\033[0m storage class already declared non-static";
         case ERROR_MESSAGE_SEMANTIC::static_pointer_initialized_from_non_integer:
             return "cannot statically initialize pointer type " EM_VARG " from constant " EM_VARG
                    ", requires a constant integer";
@@ -731,11 +644,8 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "cannot statically initialize variable from non-constant type " EM_VARG ", requires a constant";
         case ERROR_MESSAGE_SEMANTIC::scalar_initialized_with_compound_initializer:
             return "cannot initialize scalar type " EM_VARG " with compound initializer";
-        case ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void: {
-            std::string what_message = "variable " EM_VARG " declared with type ";
-            what_message += "\033[1m‘void’\033[0m";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::variable_declared_with_type_void:
+            return "variable " EM_VARG " declared with type \033[1m‘void’\033[0m";
         case ERROR_MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type:
             return "variable " EM_VARG " declared with incomplete data structure type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type:
@@ -743,57 +653,28 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
                    ", but previously declared with type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage:
             return "variable " EM_VARG " redeclared with conflicting storage class";
-        case ERROR_MESSAGE_SEMANTIC::extern_variable_defined: {
-            std::string what_message = "illegal initializer, can only declare variable " EM_VARG " with ";
-            what_message += "\033[1m‘extern’\033[0m";
-            what_message += " storage class";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::extern_variable_defined:
+            return "illegal initializer, can only declare variable " EM_VARG
+                   " with \033[1m‘extern’\033[0m storage class";
         case ERROR_MESSAGE_SEMANTIC::structure_declared_with_duplicate_member:
             return "data structure type " EM_VARG " declared with duplicate member name " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::member_declared_with_incomplete_type:
             return "data structure type " EM_VARG " declared with member " EM_VARG " with incomplete type " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::structure_redeclared_in_scope:
             return "data structure type " EM_VARG " already declared in this scope";
-        case ERROR_MESSAGE_SEMANTIC::case_outside_of_switch: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘case’\033[0m";
-            what_message += " statement outside of ";
-            what_message += "\033[1m‘switch’\033[0m";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::default_outside_of_switch: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘default’\033[0m";
-            what_message += " statement outside of ";
-            what_message += "\033[1m‘switch’\033[0m";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::more_than_one_default_in_switch: {
-            std::string what_message = "found more than one ";
-            what_message += "\033[1m‘default’\033[0m";
-            what_message += " statement in ";
-            what_message += "\033[1m‘switch’\033[0m";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::break_outside_of_loop: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘break’\033[0m";
-            what_message += " statement outside of loop";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘continue’\033[0m";
-            what_message += " statement outside of loop";
-            return what_message;
-        }
-        case ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label: {
-            std::string what_message = "found ";
-            what_message += "\033[1m‘goto’\033[0m";
-            what_message += " statement, but target label " EM_VARG " not defined in function " EM_VARG;
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::case_outside_of_switch:
+            return "found \033[1m‘case’\033[0m statement outside of \033[1m‘switch’\033[0m";
+        case ERROR_MESSAGE_SEMANTIC::default_outside_of_switch:
+            return "found \033[1m‘default’\033[0m statement outside of \033[1m‘switch’\033[0m";
+        case ERROR_MESSAGE_SEMANTIC::more_than_one_default_in_switch:
+            return "found more than one \033[1m‘default’\033[0m statement in \033[1m‘switch’\033[0m";
+        case ERROR_MESSAGE_SEMANTIC::break_outside_of_loop:
+            return "found \033[1m‘break’\033[0m statement outside of loop";
+        case ERROR_MESSAGE_SEMANTIC::continue_outside_of_loop:
+            return "found \033[1m‘continue’\033[0m statement outside of loop";
+        case ERROR_MESSAGE_SEMANTIC::goto_with_undefined_target_label:
+            return "found \033[1m‘goto’\033[0m statement, but target label " EM_VARG
+                   " not defined in function " EM_VARG;
         case ERROR_MESSAGE_SEMANTIC::structure_conflicts_with_previously_declared:
             return EM_VARG " conflicts with data structure type " EM_VARG
                            " previously declared or defined in this scope";
@@ -803,12 +684,9 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
             return "variable " EM_VARG " not declared in this scope";
         case ERROR_MESSAGE_SEMANTIC::function_not_declared_in_scope:
             return "function " EM_VARG " not declared in this scope";
-        case ERROR_MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage: {
-            std::string what_message = "variable " EM_VARG " declared with " EM_VARG " storage class in ";
-            what_message += "\033[1m‘for’\033[0m";
-            what_message += " loop initial declaration";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage:
+            return "variable " EM_VARG " declared with " EM_VARG
+                   " storage class in \033[1m‘for’\033[0m loop initial declaration";
         case ERROR_MESSAGE_SEMANTIC::label_redefined_in_scope:
             return "label " EM_VARG " already defined in this scope";
         case ERROR_MESSAGE_SEMANTIC::variable_redeclared_in_scope:
@@ -816,12 +694,9 @@ std::string get_what_message(ERROR_MESSAGE_SEMANTIC message) {
         case ERROR_MESSAGE_SEMANTIC::nested_function_defined:
             return "function " EM_VARG " defined inside another function, but nested function definition are not "
                    "permitted";
-        case ERROR_MESSAGE_SEMANTIC::nested_static_function_declared: {
-            std::string what_message = "cannot declare nested function " EM_VARG " in another function with ";
-            what_message += "\033[1m‘static’\033[0m";
-            what_message += " storage class";
-            return what_message;
-        }
+        case ERROR_MESSAGE_SEMANTIC::nested_static_function_declared:
+            return "cannot declare nested function " EM_VARG
+                   " in another function with \033[1m‘static’\033[0m storage class";
         case ERROR_MESSAGE_SEMANTIC::function_redeclared_in_scope:
             return "function " EM_VARG " already declared in this scope";
         default:
