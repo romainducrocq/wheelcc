@@ -25,7 +25,7 @@ A C compiler should be written in C, right? wheelcc was implemented from the sta
 
 ### Progress
 
-- [ ] (~90ish% done) `all` Remove easely removable C++ features (classes, templates, namespaces, ...)
+- [x] `all` Remove easely removable C++ features (classes, templates, overloads, namespaces, ...)
 - [ ] `lexer` Replace C++ regex library with a C alternative (either POSIX regex or regexp9)
 - [ ] (POC done) `error handler` Replace exception throwing with error code propagation
 - [ ] (POC done) `algebraic datatypes` Replace single inheritance data structures with tagged unions
