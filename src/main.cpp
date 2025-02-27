@@ -248,39 +248,37 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(ERROR_MESSAGE_ARGUMENT::no_debug_code_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_debug_code_in_argument));
     }
     else if (arg_parse_uint8(arg, context->debug_code)) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(ERROR_MESSAGE_ARGUMENT::no_optim_1_mask_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_optim_1_mask_in_argument));
     }
     else if (arg_parse_uint8(arg, context->optim_1_mask) || context->optim_1_mask > 15) {
-        RAISE_ARGUMENT_ERROR(
-            GET_ARGUMENT_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(ERROR_MESSAGE_ARGUMENT::no_optim_2_code_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_optim_2_code_in_argument));
     }
     else if (arg_parse_uint8(arg, context->optim_2_code) || context->optim_2_code > 2) {
-        RAISE_ARGUMENT_ERROR(
-            GET_ARGUMENT_MESSAGE(ERROR_MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(ERROR_MESSAGE_ARGUMENT::no_input_files_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_input_files_in_argument));
     }
     context->filename = arg;
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(ERROR_MESSAGE_ARGUMENT::no_include_directories_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_include_directories_in_argument));
     }
     do {
         std::string includedir = arg;

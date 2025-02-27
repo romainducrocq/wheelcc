@@ -19,7 +19,7 @@ struct CStorageClass;
 
 // Errors
 
-enum ERROR_MESSAGE_ARGUMENT {
+enum MESSAGE_ARGUMENT {
     unhandled_argument_error = 100,
     no_debug_code_in_argument,
     invalid_debug_code_in_argument,
@@ -31,7 +31,7 @@ enum ERROR_MESSAGE_ARGUMENT {
     no_include_directories_in_argument
 };
 
-enum ERROR_MESSAGE_UTIL {
+enum MESSAGE_UTIL {
     unhandled_util_error = 200,
     failed_to_read_input_file,
     failed_to_write_to_output_file,
@@ -40,7 +40,7 @@ enum ERROR_MESSAGE_UTIL {
     failed_to_interpret_string_to_float
 };
 
-enum ERROR_MESSAGE_SEMANTIC {
+enum MESSAGE_SEMANTIC {
     unhandled_semantic_error = 500,
     array_of_incomplete_type,
     joint_pointer_type_mismatch,
@@ -134,11 +134,11 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op);
 #define get_binary_op_hr_c_str(X) get_binary_op_hr(X).c_str()
 #define get_assignment_hr_c_str(X, Y) get_assignment_hr(X, Y).c_str()
 
-const char* get_argument_message(ERROR_MESSAGE_ARGUMENT message);
-const char* get_util_message(ERROR_MESSAGE_UTIL message);
-const char* get_lexer_message(ERROR_MESSAGE_LEXER message);
-const char* get_parser_message(ERROR_MESSAGE_PARSER message);
-const char* get_semantic_message(ERROR_MESSAGE_SEMANTIC message);
+const char* get_argument_message(MESSAGE_ARGUMENT message);
+const char* get_util_message(MESSAGE_UTIL message);
+const char* get_lexer_message(MESSAGE_LEXER message);
+const char* get_parser_message(MESSAGE_PARSER message);
+const char* get_semantic_message(MESSAGE_SEMANTIC message);
 #define GET_ERROR_MESSAGE(X, ...) snprintf(errors->message, sizeof(char) * 1024, X, __VA_ARGS__)
 #define GET_ARGUMENT_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_argument_message(X), (int)X, __VA_ARGS__)
 #define GET_UTIL_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_util_message(X), (int)X, __VA_ARGS__)
