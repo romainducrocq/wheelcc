@@ -235,7 +235,7 @@ static void tokenize_file() {
                     case TOKEN_KIND::error:
                     case TOKEN_KIND::comment_multilineend:
                         raise_runtime_error_at_line(
-                            GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, context->re_match_token),
+                            GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::invalid_token, context->re_match_token.c_str()),
                             line_number);
                     case TOKEN_KIND::skip:
                         goto Lcontinue;
@@ -295,7 +295,8 @@ static void tokenize_header(std::string filename, size_t line_number) {
         if (!find_header(context->stdlibdirs, filename)) {
             if (!find_header(*context->p_includedirs, filename)) {
                 raise_runtime_error_at_line(
-                    GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
+                    GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename.c_str()),
+                    line_number);
             }
         }
     }
@@ -309,7 +310,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
         context->filename_include_set.insert(filename_include);
         if (!find_header(*context->p_includedirs, filename)) {
             raise_runtime_error_at_line(
-                GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename), line_number);
+                GET_ERROR_MESSAGE(ERROR_MESSAGE_LEXER::failed_to_include_header_file, filename.c_str()), line_number);
         }
     }
 

@@ -132,10 +132,20 @@ const char* get_what_message(ERROR_MESSAGE_SEMANTIC message);
 template <typename TErrorMessage, typename... TArgs>
 inline std::string get_error_message(TErrorMessage message, TArgs&&... args) {
     char buffer[1024];
-    snprintf(buffer, sizeof(buffer), get_what_message(message), static_cast<int>(message),
-        std::string(std::forward<TArgs>(args)).c_str()...);
+    snprintf(
+        buffer, sizeof(buffer), get_what_message(message), static_cast<int>(message), std::forward<TArgs>(args)...);
     return std::string(buffer);
 }
 #define GET_ERROR_MESSAGE(...) get_error_message(__VA_ARGS__)
+
+#define get_token_kind_hr_c_str(X) get_token_kind_hr(X).c_str()
+#define get_name_hr_c_str(X) get_name_hr(X).c_str()
+#define get_struct_name_hr_c_str(X, Y) get_struct_name_hr(X, Y).c_str()
+#define get_type_hr_c_str(X) get_type_hr(X).c_str()
+#define get_const_hr_c_str(X) get_const_hr(X).c_str()
+#define get_storage_class_hr_c_str(X) get_storage_class_hr(X).c_str()
+#define get_unary_op_hr_c_str(X) get_unary_op_hr(X).c_str()
+#define get_binary_op_hr_c_str(X) get_binary_op_hr(X).c_str()
+#define get_assignment_hr_c_str(X, Y) get_assignment_hr(X, Y).c_str()
 
 #endif
