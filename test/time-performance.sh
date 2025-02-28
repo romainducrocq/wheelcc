@@ -22,12 +22,14 @@ function performance () {
     do
         ${PACKAGE_NAME} ${OPTIM} -s ${FILE} > /dev/null 2>&1
     done } 2>&1
-    echo ""
-    echo "nqcc2 ${OPTIM_NQCC2}"
-    { time for FILE in ${FILES}
-    do
-        ${NQCC2}/_build/default/bin/main.exe ${OPTIM_NQCC2} -S $(readlink -f ${FILE}) > /dev/null 2>&1
-    done } 2>&1
+    if [ 1 -eq 0 ]; then
+        echo ""
+        echo "nqcc2 ${OPTIM_NQCC2}"
+        { time for FILE in ${FILES}
+        do
+            ${NQCC2}/_build/default/bin/main.exe ${OPTIM_NQCC2} -S $(readlink -f ${FILE}) > /dev/null 2>&1
+        done } 2>&1
+    fi
     for FILE in ${FILES}
     do
         FILE=${FILE%.*}.s

@@ -116,8 +116,6 @@ static void compile() {
         context->is_verbose = true;
     }
 
-    INIT_FILEIO_CONTEXT;
-
     verbose("-- Lexing ... ", false);
     std::vector<Token> tokens = lexing(context->filename, std::move(context->includedirs));
     verbose("OK", true);
@@ -299,6 +297,8 @@ int main(int argc, char** argv) {
                 context->args.emplace_back(std::move(arg));
             }
         }
+
+        INIT_FILEIO_CONTEXT;
 
         INIT_ERRORS_CONTEXT;
 
