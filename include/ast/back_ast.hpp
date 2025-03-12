@@ -15,6 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // reg = AX
+//     | BX
 //     | CX
 //     | DX
 //     | DI
@@ -23,6 +24,10 @@
 //     | R9
 //     | R10
 //     | R11
+//     | R12
+//     | R13
+//     | R14
+//     | R15
 //     | SP
 //     | BP
 //     | XMM0
@@ -33,6 +38,12 @@
 //     | XMM5
 //     | XMM6
 //     | XMM7
+//     | XMM8
+//     | XMM9
+//     | XMM10
+//     | XMM11
+//     | XMM12
+//     | XMM13
 //     | XMM14
 //     | XMM15
 struct AsmReg : Ast {
@@ -40,6 +51,10 @@ struct AsmReg : Ast {
 };
 
 struct AsmAx : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmBx : AsmReg {
     AST_T type() override;
 };
 
@@ -72,6 +87,22 @@ struct AsmR10 : AsmReg {
 };
 
 struct AsmR11 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmR12 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmR13 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmR14 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmR15 : AsmReg {
     AST_T type() override;
 };
 
@@ -112,6 +143,30 @@ struct AsmXMM6 : AsmReg {
 };
 
 struct AsmXMM7 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmXMM8 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmXMM9 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmXMM10 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmXMM11 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmXMM12 : AsmReg {
+    AST_T type() override;
+};
+
+struct AsmXMM13 : AsmReg {
     AST_T type() override;
 };
 

@@ -1288,6 +1288,10 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmAx", "", ++t);
             break;
         }
+        case AST_T::AsmBx_t: {
+            field("AsmBx", "", ++t);
+            break;
+        }
         case AST_T::AsmCx_t: {
             field("AsmCx", "", ++t);
             break;
@@ -1318,6 +1322,22 @@ static void print_ast(Ast* node, size_t t) {
         }
         case AST_T::AsmR11_t: {
             field("AsmR11", "", ++t);
+            break;
+        }
+        case AST_T::AsmR12_t: {
+            field("AsmR12", "", ++t);
+            break;
+        }
+        case AST_T::AsmR13_t: {
+            field("AsmR13", "", ++t);
+            break;
+        }
+        case AST_T::AsmR14_t: {
+            field("AsmR14", "", ++t);
+            break;
+        }
+        case AST_T::AsmR15_t: {
+            field("AsmR15", "", ++t);
             break;
         }
         case AST_T::AsmSp_t: {
@@ -1358,6 +1378,30 @@ static void print_ast(Ast* node, size_t t) {
         }
         case AST_T::AsmXMM7_t: {
             field("AsmXMM7", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM8_t: {
+            field("AsmXMM8", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM9_t: {
+            field("AsmXMM9", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM10_t: {
+            field("AsmXMM10", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM11_t: {
+            field("AsmXMM11", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM12_t: {
+            field("AsmXMM12", "", ++t);
+            break;
+        }
+        case AST_T::AsmXMM13_t: {
+            field("AsmXMM13", "", ++t);
             break;
         }
         case AST_T::AsmXMM14_t: {

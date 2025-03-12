@@ -12,6 +12,7 @@
 
 AST_T AsmReg::type() { return AST_T::AsmReg_t; }
 AST_T AsmAx::type() { return AST_T::AsmAx_t; }
+AST_T AsmBx::type() { return AST_T::AsmBx_t; }
 AST_T AsmCx::type() { return AST_T::AsmCx_t; }
 AST_T AsmDx::type() { return AST_T::AsmDx_t; }
 AST_T AsmDi::type() { return AST_T::AsmDi_t; }
@@ -20,6 +21,10 @@ AST_T AsmR8::type() { return AST_T::AsmR8_t; }
 AST_T AsmR9::type() { return AST_T::AsmR9_t; }
 AST_T AsmR10::type() { return AST_T::AsmR10_t; }
 AST_T AsmR11::type() { return AST_T::AsmR11_t; }
+AST_T AsmR12::type() { return AST_T::AsmR12_t; }
+AST_T AsmR13::type() { return AST_T::AsmR13_t; }
+AST_T AsmR14::type() { return AST_T::AsmR14_t; }
+AST_T AsmR15::type() { return AST_T::AsmR15_t; }
 AST_T AsmSp::type() { return AST_T::AsmSp_t; }
 AST_T AsmBp::type() { return AST_T::AsmBp_t; }
 AST_T AsmXMM0::type() { return AST_T::AsmXMM0_t; }
@@ -30,6 +35,12 @@ AST_T AsmXMM4::type() { return AST_T::AsmXMM4_t; }
 AST_T AsmXMM5::type() { return AST_T::AsmXMM5_t; }
 AST_T AsmXMM6::type() { return AST_T::AsmXMM6_t; }
 AST_T AsmXMM7::type() { return AST_T::AsmXMM7_t; }
+AST_T AsmXMM8::type() { return AST_T::AsmXMM8_t; }
+AST_T AsmXMM9::type() { return AST_T::AsmXMM9_t; }
+AST_T AsmXMM10::type() { return AST_T::AsmXMM10_t; }
+AST_T AsmXMM11::type() { return AST_T::AsmXMM11_t; }
+AST_T AsmXMM12::type() { return AST_T::AsmXMM12_t; }
+AST_T AsmXMM13::type() { return AST_T::AsmXMM13_t; }
 AST_T AsmXMM14::type() { return AST_T::AsmXMM14_t; }
 AST_T AsmXMM15::type() { return AST_T::AsmXMM15_t; }
 AST_T AsmCondCode::type() { return AST_T::AsmCondCode_t; }

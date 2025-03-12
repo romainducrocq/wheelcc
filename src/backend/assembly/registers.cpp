@@ -10,12 +10,14 @@
 
 // Registers
 
-// reg = AX | CX | DX | DI | SI | R8 | R9 | R10 | R11 | SP | XMM0 | XMM1 | XMM2 | XMM3 | XMM4 | XMM5 | XMM6 | XMM7
-//     | XMM14 | XMM15
+// reg = AX | BX | CX | DX | DI | SI | R8 | R9 | R10 | R11 | R12 | R13 | R14 | R15 | SP | XMM0 | XMM1 | XMM2 | XMM3
+//     | XMM4 | XMM5 | XMM6 | XMM7 | XMM8 | XMM9 | XMM10 | XMM11 | XMM12 | XMM13 | XMM14 | XMM15
 static std::unique_ptr<AsmReg> generate_reg(REGISTER_KIND register_kind) {
     switch (register_kind) {
         case REGISTER_KIND::Ax:
             return std::make_unique<AsmAx>();
+        case REGISTER_KIND::Bx:
+            return std::make_unique<AsmBx>();
         case REGISTER_KIND::Cx:
             return std::make_unique<AsmCx>();
         case REGISTER_KIND::Dx:
@@ -32,6 +34,14 @@ static std::unique_ptr<AsmReg> generate_reg(REGISTER_KIND register_kind) {
             return std::make_unique<AsmR10>();
         case REGISTER_KIND::R11:
             return std::make_unique<AsmR11>();
+        case REGISTER_KIND::R12:
+            return std::make_unique<AsmR12>();
+        case REGISTER_KIND::R13:
+            return std::make_unique<AsmR13>();
+        case REGISTER_KIND::R14:
+            return std::make_unique<AsmR14>();
+        case REGISTER_KIND::R15:
+            return std::make_unique<AsmR15>();
         case REGISTER_KIND::Sp:
             return std::make_unique<AsmSp>();
         case REGISTER_KIND::Bp:
@@ -52,6 +62,18 @@ static std::unique_ptr<AsmReg> generate_reg(REGISTER_KIND register_kind) {
             return std::make_unique<AsmXMM6>();
         case REGISTER_KIND::Xmm7:
             return std::make_unique<AsmXMM7>();
+        case REGISTER_KIND::XMM8:
+            return std::make_unique<AsmXMM8>();
+        case REGISTER_KIND::XMM9:
+            return std::make_unique<AsmXMM9>();
+        case REGISTER_KIND::XMM10:
+            return std::make_unique<AsmXMM10>();
+        case REGISTER_KIND::XMM11:
+            return std::make_unique<AsmXMM11>();
+        case REGISTER_KIND::XMM12:
+            return std::make_unique<AsmXMM12>();
+        case REGISTER_KIND::XMM13:
+            return std::make_unique<AsmXMM13>();
         case REGISTER_KIND::Xmm14:
             return std::make_unique<AsmXMM14>();
         case REGISTER_KIND::Xmm15:

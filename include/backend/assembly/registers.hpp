@@ -15,6 +15,7 @@ struct AsmIndexed;
 
 enum REGISTER_KIND {
     Ax,
+    Bx,
     Cx,
     Dx,
     Di,
@@ -23,6 +24,10 @@ enum REGISTER_KIND {
     R9,
     R10,
     R11,
+    R12,
+    R13,
+    R14,
+    R15,
     Sp,
     Bp,
     Xmm0,
@@ -33,6 +38,12 @@ enum REGISTER_KIND {
     Xmm5,
     Xmm6,
     Xmm7,
+    XMM8,
+    XMM9,
+    XMM10,
+    XMM11,
+    XMM12,
+    XMM13,
     Xmm14,
     Xmm15
 };
