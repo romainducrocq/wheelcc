@@ -2242,7 +2242,7 @@ static void generate_instructions(TacInstruction* node) {
 //             | Unary(unary_operator, assembly_type, operand) | Binary(binary_operator, assembly_type, operand,
 //             operand) | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type,
 //             operand) | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
-//             operand) | Label(identifier) | Push(operand) | Call(identifier) | Ret
+//             operand) | Label(identifier) | Push(operand) | Pop(reg) | Call(identifier) | Ret
 static void generate_list_instructions(const std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for (const auto& instruction : list_node) {
         if (instruction) {

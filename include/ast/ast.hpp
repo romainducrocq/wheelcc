@@ -300,6 +300,7 @@ enum AST_T {
     AsmSetCC_t,
     AsmLabel_t,
     AsmPush_t,
+    AsmPop_t,
     AsmCall_t,
     AsmRet_t,
     AsmTopLevel_t,

@@ -85,6 +85,7 @@ AST_T AsmJmpCC::type() { return AST_T::AsmJmpCC_t; }
 AST_T AsmSetCC::type() { return AST_T::AsmSetCC_t; }
 AST_T AsmLabel::type() { return AST_T::AsmLabel_t; }
 AST_T AsmPush::type() { return AST_T::AsmPush_t; }
+AST_T AsmPop::type() { return AST_T::AsmPop_t; }
 AST_T AsmCall::type() { return AST_T::AsmCall_t; }
 AST_T AsmRet::type() { return AST_T::AsmRet_t; }
 AST_T AsmTopLevel::type() { return AST_T::AsmTopLevel_t; }
@@ -171,6 +172,8 @@ AsmSetCC::AsmSetCC(std::unique_ptr<AsmCondCode> cond_code, std::shared_ptr<AsmOp
 AsmLabel::AsmLabel(TIdentifier name) : name(name) {}
 
 AsmPush::AsmPush(std::shared_ptr<AsmOperand> src) : src(std::move(src)) {}
+
+AsmPop::AsmPop(std::unique_ptr<AsmReg> reg) : reg(std::move(reg)) {}
 
 AsmCall::AsmCall(TIdentifier name) : name(name) {}
 

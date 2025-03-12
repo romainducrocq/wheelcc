@@ -1423,9 +1423,10 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::AsmImm_t: {
             field("AsmImm", "", ++t);
             AsmImm* p_node = static_cast<AsmImm*>(node);
-            field("TIdentifier", identifiers->hash_table[p_node->value], t + 1);
+            field("TULong", std::to_string(p_node->value), t + 1);
             field("Bool", std::to_string(p_node->is_byte), t + 1);
             field("Bool", std::to_string(p_node->is_quad), t + 1);
+            field("Bool", std::to_string(p_node->is_neg), t + 1);
             break;
         }
         case AST_T::AsmRegister_t: {
@@ -1657,6 +1658,12 @@ static void print_ast(Ast* node, size_t t) {
             field("AsmPush", "", ++t);
             AsmPush* p_node = static_cast<AsmPush*>(node);
             print_ast(p_node->src.get(), t);
+            break;
+        }
+        case AST_T::AsmPop_t: {
+            field("AsmPop", "", ++t);
+            AsmPop* p_node = static_cast<AsmPop*>(node);
+            print_ast(p_node->reg.get(), t);
             break;
         }
         case AST_T::AsmCall_t: {

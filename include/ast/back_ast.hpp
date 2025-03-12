@@ -357,6 +357,7 @@ struct AsmShr : AsmUnaryOp {
 //             | SetCC(cond_code, operand)
 //             | Label(identifier)
 //             | Push(operand)
+//             | Pop(reg)
 //             | Call(identifier)
 //             | Ret
 struct AsmInstruction : Ast {
@@ -529,6 +530,14 @@ struct AsmPush : AsmInstruction {
     AsmPush(std::shared_ptr<AsmOperand> src);
 
     std::shared_ptr<AsmOperand> src;
+};
+
+struct AsmPop : AsmInstruction {
+    AST_T type() override;
+    AsmPop() = default;
+    AsmPop(std::unique_ptr<AsmReg> reg);
+
+    std::unique_ptr<AsmReg> reg;
 };
 
 struct AsmCall : AsmInstruction {
