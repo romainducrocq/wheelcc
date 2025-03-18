@@ -29,6 +29,7 @@ enum STRUCT_8B_CLS {
 struct AsmGenContext {
     AsmGenContext();
 
+    FunType* p_fun_type_top_level;
     std::array<REGISTER_KIND, 6> ARG_REGISTERS;
     std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS;
     std::unordered_map<TIdentifier, TIdentifier> double_constant_table;
@@ -1003,6 +1004,18 @@ static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
     }
 }
 
+static void set_fun_type_param_register_mask(FunType* fun_type, size_t reg_size, size_t sse_size) {
+    if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->param_reg_mask = 0ul;
+        for (size_t i = 0; i < reg_size; ++i) {
+            register_mask_set(fun_type->param_reg_mask, context->ARG_REGISTERS[i], true);
+        }
+        for (size_t i = 0; i < sse_size; ++i) {
+            register_mask_set(fun_type->param_reg_mask, context->ARG_SSE_REGISTERS[i], true);
+        }
+    }
+}
+
 static void generate_allocate_stack_instructions(TLong byte) { push_instruction(allocate_stack_bytes(byte)); }
 
 static void generate_deallocate_stack_instructions(TLong byte) { push_instruction(deallocate_stack_bytes(byte)); }
@@ -1116,7 +1129,7 @@ static void generate_8byte_stack_arg_fun_call_instructions(TIdentifier name, TLo
     }
 }
 
-static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return_memory) {
+static TLong generate_arg_fun_call_instructions(TacFunCall* node, FunType* fun_type, bool is_return_memory) {
     size_t reg_size = is_return_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_padding = 0l;
@@ -1193,6 +1206,7 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, bool is_return
             }
         }
     }
+    set_fun_type_param_register_mask(fun_type, reg_size, sse_size);
     if (stack_padding % 2l == 1l) {
         generate_allocate_stack_instructions(8l);
         stack_padding++;
@@ -1261,6 +1275,7 @@ static void generate_8byte_return_fun_call_instructions(
 
 static void generate_fun_call_instructions(TacFunCall* node) {
     bool is_return_memory = false;
+    FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     {
         if (node->dst && is_value_structure(node->dst.get())) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
@@ -1275,7 +1290,7 @@ static void generate_fun_call_instructions(TacFunCall* node) {
                 }
             }
         }
-        TLong stack_padding = generate_arg_fun_call_instructions(node, is_return_memory);
+        TLong stack_padding = generate_arg_fun_call_instructions(node, fun_type, is_return_memory);
 
         {
             TIdentifier name = node->name;
@@ -2313,7 +2328,7 @@ static void generate_8byte_stack_param_function_instructions(
     }
 }
 
-static void generate_param_function_top_level(TacFunction* node, bool is_return_memory) {
+static void generate_param_function_top_level(TacFunction* node, FunType* fun_type, bool is_return_memory) {
     size_t reg_size = is_return_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
@@ -2381,6 +2396,7 @@ static void generate_param_function_top_level(TacFunction* node, bool is_return_
             }
         }
     }
+    set_fun_type_param_register_mask(fun_type, reg_size, sse_size);
 }
 
 static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* node) {
@@ -2407,9 +2423,11 @@ static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* nod
                 }
             }
         }
-        generate_param_function_top_level(node, is_return_memory);
+        generate_param_function_top_level(node, fun_type, is_return_memory);
 
+        context->p_fun_type_top_level = fun_type;
         generate_list_instructions(node->body);
+        context->p_fun_type_top_level = nullptr;
         context->p_instructions = nullptr;
     }
 
