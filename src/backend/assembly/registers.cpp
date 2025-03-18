@@ -99,3 +99,16 @@ std::shared_ptr<AsmIndexed> generate_indexed(
     std::unique_ptr<AsmReg> reg_index = generate_reg(register_kind_index);
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
 }
+
+bool register_mask_get(TULong register_mask, REGISTER_KIND register_kind) {
+    return (register_mask & (static_cast<TULong>(1ul) << static_cast<size_t>(register_kind))) > 0;
+}
+
+void register_mask_set(TULong& register_mask, REGISTER_KIND register_kind, bool value) {
+    if (value) {
+        register_mask |= static_cast<TULong>(1ul) << static_cast<size_t>(register_kind);
+    }
+    else {
+        register_mask &= ~(static_cast<TULong>(1ul) << static_cast<size_t>(register_kind));
+    }
+}
