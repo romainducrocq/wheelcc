@@ -23,7 +23,7 @@
 //      | ULong
 //      | Double
 //      | Void
-//      | FunType(type*, type)
+//      | FunType(int, int, type*, type)
 //      | Pointer(type)
 //      | Array(int, type)
 //      | Structure(identifier, bool)
@@ -70,8 +70,11 @@ struct Void : Type {
 struct FunType : Type {
     AST_T type() override;
     FunType() = default;
-    FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type);
+    FunType(TULong param_reg_mask, TULong ret_reg_mask, std::vector<std::shared_ptr<Type>> param_types,
+        std::shared_ptr<Type> ret_type);
 
+    TULong param_reg_mask;
+    TULong ret_reg_mask;
     std::vector<std::shared_ptr<Type>> param_types;
     std::shared_ptr<Type> ret_type;
 };

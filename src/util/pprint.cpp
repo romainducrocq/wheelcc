@@ -152,6 +152,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_T::FunType_t: {
             field("FunType", "", ++t);
             FunType* p_node = static_cast<FunType*>(node);
+            field("TULong", std::to_string(p_node->param_reg_mask), t + 1);
+            field("TULong", std::to_string(p_node->ret_reg_mask), t + 1);
             field("List[" + std::to_string(p_node->param_types.size()) + "]", "", t + 1);
             for (const auto& item : p_node->param_types) {
                 print_ast(item.get(), t + 1);

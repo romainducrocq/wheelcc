@@ -37,7 +37,7 @@ ast = [
     ["ULong", [], []],
     ["Double", [], []],
     ["Void", [], []],
-    ["FunType", [], ["[param_types", "ret_type"]],
+    ["FunType", [(TULong, "param_reg_mask"), (TULong, "ret_reg_mask")], ["[param_types", "ret_type"]],
     ["Pointer", [], ["ref_type"]],
     ["Array", [(TLong, "size")], ["elem_type"]],
     ["Structure", [(TIdentifier, "tag"), (Bool, "is_union")], []],
