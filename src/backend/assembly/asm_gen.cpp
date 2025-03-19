@@ -718,7 +718,7 @@ static void generate_return_structure_instructions(TacReturn* node) {
                 RAISE_INTERNAL_ERROR;
         }
         if (context->struct_8b_cls_map[struct_type->tag].size() == 2) {
-            bool sse_size = false;
+            bool sse_size = !reg_size;
             switch (context->struct_8b_cls_map[struct_type->tag][1]) {
                 case STRUCT_8B_CLS::INTEGER:
                     generate_8byte_return_instructions(
@@ -726,7 +726,7 @@ static void generate_return_structure_instructions(TacReturn* node) {
                     break;
                 case STRUCT_8B_CLS::SSE: {
                     generate_8byte_return_instructions(
-                        name, 8l, nullptr, reg_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Xmm1);
+                        name, 8l, nullptr, sse_size ? REGISTER_KIND::Xmm1 : REGISTER_KIND::Xmm0);
                     sse_size = true;
                     break;
                 }
@@ -1336,44 +1336,61 @@ static void generate_fun_call_instructions(TacFunCall* node) {
         }
     }
 
-    if (node->dst && !is_return_memory) {
-        if (is_value_double(node->dst.get())) {
-            generate_return_fun_call_instructions(node->dst.get(), REGISTER_KIND::Xmm0);
-        }
-        else if (!is_value_structure(node->dst.get())) {
-            generate_return_fun_call_instructions(node->dst.get(), REGISTER_KIND::Ax);
+    if (node->dst) {
+        if (is_return_memory) {
+            set_fun_type_ret_one_reg_mask(fun_type, true);
         }
         else {
-            bool reg_size = false;
-            TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
-            Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-            switch (context->struct_8b_cls_map[struct_type->tag][0]) {
-                case STRUCT_8B_CLS::INTEGER: {
-                    generate_8byte_return_fun_call_instructions(name, 0l, struct_type, REGISTER_KIND::Ax);
-                    reg_size = true;
-                    break;
-                }
-                case STRUCT_8B_CLS::SSE:
-                    generate_8byte_return_fun_call_instructions(name, 0l, nullptr, REGISTER_KIND::Xmm0);
-                    break;
-                default:
-                    RAISE_INTERNAL_ERROR;
+            if (is_value_double(node->dst.get())) {
+                generate_return_fun_call_instructions(node->dst.get(), REGISTER_KIND::Xmm0);
+                set_fun_type_ret_one_reg_mask(fun_type, false);
             }
-            if (context->struct_8b_cls_map[struct_type->tag].size() == 2) {
-                switch (context->struct_8b_cls_map[struct_type->tag][1]) {
-                    case STRUCT_8B_CLS::INTEGER:
-                        generate_8byte_return_fun_call_instructions(
-                            name, 8l, struct_type, reg_size ? REGISTER_KIND::Dx : REGISTER_KIND::Ax);
+            else if (!is_value_structure(node->dst.get())) {
+                generate_return_fun_call_instructions(node->dst.get(), REGISTER_KIND::Ax);
+                set_fun_type_ret_one_reg_mask(fun_type, true);
+            }
+            else {
+                bool reg_size = false;
+                TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
+                Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
+                switch (context->struct_8b_cls_map[struct_type->tag][0]) {
+                    case STRUCT_8B_CLS::INTEGER: {
+                        generate_8byte_return_fun_call_instructions(name, 0l, struct_type, REGISTER_KIND::Ax);
+                        reg_size = true;
                         break;
+                    }
                     case STRUCT_8B_CLS::SSE:
-                        generate_8byte_return_fun_call_instructions(
-                            name, 8l, nullptr, reg_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Xmm1);
+                        generate_8byte_return_fun_call_instructions(name, 0l, nullptr, REGISTER_KIND::Xmm0);
                         break;
                     default:
                         RAISE_INTERNAL_ERROR;
                 }
+                if (context->struct_8b_cls_map[struct_type->tag].size() == 2) {
+                    bool sse_size = !reg_size;
+                    switch (context->struct_8b_cls_map[struct_type->tag][1]) {
+                        case STRUCT_8B_CLS::INTEGER:
+                            generate_8byte_return_fun_call_instructions(
+                                name, 8l, struct_type, reg_size ? REGISTER_KIND::Dx : REGISTER_KIND::Ax);
+                            break;
+                        case STRUCT_8B_CLS::SSE: {
+                            generate_8byte_return_fun_call_instructions(
+                                name, 8l, nullptr, sse_size ? REGISTER_KIND::Xmm1 : REGISTER_KIND::Xmm0);
+                            sse_size = true;
+                            break;
+                        }
+                        default:
+                            RAISE_INTERNAL_ERROR;
+                    }
+                    set_fun_type_ret_two_regs_mask(fun_type, reg_size, sse_size);
+                }
+                else {
+                    set_fun_type_ret_one_reg_mask(fun_type, reg_size);
+                }
             }
         }
+    }
+    else {
+        set_fun_type_ret_two_regs_mask(fun_type, false, false);
     }
 }
 
