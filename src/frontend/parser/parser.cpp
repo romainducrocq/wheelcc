@@ -1461,8 +1461,7 @@ static void parse_process_fun_declarator(
         param_types.push_back(std::move(param_declarator.derived_type));
     }
     TIdentifier name = static_cast<CIdent*>(node->declarator.get())->name;
-    std::shared_ptr<Type> derived_type =
-        std::make_shared<FunType>(NULL_REGISTER_MASK, NULL_REGISTER_MASK, std::move(param_types), std::move(base_type));
+    std::shared_ptr<Type> derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
     declarator.name = std::move(name);
     declarator.derived_type = std::move(derived_type);
     declarator.params = std::move(params);

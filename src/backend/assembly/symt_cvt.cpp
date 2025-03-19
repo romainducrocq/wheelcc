@@ -163,11 +163,19 @@ static void convert_top_level(AsmTopLevel* node) {
 }
 
 static void convert_fun_type(FunAttr* node, FunType* fun_type) {
-    if (node->is_defined && fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-        RAISE_INTERNAL_ERROR;
+    // TODO after impl regalloc
+    // see if keep reg masks in frontend symt or add to backend symt
+    if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
+        if (node->is_defined) {
+            RAISE_INTERNAL_ERROR;
+        }
+        else {
+            fun_type->param_reg_mask = 0ul;
+        }
     }
-    TULong param_reg_mask = fun_type->param_reg_mask == NULL_REGISTER_MASK ? 0ul : fun_type->param_reg_mask;
-    TULong ret_reg_mask = fun_type->ret_reg_mask == NULL_REGISTER_MASK ? 0ul : fun_type->ret_reg_mask;
+    if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->ret_reg_mask = 0ul;
+    }
     bool is_defined = node->is_defined;
     convert_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
 }
