@@ -559,6 +559,39 @@ static void generate_structure_type_classes(Structure* struct_type) {
     }
 }
 
+static void set_fun_type_param_reg_mask(FunType* fun_type, size_t reg_size, size_t sse_size) {
+    if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->param_reg_mask = 0ul;
+        for (size_t i = 0; i < reg_size; ++i) {
+            register_mask_set(fun_type->param_reg_mask, context->ARG_REGISTERS[i], true);
+        }
+        for (size_t i = 0; i < sse_size; ++i) {
+            register_mask_set(fun_type->param_reg_mask, context->ARG_SSE_REGISTERS[i], true);
+        }
+    }
+}
+
+static void set_fun_type_ret_one_reg_mask(FunType* fun_type, bool reg_size) {
+    if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->ret_reg_mask = 0ul;
+        register_mask_set(fun_type->ret_reg_mask, reg_size ? REGISTER_KIND::Ax : REGISTER_KIND::Xmm0, true);
+    }
+}
+
+static void set_fun_type_ret_two_regs_mask(FunType* fun_type, bool reg_size, bool sse_size) {
+    if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->ret_reg_mask = 0ul;
+        if (reg_size) {
+            register_mask_set(fun_type->ret_reg_mask, REGISTER_KIND::Ax, true);
+            register_mask_set(fun_type->ret_reg_mask, sse_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Dx, true);
+        }
+        else if (sse_size) {
+            register_mask_set(fun_type->ret_reg_mask, REGISTER_KIND::Xmm0, true);
+            register_mask_set(fun_type->ret_reg_mask, REGISTER_KIND::Xmm1, true);
+        }
+    }
+}
+
 static void push_instruction(std::unique_ptr<AsmInstruction>&& instruction) {
     context->p_instructions->push_back(std::move(instruction));
 }
@@ -568,6 +601,7 @@ static void generate_return_integer_instructions(TacReturn* node) {
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
     std::shared_ptr<AssemblyType> assembly_type_val = generate_assembly_type(node->val.get());
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src), std::move(dst)));
+    set_fun_type_ret_one_reg_mask(context->p_fun_type_top_level, true);
 }
 
 static void generate_return_double_instructions(TacReturn* node) {
@@ -575,6 +609,7 @@ static void generate_return_double_instructions(TacReturn* node) {
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm0);
     std::shared_ptr<AssemblyType> assembly_type_val = std::make_shared<BackendDouble>();
     push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src), std::move(dst)));
+    set_fun_type_ret_one_reg_mask(context->p_fun_type_top_level, false);
 }
 
 static void generate_8byte_return_instructions(
@@ -635,6 +670,7 @@ static void generate_return_structure_instructions(TacReturn* node) {
             std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Ax);
             std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
             push_instruction(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+            set_fun_type_ret_one_reg_mask(context->p_fun_type_top_level, true);
         }
         {
             TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
@@ -682,18 +718,25 @@ static void generate_return_structure_instructions(TacReturn* node) {
                 RAISE_INTERNAL_ERROR;
         }
         if (context->struct_8b_cls_map[struct_type->tag].size() == 2) {
+            bool sse_size = false;
             switch (context->struct_8b_cls_map[struct_type->tag][1]) {
                 case STRUCT_8B_CLS::INTEGER:
                     generate_8byte_return_instructions(
                         name, 8l, struct_type, reg_size ? REGISTER_KIND::Dx : REGISTER_KIND::Ax);
                     break;
-                case STRUCT_8B_CLS::SSE:
+                case STRUCT_8B_CLS::SSE: {
                     generate_8byte_return_instructions(
                         name, 8l, nullptr, reg_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Xmm1);
+                    sse_size = true;
                     break;
+                }
                 default:
                     RAISE_INTERNAL_ERROR;
             }
+            set_fun_type_ret_two_regs_mask(context->p_fun_type_top_level, reg_size, sse_size);
+        }
+        else {
+            set_fun_type_ret_one_reg_mask(context->p_fun_type_top_level, reg_size);
         }
     }
 }
@@ -709,6 +752,9 @@ static void generate_return_instructions(TacReturn* node) {
         else {
             generate_return_structure_instructions(node);
         }
+    }
+    else {
+        set_fun_type_ret_two_regs_mask(context->p_fun_type_top_level, false, false);
     }
     push_instruction(std::make_unique<AsmRet>());
 }
@@ -1004,18 +1050,6 @@ static void generate_unsigned_to_double_instructions(TacUIntToDouble* node) {
     }
 }
 
-static void set_fun_type_param_register_mask(FunType* fun_type, size_t reg_size, size_t sse_size) {
-    if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-        fun_type->param_reg_mask = 0ul;
-        for (size_t i = 0; i < reg_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, context->ARG_REGISTERS[i], true);
-        }
-        for (size_t i = 0; i < sse_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, context->ARG_SSE_REGISTERS[i], true);
-        }
-    }
-}
-
 static void generate_allocate_stack_instructions(TLong byte) { push_instruction(allocate_stack_bytes(byte)); }
 
 static void generate_deallocate_stack_instructions(TLong byte) { push_instruction(deallocate_stack_bytes(byte)); }
@@ -1206,7 +1240,7 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, FunType* fun_t
             }
         }
     }
-    set_fun_type_param_register_mask(fun_type, reg_size, sse_size);
+    set_fun_type_param_reg_mask(fun_type, reg_size, sse_size);
     if (stack_padding % 2l == 1l) {
         generate_allocate_stack_instructions(8l);
         stack_padding++;
@@ -2396,7 +2430,7 @@ static void generate_param_function_top_level(TacFunction* node, FunType* fun_ty
             }
         }
     }
-    set_fun_type_param_register_mask(fun_type, reg_size, sse_size);
+    set_fun_type_param_reg_mask(fun_type, reg_size, sse_size);
 }
 
 static std::unique_ptr<AsmFunction> generate_function_top_level(TacFunction* node) {
