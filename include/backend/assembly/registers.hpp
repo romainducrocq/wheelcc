@@ -54,6 +54,5 @@ std::shared_ptr<AsmIndexed> generate_indexed(
     REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index, TLong scale);
 bool register_mask_get(TULong register_mask, REGISTER_KIND register_kind);
 void register_mask_set(TULong& register_mask, REGISTER_KIND register_kind, bool value);
-#define NULL_REGISTER_MASK 18446744073709551615ul
 
 #endif

@@ -162,7 +162,12 @@ static void convert_top_level(AsmTopLevel* node) {
     }
 }
 
-static void convert_fun_type(FunAttr* node) {
+static void convert_fun_type(FunAttr* node, FunType* fun_type) {
+    if (node->is_defined && fun_type->param_reg_mask == NULL_REGISTER_MASK) {
+        RAISE_INTERNAL_ERROR;
+    }
+    TULong param_reg_mask = fun_type->param_reg_mask == NULL_REGISTER_MASK ? 0ul : fun_type->param_reg_mask;
+    TULong ret_reg_mask = fun_type->ret_reg_mask == NULL_REGISTER_MASK ? 0ul : fun_type->ret_reg_mask;
     bool is_defined = node->is_defined;
     convert_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
 }
@@ -180,7 +185,8 @@ static void convert_program(AsmProgram* node) {
     for (const auto& symbol : frontend->symbol_table) {
         context->symbol = symbol.first;
         if (symbol.second->type_t->type() == AST_T::FunType_t) {
-            convert_fun_type(static_cast<FunAttr*>(symbol.second->attrs.get()));
+            convert_fun_type(
+                static_cast<FunAttr*>(symbol.second->attrs.get()), static_cast<FunType*>(symbol.second->type_t.get()));
         }
         else {
             convert_obj_type(symbol.second->attrs.get());

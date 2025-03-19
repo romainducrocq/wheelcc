@@ -18,8 +18,6 @@
 
 #include "frontend/intermediate/idents.hpp"
 
-#include "backend/assembly/registers.hpp"
-
 struct AbstractDeclarator {
     std::shared_ptr<Type> derived_type;
 };
