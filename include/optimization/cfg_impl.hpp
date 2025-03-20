@@ -36,7 +36,6 @@ struct DataFlowAnalysis {
     size_t mask_size;
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
-    std::vector<size_t> block_index_map;
     std::vector<size_t> instruction_index_map;
     std::vector<uint64_t> blocks_mask_sets;
     std::vector<uint64_t> instructions_mask_sets;
@@ -428,8 +427,7 @@ static void mask_set(uint64_t& mask, size_t bit, bool value) {
 #endif
 #define MASK_OFFSET(X) X > 63 ? X / 64 : 0
 
-#define GET_DFA_BLOCK_SET_INDEX(X, Y) \
-    context->data_flow_analysis->block_index_map[X] * context->data_flow_analysis->mask_size + (Y)
+#define GET_DFA_BLOCK_SET_INDEX(X, Y) (X) * context->data_flow_analysis->mask_size + (Y)
 #define GET_DFA_INSTRUCTION_SET_INDEX(X, Y) \
     context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->mask_size + (Y)
 
@@ -853,9 +851,6 @@ static bool data_flow_analysis_initialize(
     if (context->data_flow_analysis->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->data_flow_analysis->open_block_ids.resize(context->control_flow_graph->blocks.size());
     }
-    if (context->data_flow_analysis->block_index_map.size() < context->control_flow_graph->blocks.size()) {
-        context->data_flow_analysis->block_index_map.resize(context->control_flow_graph->blocks.size());
-    }
     if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + 3) {
         context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + 3);
     }
@@ -865,7 +860,6 @@ static bool data_flow_analysis_initialize(
     std::fill(context->control_flow_graph->reaching_code.begin(),
         context->control_flow_graph->reaching_code.begin() + context->control_flow_graph->blocks.size(), false);
 
-    size_t blocks_mask_sets_size = 0;
     size_t instructions_mask_sets_size = 0;
 #if __OPTIM_LEVEL__ == 1
     bool is_copy_propagation = !is_dead_store_elimination;
@@ -1073,10 +1067,6 @@ static bool data_flow_analysis_initialize(
                 Lcontinue:;
                 }
             }
-            if (GET_CFG_BLOCK(block_id).size > 0) {
-                context->data_flow_analysis->block_index_map[block_id] = blocks_mask_sets_size;
-                blocks_mask_sets_size++;
-            }
         }
         else {
             context->control_flow_graph->reaching_code[block_id] = true;
@@ -1102,8 +1092,8 @@ static bool data_flow_analysis_initialize(
     }
 #endif
     context->data_flow_analysis->mask_size = (context->data_flow_analysis->set_size + 63) / 64;
-    blocks_mask_sets_size *= context->data_flow_analysis->mask_size;
     instructions_mask_sets_size *= context->data_flow_analysis->mask_size;
+    size_t blocks_mask_sets_size = context->data_flow_analysis->mask_size * context->control_flow_graph->blocks.size();
 
     if (context->data_flow_analysis->blocks_mask_sets.size() < blocks_mask_sets_size) {
         context->data_flow_analysis->blocks_mask_sets.resize(blocks_mask_sets_size);
