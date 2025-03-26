@@ -4,14 +4,16 @@
 #ifdef __OPTIM_LEVEL__
 #if __OPTIM_LEVEL__ >= 1 && __OPTIM_LEVEL__ <= 2
 
-#if __OPTIM_LEVEL__ == 1
 #define GET_INSTRUCTION(X) (*context->p_instructions)[X]
 #define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
-#endif
 
+using AstInstruction =
 #if __OPTIM_LEVEL__ == 1
-#define AST_INSTRUCTION TacInstruction
+    TacInstruction
+#elif __OPTIM_LEVEL__ == 2
+    AsmInstruction
 #endif
+    ;
 
 struct ControlFlowBlock {
     size_t size;
@@ -45,12 +47,17 @@ struct DataFlowAnalysis {
     std::vector<size_t> data_index_map;
     std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
     // Dead store elimination
+#elif __OPTIM_LEVEL__ == 2
+    // Register allocation
 #endif
     size_t static_index;
     size_t addressed_index;
 };
 
-static void set_instruction(std::unique_ptr<AST_INSTRUCTION>&& instruction, size_t instruction_index);
+static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index);
+
+// TODO rm
+#if __OPTIM_LEVEL__ == 1
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -199,7 +206,7 @@ static void control_flow_graph_initialize_label_block(TacLabel* node) {
 #endif
 
 static void control_flow_graph_initialize_block(size_t instruction_index, size_t& instructions_back_index) {
-    AST_INSTRUCTION* node = GET_INSTRUCTION(instruction_index).get();
+    AstInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_T::TacLabel_t:
@@ -251,7 +258,7 @@ static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZer
 #endif
 
 static void control_flow_graph_initialize_edges(size_t block_id) {
-    AST_INSTRUCTION* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
+    AstInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_T::TacReturn_t:
@@ -374,7 +381,7 @@ static void control_flow_graph_initialize() {
 //         printf("\n    instructions: \n");
 //         std::unique_ptr<TacTopLevel> print_ast;
 //         {
-//             std::vector<std::unique_ptr<AST_INSTRUCTION>> print_instructions;
+//             std::vector<std::unique_ptr<AstInstruction>> print_instructions;
 //             print_instructions.reserve(
 //                 GET_CFG_BLOCK(block_id).instructions_back_index - GET_CFG_BLOCK(block_id).instructions_front_index +
 //                 1);
@@ -387,7 +394,7 @@ static void control_flow_graph_initialize() {
 //         }
 //         pretty_print_ast(print_ast.get(), std::to_string(block_id));
 //         {
-//             std::vector<std::unique_ptr<AST_INSTRUCTION>>& print_instructions =
+//             std::vector<std::unique_ptr<AstInstruction>>& print_instructions =
 //                 static_cast<TacFunction*>(print_ast.get())->body;
 //             for (size_t instruction_index = 0; instruction_index < print_instructions.size(); ++instruction_index) {
 //                 GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_front_index + instruction_index) =
@@ -881,7 +888,7 @@ static bool data_flow_analysis_initialize(
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
-                    AST_INSTRUCTION* node = GET_INSTRUCTION(instruction_index).get();
+                    AstInstruction* node = GET_INSTRUCTION(instruction_index).get();
                     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
                         case AST_T::TacReturn_t: {
@@ -1263,6 +1270,9 @@ static bool data_flow_analysis_initialize(
 //         printf("\n");
 //     }
 // }
+
+// TODO rm
+#endif
 
 #endif
 #endif

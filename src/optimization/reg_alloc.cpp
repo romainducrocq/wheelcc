@@ -1,12 +1,20 @@
+#include <algorithm>
 #include <inttypes.h>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "util/throw.hpp"
 
+#include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
+#include "ast/front_symt.hpp"
 
 #include "optimization/reg_alloc.hpp"
+
+struct ControlFlowGraph;
+struct DataFlowAnalysis;
 
 struct RegAllocContext {
     RegAllocContext(uint8_t optim_2_code);
@@ -14,6 +22,8 @@ struct RegAllocContext {
     // Register allocation
     // Register coalescing
     bool is_with_coalescing;
+    std::unique_ptr<ControlFlowGraph> control_flow_graph;
+    std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
 };
 
@@ -26,6 +36,22 @@ static std::unique_ptr<RegAllocContext> context;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Register allocation
+
+#ifndef __OPTIM_LEVEL__
+#define __OPTIM_LEVEL__ 2
+#undef _OPTIMIZATION_CFG_IMPL_HPP
+#include "optimization/cfg_impl.hpp"
+#undef __OPTIM_LEVEL__
+#endif
+
+static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_t instruction_index) {
+    if (instruction) {
+        GET_INSTRUCTION(instruction_index) = std::move(instruction);
+    }
+    else {
+        GET_INSTRUCTION(instruction_index).reset();
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,6 +102,8 @@ static void regalloc_program(AsmProgram* node) {
 
 void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
     context = std::make_unique<RegAllocContext>(optim_2_code);
+    context->control_flow_graph = std::make_unique<ControlFlowGraph>();
+    context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
     regalloc_program(node);
     context.reset();
 }
