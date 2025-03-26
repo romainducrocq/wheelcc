@@ -57,9 +57,7 @@ static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_
 
 // Register allocation
 
-static void regalloc_inference_graph() {
-    // TODO
-}
+static void regalloc_inference_graph() { control_flow_graph_initialize(); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

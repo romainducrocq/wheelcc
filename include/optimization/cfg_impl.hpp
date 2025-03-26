@@ -56,9 +56,6 @@ struct DataFlowAnalysis {
 
 static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index);
 
-// TODO rm
-#if __OPTIM_LEVEL__ == 1
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Control flow graph
@@ -203,6 +200,10 @@ static void control_flow_graph_remove_block_instruction(size_t instruction_index
 static void control_flow_graph_initialize_label_block(TacLabel* node) {
     context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
+#elif __OPTIM_LEVEL__ == 2
+static void control_flow_graph_initialize_label_block(AsmLabel* node) {
+    context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
+}
 #endif
 
 static void control_flow_graph_initialize_block(size_t instruction_index, size_t& instructions_back_index) {
@@ -210,6 +211,8 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_T::TacLabel_t:
+#elif __OPTIM_LEVEL__ == 2
+        case AST_T::AsmLabel_t:
 #endif
         {
             if (instructions_back_index != context->p_instructions->size()) {
@@ -219,6 +222,8 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
             }
 #if __OPTIM_LEVEL__ == 1
             control_flow_graph_initialize_label_block(static_cast<TacLabel*>(node));
+#elif __OPTIM_LEVEL__ == 2
+            control_flow_graph_initialize_label_block(static_cast<AsmLabel*>(node));
 #endif
             instructions_back_index = instruction_index;
             break;
@@ -228,6 +233,10 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
         case AST_T::TacJump_t:
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t:
+#elif __OPTIM_LEVEL__ == 2
+        case AST_T::AsmRet_t:
+        case AST_T::AsmJmp_t:
+        case AST_T::AsmJmpCC_t:
 #endif
         {
             context->control_flow_graph->blocks.back().instructions_back_index = instruction_index;
@@ -255,6 +264,15 @@ static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZer
     control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
     control_flow_graph_add_successor_edge(block_id, block_id + 1);
 }
+#elif __OPTIM_LEVEL__ == 2
+static void control_flow_graph_initialize_jmp_edges(AsmJmp* node, size_t block_id) {
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+}
+
+static void control_flow_graph_initialize_jmp_cc_edges(AsmJmpCC* node, size_t block_id) {
+    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    control_flow_graph_add_successor_edge(block_id, block_id + 1);
+}
 #endif
 
 static void control_flow_graph_initialize_edges(size_t block_id) {
@@ -262,6 +280,8 @@ static void control_flow_graph_initialize_edges(size_t block_id) {
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_T::TacReturn_t:
+#elif __OPTIM_LEVEL__ == 2
+        case AST_T::AsmRet_t:
 #endif
             control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->exit_id);
             break;
@@ -274,6 +294,13 @@ static void control_flow_graph_initialize_edges(size_t block_id) {
             break;
         case AST_T::TacJumpIfNotZero_t:
             control_flow_graph_initialize_jump_if_not_zero_edges(static_cast<TacJumpIfNotZero*>(node), block_id);
+            break;
+#elif __OPTIM_LEVEL__ == 2
+        case AST_T::AsmJmp_t:
+            control_flow_graph_initialize_jmp_edges(static_cast<AsmJmp*>(node), block_id);
+            break;
+        case AST_T::AsmJmpCC_t:
+            control_flow_graph_initialize_jmp_cc_edges(static_cast<AsmJmpCC*>(node), block_id);
             break;
 #endif
         default:
@@ -404,6 +431,9 @@ static void control_flow_graph_initialize() {
 //     }
 //     // RAISE_INTERNAL_ERROR;
 // }
+
+// TODO rm
+#if __OPTIM_LEVEL__ == 1
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
