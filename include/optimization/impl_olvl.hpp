@@ -432,9 +432,6 @@ static void control_flow_graph_initialize() {
 //     // RAISE_INTERNAL_ERROR;
 // }
 
-// TODO rm
-#if __OPTIM_LEVEL__ == 1
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Data flow analysis
@@ -481,8 +478,9 @@ static void mask_set(uint64_t& mask, size_t bit, bool value) {
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 #endif
 
-static bool is_transfer_instruction(size_t instruction_index,
+static bool is_transfer_instruction(size_t instruction_index
 #if __OPTIM_LEVEL__ == 1
+    ,
     bool is_dead_store_elimination
 #endif
 ) {
@@ -510,6 +508,8 @@ static bool is_transfer_instruction(size_t instruction_index,
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t:
             return is_dead_store_elimination;
+#elif __OPTIM_LEVEL__ == 2
+        // TODO
 #endif
         default:
             return false;
@@ -558,6 +558,8 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
 #if __OPTIM_LEVEL__ == 1
 static bool copy_propagation_transfer_reaching_copies(TacInstruction* node, size_t next_instruction_index);
 static void eliminate_dead_store_transfer_live_values(TacInstruction* node, size_t next_instruction_index);
+#elif __OPTIM_LEVEL__ == 2
+static bool regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -598,13 +600,21 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
     if (instruction_index > 0) {
         for (size_t next_instruction_index = instruction_index;
              next_instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
-            if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, true)) {
+            if (GET_INSTRUCTION(next_instruction_index)
+                && is_transfer_instruction(next_instruction_index
+#if __OPTIM_LEVEL__ == 1
+                    ,
+                    true
+#endif
+                    )) {
                 for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
                     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                         GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
                 }
 #if __OPTIM_LEVEL__ == 1
                 eliminate_dead_store_transfer_live_values
+#elif __OPTIM_LEVEL__ == 2
+                regalloc_transfer_live_registers
 #endif
                     (GET_INSTRUCTION(instruction_index).get(), next_instruction_index);
                 instruction_index = next_instruction_index;
@@ -617,6 +627,8 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
     }
 #if __OPTIM_LEVEL__ == 1
     eliminate_dead_store_transfer_live_values
+#elif __OPTIM_LEVEL__ == 2
+    regalloc_transfer_live_registers
 #endif
         (GET_INSTRUCTION(instruction_index).get(), context->data_flow_analysis->incoming_index);
     return instruction_index;
@@ -686,7 +698,13 @@ Lelse:
 static bool data_flow_analysis_backward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index + 1;
     while (instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index) {
-        if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index, true)) {
+        if (GET_INSTRUCTION(instruction_index)
+            && is_transfer_instruction(instruction_index
+#if __OPTIM_LEVEL__ == 1
+                ,
+                true
+#endif
+                )) {
             goto Lelse;
         }
     }
@@ -875,6 +893,8 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
         eliminate_dead_store_add_data_name(static_cast<TacVariable*>(node)->name);
     }
 }
+#elif __OPTIM_LEVEL__ == 2
+// TODO
 #endif
 
 static bool data_flow_analysis_initialize(
@@ -1095,6 +1115,8 @@ static bool data_flow_analysis_initialize(
                             eliminate_dead_store_add_data_value(static_cast<TacJumpIfNotZero*>(node)->condition.get());
                             break;
                         }
+#elif __OPTIM_LEVEL__ == 2
+                        // TODO
 #endif
                         default:
                             goto Lcontinue;
@@ -1207,6 +1229,8 @@ static bool data_flow_analysis_initialize(
             if (
 #if __OPTIM_LEVEL__ == 1
                 frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t
+#elif __OPTIM_LEVEL__ == 2
+            true // TODO
 #endif
             ) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
@@ -1300,9 +1324,6 @@ static bool data_flow_analysis_initialize(
 //         printf("\n");
 //     }
 // }
-
-// TODO rm
-#endif
 
 #endif
 #endif

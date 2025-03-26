@@ -57,7 +57,15 @@ static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_
 
 // Register allocation
 
-static void regalloc_inference_graph() { control_flow_graph_initialize(); }
+static bool regalloc_transfer_live_registers(AsmInstruction* /*node*/, size_t /*next_instruction_index*/) {
+    // TODO
+    return true;
+}
+
+static void regalloc_inference_graph() {
+    control_flow_graph_initialize();
+    data_flow_analysis_initialize();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
