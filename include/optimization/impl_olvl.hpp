@@ -1227,11 +1227,11 @@ static bool data_flow_analysis_initialize(
 
         for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
             if (
-#if __OPTIM_LEVEL__ == 1
+                // #if __OPTIM_LEVEL__ == 1
                 frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t
-#elif __OPTIM_LEVEL__ == 2
-            true // TODO
-#endif
+                // #elif __OPTIM_LEVEL__ == 2
+                // TODO ?
+                // #endif
             ) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
             }
