@@ -51,8 +51,8 @@ static std::unique_ptr<OptimTacContext> context;
 
 #ifndef __OPTIM_LEVEL__
 #define __OPTIM_LEVEL__ 1
-#undef _OPTIMIZATION_CFG_IMPL_HPP
-#include "optimization/cfg_impl.hpp"
+#undef _OPTIMIZATION_IMPL_OLVL_HPP
+#include "optimization/impl_olvl.hpp"
 #undef __OPTIM_LEVEL__
 #endif
 
