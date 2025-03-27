@@ -572,7 +572,7 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
 static bool copy_propagation_transfer_reaching_copies(TacInstruction* node, size_t next_instruction_index);
 static void eliminate_dead_store_transfer_live_values(TacInstruction* node, size_t next_instruction_index);
 #elif __OPTIM_LEVEL__ == 2
-static bool regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index);
+static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -908,7 +908,6 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
 }
 #elif __OPTIM_LEVEL__ == 2
 static void regalloc_add_data_name(TIdentifier name) {
-    // TODO make sure that it is needed to exclude static variables
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {

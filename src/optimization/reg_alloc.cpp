@@ -9,6 +9,7 @@
 
 #include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
+#include "ast/front_symt.hpp"
 
 #include "backend/assembly/registers.hpp"
 
@@ -58,9 +59,125 @@ static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_
 
 // Register allocation
 
-static bool regalloc_transfer_live_registers(AsmInstruction* /*node*/, size_t /*next_instruction_index*/) {
+static void regalloc_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
+    if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
+        size_t i = context->control_flow_graph->identifier_id_map[name];
+        SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
+    }
+}
+
+static void regalloc_transfer_used_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
+    if (node->type() == AST_T::AsmPseudo_t) {
+        regalloc_transfer_used_name_live_registers(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+    }
+}
+
+static void regalloc_transfer_used_reg_live_registers(REGISTER_KIND register_kind, size_t next_instruction_index) {
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, static_cast<size_t>(register_kind), true);
+}
+
+static void regalloc_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
+    if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
+        size_t i = context->control_flow_graph->identifier_id_map[name];
+        SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
+    }
+}
+
+static void regalloc_transfer_updated_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
+    if (node->type() == AST_T::AsmPseudo_t) {
+        regalloc_transfer_updated_name_live_registers(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+    }
+}
+
+static void regalloc_transfer_updated_reg_live_registers(REGISTER_KIND register_kind, size_t next_instruction_index) {
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, static_cast<size_t>(register_kind), false);
+}
+
+static void regalloc_transfer_live_registers(AsmInstruction* node, size_t /*next_instruction_index*/) {
     // TODO
-    return true;
+    switch (node->type()) {
+        case AST_T::AsmMov_t: {
+            // AsmMov* p_node = static_cast<AsmMov*>(node);
+            // regalloc_add_data_operand(p_node->src.get());
+            // regalloc_add_data_operand(p_node->dst.get());
+
+            // | Mov(src, dst) ->
+            // used = [src]
+            // updated = [dst]
+
+            break;
+        }
+        case AST_T::AsmUnary_t:
+            // regalloc_add_data_operand(static_cast<AsmUnary*>(node)->dst.get());
+
+            // | Unary(op, dst) ->
+            // used = [dst]
+            // updated = [dst]
+
+            break;
+        case AST_T::AsmBinary_t: {
+            // AsmBinary* p_node = static_cast<AsmBinary*>(node);
+            // regalloc_add_data_operand(p_node->src.get());
+            // regalloc_add_data_operand(p_node->dst.get());
+
+            // | Binary(op, src, dst) ->
+            // used = [src, dst]
+            // updated = [dst]
+
+            break;
+        }
+        case AST_T::AsmCmp_t: {
+            // AsmCmp* p_node = static_cast<AsmCmp*>(node);
+            // regalloc_add_data_operand(p_node->src.get());
+            // regalloc_add_data_operand(p_node->dst.get());
+
+            // | Cmp(v1, v2) ->
+            // used = [v1, v2]
+            // updated = []
+
+            break;
+        }
+        case AST_T::AsmIdiv_t:
+            // regalloc_add_data_operand(static_cast<AsmIdiv*>(node)->src.get());
+
+            // | Idiv(divisor) ->
+            // used = [ divisor, Reg(AX), Reg(DX) ]
+            // updated = [ Reg(AX), Reg(DX) ]
+
+            break;
+        case AST_T::AsmCdq_t:
+
+            // | Cdq ->
+            // used = [ Reg(AX) ]
+            // updated = [ Reg(DX) ]
+
+            break;
+        case AST_T::AsmSetCC_t:
+            // regalloc_add_data_operand(static_cast<AsmSetCC*>(node)->dst.get());
+
+            // | Push(v) ->
+            // used = [v]
+            // updated = []
+
+            break;
+        case AST_T::AsmPush_t:
+            // regalloc_add_data_operand(static_cast<AsmPush*>(node)->src.get());
+
+            // | SetCC(cond, dst) ->
+            // used = []
+            // updated = [dst]
+
+            break;
+        case AST_T::AsmCall_t:
+
+            // | Call(f) ->Writing a C Compiler (Early Access) © 2023 by Nora Sandler
+            // used = <look up parameter passing registers in the backend symbol table>
+            // updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
+
+            break;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
 }
 
 static void regalloc_inference_graph() {
