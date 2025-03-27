@@ -478,6 +478,10 @@ static void mask_set(uint64_t& mask, size_t bit, bool value) {
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 #endif
 
+#if __OPTIM_LEVEL__ == 2
+#define REGISTER_KIND_SIZE REGISTER_KIND::Xmm15 + 1
+#endif
+
 static bool is_transfer_instruction(size_t instruction_index
 #if __OPTIM_LEVEL__ == 1
     ,
@@ -903,14 +907,13 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 #elif __OPTIM_LEVEL__ == 2
-// TODO ?
-// offset set_size and others
 static void regalloc_add_data_name(TIdentifier name) {
     // TODO make sure that it is needed to exclude static variables
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {
-        context->control_flow_graph->identifier_id_map[name] = context->data_flow_analysis->set_size;
+        context->control_flow_graph->identifier_id_map[name] =
+            REGISTER_KIND_SIZE + context->data_flow_analysis->set_size;
         context->data_flow_analysis->set_size++;
     }
 }
@@ -1191,6 +1194,10 @@ static bool data_flow_analysis_initialize(
     if (context->data_flow_analysis->set_size == 0) {
         return false;
     }
+
+#if __OPTIM_LEVEL__ == 2
+    context->data_flow_analysis->set_size += REGISTER_KIND_SIZE;
+#endif
 
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
         instructions_mask_sets_size;
