@@ -64,8 +64,17 @@ static bool regalloc_transfer_live_registers(AsmInstruction* /*node*/, size_t /*
 }
 
 static void regalloc_inference_graph() {
+    // TODO
+}
+
+static bool inference_graph_initialize() {
     control_flow_graph_initialize();
-    data_flow_analysis_initialize();
+    if (!data_flow_analysis_initialize()) {
+        return false;
+    }
+    data_flow_analysis_backward_iterative_algorithm();
+    // TODO
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,9 +89,11 @@ static void coalesce_list_instructions() {
 
 static void regalloc_function_top_level(AsmFunction* node) {
     context->p_instructions = &node->instructions;
-    regalloc_inference_graph();
-    if (context->is_with_coalescing) {
-        coalesce_list_instructions();
+    if (inference_graph_initialize()) {
+        regalloc_inference_graph();
+        if (context->is_with_coalescing) {
+            coalesce_list_instructions();
+        }
     }
     context->p_instructions = nullptr;
 }
