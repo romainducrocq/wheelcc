@@ -1226,20 +1226,21 @@ static bool data_flow_analysis_initialize(
         }
 
         for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
-            if (
-                // #if __OPTIM_LEVEL__ == 1
-                frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t
-                // #elif __OPTIM_LEVEL__ == 2
-                // TODO ?
-                // #endif
-            ) {
+#if __OPTIM_LEVEL__ == 1
+            if (frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
             }
+#endif
             if (context->data_flow_analysis->alias_set.find(name_id.first)
                 != context->data_flow_analysis->alias_set.end()) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->addressed_index, name_id.second, true);
             }
         }
+
+#if __OPTIM_LEVEL__ == 2
+        SET_DFA_INSTRUCTION_SET_AT(
+            context->data_flow_analysis->static_index, static_cast<size_t>(REGISTER_KIND::Ax), true);
+#endif
 
         std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
             context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, MASK_FALSE);

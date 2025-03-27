@@ -9,7 +9,8 @@
 
 #include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
-#include "ast/front_symt.hpp"
+
+#include "backend/assembly/registers.hpp"
 
 #include "optimization/reg_alloc.hpp"
 
