@@ -234,9 +234,9 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
         case AST_T::TacJumpIfZero_t:
         case AST_T::TacJumpIfNotZero_t:
 #elif __OPTIM_LEVEL__ == 2
-        case AST_T::AsmRet_t:
         case AST_T::AsmJmp_t:
         case AST_T::AsmJmpCC_t:
+        case AST_T::AsmRet_t:
 #endif
         {
             context->control_flow_graph->blocks.back().instructions_back_index = instruction_index;
@@ -509,7 +509,16 @@ static bool is_transfer_instruction(size_t instruction_index
         case AST_T::TacJumpIfNotZero_t:
             return is_dead_store_elimination;
 #elif __OPTIM_LEVEL__ == 2
-        // TODO
+        case AST_T::AsmMov_t:
+        case AST_T::AsmUnary_t:
+        case AST_T::AsmBinary_t:
+        case AST_T::AsmCmp_t:
+        case AST_T::AsmIdiv_t:
+        case AST_T::AsmCdq_t:
+        case AST_T::AsmSetCC_t:
+        case AST_T::AsmPush_t:
+        case AST_T::AsmCall_t:
+            return true;
 #endif
         default:
             return false;
@@ -894,7 +903,23 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 #elif __OPTIM_LEVEL__ == 2
-// TODO
+// TODO ?
+// offset set_size and others
+static void regalloc_add_data_name(TIdentifier name) {
+    // TODO make sure that it is needed to exclude static variables
+    if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t
+        && context->control_flow_graph->identifier_id_map.find(name)
+               == context->control_flow_graph->identifier_id_map.end()) {
+        context->control_flow_graph->identifier_id_map[name] = context->data_flow_analysis->set_size;
+        context->data_flow_analysis->set_size++;
+    }
+}
+
+static void regalloc_add_data_operand(AsmOperand* node) {
+    if (node->type() == AST_T::AsmPseudo_t) {
+        regalloc_add_data_name(static_cast<AsmPseudo*>(node)->name);
+    }
+}
 #endif
 
 static bool data_flow_analysis_initialize(
@@ -1116,7 +1141,39 @@ static bool data_flow_analysis_initialize(
                             break;
                         }
 #elif __OPTIM_LEVEL__ == 2
-                        // TODO
+                        case AST_T::AsmMov_t: {
+                            AsmMov* p_node = static_cast<AsmMov*>(node);
+                            regalloc_add_data_operand(p_node->src.get());
+                            regalloc_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmUnary_t:
+                            regalloc_add_data_operand(static_cast<AsmUnary*>(node)->dst.get());
+                            break;
+                        case AST_T::AsmBinary_t: {
+                            AsmBinary* p_node = static_cast<AsmBinary*>(node);
+                            regalloc_add_data_operand(p_node->src.get());
+                            regalloc_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmCmp_t: {
+                            AsmCmp* p_node = static_cast<AsmCmp*>(node);
+                            regalloc_add_data_operand(p_node->src.get());
+                            regalloc_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmIdiv_t:
+                            regalloc_add_data_operand(static_cast<AsmIdiv*>(node)->src.get());
+                            break;
+                        case AST_T::AsmSetCC_t:
+                            regalloc_add_data_operand(static_cast<AsmSetCC*>(node)->dst.get());
+                            break;
+                        case AST_T::AsmPush_t:
+                            regalloc_add_data_operand(static_cast<AsmPush*>(node)->src.get());
+                            break;
+                        case AST_T::AsmCdq_t:
+                        case AST_T::AsmCall_t:
+                            break;
 #endif
                         default:
                             goto Lcontinue;
