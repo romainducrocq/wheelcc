@@ -102,77 +102,51 @@ static void regalloc_transfer_updated_reg_live_registers(REGISTER_KIND register_
 static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index) {
     switch (node->type()) {
         case AST_T::AsmMov_t: {
-            // | Mov(src, dst) ->
             AsmMov* p_node = static_cast<AsmMov*>(node);
-            // updated = [dst]
             regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            // used = [src]
             regalloc_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmUnary_t: {
-            // | Unary(op, dst) ->
             AsmUnary* p_node = static_cast<AsmUnary*>(node);
-            // updated = [dst]
             regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            // used = [dst]
             regalloc_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmBinary_t: {
-            // | Binary(op, src, dst) ->
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            // updated = [dst]
             regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            // used = [src, dst]
             regalloc_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             regalloc_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmCmp_t: {
-            // | Cmp(v1, v2) ->
             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-            // updated = []
-            // used = [v1, v2]
             regalloc_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             regalloc_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmIdiv_t:
-            // | Idiv(divisor) ->
-            // updated = [ Reg(AX), Reg(DX) ]
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            // used = [ divisor, Reg(AX), Reg(DX) ]
             regalloc_transfer_used_operand_live_registers(
                 static_cast<AsmIdiv*>(node)->src.get(), next_instruction_index);
             regalloc_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             regalloc_transfer_used_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
             break;
         case AST_T::AsmCdq_t:
-            // | Cdq ->
-            // updated = [ Reg(DX) ]
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            // used = [ Reg(AX) ]
             regalloc_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             break;
         case AST_T::AsmSetCC_t:
-            // | SetCC(cond, dst) ->
-            // updated = [dst]
             regalloc_transfer_updated_operand_live_registers(
                 static_cast<AsmSetCC*>(node)->dst.get(), next_instruction_index);
-            // used = []
             break;
         case AST_T::AsmPush_t:
-            // | Push(v) ->
-            // updated = []
-            // used = [v]
             regalloc_transfer_used_operand_live_registers(
                 static_cast<AsmPush*>(node)->src.get(), next_instruction_index);
             break;
         case AST_T::AsmCall_t:
-            // | Call(f) ->
-            // updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
@@ -180,7 +154,6 @@ static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_i
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
             regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
-            // used = <look up parameter passing registers in the backend symbol table>
             regalloc_transfer_used_call_live_registers(static_cast<AsmCall*>(node), next_instruction_index);
             break;
         default:
