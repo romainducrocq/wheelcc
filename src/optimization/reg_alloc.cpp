@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <inttypes.h>
 #include <memory>
 #include <unordered_map>
@@ -21,45 +22,42 @@ struct DataFlowAnalysis;
 // node = Node(operand id, operand* neighbors, double spill_cost, int? color, bool pruned)
 // graph = Graph(node* nodes)
 
-// struct ControlFlowBlock {
-//     size_t size;
-//     size_t instructions_front_index;
-//     size_t instructions_back_index;
-//     std::vector<size_t> predecessor_ids;
-//     std::vector<size_t> successor_ids;
-// };
-
-// struct ControlFlowGraph {
-//     size_t entry_id;
-//     size_t exit_id;
-//     std::vector<size_t> entry_successor_ids;
-//     std::vector<size_t> exit_predecessor_ids;
-//     std::vector<bool> reaching_code;
-//     std::vector<ControlFlowBlock> blocks;
-//     std::unordered_map<TIdentifier, size_t> identifier_id_map;
-// };
-
-// struct InferenceNode {
-//     size_t color;
-//     // size_t color;
-//     double spill_cost;
-//     bool is_pruned;
-//     std::vector<size_t> neighbor_ids;
-// };
-
-struct RegAllocContext {
-    RegAllocContext(uint8_t optim_2_code);
-
-    // Register allocation
-    // Register coalescing
-    bool is_with_coalescing;
-    std::unique_ptr<ControlFlowGraph> control_flow_graph;
-    std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
-    // std::vector<InferenceNode> inference_graph;
-    std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
+struct InferenceNode {
+    TIdentifier name;
+    double spill_cost;
+    uint64_t linked_reg_mask;
+    size_t color;
+    bool is_pruned;
+    std::vector<size_t> linked_pseudo_bits;
 };
 
-RegAllocContext::RegAllocContext(uint8_t optim_2_code) :
+struct RegAllocContext {
+    RegAllocContext(uint8_t optim_2_code, uint64_t hard_reg_mask, uint64_t hard_sse_reg_mask);
+
+    // Register allocation
+    uint64_t HARD_REG_MASK;
+    uint64_t HARD_SSE_REG_MASK;
+    // std::array<REGISTER_KIND, 12> HARD_REGISTERS;
+    // std::array<REGISTER_KIND, 14> HARD_SSE_REGISTERS;
+    std::array<InferenceNode, 12> reg_inference_nodes;
+    std::array<InferenceNode, 14> sse_reg_inference_nodes;
+    std::vector<InferenceNode> pseudo_inference_nodes;
+    std::vector<InferenceNode> sse_pseudo_inference_nodes;
+    std::unique_ptr<ControlFlowGraph> control_flow_graph;
+    std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
+    std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
+    // Register coalescing
+    bool is_with_coalescing;
+};
+
+RegAllocContext::RegAllocContext(uint8_t optim_2_code, uint64_t hard_reg_mask, uint64_t hard_sse_reg_mask) :
+    HARD_REG_MASK(hard_reg_mask), HARD_SSE_REG_MASK(hard_sse_reg_mask),
+    // , HARD_REGISTERS({REGISTER_KIND::Ax, REGISTER_KIND::Bx, REGISTER_KIND::Cx, REGISTER_KIND::Dx, REGISTER_KIND::Di,
+    //     REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9, REGISTER_KIND::R12, REGISTER_KIND::R13,
+    //     REGISTER_KIND::R14, REGISTER_KIND::R15}),
+    // , HARD_SSE_REGISTERS({REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2, REGISTER_KIND::Xmm3,
+    //     REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7, REGISTER_KIND::Xmm8,
+    //     REGISTER_KIND::Xmm9, REGISTER_KIND::Xmm10, REGISTER_KIND::Xmm11, REGISTER_KIND::Xmm12, REGISTER_KIND::Xmm13})
     is_with_coalescing(optim_2_code > 1u) // With register coalescing
 {}
 
@@ -84,10 +82,6 @@ static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_
         GET_INSTRUCTION(instruction_index).reset();
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Register allocation
 
 static void regalloc_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
@@ -191,18 +185,40 @@ static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_i
     }
 }
 
-static void regalloc_inference_graph() {
-    // TODO
-}
-
 static bool inference_graph_initialize() {
     control_flow_graph_initialize();
     if (!data_flow_analysis_initialize()) {
         return false;
     }
     data_flow_analysis_backward_iterative_algorithm();
+
+    for (size_t i = 0; i < 12; ++i) {
+        context->reg_inference_nodes[i].name = 0;
+        context->reg_inference_nodes[i].spill_cost = -1.;
+        context->reg_inference_nodes[i].linked_reg_mask = context->HARD_REG_MASK;
+        context->reg_inference_nodes[i].color = 0;
+        context->reg_inference_nodes[i].is_pruned = false;
+        context->reg_inference_nodes[i].linked_pseudo_bits.clear();
+    }
+    for (size_t i = 0; i < 14; ++i) {
+        context->sse_reg_inference_nodes[i].name = 0;
+        context->sse_reg_inference_nodes[i].spill_cost = -1.;
+        context->sse_reg_inference_nodes[i].linked_reg_mask = context->HARD_SSE_REG_MASK;
+        context->sse_reg_inference_nodes[i].color = 0;
+        context->sse_reg_inference_nodes[i].is_pruned = false;
+        context->sse_reg_inference_nodes[i].linked_pseudo_bits.clear();
+    }
+
     // TODO
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Register allocation
+
+static void regalloc_inference_graph() {
+    // TODO
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,7 +263,42 @@ static void regalloc_program(AsmProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
-    context = std::make_unique<RegAllocContext>(optim_2_code);
+    {
+        uint64_t hard_reg_mask = MASK_FALSE;
+        {
+            register_mask_set(hard_reg_mask, REGISTER_KIND::Ax, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::Bx, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::Cx, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::Dx, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::Di, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::Si, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::R8, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::R9, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::R12, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::R13, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::R14, true);
+            register_mask_set(hard_reg_mask, REGISTER_KIND::R15, true);
+        }
+        uint64_t hard_sse_reg_mask = MASK_FALSE;
+        {
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm0, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm1, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm2, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm3, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm4, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm5, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm6, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm7, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm8, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm9, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm10, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm11, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm12, true);
+            register_mask_set(hard_sse_reg_mask, REGISTER_KIND::Xmm13, true);
+        }
+        context = std::make_unique<RegAllocContext>(
+            std::move(optim_2_code), std::move(hard_reg_mask), std::move(hard_sse_reg_mask));
+    }
     context->control_flow_graph = std::make_unique<ControlFlowGraph>();
     context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
     regalloc_program(node);
