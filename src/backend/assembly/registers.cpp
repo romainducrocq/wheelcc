@@ -62,17 +62,17 @@ static std::unique_ptr<AsmReg> generate_reg(REGISTER_KIND register_kind) {
             return std::make_unique<AsmXMM6>();
         case REGISTER_KIND::Xmm7:
             return std::make_unique<AsmXMM7>();
-        case REGISTER_KIND::XMM8:
+        case REGISTER_KIND::Xmm8:
             return std::make_unique<AsmXMM8>();
-        case REGISTER_KIND::XMM9:
+        case REGISTER_KIND::Xmm9:
             return std::make_unique<AsmXMM9>();
-        case REGISTER_KIND::XMM10:
+        case REGISTER_KIND::Xmm10:
             return std::make_unique<AsmXMM10>();
-        case REGISTER_KIND::XMM11:
+        case REGISTER_KIND::Xmm11:
             return std::make_unique<AsmXMM11>();
-        case REGISTER_KIND::XMM12:
+        case REGISTER_KIND::Xmm12:
             return std::make_unique<AsmXMM12>();
-        case REGISTER_KIND::XMM13:
+        case REGISTER_KIND::Xmm13:
             return std::make_unique<AsmXMM13>();
         case REGISTER_KIND::Xmm14:
             return std::make_unique<AsmXMM14>();
@@ -100,15 +100,81 @@ std::shared_ptr<AsmIndexed> generate_indexed(
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
 }
 
+size_t register_mask_bit(REGISTER_KIND register_kind) {
+    switch (register_kind) {
+        case REGISTER_KIND::Ax:
+            return 0;
+        case REGISTER_KIND::Bx:
+            return 1;
+        case REGISTER_KIND::Cx:
+            return 2;
+        case REGISTER_KIND::Dx:
+            return 3;
+        case REGISTER_KIND::Di:
+            return 4;
+        case REGISTER_KIND::Si:
+            return 5;
+        case REGISTER_KIND::R8:
+            return 6;
+        case REGISTER_KIND::R9:
+            return 7;
+        case REGISTER_KIND::R12:
+            return 8;
+        case REGISTER_KIND::R13:
+            return 9;
+        case REGISTER_KIND::R14:
+            return 10;
+        case REGISTER_KIND::R15:
+            return 11;
+        case REGISTER_KIND::Xmm0:
+            return 12;
+        case REGISTER_KIND::Xmm1:
+            return 13;
+        case REGISTER_KIND::Xmm2:
+            return 14;
+        case REGISTER_KIND::Xmm3:
+            return 15;
+        case REGISTER_KIND::Xmm4:
+            return 16;
+        case REGISTER_KIND::Xmm5:
+            return 17;
+        case REGISTER_KIND::Xmm6:
+            return 18;
+        case REGISTER_KIND::Xmm7:
+            return 19;
+        case REGISTER_KIND::Xmm8:
+            return 20;
+        case REGISTER_KIND::Xmm9:
+            return 21;
+        case REGISTER_KIND::Xmm10:
+            return 22;
+        case REGISTER_KIND::Xmm11:
+            return 23;
+        case REGISTER_KIND::Xmm12:
+            return 24;
+        case REGISTER_KIND::Xmm13:
+            return 25;
+        case REGISTER_KIND::R10:
+        case REGISTER_KIND::R11:
+        case REGISTER_KIND::Sp:
+        case REGISTER_KIND::Bp:
+        case REGISTER_KIND::Xmm14:
+        case REGISTER_KIND::Xmm15:
+            RAISE_INTERNAL_ERROR;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 bool register_mask_get(TULong register_mask, REGISTER_KIND register_kind) {
-    return (register_mask & (static_cast<TULong>(1ul) << static_cast<size_t>(register_kind))) > 0;
+    return (register_mask & (static_cast<TULong>(1ul) << register_mask_bit(register_kind))) > 0;
 }
 
 void register_mask_set(TULong& register_mask, REGISTER_KIND register_kind, bool value) {
     if (value) {
-        register_mask |= static_cast<TULong>(1ul) << static_cast<size_t>(register_kind);
+        register_mask |= static_cast<TULong>(1ul) << register_mask_bit(register_kind);
     }
     else {
-        register_mask &= ~(static_cast<TULong>(1ul) << static_cast<size_t>(register_kind));
+        register_mask &= ~(static_cast<TULong>(1ul) << register_mask_bit(register_kind));
     }
 }

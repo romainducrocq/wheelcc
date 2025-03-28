@@ -1302,7 +1302,7 @@ static bool data_flow_analysis_initialize(
 
 #if __OPTIM_LEVEL__ == 2
         SET_DFA_INSTRUCTION_SET_AT(
-            context->data_flow_analysis->static_index, static_cast<size_t>(REGISTER_KIND::Ax), true);
+            context->data_flow_analysis->static_index, register_mask_bit(REGISTER_KIND::Ax), true);
 #endif
 
         std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),

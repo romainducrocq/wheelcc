@@ -18,6 +18,35 @@
 struct ControlFlowGraph;
 struct DataFlowAnalysis;
 
+// node = Node(operand id, operand* neighbors, double spill_cost, int? color, bool pruned)
+// graph = Graph(node* nodes)
+
+// struct ControlFlowBlock {
+//     size_t size;
+//     size_t instructions_front_index;
+//     size_t instructions_back_index;
+//     std::vector<size_t> predecessor_ids;
+//     std::vector<size_t> successor_ids;
+// };
+
+// struct ControlFlowGraph {
+//     size_t entry_id;
+//     size_t exit_id;
+//     std::vector<size_t> entry_successor_ids;
+//     std::vector<size_t> exit_predecessor_ids;
+//     std::vector<bool> reaching_code;
+//     std::vector<ControlFlowBlock> blocks;
+//     std::unordered_map<TIdentifier, size_t> identifier_id_map;
+// };
+
+// struct InferenceNode {
+//     size_t color;
+//     // size_t color;
+//     double spill_cost;
+//     bool is_pruned;
+//     std::vector<size_t> neighbor_ids;
+// };
+
 struct RegAllocContext {
     RegAllocContext(uint8_t optim_2_code);
 
@@ -26,6 +55,7 @@ struct RegAllocContext {
     bool is_with_coalescing;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
+    // std::vector<InferenceNode> inference_graph;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
 };
 
@@ -79,7 +109,7 @@ static void regalloc_transfer_used_call_live_registers(AsmCall* node, size_t nex
 }
 
 static void regalloc_transfer_used_reg_live_registers(REGISTER_KIND register_kind, size_t next_instruction_index) {
-    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, static_cast<size_t>(register_kind), true);
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
 }
 
 static void regalloc_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
@@ -96,7 +126,7 @@ static void regalloc_transfer_updated_operand_live_registers(AsmOperand* node, s
 }
 
 static void regalloc_transfer_updated_reg_live_registers(REGISTER_KIND register_kind, size_t next_instruction_index) {
-    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, static_cast<size_t>(register_kind), false);
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
 static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index) {
