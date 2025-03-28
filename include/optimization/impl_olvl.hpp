@@ -478,10 +478,6 @@ static void mask_set(uint64_t& mask, size_t bit, bool value) {
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
 #endif
 
-#if __OPTIM_LEVEL__ == 2
-#define REGISTER_KIND_SIZE REGISTER_KIND::Xmm15 + 1
-#endif
-
 static bool is_transfer_instruction(size_t instruction_index
 #if __OPTIM_LEVEL__ == 1
     ,
@@ -912,7 +908,7 @@ static void regalloc_add_data_name(TIdentifier name) {
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {
         context->control_flow_graph->identifier_id_map[name] =
-            REGISTER_KIND_SIZE + context->data_flow_analysis->set_size;
+            REGISTER_MASK_SIZE + context->data_flow_analysis->set_size;
         context->data_flow_analysis->set_size++;
     }
 }
@@ -1195,7 +1191,7 @@ static bool data_flow_analysis_initialize(
     }
 
 #if __OPTIM_LEVEL__ == 2
-    context->data_flow_analysis->set_size += REGISTER_KIND_SIZE;
+    context->data_flow_analysis->set_size += REGISTER_MASK_SIZE;
 #endif
 
     context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
