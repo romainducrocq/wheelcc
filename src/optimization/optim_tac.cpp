@@ -2856,7 +2856,7 @@ static void optimize_program(TacProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
-    context = std::make_unique<OptimTacContext>(optim_1_mask);
+    context = std::make_unique<OptimTacContext>(std::move(optim_1_mask));
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
         if (context->enabled_optimizations[COPY_PROPAGATION]

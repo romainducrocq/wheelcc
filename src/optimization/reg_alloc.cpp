@@ -24,10 +24,12 @@ struct DataFlowAnalysis;
 
 struct InferenceNode {
     TIdentifier name;
-    double spill_cost;
-    uint64_t linked_reg_mask;
-    size_t color;
+    // TODO maybe separate in 3 vectors: is_pruned_nodes, spill_cost_nodes, color_nodes ?
+    // And access by indices
     bool is_pruned;
+    double spill_cost;
+    size_t color;
+    uint64_t linked_reg_mask;
     std::vector<size_t> linked_pseudo_ids;
 };
 
@@ -41,6 +43,7 @@ struct RegAllocContext {
     // std::array<REGISTER_KIND, 14> HARD_SSE_REGISTERS;
     std::array<InferenceNode, 12> reg_inference_graph;
     std::array<InferenceNode, 14> sse_reg_inference_graph;
+    // TODO should these be unordered_map with name as key ?
     std::vector<InferenceNode> pseudo_inference_graph;
     std::vector<InferenceNode> sse_pseudo_inference_graph;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
@@ -196,26 +199,24 @@ static bool inference_graph_initialize() {
     }
 
     for (size_t i = 0; i < 12; ++i) {
-        context->reg_inference_graph[i].name = 0;
-        context->reg_inference_graph[i].spill_cost = -1.;
-        context->reg_inference_graph[i].linked_reg_mask = context->HARD_REG_MASK;
-        context->reg_inference_graph[i].color = 0;
         context->reg_inference_graph[i].is_pruned = false;
+        context->reg_inference_graph[i].spill_cost = -1.;
+        context->reg_inference_graph[i].color = 0;
+        context->reg_inference_graph[i].linked_reg_mask = context->HARD_REG_MASK;
         context->reg_inference_graph[i].linked_pseudo_ids.clear();
     }
     for (size_t i = 0; i < 14; ++i) {
-        context->sse_reg_inference_graph[i].name = 0;
-        context->sse_reg_inference_graph[i].spill_cost = -1.;
-        context->sse_reg_inference_graph[i].linked_reg_mask = context->HARD_SSE_REG_MASK;
-        context->sse_reg_inference_graph[i].color = 0;
         context->sse_reg_inference_graph[i].is_pruned = false;
+        context->sse_reg_inference_graph[i].spill_cost = -1.;
+        context->sse_reg_inference_graph[i].color = 0;
+        context->sse_reg_inference_graph[i].linked_reg_mask = context->HARD_SSE_REG_MASK;
         context->sse_reg_inference_graph[i].linked_pseudo_ids.clear();
     }
 
     context->pseudo_inference_graph.clear();
     context->sse_pseudo_inference_graph.clear();
     for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
-        InferenceNode node = {name_id.first, 0., MASK_FALSE, 0, false, {}};
+        InferenceNode node = {name_id.first, false, 0., 0, MASK_FALSE, {}};
         if (frontend->symbol_table[name_id.first]->type_t->type() == AST_T::Double_t) {
             context->sse_pseudo_inference_graph.emplace_back(std::move(node));
         }
@@ -224,7 +225,7 @@ static bool inference_graph_initialize() {
         }
     }
 
-    // TODO
+    // TODO add_edges
     return true;
 }
 
