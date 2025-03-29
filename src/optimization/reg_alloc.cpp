@@ -179,6 +179,41 @@ static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_i
     }
 }
 
+static void inference_graph_initialize_edge(size_t instruction_index) {
+    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
+    switch (node->type()) {
+        case AST_T::AsmMov_t:
+            // TODO
+            break;
+        case AST_T::AsmUnary_t:
+            // TODO
+            break;
+        case AST_T::AsmBinary_t:
+            // TODO
+            break;
+        case AST_T::AsmCmp_t:
+            // TODO
+            break;
+        case AST_T::AsmIdiv_t:
+            // TODO
+            break;
+        case AST_T::AsmCdq_t:
+            // TODO
+            break;
+        case AST_T::AsmSetCC_t:
+            // TODO
+            break;
+        case AST_T::AsmPush_t:
+            // TODO
+            break;
+        case AST_T::AsmCall_t:
+            // TODO
+            break;
+        default:
+            break;
+    }
+}
+
 static bool inference_graph_initialize() {
     control_flow_graph_initialize();
     if (!data_flow_analysis_initialize()) {
@@ -237,7 +272,16 @@ static bool inference_graph_initialize() {
         }
     }
 
-    // TODO add_edges
+    for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+        if (GET_CFG_BLOCK(block_id).size > 0) {
+            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+                if (GET_INSTRUCTION(instruction_index)) {
+                    inference_graph_initialize_edge(instruction_index);
+                }
+            }
+        }
+    }
     return true;
 }
 
