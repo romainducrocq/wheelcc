@@ -19,9 +19,6 @@
 struct ControlFlowGraph;
 struct DataFlowAnalysis;
 
-// node = Node(operand id, operand* neighbors, double spill_cost, int? color, bool pruned)
-// graph = Graph(node* nodes)
-
 struct InferenceNode {
     REGISTER_KIND hard_register;
     bool is_pruned;
@@ -43,7 +40,6 @@ struct RegAllocContext {
     uint64_t HARD_SSE_REG_MASK;
     std::array<InferenceNode, 12> reg_inference_graph;
     std::array<InferenceNode, 14> sse_reg_inference_graph;
-    // TODO keep unpruned vector ?
     std::vector<size_t> unpruned_reg_nodes;
     std::vector<size_t> unpruned_sse_reg_nodes;
     std::vector<TIdentifier> unpruned_pseudo_nodes;
@@ -112,7 +108,6 @@ static void regalloc_transfer_used_operand_live_registers(AsmOperand* node, size
 
 static void regalloc_transfer_used_call_live_registers(AsmCall* node, size_t next_instruction_index) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
-    // TODO mask param_reg_mask with only integer registers ?
     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, 0) |= fun_type->param_reg_mask;
 }
 
@@ -209,14 +204,29 @@ static bool inference_graph_initialize() {
         return false;
     }
 
+    if (context->unpruned_reg_nodes.size() < 12) {
+        context->unpruned_reg_nodes.resize(12);
+    }
+    if (context->unpruned_sse_reg_nodes.size() < 14) {
+        context->unpruned_sse_reg_nodes.resize(14);
+    }
     for (size_t i = 0; i < 12; ++i) {
+        context->unpruned_reg_nodes[i] = i;
         context->reg_inference_graph[i].is_pruned = false;
         context->reg_inference_graph[i].spill_cost = -1.;
         context->reg_inference_graph[i].color = 0;
         context->reg_inference_graph[i].linked_reg_mask = context->HARD_REG_MASK;
         context->reg_inference_graph[i].linked_pseudo_nodes.clear();
+
+        context->unpruned_sse_reg_nodes[i] = i;
+        context->sse_reg_inference_graph[i].is_pruned = false;
+        context->sse_reg_inference_graph[i].spill_cost = -1.;
+        context->sse_reg_inference_graph[i].color = 0;
+        context->sse_reg_inference_graph[i].linked_reg_mask = context->HARD_SSE_REG_MASK;
+        context->sse_reg_inference_graph[i].linked_pseudo_nodes.clear();
     }
-    for (size_t i = 0; i < 14; ++i) {
+    for (size_t i = 12; i < 14; ++i) {
+        context->unpruned_sse_reg_nodes[i] = i;
         context->sse_reg_inference_graph[i].is_pruned = false;
         context->sse_reg_inference_graph[i].spill_cost = -1.;
         context->sse_reg_inference_graph[i].color = 0;
@@ -224,15 +234,20 @@ static bool inference_graph_initialize() {
         context->sse_reg_inference_graph[i].linked_pseudo_nodes.clear();
     }
 
+    context->unpruned_pseudo_nodes.clear();
+    context->unpruned_sse_pseudo_nodes.clear();
     context->pseudo_inference_graph.clear();
     context->sse_pseudo_inference_graph.clear();
     for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
+        TIdentifier name = name_id.first;
         InferenceNode node = {REGISTER_KIND::Sp, false, 0., 0, MASK_FALSE, {}};
         if (frontend->symbol_table[name_id.first]->type_t->type() == AST_T::Double_t) {
-            context->sse_pseudo_inference_graph[name_id.first] = std::move(node);
+            context->unpruned_sse_pseudo_nodes.push_back(name);
+            context->sse_pseudo_inference_graph[name] = std::move(node);
         }
         else {
-            context->pseudo_inference_graph[name_id.first] = std::move(node);
+            context->unpruned_pseudo_nodes.push_back(name);
+            context->pseudo_inference_graph[name] = std::move(node);
         }
     }
 
