@@ -30,8 +30,8 @@ struct AsmGenContext {
     AsmGenContext();
 
     FunType* p_fun_type_top_level;
-    std::array<REGISTER_KIND, 6> ARG_REGISTERS;
-    std::array<REGISTER_KIND, 8> ARG_SSE_REGISTERS;
+    std::array<REGISTER_KIND, 6> arg_registers;
+    std::array<REGISTER_KIND, 8> sse_arg_registers;
     std::unordered_map<TIdentifier, TIdentifier> double_constant_table;
     std::unordered_map<TIdentifier, std::vector<STRUCT_8B_CLS>> struct_8b_cls_map;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
@@ -39,9 +39,9 @@ struct AsmGenContext {
 };
 
 AsmGenContext::AsmGenContext() :
-    ARG_REGISTERS({REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx, REGISTER_KIND::Cx, REGISTER_KIND::R8,
+    arg_registers({REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::Dx, REGISTER_KIND::Cx, REGISTER_KIND::R8,
         REGISTER_KIND::R9}),
-    ARG_SSE_REGISTERS({REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2, REGISTER_KIND::Xmm3,
+    sse_arg_registers({REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2, REGISTER_KIND::Xmm3,
         REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6, REGISTER_KIND::Xmm7}) {}
 
 static std::unique_ptr<AsmGenContext> context;
@@ -563,10 +563,10 @@ static void regalloc_fun_type_param_reg_mask(FunType* fun_type, size_t reg_size,
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
         fun_type->param_reg_mask = 0ul;
         for (size_t i = 0; i < reg_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, context->ARG_REGISTERS[i], true);
+            register_mask_set(fun_type->param_reg_mask, context->arg_registers[i], true);
         }
         for (size_t i = 0; i < sse_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, context->ARG_SSE_REGISTERS[i], true);
+            register_mask_set(fun_type->param_reg_mask, context->sse_arg_registers[i], true);
         }
     }
 }
@@ -1172,7 +1172,7 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, FunType* fun_t
     for (const auto& arg : node->args) {
         if (is_value_double(arg.get())) {
             if (sse_size < 8) {
-                generate_reg_arg_fun_call_instructions(arg.get(), context->ARG_SSE_REGISTERS[sse_size]);
+                generate_reg_arg_fun_call_instructions(arg.get(), context->sse_arg_registers[sse_size]);
                 sse_size++;
             }
             else {
@@ -1184,7 +1184,7 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, FunType* fun_t
         }
         else if (!is_value_structure(arg.get())) {
             if (reg_size < 6) {
-                generate_reg_arg_fun_call_instructions(arg.get(), context->ARG_REGISTERS[reg_size]);
+                generate_reg_arg_fun_call_instructions(arg.get(), context->arg_registers[reg_size]);
                 reg_size++;
             }
             else {
@@ -1217,12 +1217,12 @@ static TLong generate_arg_fun_call_instructions(TacFunCall* node, FunType* fun_t
                 for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_arg_fun_call_instructions(
-                            name, offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
+                            name, offset, nullptr, context->sse_arg_registers[sse_size]);
                         sse_size++;
                     }
                     else {
                         generate_8byte_reg_arg_fun_call_instructions(
-                            name, offset, struct_type, context->ARG_REGISTERS[reg_size]);
+                            name, offset, struct_type, context->arg_registers[reg_size]);
                         reg_size++;
                     }
                     offset += 8l;
@@ -2386,7 +2386,7 @@ static void generate_param_function_top_level(TacFunction* node, FunType* fun_ty
     for (TIdentifier param : node->params) {
         if (frontend->symbol_table[param]->type_t->type() == AST_T::Double_t) {
             if (sse_size < 8) {
-                generate_reg_param_function_instructions(param, context->ARG_SSE_REGISTERS[sse_size]);
+                generate_reg_param_function_instructions(param, context->sse_arg_registers[sse_size]);
                 sse_size++;
             }
             else {
@@ -2396,7 +2396,7 @@ static void generate_param_function_top_level(TacFunction* node, FunType* fun_ty
         }
         else if (frontend->symbol_table[param]->type_t->type() != AST_T::Structure_t) {
             if (reg_size < 6) {
-                generate_reg_param_function_instructions(param, context->ARG_REGISTERS[reg_size]);
+                generate_reg_param_function_instructions(param, context->arg_registers[reg_size]);
                 reg_size++;
             }
             else {
@@ -2426,12 +2426,12 @@ static void generate_param_function_top_level(TacFunction* node, FunType* fun_ty
                 for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
                         generate_8byte_reg_param_function_instructions(
-                            param, offset, nullptr, context->ARG_SSE_REGISTERS[sse_size]);
+                            param, offset, nullptr, context->sse_arg_registers[sse_size]);
                         sse_size++;
                     }
                     else {
                         generate_8byte_reg_param_function_instructions(
-                            param, offset, struct_type, context->ARG_REGISTERS[reg_size]);
+                            param, offset, struct_type, context->arg_registers[reg_size]);
                         reg_size++;
                     }
                     offset += 8l;
