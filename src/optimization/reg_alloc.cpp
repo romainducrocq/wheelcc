@@ -117,7 +117,8 @@ static void regalloc_transfer_updated_reg_live_registers(REGISTER_KIND register_
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
-static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index) {
+static void regalloc_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
+    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t: {
             AsmMov* p_node = static_cast<AsmMov*>(node);

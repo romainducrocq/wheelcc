@@ -565,10 +565,10 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
 #endif
 
 #if __OPTIM_LEVEL__ == 1
-static bool copy_propagation_transfer_reaching_copies(TacInstruction* node, size_t next_instruction_index);
-static void eliminate_dead_store_transfer_live_values(TacInstruction* node, size_t next_instruction_index);
+static bool copy_propagation_transfer_reaching_copies(size_t instruction_index, size_t next_instruction_index);
+static void eliminate_dead_store_transfer_live_values(size_t instruction_index, size_t next_instruction_index);
 #elif __OPTIM_LEVEL__ == 2
-static void regalloc_transfer_live_registers(AsmInstruction* node, size_t next_instruction_index);
+static void regalloc_transfer_live_registers(size_t instruction_index, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -580,8 +580,7 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
                 GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                     GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
             }
-            if (!copy_propagation_transfer_reaching_copies(
-                    GET_INSTRUCTION(instruction_index).get(), next_instruction_index)) {
+            if (!copy_propagation_transfer_reaching_copies(instruction_index, next_instruction_index)) {
                 for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
                     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                         GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
@@ -594,8 +593,7 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
         GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
             GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
     }
-    if (!copy_propagation_transfer_reaching_copies(
-            GET_INSTRUCTION(instruction_index).get(), context->data_flow_analysis->incoming_index)) {
+    if (!copy_propagation_transfer_reaching_copies(instruction_index, context->data_flow_analysis->incoming_index)) {
         for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
                 GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
@@ -625,7 +623,7 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
 #elif __OPTIM_LEVEL__ == 2
                 regalloc_transfer_live_registers
 #endif
-                    (GET_INSTRUCTION(instruction_index).get(), next_instruction_index);
+                    (instruction_index, next_instruction_index);
                 instruction_index = next_instruction_index;
             }
         }
@@ -639,7 +637,7 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
 #elif __OPTIM_LEVEL__ == 2
     regalloc_transfer_live_registers
 #endif
-        (GET_INSTRUCTION(instruction_index).get(), context->data_flow_analysis->incoming_index);
+        (instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
 }
 
