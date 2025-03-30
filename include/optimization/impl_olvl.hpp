@@ -49,6 +49,7 @@ struct DataFlowAnalysis {
     // Dead store elimination
 #elif __OPTIM_LEVEL__ == 2
     // Register allocation
+    std::vector<TIdentifier> data_name_map;
 #endif
     size_t static_index;
     size_t addressed_index;
@@ -1189,6 +1190,9 @@ static bool data_flow_analysis_initialize(
     }
 
 #if __OPTIM_LEVEL__ == 2
+    if (context->data_flow_analysis->data_name_map.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->data_name_map.resize(context->data_flow_analysis->set_size);
+    }
     context->data_flow_analysis->set_size += REGISTER_MASK_SIZE;
 #endif
 
@@ -1287,6 +1291,8 @@ static bool data_flow_analysis_initialize(
             if (frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
             }
+#elif __OPTIM_LEVEL__ == 2
+        context->data_flow_analysis->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
 #endif
             if (context->data_flow_analysis->alias_set.find(name_id.first)
                 != context->data_flow_analysis->alias_set.end()) {

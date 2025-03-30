@@ -180,35 +180,84 @@ static void regalloc_transfer_live_registers(size_t instruction_index, size_t ne
     }
 }
 
+static void inference_graph_initialize_operand_edge(AsmOperand* node, uint64_t register_mask) {
+    // if (node) {
+    //     if (node->type() == AST_T::AsmPseudo_t) {
+    //         regalloc_transfer_updated_name_live_registers(static_cast<AsmPseudo*>(node)->name,
+    //         next_instruction_index);
+    //     }
+    // }
+}
+
 static void inference_graph_initialize_edge(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
             // TODO
+            // | Mov(src, dst) -> updated = [dst]
+            // {
+            //     AsmMov* p_node = static_cast<AsmMov*>(node);
+            //     regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            //     break;
+            // }
             break;
         case AST_T::AsmUnary_t:
             // TODO
+            // | Unary(op, dst) -> updated = [dst]
+            // {
+            //     AsmUnary* p_node = static_cast<AsmUnary*>(node);
+            //     regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            //     break;
+            // }
             break;
         case AST_T::AsmBinary_t:
             // TODO
+            // | Binary(op, src, dst) -> updated = [dst]
+            // {
+            //     AsmBinary* p_node = static_cast<AsmBinary*>(node);
+            //     regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            //     break;
+            // }
             break;
         case AST_T::AsmCmp_t:
             // TODO
+            // | Cmp(v1, v2)->updated = []
+            // {
+            //     AsmCmp* p_node = static_cast<AsmCmp*>(node);
+            //     break;
+            // }
             break;
         case AST_T::AsmIdiv_t:
             // TODO
+            // | Idiv(divisor)->updated = [ Reg(AX), Reg(DX) ]
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
             break;
         case AST_T::AsmCdq_t:
             // TODO
+            // | Cdq->updated = [Reg(DX)]
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
             break;
         case AST_T::AsmSetCC_t:
             // TODO
+            // | SetCC(cond, dst)->updated = [dst]
+            // regalloc_transfer_updated_operand_live_registers(
+            //     static_cast<AsmSetCC*>(node)->dst.get(), next_instruction_index);
             break;
         case AST_T::AsmPush_t:
             // TODO
+            // | Push(v)->updated = []
             break;
         case AST_T::AsmCall_t:
             // TODO
+            // | Call(f)->updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Di, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
+            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
             break;
         default:
             break;
