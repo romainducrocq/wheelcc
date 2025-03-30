@@ -31,7 +31,7 @@ struct InferenceRegister {
 struct InferenceGraph {
     size_t k;
     size_t offset;
-    uint64_t hard_register_mask;
+    uint64_t hard_reg_mask;
     std::array<InferenceRegister, 14> hard_registers;
     std::vector<size_t> unpruned_hard_xs;
     std::vector<TIdentifier> unpruned_pseudo_names;
@@ -180,16 +180,36 @@ static void regalloc_transfer_live_registers(size_t instruction_index, size_t ne
     }
 }
 
-static void inference_graph_initialize_operand_edge(AsmOperand* node, uint64_t register_mask) {
-    // if (node) {
-    //     if (node->type() == AST_T::AsmPseudo_t) {
-    //         regalloc_transfer_updated_name_live_registers(static_cast<AsmPseudo*>(node)->name,
-    //         next_instruction_index);
-    //     }
-    // }
+static void inference_graph_add_name_edges(TIdentifier name, size_t instruction_index) {
+    if (frontend->symbol_table[name]->type_t->type() == AST_T::Double_t) {
+        context->p_inference_graph = context->sse_inference_graph.get();
+    }
+    else {
+        context->p_inference_graph = context->inference_graph.get();
+    }
+
+    // TODO
 }
 
-static void inference_graph_initialize_edge(size_t instruction_index) {
+static void inference_graph_add_operand_edges(AsmOperand* node, size_t instruction_index) {
+    if (node->type() == AST_T::AsmPseudo_t) {
+        inference_graph_add_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index);
+    }
+}
+
+static void inference_graph_add_regs_edges(
+    REGISTER_KIND* register_kinds, size_t instruction_index, size_t size, bool is_double) {
+    if (is_double) {
+        context->p_inference_graph = context->sse_inference_graph.get();
+    }
+    else {
+        context->p_inference_graph = context->inference_graph.get();
+    }
+
+    // TODO
+}
+
+static void inference_graph_initialize_edges(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
@@ -296,13 +316,13 @@ static bool inference_graph_initialize() {
             context->inference_graph->unpruned_hard_xs.resize(12);
         }
 
-        uint64_t hard_register_mask = context->inference_graph->hard_register_mask;
+        uint64_t hard_reg_mask = context->inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 12; ++i) {
             context->inference_graph->unpruned_hard_xs[i] = i;
             context->inference_graph->hard_registers[i].is_pruned = false;
             context->inference_graph->hard_registers[i].spill_cost = -1.;
             context->inference_graph->hard_registers[i].color = 0;
-            context->inference_graph->hard_registers[i].linked_hard_mask = hard_register_mask;
+            context->inference_graph->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->inference_graph->hard_registers[i].linked_pseudo_names.clear();
         }
     }
@@ -311,13 +331,13 @@ static bool inference_graph_initialize() {
             context->sse_inference_graph->unpruned_hard_xs.resize(14);
         }
 
-        uint64_t hard_register_mask = context->sse_inference_graph->hard_register_mask;
+        uint64_t hard_reg_mask = context->sse_inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 14; ++i) {
             context->sse_inference_graph->unpruned_hard_xs[i] = i;
             context->sse_inference_graph->hard_registers[i].is_pruned = false;
             context->sse_inference_graph->hard_registers[i].spill_cost = -1.;
             context->sse_inference_graph->hard_registers[i].color = 0;
-            context->sse_inference_graph->hard_registers[i].linked_hard_mask = hard_register_mask;
+            context->sse_inference_graph->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->sse_inference_graph->hard_registers[i].linked_pseudo_names.clear();
         }
     }
@@ -327,7 +347,7 @@ static bool inference_graph_initialize() {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
-                    inference_graph_initialize_edge(instruction_index);
+                    inference_graph_initialize_edges(instruction_index);
                 }
             }
         }
@@ -393,19 +413,19 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
         context->inference_graph->k = 12;
         context->inference_graph->offset = 0;
 
-        context->inference_graph->hard_register_mask = MASK_FALSE;
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::Ax, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::Bx, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::Cx, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::Dx, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::Di, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::Si, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::R8, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::R9, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::R12, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::R13, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::R14, true);
-        register_mask_set(context->inference_graph->hard_register_mask, REGISTER_KIND::R15, true);
+        context->inference_graph->hard_reg_mask = MASK_FALSE;
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Ax, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Bx, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Cx, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Dx, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Di, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Si, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::R8, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::R9, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::R12, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::R13, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::R14, true);
+        register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::R15, true);
 
         context->inference_graph->hard_registers[0].register_kind = REGISTER_KIND::Ax;
         context->inference_graph->hard_registers[1].register_kind = REGISTER_KIND::Bx;
@@ -425,21 +445,21 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
         context->sse_inference_graph->k = 14;
         context->sse_inference_graph->offset = 12;
 
-        context->sse_inference_graph->hard_register_mask = MASK_FALSE;
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm0, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm1, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm2, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm3, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm4, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm5, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm6, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm7, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm8, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm9, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm10, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm11, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm12, true);
-        register_mask_set(context->sse_inference_graph->hard_register_mask, REGISTER_KIND::Xmm13, true);
+        context->sse_inference_graph->hard_reg_mask = MASK_FALSE;
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm0, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm1, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm2, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm3, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm4, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm5, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm6, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm7, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm8, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm9, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm10, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm11, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm12, true);
+        register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm13, true);
 
         context->sse_inference_graph->hard_registers[0].register_kind = REGISTER_KIND::Xmm0;
         context->sse_inference_graph->hard_registers[1].register_kind = REGISTER_KIND::Xmm1;
