@@ -189,6 +189,7 @@ static void inference_graph_add_name_edges(TIdentifier name, size_t instruction_
     }
 
     // TODO
+    // add spill_cost here
 }
 
 static void inference_graph_add_operand_edges(AsmOperand* node, size_t instruction_index, bool is_mov) {
