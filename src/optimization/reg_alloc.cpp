@@ -180,7 +180,7 @@ static void regalloc_transfer_live_registers(size_t instruction_index, size_t ne
     }
 }
 
-static void inference_graph_add_name_edges(TIdentifier name, size_t instruction_index) {
+static void inference_graph_add_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
     if (frontend->symbol_table[name]->type_t->type() == AST_T::Double_t) {
         context->p_inference_graph = context->sse_inference_graph.get();
     }
@@ -191,9 +191,9 @@ static void inference_graph_add_name_edges(TIdentifier name, size_t instruction_
     // TODO
 }
 
-static void inference_graph_add_operand_edges(AsmOperand* node, size_t instruction_index) {
+static void inference_graph_add_operand_edges(AsmOperand* node, size_t instruction_index, bool is_mov) {
     if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_add_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index);
+        inference_graph_add_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index, is_mov);
     }
 }
 
@@ -213,71 +213,44 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            // TODO
             // | Mov(src, dst) -> updated = [dst]
-            // {
-            //     AsmMov* p_node = static_cast<AsmMov*>(node);
-            //     regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            //     break;
-            // }
+            inference_graph_add_operand_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index, true);
             break;
         case AST_T::AsmUnary_t:
-            // TODO
             // | Unary(op, dst) -> updated = [dst]
-            // {
-            //     AsmUnary* p_node = static_cast<AsmUnary*>(node);
-            //     regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            //     break;
-            // }
+            inference_graph_add_operand_edges(static_cast<AsmUnary*>(node)->dst.get(), instruction_index, false);
             break;
         case AST_T::AsmBinary_t:
-            // TODO
             // | Binary(op, src, dst) -> updated = [dst]
-            // {
-            //     AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            //     regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            //     break;
-            // }
+            inference_graph_add_operand_edges(static_cast<AsmBinary*>(node)->dst.get(), instruction_index, false);
             break;
-        case AST_T::AsmCmp_t:
-            // TODO
-            // | Cmp(v1, v2)->updated = []
-            // {
-            //     AsmCmp* p_node = static_cast<AsmCmp*>(node);
-            //     break;
-            // }
-            break;
-        case AST_T::AsmIdiv_t:
-            // TODO
+        case AST_T::AsmIdiv_t: {
             // | Idiv(divisor)->updated = [ Reg(AX), Reg(DX) ]
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            REGISTER_KIND register_kinds[2] = {REGISTER_KIND::Ax, REGISTER_KIND::Dx};
+            inference_graph_add_regs_edges(register_kinds, instruction_index, 2, false);
             break;
-        case AST_T::AsmCdq_t:
-            // TODO
+        }
+        case AST_T::AsmCdq_t: {
             // | Cdq->updated = [Reg(DX)]
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Dx};
+            inference_graph_add_regs_edges(register_kinds, instruction_index, 1, false);
             break;
+        }
         case AST_T::AsmSetCC_t:
-            // TODO
             // | SetCC(cond, dst)->updated = [dst]
-            // regalloc_transfer_updated_operand_live_registers(
-            //     static_cast<AsmSetCC*>(node)->dst.get(), next_instruction_index);
+            inference_graph_add_operand_edges(static_cast<AsmSetCC*>(node)->dst.get(), instruction_index, false);
             break;
-        case AST_T::AsmPush_t:
-            // TODO
-            // | Push(v)->updated = []
-            break;
-        case AST_T::AsmCall_t:
-            // TODO
+        case AST_T::AsmCall_t: {
             // | Call(f)->updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Di, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
-            // regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
+            REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
+                REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9};
+            inference_graph_add_regs_edges(register_kinds, instruction_index, 7, false);
+            break;
+        }
+        case AST_T::AsmCmp_t:
+        case AST_T::AsmPush_t:
+            // | Cmp(v1, v2)-> updated = []
+            // | Push(v)->updated = []
             break;
         default:
             break;
