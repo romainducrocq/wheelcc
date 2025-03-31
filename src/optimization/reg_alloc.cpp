@@ -208,6 +208,14 @@ static void regalloc_set_inference_graph(bool is_double) {
 //                 if (l and u are in interference_graph) && (l != u):
 //                     add_edge(interference_graph, l, u)
 
+static void inference_graph_initialize_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
+    // TODO
+}
+
+static void inference_graph_initialize_reg_edges(TIdentifier name, size_t mask_bit) {
+    // TODO
+}
+
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
     regalloc_set_inference_graph(is_double);
@@ -243,7 +251,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         size_t mask_set_size = i + context->p_inference_graph->k;
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
-                // TODO add reg_pseudo edge between i and name
+                inference_graph_initialize_reg_edges(name, i);
             }
         }
         i = REGISTER_MASK_SIZE;
@@ -253,7 +261,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    // TODO add pseudo_pseudo edge between name and pseudo_name
+                    inference_graph_initialize_pseudo_edges(name, pseudo_name);
                 }
             }
         }
@@ -273,7 +281,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    // TODO add pseudo_pseudo edge between name and pseudo_name
+                    inference_graph_initialize_pseudo_edges(name, pseudo_name);
                 }
             }
         }
@@ -297,7 +305,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t j = 0; j < register_kinds_size; ++j) {
-                        // TODO add edge between register_mask_bit(register_kinds[j]) and pseudo_name
+                        inference_graph_initialize_reg_edges(pseudo_name, register_mask_bit(register_kinds[j]));
                     }
                 }
             }
@@ -318,7 +326,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t k = 0; k < register_kinds_size; ++k) {
-                        // TODO add edge between register_mask_bit(register_kinds[k]) and pseudo_name
+                        inference_graph_initialize_reg_edges(pseudo_name, register_mask_bit(register_kinds[k]));
                     }
                 }
             }
