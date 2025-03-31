@@ -236,7 +236,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
     inference_graph_set_p(is_double);
     context->p_inference_graph->pseudo_register_map[name].spill_cost++;
 
-    size_t mov_mask_bit = REGISTER_MASK_SIZE;
+    size_t mov_mask_bit = context->data_flow_analysis->set_size;
     if (is_mov) {
         if (GET_INSTRUCTION(instruction_index)->type() != AST_T::AsmMov_t) {
             RAISE_INTERNAL_ERROR;
@@ -251,6 +251,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             case AST_T::AsmPseudo_t: {
                 TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
                 mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
                 break;
             }
             default: {
@@ -366,18 +367,30 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
             inference_graph_initialize_updated_operand_edges(
                 static_cast<AsmUnary*>(node)->dst.get(), instruction_index, false);
             break;
-        case AST_T::AsmBinary_t:
+        case AST_T::AsmBinary_t: {
             // | Binary(op, src, dst) -> updated = [dst]
             // std::shared_ptr<AsmOperand> src;
             // std::shared_ptr<AsmOperand> dst;
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmBinary*>(node)->dst.get(), instruction_index, false);
+            AsmBinary* p_node = static_cast<AsmBinary*>(node);
+            inference_graph_initialize_updated_operand_edges(p_node->dst.get(), instruction_index, false);
+            inference_graph_initialize_used_operand_edges(p_node->src.get());
             break;
+        }
+        case AST_T::AsmCmp_t: {
+            // | Cmp(v1, v2)-> updated = []
+            // std::shared_ptr<AsmOperand> src;
+            // std::shared_ptr<AsmOperand> dst;
+            AsmCmp* p_node = static_cast<AsmCmp*>(node);
+            inference_graph_initialize_used_operand_edges(p_node->src.get());
+            inference_graph_initialize_used_operand_edges(p_node->dst.get());
+            break;
+        }
         case AST_T::AsmIdiv_t: {
             // | Idiv(divisor)->updated = [ Reg(AX), Reg(DX) ]
             // std::shared_ptr<AsmOperand> src;
             REGISTER_KIND register_kinds[2] = {REGISTER_KIND::Ax, REGISTER_KIND::Dx};
             inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 2, false);
+            inference_graph_initialize_used_operand_edges(static_cast<AsmIdiv*>(node)->src.get());
             break;
         }
         case AST_T::AsmCdq_t: {
@@ -392,6 +405,12 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
             inference_graph_initialize_updated_operand_edges(
                 static_cast<AsmSetCC*>(node)->dst.get(), instruction_index, false);
             break;
+        case AST_T::AsmPush_t:
+            // | Push(v)->updated = []
+            // std::shared_ptr<AsmOperand> src;
+            // inference_graph_initialize_used_operand_edges(src)
+            inference_graph_initialize_used_operand_edges(static_cast<AsmPush*>(node)->src.get());
+            break;
         case AST_T::AsmCall_t: {
             // | Call(f)->updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
             REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
@@ -399,14 +418,6 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
             inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 7, false);
             break;
         }
-        case AST_T::AsmCmp_t:
-            // | Cmp(v1, v2)-> updated = []
-            // std::shared_ptr<AsmOperand> src;
-            // std::shared_ptr<AsmOperand> dst;
-        case AST_T::AsmPush_t:
-            // | Push(v)->updated = []
-            // std::shared_ptr<AsmOperand> src;
-            break;
         default:
             break;
     }
