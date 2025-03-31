@@ -55,7 +55,17 @@ struct DataFlowAnalysis {
     size_t addressed_index;
 };
 
-static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index);
+static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
+    if (instruction) {
+        GET_INSTRUCTION(instruction_index) = std::move(instruction);
+    }
+    else {
+        GET_INSTRUCTION(instruction_index).reset();
+    }
+#if __OPTIM_LEVEL__ == 1
+    context->is_fixed_point = false;
+#endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -569,7 +579,7 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
 static bool copy_propagation_transfer_reaching_copies(size_t instruction_index, size_t next_instruction_index);
 static void eliminate_dead_store_transfer_live_values(size_t instruction_index, size_t next_instruction_index);
 #elif __OPTIM_LEVEL__ == 2
-static void regalloc_transfer_live_registers(size_t instruction_index, size_t next_instruction_index);
+static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -622,7 +632,7 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
 #if __OPTIM_LEVEL__ == 1
                 eliminate_dead_store_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
-                regalloc_transfer_live_registers
+                inference_graph_transfer_live_registers
 #endif
                     (instruction_index, next_instruction_index);
                 instruction_index = next_instruction_index;
@@ -636,7 +646,7 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
 #if __OPTIM_LEVEL__ == 1
     eliminate_dead_store_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
-    regalloc_transfer_live_registers
+    inference_graph_transfer_live_registers
 #endif
         (instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
@@ -902,7 +912,7 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 #elif __OPTIM_LEVEL__ == 2
-static void regalloc_add_data_name(TIdentifier name) {
+static void inference_graph_add_data_name(TIdentifier name) {
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {
@@ -912,9 +922,9 @@ static void regalloc_add_data_name(TIdentifier name) {
     }
 }
 
-static void regalloc_add_data_operand(AsmOperand* node) {
+static void inference_graph_add_data_operand(AsmOperand* node) {
     if (node->type() == AST_T::AsmPseudo_t) {
-        regalloc_add_data_name(static_cast<AsmPseudo*>(node)->name);
+        inference_graph_add_data_name(static_cast<AsmPseudo*>(node)->name);
     }
 }
 #endif
@@ -1140,33 +1150,33 @@ static bool data_flow_analysis_initialize(
 #elif __OPTIM_LEVEL__ == 2
                         case AST_T::AsmMov_t: {
                             AsmMov* p_node = static_cast<AsmMov*>(node);
-                            regalloc_add_data_operand(p_node->src.get());
-                            regalloc_add_data_operand(p_node->dst.get());
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmUnary_t:
-                            regalloc_add_data_operand(static_cast<AsmUnary*>(node)->dst.get());
+                            inference_graph_add_data_operand(static_cast<AsmUnary*>(node)->dst.get());
                             break;
                         case AST_T::AsmBinary_t: {
                             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-                            regalloc_add_data_operand(p_node->src.get());
-                            regalloc_add_data_operand(p_node->dst.get());
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmCmp_t: {
                             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-                            regalloc_add_data_operand(p_node->src.get());
-                            regalloc_add_data_operand(p_node->dst.get());
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmIdiv_t:
-                            regalloc_add_data_operand(static_cast<AsmIdiv*>(node)->src.get());
+                            inference_graph_add_data_operand(static_cast<AsmIdiv*>(node)->src.get());
                             break;
                         case AST_T::AsmSetCC_t:
-                            regalloc_add_data_operand(static_cast<AsmSetCC*>(node)->dst.get());
+                            inference_graph_add_data_operand(static_cast<AsmSetCC*>(node)->dst.get());
                             break;
                         case AST_T::AsmPush_t:
-                            regalloc_add_data_operand(static_cast<AsmPush*>(node)->src.get());
+                            inference_graph_add_data_operand(static_cast<AsmPush*>(node)->src.get());
                             break;
                         case AST_T::AsmCdq_t:
                         case AST_T::AsmCall_t:

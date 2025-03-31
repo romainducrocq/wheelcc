@@ -69,119 +69,109 @@ static std::unique_ptr<RegAllocContext> context;
 #undef __OPTIM_LEVEL__
 #endif
 
-static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_t instruction_index) {
-    if (instruction) {
-        GET_INSTRUCTION(instruction_index) = std::move(instruction);
-    }
-    else {
-        GET_INSTRUCTION(instruction_index).reset();
-    }
-}
-
-// TODO
-// move set_instruction to impl_olvl
-// rename all regalloc_transfer_*_live_registers to inference_graph_transfer_*_live_registers
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Inference graph
 
-static void regalloc_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
+static void inference_graph_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
     }
 }
 
-static void regalloc_transfer_used_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
+static void inference_graph_transfer_used_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
     if (node->type() == AST_T::AsmPseudo_t) {
-        regalloc_transfer_used_name_live_registers(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+        inference_graph_transfer_used_name_live_registers(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
     }
 }
 
-static void regalloc_transfer_used_call_live_registers(AsmCall* node, size_t next_instruction_index) {
+static void inference_graph_transfer_used_call_live_registers(AsmCall* node, size_t next_instruction_index) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, 0) |= fun_type->param_reg_mask;
 }
 
-static void regalloc_transfer_used_reg_live_registers(REGISTER_KIND register_kind, size_t next_instruction_index) {
+static void inference_graph_transfer_used_reg_live_registers(
+    REGISTER_KIND register_kind, size_t next_instruction_index) {
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
 }
 
-static void regalloc_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
+static void inference_graph_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
     }
 }
 
-static void regalloc_transfer_updated_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
+static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
     if (node->type() == AST_T::AsmPseudo_t) {
-        regalloc_transfer_updated_name_live_registers(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+        inference_graph_transfer_updated_name_live_registers(
+            static_cast<AsmPseudo*>(node)->name, next_instruction_index);
     }
 }
 
-static void regalloc_transfer_updated_reg_live_registers(REGISTER_KIND register_kind, size_t next_instruction_index) {
+static void inference_graph_transfer_updated_reg_live_registers(
+    REGISTER_KIND register_kind, size_t next_instruction_index) {
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
-static void regalloc_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
+static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t: {
             AsmMov* p_node = static_cast<AsmMov*>(node);
-            regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            regalloc_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmUnary_t: {
             AsmUnary* p_node = static_cast<AsmUnary*>(node);
-            regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            regalloc_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmBinary_t: {
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            regalloc_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            regalloc_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
-            regalloc_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmCmp_t: {
             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-            regalloc_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
-            regalloc_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmIdiv_t:
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            regalloc_transfer_used_operand_live_registers(
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(
                 static_cast<AsmIdiv*>(node)->src.get(), next_instruction_index);
-            regalloc_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            regalloc_transfer_used_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
             break;
         case AST_T::AsmCdq_t:
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            regalloc_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             break;
         case AST_T::AsmSetCC_t:
-            regalloc_transfer_updated_operand_live_registers(
+            inference_graph_transfer_updated_operand_live_registers(
                 static_cast<AsmSetCC*>(node)->dst.get(), next_instruction_index);
             break;
         case AST_T::AsmPush_t:
-            regalloc_transfer_used_operand_live_registers(
+            inference_graph_transfer_used_operand_live_registers(
                 static_cast<AsmPush*>(node)->src.get(), next_instruction_index);
             break;
         case AST_T::AsmCall_t:
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Di, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
-            regalloc_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
-            regalloc_transfer_used_call_live_registers(static_cast<AsmCall*>(node), next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Di, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
+            inference_graph_transfer_used_call_live_registers(static_cast<AsmCall*>(node), next_instruction_index);
             break;
         default:
             RAISE_INTERNAL_ERROR;

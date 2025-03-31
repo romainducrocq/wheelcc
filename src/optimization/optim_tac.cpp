@@ -56,16 +56,6 @@ static std::unique_ptr<OptimTacContext> context;
 #undef __OPTIM_LEVEL__
 #endif
 
-static void set_instruction(std::unique_ptr<TacInstruction>&& instruction, size_t instruction_index) {
-    if (instruction) {
-        GET_INSTRUCTION(instruction_index) = std::move(instruction);
-    }
-    else {
-        GET_INSTRUCTION(instruction_index).reset();
-    }
-    context->is_fixed_point = false;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Constant folding
