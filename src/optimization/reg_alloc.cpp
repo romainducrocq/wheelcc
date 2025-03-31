@@ -78,6 +78,14 @@ static void set_instruction(std::unique_ptr<AsmInstruction>&& instruction, size_
     }
 }
 
+// TODO
+// move set_instruction to impl_olvl
+// rename all regalloc_transfer_*_live_registers to inference_graph_transfer_*_live_registers
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Inference graph
+
 static void regalloc_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
@@ -180,34 +188,6 @@ static void regalloc_transfer_live_registers(size_t instruction_index, size_t ne
     }
 }
 
-// TODO keep ?
-static void regalloc_set_inference_graph(bool is_double) {
-    if (is_double) {
-        context->p_inference_graph = context->sse_inference_graph.get();
-    }
-    else {
-        context->p_inference_graph = context->inference_graph.get();
-    }
-}
-
-// add_edges(liveness_cfg, interference_graph):
-//     for node in liveness_cfg.nodes:
-//         if node is EntryNode or ExitNode:
-//             continue
-
-//         for instr in node.instructions:
-//             used, updated = find_used_and_updated(instr)
-
-//             live_registers = get_instruction_annotation(instr)
-
-//             for l in live_registers:
-//                 if instr is Mov && l == instr.src:
-//                     continue
-
-//             for u in updated:
-//                 if (l and u are in interference_graph) && (l != u):
-//                     add_edge(interference_graph, l, u)
-
 static void inference_graph_add_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name_1];
@@ -242,7 +222,7 @@ static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND registe
 
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
-    regalloc_set_inference_graph(is_double);
+    context->p_inference_graph = is_double ? context->sse_inference_graph.get() : context->inference_graph.get();
 
     // TODO add spill cost for updated here ?
 
@@ -322,7 +302,7 @@ static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, s
 
 static void inference_graph_initialize_updated_regs_edges(
     REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
-    regalloc_set_inference_graph(is_double);
+    context->p_inference_graph = is_double ? context->sse_inference_graph.get() : context->inference_graph.get();
 
     if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
         for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
