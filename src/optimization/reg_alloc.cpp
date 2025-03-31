@@ -21,9 +21,9 @@ struct DataFlowAnalysis;
 
 struct InferenceRegister {
     REGISTER_KIND register_kind;
-    double spill_cost;
     size_t color;
     size_t degree;
+    size_t spill_cost;
     uint64_t linked_hard_mask;
     std::vector<TIdentifier> linked_pseudo_names;
 };
@@ -428,7 +428,7 @@ static bool inference_graph_initialize() {
     context->sse_inference_graph->pseudo_register_map.clear();
     for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
         TIdentifier name = name_id.first;
-        InferenceRegister infer = {REGISTER_KIND::Sp, 0., 0, 0, MASK_FALSE, {}};
+        InferenceRegister infer = {REGISTER_KIND::Sp, 0, 0, 0, MASK_FALSE, {}};
         if (frontend->symbol_table[name_id.first]->type_t->type() == AST_T::Double_t) {
             context->sse_inference_graph->unpruned_pseudo_names.push_back(name);
             context->sse_inference_graph->pseudo_register_map[name] = std::move(infer);
@@ -447,9 +447,9 @@ static bool inference_graph_initialize() {
         uint64_t hard_reg_mask = context->inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 12; ++i) {
             context->inference_graph->unpruned_hard_mask_bits[i] = i;
-            context->inference_graph->hard_registers[i].spill_cost = -1.;
             context->inference_graph->hard_registers[i].color = 0;
             context->inference_graph->hard_registers[i].degree = 12;
+            context->inference_graph->hard_registers[i].spill_cost = 0;
             context->inference_graph->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->inference_graph->hard_registers[i].linked_pseudo_names.clear();
         }
@@ -462,9 +462,9 @@ static bool inference_graph_initialize() {
         uint64_t hard_reg_mask = context->sse_inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 14; ++i) {
             context->sse_inference_graph->unpruned_hard_mask_bits[i] = i;
-            context->sse_inference_graph->hard_registers[i].spill_cost = -1.;
             context->sse_inference_graph->hard_registers[i].color = 0;
             context->sse_inference_graph->hard_registers[i].degree = 14;
+            context->sse_inference_graph->hard_registers[i].spill_cost = 0;
             context->sse_inference_graph->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->sse_inference_graph->hard_registers[i].linked_pseudo_names.clear();
         }
