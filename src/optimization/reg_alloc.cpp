@@ -355,64 +355,44 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            // | Mov(src, dst) -> updated = [dst]
-            // std::shared_ptr<AsmOperand> src;
-            // std::shared_ptr<AsmOperand> dst;
             inference_graph_initialize_updated_operand_edges(
                 static_cast<AsmMov*>(node)->dst.get(), instruction_index, true);
             break;
         case AST_T::AsmUnary_t:
-            // | Unary(op, dst) -> updated = [dst]
-            // std::shared_ptr<AsmOperand> dst;
             inference_graph_initialize_updated_operand_edges(
                 static_cast<AsmUnary*>(node)->dst.get(), instruction_index, false);
             break;
         case AST_T::AsmBinary_t: {
-            // | Binary(op, src, dst) -> updated = [dst]
-            // std::shared_ptr<AsmOperand> src;
-            // std::shared_ptr<AsmOperand> dst;
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
             inference_graph_initialize_updated_operand_edges(p_node->dst.get(), instruction_index, false);
             inference_graph_initialize_used_operand_edges(p_node->src.get());
             break;
         }
         case AST_T::AsmCmp_t: {
-            // | Cmp(v1, v2)-> updated = []
-            // std::shared_ptr<AsmOperand> src;
-            // std::shared_ptr<AsmOperand> dst;
             AsmCmp* p_node = static_cast<AsmCmp*>(node);
             inference_graph_initialize_used_operand_edges(p_node->src.get());
             inference_graph_initialize_used_operand_edges(p_node->dst.get());
             break;
         }
         case AST_T::AsmIdiv_t: {
-            // | Idiv(divisor)->updated = [ Reg(AX), Reg(DX) ]
-            // std::shared_ptr<AsmOperand> src;
             REGISTER_KIND register_kinds[2] = {REGISTER_KIND::Ax, REGISTER_KIND::Dx};
             inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 2, false);
             inference_graph_initialize_used_operand_edges(static_cast<AsmIdiv*>(node)->src.get());
             break;
         }
         case AST_T::AsmCdq_t: {
-            // | Cdq->updated = [Reg(DX)]
             REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Dx};
             inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
             break;
         }
         case AST_T::AsmSetCC_t:
-            // | SetCC(cond, dst)->updated = [dst]
-            // std::shared_ptr<AsmOperand> dst;
             inference_graph_initialize_updated_operand_edges(
                 static_cast<AsmSetCC*>(node)->dst.get(), instruction_index, false);
             break;
         case AST_T::AsmPush_t:
-            // | Push(v)->updated = []
-            // std::shared_ptr<AsmOperand> src;
-            // inference_graph_initialize_used_operand_edges(src)
             inference_graph_initialize_used_operand_edges(static_cast<AsmPush*>(node)->src.get());
             break;
         case AST_T::AsmCall_t: {
-            // | Call(f)->updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
             REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
                 REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9};
             inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 7, false);
