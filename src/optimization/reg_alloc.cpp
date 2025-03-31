@@ -246,8 +246,29 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         }
     }
 
-    size_t i = 0;
-    for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+    size_t i = context->p_inference_graph->offset;
+    if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
+        size_t mask_set_size = i + context->p_inference_graph->k;
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
+                // TODO add edge between reg and pseudo
+            }
+        }
+        i = REGISTER_MASK_SIZE;
+        if (context->data_flow_analysis->set_size < 64) {
+            mask_set_size = context->data_flow_analysis->set_size;
+        }
+        else {
+            mask_set_size = 64;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
+                // TODO add edge between pseudo and pseudo
+            }
+        }
+    }
+    i = 64;
+    for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
         if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
             i += 64;
             continue;
@@ -258,12 +279,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         }
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
-                if (i < REGISTER_MASK_SIZE) {
-                    // TODO add edge between reg and pseudo
-                }
-                else {
-                    // TODO add edge between pseudo and pseudo
-                }
+                // TODO add edge between pseudo and pseudo
             }
         }
     }
