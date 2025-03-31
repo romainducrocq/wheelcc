@@ -33,7 +33,7 @@ struct InferenceGraph {
     size_t offset;
     uint64_t hard_reg_mask;
     std::array<InferenceRegister, 14> hard_registers;
-    std::vector<size_t> unpruned_hard_xs;
+    std::vector<size_t> unpruned_hard_mask_bits;
     std::vector<TIdentifier> unpruned_pseudo_names;
     std::unordered_map<TIdentifier, InferenceRegister> pseudo_register_map;
 };
@@ -180,33 +180,81 @@ static void regalloc_transfer_live_registers(size_t instruction_index, size_t ne
     }
 }
 
-static void inference_graph_add_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
-    if (frontend->symbol_table[name]->type_t->type() == AST_T::Double_t) {
-        context->p_inference_graph = context->sse_inference_graph.get();
-    }
-    else {
-        context->p_inference_graph = context->inference_graph.get();
-    }
-
-    // TODO
-    // add spill_cost here
-}
-
-static void inference_graph_add_operand_edges(AsmOperand* node, size_t instruction_index, bool is_mov) {
-    if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_add_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index, is_mov);
-    }
-}
-
-static void inference_graph_add_regs_edges(
-    REGISTER_KIND* register_kinds, size_t instruction_index, size_t size, bool is_double) {
+// TODO keep these ?
+static void regalloc_set_inference_graph(bool is_double) {
     if (is_double) {
         context->p_inference_graph = context->sse_inference_graph.get();
     }
     else {
         context->p_inference_graph = context->inference_graph.get();
     }
+}
 
+static void regalloc_set_inference_graph_by_name(TIdentifier name) {
+    if (frontend->symbol_table[name]->type_t->type() == AST_T::Double_t) {
+        context->p_inference_graph = context->sse_inference_graph.get();
+    }
+    else {
+        context->p_inference_graph = context->inference_graph.get();
+    }
+}
+
+// add_edges(liveness_cfg, interference_graph):
+//     for node in liveness_cfg.nodes:
+//         if node is EntryNode or ExitNode:
+//             continue
+
+//         for instr in node.instructions:
+//             used, updated = find_used_and_updated(instr)
+
+//             live_registers = get_instruction_annotation(instr)
+
+//             for l in live_registers:
+//                 if instr is Mov && l == instr.src:
+//                     continue
+
+//             for u in updated:
+//                 if (l and u are in interference_graph) && (l != u):
+//                     add_edge(interference_graph, l, u)
+
+static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
+    regalloc_set_inference_graph_by_name(name);
+
+    size_t src_mask_bit = REGISTER_MASK_SIZE;
+    TIdentifier src_name = 0;
+    if (is_mov) {
+        if (GET_INSTRUCTION(instruction_index)->type() != AST_T::AsmMov_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
+        switch (mov->src->type()) {
+            case AST_T::AsmRegister_t: {
+                REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(mov->src.get()));
+                src_mask_bit = register_mask_bit(register_kind);
+                break;
+            }
+            case AST_T::AsmPseudo_t: {
+                src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
+                break;
+            }
+            default: {
+                is_mov = false;
+                break;
+            }
+        }
+    }
+    // TODO
+}
+
+static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, size_t instruction_index, bool is_mov) {
+    if (node->type() == AST_T::AsmPseudo_t) {
+        inference_graph_initialize_updated_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index, is_mov);
+    }
+}
+
+static void inference_graph_initialize_updated_regs_edges(
+    REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
+    regalloc_set_inference_graph(is_double);
     // TODO
 }
 
@@ -215,37 +263,41 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
     switch (node->type()) {
         case AST_T::AsmMov_t:
             // | Mov(src, dst) -> updated = [dst]
-            inference_graph_add_operand_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index, true);
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmMov*>(node)->dst.get(), instruction_index, true);
             break;
         case AST_T::AsmUnary_t:
             // | Unary(op, dst) -> updated = [dst]
-            inference_graph_add_operand_edges(static_cast<AsmUnary*>(node)->dst.get(), instruction_index, false);
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmUnary*>(node)->dst.get(), instruction_index, false);
             break;
         case AST_T::AsmBinary_t:
             // | Binary(op, src, dst) -> updated = [dst]
-            inference_graph_add_operand_edges(static_cast<AsmBinary*>(node)->dst.get(), instruction_index, false);
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmBinary*>(node)->dst.get(), instruction_index, false);
             break;
         case AST_T::AsmIdiv_t: {
             // | Idiv(divisor)->updated = [ Reg(AX), Reg(DX) ]
             REGISTER_KIND register_kinds[2] = {REGISTER_KIND::Ax, REGISTER_KIND::Dx};
-            inference_graph_add_regs_edges(register_kinds, instruction_index, 2, false);
+            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 2, false);
             break;
         }
         case AST_T::AsmCdq_t: {
             // | Cdq->updated = [Reg(DX)]
             REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Dx};
-            inference_graph_add_regs_edges(register_kinds, instruction_index, 1, false);
+            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
             break;
         }
         case AST_T::AsmSetCC_t:
             // | SetCC(cond, dst)->updated = [dst]
-            inference_graph_add_operand_edges(static_cast<AsmSetCC*>(node)->dst.get(), instruction_index, false);
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmSetCC*>(node)->dst.get(), instruction_index, false);
             break;
         case AST_T::AsmCall_t: {
             // | Call(f)->updated = [ Reg(DI), Reg(SI), Reg(DX), Reg(CX), Reg(R8), Reg(R9), Reg(AX) ]
             REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
                 REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9};
-            inference_graph_add_regs_edges(register_kinds, instruction_index, 7, false);
+            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 7, false);
             break;
         }
         case AST_T::AsmCmp_t:
@@ -286,13 +338,13 @@ static bool inference_graph_initialize() {
     }
 
     if (!context->inference_graph->pseudo_register_map.empty()) {
-        if (context->inference_graph->unpruned_hard_xs.size() < 12) {
-            context->inference_graph->unpruned_hard_xs.resize(12);
+        if (context->inference_graph->unpruned_hard_mask_bits.size() < 12) {
+            context->inference_graph->unpruned_hard_mask_bits.resize(12);
         }
 
         uint64_t hard_reg_mask = context->inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 12; ++i) {
-            context->inference_graph->unpruned_hard_xs[i] = i;
+            context->inference_graph->unpruned_hard_mask_bits[i] = i;
             context->inference_graph->hard_registers[i].is_pruned = false;
             context->inference_graph->hard_registers[i].spill_cost = -1.;
             context->inference_graph->hard_registers[i].color = 0;
@@ -301,13 +353,13 @@ static bool inference_graph_initialize() {
         }
     }
     if (!context->sse_inference_graph->pseudo_register_map.empty()) {
-        if (context->sse_inference_graph->unpruned_hard_xs.size() < 14) {
-            context->sse_inference_graph->unpruned_hard_xs.resize(14);
+        if (context->sse_inference_graph->unpruned_hard_mask_bits.size() < 14) {
+            context->sse_inference_graph->unpruned_hard_mask_bits.resize(14);
         }
 
         uint64_t hard_reg_mask = context->sse_inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 14; ++i) {
-            context->sse_inference_graph->unpruned_hard_xs[i] = i;
+            context->sse_inference_graph->unpruned_hard_mask_bits[i] = i;
             context->sse_inference_graph->hard_registers[i].is_pruned = false;
             context->sse_inference_graph->hard_registers[i].spill_cost = -1.;
             context->sse_inference_graph->hard_registers[i].color = 0;

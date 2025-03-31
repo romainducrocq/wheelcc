@@ -100,6 +100,72 @@ std::shared_ptr<AsmIndexed> generate_indexed(
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
 }
 
+REGISTER_KIND register_mask_kind(AsmRegister* node) {
+    switch (node->reg->type()) {
+        case AST_T::AsmAx_t:
+            return REGISTER_KIND::Ax;
+        case AST_T::AsmBx_t:
+            return REGISTER_KIND::Bx;
+        case AST_T::AsmCx_t:
+            return REGISTER_KIND::Cx;
+        case AST_T::AsmDx_t:
+            return REGISTER_KIND::Dx;
+        case AST_T::AsmDi_t:
+            return REGISTER_KIND::Di;
+        case AST_T::AsmSi_t:
+            return REGISTER_KIND::Si;
+        case AST_T::AsmR8_t:
+            return REGISTER_KIND::R8;
+        case AST_T::AsmR9_t:
+            return REGISTER_KIND::R9;
+        case AST_T::AsmR12_t:
+            return REGISTER_KIND::R12;
+        case AST_T::AsmR13_t:
+            return REGISTER_KIND::R13;
+        case AST_T::AsmR14_t:
+            return REGISTER_KIND::R14;
+        case AST_T::AsmR15_t:
+            return REGISTER_KIND::R15;
+        case AST_T::AsmXMM0_t:
+            return REGISTER_KIND::Xmm0;
+        case AST_T::AsmXMM1_t:
+            return REGISTER_KIND::Xmm1;
+        case AST_T::AsmXMM2_t:
+            return REGISTER_KIND::Xmm2;
+        case AST_T::AsmXMM3_t:
+            return REGISTER_KIND::Xmm3;
+        case AST_T::AsmXMM4_t:
+            return REGISTER_KIND::Xmm4;
+        case AST_T::AsmXMM5_t:
+            return REGISTER_KIND::Xmm5;
+        case AST_T::AsmXMM6_t:
+            return REGISTER_KIND::Xmm6;
+        case AST_T::AsmXMM7_t:
+            return REGISTER_KIND::Xmm7;
+        case AST_T::AsmXMM8_t:
+            return REGISTER_KIND::Xmm8;
+        case AST_T::AsmXMM9_t:
+            return REGISTER_KIND::Xmm9;
+        case AST_T::AsmXMM10_t:
+            return REGISTER_KIND::Xmm10;
+        case AST_T::AsmXMM11_t:
+            return REGISTER_KIND::Xmm11;
+        case AST_T::AsmXMM12_t:
+            return REGISTER_KIND::Xmm12;
+        case AST_T::AsmXMM13_t:
+            return REGISTER_KIND::Xmm13;
+        case AST_T::AsmR10_t:
+        case AST_T::AsmR11_t:
+        case AST_T::AsmSp_t:
+        case AST_T::AsmBp_t:
+        case AST_T::AsmXMM14_t:
+        case AST_T::AsmXMM15_t:
+            RAISE_INTERNAL_ERROR;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 size_t register_mask_bit(REGISTER_KIND register_kind) {
     switch (register_kind) {
         case REGISTER_KIND::Ax:
