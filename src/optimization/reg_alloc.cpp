@@ -209,11 +209,42 @@ static void regalloc_set_inference_graph(bool is_double) {
 //                     add_edge(interference_graph, l, u)
 
 static void inference_graph_initialize_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
-    // TODO
+    {
+        InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name_1];
+        for (TIdentifier pseudo_name : infer.linked_pseudo_names) {
+            if (pseudo_name == name_2) {
+                goto Lelse;
+            }
+        }
+        infer.linked_pseudo_names.push_back(name_2);
+    Lelse:;
+    }
+    {
+        InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name_2];
+        for (TIdentifier pseudo_name : infer.linked_pseudo_names) {
+            if (pseudo_name == name_1) {
+                return;
+            }
+        }
+        infer.linked_pseudo_names.push_back(name_1);
+    }
 }
 
 static void inference_graph_initialize_reg_edges(TIdentifier name, size_t mask_bit) {
-    // TODO
+    {
+        InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name];
+        mask_set(infer.linked_hard_mask, mask_bit, true);
+    }
+    {
+        size_t i = mask_bit - context->p_inference_graph->offset;
+        InferenceRegister& infer = context->p_inference_graph->hard_registers[i];
+        for (TIdentifier pseudo_name : infer.linked_pseudo_names) {
+            if (pseudo_name == name) {
+                return;
+            }
+        }
+        infer.linked_pseudo_names.push_back(name);
+    }
 }
 
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
