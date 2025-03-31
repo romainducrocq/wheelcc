@@ -208,29 +208,24 @@ static void regalloc_set_inference_graph(bool is_double) {
 //                 if (l and u are in interference_graph) && (l != u):
 //                     add_edge(interference_graph, l, u)
 
-static void inference_graph_initialize_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
+static void inference_graph_add_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name_1];
-        for (TIdentifier pseudo_name : infer.linked_pseudo_names) {
-            if (pseudo_name == name_2) {
-                goto Lelse;
-            }
+        if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name_2)
+            == infer.linked_pseudo_names.end()) {
+            infer.linked_pseudo_names.push_back(name_2);
         }
-        infer.linked_pseudo_names.push_back(name_2);
-    Lelse:;
     }
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name_2];
-        for (TIdentifier pseudo_name : infer.linked_pseudo_names) {
-            if (pseudo_name == name_1) {
-                return;
-            }
+        if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name_1)
+            == infer.linked_pseudo_names.end()) {
+            infer.linked_pseudo_names.push_back(name_1);
         }
-        infer.linked_pseudo_names.push_back(name_1);
     }
 }
 
-static void inference_graph_initialize_reg_edges(TIdentifier name, REGISTER_KIND register_kind) {
+static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND register_kind) {
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name];
         register_mask_set(infer.linked_hard_mask, register_kind, true);
@@ -238,12 +233,10 @@ static void inference_graph_initialize_reg_edges(TIdentifier name, REGISTER_KIND
     {
         size_t i = register_mask_bit(register_kind) - context->p_inference_graph->offset;
         InferenceRegister& infer = context->p_inference_graph->hard_registers[i];
-        for (TIdentifier pseudo_name : infer.linked_pseudo_names) {
-            if (pseudo_name == name) {
-                return;
-            }
+        if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name)
+            == infer.linked_pseudo_names.end()) {
+            infer.linked_pseudo_names.push_back(name);
         }
-        infer.linked_pseudo_names.push_back(name);
     }
 }
 
@@ -284,7 +277,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
                 size_t j = i - context->p_inference_graph->offset;
                 REGISTER_KIND register_kind = context->p_inference_graph->hard_registers[j].register_kind;
-                inference_graph_initialize_reg_edges(name, register_kind);
+                inference_graph_add_reg_edge(name, register_kind);
             }
         }
         i = REGISTER_MASK_SIZE;
@@ -294,7 +287,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    inference_graph_initialize_pseudo_edges(name, pseudo_name);
+                    inference_graph_add_pseudo_edges(name, pseudo_name);
                 }
             }
         }
@@ -314,7 +307,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    inference_graph_initialize_pseudo_edges(name, pseudo_name);
+                    inference_graph_add_pseudo_edges(name, pseudo_name);
                 }
             }
         }
@@ -338,7 +331,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t j = 0; j < register_kinds_size; ++j) {
-                        inference_graph_initialize_reg_edges(pseudo_name, register_kinds[j]);
+                        inference_graph_add_reg_edge(pseudo_name, register_kinds[j]);
                     }
                 }
             }
@@ -359,7 +352,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t k = 0; k < register_kinds_size; ++k) {
-                        inference_graph_initialize_reg_edges(pseudo_name, register_kinds[k]);
+                        inference_graph_add_reg_edge(pseudo_name, register_kinds[k]);
                     }
                 }
             }
