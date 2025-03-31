@@ -220,8 +220,9 @@ static void regalloc_set_inference_graph_by_name(TIdentifier name) {
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
     regalloc_set_inference_graph_by_name(name);
 
-    size_t src_mask_bit = REGISTER_MASK_SIZE;
-    TIdentifier src_name = 0;
+    // TODO add spill cost for updated here ?
+
+    size_t src_mask_bit;
     if (is_mov) {
         if (GET_INSTRUCTION(instruction_index)->type() != AST_T::AsmMov_t) {
             RAISE_INTERNAL_ERROR;
@@ -229,12 +230,13 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
         switch (mov->src->type()) {
             case AST_T::AsmRegister_t: {
-                REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(mov->src.get()));
-                src_mask_bit = register_mask_bit(register_kind);
+                REGISTER_KIND src_register_kind = register_mask_kind(static_cast<AsmRegister*>(mov->src.get()));
+                src_mask_bit = register_mask_bit(src_register_kind);
                 break;
             }
             case AST_T::AsmPseudo_t: {
-                src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
+                TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
+                src_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
                 break;
             }
             default: {
@@ -243,7 +245,28 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             }
         }
     }
-    // TODO
+
+    size_t i = 0;
+    for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
+        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
+                if (i < REGISTER_MASK_SIZE) {
+                    // TODO add edge between reg and pseudo
+                }
+                else {
+                    // TODO add edge between pseudo and pseudo
+                }
+            }
+        }
+    }
 }
 
 static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, size_t instruction_index, bool is_mov) {
