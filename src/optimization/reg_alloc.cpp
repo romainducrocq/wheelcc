@@ -246,28 +246,25 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         }
     }
 
-    size_t i = context->p_inference_graph->offset;
     if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
+        size_t i = context->p_inference_graph->offset;
         size_t mask_set_size = i + context->p_inference_graph->k;
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
-                // TODO add edge between reg and pseudo
+                // if (l and u are in interference_graph) && (l != u):
+                // TODO add edge between param(pseudo) and reg
             }
         }
         i = REGISTER_MASK_SIZE;
-        if (context->data_flow_analysis->set_size < 64) {
-            mask_set_size = context->data_flow_analysis->set_size;
-        }
-        else {
-            mask_set_size = 64;
-        }
+        mask_set_size = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
-                // TODO add edge between pseudo and pseudo
+                // if (l and u are in interference_graph) && (l != u):
+                // TODO add edge between param(pseudo) and pseudo
             }
         }
     }
-    i = 64;
+    size_t i = 64;
     for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
         if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
             i += 64;
@@ -279,7 +276,8 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         }
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == src_mask_bit)) {
-                // TODO add edge between pseudo and pseudo
+                // if (l and u are in interference_graph) && (l != u):
+                // TODO add edge between param(pseudo) and pseudo
             }
         }
     }
@@ -294,7 +292,33 @@ static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, s
 static void inference_graph_initialize_updated_regs_edges(
     REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
     regalloc_set_inference_graph(is_double);
-    // TODO
+
+    if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
+        for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
+             i-- > REGISTER_MASK_SIZE;) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                // if (l and u are in interference_graph) && (l != u):
+                // TODO add edge between param(regs*) and pseudo
+            }
+        }
+    }
+    size_t i = 64;
+    for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
+        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
+                // if (l and u are in interference_graph) && (l != u):
+                // TODO add edge between param(regs*) and pseudo
+            }
+        }
+    }
 }
 
 static void inference_graph_initialize_edges(size_t instruction_index) {
