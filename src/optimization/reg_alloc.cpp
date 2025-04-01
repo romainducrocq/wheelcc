@@ -478,7 +478,105 @@ static bool inference_graph_initialize() {
 
 // Register allocation
 
+static void regalloc_prune_inference_register(InferenceRegister* infer, size_t pruned_index) {
+    if (infer->register_kind == REGISTER_KIND::Sp) {
+        std::swap(context->p_inference_graph->unpruned_pseudo_names[pruned_index],
+            context->p_inference_graph->unpruned_pseudo_names.back());
+        context->p_inference_graph->unpruned_pseudo_names.pop_back();
+    }
+    else {
+        std::swap(context->p_inference_graph->unpruned_hard_mask_bits[pruned_index],
+            context->p_inference_graph->unpruned_hard_mask_bits.back());
+        context->p_inference_graph->unpruned_hard_mask_bits.pop_back();
+    }
+    if (infer->linked_hard_mask != MASK_FALSE) {
+        for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
+            InferenceRegister* linked_infer = &context->p_inference_graph->hard_registers[i];
+            REGISTER_KIND linked_register_kind = context->p_inference_graph->hard_registers[i].register_kind;
+            if (register_mask_get(infer->linked_hard_mask, linked_register_kind)) {
+                linked_infer->degree--;
+            }
+        }
+    }
+    for (TIdentifier name : infer->linked_pseudo_names) {
+        InferenceRegister* linked_infer = &context->p_inference_graph->pseudo_register_map[name];
+        linked_infer->degree--;
+    }
+}
+
+static void regalloc_unprune_inference_register(InferenceRegister* /*infer*/) {
+    // TODO
+}
+
+static void regalloc_color_inference_graph();
+
+static void regalloc_next_color_inference_graph() {
+    if (!context->p_inference_graph->unpruned_hard_mask_bits.empty()
+        || !context->p_inference_graph->unpruned_pseudo_names.empty()) {
+        regalloc_color_inference_graph();
+    }
+}
+
+static void regalloc_color_inference_graph() {
+    InferenceRegister* infer = nullptr;
+    for (size_t i = 0; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
+        TIdentifier name = context->p_inference_graph->unpruned_pseudo_names[i];
+        infer = &context->p_inference_graph->pseudo_register_map[name];
+        if (infer->degree < context->p_inference_graph->k) {
+            size_t pruned_index = i;
+            regalloc_prune_inference_register(infer, pruned_index);
+            break;
+        }
+        infer = nullptr;
+    }
+    if (!infer) {
+        for (size_t i = 0; i < context->p_inference_graph->unpruned_hard_mask_bits.size(); ++i) {
+            size_t mask_bit = context->p_inference_graph->unpruned_hard_mask_bits[i];
+            infer = &context->p_inference_graph->hard_registers[mask_bit];
+            if (infer->degree < context->p_inference_graph->k) {
+                size_t pruned_index = i;
+                regalloc_prune_inference_register(infer, pruned_index);
+                break;
+            }
+            infer = nullptr;
+        }
+    }
+    if (!infer) {
+        if (context->p_inference_graph->unpruned_pseudo_names.empty()) {
+            RAISE_INTERNAL_ERROR;
+        }
+        {
+            TIdentifier name = context->p_inference_graph->unpruned_pseudo_names[0];
+            infer = &context->p_inference_graph->pseudo_register_map[name];
+        }
+        size_t pruned_index = 0;
+        double min_spill_metric = static_cast<double>(infer->spill_cost) / (infer->degree + 1);
+        for (size_t i = 1; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
+            TIdentifier spill_name = context->p_inference_graph->unpruned_pseudo_names[i];
+            InferenceRegister* spill_infer = &context->p_inference_graph->pseudo_register_map[spill_name];
+            double spill_metric = static_cast<double>(spill_infer->spill_cost) / (spill_infer->degree + 1);
+            if (spill_metric < min_spill_metric) {
+                infer = spill_infer;
+                min_spill_metric = spill_metric;
+                pruned_index = i;
+            }
+        }
+        regalloc_prune_inference_register(infer, pruned_index);
+    }
+    regalloc_next_color_inference_graph();
+
+    // TODO
+}
+
 static void regalloc_inference_graph() {
+    if (!context->inference_graph->pseudo_register_map.empty()) {
+        inference_graph_set_p(false);
+        regalloc_color_inference_graph();
+    }
+    if (!context->sse_inference_graph->pseudo_register_map.empty()) {
+        inference_graph_set_p(true);
+        // regalloc_color_inference_graph();
+    }
     // TODO
 }
 
