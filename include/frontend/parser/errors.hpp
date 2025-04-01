@@ -23,7 +23,9 @@ struct CStorageClass;
 enum MESSAGE_FATAL {
     unhandled_fatal_error = 0,
     operating_system_not_supported,
-    compiler_not_supported
+    architecture_not_supported,
+    compiler_not_supported,
+    gcc_version_not_supported
 };
 
 enum MESSAGE_ARGUMENT {
@@ -72,14 +74,15 @@ const char* get_util_message(MESSAGE_UTIL message);
 const char* get_lexer_message(MESSAGE_LEXER message);
 const char* get_parser_message(MESSAGE_PARSER message);
 const char* get_semantic_message(MESSAGE_SEMANTIC message);
+#define GET_FATAL_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_fatal_message(X), (int)X, __VA_ARGS__)
 #define GET_ARGUMENT_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_argument_message(X), (int)X, __VA_ARGS__)
 #define GET_UTIL_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_util_message(X), (int)X, __VA_ARGS__)
 #define GET_LEXER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_lexer_message(X), (int)X, __VA_ARGS__)
 #define GET_PARSER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_parser_message(X), (int)X, __VA_ARGS__)
 #define GET_SEMANTIC_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_semantic_message(X), (int)X, __VA_ARGS__)
-#define GET_FATAL_MESSAGE_0(X) GET_ERROR_MESSAGE(get_fatal_message(X), (int)X)
 #define GET_ARGUMENT_MESSAGE_0(X) GET_ERROR_MESSAGE(get_argument_message(X), (int)X)
 #define GET_PARSER_MESSAGE_0(X) GET_ERROR_MESSAGE(get_parser_message(X), (int)X)
 #define GET_SEMANTIC_MESSAGE_0(X) GET_ERROR_MESSAGE(get_semantic_message(X), (int)X)
+#define GCC_VERSION __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
 
 #endif

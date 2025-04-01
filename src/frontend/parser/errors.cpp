@@ -420,9 +420,13 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
 const char* get_fatal_message(MESSAGE_FATAL message) {
     switch (message) {
         case MESSAGE_FATAL::operating_system_not_supported:
-            RETURN_ERRNO "TODO operating_system_not_supported";
+            RETURN_ERRNO EM_VARG " operating system is not supported, requires \033[1m‘GNU/Linux’\033[0m (x86_64)";
+        case MESSAGE_FATAL::architecture_not_supported:
+            RETURN_ERRNO EM_VARG " architecture is not supported, requires \033[1m‘x86_64’\033[0m";
         case MESSAGE_FATAL::compiler_not_supported:
-            RETURN_ERRNO "TODO compiler_not_supported";
+            RETURN_ERRNO EM_VARG " compiler is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
+        case MESSAGE_FATAL::gcc_version_not_supported:
+            RETURN_ERRNO "\033[1m‘gcc’\033[0m %i.%i.%i is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
         default:
             RAISE_INTERNAL_ERROR;
     }

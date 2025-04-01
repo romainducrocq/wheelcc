@@ -302,8 +302,24 @@ int main(int argc, char** argv) {
 
         INIT_ERRORS_CONTEXT;
 
-#ifdef __GNUC__
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE_0(MESSAGE_FATAL::compiler_not_supported));
+#ifdef _WIN32
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::operating_system_not_supported, "Windows"));
+#elif defined(__APPLE__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::operating_system_not_supported, "MacOS"));
+#elif !defined(__linux__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::operating_system_not_supported, "unknown"));
+#elif defined(__arm__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::architecture_not_supported, "arm"));
+#elif defined(__i386__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::architecture_not_supported, "x86"));
+#elif !defined(__x86_64__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::architecture_not_supported, "unknown"));
+#elif defined(__clang__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::compiler_not_supported, "clang"));
+#elif !defined(__GNUC__)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::compiler_not_supported, "unknown"));
+#elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::gcc_version_not_supported, GCC_VERSION));
 #endif
 
         arg_parse();
