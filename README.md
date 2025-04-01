@@ -47,9 +47,9 @@ A C compiler should be written in C, right? wheelcc was implemented from the sta
 
 ### Distros
 
-The tip of master branch has passed all tests and validation for these GNU/Linux distributions (x86-64):  
-Debian GNU/Linux  | Linux Mint       | Ubuntu           | openSUSE Leap    | Rocky Linux      | Arch Linux       | EndeavourOS
-:---:             |:---:             |:---:             |:---:             |:---:             |:---:             |:---:
+The tip of `master` branch has passed all tests and validation for these GNU/Linux distributions (x86-64):  
+Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Linux 9.5|Arch Linux|EndeavourOS Linux
+:---:|:---:|:---:|:---:|:---:|:---:|:---:
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
 
 ### Install
@@ -206,7 +206,7 @@ The preprocessor does not natively support macros, but macro expansion can be en
 
 ### Compiler
 
-wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features). (TBD, it is planned to support fasm x86-64 Intel GNU/Linux assembly as an alternative backend  output.)  
+wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features).
 The `-s` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
 wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line and explanation for the compile error to stderr.
 
@@ -217,7 +217,6 @@ wheelcc can perform multiple compiler performance optimizations for smaller and 
 ### Linker
 
 There is no built-in linker, the compiler outputs assembly that is then linked with gcc/ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.  
-(TBD, it is planned to support fasm as an alternative linker to produce very small executables.)
 
 ### Standard library
 
