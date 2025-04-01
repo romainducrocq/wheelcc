@@ -87,7 +87,7 @@ IncludeCategories:
   - Regex:           '^"frontend/intermediate/'
     Priority:        5
     SortPriority:    0
-  - Regex:           '^"frontend/parser/|^"tokens.hpp"$|^"messages.hpp"$'
+  - Regex:           '^"frontend/parser/|^"parser/.+\.hpp"$|^"intermediate/.+\.hpp"$'
     Priority:        4
     SortPriority:    0
   - Regex:           '^"ast/'
