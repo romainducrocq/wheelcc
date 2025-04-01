@@ -302,6 +302,10 @@ int main(int argc, char** argv) {
 
         INIT_ERRORS_CONTEXT;
 
+#ifdef __GNUC__
+        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE_0(MESSAGE_FATAL::compiler_not_supported));
+#endif
+
         arg_parse();
 
         compile();

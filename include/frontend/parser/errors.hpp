@@ -20,6 +20,12 @@ struct CStorageClass;
 
 // Errors
 
+enum MESSAGE_FATAL {
+    unhandled_fatal_error = 0,
+    operating_system_not_supported,
+    compiler_not_supported
+};
+
 enum MESSAGE_ARGUMENT {
     unhandled_argument_error = 100,
     no_debug_code_in_argument,
@@ -60,6 +66,7 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op);
 #define get_binary_op_hr_c_str(X) get_binary_op_hr(X).c_str()
 #define get_assignment_hr_c_str(X, Y) get_assignment_hr(X, Y).c_str()
 
+const char* get_fatal_message(MESSAGE_FATAL message);
 const char* get_argument_message(MESSAGE_ARGUMENT message);
 const char* get_util_message(MESSAGE_UTIL message);
 const char* get_lexer_message(MESSAGE_LEXER message);
@@ -70,6 +77,7 @@ const char* get_semantic_message(MESSAGE_SEMANTIC message);
 #define GET_LEXER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_lexer_message(X), (int)X, __VA_ARGS__)
 #define GET_PARSER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_parser_message(X), (int)X, __VA_ARGS__)
 #define GET_SEMANTIC_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_semantic_message(X), (int)X, __VA_ARGS__)
+#define GET_FATAL_MESSAGE_0(X) GET_ERROR_MESSAGE(get_fatal_message(X), (int)X)
 #define GET_ARGUMENT_MESSAGE_0(X) GET_ERROR_MESSAGE(get_argument_message(X), (int)X)
 #define GET_PARSER_MESSAGE_0(X) GET_ERROR_MESSAGE(get_parser_message(X), (int)X)
 #define GET_SEMANTIC_MESSAGE_0(X) GET_ERROR_MESSAGE(get_semantic_message(X), (int)X)

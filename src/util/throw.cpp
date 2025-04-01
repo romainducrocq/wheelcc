@@ -64,10 +64,9 @@ size_t handle_error_at_line(size_t total_line_number) {
     throw std::runtime_error(message);
 }
 
-[[noreturn]] void raise_argument_error(const char* error_message) {
+[[noreturn]] void raise_base_error(const char* error_message) {
     std::string message = "\033[0;31merror:\033[0m ";
     message += std::string(error_message);
-    message += "\n";
     throw std::runtime_error(message);
 }
 
@@ -78,7 +77,6 @@ size_t handle_error_at_line(size_t total_line_number) {
     message += filename;
     message += ":\033[0m\n\033[0;31merror:\033[0m ";
     message += std::string(error_message);
-    message += "\n";
     throw std::runtime_error(message);
 }
 

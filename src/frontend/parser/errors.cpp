@@ -417,6 +417,17 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
 #define EM_VARG "\033[1m‘%s’\033[0m"
 #define RETURN_ERRNO return "(no. %i) "
 
+const char* get_fatal_message(MESSAGE_FATAL message) {
+    switch (message) {
+        case MESSAGE_FATAL::operating_system_not_supported:
+            RETURN_ERRNO "TODO operating_system_not_supported";
+        case MESSAGE_FATAL::compiler_not_supported:
+            RETURN_ERRNO "TODO compiler_not_supported";
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
+
 const char* get_argument_message(MESSAGE_ARGUMENT message) {
     switch (message) {
         case MESSAGE_ARGUMENT::no_debug_code_in_argument:
