@@ -491,16 +491,15 @@ static void regalloc_prune_inference_register(InferenceRegister* infer, size_t p
     }
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-            InferenceRegister* linked_infer = &context->p_inference_graph->hard_registers[i];
-            REGISTER_KIND linked_register_kind = context->p_inference_graph->hard_registers[i].register_kind;
+            InferenceRegister& linked_infer = context->p_inference_graph->hard_registers[i];
+            REGISTER_KIND linked_register_kind = linked_infer.register_kind;
             if (register_mask_get(infer->linked_hard_mask, linked_register_kind)) {
-                linked_infer->degree--;
+                linked_infer.degree--;
             }
         }
     }
     for (TIdentifier name : infer->linked_pseudo_names) {
-        InferenceRegister* linked_infer = &context->p_inference_graph->pseudo_register_map[name];
-        linked_infer->degree--;
+        context->p_inference_graph->pseudo_register_map[name].degree--;
     }
 }
 
@@ -531,8 +530,8 @@ static void regalloc_color_inference_graph() {
     }
     if (!infer) {
         for (size_t i = 0; i < context->p_inference_graph->unpruned_hard_mask_bits.size(); ++i) {
-            size_t mask_bit = context->p_inference_graph->unpruned_hard_mask_bits[i];
-            infer = &context->p_inference_graph->hard_registers[mask_bit];
+            size_t j = context->p_inference_graph->unpruned_hard_mask_bits[i];
+            infer = &context->p_inference_graph->hard_registers[j];
             if (infer->degree < context->p_inference_graph->k) {
                 size_t pruned_index = i;
                 regalloc_prune_inference_register(infer, pruned_index);
@@ -553,10 +552,10 @@ static void regalloc_color_inference_graph() {
         double min_spill_metric = static_cast<double>(infer->spill_cost) / (infer->degree + 1);
         for (size_t i = 1; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = context->p_inference_graph->unpruned_pseudo_names[i];
-            InferenceRegister* spill_infer = &context->p_inference_graph->pseudo_register_map[spill_name];
-            double spill_metric = static_cast<double>(spill_infer->spill_cost) / (spill_infer->degree + 1);
+            InferenceRegister& spill_infer = context->p_inference_graph->pseudo_register_map[spill_name];
+            double spill_metric = static_cast<double>(spill_infer.spill_cost) / (spill_infer.degree + 1);
             if (spill_metric < min_spill_metric) {
-                infer = spill_infer;
+                infer = &spill_infer;
                 min_spill_metric = spill_metric;
                 pruned_index = i;
             }
