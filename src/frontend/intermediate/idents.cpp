@@ -47,14 +47,6 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
             name = "and_true";
             break;
         }
-        case LABEL_KIND::Lcomisd_nan: {
-            name = "comisd_nan";
-            break;
-        }
-        case LABEL_KIND::Ldouble: {
-            name = "double";
-            break;
-        }
         case LABEL_KIND::Ldo_while: {
             name = "do_while";
             break;
@@ -89,22 +81,6 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
         }
         case LABEL_KIND::Lor_true: {
             name = "or_true";
-            break;
-        }
-        case LABEL_KIND::Lsd2si_after: {
-            name = "sd2si_after";
-            break;
-        }
-        case LABEL_KIND::Lsd2si_out_of_range: {
-            name = "sd2si_out_of_range";
-            break;
-        }
-        case LABEL_KIND::Lsi2sd_after: {
-            name = "si2sd_after";
-            break;
-        }
-        case LABEL_KIND::Lsi2sd_out_of_range: {
-            name = "si2sd_out_of_range";
             break;
         }
         case LABEL_KIND::Lstring: {

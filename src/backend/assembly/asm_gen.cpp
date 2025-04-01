@@ -13,8 +13,6 @@
 #include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
 
-#include "frontend/intermediate/idents.hpp"
-
 #include "backend/assembly/asm_gen.hpp"
 #include "backend/assembly/registers.hpp"
 #include "backend/assembly/stack_fix.hpp"
@@ -24,6 +22,15 @@ enum STRUCT_8B_CLS {
     INTEGER,
     SSE,
     MEMORY
+};
+
+enum ASM_LABEL_KIND {
+    Lcomisd_nan,
+    Ldouble,
+    Lsd2si_after,
+    Lsd2si_out_of_range,
+    Lsi2sd_after,
+    Lsi2sd_out_of_range
 };
 
 struct AsmGenContext {
@@ -90,6 +97,42 @@ static std::shared_ptr<AsmImm> generate_ulong_imm_operand(CConstULong* node) {
     return std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), false);
 }
 
+static TIdentifier generate_asm_label_identifier(ASM_LABEL_KIND asm_label_kind) {
+    std::string name;
+    switch (asm_label_kind) {
+        case ASM_LABEL_KIND::Lcomisd_nan: {
+            name = "comisd_nan";
+            break;
+        }
+        case ASM_LABEL_KIND::Ldouble: {
+            name = "double";
+            break;
+        }
+        case ASM_LABEL_KIND::Lsd2si_after: {
+            name = "sd2si_after";
+            break;
+        }
+        case ASM_LABEL_KIND::Lsd2si_out_of_range: {
+            name = "sd2si_out_of_range";
+            break;
+        }
+        case ASM_LABEL_KIND::Lsi2sd_after: {
+            name = "si2sd_after";
+            break;
+        }
+        case ASM_LABEL_KIND::Lsi2sd_out_of_range: {
+            name = "si2sd_out_of_range";
+            break;
+        }
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+    name += ".";
+    name += std::to_string(identifiers->label_counter);
+    identifiers->label_counter++;
+    return make_string_identifier(std::move(name));
+}
+
 static void generate_double_static_constant_top_level(TIdentifier identifier, TIdentifier double_constant, TInt byte);
 
 static std::shared_ptr<AsmData> generate_double_static_constant_operand(TULong binary, TInt byte) {
@@ -100,7 +143,7 @@ static std::shared_ptr<AsmData> generate_double_static_constant_operand(TULong b
             double_constant_label = context->double_constant_table[double_constant];
         }
         else {
-            double_constant_label = represent_label_identifier(LABEL_KIND::Ldouble);
+            double_constant_label = generate_asm_label_identifier(ASM_LABEL_KIND::Ldouble);
             context->double_constant_table[double_constant] = double_constant_label;
             generate_double_static_constant_top_level(double_constant_label, double_constant, byte);
         }
@@ -877,8 +920,8 @@ static void generate_uint_double_to_unsigned_instructions(TacDoubleToUInt* node)
 }
 
 static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node) {
-    TIdentifier target_out_of_range = represent_label_identifier(LABEL_KIND::Lsd2si_out_of_range);
-    TIdentifier target_after = represent_label_identifier(LABEL_KIND::Lsd2si_after);
+    TIdentifier target_out_of_range = generate_asm_label_identifier(ASM_LABEL_KIND::Lsd2si_out_of_range);
+    TIdentifier target_after = generate_asm_label_identifier(ASM_LABEL_KIND::Lsd2si_after);
     std::shared_ptr<AsmOperand> upper_bound_sd = generate_double_static_constant_operand(4890909195324358656ul, 8);
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
@@ -991,8 +1034,8 @@ static void generate_uint_unsigned_to_double_instructions(TacUIntToDouble* node)
 }
 
 static void generate_ulong_unsigned_to_double_instructions(TacUIntToDouble* node) {
-    TIdentifier target_out_of_range = represent_label_identifier(LABEL_KIND::Lsi2sd_out_of_range);
-    TIdentifier target_after = represent_label_identifier(LABEL_KIND::Lsi2sd_after);
+    TIdentifier target_out_of_range = generate_asm_label_identifier(ASM_LABEL_KIND::Lsi2sd_out_of_range);
+    TIdentifier target_after = generate_asm_label_identifier(ASM_LABEL_KIND::Lsi2sd_after);
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AsmOperand> dst_out_of_range_si = generate_register(REGISTER_KIND::Ax);
@@ -1458,7 +1501,7 @@ static void generate_unary_operator_conditional_integer_instructions(TacUnary* n
 }
 
 static void generate_unary_operator_conditional_double_instructions(TacUnary* node) {
-    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = generate_asm_label_identifier(ASM_LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
     generate_zero_out_xmm_reg_instructions();
     {
@@ -1651,7 +1694,7 @@ static void generate_binary_operator_conditional_integer_instructions(TacBinary*
 }
 
 static void generate_binary_operator_conditional_double_instructions(TacBinary* node) {
-    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = generate_asm_label_identifier(ASM_LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = generate_operand(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src1 = generate_operand(node->src1.get());
@@ -1671,7 +1714,7 @@ static void generate_binary_operator_conditional_double_instructions(TacBinary* 
     {
         std::unique_ptr<AsmCondCode> cond_code = generate_unsigned_condition_code(node->binary_op.get());
         if (cond_code->type() == AST_T::AsmNE_t) {
-            TIdentifier target_nan_ne = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+            TIdentifier target_nan_ne = generate_asm_label_identifier(ASM_LABEL_KIND::Lcomisd_nan);
             push_instruction(std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
             push_instruction(std::make_unique<AsmJmp>(target_nan_ne));
             push_instruction(std::make_unique<AsmLabel>(std::move(target_nan)));
@@ -2141,7 +2184,7 @@ static void generate_jump_if_zero_integer_instructions(TacJumpIfZero* node) {
 }
 
 static void generate_jump_if_zero_double_instructions(TacJumpIfZero* node) {
-    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = generate_asm_label_identifier(ASM_LABEL_KIND::Lcomisd_nan);
     generate_zero_out_xmm_reg_instructions();
     {
         std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
@@ -2188,8 +2231,8 @@ static void generate_jump_if_not_zero_integer_instructions(TacJumpIfNotZero* nod
 
 static void generate_jump_if_not_zero_double_instructions(TacJumpIfNotZero* node) {
     TIdentifier target = node->target;
-    TIdentifier target_nan = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
-    TIdentifier target_nan_ne = represent_label_identifier(LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = generate_asm_label_identifier(ASM_LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan_ne = generate_asm_label_identifier(ASM_LABEL_KIND::Lcomisd_nan);
     generate_zero_out_xmm_reg_instructions();
     {
         std::shared_ptr<AsmOperand> condition = generate_operand(node->condition.get());
