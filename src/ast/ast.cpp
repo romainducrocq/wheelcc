@@ -1,4 +1,5 @@
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ast/ast.hpp"
@@ -40,3 +41,11 @@ CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value
 IdentifierContext::IdentifierContext() : label_counter(0), variable_counter(0), structure_counter(0) {}
 
 std::unique_ptr<IdentifierContext> identifiers;
+
+TIdentifier string_to_hash(const std::string& string);
+
+TIdentifier make_string_identifier(std::string&& value) {
+    TIdentifier identifier = string_to_hash(value);
+    identifiers->hash_table[identifier] = std::move(value);
+    return identifier;
+}

@@ -12,12 +12,6 @@
 
 // Identifiers
 
-TIdentifier make_string_identifier(std::string&& value) {
-    TIdentifier identifier = string_to_hash(value);
-    identifiers->hash_table[identifier] = std::move(value);
-    return identifier;
-}
-
 TIdentifier resolve_label_identifier(TIdentifier label) {
     std::string name = identifiers->hash_table[label];
     name += ".";

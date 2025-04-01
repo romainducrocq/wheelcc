@@ -436,4 +436,6 @@ extern std::unique_ptr<IdentifierContext> identifiers;
 #define INIT_IDENTIFIER_CONTEXT identifiers = std::make_unique<IdentifierContext>()
 #define FREE_IDENTIFIER_CONTEXT identifiers.reset()
 
+TIdentifier make_string_identifier(std::string&& value);
+
 #endif
