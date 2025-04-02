@@ -10,6 +10,7 @@
 
 #include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
+#include "ast/back_symt.hpp"
 #include "ast/front_symt.hpp"
 
 #include "backend/assembly/registers.hpp"
@@ -44,13 +45,14 @@ struct RegAllocContext {
     RegAllocContext(uint8_t optim_2_code);
 
     // Register allocation
+    BackendFun* p_backend_fun_top_level;
+    InferenceGraph* p_inference_graph;
     std::array<REGISTER_KIND, 26> register_color_map;
     std::array<InferenceRegister, 26> hard_registers;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
     std::unique_ptr<InferenceGraph> inference_graph;
     std::unique_ptr<InferenceGraph> sse_inference_graph;
-    InferenceGraph* p_inference_graph;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
     // Register coalescing
     bool is_with_coalescing;
@@ -673,10 +675,20 @@ static void regalloc_color_register_map() {
     }
 }
 
-static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier /*name*/) {
-    // TODO
-    // keep track of callee saved registers
-    return nullptr;
+static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
+    inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+    REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
+    if (color != REGISTER_KIND::Sp) {
+        REGISTER_KIND register_kind = context->register_color_map[register_mask_bit(color)];
+        if (is_register_callee_saved(register_kind)) {
+            // TODO
+            // keep track of callee saved registers
+        }
+        return generate_register(register_kind);
+    }
+    else {
+        return nullptr;
+    }
 }
 
 static void regalloc_mov_instructions(AsmMov* node) {
@@ -821,7 +833,12 @@ static void regalloc_function_top_level(AsmFunction* node) {
         if (context->is_with_coalescing) {
             coalesce_inference_graph();
         }
+        {
+            BackendFun* backend_fun = static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get());
+            context->p_backend_fun_top_level = backend_fun;
+        }
         regalloc_inference_graph();
+        context->p_backend_fun_top_level = nullptr;
         context->p_inference_graph = nullptr;
     }
     context->p_instructions = nullptr;
