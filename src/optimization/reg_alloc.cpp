@@ -32,7 +32,7 @@ struct InferenceGraph {
     size_t k;
     size_t offset;
     uint64_t hard_reg_mask;
-    std::array<InferenceRegister, 14> hard_registers;
+    // std::array<InferenceRegister, 14> hard_registers;
     std::vector<size_t> unpruned_hard_mask_bits;
     std::vector<TIdentifier> unpruned_pseudo_names;
     std::unordered_map<TIdentifier, InferenceRegister> pseudo_register_map;
@@ -43,6 +43,7 @@ struct RegAllocContext {
 
     // Register allocation
     std::array<REGISTER_KIND, 26> register_color_map;
+    std::array<InferenceRegister, 26> hard_registers;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
     std::unique_ptr<InferenceGraph> inference_graph;
@@ -211,8 +212,7 @@ static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND registe
         }
     }
     {
-        size_t i = register_mask_bit(register_kind) - context->p_inference_graph->offset;
-        InferenceRegister& infer = context->p_inference_graph->hard_registers[i];
+        InferenceRegister& infer = context->hard_registers[register_mask_bit(register_kind)];
         if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name)
             == infer.linked_pseudo_names.end()) {
             infer.linked_pseudo_names.push_back(name);
@@ -267,8 +267,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         size_t mask_set_size = i + context->p_inference_graph->k;
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
-                size_t j = i - context->p_inference_graph->offset;
-                REGISTER_KIND register_kind = context->p_inference_graph->hard_registers[j].register_kind;
+                REGISTER_KIND register_kind = context->hard_registers[i].register_kind;
                 inference_graph_add_reg_edge(name, register_kind);
             }
         }
@@ -507,7 +506,7 @@ static void regalloc_prune_inference_register(InferenceRegister* infer, size_t p
     }
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-            InferenceRegister& linked_infer = context->p_inference_graph->hard_registers[i];
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
                 linked_infer.degree--;
             }
@@ -538,7 +537,7 @@ static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdent
     }
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-            InferenceRegister& linked_infer = context->p_inference_graph->hard_registers[i];
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
                 linked_infer.degree++;
             }
@@ -574,7 +573,7 @@ static void regalloc_color_inference_graph() {
     if (!infer) {
         for (size_t i = 0; i < context->p_inference_graph->unpruned_hard_mask_bits.size(); ++i) {
             size_t j = context->p_inference_graph->unpruned_hard_mask_bits[i];
-            infer = &context->p_inference_graph->hard_registers[j];
+            infer = &context->hard_registers[j];
             if (infer->degree < context->p_inference_graph->k) {
                 size_t pruned_index = i;
                 regalloc_prune_inference_register(infer, pruned_index);
@@ -612,7 +611,7 @@ static void regalloc_color_inference_graph() {
     uint64_t color_reg_mask = context->inference_graph->hard_reg_mask;
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-            InferenceRegister& linked_infer = context->p_inference_graph->hard_registers[i];
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
                 if (linked_infer.color != REGISTER_KIND::Sp) {
                     register_mask_set(color_reg_mask, linked_infer.color, false);
@@ -629,7 +628,7 @@ static void regalloc_color_inference_graph() {
     if (color_reg_mask != MASK_FALSE) {
         if (is_register_callee_saved(infer->register_kind)) {
             for (size_t i = context->p_inference_graph->k; i-- > 0;) {
-                REGISTER_KIND color = context->p_inference_graph->hard_registers[i].register_kind;
+                REGISTER_KIND color = context->hard_registers[i + context->p_inference_graph->offset].register_kind;
                 if (register_mask_get(color_reg_mask, color)) {
                     infer->color = color;
                     break;
@@ -638,7 +637,7 @@ static void regalloc_color_inference_graph() {
         }
         else {
             for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-                REGISTER_KIND color = context->p_inference_graph->hard_registers[i].register_kind;
+                REGISTER_KIND color = context->hard_registers[i + context->p_inference_graph->offset].register_kind;
                 if (register_mask_get(color_reg_mask, color)) {
                     infer->color = color;
                     break;
@@ -651,11 +650,10 @@ static void regalloc_color_inference_graph() {
 
 static void regalloc_color_register_map() {
     for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-        InferenceRegister& infer = context->p_inference_graph->hard_registers[i];
+        InferenceRegister& infer = context->hard_registers[i + context->p_inference_graph->offset];
         if (infer.color != REGISTER_KIND::Sp) {
             // TODO check that that color was not already colored
-            size_t j = register_mask_bit(infer.color);
-            context->register_color_map[j] = infer.register_kind;
+            context->register_color_map[register_mask_bit(infer.color)] = infer.register_kind;
         }
     }
 }
