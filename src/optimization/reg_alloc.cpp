@@ -42,6 +42,7 @@ struct RegAllocContext {
     RegAllocContext(uint8_t optim_2_code);
 
     // Register allocation
+    std::array<REGISTER_KIND, 26> register_color_map;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
     std::unique_ptr<InferenceGraph> inference_graph;
@@ -437,12 +438,13 @@ static bool inference_graph_initialize() {
 
         uint64_t hard_reg_mask = context->inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 12; ++i) {
-            context->inference_graph->unpruned_hard_mask_bits[i] = i;
+            context->register_color_map[i] = REGISTER_KIND::Sp;
             context->inference_graph->hard_registers[i].color = REGISTER_KIND::Sp;
             context->inference_graph->hard_registers[i].degree = 12;
             context->inference_graph->hard_registers[i].spill_cost = 0;
             context->inference_graph->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->inference_graph->hard_registers[i].linked_pseudo_names.clear();
+            context->inference_graph->unpruned_hard_mask_bits[i] = i;
         }
     }
     if (!context->sse_inference_graph->pseudo_register_map.empty()) {
@@ -452,12 +454,13 @@ static bool inference_graph_initialize() {
 
         uint64_t hard_reg_mask = context->sse_inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 14; ++i) {
-            context->sse_inference_graph->unpruned_hard_mask_bits[i] = i;
+            context->register_color_map[i + 12] = REGISTER_KIND::Sp;
             context->sse_inference_graph->hard_registers[i].color = REGISTER_KIND::Sp;
             context->sse_inference_graph->hard_registers[i].degree = 14;
             context->sse_inference_graph->hard_registers[i].spill_cost = 0;
             context->sse_inference_graph->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->sse_inference_graph->hard_registers[i].linked_pseudo_names.clear();
+            context->sse_inference_graph->unpruned_hard_mask_bits[i] = i;
         }
     }
 
@@ -589,6 +592,7 @@ static void regalloc_color_inference_graph() {
             infer = &context->p_inference_graph->pseudo_register_map[pruned_name];
         }
         size_t pruned_index = 0;
+        // wrong because if degree == 0, spill metric should be infinity
         double min_spill_metric = static_cast<double>(infer->spill_cost) / (infer->degree + 1);
         for (size_t i = 1; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = context->p_inference_graph->unpruned_pseudo_names[i];
@@ -645,14 +649,27 @@ static void regalloc_color_inference_graph() {
     }
 }
 
+static void regalloc_color_register_map() {
+    for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
+        InferenceRegister& infer = context->p_inference_graph->hard_registers[i];
+        if (infer.color != REGISTER_KIND::Sp) {
+            // TODO check that that color was not already colored
+            size_t j = register_mask_bit(infer.color);
+            context->register_color_map[j] = infer.register_kind;
+        }
+    }
+}
+
 static void regalloc_inference_graph() {
     if (!context->inference_graph->pseudo_register_map.empty()) {
         inference_graph_set_p(false);
         regalloc_color_inference_graph();
+        regalloc_color_register_map();
     }
     if (!context->sse_inference_graph->pseudo_register_map.empty()) {
         inference_graph_set_p(true);
         // regalloc_color_inference_graph();
+        // regalloc_color_register_map();
     }
     // TODO
 }
