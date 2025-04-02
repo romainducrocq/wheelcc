@@ -32,7 +32,6 @@ struct InferenceGraph {
     size_t k;
     size_t offset;
     uint64_t hard_reg_mask;
-    // std::array<InferenceRegister, 14> hard_registers;
     std::vector<size_t> unpruned_hard_mask_bits;
     std::vector<TIdentifier> unpruned_pseudo_names;
     std::unordered_map<TIdentifier, InferenceRegister> pseudo_register_map;
@@ -594,7 +593,6 @@ static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_nam
         if (!infer) {
             RAISE_INTERNAL_ERROR;
         }
-        // wrong because if degree == 0, spill metric should be infinity
         double min_spill_metric = static_cast<double>(infer->spill_cost) / infer->degree;
         for (; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = context->p_inference_graph->unpruned_pseudo_names[i];
