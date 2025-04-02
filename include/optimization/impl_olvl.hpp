@@ -58,6 +58,7 @@ struct DataFlowAnalysis {
     size_t addressed_index;
 };
 
+#if __OPTIM_LEVEL__ == 1
 static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
         GET_INSTRUCTION(instruction_index) = std::move(instruction);
@@ -65,10 +66,9 @@ static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_
     else {
         GET_INSTRUCTION(instruction_index).reset();
     }
-#if __OPTIM_LEVEL__ == 1
     context->is_fixed_point = false;
-#endif
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +112,7 @@ static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t pred
     }
 }
 
+#if __OPTIM_LEVEL__ == 1
 static void control_flow_graph_remove_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids,
     size_t successor_id, size_t predecessor_id, bool is_reachable) {
     if (is_reachable) {
@@ -209,6 +210,7 @@ static void control_flow_graph_remove_block_instruction(size_t instruction_index
         }
     }
 }
+#endif
 
 #if __OPTIM_LEVEL__ == 1
 static void control_flow_graph_initialize_label_block(TacLabel* node) {
