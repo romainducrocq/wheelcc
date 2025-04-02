@@ -717,7 +717,6 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
     context = std::make_unique<RegAllocContext>(std::move(optim_2_code));
     context->control_flow_graph = std::make_unique<ControlFlowGraph>();
     context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
-    context->inference_graph = std::make_unique<InferenceGraph>();
     {
         context->hard_registers[0].register_kind = REGISTER_KIND::Ax;
         context->hard_registers[1].register_kind = REGISTER_KIND::Bx;
@@ -747,12 +746,12 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
         context->hard_registers[24].register_kind = REGISTER_KIND::Xmm12;
         context->hard_registers[25].register_kind = REGISTER_KIND::Xmm13;
     }
+    context->inference_graph = std::make_unique<InferenceGraph>();
     {
         context->inference_graph->k = 12;
         context->inference_graph->offset = 0;
 
         context->inference_graph->hard_reg_mask = MASK_FALSE;
-
         register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Ax, true);
         register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Bx, true);
         register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Cx, true);
