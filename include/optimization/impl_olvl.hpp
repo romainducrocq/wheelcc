@@ -39,8 +39,8 @@ struct DataFlowAnalysis {
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
     std::vector<size_t> instruction_index_map;
-    std::vector<uint64_t> blocks_mask_sets;
-    std::vector<uint64_t> instructions_mask_sets;
+    std::vector<TULong> blocks_mask_sets;
+    std::vector<TULong> instructions_mask_sets;
     std::unordered_set<TIdentifier> alias_set;
 #if __OPTIM_LEVEL__ == 1
     // Copy propagation
@@ -447,22 +447,22 @@ static void control_flow_graph_initialize() {
 
 // Data flow analysis
 
-static bool mask_get(uint64_t mask, size_t bit) {
+static bool mask_get(TULong mask, size_t bit) {
     if (bit > 63) {
         bit %= 64;
     }
-    return (mask & (static_cast<uint64_t>(1ul) << bit)) > 0;
+    return (mask & (static_cast<TULong>(1ul) << bit)) > 0;
 }
 
-static void mask_set(uint64_t& mask, size_t bit, bool value) {
+static void mask_set(TULong& mask, size_t bit, bool value) {
     if (bit > 63) {
         bit %= 64;
     }
     if (value) {
-        mask |= static_cast<uint64_t>(1ul) << bit;
+        mask |= static_cast<TULong>(1ul) << bit;
     }
     else {
-        mask &= ~(static_cast<uint64_t>(1ul) << bit);
+        mask &= ~(static_cast<TULong>(1ul) << bit);
     }
 }
 
@@ -1244,7 +1244,7 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        uint64_t mask_true_back = MASK_TRUE;
+        TULong mask_true_back = MASK_TRUE;
         i = context->data_flow_analysis->set_size - (context->data_flow_analysis->mask_size - 1) * 64;
         if (i > 0) {
             for (; i < 64; ++i) {
