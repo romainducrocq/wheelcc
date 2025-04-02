@@ -557,15 +557,14 @@ static void regalloc_next_color_inference_graph() {
     }
 }
 
-static void regalloc_color_inference_graph() {
-    TIdentifier pruned_name = 0;
+static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_name) {
+    size_t pruned_index;
     InferenceRegister* infer = nullptr;
     for (size_t i = 0; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
         pruned_name = context->p_inference_graph->unpruned_pseudo_names[i];
         infer = &context->p_inference_graph->pseudo_register_map[pruned_name];
         if (infer->degree < context->p_inference_graph->k) {
-            size_t pruned_index = i;
-            regalloc_prune_inference_register(infer, pruned_index);
+            pruned_index = i;
             break;
         }
         infer = nullptr;
@@ -575,39 +574,47 @@ static void regalloc_color_inference_graph() {
             size_t pruned_mask_bit = context->p_inference_graph->unpruned_hard_mask_bits[i];
             infer = &context->hard_registers[pruned_mask_bit];
             if (infer->degree < context->p_inference_graph->k) {
-                size_t pruned_index = i;
-                regalloc_prune_inference_register(infer, pruned_index);
+                pruned_index = i;
                 break;
             }
             infer = nullptr;
         }
     }
     if (!infer) {
-        if (context->p_inference_graph->unpruned_pseudo_names.empty()) {
+        size_t i = 0;
+        for (; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
+            pruned_name = context->p_inference_graph->unpruned_pseudo_names[i];
+            infer = &context->p_inference_graph->pseudo_register_map[pruned_name];
+            if (infer->degree > 0) {
+                pruned_index = i;
+                break;
+            }
+            infer = nullptr;
+        }
+        if (!infer) {
             RAISE_INTERNAL_ERROR;
         }
-        {
-            pruned_name = context->p_inference_graph->unpruned_pseudo_names[0];
-            infer = &context->p_inference_graph->pseudo_register_map[pruned_name];
-        }
-        size_t pruned_index = 0;
         // wrong because if degree == 0, spill metric should be infinity
-        double min_spill_metric = static_cast<double>(infer->spill_cost) / (infer->degree + 1);
-        for (size_t i = 1; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
+        double min_spill_metric = static_cast<double>(infer->spill_cost) / infer->degree;
+        for (; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = context->p_inference_graph->unpruned_pseudo_names[i];
             InferenceRegister& spill_infer = context->p_inference_graph->pseudo_register_map[spill_name];
-            double spill_metric = static_cast<double>(spill_infer.spill_cost) / (spill_infer.degree + 1);
-            if (spill_metric < min_spill_metric) {
-                pruned_name = spill_name;
-                infer = &spill_infer;
-                min_spill_metric = spill_metric;
-                pruned_index = i;
+            if (spill_infer.degree > 0) {
+                double spill_metric = static_cast<double>(spill_infer.spill_cost) / spill_infer.degree;
+                if (spill_metric < min_spill_metric) {
+                    pruned_index = i;
+                    pruned_name = spill_name;
+                    infer = &spill_infer;
+                    min_spill_metric = spill_metric;
+                }
             }
         }
-        regalloc_prune_inference_register(infer, pruned_index);
     }
-    regalloc_next_color_inference_graph();
+    regalloc_prune_inference_register(infer, pruned_index);
+    return infer;
+}
 
+static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifier pruned_name) {
     uint64_t color_reg_mask = context->inference_graph->hard_reg_mask;
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
@@ -648,6 +655,13 @@ static void regalloc_color_inference_graph() {
     }
 }
 
+static void regalloc_color_inference_graph() {
+    TIdentifier pruned_name;
+    InferenceRegister* infer = regalloc_prune_inference_graph(pruned_name);
+    regalloc_next_color_inference_graph();
+    regalloc_unprune_inference_graph(infer, pruned_name);
+}
+
 static void regalloc_color_register_map() {
     for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
         InferenceRegister& infer = context->hard_registers[i + context->p_inference_graph->offset];
@@ -670,6 +684,7 @@ static void regalloc_inference_graph() {
         // regalloc_color_register_map();
     }
     // TODO
+    // rewrite instructions
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
