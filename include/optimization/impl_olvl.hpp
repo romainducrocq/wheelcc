@@ -7,6 +7,9 @@
 #define GET_INSTRUCTION(X) (*context->p_instructions)[X]
 #define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
 
+#ifndef __MASK_TYPE__
+using mask_t = TULong;
+#endif
 using AstInstruction =
 #if __OPTIM_LEVEL__ == 1
     TacInstruction
@@ -39,8 +42,8 @@ struct DataFlowAnalysis {
     size_t incoming_index;
     std::vector<size_t> open_block_ids;
     std::vector<size_t> instruction_index_map;
-    std::vector<TULong> blocks_mask_sets;
-    std::vector<TULong> instructions_mask_sets;
+    std::vector<mask_t> blocks_mask_sets;
+    std::vector<mask_t> instructions_mask_sets;
     std::unordered_set<TIdentifier> alias_set;
 #if __OPTIM_LEVEL__ == 1
     // Copy propagation
@@ -1244,7 +1247,7 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        TULong mask_true_back = MASK_TRUE;
+        mask_t mask_true_back = MASK_TRUE;
         i = context->data_flow_analysis->set_size - (context->data_flow_analysis->mask_size - 1) * 64;
         if (i > 0) {
             for (; i < 64; ++i) {

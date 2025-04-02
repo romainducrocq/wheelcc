@@ -16,6 +16,9 @@
 
 #include "optimization/reg_alloc.hpp"
 
+#define __MASK_TYPE__
+using mask_t = TULong;
+
 struct ControlFlowGraph;
 struct DataFlowAnalysis;
 
@@ -24,14 +27,14 @@ struct InferenceRegister {
     REGISTER_KIND register_kind;
     size_t degree;
     size_t spill_cost;
-    TULong linked_hard_mask;
+    mask_t linked_hard_mask;
     std::vector<TIdentifier> linked_pseudo_names;
 };
 
 struct InferenceGraph {
     size_t k;
     size_t offset;
-    TULong hard_reg_mask;
+    mask_t hard_reg_mask;
     std::vector<size_t> unpruned_hard_mask_bits;
     std::vector<TIdentifier> unpruned_pseudo_names;
     std::unordered_map<TIdentifier, InferenceRegister> pseudo_register_map;
@@ -434,7 +437,7 @@ static bool inference_graph_initialize() {
             context->inference_graph->unpruned_hard_mask_bits.resize(12);
         }
 
-        TULong hard_reg_mask = context->inference_graph->hard_reg_mask;
+        mask_t hard_reg_mask = context->inference_graph->hard_reg_mask;
         for (size_t i = 0; i < 12; ++i) {
             context->register_color_map[i] = REGISTER_KIND::Sp;
             context->hard_registers[i].color = REGISTER_KIND::Sp;
@@ -450,7 +453,7 @@ static bool inference_graph_initialize() {
             context->sse_inference_graph->unpruned_hard_mask_bits.resize(14);
         }
 
-        TULong hard_reg_mask = context->sse_inference_graph->hard_reg_mask;
+        mask_t hard_reg_mask = context->sse_inference_graph->hard_reg_mask;
         for (size_t i = 12; i < 26; ++i) {
             context->register_color_map[i] = REGISTER_KIND::Sp;
             context->hard_registers[i].color = REGISTER_KIND::Sp;
@@ -613,7 +616,7 @@ static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_nam
 }
 
 static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifier pruned_name) {
-    TULong color_reg_mask = context->inference_graph->hard_reg_mask;
+    mask_t color_reg_mask = context->inference_graph->hard_reg_mask;
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
