@@ -528,18 +528,20 @@ static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdent
         // TODO dont bother to find if we are sure that it can not have doubles
         if (std::find(context->p_inference_graph->unpruned_pseudo_names.begin(),
                 context->p_inference_graph->unpruned_pseudo_names.end(), pruned_name)
-            == context->p_inference_graph->unpruned_pseudo_names.end()) {
-            context->p_inference_graph->unpruned_pseudo_names.push_back(pruned_name);
+            != context->p_inference_graph->unpruned_pseudo_names.end()) {
+            RAISE_INTERNAL_ERROR;
         }
+        context->p_inference_graph->unpruned_pseudo_names.push_back(pruned_name);
     }
     else {
         // TODO dont bother to find if we are sure that it can not have doubles
         size_t pruned_mask_bit = register_mask_bit(infer->register_kind);
         if (std::find(context->p_inference_graph->unpruned_hard_mask_bits.begin(),
                 context->p_inference_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
-            == context->p_inference_graph->unpruned_hard_mask_bits.end()) {
-            context->p_inference_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
+            != context->p_inference_graph->unpruned_hard_mask_bits.end()) {
+            RAISE_INTERNAL_ERROR;
         }
+        context->p_inference_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
     }
     if (infer->linked_hard_mask != MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
@@ -826,7 +828,8 @@ static void regalloc_inference_graph() {
     }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index)) {
-            regalloc_instructions(instruction_index);
+            // TODO
+            // regalloc_instructions(instruction_index);
         }
     }
 }
