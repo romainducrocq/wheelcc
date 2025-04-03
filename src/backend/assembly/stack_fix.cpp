@@ -1014,6 +1014,10 @@ static void fix_function_top_level(AsmFunction* node) {
     if (!is_ret) {
         fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
     }
+    {
+        TLong callee_saved_size = static_cast<TLong>(backend_fun->callee_saved_registers.size());
+        context->stack_bytes += callee_saved_size * 8l;
+    }
     fix_allocate_stack_bytes();
     context->p_fix_instructions = nullptr;
 }
