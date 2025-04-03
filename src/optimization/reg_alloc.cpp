@@ -445,7 +445,7 @@ static bool inference_graph_initialize() {
         for (size_t i = 0; i < 12; ++i) {
             context->register_color_map[i] = REGISTER_KIND::Sp;
             context->hard_registers[i].color = REGISTER_KIND::Sp;
-            context->hard_registers[i].degree = 12;
+            context->hard_registers[i].degree = 11;
             context->hard_registers[i].spill_cost = 0;
             context->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->hard_registers[i].linked_pseudo_names.clear();
@@ -461,7 +461,7 @@ static bool inference_graph_initialize() {
         for (size_t i = 12; i < 26; ++i) {
             context->register_color_map[i] = REGISTER_KIND::Sp;
             context->hard_registers[i].color = REGISTER_KIND::Sp;
-            context->hard_registers[i].degree = 14;
+            context->hard_registers[i].degree = 13;
             context->hard_registers[i].spill_cost = 0;
             context->hard_registers[i].linked_hard_mask = hard_reg_mask;
             context->hard_registers[i].linked_pseudo_names.clear();
