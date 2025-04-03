@@ -696,6 +696,13 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
 }
 
 static void regalloc_mov_instructions(AsmMov* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
@@ -825,8 +832,7 @@ static void regalloc_inference_graph() {
     }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index)) {
-            // TODO
-            // regalloc_instructions(instruction_index);
+            regalloc_instructions(instruction_index);
         }
     }
 }
