@@ -104,6 +104,7 @@ static std::string emit_register_rsp_sse(AsmReg* node) {
 }
 
 // Reg(AX)  -> $ %al
+// Reg(BX)  -> $ %bl
 // Reg(DX)  -> $ %dl
 // Reg(CX)  -> $ %cl
 // Reg(DI)  -> $ %dil
@@ -112,10 +113,16 @@ static std::string emit_register_rsp_sse(AsmReg* node) {
 // Reg(R9)  -> $ %r9b
 // Reg(R10) -> $ %r10b
 // Reg(R11) -> $ %r11b
+// Reg(R12) -> $ %r12b
+// Reg(R13) -> $ %r13b
+// Reg(R14) -> $ %r14b
+// Reg(R15) -> $ %r15b
 static std::string emit_register_1byte(AsmReg* node) {
     switch (node->type()) {
         case AST_T::AsmAx_t:
             return "al";
+        case AST_T::AsmBx_t:
+            return "bl";
         case AST_T::AsmDx_t:
             return "dl";
         case AST_T::AsmCx_t:
@@ -132,12 +139,21 @@ static std::string emit_register_1byte(AsmReg* node) {
             return "r10b";
         case AST_T::AsmR11_t:
             return "r11b";
+        case AST_T::AsmR12_t:
+            return "r12b";
+        case AST_T::AsmR13_t:
+            return "r13b";
+        case AST_T::AsmR14_t:
+            return "r14b";
+        case AST_T::AsmR15_t:
+            return "r15b";
         default:
             return emit_register_rsp_sse(node);
     }
 }
 
 // Reg(AX)  -> $ %eax
+// Reg(BX)  -> $ %ebx
 // Reg(DX)  -> $ %edx
 // Reg(CX)  -> $ %ecx
 // Reg(DI)  -> $ %edi
@@ -146,10 +162,16 @@ static std::string emit_register_1byte(AsmReg* node) {
 // Reg(R9)  -> $ %r9d
 // Reg(R10) -> $ %r10d
 // Reg(R11) -> $ %r11d
+// Reg(R12) -> $ %r12d
+// Reg(R13) -> $ %r13d
+// Reg(R14) -> $ %r14d
+// Reg(R15) -> $ %r15d
 static std::string emit_register_4byte(AsmReg* node) {
     switch (node->type()) {
         case AST_T::AsmAx_t:
             return "eax";
+        case AST_T::AsmBx_t:
+            return "ebx";
         case AST_T::AsmDx_t:
             return "edx";
         case AST_T::AsmCx_t:
@@ -166,24 +188,39 @@ static std::string emit_register_4byte(AsmReg* node) {
             return "r10d";
         case AST_T::AsmR11_t:
             return "r11d";
+        case AST_T::AsmR12_t:
+            return "r12d";
+        case AST_T::AsmR13_t:
+            return "r13d";
+        case AST_T::AsmR14_t:
+            return "r14d";
+        case AST_T::AsmR15_t:
+            return "r15d";
         default:
             return emit_register_rsp_sse(node);
     }
 }
 
-// Reg(AX)    -> $ %rax
-// Reg(DX)    -> $ %rdx
-// Reg(CX)    -> $ %rcx
-// Reg(DI)    -> $ %rdi
-// Reg(SI)    -> $ %rsi
-// Reg(R8)    -> $ %r8
-// Reg(R9)    -> $ %r9
-// Reg(R10)   -> $ %r10
-// Reg(R11)   -> $ %r11
+// Reg(AX)  -> $ %rax
+// Reg(BX)  -> $ %rbx
+// Reg(DX)  -> $ %rdx
+// Reg(CX)  -> $ %rcx
+// Reg(DI)  -> $ %rdi
+// Reg(SI)  -> $ %rsi
+// Reg(R8)  -> $ %r8
+// Reg(R9)  -> $ %r9
+// Reg(R10) -> $ %r10
+// Reg(R11) -> $ %r11
+// Reg(R12) -> $ %r12
+// Reg(R13) -> $ %r13
+// Reg(R14) -> $ %r14
+// Reg(R15) -> $ %r15
 static std::string emit_register_8byte(AsmReg* node) {
     switch (node->type()) {
         case AST_T::AsmAx_t:
             return "rax";
+        case AST_T::AsmBx_t:
+            return "rbx";
         case AST_T::AsmDx_t:
             return "rdx";
         case AST_T::AsmCx_t:
@@ -200,6 +237,14 @@ static std::string emit_register_8byte(AsmReg* node) {
             return "r10";
         case AST_T::AsmR11_t:
             return "r11";
+        case AST_T::AsmR12_t:
+            return "r12";
+        case AST_T::AsmR13_t:
+            return "r13";
+        case AST_T::AsmR14_t:
+            return "r14";
+        case AST_T::AsmR15_t:
+            return "r15";
         default:
             return emit_register_rsp_sse(node);
     }
