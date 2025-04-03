@@ -52,6 +52,12 @@ static std::string emit_ulong(TULong value) { return std::to_string(value); }
 // Reg(XMM5)  -> $ %xmm5
 // Reg(XMM6)  -> $ %xmm6
 // Reg(XMM7)  -> $ %xmm7
+// Reg(XMM8)  -> $ %xmm8
+// Reg(XMM9)  -> $ %xmm9
+// Reg(XMM10) -> $ %xmm10
+// Reg(XMM11) -> $ %xmm11
+// Reg(XMM12) -> $ %xmm12
+// Reg(XMM13) -> $ %xmm13
 // Reg(XMM14) -> $ %xmm14
 // Reg(XMM15) -> $ %xmm15
 static std::string emit_register_rsp_sse(AsmReg* node) {
@@ -76,6 +82,18 @@ static std::string emit_register_rsp_sse(AsmReg* node) {
             return "xmm6";
         case AST_T::AsmXMM7_t:
             return "xmm7";
+        case AST_T::AsmXMM8_t:
+            return "xmm8";
+        case AST_T::AsmXMM9_t:
+            return "xmm9";
+        case AST_T::AsmXMM10_t:
+            return "xmm10";
+        case AST_T::AsmXMM11_t:
+            return "xmm11";
+        case AST_T::AsmXMM12_t:
+            return "xmm12";
+        case AST_T::AsmXMM13_t:
+            return "xmm13";
         case AST_T::AsmXMM14_t:
             return "xmm14";
         case AST_T::AsmXMM15_t:
@@ -611,6 +629,12 @@ static void emit_push_instructions(AsmPush* node) {
     emit(std::move(instruction), 2);
 }
 
+static void emit_pop_instructions(AsmPop* node) {
+    std::string instruction = "popq %";
+    instruction += emit_register_8byte(node->reg.get());
+    emit(std::move(instruction), 2);
+}
+
 static void emit_call_instructions(AsmCall* node) {
     std::string instruction = "call ";
     instruction += emit_identifier(node->name);
@@ -648,6 +672,7 @@ static void emit_ret_instructions() {
 // SetCC(cond_code, operand)             -> $ set<cond_code> <operand>
 // Label(label)                          -> $ .L<label>:
 // Push(operand)                         -> $ pushq <operand>
+// Pop(reg)                              -> $ popq <reg>
 // Call(label)                           -> $ call <label>@PLT
 // Ret                                   -> $ movq %rbp, %rsp
 //                                          $ popq %rbp
@@ -704,6 +729,9 @@ static void emit_instructions(AsmInstruction* node) {
             break;
         case AST_T::AsmPush_t:
             emit_push_instructions(static_cast<AsmPush*>(node));
+            break;
+        case AST_T::AsmPop_t:
+            emit_pop_instructions(static_cast<AsmPop*>(node));
             break;
         case AST_T::AsmCall_t:
             emit_call_instructions(static_cast<AsmCall*>(node));
