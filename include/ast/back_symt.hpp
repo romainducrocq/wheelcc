@@ -64,12 +64,14 @@ struct BackendObj : BackendSymbol {
     std::shared_ptr<AssemblyType> assembly_type;
 };
 
+struct AsmOperand;
 struct BackendFun : BackendSymbol {
     AST_T type() override;
     BackendFun() = default;
     BackendFun(bool is_defined);
 
     bool is_defined;
+    std::vector<std::shared_ptr<AsmOperand>> callee_saved_registers;
 };
 
 /*
