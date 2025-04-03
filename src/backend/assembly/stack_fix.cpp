@@ -514,6 +514,47 @@ static void fix_allocate_stack_bytes() {
     }
 }
 
+static void fix_push_callee_saved_registers(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
+    for (std::shared_ptr<AsmOperand> src : callee_saved_registers) {
+        push_fix_instruction(std::make_unique<AsmPush>(std::move(src)));
+    }
+}
+
+static void fix_pop_callee_saved_registers(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
+    for (size_t i = callee_saved_registers.size(); i-- > 0;) {
+        if (callee_saved_registers[i]->type() != AST_T::AsmRegister_t) {
+            RAISE_INTERNAL_ERROR;
+        }
+        REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_registers[i].get()));
+        std::unique_ptr<AsmReg> reg;
+        switch (register_kind) {
+            case REGISTER_KIND::Bx: {
+                reg = std::make_unique<AsmBx>();
+                break;
+            }
+            case REGISTER_KIND::R12: {
+                reg = std::make_unique<AsmR12>();
+                break;
+            }
+            case REGISTER_KIND::R13: {
+                reg = std::make_unique<AsmR13>();
+                break;
+            }
+            case REGISTER_KIND::R14: {
+                reg = std::make_unique<AsmR14>();
+                break;
+            }
+            case REGISTER_KIND::R15: {
+                reg = std::make_unique<AsmR15>();
+                break;
+            }
+            default:
+                RAISE_INTERNAL_ERROR;
+        }
+        push_fix_instruction(std::make_unique<AsmPop>(std::move(reg)));
+    }
+}
+
 static bool is_type_imm(AsmOperand* node) { return node->type() == AST_T::AsmImm_t; }
 
 static bool is_type_addr(AsmOperand* node) {
@@ -881,7 +922,7 @@ static void fix_div_instruction(AsmDiv* node) {
     }
 }
 
-// TODO (p3, ch20)
+// TODO (p3, ch20) see page 315
 // static void fix_double_push_from_xmm_reg_to_any_instruction(AsmPush* node) {
 //     // subq $8, %rsp
 //     // movsd %xmm0, (%rsp)
@@ -897,7 +938,7 @@ static void fix_push_from_quad_word_imm_to_any_instruction(AsmPush* node) {
 }
 
 static void fix_push_instruction(AsmPush* node) {
-    // TODO (p3, ch20)
+    // TODO (p3, ch20) see page 315
     // // pushq %xmm0
     // if src is register and src->reg is
     // fix_double_push_from_xmm_reg_to_any_instruction(node);
@@ -948,19 +989,30 @@ static void fix_instruction(AsmInstruction* node) {
 
 static void fix_function_top_level(AsmFunction* node) {
     std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
+    BackendFun* backend_fun = static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get());
 
     node->instructions.clear();
     node->instructions.reserve(instructions.size());
-    context->p_fix_instructions = &node->instructions;
-    context->p_fix_instructions->emplace_back();
 
     context->stack_bytes = node->is_return_memory ? 8l : 0l;
     context->pseudo_stack_bytes_map.clear();
+    context->p_fix_instructions = &node->instructions;
+    context->p_fix_instructions->emplace_back();
+
+    bool is_ret = false;
+    fix_push_callee_saved_registers(backend_fun->callee_saved_registers);
     for (size_t i = 0; i < instructions.size(); ++i) {
+        if (instructions[i]->type() == AST_T::AsmRet_t) {
+            fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
+            is_ret = true;
+        }
         push_fix_instruction(std::move(instructions[i]));
 
         replace_pseudo_registers(context->p_fix_instructions->back().get());
         fix_instruction(context->p_fix_instructions->back().get());
+    }
+    if (!is_ret) {
+        fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
     }
     fix_allocate_stack_bytes();
     context->p_fix_instructions = nullptr;
