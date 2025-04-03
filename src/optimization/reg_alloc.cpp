@@ -695,19 +695,48 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
     }
 }
 
-static void regalloc_mov_instructions(AsmMov* node) {
-    if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
-        if (hard_register) {
-            node->src = hard_register;
+static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
+    switch (node->type()) {
+        case AST_T::AsmRegister_t:
+            return register_mask_kind(static_cast<AsmRegister*>(node));
+        case AST_T::AsmPseudo_t: {
+            TIdentifier name = static_cast<AsmPseudo*>(node)->name;
+            inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+            REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
+            if (color != REGISTER_KIND::Sp) {
+                return context->register_color_map[register_mask_bit(color)];
+            }
+            else {
+                return REGISTER_KIND::Sp;
+            }
         }
+        default:
+            return REGISTER_KIND::Sp;
     }
-    if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
-        if (hard_register) {
-            node->dst = hard_register;
+}
+
+static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
+    AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
+    AsmOperand* dst_operand = static_cast<AsmPseudo*>(node->dst.get());
+    REGISTER_KIND src_register_kind = regalloc_operand_register_kind(src_operand);
+    REGISTER_KIND dst_register_kind = regalloc_operand_register_kind(dst_operand);
+    if (src_register_kind != REGISTER_KIND::Sp && src_register_kind == dst_register_kind) {
+        GET_INSTRUCTION(instruction_index).reset();
+    }
+    else {
+        if (src_operand->type() == AST_T::AsmPseudo_t) {
+            std::shared_ptr<AsmOperand> hard_register =
+                regalloc_hard_register(static_cast<AsmPseudo*>(src_operand)->name);
+            if (hard_register) {
+                node->src = hard_register;
+            }
+        }
+        if (node->dst->type() == AST_T::AsmPseudo_t) {
+            std::shared_ptr<AsmOperand> hard_register =
+                regalloc_hard_register(static_cast<AsmPseudo*>(dst_operand)->name);
+            if (hard_register) {
+                node->dst = hard_register;
+            }
         }
     }
 }
@@ -790,7 +819,7 @@ static void regalloc_instructions(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            regalloc_mov_instructions(static_cast<AsmMov*>(node));
+            regalloc_mov_instructions(static_cast<AsmMov*>(node), instruction_index);
             break;
         case AST_T::AsmUnary_t:
             regalloc_unary_instructions(static_cast<AsmUnary*>(node));

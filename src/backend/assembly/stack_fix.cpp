@@ -1005,14 +1005,16 @@ static void fix_function_top_level(AsmFunction* node) {
     bool is_ret = false;
     fix_push_callee_saved_registers(backend_fun->callee_saved_registers);
     for (size_t i = 0; i < instructions.size(); ++i) {
-        if (instructions[i]->type() == AST_T::AsmRet_t) {
-            fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
-            is_ret = true;
-        }
-        push_fix_instruction(std::move(instructions[i]));
+        if (instructions[i]) {
+            if (instructions[i]->type() == AST_T::AsmRet_t) {
+                fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
+                is_ret = true;
+            }
+            push_fix_instruction(std::move(instructions[i]));
 
-        replace_pseudo_registers(context->p_fix_instructions->back().get());
-        fix_instruction(context->p_fix_instructions->back().get());
+            replace_pseudo_registers(context->p_fix_instructions->back().get());
+            fix_instruction(context->p_fix_instructions->back().get());
+        }
     }
     if (!is_ret) {
         fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
