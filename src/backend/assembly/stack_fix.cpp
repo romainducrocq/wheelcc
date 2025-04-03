@@ -508,9 +508,9 @@ static void swap_fix_instruction_back() {
 }
 
 static void fix_allocate_stack_bytes(TLong callee_saved_size) {
+    TLong callee_saved_bytes = callee_saved_size * 8l;
+    context->stack_bytes += callee_saved_bytes;
     if (context->stack_bytes > 0l) {
-        TLong callee_saved_bytes = callee_saved_size * 8l;
-        context->stack_bytes += callee_saved_bytes;
         align_offset_stack_bytes(16);
         context->stack_bytes -= callee_saved_bytes;
         (*context->p_fix_instructions)[0] = allocate_stack_bytes(context->stack_bytes);
