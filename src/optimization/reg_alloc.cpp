@@ -525,7 +525,6 @@ static void regalloc_prune_inference_register(InferenceRegister* infer, size_t p
 
 static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->register_kind == REGISTER_KIND::Sp) {
-        // TODO dont bother to find if we are sure that it can not have doubles
         if (std::find(context->p_inference_graph->unpruned_pseudo_names.begin(),
                 context->p_inference_graph->unpruned_pseudo_names.end(), pruned_name)
             != context->p_inference_graph->unpruned_pseudo_names.end()) {
@@ -534,7 +533,6 @@ static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdent
         context->p_inference_graph->unpruned_pseudo_names.push_back(pruned_name);
     }
     else {
-        // TODO dont bother to find if we are sure that it can not have doubles
         size_t pruned_mask_bit = register_mask_bit(infer->register_kind);
         if (std::find(context->p_inference_graph->unpruned_hard_mask_bits.begin(),
                 context->p_inference_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
@@ -673,7 +671,6 @@ static void regalloc_color_register_map() {
     for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
         InferenceRegister& infer = context->hard_registers[i + context->p_inference_graph->offset];
         if (infer.color != REGISTER_KIND::Sp) {
-            // TODO check that that color was not already colored
             context->register_color_map[register_mask_bit(infer.color)] = infer.register_kind;
         }
     }

@@ -49,7 +49,7 @@ struct ByteArray : AssemblyType {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // symbol = Obj(assembly_type, bool, bool)
-//        | Fun(bool)
+//        | Fun(bool, operand*)
 struct BackendSymbol : Ast {
     AST_T type() override;
 };
