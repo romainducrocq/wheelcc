@@ -96,7 +96,9 @@ static void inference_graph_transfer_used_operand_live_registers(AsmOperand* nod
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node));
-            inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            if (register_kind != REGISTER_KIND::Sp) {
+                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            }
             break;
         }
         case AST_T::AsmPseudo_t:
@@ -129,7 +131,9 @@ static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* 
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node));
-            inference_graph_transfer_updated_reg_live_registers(register_kind, next_instruction_index);
+            if (register_kind != REGISTER_KIND::Sp) {
+                inference_graph_transfer_updated_reg_live_registers(register_kind, next_instruction_index);
+            }
             break;
         }
         case AST_T::AsmPseudo_t:
@@ -257,23 +261,78 @@ static void inference_graph_initialize_used_operand_edges(AsmOperand* node) {
     }
 }
 
-// TODO put inference_graph_initialize_updated_regs_edges here
+static void inference_graph_initialize_updated_regs_edges(
+    REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
+    inference_graph_set_p(is_double);
 
-static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
+    size_t mov_mask_bit = context->data_flow_analysis->set_size;
+    bool is_mov = GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t;
+    if (is_mov) {
+        AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
+        if (mov->src->type() == AST_T::AsmPseudo_t) {
+            TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
+            mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+            context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+        }
+        else {
+            is_mov = false;
+        }
+    }
+
+    if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
+        for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
+             i-- > REGISTER_MASK_SIZE;) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
+                if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
+                    for (size_t j = 0; j < register_kinds_size; ++j) {
+                        inference_graph_add_reg_edge(pseudo_name, register_kinds[j]);
+                    }
+                }
+            }
+        }
+    }
+    size_t i = 64;
+    for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
+        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > context->data_flow_analysis->set_size) {
+            mask_set_size = context->data_flow_analysis->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
+                if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
+                    for (size_t k = 0; k < register_kinds_size; ++k) {
+                        inference_graph_add_reg_edge(pseudo_name, register_kinds[k]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index) {
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
     inference_graph_set_p(is_double);
     context->p_inference_graph->pseudo_register_map[name].spill_cost++;
 
     size_t mov_mask_bit = context->data_flow_analysis->set_size;
+    bool is_mov = GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t;
     if (is_mov) {
-        if (GET_INSTRUCTION(instruction_index)->type() != AST_T::AsmMov_t) {
-            RAISE_INTERNAL_ERROR;
-        }
         AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
         switch (mov->src->type()) {
             case AST_T::AsmRegister_t: {
                 REGISTER_KIND src_register_kind = register_mask_kind(static_cast<AsmRegister*>(mov->src.get()));
-                mov_mask_bit = register_mask_bit(src_register_kind);
+                if (src_register_kind == REGISTER_KIND::Sp) {
+                    is_mov = false;
+                }
+                else {
+                    mov_mask_bit = register_mask_bit(src_register_kind);
+                }
                 break;
             }
             case AST_T::AsmPseudo_t: {
@@ -332,49 +391,21 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
     }
 }
 
-static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, size_t instruction_index, bool is_mov) {
-    if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_initialize_updated_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index, is_mov);
-    }
-}
-
-static void inference_graph_initialize_updated_regs_edges(
-    REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
-    inference_graph_set_p(is_double);
-
-    if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
-        for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
-             i-- > REGISTER_MASK_SIZE;) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
-                if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    for (size_t j = 0; j < register_kinds_size; ++j) {
-                        inference_graph_add_reg_edge(pseudo_name, register_kinds[j]);
-                    }
-                }
+static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, size_t instruction_index) {
+    switch (node->type()) {
+        case AST_T::AsmRegister_t: {
+            REGISTER_KIND register_kinds[1] = {register_mask_kind(static_cast<AsmRegister*>(node))};
+            if (register_kinds[0] != REGISTER_KIND::Sp) {
+                bool is_double = register_mask_bit(register_kinds[0]) > 11;
+                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, is_double);
             }
+            break;
         }
-    }
-    size_t i = 64;
-    for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
-        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
-            i += 64;
-            continue;
-        }
-        size_t mask_set_size = i + 64;
-        if (mask_set_size > context->data_flow_analysis->set_size) {
-            mask_set_size = context->data_flow_analysis->set_size;
-        }
-        for (; i < mask_set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i)) {
-                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
-                if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    for (size_t k = 0; k < register_kinds_size; ++k) {
-                        inference_graph_add_reg_edge(pseudo_name, register_kinds[k]);
-                    }
-                }
-            }
-        }
+        case AST_T::AsmPseudo_t:
+            inference_graph_initialize_updated_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index);
+            break;
+        default:
+            break;
     }
 }
 
@@ -382,16 +413,15 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmMov*>(node)->dst.get(), instruction_index, true);
+            inference_graph_initialize_updated_operand_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmUnary_t:
             inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmUnary*>(node)->dst.get(), instruction_index, false);
+                static_cast<AsmUnary*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmBinary_t: {
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            inference_graph_initialize_updated_operand_edges(p_node->dst.get(), instruction_index, false);
+            inference_graph_initialize_updated_operand_edges(p_node->dst.get(), instruction_index);
             inference_graph_initialize_used_operand_edges(p_node->src.get());
             break;
         }
@@ -414,7 +444,7 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
         }
         case AST_T::AsmSetCC_t:
             inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmSetCC*>(node)->dst.get(), instruction_index, false);
+                static_cast<AsmSetCC*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmPush_t:
             inference_graph_initialize_used_operand_edges(static_cast<AsmPush*>(node)->src.get());

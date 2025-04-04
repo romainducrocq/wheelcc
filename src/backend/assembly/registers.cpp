@@ -154,10 +154,11 @@ REGISTER_KIND register_mask_kind(AsmRegister* node) {
             return REGISTER_KIND::Xmm12;
         case AST_T::AsmXMM13_t:
             return REGISTER_KIND::Xmm13;
-        case AST_T::AsmR10_t:
-        case AST_T::AsmR11_t:
         case AST_T::AsmSp_t:
         case AST_T::AsmBp_t:
+            return REGISTER_KIND::Sp;
+        case AST_T::AsmR10_t:
+        case AST_T::AsmR11_t:
         case AST_T::AsmXMM14_t:
         case AST_T::AsmXMM15_t:
             RAISE_INTERNAL_ERROR;
