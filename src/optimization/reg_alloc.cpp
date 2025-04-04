@@ -80,6 +80,11 @@ static std::unique_ptr<RegAllocContext> context;
 
 // Inference graph
 
+static void inference_graph_transfer_used_reg_live_registers(
+    REGISTER_KIND register_kind, size_t next_instruction_index) {
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
+}
+
 static void inference_graph_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
     if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
@@ -88,8 +93,18 @@ static void inference_graph_transfer_used_name_live_registers(TIdentifier name, 
 }
 
 static void inference_graph_transfer_used_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
-    if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_transfer_used_name_live_registers(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+    switch (node->type()) {
+        case AST_T::AsmRegister_t: {
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node));
+            inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            break;
+        }
+        case AST_T::AsmPseudo_t:
+            inference_graph_transfer_used_name_live_registers(
+                static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+            break;
+        default:
+            break;
     }
 }
 
@@ -98,9 +113,9 @@ static void inference_graph_transfer_used_call_live_registers(AsmCall* node, siz
     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, 0) |= fun_type->param_reg_mask;
 }
 
-static void inference_graph_transfer_used_reg_live_registers(
+static void inference_graph_transfer_updated_reg_live_registers(
     REGISTER_KIND register_kind, size_t next_instruction_index) {
-    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
+    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
 static void inference_graph_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
@@ -111,18 +126,22 @@ static void inference_graph_transfer_updated_name_live_registers(TIdentifier nam
 }
 
 static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
-    if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_transfer_updated_name_live_registers(
-            static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+    switch (node->type()) {
+        case AST_T::AsmRegister_t: {
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node));
+            inference_graph_transfer_updated_reg_live_registers(register_kind, next_instruction_index);
+            break;
+        }
+        case AST_T::AsmPseudo_t:
+            inference_graph_transfer_updated_name_live_registers(
+                static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+            break;
+        default:
+            break;
     }
 }
 
-static void inference_graph_transfer_updated_reg_live_registers(
-    REGISTER_KIND register_kind, size_t next_instruction_index) {
-    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
-}
-
-// TODO here no need to update if same reg is used afterwards
+// TODO here no need to update if same reg is used afterwards?
 static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
@@ -237,6 +256,8 @@ static void inference_graph_initialize_used_operand_edges(AsmOperand* node) {
         inference_graph_initialize_used_name_edges(static_cast<AsmPseudo*>(node)->name);
     }
 }
+
+// TODO put inference_graph_initialize_updated_regs_edges here
 
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index, bool is_mov) {
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
