@@ -122,6 +122,7 @@ static void inference_graph_transfer_updated_reg_live_registers(
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
+// TODO here no need to update if same reg is used afterwards
 static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
@@ -721,7 +722,7 @@ static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
     REGISTER_KIND src_register_kind = regalloc_operand_register_kind(src_operand);
     REGISTER_KIND dst_register_kind = regalloc_operand_register_kind(dst_operand);
     if (src_register_kind != REGISTER_KIND::Sp && src_register_kind == dst_register_kind) {
-        GET_INSTRUCTION(instruction_index).reset();
+        set_instruction(nullptr, instruction_index);
     }
     else {
         if (src_operand->type() == AST_T::AsmPseudo_t) {

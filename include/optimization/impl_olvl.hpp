@@ -58,7 +58,6 @@ struct DataFlowAnalysis {
     size_t addressed_index;
 };
 
-#if __OPTIM_LEVEL__ == 1
 static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
         GET_INSTRUCTION(instruction_index) = std::move(instruction);
@@ -66,9 +65,10 @@ static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_
     else {
         GET_INSTRUCTION(instruction_index).reset();
     }
+#if __OPTIM_LEVEL__ == 1
     context->is_fixed_point = false;
-}
 #endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
