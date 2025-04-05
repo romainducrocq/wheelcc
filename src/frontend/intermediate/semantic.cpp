@@ -2283,9 +2283,7 @@ static void deannotate_lookup() { context->break_loop_labels.pop_back(); }
 
 // Identifier resolution
 
-static size_t current_scope_depth() { return context->scoped_identifier_maps.size(); }
-
-static bool is_file_scope() { return current_scope_depth() == 1; }
+static bool is_file_scope() { return context->scoped_identifier_maps.size() == 1; }
 
 static void enter_scope() {
     context->scoped_identifier_maps.emplace_back();
@@ -2295,7 +2293,7 @@ static void enter_scope() {
 static void exit_scope() {
     for (const auto& identifier : context->scoped_identifier_maps.back()) {
         if (context->external_linkage_scope_map.find(identifier.first) != context->external_linkage_scope_map.end()
-            && context->external_linkage_scope_map[identifier.first] == current_scope_depth()) {
+            && context->external_linkage_scope_map[identifier.first] == context->scoped_identifier_maps.size()) {
             context->external_linkage_scope_map.erase(identifier.first);
         }
     }
@@ -2328,7 +2326,7 @@ static void resolve_structure_struct_type(Structure* struct_type) {
             return;
         }
     }
-    for (size_t i = current_scope_depth(); i-- > 0;) {
+    for (size_t i = context->scoped_identifier_maps.size(); i-- > 0;) {
         if (context->scoped_structure_type_maps[i].find(struct_type->tag)
             != context->scoped_structure_type_maps[i].end()) {
             if (context->scoped_structure_type_maps[i][struct_type->tag].is_union != struct_type->is_union) {
@@ -2373,7 +2371,7 @@ static void resolve_constant_expression(CConstant* node) { checktype_constant_ex
 static void resolve_string_expression(CString* node) { checktype_string_expression(node); }
 
 static void resolve_var_expression(CVar* node) {
-    for (size_t i = current_scope_depth(); i-- > 0;) {
+    for (size_t i = context->scoped_identifier_maps.size(); i-- > 0;) {
         if (context->scoped_identifier_maps[i].find(node->name) != context->scoped_identifier_maps[i].end()) {
             node->name = context->scoped_identifier_maps[i][node->name];
             goto Lelse;
@@ -2419,7 +2417,7 @@ static void resolve_conditional_expression(CConditional* node) {
 }
 
 static void resolve_function_call_expression(CFunctionCall* node) {
-    for (size_t i = current_scope_depth(); i-- > 0;) {
+    for (size_t i = context->scoped_identifier_maps.size(); i-- > 0;) {
         if (context->scoped_identifier_maps[i].find(node->name) != context->scoped_identifier_maps[i].end()) {
             node->name = context->scoped_identifier_maps[i][node->name];
             goto Lelse;
@@ -2852,7 +2850,7 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
                 GET_SEMANTIC_MESSAGE(MESSAGE_SEMANTIC::function_redeclared_in_scope, get_name_hr_c_str(node->name)),
                 node->line);
         }
-        context->external_linkage_scope_map[node->name] = current_scope_depth();
+        context->external_linkage_scope_map[node->name] = context->scoped_identifier_maps.size();
     }
 
     context->scoped_identifier_maps.back()[node->name] = node->name;
@@ -2872,7 +2870,7 @@ static void resolve_function_declaration(CFunctionDeclaration* node) {
 
 static void resolve_file_scope_variable_declaration(CVariableDeclaration* node) {
     if (context->external_linkage_scope_map.find(node->name) == context->external_linkage_scope_map.end()) {
-        context->external_linkage_scope_map[node->name] = current_scope_depth();
+        context->external_linkage_scope_map[node->name] = context->scoped_identifier_maps.size();
     }
 
     context->scoped_identifier_maps.back()[node->name] = node->name;
