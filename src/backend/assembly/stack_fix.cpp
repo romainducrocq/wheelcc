@@ -580,7 +580,7 @@ static void fix_double_mov_from_addr_to_addr_instruction(AsmMov* node) {
     swap_fix_instruction_back();
 }
 
-static void fix_mov_from_quad_word_imm_to_any_instruction(AsmMov* node) {
+static void fix_mov_from_quad_word_imm_to_not_reg_instruction(AsmMov* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
@@ -607,7 +607,7 @@ static void fix_mov_instruction(AsmMov* node) {
     else {
         if (node->dst->type() != AST_T::AsmRegister_t && is_type_imm(node->src.get())
             && static_cast<AsmImm*>(node->src.get())->is_quad) {
-            fix_mov_from_quad_word_imm_to_any_instruction(node);
+            fix_mov_from_quad_word_imm_to_not_reg_instruction(node);
         }
         if (is_type_addr(node->src.get()) && is_type_addr(node->dst.get())) {
             fix_mov_from_addr_to_addr_instruction(node);
@@ -658,12 +658,13 @@ static void fix_byte_mov_zero_extend_from_any_to_addr_instruction(AsmMovZeroExte
     push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void fix_mov_zero_extend_from_any_to_any_instruction(AsmMovZeroExtend* node) {
+static AsmMov* fix_mov_zero_extend_as_mov_instruction(AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<LongWord>();
     context->p_fix_instructions->back() =
         std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst));
+    return static_cast<AsmMov*>(context->p_fix_instructions->back().get());
 }
 
 static void fix_mov_zero_extend_from_any_to_addr_instruction(AsmMov* node) {
@@ -684,10 +685,9 @@ static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
         }
     }
     else {
-        fix_mov_zero_extend_from_any_to_any_instruction(node);
-        AsmMov* node_2 = static_cast<AsmMov*>(context->p_fix_instructions->back().get());
-        if (is_type_addr(node_2->dst.get())) {
-            fix_mov_zero_extend_from_any_to_addr_instruction(node_2);
+        AsmMov* mov = fix_mov_zero_extend_as_mov_instruction(node);
+        if (is_type_addr(mov->dst.get())) {
+            fix_mov_zero_extend_from_any_to_addr_instruction(mov);
         }
     }
 }
