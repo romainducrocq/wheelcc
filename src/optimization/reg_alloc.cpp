@@ -251,8 +251,10 @@ static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND registe
 }
 
 static void inference_graph_initialize_used_name_edges(TIdentifier name) {
-    inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
-    context->p_inference_graph->pseudo_register_map[name].spill_cost++;
+    if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t) {
+        inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+        context->p_inference_graph->pseudo_register_map[name].spill_cost++;
+    }
 }
 
 static void inference_graph_initialize_used_operand_edges(AsmOperand* node) {
@@ -271,8 +273,13 @@ static void inference_graph_initialize_updated_regs_edges(
         AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
         if (mov->src->type() == AST_T::AsmPseudo_t) {
             TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
-            mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
-            context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+            if (frontend->symbol_table[src_name]->attrs->type() == AST_T::StaticAttr_t) {
+                is_mov = false;
+            }
+            else {
+                mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+            }
         }
         else {
             is_mov = false;
@@ -316,6 +323,9 @@ static void inference_graph_initialize_updated_regs_edges(
 }
 
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index) {
+    if (frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t) {
+        return;
+    }
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
     inference_graph_set_p(is_double);
     context->p_inference_graph->pseudo_register_map[name].spill_cost++;
@@ -337,8 +347,13 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             }
             case AST_T::AsmPseudo_t: {
                 TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
-                mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
-                context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+                if (frontend->symbol_table[src_name]->attrs->type() == AST_T::StaticAttr_t) {
+                    is_mov = false;
+                }
+                else {
+                    mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                    context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+                }
                 break;
             }
             default: {
@@ -729,6 +744,9 @@ static void regalloc_color_register_map() {
 }
 
 static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
+    if (frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t) {
+        return nullptr;
+    }
     inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
     REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
     if (color != REGISTER_KIND::Sp) {
@@ -748,22 +766,27 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
 }
 
 static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
+    TIdentifier name;
     switch (node->type()) {
         case AST_T::AsmRegister_t:
             return register_mask_kind(static_cast<AsmRegister*>(node));
         case AST_T::AsmPseudo_t: {
-            TIdentifier name = static_cast<AsmPseudo*>(node)->name;
-            inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
-            REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
-            if (color != REGISTER_KIND::Sp) {
-                return context->register_color_map[register_mask_bit(color)];
-            }
-            else {
-                return REGISTER_KIND::Sp;
-            }
+            name = static_cast<AsmPseudo*>(node)->name;
+            break;
         }
         default:
             return REGISTER_KIND::Sp;
+    }
+    if (frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t) {
+        return REGISTER_KIND::Sp;
+    }
+    inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+    REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
+    if (color == REGISTER_KIND::Sp) {
+        return REGISTER_KIND::Sp;
+    }
+    else {
+        return context->register_color_map[register_mask_bit(color)];
     }
 }
 
