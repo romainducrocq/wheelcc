@@ -17,7 +17,7 @@ if [ ${#} -ne 0 ]; then
     test ${@}
 else
     if [ 0 -eq 0 ]; then
-        test --chapter 20 --no-coalescing --int-only --latest-only --extra-credit
+        test --chapter 20 --no-coalescing --int-only --latest-only
         for i in $(seq 1 10); do
             test --chapter ${i} --latest-only --extra-credit
         done
