@@ -145,7 +145,6 @@ static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* 
     }
 }
 
-// TODO here no need to update if same reg is used afterwards?
 static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
@@ -155,15 +154,12 @@ static void inference_graph_transfer_live_registers(size_t instruction_index, si
             inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             break;
         }
-        case AST_T::AsmUnary_t: {
-            AsmUnary* p_node = static_cast<AsmUnary*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
+        case AST_T::AsmUnary_t:
+            inference_graph_transfer_used_operand_live_registers(
+                static_cast<AsmUnary*>(node)->dst.get(), next_instruction_index);
             break;
-        }
         case AST_T::AsmBinary_t: {
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
             inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
             break;
@@ -175,8 +171,6 @@ static void inference_graph_transfer_live_registers(size_t instruction_index, si
             break;
         }
         case AST_T::AsmIdiv_t:
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
             inference_graph_transfer_used_operand_live_registers(
                 static_cast<AsmIdiv*>(node)->src.get(), next_instruction_index);
             inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
@@ -766,27 +760,25 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
 }
 
 static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
-    TIdentifier name;
     switch (node->type()) {
         case AST_T::AsmRegister_t:
             return register_mask_kind(static_cast<AsmRegister*>(node));
         case AST_T::AsmPseudo_t: {
-            name = static_cast<AsmPseudo*>(node)->name;
-            break;
+            TIdentifier name = static_cast<AsmPseudo*>(node)->name;
+            if (frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t) {
+                return REGISTER_KIND::Sp;
+            }
+            inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+            REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
+            if (color == REGISTER_KIND::Sp) {
+                return REGISTER_KIND::Sp;
+            }
+            else {
+                return context->register_color_map[register_mask_bit(color)];
+            }
         }
         default:
             return REGISTER_KIND::Sp;
-    }
-    if (frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t) {
-        return REGISTER_KIND::Sp;
-    }
-    inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
-    REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
-    if (color == REGISTER_KIND::Sp) {
-        return REGISTER_KIND::Sp;
-    }
-    else {
-        return context->register_color_map[register_mask_bit(color)];
     }
 }
 
