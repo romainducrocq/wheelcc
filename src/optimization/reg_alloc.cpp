@@ -80,12 +80,12 @@ static std::unique_ptr<RegAllocContext> context;
 
 // Inference graph
 
-static bool is_binary_bitshift(AsmBinary* node) {
+static bool is_binary_bitshift_cl(AsmBinary* node) {
     switch (node->binary_op->type()) {
         case AST_T::AsmBitShiftLeft_t:
         case AST_T::AsmBitShiftRight_t:
         case AST_T::AsmBitShrArithmetic_t:
-            return true;
+            return node->src->type() != AST_T::AsmImm_t;
         default:
             return false;
     }
@@ -173,7 +173,7 @@ static void inference_graph_transfer_live_registers(size_t instruction_index, si
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
             inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            if (is_binary_bitshift(p_node)) {
+            if (is_binary_bitshift_cl(p_node)) {
                 inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
             }
             break;
@@ -444,7 +444,7 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
             break;
         case AST_T::AsmBinary_t: {
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            if (is_binary_bitshift(p_node)) {
+            if (is_binary_bitshift_cl(p_node)) {
                 REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Cx};
                 inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
             }

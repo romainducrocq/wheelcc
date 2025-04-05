@@ -784,7 +784,7 @@ static void fix_binary_imul_from_any_to_addr_instruction(AsmBinary* node) {
     push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
 }
 
-static void fix_binary_shx_from_any_to_any_instruction(AsmBinary* node) {
+static void fix_binary_shx_from_not_imm_to_any_instruction(AsmBinary* node) {
     if (node->src->type() == AST_T::AsmRegister_t
         && register_mask_kind(static_cast<AsmRegister*>(node->src.get())) == REGISTER_KIND::Cx) {
         return;
@@ -833,7 +833,9 @@ static void fix_binary_instruction(AsmBinary* node) {
                 if (is_type_imm(node->src.get()) && static_cast<AsmImm*>(node->src.get())->is_quad) {
                     fix_binary_from_quad_word_imm_to_any_instruction(node);
                 }
-                fix_binary_shx_from_any_to_any_instruction(node);
+                if (!is_type_imm(node->src.get())) {
+                    fix_binary_shx_from_not_imm_to_any_instruction(node);
+                }
                 break;
             }
             default:
