@@ -57,5 +57,6 @@ size_t register_mask_bit(REGISTER_KIND register_kind);
 bool register_mask_get(TULong register_mask, REGISTER_KIND register_kind);
 void register_mask_set(TULong& register_mask, REGISTER_KIND register_kind, bool value);
 #define REGISTER_MASK_SIZE 26
+#define REGISTER_MASK_FALSE 0ul
 
 #endif

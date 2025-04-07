@@ -497,14 +497,14 @@ static bool inference_graph_initialize() {
         return false;
     }
 
-    context->callee_saved_reg_mask = MASK_FALSE;
+    context->callee_saved_reg_mask = REGISTER_MASK_FALSE;
     context->inference_graph->unpruned_pseudo_names.clear();
     context->inference_graph->pseudo_register_map.clear();
     context->sse_inference_graph->unpruned_pseudo_names.clear();
     context->sse_inference_graph->pseudo_register_map.clear();
     for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
         TIdentifier name = name_id.first;
-        InferenceRegister infer = {REGISTER_KIND::Sp, REGISTER_KIND::Sp, 0, 0, MASK_FALSE, {}};
+        InferenceRegister infer = {REGISTER_KIND::Sp, REGISTER_KIND::Sp, 0, 0, REGISTER_MASK_FALSE, {}};
         if (frontend->symbol_table[name_id.first]->type_t->type() == AST_T::Double_t) {
             context->sse_inference_graph->unpruned_pseudo_names.push_back(name);
             context->sse_inference_graph->pseudo_register_map[name] = std::move(infer);
@@ -589,7 +589,7 @@ static void regalloc_prune_inference_register(InferenceRegister* infer, size_t p
             context->p_inference_graph->unpruned_hard_mask_bits.back());
         context->p_inference_graph->unpruned_hard_mask_bits.pop_back();
     }
-    if (infer->linked_hard_mask != MASK_FALSE) {
+    if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
@@ -620,7 +620,7 @@ static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdent
         }
         context->p_inference_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
     }
-    if (infer->linked_hard_mask != MASK_FALSE) {
+    if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
@@ -700,7 +700,7 @@ static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_nam
 
 static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifier pruned_name) {
     mask_t color_reg_mask = context->inference_graph->hard_reg_mask;
-    if (infer->linked_hard_mask != MASK_FALSE) {
+    if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
@@ -716,7 +716,7 @@ static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifi
             register_mask_set(color_reg_mask, linked_infer.color, false);
         }
     }
-    if (color_reg_mask != MASK_FALSE) {
+    if (color_reg_mask != REGISTER_MASK_FALSE) {
         if (is_register_callee_saved(infer->register_kind)) {
             for (size_t i = context->p_inference_graph->k; i-- > 0;) {
                 REGISTER_KIND color = context->hard_registers[i + context->p_inference_graph->offset].register_kind;
@@ -1036,7 +1036,7 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
         context->inference_graph->k = 12;
         context->inference_graph->offset = 0;
 
-        context->inference_graph->hard_reg_mask = MASK_FALSE;
+        context->inference_graph->hard_reg_mask = REGISTER_MASK_FALSE;
         register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Ax, true);
         register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Bx, true);
         register_mask_set(context->inference_graph->hard_reg_mask, REGISTER_KIND::Cx, true);
@@ -1055,7 +1055,7 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
         context->sse_inference_graph->k = 14;
         context->sse_inference_graph->offset = 12;
 
-        context->sse_inference_graph->hard_reg_mask = MASK_FALSE;
+        context->sse_inference_graph->hard_reg_mask = REGISTER_MASK_FALSE;
         register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm0, true);
         register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm1, true);
         register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm2, true);

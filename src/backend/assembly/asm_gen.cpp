@@ -604,7 +604,7 @@ static void generate_structure_type_classes(Structure* struct_type) {
 
 static void regalloc_fun_type_param_reg_mask(FunType* fun_type, size_t reg_size, size_t sse_size) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-        fun_type->param_reg_mask = 0ul;
+        fun_type->param_reg_mask = REGISTER_MASK_FALSE;
         for (size_t i = 0; i < reg_size; ++i) {
             register_mask_set(fun_type->param_reg_mask, context->arg_registers[i], true);
         }
@@ -616,14 +616,14 @@ static void regalloc_fun_type_param_reg_mask(FunType* fun_type, size_t reg_size,
 
 static void regalloc_fun_type_ret_one_reg_mask(FunType* fun_type, bool reg_size) {
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
-        fun_type->ret_reg_mask = 0ul;
+        fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
         register_mask_set(fun_type->ret_reg_mask, reg_size ? REGISTER_KIND::Ax : REGISTER_KIND::Xmm0, true);
     }
 }
 
 static void regalloc_fun_type_ret_two_regs_mask(FunType* fun_type, bool reg_size, bool sse_size) {
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
-        fun_type->ret_reg_mask = 0ul;
+        fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
         if (reg_size) {
             register_mask_set(fun_type->ret_reg_mask, REGISTER_KIND::Ax, true);
             register_mask_set(fun_type->ret_reg_mask, sse_size ? REGISTER_KIND::Xmm0 : REGISTER_KIND::Dx, true);
