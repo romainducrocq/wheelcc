@@ -28,11 +28,10 @@ Next development milestones planned for this year:
 - [ ] Clean up the codebase
 - [ ] Support MacOS
 - [ ] Start an experimental stdlib
-- [ ] Support Fasm backend
 
 ## Migrating to C
 
-A C compiler should be written in C, right? wheelcc was implemented from the start with the goal to switch to plain C at some point. C++ was used for development for its very handy std that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C! The migration is done on branch `cpp2c/dev` until complete.
+A C compiler should be written in C, right? wheelcc was implemented from the start with the goal to switch to plain C at some point. C++ was used for development for its very handy std that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C! The migration is done on branch `cpp2c/develop` until complete.
 
 ### Progress
 
