@@ -437,5 +437,9 @@ extern std::unique_ptr<IdentifierContext> identifiers;
 #define FREE_IDENTIFIER_CONTEXT identifiers.reset()
 
 TIdentifier make_string_identifier(std::string&& value);
+TIdentifier make_label_identifier(std::string&& name);
+TIdentifier make_variable_identifier(std::string&& name);
+TIdentifier make_structure_identifier(std::string&& name);
+#define UID_SEPARATOR "."
 
 #endif

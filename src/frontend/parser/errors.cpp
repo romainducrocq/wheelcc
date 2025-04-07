@@ -174,7 +174,7 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
 }
 
 std::string get_name_hr(TIdentifier name) {
-    return identifiers->hash_table[name].substr(0, identifiers->hash_table[name].find('.'));
+    return identifiers->hash_table[name].substr(0, identifiers->hash_table[name].find(UID_SEPARATOR[0]));
 }
 
 std::string get_struct_name_hr(TIdentifier name, bool is_union) {

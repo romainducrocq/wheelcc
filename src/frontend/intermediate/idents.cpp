@@ -14,26 +14,17 @@
 
 TIdentifier resolve_label_identifier(TIdentifier label) {
     std::string name = identifiers->hash_table[label];
-    name += ".";
-    name += std::to_string(identifiers->label_counter);
-    identifiers->label_counter++;
-    return make_string_identifier(std::move(name));
+    return make_label_identifier(std::move(name));
 }
 
 TIdentifier resolve_variable_identifier(TIdentifier variable) {
     std::string name = identifiers->hash_table[variable];
-    name += ".";
-    name += std::to_string(identifiers->variable_counter);
-    identifiers->variable_counter++;
-    return make_string_identifier(std::move(name));
+    return make_variable_identifier(std::move(name));
 }
 
 TIdentifier resolve_structure_tag(TIdentifier structure) {
     std::string name = identifiers->hash_table[structure];
-    name += ".";
-    name += std::to_string(identifiers->structure_counter);
-    identifiers->structure_counter++;
-    return make_string_identifier(std::move(name));
+    return make_structure_identifier(std::move(name));
 }
 
 TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
@@ -102,10 +93,7 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-    name += ".";
-    name += std::to_string(identifiers->label_counter);
-    identifiers->label_counter++;
-    return make_string_identifier(std::move(name));
+    return make_label_identifier(std::move(name));
 }
 
 TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
@@ -203,8 +191,5 @@ TIdentifier represent_variable_identifier(CExp* node) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-    name += ".";
-    name += std::to_string(identifiers->variable_counter);
-    identifiers->variable_counter++;
-    return make_string_identifier(std::move(name));
+    return make_variable_identifier(std::move(name));
 }

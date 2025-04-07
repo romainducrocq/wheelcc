@@ -49,3 +49,24 @@ TIdentifier make_string_identifier(std::string&& value) {
     identifiers->hash_table[identifier] = std::move(value);
     return identifier;
 }
+
+TIdentifier make_label_identifier(std::string&& name) {
+    name += UID_SEPARATOR;
+    name += std::to_string(identifiers->label_counter);
+    identifiers->label_counter++;
+    return make_string_identifier(std::move(name));
+}
+
+TIdentifier make_variable_identifier(std::string&& name) {
+    name += UID_SEPARATOR;
+    name += std::to_string(identifiers->variable_counter);
+    identifiers->variable_counter++;
+    return make_string_identifier(std::move(name));
+}
+
+TIdentifier make_structure_identifier(std::string&& name) {
+    name += UID_SEPARATOR;
+    name += std::to_string(identifiers->structure_counter);
+    identifiers->structure_counter++;
+    return make_string_identifier(std::move(name));
+}

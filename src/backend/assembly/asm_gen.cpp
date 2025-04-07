@@ -127,10 +127,7 @@ static TIdentifier generate_asm_label_identifier(ASM_LABEL_KIND asm_label_kind) 
         default:
             RAISE_INTERNAL_ERROR;
     }
-    name += ".";
-    name += std::to_string(identifiers->label_counter);
-    identifiers->label_counter++;
-    return make_string_identifier(std::move(name));
+    return make_label_identifier(std::move(name));
 }
 
 static void generate_double_static_constant_top_level(TIdentifier identifier, TIdentifier double_constant, TInt byte);
