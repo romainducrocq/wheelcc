@@ -27,6 +27,19 @@ for filename in filenames:
             for x in finditer(r"[a-zA-Z_]\w*\b", line.rstrip()):
                 id_set.add(x.group())
 
+lt_max_id_set = set({})
+signif_id_set = set({})
+n_uniq_id_set = set({})
 for id in id_set:
     if len(id) > MAX_LEN:
-        print(id)
+        lt_max_id_set.add(id)
+        signif_id = id[:MAX_LEN]
+        if signif_id in signif_id_set:
+            n_uniq_id_set.add(id)
+        signif_id_set.add(signif_id)
+
+print(f"Larger than maxlen ids: {len(lt_max_id_set)}")
+print(f"Unique significant ids: {len(signif_id_set)}")
+print(f"Ids with conflicting significant section:\n")
+for id in sorted(n_uniq_id_set):
+    print(id)
