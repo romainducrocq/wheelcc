@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "ast/ast.hpp"
@@ -317,6 +318,7 @@ struct FrontEndContext {
     std::unordered_map<TIdentifier, TIdentifier> string_constant_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
     std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
+    std::unordered_set<TIdentifier> addressed_set;
 };
 
 extern std::unique_ptr<FrontEndContext> frontend;

@@ -44,7 +44,6 @@ struct DataFlowAnalysis {
     std::vector<size_t> instruction_index_map;
     std::vector<mask_t> blocks_mask_sets;
     std::vector<mask_t> instructions_mask_sets;
-    std::unordered_set<TIdentifier> alias_set;
 #if __OPTIM_LEVEL__ == 1
     // Copy propagation
     std::vector<size_t> data_index_map;
@@ -875,9 +874,9 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void data_flow_analysis_add_alias_value(TacValue* node) {
+static void data_flow_analysis_add_aliased_value(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
-        context->data_flow_analysis->alias_set.insert(static_cast<TacVariable*>(node)->name);
+        frontend->addressed_set.insert(static_cast<TacVariable*>(node)->name);
     }
 }
 
@@ -936,7 +935,7 @@ static void inference_graph_add_data_operand(AsmOperand* node) {
 
 static bool data_flow_analysis_initialize(
 #if __OPTIM_LEVEL__ == 1
-    bool is_dead_store_elimination, bool init_alias_set
+    bool is_dead_store_elimination, bool is_addressed_set
 #endif
 ) {
     context->data_flow_analysis->set_size = 0;
@@ -964,9 +963,9 @@ static bool data_flow_analysis_initialize(
         context->data_flow_analysis->addressed_index = context->data_flow_analysis->static_index + 1;
 #if __OPTIM_LEVEL__ == 1
     }
-    if (init_alias_set) {
+    if (is_addressed_set) {
 #endif
-        context->data_flow_analysis->alias_set.clear();
+        frontend->addressed_set.clear();
 #if __OPTIM_LEVEL__ == 1
     }
 #endif
@@ -1092,8 +1091,8 @@ static bool data_flow_analysis_initialize(
                                 eliminate_dead_store_add_data_value(p_node->src.get());
                                 eliminate_dead_store_add_data_value(p_node->dst.get());
                             }
-                            if (init_alias_set) {
-                                data_flow_analysis_add_alias_value(p_node->src.get());
+                            if (is_addressed_set) {
+                                data_flow_analysis_add_aliased_value(p_node->src.get());
                             }
                             break;
                         }
@@ -1309,8 +1308,7 @@ static bool data_flow_analysis_initialize(
 #elif __OPTIM_LEVEL__ == 2
         context->data_flow_analysis->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
 #endif
-            if (context->data_flow_analysis->alias_set.find(name_id.first)
-                != context->data_flow_analysis->alias_set.end()) {
+            if (frontend->addressed_set.find(name_id.first) != frontend->addressed_set.end()) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->addressed_index, name_id.second, true);
             }
         }

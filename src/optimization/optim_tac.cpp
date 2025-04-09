@@ -3,7 +3,6 @@
 #include <inttypes.h>
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "util/str2t.hpp"
@@ -1413,8 +1412,7 @@ static bool is_static_value(TacValue* node) {
 
 static bool is_addressed_value(TacValue* node) {
     return node->type() == AST_T::TacVariable_t
-           && context->data_flow_analysis->alias_set.find(static_cast<TacVariable*>(node)->name)
-                  != context->data_flow_analysis->alias_set.end();
+           && frontend->addressed_set.find(static_cast<TacVariable*>(node)->name) != frontend->addressed_set.end();
 }
 
 static bool is_aliased_value(TacValue* node) { return is_static_value(node) || is_addressed_value(node); }
@@ -2782,8 +2780,8 @@ static void eliminate_dead_store_instructions(size_t instruction_index) {
     }
 }
 
-static void eliminate_dead_store_control_flow_graph(bool init_alias_set) {
-    if (!data_flow_analysis_initialize(true, init_alias_set)) {
+static void eliminate_dead_store_control_flow_graph(bool is_addressed_set) {
+    if (!data_flow_analysis_initialize(true, is_addressed_set)) {
         return;
     }
     data_flow_analysis_backward_iterative_algorithm();

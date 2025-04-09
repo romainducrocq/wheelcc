@@ -3,7 +3,6 @@
 #include <inttypes.h>
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "util/throw.hpp"
