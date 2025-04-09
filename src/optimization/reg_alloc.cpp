@@ -209,6 +209,14 @@ static void inference_graph_transfer_live_registers(size_t instruction_index, si
             inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
             inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
             inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm0, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm1, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm2, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm3, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm4, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm5, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm6, next_instruction_index);
+            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm7, next_instruction_index);
             inference_graph_transfer_used_call_live_registers(static_cast<AsmCall*>(node), next_instruction_index);
             break;
         default:
@@ -476,9 +484,17 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
             inference_graph_initialize_used_operand_edges(static_cast<AsmPush*>(node)->src.get());
             break;
         case AST_T::AsmCall_t: {
-            REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
-                REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9};
-            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 7, false);
+            {
+                REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
+                    REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9};
+                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 7, false);
+            }
+            {
+                REGISTER_KIND register_kinds[8] = {REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2,
+                    REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6,
+                    REGISTER_KIND::Xmm7};
+                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 8, true);
+            }
             break;
         }
         default:
