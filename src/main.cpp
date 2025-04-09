@@ -178,11 +178,11 @@ static void compile() {
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
     convert_symbol_table(asm_ast.get());
-    // if (context->optim_2_code > 0) {
-    //     verbose("OK", true);
-    //     verbose("-- Level 2 optimization ... ", false);
-    // register_allocation(asm_ast.get(), context->optim_2_code);
-    // }
+    if (context->optim_2_code > 0) {
+        verbose("OK", true);
+        verbose("-- Level 2 optimization ... ", false);
+        register_allocation(asm_ast.get(), context->optim_2_code);
+    }
     fix_stack(asm_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
