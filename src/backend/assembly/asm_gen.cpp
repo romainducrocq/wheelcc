@@ -1819,6 +1819,7 @@ static void generate_get_address_instructions(TacGetAddress* node) {
     {
         if (node->src->type() == AST_T::TacVariable_t) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
+            frontend->addressed_set.insert(name);
             if (frontend->symbol_table.find(name) != frontend->symbol_table.end()
                 && frontend->symbol_table[name]->attrs->type() == AST_T::ConstantAttr_t) {
                 src = std::make_shared<AsmData>(std::move(name), 0l);

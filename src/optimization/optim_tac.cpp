@@ -2843,6 +2843,7 @@ static void optimize_program(TacProgram* node) {
     for (const auto& top_level : node->function_top_levels) {
         optimize_top_level(top_level.get());
     }
+    frontend->addressed_set.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

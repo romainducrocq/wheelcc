@@ -964,9 +964,7 @@ static bool data_flow_analysis_initialize(
 #if __OPTIM_LEVEL__ == 1
     }
     if (is_addressed_set) {
-#endif
         frontend->addressed_set.clear();
-#if __OPTIM_LEVEL__ == 1
     }
 #endif
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {

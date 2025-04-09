@@ -15,15 +15,10 @@
 #include "frontend/intermediate/tac_repr.hpp"
 
 struct TacReprContext {
-    TacReprContext(bool is_addressed_set);
-
-    bool is_addressed_set;
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
     std::vector<std::unique_ptr<TacTopLevel>>* p_top_levels;
     std::vector<std::unique_ptr<TacTopLevel>>* p_static_constant_top_levels;
 };
-
-TacReprContext::TacReprContext(bool is_addressed_set) : is_addressed_set(is_addressed_set) {}
 
 static std::unique_ptr<TacReprContext> context;
 
@@ -668,9 +663,6 @@ static std::unique_ptr<TacDereferencedPointer> represent_exp_result_dereference_
 }
 
 static void represent_exp_result_plain_operand_addrof_instructions(TacPlainOperand* res, CAddrOf* node) {
-    if (context->is_addressed_set && res->val->type() == AST_T::TacVariable_t) {
-        frontend->addressed_set.insert(static_cast<TacVariable*>(res->val.get())->name);
-    }
     std::shared_ptr<TacValue> src = std::move(res->val);
     std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     push_instruction(std::make_unique<TacGetAddress>(std::move(src), dst));
@@ -685,9 +677,6 @@ static std::unique_ptr<TacPlainOperand> represent_exp_result_dereference_pointer
 
 static std::unique_ptr<TacPlainOperand> represent_exp_result_sub_object_addrof_instructions(
     TacSubObject* res, CAddrOf* node) {
-    if (context->is_addressed_set) {
-        frontend->addressed_set.insert(res->base_name);
-    }
     std::shared_ptr<TacValue> dst = represent_pointer_inner_value(node);
     {
         TIdentifier name = std::move(res->base_name);
@@ -1513,8 +1502,8 @@ static std::unique_ptr<TacProgram> represent_program(CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast, bool is_addressed_set) {
-    context = std::make_unique<TacReprContext>(std::move(is_addressed_set));
+std::unique_ptr<TacProgram> three_address_code_representation(std::unique_ptr<CProgram> c_ast) {
+    context = std::make_unique<TacReprContext>();
     std::unique_ptr<TacProgram> tac_ast = represent_program(c_ast.get());
     context.reset();
 

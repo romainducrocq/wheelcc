@@ -156,8 +156,7 @@ static void compile() {
     FREE_ERRORS_CONTEXT;
 
     verbose("-- TAC representation ... ", false);
-    std::unique_ptr<TacProgram> tac_ast =
-        three_address_code_representation(std::move(c_ast), context->optim_1_mask == 0);
+    std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
     if (context->optim_1_mask > 0) {
         verbose("OK", true);
         verbose("-- Level 1 optimization ... ", false);
