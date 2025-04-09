@@ -916,8 +916,13 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 #elif __OPTIM_LEVEL__ == 2
+static bool is_name_aliased(TIdentifier name) {
+    return frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t
+           || frontend->addressed_set.find(name) != frontend->addressed_set.end();
+}
+
 static void inference_graph_add_data_name(TIdentifier name) {
-    if (frontend->symbol_table[name]->attrs->type() != AST_T::StaticAttr_t
+    if (!is_name_aliased(name)
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {
         context->control_flow_graph->identifier_id_map[name] =
