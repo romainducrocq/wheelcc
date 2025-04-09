@@ -1405,17 +1405,9 @@ static void eliminate_unreachable_code_control_flow_graph() {
 
 // Copy propagation
 
-static bool is_static_value(TacValue* node) {
-    return node->type() == AST_T::TacVariable_t
-           && frontend->symbol_table[static_cast<TacVariable*>(node)->name]->attrs->type() == AST_T::StaticAttr_t;
+static bool is_aliased_value(TacValue* node) {
+    return node->type() == AST_T::TacVariable_t && is_aliased_name(static_cast<TacVariable*>(node)->name);
 }
-
-static bool is_addressed_value(TacValue* node) {
-    return node->type() == AST_T::TacVariable_t
-           && frontend->addressed_set.find(static_cast<TacVariable*>(node)->name) != frontend->addressed_set.end();
-}
-
-static bool is_aliased_value(TacValue* node) { return is_static_value(node) || is_addressed_value(node); }
 
 static bool is_constant_value_signed(TacConstant* node) {
     switch (node->constant->type()) {

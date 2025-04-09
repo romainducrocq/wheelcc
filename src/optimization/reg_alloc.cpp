@@ -96,7 +96,7 @@ static void inference_graph_transfer_used_reg_live_registers(
 }
 
 static void inference_graph_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
-    if (!is_name_aliased(name)) {
+    if (!is_aliased_name(name)) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
     }
@@ -131,7 +131,7 @@ static void inference_graph_transfer_updated_reg_live_registers(
 }
 
 static void inference_graph_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
-    if (!is_name_aliased(name)) {
+    if (!is_aliased_name(name)) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
     }
@@ -258,7 +258,7 @@ static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND registe
 }
 
 static void inference_graph_initialize_used_name_edges(TIdentifier name) {
-    if (!is_name_aliased(name)) {
+    if (!is_aliased_name(name)) {
         inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
         context->p_inference_graph->pseudo_register_map[name].spill_cost++;
     }
@@ -280,7 +280,7 @@ static void inference_graph_initialize_updated_regs_edges(
         AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
         if (mov->src->type() == AST_T::AsmPseudo_t) {
             TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
-            if (is_name_aliased(src_name)) {
+            if (is_aliased_name(src_name)) {
                 is_mov = false;
             }
             else {
@@ -330,7 +330,7 @@ static void inference_graph_initialize_updated_regs_edges(
 }
 
 static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index) {
-    if (is_name_aliased(name)) {
+    if (is_aliased_name(name)) {
         return;
     }
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
@@ -354,7 +354,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             }
             case AST_T::AsmPseudo_t: {
                 TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
-                if (is_name_aliased(src_name)) {
+                if (is_aliased_name(src_name)) {
                     is_mov = false;
                 }
                 else {
@@ -755,7 +755,7 @@ static void regalloc_color_register_map() {
 }
 
 static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
-    if (is_name_aliased(name)) {
+    if (is_aliased_name(name)) {
         return nullptr;
     }
     inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
@@ -782,7 +782,7 @@ static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
             return register_mask_kind(static_cast<AsmRegister*>(node));
         case AST_T::AsmPseudo_t: {
             TIdentifier name = static_cast<AsmPseudo*>(node)->name;
-            if (is_name_aliased(name)) {
+            if (is_aliased_name(name)) {
                 return REGISTER_KIND::Sp;
             }
             inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);

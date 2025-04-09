@@ -873,6 +873,11 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     }
 }
 
+static bool is_aliased_name(TIdentifier name) {
+    return frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t
+           || frontend->addressed_set.find(name) != frontend->addressed_set.end();
+}
+
 #if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_add_aliased_value(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
@@ -916,13 +921,8 @@ static void eliminate_dead_store_add_data_value(TacValue* node) {
     }
 }
 #elif __OPTIM_LEVEL__ == 2
-static bool is_name_aliased(TIdentifier name) {
-    return frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t
-           || frontend->addressed_set.find(name) != frontend->addressed_set.end();
-}
-
 static void inference_graph_add_data_name(TIdentifier name) {
-    if (!is_name_aliased(name)
+    if (!is_aliased_name(name)
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {
         context->control_flow_graph->identifier_id_map[name] =
