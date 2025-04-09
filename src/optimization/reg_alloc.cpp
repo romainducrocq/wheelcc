@@ -486,9 +486,9 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
     }
 }
 
-static bool inference_graph_initialize() {
+static bool inference_graph_initialize(TIdentifier function_name) {
     control_flow_graph_initialize();
-    if (!data_flow_analysis_initialize()) {
+    if (!data_flow_analysis_initialize(function_name)) {
         return false;
     }
     data_flow_analysis_backward_iterative_algorithm();
@@ -962,7 +962,7 @@ static void coalesce_inference_graph() {
 
 static void regalloc_function_top_level(AsmFunction* node) {
     context->p_instructions = &node->instructions;
-    if (inference_graph_initialize()) {
+    if (inference_graph_initialize(node->name)) {
         if (context->is_with_coalescing) {
             coalesce_inference_graph();
         }

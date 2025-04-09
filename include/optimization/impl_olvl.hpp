@@ -941,6 +941,8 @@ static void inference_graph_add_data_operand(AsmOperand* node) {
 static bool data_flow_analysis_initialize(
 #if __OPTIM_LEVEL__ == 1
     bool is_dead_store_elimination, bool is_addressed_set
+#elif __OPTIM_LEVEL__ == 2
+    TIdentifier function_name
 #endif
 ) {
     context->data_flow_analysis->set_size = 0;
@@ -1307,7 +1309,16 @@ static bool data_flow_analysis_initialize(
             context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
         }
 
-        for (i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+#if __OPTIM_LEVEL__ == 1
+        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, 0) = MASK_FALSE;
+        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, 0) = MASK_FALSE;
+#elif __OPTIM_LEVEL__ == 2
+    {
+        FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[function_name]->type_t.get());
+        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, 0) = fun_type->ret_reg_mask;
+    }
+#endif
+        for (i = 1; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i) = MASK_FALSE;
 #if __OPTIM_LEVEL__ == 1
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i) = MASK_FALSE;
@@ -1326,11 +1337,6 @@ static bool data_flow_analysis_initialize(
         context->data_flow_analysis->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
 #endif
         }
-
-#if __OPTIM_LEVEL__ == 2
-        SET_DFA_INSTRUCTION_SET_AT(
-            context->data_flow_analysis->static_index, register_mask_bit(REGISTER_KIND::Ax), true);
-#endif
 
         std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
             context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, MASK_FALSE);
