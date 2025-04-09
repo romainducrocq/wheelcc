@@ -49,12 +49,12 @@ struct DataFlowAnalysis {
     std::vector<size_t> data_index_map;
     std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
     // Dead store elimination
+    size_t addressed_index;
 #elif __OPTIM_LEVEL__ == 2
     // Register allocation
     std::vector<TIdentifier> data_name_map;
 #endif
     size_t static_index;
-    size_t addressed_index;
 };
 
 static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
@@ -944,8 +944,17 @@ static bool data_flow_analysis_initialize(
     if (context->data_flow_analysis->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
         context->data_flow_analysis->open_block_ids.resize(context->control_flow_graph->blocks.size());
     }
-    if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + 3) {
-        context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + 3);
+    {
+        size_t i =
+#if __OPTIM_LEVEL__ == 1
+            is_dead_store_elimination ? 3 : 1
+#elif __OPTIM_LEVEL__ == 2
+            2
+#endif
+            ;
+        if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + i) {
+            context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + i);
+        }
     }
     if (context->control_flow_graph->reaching_code.size() < context->control_flow_graph->blocks.size()) {
         context->control_flow_graph->reaching_code.resize(context->control_flow_graph->blocks.size());
@@ -960,8 +969,8 @@ static bool data_flow_analysis_initialize(
 #endif
         context->control_flow_graph->identifier_id_map.clear();
         context->data_flow_analysis->static_index = context->data_flow_analysis->incoming_index + 1;
-        context->data_flow_analysis->addressed_index = context->data_flow_analysis->static_index + 1;
 #if __OPTIM_LEVEL__ == 1
+        context->data_flow_analysis->addressed_index = context->data_flow_analysis->static_index + 1;
     }
     if (is_addressed_set) {
         frontend->addressed_set.clear();
@@ -1217,10 +1226,10 @@ static bool data_flow_analysis_initialize(
         context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->static_index] =
             instructions_mask_sets_size;
         instructions_mask_sets_size++;
+#if __OPTIM_LEVEL__ == 1
         context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->addressed_index] =
             instructions_mask_sets_size;
         instructions_mask_sets_size++;
-#if __OPTIM_LEVEL__ == 1
     }
 #endif
     context->data_flow_analysis->mask_size = (context->data_flow_analysis->set_size + 63) / 64;
@@ -1295,7 +1304,9 @@ static bool data_flow_analysis_initialize(
 
         for (i = 0; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i) = MASK_FALSE;
+#if __OPTIM_LEVEL__ == 1
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i) = MASK_FALSE;
+#endif
         }
 
         for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
@@ -1303,12 +1314,12 @@ static bool data_flow_analysis_initialize(
             if (frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
             }
-#elif __OPTIM_LEVEL__ == 2
-        context->data_flow_analysis->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
-#endif
             if (frontend->addressed_set.find(name_id.first) != frontend->addressed_set.end()) {
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->addressed_index, name_id.second, true);
             }
+#elif __OPTIM_LEVEL__ == 2
+        context->data_flow_analysis->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
+#endif
         }
 
 #if __OPTIM_LEVEL__ == 2
