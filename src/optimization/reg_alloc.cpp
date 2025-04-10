@@ -115,6 +115,25 @@ static void inference_graph_transfer_used_operand_live_registers(AsmOperand* nod
             inference_graph_transfer_used_name_live_registers(
                 static_cast<AsmPseudo*>(node)->name, next_instruction_index);
             break;
+        case AST_T::AsmMemory_t: {
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmMemory*>(node)->reg.get());
+            if (register_kind != REGISTER_KIND::Sp) {
+                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            }
+            break;
+        }
+        case AST_T::AsmIndexed_t: {
+            AsmIndexed* p_node = static_cast<AsmIndexed*>(node);
+            {
+                REGISTER_KIND register_kind = register_mask_kind(p_node->reg_base.get());
+                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            }
+            {
+                REGISTER_KIND register_kind = register_mask_kind(p_node->reg_index.get());
+                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            }
+            break;
+        }
         default:
             break;
     }
@@ -150,6 +169,15 @@ static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* 
             inference_graph_transfer_updated_name_live_registers(
                 static_cast<AsmPseudo*>(node)->name, next_instruction_index);
             break;
+        case AST_T::AsmMemory_t: {
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmMemory*>(node)->reg.get());
+            if (register_kind != REGISTER_KIND::Sp) {
+                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+            }
+            break;
+        }
+        case AST_T::AsmIndexed_t:
+            RAISE_INTERNAL_ERROR;
         default:
             break;
     }
@@ -372,6 +400,19 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 }
                 break;
             }
+            case AST_T::AsmMemory_t: {
+                REGISTER_KIND src_register_kind =
+                    register_mask_kind(static_cast<AsmMemory*>(mov->src.get())->reg.get());
+                if (src_register_kind == REGISTER_KIND::Sp) {
+                    is_mov = false;
+                }
+                else {
+                    mov_mask_bit = register_mask_bit(src_register_kind);
+                }
+                break;
+            }
+            case AST_T::AsmIndexed_t:
+                RAISE_INTERNAL_ERROR;
             default: {
                 is_mov = false;
                 break;
@@ -811,6 +852,10 @@ static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
                 return context->register_color_map[register_mask_bit(color)];
             }
         }
+        case AST_T::AsmMemory_t:
+            return register_mask_kind(static_cast<AsmMemory*>(node)->reg.get());
+        case AST_T::AsmIndexed_t:
+            RAISE_INTERNAL_ERROR;
         default:
             return REGISTER_KIND::Sp;
     }
