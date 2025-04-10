@@ -525,10 +525,16 @@ static bool is_transfer_instruction(size_t instruction_index
             return is_dead_store_elimination;
 #elif __OPTIM_LEVEL__ == 2
         case AST_T::AsmMov_t:
+        case AST_T::AsmMovSx_t:
+        case AST_T::AsmMovZeroExtend_t:
+        case AST_T::AsmLea_t:
+        case AST_T::AsmCvttsd2si_t:
+        case AST_T::AsmCvtsi2sd_t:
         case AST_T::AsmUnary_t:
         case AST_T::AsmBinary_t:
         case AST_T::AsmCmp_t:
         case AST_T::AsmIdiv_t:
+        case AST_T::AsmDiv_t:
         case AST_T::AsmCdq_t:
         case AST_T::AsmSetCC_t:
         case AST_T::AsmPush_t:
@@ -1172,6 +1178,36 @@ static bool data_flow_analysis_initialize(
                             inference_graph_add_data_operand(p_node->dst.get());
                             break;
                         }
+                        case AST_T::AsmMovSx_t: {
+                            AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmMovZeroExtend_t: {
+                            AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmLea_t: {
+                            AsmLea* p_node = static_cast<AsmLea*>(node);
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmCvttsd2si_t: {
+                            AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
+                            break;
+                        }
+                        case AST_T::AsmCvtsi2sd_t: {
+                            AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
+                            inference_graph_add_data_operand(p_node->src.get());
+                            inference_graph_add_data_operand(p_node->dst.get());
+                            break;
+                        }
                         case AST_T::AsmUnary_t:
                             inference_graph_add_data_operand(static_cast<AsmUnary*>(node)->dst.get());
                             break;
@@ -1189,6 +1225,9 @@ static bool data_flow_analysis_initialize(
                         }
                         case AST_T::AsmIdiv_t:
                             inference_graph_add_data_operand(static_cast<AsmIdiv*>(node)->src.get());
+                            break;
+                        case AST_T::AsmDiv_t:
+                            inference_graph_add_data_operand(static_cast<AsmDiv*>(node)->src.get());
                             break;
                         case AST_T::AsmSetCC_t:
                             inference_graph_add_data_operand(static_cast<AsmSetCC*>(node)->dst.get());
