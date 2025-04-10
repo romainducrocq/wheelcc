@@ -105,7 +105,7 @@ static void inference_graph_transfer_used_name_live_registers(TIdentifier name, 
 static void inference_graph_transfer_used_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
-            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node));
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
                 inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
             }
@@ -140,7 +140,7 @@ static void inference_graph_transfer_updated_name_live_registers(TIdentifier nam
 static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
-            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node));
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
                 inference_graph_transfer_updated_reg_live_registers(register_kind, next_instruction_index);
             }
@@ -351,7 +351,8 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
         switch (mov->src->type()) {
             case AST_T::AsmRegister_t: {
-                REGISTER_KIND src_register_kind = register_mask_kind(static_cast<AsmRegister*>(mov->src.get()));
+                REGISTER_KIND src_register_kind =
+                    register_mask_kind(static_cast<AsmRegister*>(mov->src.get())->reg.get());
                 if (src_register_kind == REGISTER_KIND::Sp) {
                     is_mov = false;
                 }
@@ -424,7 +425,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
 static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, size_t instruction_index) {
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
-            REGISTER_KIND register_kinds[1] = {register_mask_kind(static_cast<AsmRegister*>(node))};
+            REGISTER_KIND register_kinds[1] = {register_mask_kind(static_cast<AsmRegister*>(node)->reg.get())};
             if (register_kinds[0] != REGISTER_KIND::Sp) {
                 bool is_double = register_mask_bit(register_kinds[0]) > 11;
                 inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, is_double);
@@ -795,7 +796,7 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
 static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
     switch (node->type()) {
         case AST_T::AsmRegister_t:
-            return register_mask_kind(static_cast<AsmRegister*>(node));
+            return register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
         case AST_T::AsmPseudo_t: {
             TIdentifier name = static_cast<AsmPseudo*>(node)->name;
             if (is_aliased_name(name)) {

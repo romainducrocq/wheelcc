@@ -100,8 +100,8 @@ std::shared_ptr<AsmIndexed> generate_indexed(
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
 }
 
-REGISTER_KIND register_mask_kind(AsmRegister* node) {
-    switch (node->reg->type()) {
+REGISTER_KIND register_mask_kind(AsmReg* node) {
+    switch (node->type()) {
         case AST_T::AsmAx_t:
             return REGISTER_KIND::Ax;
         case AST_T::AsmBx_t:

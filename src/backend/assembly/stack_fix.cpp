@@ -528,7 +528,8 @@ static void fix_pop_callee_saved_registers(const std::vector<std::shared_ptr<Asm
         if (callee_saved_registers[i]->type() != AST_T::AsmRegister_t) {
             RAISE_INTERNAL_ERROR;
         }
-        REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_registers[i].get()));
+        REGISTER_KIND register_kind =
+            register_mask_kind(static_cast<AsmRegister*>(callee_saved_registers[i].get())->reg.get());
         std::unique_ptr<AsmReg> reg;
         switch (register_kind) {
             case REGISTER_KIND::Bx: {
@@ -784,7 +785,7 @@ static void fix_binary_imul_to_addr_instruction(AsmBinary* node) {
 
 static void fix_binary_shx_from_not_imm_instruction(AsmBinary* node) {
     if (node->src->type() == AST_T::AsmRegister_t
-        && register_mask_kind(static_cast<AsmRegister*>(node->src.get())) == REGISTER_KIND::Cx) {
+        && register_mask_kind(static_cast<AsmRegister*>(node->src.get())->reg.get()) == REGISTER_KIND::Cx) {
         return;
     }
     std::shared_ptr<AsmOperand> src = std::move(node->src);
