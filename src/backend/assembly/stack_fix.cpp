@@ -928,11 +928,22 @@ static void fix_div_instruction(AsmDiv* node) {
     }
 }
 
-// TODO (p3, ch20) see page 315
-// static void fix_double_push_from_xmm_reg_instruction(AsmPush* node) {
-//     // subq $8, %rsp
-//     // movsd %xmm0, (%rsp)
-// }
+static void fix_double_push_from_xmm_reg_instruction(AsmPush* node) {
+    std::shared_ptr<AsmOperand> src_reg = std::move(node->src);
+    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+    {
+        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
+        std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(8ul, true, false, false);
+        std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Sp);
+        context->p_fix_instructions->back() =
+            std::make_unique<AsmBinary>(std::move(binary_op), assembly_type_src, std::move(src), std::move(dst));
+    }
+    {
+        std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Sp, 0l);
+        push_fix_instruction(
+            std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src_reg), std::move(dst)));
+    }
+}
 
 static void fix_push_from_quad_word_imm_instruction(AsmPush* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
@@ -944,11 +955,13 @@ static void fix_push_from_quad_word_imm_instruction(AsmPush* node) {
 }
 
 static void fix_push_instruction(AsmPush* node) {
-    // TODO (p3, ch20) see page 315
-    // // pushq %xmm0
-    // if src is register and src->reg is
-    // fix_double_push_from_xmm_reg_instruction(node);
-    if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
+    if (node->src->type() == AST_T::AsmRegister_t) {
+        REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node->src.get())->reg.get());
+        if (register_kind != REGISTER_KIND::Sp && register_mask_bit(register_kind) > 11) {
+            fix_double_push_from_xmm_reg_instruction(node);
+        }
+    }
+    else if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
         fix_push_from_quad_word_imm_instruction(node);
     }
 }
