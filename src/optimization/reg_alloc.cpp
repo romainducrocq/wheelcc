@@ -192,6 +192,36 @@ static void inference_graph_transfer_live_registers(size_t instruction_index, si
             inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
             break;
         }
+        case AST_T::AsmMovSx_t: {
+            AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            break;
+        }
+        case AST_T::AsmMovZeroExtend_t: {
+            AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            break;
+        }
+        case AST_T::AsmLea_t: {
+            AsmLea* p_node = static_cast<AsmLea*>(node);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            break;
+        }
+        case AST_T::AsmCvttsd2si_t: {
+            AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            break;
+        }
+        case AST_T::AsmCvtsi2sd_t: {
+            AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
+            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            break;
+        }
         case AST_T::AsmUnary_t:
             inference_graph_transfer_used_operand_live_registers(
                 static_cast<AsmUnary*>(node)->dst.get(), next_instruction_index);
@@ -216,6 +246,11 @@ static void inference_graph_transfer_live_registers(size_t instruction_index, si
                 static_cast<AsmIdiv*>(node)->src.get(), next_instruction_index);
             inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            break;
+        case AST_T::AsmDiv_t:
+            inference_graph_transfer_used_operand_live_registers(
+                static_cast<AsmDiv*>(node)->src.get(), next_instruction_index);
+            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
             break;
         case AST_T::AsmCdq_t:
             inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
@@ -487,6 +522,25 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
         case AST_T::AsmMov_t:
             inference_graph_initialize_updated_operand_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index);
             break;
+        case AST_T::AsmMovSx_t:
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmMovSx*>(node)->dst.get(), instruction_index);
+            break;
+        case AST_T::AsmMovZeroExtend_t:
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmMovZeroExtend*>(node)->dst.get(), instruction_index);
+            break;
+        case AST_T::AsmLea_t:
+            inference_graph_initialize_updated_operand_edges(static_cast<AsmLea*>(node)->dst.get(), instruction_index);
+            break;
+        case AST_T::AsmCvttsd2si_t:
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmCvttsd2si*>(node)->dst.get(), instruction_index);
+            break;
+        case AST_T::AsmCvtsi2sd_t:
+            inference_graph_initialize_updated_operand_edges(
+                static_cast<AsmCvtsi2sd*>(node)->dst.get(), instruction_index);
+            break;
         case AST_T::AsmUnary_t:
             inference_graph_initialize_updated_operand_edges(
                 static_cast<AsmUnary*>(node)->dst.get(), instruction_index);
@@ -511,6 +565,12 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
             REGISTER_KIND register_kinds[2] = {REGISTER_KIND::Ax, REGISTER_KIND::Dx};
             inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 2, false);
             inference_graph_initialize_used_operand_edges(static_cast<AsmIdiv*>(node)->src.get());
+            break;
+        }
+        case AST_T::AsmDiv_t: {
+            REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Ax};
+            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
+            inference_graph_initialize_used_operand_edges(static_cast<AsmDiv*>(node)->src.get());
             break;
         }
         case AST_T::AsmCdq_t: {
@@ -887,6 +947,91 @@ static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
     }
 }
 
+static void regalloc_mov_sx_instructions(AsmMovSx* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        if (hard_register) {
+            node->dst = hard_register;
+        }
+    }
+}
+
+static void regalloc_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        if (hard_register) {
+            node->dst = hard_register;
+        }
+    }
+}
+
+static void regalloc_lea_instructions(AsmLea* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        if (hard_register) {
+            node->dst = hard_register;
+        }
+    }
+}
+
+static void regalloc_cvttsd2si_instructions(AsmCvttsd2si* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        if (hard_register) {
+            node->dst = hard_register;
+        }
+    }
+}
+
+static void regalloc_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        if (hard_register) {
+            node->dst = hard_register;
+        }
+    }
+}
+
 static void regalloc_unary_instructions(AsmUnary* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
@@ -941,6 +1086,16 @@ static void regalloc_idiv_instructions(AsmIdiv* node) {
     }
 }
 
+static void regalloc_div_instructions(AsmDiv* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        std::shared_ptr<AsmOperand> hard_register =
+            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        if (hard_register) {
+            node->src = hard_register;
+        }
+    }
+}
+
 static void regalloc_set_cc_instructions(AsmSetCC* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
@@ -967,6 +1122,21 @@ static void regalloc_instructions(size_t instruction_index) {
         case AST_T::AsmMov_t:
             regalloc_mov_instructions(static_cast<AsmMov*>(node), instruction_index);
             break;
+        case AST_T::AsmMovSx_t:
+            regalloc_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            break;
+        case AST_T::AsmMovZeroExtend_t:
+            regalloc_mov_zero_extend_instructions(static_cast<AsmMovZeroExtend*>(node));
+            break;
+        case AST_T::AsmLea_t:
+            regalloc_lea_instructions(static_cast<AsmLea*>(node));
+            break;
+        case AST_T::AsmCvttsd2si_t:
+            regalloc_cvttsd2si_instructions(static_cast<AsmCvttsd2si*>(node));
+            break;
+        case AST_T::AsmCvtsi2sd_t:
+            regalloc_cvtsi2sd_instructions(static_cast<AsmCvtsi2sd*>(node));
+            break;
         case AST_T::AsmUnary_t:
             regalloc_unary_instructions(static_cast<AsmUnary*>(node));
             break;
@@ -978,6 +1148,9 @@ static void regalloc_instructions(size_t instruction_index) {
             break;
         case AST_T::AsmIdiv_t:
             regalloc_idiv_instructions(static_cast<AsmIdiv*>(node));
+            break;
+        case AST_T::AsmDiv_t:
+            regalloc_div_instructions(static_cast<AsmDiv*>(node));
             break;
         case AST_T::AsmSetCC_t:
             regalloc_set_cc_instructions(static_cast<AsmSetCC*>(node));
