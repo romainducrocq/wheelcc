@@ -1174,9 +1174,8 @@ static void regalloc_inference_graph() {
     }
     if (!context->sse_inference_graph->pseudo_register_map.empty()) {
         inference_graph_set_p(true);
-        // TODO
-        // regalloc_color_inference_graph();
-        // regalloc_color_register_map();
+        regalloc_color_inference_graph();
+        regalloc_color_register_map();
     }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index)) {
