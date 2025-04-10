@@ -343,7 +343,6 @@ static void inference_graph_initialize_used_operand_edges(AsmOperand* node) {
 
 static void inference_graph_initialize_updated_regs_edges(
     REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
-    inference_graph_set_p(is_double);
 
     size_t mov_mask_bit = context->data_flow_analysis->set_size;
     bool is_mov = GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t;
@@ -355,14 +354,18 @@ static void inference_graph_initialize_updated_regs_edges(
                 is_mov = false;
             }
             else {
-                mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                bool is_src_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
+                inference_graph_set_p(is_src_double);
                 context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+                mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                is_mov = is_double == is_src_double;
             }
         }
         else {
             is_mov = false;
         }
     }
+    inference_graph_set_p(is_double);
 
     if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
         for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
@@ -405,8 +408,6 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         return;
     }
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
-    inference_graph_set_p(is_double);
-    context->p_inference_graph->pseudo_register_map[name].spill_cost++;
 
     size_t mov_mask_bit = context->data_flow_analysis->set_size;
     bool is_mov = GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t;
@@ -421,6 +422,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 }
                 else {
                     mov_mask_bit = register_mask_bit(src_register_kind);
+                    is_mov = is_double == (mov_mask_bit > 11);
                 }
                 break;
             }
@@ -430,8 +432,11 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                     is_mov = false;
                 }
                 else {
-                    mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                    bool is_src_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
+                    inference_graph_set_p(is_src_double);
                     context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
+                    mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
+                    is_mov = is_double == is_src_double;
                 }
                 break;
             }
@@ -443,6 +448,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 }
                 else {
                     mov_mask_bit = register_mask_bit(src_register_kind);
+                    is_mov = is_double == (mov_mask_bit > 11);
                 }
                 break;
             }
@@ -454,6 +460,8 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             }
         }
     }
+    inference_graph_set_p(is_double);
+    context->p_inference_graph->pseudo_register_map[name].spill_cost++;
 
     if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
         size_t i = context->p_inference_graph->offset;
