@@ -928,7 +928,7 @@ static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
             }
         }
         case AST_T::AsmMemory_t:
-            return register_mask_kind(static_cast<AsmMemory*>(node)->reg.get());
+            return REGISTER_KIND::Sp;
         case AST_T::AsmIndexed_t:
             RAISE_INTERNAL_ERROR;
         default:
