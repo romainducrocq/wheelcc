@@ -16,19 +16,13 @@ cd ${TEST_SUITE}
 if [ ${#} -ne 0 ]; then
     test ${@}
 else
-    if [ 0 -eq 0 ]; then
-        test --chapter 20 --no-coalescing --extra-credit --latest-only
-        for i in $(seq 1 18); do
-            test --chapter ${i} --latest-only --extra-credit
-        done
-        exit 0
-    fi
     for i in $(seq 1 18); do
         test --chapter ${i} --latest-only --extra-credit
     done
     for i in $(seq 19 19); do
         test --chapter ${i} --extra-credit
     done
+    test --chapter 20 --no-coalescing --extra-credit
 fi
 
 exit 0
