@@ -824,7 +824,7 @@ static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_nam
 }
 
 static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifier pruned_name) {
-    mask_t color_reg_mask = context->inference_graph->hard_reg_mask;
+    mask_t color_reg_mask = context->p_inference_graph->hard_reg_mask;
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
