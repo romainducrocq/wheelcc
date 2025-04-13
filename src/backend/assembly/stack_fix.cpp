@@ -579,7 +579,13 @@ static void fix_double_mov_from_addr_to_addr_instruction(AsmMov* node) {
     swap_fix_instruction_back();
 }
 
-static void fix_mov_from_quad_word_imm_to_not_reg_instruction(AsmMov* node) {
+static void fix_mov_from_quad_word_imm_instruction(AsmMov* node) {
+    if (node->dst->type() == AST_T::AsmRegister_t) {
+        if (node->assembly_type->type() != AST_T::QuadWord_t) {
+            node->assembly_type = std::make_shared<QuadWord>();
+        }
+        return;
+    }
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
@@ -604,9 +610,8 @@ static void fix_mov_instruction(AsmMov* node) {
         }
     }
     else {
-        if (node->dst->type() != AST_T::AsmRegister_t && node->src->type() == AST_T::AsmImm_t
-            && static_cast<AsmImm*>(node->src.get())->is_quad) {
-            fix_mov_from_quad_word_imm_to_not_reg_instruction(node);
+        if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
+            fix_mov_from_quad_word_imm_instruction(node);
         }
         if (is_operand_addr(node->src.get()) && is_operand_addr(node->dst.get())) {
             fix_mov_from_addr_to_addr_instruction(node);
