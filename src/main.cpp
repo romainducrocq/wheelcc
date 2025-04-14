@@ -76,6 +76,12 @@ static void debug_ast(Ast* node, std::string&& name) {
     }
 }
 
+static void debug_addressed_set() {
+    if (context->is_verbose) {
+        pretty_print_addressed_set();
+    }
+}
+
 static void debug_string_constant_table() {
     if (context->is_verbose) {
         pretty_print_string_constant_table();
@@ -188,6 +194,7 @@ static void compile() {
 #ifndef __NDEBUG__
     if (context->debug_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
+        debug_addressed_set();
         debug_string_constant_table();
         debug_struct_typedef_table();
         debug_symbol_table();

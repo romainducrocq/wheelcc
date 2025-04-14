@@ -1786,6 +1786,15 @@ void pretty_print_ast(Ast* node, const std::string& name) {
     std::cout << std::endl;
 }
 
+void pretty_print_addressed_set() {
+    header_string("Addressed Set");
+    std::cout << "\nSet(" << std::to_string(frontend->addressed_set.size()) << "):";
+    for (const TIdentifier& name : frontend->addressed_set) {
+        field("", identifiers->hash_table[name], 2);
+    }
+    std::cout << std::endl;
+}
+
 void pretty_print_string_constant_table() {
     header_string("String Constant Table");
     std::cout << "\nDict(" << std::to_string(frontend->string_constant_table.size()) << "):";
