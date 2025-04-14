@@ -24,8 +24,8 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 Next development milestones planned for this year:  
 - [x] Add IR optimizations
 - [ ] Add a register allocator
-- [ ] Migrate the compiler to C
 - [ ] Clean up the codebase
+- [ ] Migrate the compiler to C
 - [ ] Support MacOS
 - [ ] Start an experimental stdlib
 
