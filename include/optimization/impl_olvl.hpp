@@ -40,22 +40,27 @@ struct DataFlowAnalysis {
     size_t set_size;
     size_t mask_size;
     size_t incoming_index;
+    size_t static_index;
     std::vector<size_t> open_block_ids;
     std::vector<size_t> instruction_index_map;
     std::vector<mask_t> blocks_mask_sets;
     std::vector<mask_t> instructions_mask_sets;
+};
+
 #if __OPTIM_LEVEL__ == 1
+struct DataFlowAnalysisO1 {
     // Copy propagation
     std::vector<size_t> data_index_map;
     std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
     // Dead store elimination
     size_t addressed_index;
+};
 #elif __OPTIM_LEVEL__ == 2
+struct DataFlowAnalysisO2 {
     // Register allocation
     std::vector<TIdentifier> data_name_map;
-#endif
-    size_t static_index;
 };
+#endif
 
 static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
@@ -399,7 +404,7 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
 #define SET_DFA_INSTRUCTION_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTRUCTION_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
 #if __OPTIM_LEVEL__ == 1
-#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis->data_index_map[X])
+#define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis_o1->data_index_map[X])
 #endif
 
 static bool is_transfer_instruction(size_t instruction_index
@@ -458,7 +463,7 @@ static bool is_transfer_instruction(size_t instruction_index
 #if __OPTIM_LEVEL__ == 1
 static size_t get_dfa_data_index(size_t instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis->data_index_map[i] == instruction_index) {
+        if (context->data_flow_analysis_o1->data_index_map[i] == instruction_index) {
             return i;
         }
     }
@@ -467,8 +472,8 @@ static size_t get_dfa_data_index(size_t instruction_index) {
 
 static TacInstruction* get_dfa_bak_instruction(size_t i) {
     if (context->control_flow_graph->reaching_code[i]) {
-        if (context->data_flow_analysis->bak_instructions[i]) {
-            return context->data_flow_analysis->bak_instructions[i].get();
+        if (context->data_flow_analysis_o1->bak_instructions[i]) {
+            return context->data_flow_analysis_o1->bak_instructions[i].get();
         }
         else {
             RAISE_INTERNAL_ERROR;
@@ -811,11 +816,11 @@ static bool propagate_copies_add_data_index(TacCopy* node, size_t instruction_in
         return false;
     }
     else {
-        if (context->data_flow_analysis->set_size < context->data_flow_analysis->data_index_map.size()) {
-            context->data_flow_analysis->data_index_map[context->data_flow_analysis->set_size] = instruction_index;
+        if (context->data_flow_analysis->set_size < context->data_flow_analysis_o1->data_index_map.size()) {
+            context->data_flow_analysis_o1->data_index_map[context->data_flow_analysis->set_size] = instruction_index;
         }
         else {
-            context->data_flow_analysis->data_index_map.push_back(instruction_index);
+            context->data_flow_analysis_o1->data_index_map.push_back(instruction_index);
         }
         context->data_flow_analysis->set_size++;
         return true;
@@ -892,7 +897,7 @@ static bool data_flow_analysis_initialize(
         context->control_flow_graph->identifier_id_map.clear();
         context->data_flow_analysis->static_index = context->data_flow_analysis->incoming_index + 1;
 #if __OPTIM_LEVEL__ == 1
-        context->data_flow_analysis->addressed_index = context->data_flow_analysis->static_index + 1;
+        context->data_flow_analysis_o1->addressed_index = context->data_flow_analysis->static_index + 1;
     }
     if (is_addressed_set) {
         frontend->addressed_set.clear();
@@ -1166,8 +1171,8 @@ static bool data_flow_analysis_initialize(
     }
 
 #if __OPTIM_LEVEL__ == 2
-    if (context->data_flow_analysis->data_name_map.size() < context->data_flow_analysis->set_size) {
-        context->data_flow_analysis->data_name_map.resize(context->data_flow_analysis->set_size);
+    if (context->data_flow_analysis_o2->data_name_map.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis_o2->data_name_map.resize(context->data_flow_analysis->set_size);
     }
     context->data_flow_analysis->set_size += REGISTER_MASK_SIZE;
 #endif
@@ -1182,7 +1187,7 @@ static bool data_flow_analysis_initialize(
             instructions_mask_sets_size;
         instructions_mask_sets_size++;
 #if __OPTIM_LEVEL__ == 1
-        context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->addressed_index] =
+        context->data_flow_analysis->instruction_index_map[context->data_flow_analysis_o1->addressed_index] =
             instructions_mask_sets_size;
         instructions_mask_sets_size++;
     }
@@ -1221,8 +1226,8 @@ static bool data_flow_analysis_initialize(
         if (context->control_flow_graph->reaching_code.size() < context->data_flow_analysis->set_size) {
             context->control_flow_graph->reaching_code.resize(context->data_flow_analysis->set_size);
         }
-        if (context->data_flow_analysis->bak_instructions.size() < context->data_flow_analysis->set_size) {
-            context->data_flow_analysis->bak_instructions.resize(context->data_flow_analysis->set_size);
+        if (context->data_flow_analysis_o1->bak_instructions.size() < context->data_flow_analysis->set_size) {
+            context->data_flow_analysis_o1->bak_instructions.resize(context->data_flow_analysis->set_size);
         }
 
         std::fill(context->control_flow_graph->reaching_code.begin(),
@@ -1259,7 +1264,7 @@ static bool data_flow_analysis_initialize(
 
 #if __OPTIM_LEVEL__ == 1
         GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, 0) = MASK_FALSE;
-        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, 0) = MASK_FALSE;
+        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis_o1->addressed_index, 0) = MASK_FALSE;
 #elif __OPTIM_LEVEL__ == 2
     {
         FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[function_name]->type_t.get());
@@ -1269,7 +1274,7 @@ static bool data_flow_analysis_initialize(
         for (i = 1; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i) = MASK_FALSE;
 #if __OPTIM_LEVEL__ == 1
-            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i) = MASK_FALSE;
+            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis_o1->addressed_index, i) = MASK_FALSE;
 #endif
         }
 
@@ -1279,10 +1284,10 @@ static bool data_flow_analysis_initialize(
                 SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
             }
             if (frontend->addressed_set.find(name_id.first) != frontend->addressed_set.end()) {
-                SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->addressed_index, name_id.second, true);
+                SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis_o1->addressed_index, name_id.second, true);
             }
 #elif __OPTIM_LEVEL__ == 2
-        context->data_flow_analysis->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
+        context->data_flow_analysis_o2->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
 #endif
         }
 

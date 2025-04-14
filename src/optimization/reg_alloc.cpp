@@ -21,6 +21,7 @@ using mask_t = TULong;
 
 struct ControlFlowGraph;
 struct DataFlowAnalysis;
+struct DataFlowAnalysisO2;
 
 struct InferenceRegister {
     REGISTER_KIND color;
@@ -51,6 +52,7 @@ struct RegAllocContext {
     std::array<InferenceRegister, 26> hard_registers;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
+    std::unique_ptr<DataFlowAnalysisO2> data_flow_analysis_o2;
     std::unique_ptr<InferenceGraph> inference_graph;
     std::unique_ptr<InferenceGraph> sse_inference_graph;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
@@ -377,7 +379,7 @@ static void inference_graph_initialize_updated_regs_edges(
         for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
              i-- > REGISTER_MASK_SIZE;) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
-                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
+                TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t j = 0; j < register_kinds_size; ++j) {
                         inference_graph_add_reg_edge(pseudo_name, register_kinds[j]);
@@ -398,7 +400,7 @@ static void inference_graph_initialize_updated_regs_edges(
         }
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
-                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
+                TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t k = 0; k < register_kinds_size; ++k) {
                         inference_graph_add_reg_edge(pseudo_name, register_kinds[k]);
@@ -482,7 +484,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         mask_set_size = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
-                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
+                TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     inference_graph_add_pseudo_edges(name, pseudo_name);
@@ -502,7 +504,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         }
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
-                TIdentifier pseudo_name = context->data_flow_analysis->data_name_map[i - REGISTER_MASK_SIZE];
+                TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     inference_graph_add_pseudo_edges(name, pseudo_name);
@@ -1250,6 +1252,7 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
     context = std::make_unique<RegAllocContext>(std::move(optim_2_code));
     context->control_flow_graph = std::make_unique<ControlFlowGraph>();
     context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
+    context->data_flow_analysis_o2 = std::make_unique<DataFlowAnalysisO2>();
     {
         context->hard_registers[0].register_kind = REGISTER_KIND::Ax;
         context->hard_registers[1].register_kind = REGISTER_KIND::Bx;

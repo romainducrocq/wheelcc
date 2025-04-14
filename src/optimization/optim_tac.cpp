@@ -17,6 +17,7 @@
 
 struct ControlFlowGraph;
 struct DataFlowAnalysis;
+struct DataFlowAnalysisO1;
 
 struct OptimTacContext {
     OptimTacContext(uint8_t optim_1_mask);
@@ -29,6 +30,7 @@ struct OptimTacContext {
     std::array<bool, 5> enabled_optimizations;
     std::unique_ptr<ControlFlowGraph> control_flow_graph;
     std::unique_ptr<DataFlowAnalysis> data_flow_analysis;
+    std::unique_ptr<DataFlowAnalysisO1> data_flow_analysis_o1;
     std::vector<std::unique_ptr<TacInstruction>>* p_instructions;
 };
 
@@ -1804,7 +1806,7 @@ static void set_dfa_bak_copy_instruction(TacCopy* node, size_t instruction_index
     if (set_dfa_bak_instruction(instruction_index, i)) {
         std::shared_ptr<TacValue> src = node->src;
         std::shared_ptr<TacValue> dst = node->dst;
-        context->data_flow_analysis->bak_instructions[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
+        context->data_flow_analysis_o1->bak_instructions[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
     }
 }
 
@@ -2165,7 +2167,7 @@ static void propagate_copies_copy_instructions(TacCopy* node, size_t instruction
                 if (copy->dst->type() != AST_T::TacVariable_t) {
                     RAISE_INTERNAL_ERROR;
                 }
-                else if (context->data_flow_analysis->data_index_map[i] == instruction_index
+                else if (context->data_flow_analysis_o1->data_index_map[i] == instruction_index
                          || (is_same_value(node->src.get(), copy->dst.get())
                              && is_same_value(node->dst.get(), copy->src.get()))) {
                     set_dfa_bak_copy_instruction(node, instruction_index);
@@ -2534,7 +2536,7 @@ static void propagate_copies_control_flow_graph() {
 static void eliminate_dead_store_transfer_addressed_live_values(size_t next_instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
         GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) |=
-            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i);
+            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis_o1->addressed_index, i);
     }
 }
 
@@ -2543,7 +2545,7 @@ static void eliminate_dead_store_transfer_aliased_live_values(size_t next_instru
         GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) |=
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->static_index, i);
         GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) |=
-            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->addressed_index, i);
+            GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis_o1->addressed_index, i);
     }
 }
 
@@ -2847,6 +2849,7 @@ void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
         if (context->enabled_optimizations[COPY_PROPAGATION]
             || context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
             context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();
+            context->data_flow_analysis_o1 = std::make_unique<DataFlowAnalysisO1>();
         }
     }
     optimize_program(node);
