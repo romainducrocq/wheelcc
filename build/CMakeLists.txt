@@ -17,6 +17,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../src/")
 set(HEADER_DIR "${PROJECT_SOURCE_DIR}/../include/"
+    "${SOURCE_DIR}/ast/" "${SOURCE_DIR}/optimization/"
     "${SOURCE_DIR}/frontend/" "${SOURCE_DIR}/backend/")
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/../lib/")
 set(BIN_DIR "${PROJECT_SOURCE_DIR}/../bin/")

@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <string>
 
-#include "ast/ast.hpp"
+#include "ast_t.hpp" // ast
 
 #include "parser/messages.hpp" // frontend
 #include "parser/tokens.hpp"   // frontend

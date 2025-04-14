@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "ast/ast.hpp"
+#include "ast_t.hpp" // ast
 
 struct Type;
 struct AssemblyType;

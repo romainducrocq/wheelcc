@@ -8,10 +8,10 @@
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
-#include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
+#include "ast_t.hpp" // ast
 
 #include "optimization/optim_tac.hpp"
 

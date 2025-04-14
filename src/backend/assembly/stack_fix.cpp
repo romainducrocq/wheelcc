@@ -4,9 +4,9 @@
 
 #include "util/throw.hpp"
 
-#include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
 #include "ast/back_symt.hpp"
+#include "ast_t.hpp" // ast
 
 #include "backend/assembly/registers.hpp"
 #include "backend/assembly/stack_fix.hpp"

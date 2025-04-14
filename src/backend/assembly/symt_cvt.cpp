@@ -2,10 +2,10 @@
 
 #include "util/throw.hpp"
 
-#include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
 #include "ast/back_symt.hpp"
 #include "ast/front_symt.hpp"
+#include "ast_t.hpp" // ast
 
 #include "assembly/regs.hpp" // backend
 #include "backend/assembly/symt_cvt.hpp"

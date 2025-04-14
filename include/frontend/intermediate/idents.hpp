@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "ast/ast.hpp"
+#include "ast_t.hpp" // ast
 
 #include "intermediate/labels.hpp" // frontend
 
