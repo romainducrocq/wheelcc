@@ -6,9 +6,10 @@
 
 #include "ast/ast.hpp"
 
+#include "parser/messages.hpp" // frontend
+#include "parser/tokens.hpp"   // frontend
+
 #include "intermediate/messages.hpp" // frontend
-#include "parser/messages.hpp"       // frontend
-#include "parser/tokens.hpp"         // frontend
 
 struct Type;
 struct CConst;

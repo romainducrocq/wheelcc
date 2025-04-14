@@ -7,6 +7,7 @@
 #include "ast/back_symt.hpp"
 #include "ast/front_symt.hpp"
 
+#include "assembly/regs.hpp" // backend
 #include "backend/assembly/symt_cvt.hpp"
 
 struct SymtCvtContext {

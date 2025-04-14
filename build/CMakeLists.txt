@@ -16,7 +16,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../src/")
-set(HEADER_DIR "${PROJECT_SOURCE_DIR}/../include/" "${SOURCE_DIR}/frontend/")
+set(HEADER_DIR "${PROJECT_SOURCE_DIR}/../include/"
+    "${SOURCE_DIR}/frontend/" "${SOURCE_DIR}/backend/")
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/../lib/")
 set(BIN_DIR "${PROJECT_SOURCE_DIR}/../bin/")
 file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/*.cpp")

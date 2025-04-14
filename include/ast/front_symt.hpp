@@ -330,7 +330,4 @@ extern std::unique_ptr<FrontEndContext> frontend;
 #define GET_STRUCT_TYPEDEF_MEMBER_BACK(X) \
     frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names.back()]
 
-#include "backend/assembly/registers.hpp"
-#define NULL_REGISTER_MASK static_cast<uint8_t>(1u) << REGISTER_MASK_SIZE
-
 #endif
