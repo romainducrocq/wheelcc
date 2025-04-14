@@ -949,14 +949,14 @@ static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
             std::shared_ptr<AsmOperand> hard_register =
                 regalloc_hard_register(static_cast<AsmPseudo*>(src_operand)->name);
             if (hard_register) {
-                node->src = hard_register;
+                node->src = std::move(hard_register);
             }
         }
         if (node->dst->type() == AST_T::AsmPseudo_t) {
             std::shared_ptr<AsmOperand> hard_register =
                 regalloc_hard_register(static_cast<AsmPseudo*>(dst_operand)->name);
             if (hard_register) {
-                node->dst = hard_register;
+                node->dst = std::move(hard_register);
             }
         }
     }
@@ -967,14 +967,14 @@ static void regalloc_mov_sx_instructions(AsmMovSx* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -984,14 +984,14 @@ static void regalloc_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1001,14 +1001,14 @@ static void regalloc_lea_instructions(AsmLea* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1018,14 +1018,14 @@ static void regalloc_cvttsd2si_instructions(AsmCvttsd2si* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1035,14 +1035,14 @@ static void regalloc_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1052,7 +1052,7 @@ static void regalloc_unary_instructions(AsmUnary* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1062,14 +1062,14 @@ static void regalloc_binary_instructions(AsmBinary* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1079,14 +1079,14 @@ static void regalloc_cmp_instructions(AsmCmp* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1096,7 +1096,7 @@ static void regalloc_idiv_instructions(AsmIdiv* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
 }
@@ -1106,7 +1106,7 @@ static void regalloc_div_instructions(AsmDiv* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
 }
@@ -1116,7 +1116,7 @@ static void regalloc_set_cc_instructions(AsmSetCC* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
-            node->dst = hard_register;
+            node->dst = std::move(hard_register);
         }
     }
 }
@@ -1126,7 +1126,7 @@ static void regalloc_push_instructions(AsmPush* node) {
         std::shared_ptr<AsmOperand> hard_register =
             regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
-            node->src = hard_register;
+            node->src = std::move(hard_register);
         }
     }
 }

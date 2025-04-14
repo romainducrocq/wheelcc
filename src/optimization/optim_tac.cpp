@@ -1179,7 +1179,7 @@ static void fold_constants_copy_instructions(TacCopy* node) {
         std::shared_ptr<TacValue> src = fold_constants_copy_constant_value(
             static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
         if (src) {
-            node->src = src;
+            node->src = std::move(src);
             context->is_fixed_point = false;
         }
     }
