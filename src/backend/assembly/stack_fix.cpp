@@ -933,7 +933,6 @@ static void fix_div_instruction(AsmDiv* node) {
     }
 }
 
-// TODO (p3, ch20) see page 315
 static void fix_double_push_from_xmm_reg_instruction(AsmPush* node) {
     std::shared_ptr<AsmOperand> src_reg = std::move(node->src);
     std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
