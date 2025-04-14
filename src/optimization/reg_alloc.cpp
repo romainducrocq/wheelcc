@@ -73,7 +73,7 @@ static std::unique_ptr<RegAllocContext> context;
 #ifndef __OPTIM_LEVEL__
 #define __OPTIM_LEVEL__ 2
 #undef _OPTIMIZATION_IMPL_OLVL_HPP
-#include "optimization/impl_olvl.hpp"
+#include "impl_olvl.hpp" // optimization
 #undef __OPTIM_LEVEL__
 #endif
 
