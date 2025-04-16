@@ -1205,6 +1205,142 @@ static void regalloc_inference_graph() {
 
 // Register coalescing
 
+/*
+init_disjoint_sets():
+    return <empty map>
+*/
+/*
+union(x, y, reg_map):
+    reg_map.add(x, y)
+*/
+/*
+find(r, reg_map):
+    if r is in reg_map:
+        result = reg_map.get(r)
+        return find(result, reg_map)
+    return r
+*/
+/*
+nothing_was_coalesced(reg_map):
+    if reg_map is empty:
+        return True
+    return False
+*/
+/*
+george_test(graph, hardreg, pseudoreg):
+    pseudo_node = get_node_by_id(graph, pseudoreg)
+    for n in pseudo_node.neighbors:
+        if are_neighbors(graph, n, hardreg):
+            continue
+
+        neighbor_node = get_node_by_id(graph, n)
+        if length(neighbor_node.neighbors) < k:
+            continue
+
+        return False
+    return True
+*/
+/*
+briggs_test(graph, x, y):
+    significant_neighbors = 0
+
+    x_node = get_node_by_id(graph, x)
+    y_node = get_node_by_id(graph, y)
+
+    combined_neighbors = set(x_node.neighbors)
+    combined_neighbors.add_all(y_node.neighbors)
+    for n in combined_neighbors:
+        neighbor_node = get_node_by_id(graph, n)
+        degree = length(neighbor_node.neighbors)
+        if are_neighbors(graph, n, x) && are_neighbors(graph, n, y):
+            degree -= 1
+        if degree >= k:
+            significant_neighbors += 1
+
+    return (significant_neighbors < k)
+*/
+/*
+conservative_coalesceable(graph, src, dst):
+    if briggs_test(graph, src, dst):
+        return True
+    if src is a hard register:
+        return george_test(graph, src, dst)
+    if dst is a hard register:
+        return george_test(graph, dst, src)
+    return False
+*/
+/*
+update_graph(graph, x, y):
+    node_to_remove = get_node_by_id(graph, x)
+    for neighbor in node_to_remove.neighbors:
+        add_edge(graph, y, neighbor)
+        remove_edge(graph, x, neighbor)
+    remove_node_by_id(graph, x)
+*/
+/*
+coalesce(graph, instructions):
+    coalesced_regs = init_disjoint_sets()
+
+    for i in instructions:
+        match i with
+        | Mov(src, dst) ->
+            src = find(src, coalesced_regs)
+            dst = find(dst, coalesced_regs)
+
+            if (src is in graph) && (dst is in graph) && (src != dst)
+                && (not are_neighbors(graph, src, dst))
+                && conservative_coalesceable(graph, src, dst):
+
+                if src is a hard register:
+                    to_keep = src
+                    to_merge = dst
+                else:
+                    to_keep = dst
+                    to_merge = src
+
+                union(to_merge, to_keep, coalesced_regs)
+                update_graph(graph, to_merge, to_keep)
+
+        | _ -> continue
+
+    return coalesced_regs
+*/
+/*
+rewrite_coalesced(instructions, coalesced_regs):
+    new_instructions = []
+    for i in instructions:
+        match i with
+        | Mov(src, dst) ->
+            src = find(src, coalesced_regs)
+            dst = find(dst, coalesced_regs)
+            if src != dst:
+                new_instructions.append(Mov(src, dst))
+        | Binary(op, src, dst) ->
+            src = find(src, coalesced_regs)
+            dst = find(dst, coalesced_regs)
+            new_instructions.append(Binary(op, src, dst))
+    | --snip--
+
+    return new_instructions
+*/
+/*
+allocate_registers(instructions):
+    while True:
+        interference_graph = build_graph(instructions)
+        coalesced_regs = coalesce(interference_graph, instructions)
+        if nothing_was_coalesced(coalesced_regs):
+            break
+        instructions = rewrite_coalesced(instructions, coalesced_regs)
+    add_spill_costs(interference_graph, instructions)
+    color_graph(interference_graph)
+    register_map = create_register_map(interference_graph)
+    transformed_instructions = replace_pseudoregs(instructions, register_map)
+    return transformed_instructions
+*/
+
+// TODO only mov instructions are removed.
+// maybe we need to only run the data flow analysis again and not the control flow graph
+
 static void coalesce_inference_graph() {
     // TODO
 }
