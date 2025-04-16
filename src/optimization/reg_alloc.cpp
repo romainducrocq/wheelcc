@@ -58,6 +58,7 @@ struct RegAllocContext {
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
     // Register coalescing
     bool is_with_coalescing;
+    std::unordered_map<size_t, size_t> coalesced_mask_bit_map;
 };
 
 RegAllocContext::RegAllocContext(uint8_t optim_2_code) :
@@ -622,7 +623,6 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
 }
 
 static bool inference_graph_initialize(TIdentifier function_name) {
-    control_flow_graph_initialize();
     if (!data_flow_analysis_initialize(function_name)) {
         return false;
     }
@@ -911,7 +911,7 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
     }
 }
 
-static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
+static REGISTER_KIND get_operand_register_kind(AsmOperand* node) {
     switch (node->type()) {
         case AST_T::AsmRegister_t:
             return register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
@@ -941,8 +941,8 @@ static REGISTER_KIND regalloc_operand_register_kind(AsmOperand* node) {
 static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
     AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
     AsmOperand* dst_operand = static_cast<AsmPseudo*>(node->dst.get());
-    REGISTER_KIND src_register_kind = regalloc_operand_register_kind(src_operand);
-    REGISTER_KIND dst_register_kind = regalloc_operand_register_kind(dst_operand);
+    REGISTER_KIND src_register_kind = get_operand_register_kind(src_operand);
+    REGISTER_KIND dst_register_kind = get_operand_register_kind(dst_operand);
     if (src_register_kind != REGISTER_KIND::Sp && src_register_kind == dst_register_kind) {
         set_instruction(nullptr, instruction_index);
     }
@@ -1209,10 +1209,16 @@ static void regalloc_inference_graph() {
 init_disjoint_sets():
     return <empty map>
 */
+// union:
+//     x -> y
+//     y := { x | y }
 /*
 union(x, y, reg_map):
     reg_map.add(x, y)
 */
+// find(x):
+//     find(y)
+//         return y
 /*
 find(r, reg_map):
     if r is in reg_map:
@@ -1225,20 +1231,6 @@ nothing_was_coalesced(reg_map):
     if reg_map is empty:
         return True
     return False
-*/
-/*
-george_test(graph, hardreg, pseudoreg):
-    pseudo_node = get_node_by_id(graph, pseudoreg)
-    for n in pseudo_node.neighbors:
-        if are_neighbors(graph, n, hardreg):
-            continue
-
-        neighbor_node = get_node_by_id(graph, n)
-        if length(neighbor_node.neighbors) < k:
-            continue
-
-        return False
-    return True
 */
 /*
 briggs_test(graph, x, y):
@@ -1258,6 +1250,20 @@ briggs_test(graph, x, y):
             significant_neighbors += 1
 
     return (significant_neighbors < k)
+*/
+/*
+george_test(graph, hardreg, pseudoreg):
+    pseudo_node = get_node_by_id(graph, pseudoreg)
+    for n in pseudo_node.neighbors:
+        if are_neighbors(graph, n, hardreg):
+            continue
+
+        neighbor_node = get_node_by_id(graph, n)
+        if length(neighbor_node.neighbors) < k:
+            continue
+
+        return False
+    return True
 */
 /*
 conservative_coalesceable(graph, src, dst):
@@ -1338,20 +1344,73 @@ allocate_registers(instructions):
     return transformed_instructions
 */
 
-// TODO only mov instructions are removed.
-// maybe we need to only run the data flow analysis again and not the control flow graph
+static size_t get_operand_coalesced_mask_bit(AsmOperand* node) {
+    size_t coalesced_mask_bit = context->data_flow_analysis->set_size;
+    switch (node->type()) {
+        case AST_T::AsmRegister_t: {
+            REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
+            if (register_kind != REGISTER_KIND::Sp) {
+                coalesced_mask_bit = register_mask_bit(register_kind);
+                // TODO set_inference_graph_p here ?
+            }
+            break;
+        }
+        case AST_T::AsmPseudo_t: {
+            TIdentifier name = static_cast<AsmPseudo*>(node)->name;
+            if (!is_aliased_name(name)) {
+                coalesced_mask_bit = context->control_flow_graph->identifier_id_map[name];
+                // TODO set_inference_graph_p here ?
+            }
+            break;
+        }
+        default:
+            break;
+    }
 
-static void coalesce_inference_graph() {
+    while (context->coalesced_mask_bit_map.find(coalesced_mask_bit) != context->coalesced_mask_bit_map.end()) {
+        coalesced_mask_bit = context->coalesced_mask_bit_map[coalesced_mask_bit];
+    }
+    return coalesced_mask_bit;
+}
+
+static InferenceRegister* get_coalesced_inference_register(size_t coalesced_mask_bit) {
+    // TODO ?
+    return nullptr;
+}
+
+static bool coalesce_inference_graph() {
+    context->coalesced_mask_bit_map.clear();
+    {
+        size_t coalesced_mask_sets_size =
+            context->data_flow_analysis->set_size * context->data_flow_analysis->mask_size;
+        if (context->data_flow_analysis->instructions_mask_sets.size() < coalesced_mask_sets_size) {
+            context->data_flow_analysis->instructions_mask_sets.resize(coalesced_mask_sets_size);
+        }
+        std::fill(context->data_flow_analysis->instructions_mask_sets.begin(),
+            context->data_flow_analysis->instructions_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
+    }
     // TODO
+
+    if (context->coalesced_mask_bit_map.empty()) {
+        return false;
+    }
+
+    // TODO
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO only mov instructions are removed.
+// maybe we need to only run the data flow analysis again and not the control flow graph
+
 static void regalloc_function_top_level(AsmFunction* node) {
     context->p_instructions = &node->instructions;
+    control_flow_graph_initialize();
+Ldowhile:
     if (inference_graph_initialize(node->name)) {
-        if (context->is_with_coalescing) {
-            coalesce_inference_graph();
+        if (context->is_with_coalescing && coalesce_inference_graph()) {
+            goto Ldowhile;
         }
         {
             BackendFun* backend_fun = static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get());
@@ -1359,8 +1418,8 @@ static void regalloc_function_top_level(AsmFunction* node) {
         }
         regalloc_inference_graph();
         context->p_backend_fun_top_level = nullptr;
-        context->p_inference_graph = nullptr;
     }
+    context->p_inference_graph = nullptr;
     context->p_instructions = nullptr;
 }
 
