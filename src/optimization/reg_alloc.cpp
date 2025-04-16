@@ -1344,6 +1344,11 @@ allocate_registers(instructions):
     return transformed_instructions
 */
 
+// TODO
+// - use std::vector<size_t> coalesced_mask_bits instead of umap
+// - set is_with_coalescing = false at start and keep track with that instead of empty()
+// - at start resize instead of clear, and set all to set_size ?
+
 static size_t get_operand_coalesced_mask_bit(AsmOperand* node) {
     size_t coalesced_mask_bit = context->data_flow_analysis->set_size;
     switch (node->type()) {
@@ -1368,6 +1373,7 @@ static size_t get_operand_coalesced_mask_bit(AsmOperand* node) {
     }
 
     while (context->coalesced_mask_bit_map.find(coalesced_mask_bit) != context->coalesced_mask_bit_map.end()) {
+        // TODO also break if mapping to itself
         coalesced_mask_bit = context->coalesced_mask_bit_map[coalesced_mask_bit];
     }
     return coalesced_mask_bit;
