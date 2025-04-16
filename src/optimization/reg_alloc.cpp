@@ -1345,7 +1345,7 @@ allocate_registers(instructions):
 */
 
 // TODO
-// - use std::vector<size_t> coalesced_mask_bits instead of umap
+// - use std::vector<size_t> coalesced_mask_bits instead of umap / or just use dfa->instruction_index_map ?
 // - set is_with_coalescing = false at start and keep track with that instead of empty()
 // - at start resize instead of clear, and set all to set_size ?
 
