@@ -32,6 +32,13 @@ struct InferenceRegister {
     std::vector<TIdentifier> linked_pseudo_names;
 };
 
+struct CoalescedRegister {
+    TIdentifier name;
+    size_t index;
+    bool is_double;
+    InferenceRegister* p_register;
+};
+
 struct InferenceGraph {
     size_t k;
     size_t offset;
@@ -1347,7 +1354,7 @@ allocate_registers(instructions):
 #define GET_COALESCED_SET_AT(X, Y) GET_DFA_BLOCK_SET_AT(X, Y)
 #define SET_COALESCED_SET_AT(X, Y, Z) mask_set(GET_COALESCED_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
-static size_t get_operand_coalesced_index(AsmOperand* node) {
+static size_t get_coalesced_index(AsmOperand* node) {
     size_t coalesced_index = context->data_flow_analysis->set_size;
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
@@ -1376,31 +1383,49 @@ static size_t get_operand_coalesced_index(AsmOperand* node) {
     return coalesced_index;
 }
 
-static InferenceRegister* get_coalesced_inference_register(size_t coalesced_index) {
-    if (coalesced_index < REGISTER_MASK_SIZE) {
-        inference_graph_set_p(coalesced_index > 11);
-        return &context->hard_registers[coalesced_index];
+static bool get_coalesced_register(CoalescedRegister& coalesced) {
+    if (coalesced.index < REGISTER_MASK_SIZE) {
+        coalesced.is_double = coalesced.index > 11;
+        inference_graph_set_p(coalesced.is_double);
+        coalesced.p_register = &context->hard_registers[coalesced.index];
+        return true;
     }
-    else if (coalesced_index < context->data_flow_analysis->set_size) {
-        coalesced_index -= REGISTER_MASK_SIZE;
-        TIdentifier coalesced_name = context->data_flow_analysis_o2->data_name_map[coalesced_index];
-        inference_graph_set_p(frontend->symbol_table[coalesced_name]->type_t->type() == AST_T::Double_t);
-        RAISE_INTERNAL_ERROR;
-        return &context->p_inference_graph->pseudo_register_map[coalesced_name];
+    else if (coalesced.index < context->data_flow_analysis->set_size) {
+        coalesced.name = context->data_flow_analysis_o2->data_name_map[coalesced.index - REGISTER_MASK_SIZE];
+        coalesced.is_double = frontend->symbol_table[coalesced.name]->type_t->type() == AST_T::Double_t;
+        inference_graph_set_p(coalesced.is_double);
+        coalesced.p_register = &context->p_inference_graph->pseudo_register_map[coalesced.name];
+        return true;
     }
     else {
-        return nullptr;
+        return false;
     }
 }
 
 static void coalesce_mov_registers(AsmMov* node) {
-    size_t src_coalesced_index = get_operand_coalesced_index(node->src.get());
-    size_t dst_coalesced_index = get_operand_coalesced_index(node->dst.get());
-    if (src_coalesced_index < context->data_flow_analysis->set_size) {
+    CoalescedRegister src_coalesced;
+    CoalescedRegister dst_coalesced;
+    src_coalesced.index = get_coalesced_index(node->src.get());
+    dst_coalesced.index = get_coalesced_index(node->dst.get());
+    if (src_coalesced.index != dst_coalesced.index
+        && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
+        && get_coalesced_register(src_coalesced) && get_coalesced_register(dst_coalesced)
+        && src_coalesced.is_double == dst_coalesced.is_double) {
         // TODO
-    }
-    if (dst_coalesced_index < context->data_flow_analysis->set_size) {
-        // TODO
+        /*
+        if((not are_neighbors(graph, src, dst))
+            && conservative_coalesceable(graph, src, dst):
+
+            if src is a hard register:
+                to_keep = src
+                to_merge = dst
+            else:
+                to_keep = dst
+                to_merge = src
+
+            union(to_merge, to_keep, coalesced_regs)
+            update_graph(graph, to_merge, to_keep)
+        */
     }
 }
 
