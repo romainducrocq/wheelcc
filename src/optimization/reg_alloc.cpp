@@ -1368,9 +1368,10 @@ static size_t get_operand_coalesced_index(AsmOperand* node) {
             break;
     }
 
-    while (coalesced_index < context->data_flow_analysis->set_size
-           && coalesced_index != context->data_flow_analysis->instruction_index_map[coalesced_index]) {
-        coalesced_index = context->data_flow_analysis->instruction_index_map[coalesced_index];
+    if (coalesced_index < context->data_flow_analysis->set_size) {
+        while (coalesced_index != context->data_flow_analysis->instruction_index_map[coalesced_index]) {
+            coalesced_index = context->data_flow_analysis->instruction_index_map[coalesced_index];
+        }
     }
     return coalesced_index;
 }
@@ -1381,12 +1382,25 @@ static InferenceRegister* get_coalesced_inference_register(size_t coalesced_inde
         return &context->hard_registers[coalesced_index];
     }
     else if (coalesced_index < context->data_flow_analysis->set_size) {
-        TIdentifier name = context->data_flow_analysis_o2->data_name_map[coalesced_index - REGISTER_MASK_SIZE];
-        inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
-        return &context->p_inference_graph->pseudo_register_map[name];
+        coalesced_index -= REGISTER_MASK_SIZE;
+        TIdentifier coalesced_name = context->data_flow_analysis_o2->data_name_map[coalesced_index];
+        inference_graph_set_p(frontend->symbol_table[coalesced_name]->type_t->type() == AST_T::Double_t);
+        RAISE_INTERNAL_ERROR;
+        return &context->p_inference_graph->pseudo_register_map[coalesced_name];
     }
     else {
         return nullptr;
+    }
+}
+
+static void coalesce_mov_registers(AsmMov* node) {
+    size_t src_coalesced_index = get_operand_coalesced_index(node->src.get());
+    size_t dst_coalesced_index = get_operand_coalesced_index(node->dst.get());
+    if (src_coalesced_index < context->data_flow_analysis->set_size) {
+        // TODO
+    }
+    if (dst_coalesced_index < context->data_flow_analysis->set_size) {
+        // TODO
     }
 }
 
@@ -1395,9 +1409,9 @@ static bool coalesce_inference_graph() {
     if (context->data_flow_analysis->instruction_index_map.size() < context->data_flow_analysis->set_size) {
         context->data_flow_analysis->instruction_index_map.resize(context->data_flow_analysis->set_size);
     }
-    std::fill(context->data_flow_analysis->instruction_index_map.begin(),
-        context->data_flow_analysis->instruction_index_map.begin() + context->data_flow_analysis->set_size,
-        context->data_flow_analysis->set_size);
+    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
+        context->data_flow_analysis->instruction_index_map[i] = i;
+    }
     {
         size_t coalesced_mask_sets_size =
             context->data_flow_analysis->set_size * context->data_flow_analysis->mask_size;
@@ -1407,7 +1421,11 @@ static bool coalesce_inference_graph() {
         std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
             context->data_flow_analysis->blocks_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
     }
-    // TODO
+    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t) {
+            coalesce_mov_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
+        }
+    }
 
     if (!context->is_with_coalescing) {
         return false;
