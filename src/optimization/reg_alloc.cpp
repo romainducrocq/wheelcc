@@ -1292,7 +1292,7 @@ briggs_test(graph, x, y):
 
     return (significant_neighbors < k)
 */
-static bool coalesce_briggs_test(CoalescedRegister& /*coalesced_1*/, CoalescedRegister& /*coalesced_2*/) {
+static bool coalesce_briggs_test(InferenceRegister* /*src_infer*/, InferenceRegister* /*dst_infer*/) {
     // TODO
     return true;
 }
@@ -1311,13 +1311,14 @@ george_test(graph, hardreg, pseudoreg):
         return False
     return True
 */
-static bool coalesce_george_test(CoalescedRegister& coalesced_1, CoalescedRegister& coalesced_2) {
-    for (TIdentifier pseudo_name : coalesced_2.p_register->linked_pseudo_names) {
-        InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
-        if (register_mask_get(infer.linked_hard_mask, coalesced_1.p_register->register_kind)) {
+static bool coalesce_george_test(InferenceRegister* hard_infer, InferenceRegister* pseudo_infer) {
+    // TODO also for linked hard regs of pseudo_infer
+    for (TIdentifier pseudo_name : pseudo_infer->linked_pseudo_names) {
+        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+        if (register_mask_get(linked_infer.linked_hard_mask, hard_infer->register_kind)) {
             continue;
         }
-        if (infer.degree < context->p_inference_graph->k) {
+        if (linked_infer.degree < context->p_inference_graph->k) {
             continue;
         }
         return false;
@@ -1335,35 +1336,34 @@ conservative_coalesceable(graph, src, dst):
         return george_test(graph, dst, src)
     return False
 */
-static bool coalesce_conservative_tests(CoalescedRegister& coalesced_1, CoalescedRegister& coalesced_2) {
-    if (coalesced_1.index < REGISTER_MASK_SIZE) {
-        REGISTER_KIND register_kind = coalesced_1.p_register->register_kind;
-        if (register_mask_get(coalesced_2.p_register->linked_hard_mask, register_kind)) {
+static bool coalesce_conservative_tests(
+    InferenceRegister* src_infer, InferenceRegister* dst_infer, TIdentifier src_name) {
+    if (src_infer->register_kind != REGISTER_KIND::Sp) {
+        if (register_mask_get(dst_infer->linked_hard_mask, src_infer->register_kind)) {
             return false;
         }
     }
-    else if (coalesced_2.index < REGISTER_MASK_SIZE) {
-        REGISTER_KIND register_kind = coalesced_2.p_register->register_kind;
-        if (register_mask_get(coalesced_1.p_register->linked_hard_mask, register_kind)) {
+    else if (dst_infer->register_kind != REGISTER_KIND::Sp) {
+        if (register_mask_get(src_infer->linked_hard_mask, dst_infer->register_kind)) {
             return false;
         }
     }
     else {
-        for (TIdentifier pseudo_name : coalesced_2.p_register->linked_pseudo_names) {
-            if (pseudo_name == coalesced_1.name) {
+        for (TIdentifier pseudo_name : dst_infer->linked_pseudo_names) {
+            if (pseudo_name == src_name) {
                 return false;
             }
         }
     }
 
-    if (coalesce_briggs_test(coalesced_1, coalesced_2)) {
+    if (coalesce_briggs_test(src_infer, dst_infer)) {
         return true;
     }
-    else if (coalesced_1.index < REGISTER_MASK_SIZE) {
-        return coalesce_george_test(coalesced_1, coalesced_2);
+    else if (src_infer->register_kind != REGISTER_KIND::Sp) {
+        return coalesce_george_test(src_infer, dst_infer);
     }
-    else if (coalesced_2.index < REGISTER_MASK_SIZE) {
-        return coalesce_george_test(coalesced_2, coalesced_1);
+    else if (dst_infer->register_kind != REGISTER_KIND::Sp) {
+        return coalesce_george_test(dst_infer, src_infer);
     }
     else {
         return false;
@@ -1426,7 +1426,7 @@ static void coalesce_mov_registers(AsmMov* node) {
         && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
         && get_coalesced_register(src_coalesced) && get_coalesced_register(dst_coalesced)
         && src_coalesced.is_double == dst_coalesced.is_double
-        && coalesce_conservative_tests(src_coalesced, dst_coalesced)) {
+        && coalesce_conservative_tests(src_coalesced.p_register, dst_coalesced.p_register, src_coalesced.name)) {
         if (src_coalesced.index < REGISTER_MASK_SIZE) {
             // TODO
             // union(dst, src, coalesced_regs)
