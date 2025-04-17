@@ -1402,6 +1402,51 @@ static bool get_coalesced_register(CoalescedRegister& coalesced) {
     }
 }
 
+static bool coalesce_briggs_test(CoalescedRegister& /*coalesced_1*/, CoalescedRegister& /*coalesced_2*/) {
+    // TODO
+    return true;
+}
+
+static bool coalesce_george_test(CoalescedRegister& /*coalesced_1*/, CoalescedRegister& /*coalesced_2*/) {
+    // TODO
+    return true;
+}
+
+static bool coalesce_conservative_tests(CoalescedRegister& coalesced_1, CoalescedRegister& coalesced_2) {
+    if (coalesced_1.index < REGISTER_MASK_SIZE) {
+        REGISTER_KIND register_kind = coalesced_1.p_register->register_kind;
+        if (register_mask_get(coalesced_2.p_register->linked_hard_mask, register_kind)) {
+            return false;
+        }
+    }
+    else if (coalesced_2.index < REGISTER_MASK_SIZE) {
+        REGISTER_KIND register_kind = coalesced_2.p_register->register_kind;
+        if (register_mask_get(coalesced_1.p_register->linked_hard_mask, register_kind)) {
+            return false;
+        }
+    }
+    else {
+        for (TIdentifier name : coalesced_2.p_register->linked_pseudo_names) {
+            if (name == coalesced_1.name) {
+                return false;
+            }
+        }
+    }
+
+    if (coalesce_briggs_test(coalesced_1, coalesced_2)) {
+        return true;
+    }
+    else if (coalesced_1.index < REGISTER_MASK_SIZE) {
+        return coalesce_george_test(coalesced_1, coalesced_2);
+    }
+    else if (coalesced_2.index < REGISTER_MASK_SIZE) {
+        return coalesce_george_test(coalesced_2, coalesced_1);
+    }
+    else {
+        return false;
+    }
+}
+
 static void coalesce_mov_registers(AsmMov* node) {
     CoalescedRegister src_coalesced;
     CoalescedRegister dst_coalesced;
@@ -1410,22 +1455,18 @@ static void coalesce_mov_registers(AsmMov* node) {
     if (src_coalesced.index != dst_coalesced.index
         && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
         && get_coalesced_register(src_coalesced) && get_coalesced_register(dst_coalesced)
-        && src_coalesced.is_double == dst_coalesced.is_double) {
-        // TODO
-        /*
-        if((not are_neighbors(graph, src, dst))
-            && conservative_coalesceable(graph, src, dst):
-
-            if src is a hard register:
-                to_keep = src
-                to_merge = dst
-            else:
-                to_keep = dst
-                to_merge = src
-
-            union(to_merge, to_keep, coalesced_regs)
-            update_graph(graph, to_merge, to_keep)
-        */
+        && src_coalesced.is_double == dst_coalesced.is_double
+        && coalesce_conservative_tests(src_coalesced, dst_coalesced)) {
+        if (src_coalesced.index < REGISTER_MASK_SIZE) {
+            // TODO
+            // union(dst, src, coalesced_regs)
+            // update_graph(graph, dst, src)
+        }
+        else {
+            // TODO
+            // union(src, dst, coalesced_regs)
+            // update_graph(graph, src, dst)
+        }
     }
 }
 
