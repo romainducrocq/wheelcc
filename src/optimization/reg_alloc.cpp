@@ -58,7 +58,6 @@ struct RegAllocContext {
     std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
     // Register coalescing
     bool is_with_coalescing;
-    std::unordered_map<size_t, size_t> coalesced_mask_bit_map;
 };
 
 RegAllocContext::RegAllocContext(uint8_t optim_2_code) :
@@ -1344,18 +1343,17 @@ allocate_registers(instructions):
     return transformed_instructions
 */
 
-// TODO
-// - use std::vector<size_t> coalesced_mask_bits instead of umap / or just use dfa->instruction_index_map ?
-// - set is_with_coalescing = false at start and keep track with that instead of empty()
-// - at start resize instead of clear, and set all to set_size ?
+#define GET_COALESCED_SET_MASK(X, Y) GET_DFA_BLOCK_SET_MASK(X, Y)
+#define GET_COALESCED_SET_AT(X, Y) GET_DFA_BLOCK_SET_AT(X, Y)
+#define SET_COALESCED_SET_AT(X, Y, Z) mask_set(GET_COALESCED_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
-static size_t get_operand_coalesced_mask_bit(AsmOperand* node) {
-    size_t coalesced_mask_bit = context->data_flow_analysis->set_size;
+static size_t get_operand_coalesced_index(AsmOperand* node) {
+    size_t coalesced_index = context->data_flow_analysis->set_size;
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
-                coalesced_mask_bit = register_mask_bit(register_kind);
+                coalesced_index = register_mask_bit(register_kind);
                 // TODO set_inference_graph_p here ?
             }
             break;
@@ -1363,7 +1361,7 @@ static size_t get_operand_coalesced_mask_bit(AsmOperand* node) {
         case AST_T::AsmPseudo_t: {
             TIdentifier name = static_cast<AsmPseudo*>(node)->name;
             if (!is_aliased_name(name)) {
-                coalesced_mask_bit = context->control_flow_graph->identifier_id_map[name];
+                coalesced_index = context->control_flow_graph->identifier_id_map[name];
                 // TODO set_inference_graph_p here ?
             }
             break;
@@ -1372,32 +1370,38 @@ static size_t get_operand_coalesced_mask_bit(AsmOperand* node) {
             break;
     }
 
-    while (context->coalesced_mask_bit_map.find(coalesced_mask_bit) != context->coalesced_mask_bit_map.end()) {
-        // TODO also break if mapping to itself
-        coalesced_mask_bit = context->coalesced_mask_bit_map[coalesced_mask_bit];
+    while (coalesced_index < context->data_flow_analysis->set_size
+           && coalesced_index != context->data_flow_analysis->instruction_index_map[coalesced_index]) {
+        coalesced_index = context->data_flow_analysis->instruction_index_map[coalesced_index];
     }
-    return coalesced_mask_bit;
+    return coalesced_index;
 }
 
-static InferenceRegister* get_coalesced_inference_register(size_t coalesced_mask_bit) {
+static InferenceRegister* get_coalesced_inference_register(size_t /*coalesced_index*/) {
     // TODO ?
     return nullptr;
 }
 
 static bool coalesce_inference_graph() {
-    context->coalesced_mask_bit_map.clear();
+    context->is_with_coalescing = false;
+    if (context->data_flow_analysis->instruction_index_map.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->instruction_index_map.resize(context->data_flow_analysis->set_size);
+    }
+    std::fill(context->data_flow_analysis->instruction_index_map.begin(),
+        context->data_flow_analysis->instruction_index_map.begin() + context->data_flow_analysis->set_size,
+        context->data_flow_analysis->set_size);
     {
         size_t coalesced_mask_sets_size =
             context->data_flow_analysis->set_size * context->data_flow_analysis->mask_size;
-        if (context->data_flow_analysis->instructions_mask_sets.size() < coalesced_mask_sets_size) {
-            context->data_flow_analysis->instructions_mask_sets.resize(coalesced_mask_sets_size);
+        if (context->data_flow_analysis->blocks_mask_sets.size() < coalesced_mask_sets_size) {
+            context->data_flow_analysis->blocks_mask_sets.resize(coalesced_mask_sets_size);
         }
-        std::fill(context->data_flow_analysis->instructions_mask_sets.begin(),
-            context->data_flow_analysis->instructions_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
+        std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
+            context->data_flow_analysis->blocks_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
     }
     // TODO
 
-    if (context->coalesced_mask_bit_map.empty()) {
+    if (!context->is_with_coalescing) {
         return false;
     }
 
