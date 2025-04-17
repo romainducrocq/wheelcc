@@ -1311,8 +1311,17 @@ george_test(graph, hardreg, pseudoreg):
         return False
     return True
 */
-static bool coalesce_george_test(CoalescedRegister& /*coalesced_1*/, CoalescedRegister& /*coalesced_2*/) {
-    // TODO
+static bool coalesce_george_test(CoalescedRegister& coalesced_1, CoalescedRegister& coalesced_2) {
+    for (TIdentifier pseudo_name : coalesced_2.p_register->linked_pseudo_names) {
+        InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+        if (register_mask_get(infer.linked_hard_mask, coalesced_1.p_register->register_kind)) {
+            continue;
+        }
+        if (infer.degree < context->p_inference_graph->k) {
+            continue;
+        }
+        return false;
+    }
     return true;
 }
 
@@ -1340,8 +1349,8 @@ static bool coalesce_conservative_tests(CoalescedRegister& coalesced_1, Coalesce
         }
     }
     else {
-        for (TIdentifier name : coalesced_2.p_register->linked_pseudo_names) {
-            if (name == coalesced_1.name) {
+        for (TIdentifier pseudo_name : coalesced_2.p_register->linked_pseudo_names) {
+            if (pseudo_name == coalesced_1.name) {
                 return false;
             }
         }
