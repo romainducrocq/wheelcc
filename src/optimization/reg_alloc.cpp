@@ -1254,6 +1254,7 @@ static size_t get_coalesced_index(AsmOperand* node) {
     return coalesced_index;
 }
 
+// TODO maybe rewrite into get_coalescable_registers and do all checks here ?
 static bool get_coalesced_register(CoalescedRegister& coalesced) {
     if (coalesced.index < REGISTER_MASK_SIZE) {
         coalesced.is_double = coalesced.index > 11;
@@ -1312,16 +1313,20 @@ george_test(graph, hardreg, pseudoreg):
     return True
 */
 static bool coalesce_george_test(InferenceRegister* hard_infer, InferenceRegister* pseudo_infer) {
-    // TODO also for linked hard regs of pseudo_infer
+    if (pseudo_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
+        for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
+            if (linked_infer.degree >= context->p_inference_graph->k) {
+                return false;
+            }
+        }
+    }
     for (TIdentifier pseudo_name : pseudo_infer->linked_pseudo_names) {
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
-        if (register_mask_get(linked_infer.linked_hard_mask, hard_infer->register_kind)) {
-            continue;
+        if (!register_mask_get(linked_infer.linked_hard_mask, hard_infer->register_kind)
+            && linked_infer.degree >= context->p_inference_graph->k) {
+            return false;
         }
-        if (linked_infer.degree < context->p_inference_graph->k) {
-            continue;
-        }
-        return false;
     }
     return true;
 }
@@ -1338,6 +1343,7 @@ conservative_coalesceable(graph, src, dst):
 */
 static bool coalesce_conservative_tests(
     InferenceRegister* src_infer, InferenceRegister* dst_infer, TIdentifier src_name) {
+    // TODO move the neighbor test to get_coalescable_registers?
     if (src_infer->register_kind != REGISTER_KIND::Sp) {
         if (register_mask_get(dst_infer->linked_hard_mask, src_infer->register_kind)) {
             return false;
@@ -1424,7 +1430,8 @@ static void coalesce_mov_registers(AsmMov* node) {
     dst_coalesced.index = get_coalesced_index(node->dst.get());
     if (src_coalesced.index != dst_coalesced.index
         && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
-        && get_coalesced_register(src_coalesced) && get_coalesced_register(dst_coalesced)
+        && get_coalesced_register(src_coalesced)
+        && get_coalesced_register(dst_coalesced) // TODO remove CoalescedRegister struct, as needed only here
         && src_coalesced.is_double == dst_coalesced.is_double
         && coalesce_conservative_tests(src_coalesced.p_register, dst_coalesced.p_register, src_coalesced.name)) {
         if (src_coalesced.index < REGISTER_MASK_SIZE) {
