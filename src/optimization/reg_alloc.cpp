@@ -1354,7 +1354,6 @@ static size_t get_operand_coalesced_index(AsmOperand* node) {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
                 coalesced_index = register_mask_bit(register_kind);
-                // TODO set_inference_graph_p here ?
             }
             break;
         }
@@ -1362,7 +1361,6 @@ static size_t get_operand_coalesced_index(AsmOperand* node) {
             TIdentifier name = static_cast<AsmPseudo*>(node)->name;
             if (!is_aliased_name(name)) {
                 coalesced_index = context->control_flow_graph->identifier_id_map[name];
-                // TODO set_inference_graph_p here ?
             }
             break;
         }
@@ -1377,9 +1375,19 @@ static size_t get_operand_coalesced_index(AsmOperand* node) {
     return coalesced_index;
 }
 
-static InferenceRegister* get_coalesced_inference_register(size_t /*coalesced_index*/) {
-    // TODO ?
-    return nullptr;
+static InferenceRegister* get_coalesced_inference_register(size_t coalesced_index) {
+    if (coalesced_index < REGISTER_MASK_SIZE) {
+        inference_graph_set_p(coalesced_index > 11);
+        return &context->hard_registers[coalesced_index];
+    }
+    else if (coalesced_index < context->data_flow_analysis->set_size) {
+        TIdentifier name = context->data_flow_analysis_o2->data_name_map[coalesced_index - REGISTER_MASK_SIZE];
+        inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+        return &context->p_inference_graph->pseudo_register_map[name];
+    }
+    else {
+        return nullptr;
+    }
 }
 
 static bool coalesce_inference_graph() {
