@@ -1204,9 +1204,9 @@ static void regalloc_inference_graph() {
 
 // Register coalescing
 
-#define GET_COALESCED_SET_MASK(X, Y) GET_DFA_BLOCK_SET_MASK(X, Y)
-#define GET_COALESCED_SET_AT(X, Y) GET_DFA_BLOCK_SET_AT(X, Y)
-#define SET_COALESCED_SET_AT(X, Y, Z) mask_set(GET_COALESCED_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
+// #define GET_COALESCED_SET_MASK(X, Y) GET_DFA_BLOCK_SET_MASK(X, Y)
+// #define GET_COALESCED_SET_AT(X, Y) GET_DFA_BLOCK_SET_AT(X, Y)
+// #define SET_COALESCED_SET_AT(X, Y, Z) mask_set(GET_COALESCED_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
 // find(x):
 //     find(y)
@@ -1312,10 +1312,60 @@ briggs_test(graph, x, y):
 
     return (significant_neighbors < k)
 */
-static bool coalesce_briggs_test(
-    InferenceRegister* /*src_infer*/, InferenceRegister* /*dst_infer*/, size_t /*src_index*/, size_t /*dst_index*/) {
-    // TODO
-    return true;
+static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
+    size_t degree = 0;
+
+    if (src_infer->linked_hard_mask != REGISTER_MASK_FALSE || dst_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
+        for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
+            if (register_mask_get(src_infer->linked_hard_mask, linked_infer.register_kind)) {
+                if (register_mask_get(dst_infer->linked_hard_mask, linked_infer.register_kind)) {
+                    if (linked_infer.degree > context->p_inference_graph->k) {
+                        degree++;
+                    }
+                }
+                else if (linked_infer.degree >= context->p_inference_graph->k) {
+                    degree++;
+                }
+            }
+            else if (register_mask_get(dst_infer->linked_hard_mask, linked_infer.register_kind)
+                     && linked_infer.degree >= context->p_inference_graph->k) {
+                degree++;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) = MASK_FALSE;
+    }
+    for (TIdentifier pseudo_name : dst_infer->linked_pseudo_names) {
+        size_t i = context->control_flow_graph->identifier_id_map[pseudo_name];
+        SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i, true);
+    }
+    for (TIdentifier pseudo_name : src_infer->linked_pseudo_names) {
+        size_t i = context->control_flow_graph->identifier_id_map[pseudo_name];
+        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+        if (GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+            if (linked_infer.degree > context->p_inference_graph->k) {
+                degree++;
+            }
+            SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i, false);
+        }
+        else if (linked_infer.degree >= context->p_inference_graph->k) {
+            degree++;
+        }
+    }
+    for (TIdentifier pseudo_name : dst_infer->linked_pseudo_names) {
+        size_t i = context->control_flow_graph->identifier_id_map[pseudo_name];
+        if (GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+            InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+            if (linked_infer.degree >= context->p_inference_graph->k) {
+                degree++;
+            }
+        }
+    }
+
+    return degree < context->p_inference_graph->k;
 }
 
 /*
@@ -1361,9 +1411,8 @@ conservative_coalesceable(graph, src, dst):
         return george_test(graph, dst, src)
     return False
 */
-static bool coalesce_conservative_tests(
-    InferenceRegister* src_infer, InferenceRegister* dst_infer, size_t src_index, size_t dst_index) {
-    if (coalesce_briggs_test(src_infer, dst_infer, src_index, dst_index)) {
+static bool coalesce_conservative_tests(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
+    if (coalesce_briggs_test(src_infer, dst_infer)) {
         return true;
     }
     else if (src_infer->register_kind != REGISTER_KIND::Sp) {
@@ -1430,7 +1479,7 @@ static void coalesce_mov_registers(AsmMov* node) {
     size_t src_index = get_coalesced_index(node->src.get());
     size_t dst_index = get_coalesced_index(node->dst.get());
     if (get_coalescable_registers(src_infer, dst_infer, src_index, dst_index)
-        && coalesce_conservative_tests(src_infer, dst_infer, src_index, dst_index)) {
+        && coalesce_conservative_tests(src_infer, dst_infer)) {
         if (src_index < REGISTER_MASK_SIZE) {
             // TODO
             // union(dst, src, coalesced_regs)
@@ -1490,15 +1539,15 @@ static bool coalesce_inference_graph() {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         context->data_flow_analysis->instruction_index_map[i] = i;
     }
-    {
-        size_t coalesced_mask_sets_size =
-            context->data_flow_analysis->set_size * context->data_flow_analysis->mask_size;
-        if (context->data_flow_analysis->blocks_mask_sets.size() < coalesced_mask_sets_size) {
-            context->data_flow_analysis->blocks_mask_sets.resize(coalesced_mask_sets_size);
-        }
-        std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
-            context->data_flow_analysis->blocks_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
-    }
+    // {
+    //     size_t coalesced_mask_sets_size =
+    //         context->data_flow_analysis->set_size * context->data_flow_analysis->mask_size;
+    //     if (context->data_flow_analysis->blocks_mask_sets.size() < coalesced_mask_sets_size) {
+    //         context->data_flow_analysis->blocks_mask_sets.resize(coalesced_mask_sets_size);
+    //     }
+    //     std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
+    //         context->data_flow_analysis->blocks_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
+    // }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t) {
             coalesce_mov_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
