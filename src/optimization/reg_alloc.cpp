@@ -32,13 +32,6 @@ struct InferenceRegister {
     std::vector<TIdentifier> linked_pseudo_names;
 };
 
-struct CoalescedRegister {
-    TIdentifier name;
-    size_t index;
-    bool is_double;
-    InferenceRegister* p_register;
-};
-
 struct InferenceGraph {
     size_t k;
     size_t offset;
@@ -1254,24 +1247,50 @@ static size_t get_coalesced_index(AsmOperand* node) {
     return coalesced_index;
 }
 
-// TODO maybe rewrite into get_coalescable_registers and do all checks here ?
-static bool get_coalesced_register(CoalescedRegister& coalesced) {
-    if (coalesced.index < REGISTER_MASK_SIZE) {
-        coalesced.is_double = coalesced.index > 11;
-        inference_graph_set_p(coalesced.is_double);
-        coalesced.p_register = &context->hard_registers[coalesced.index];
-        return true;
+// src_coalesced.index != dst_coalesced.index
+// && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
+// && get_coalesced_register(src_coalesced)
+// && get_coalesced_register(dst_coalesced) // TODO remove CoalescedRegister struct, as needed only here
+// && src_coalesced.is_double == dst_coalesced.is_double
+// TODO maybe we need src_index, dst_index, dst_name in callee
+static bool get_coalescable_registers(
+    InferenceRegister*& src_infer, InferenceRegister*& dst_infer, size_t src_index, size_t dst_index) {
+    if (src_index != dst_index && (src_index >= REGISTER_MASK_SIZE || dst_index >= REGISTER_MASK_SIZE)
+        && src_index < context->data_flow_analysis->set_size && dst_index < context->data_flow_analysis->set_size) {
+        if (src_index < REGISTER_MASK_SIZE) {
+            TIdentifier dst_name = context->data_flow_analysis_o2->data_name_map[dst_index - REGISTER_MASK_SIZE];
+            bool is_double = frontend->symbol_table[dst_name]->type_t->type() == AST_T::Double_t;
+            if (is_double == (src_index > 11)) {
+                inference_graph_set_p(is_double);
+                src_infer = &context->hard_registers[src_index];
+                dst_infer = &context->p_inference_graph->pseudo_register_map[dst_name];
+                return !register_mask_get(dst_infer->linked_hard_mask, src_infer->register_kind);
+            }
+        }
+        else if (dst_index < REGISTER_MASK_SIZE) {
+            TIdentifier src_name = context->data_flow_analysis_o2->data_name_map[src_index - REGISTER_MASK_SIZE];
+            bool is_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
+            if (is_double == (dst_index > 11)) {
+                inference_graph_set_p(is_double);
+                src_infer = &context->p_inference_graph->pseudo_register_map[src_name];
+                dst_infer = &context->hard_registers[dst_index];
+                return !register_mask_get(src_infer->linked_hard_mask, dst_infer->register_kind);
+            }
+        }
+        else {
+            TIdentifier src_name = context->data_flow_analysis_o2->data_name_map[src_index - REGISTER_MASK_SIZE];
+            TIdentifier dst_name = context->data_flow_analysis_o2->data_name_map[dst_index - REGISTER_MASK_SIZE];
+            bool is_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
+            if (is_double == (frontend->symbol_table[dst_name]->type_t->type() == AST_T::Double_t)) {
+                inference_graph_set_p(is_double);
+                src_infer = &context->p_inference_graph->pseudo_register_map[src_name];
+                dst_infer = &context->p_inference_graph->pseudo_register_map[dst_name];
+                return std::find(dst_infer->linked_pseudo_names.begin(), dst_infer->linked_pseudo_names.end(), src_name)
+                       == dst_infer->linked_pseudo_names.end();
+            }
+        }
     }
-    else if (coalesced.index < context->data_flow_analysis->set_size) {
-        coalesced.name = context->data_flow_analysis_o2->data_name_map[coalesced.index - REGISTER_MASK_SIZE];
-        coalesced.is_double = frontend->symbol_table[coalesced.name]->type_t->type() == AST_T::Double_t;
-        inference_graph_set_p(coalesced.is_double);
-        coalesced.p_register = &context->p_inference_graph->pseudo_register_map[coalesced.name];
-        return true;
-    }
-    else {
-        return false;
-    }
+    return false;
 }
 
 /*
@@ -1293,7 +1312,8 @@ briggs_test(graph, x, y):
 
     return (significant_neighbors < k)
 */
-static bool coalesce_briggs_test(InferenceRegister* /*src_infer*/, InferenceRegister* /*dst_infer*/) {
+static bool coalesce_briggs_test(
+    InferenceRegister* /*src_infer*/, InferenceRegister* /*dst_infer*/, size_t /*src_index*/, size_t /*dst_index*/) {
     // TODO
     return true;
 }
@@ -1342,27 +1362,8 @@ conservative_coalesceable(graph, src, dst):
     return False
 */
 static bool coalesce_conservative_tests(
-    InferenceRegister* src_infer, InferenceRegister* dst_infer, TIdentifier src_name) {
-    // TODO move the neighbor test to get_coalescable_registers?
-    if (src_infer->register_kind != REGISTER_KIND::Sp) {
-        if (register_mask_get(dst_infer->linked_hard_mask, src_infer->register_kind)) {
-            return false;
-        }
-    }
-    else if (dst_infer->register_kind != REGISTER_KIND::Sp) {
-        if (register_mask_get(src_infer->linked_hard_mask, dst_infer->register_kind)) {
-            return false;
-        }
-    }
-    else {
-        for (TIdentifier pseudo_name : dst_infer->linked_pseudo_names) {
-            if (pseudo_name == src_name) {
-                return false;
-            }
-        }
-    }
-
-    if (coalesce_briggs_test(src_infer, dst_infer)) {
+    InferenceRegister* src_infer, InferenceRegister* dst_infer, size_t src_index, size_t dst_index) {
+    if (coalesce_briggs_test(src_infer, dst_infer, src_index, dst_index)) {
         return true;
     }
     else if (src_infer->register_kind != REGISTER_KIND::Sp) {
@@ -1424,17 +1425,13 @@ coalesce(graph, instructions):
     return coalesced_regs
 */
 static void coalesce_mov_registers(AsmMov* node) {
-    CoalescedRegister src_coalesced;
-    CoalescedRegister dst_coalesced;
-    src_coalesced.index = get_coalesced_index(node->src.get());
-    dst_coalesced.index = get_coalesced_index(node->dst.get());
-    if (src_coalesced.index != dst_coalesced.index
-        && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
-        && get_coalesced_register(src_coalesced)
-        && get_coalesced_register(dst_coalesced) // TODO remove CoalescedRegister struct, as needed only here
-        && src_coalesced.is_double == dst_coalesced.is_double
-        && coalesce_conservative_tests(src_coalesced.p_register, dst_coalesced.p_register, src_coalesced.name)) {
-        if (src_coalesced.index < REGISTER_MASK_SIZE) {
+    InferenceRegister* src_infer = nullptr;
+    InferenceRegister* dst_infer = nullptr;
+    size_t src_index = get_coalesced_index(node->src.get());
+    size_t dst_index = get_coalesced_index(node->dst.get());
+    if (get_coalescable_registers(src_infer, dst_infer, src_index, dst_index)
+        && coalesce_conservative_tests(src_infer, dst_infer, src_index, dst_index)) {
+        if (src_index < REGISTER_MASK_SIZE) {
             // TODO
             // union(dst, src, coalesced_regs)
             // update_graph(graph, dst, src)
