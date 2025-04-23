@@ -1483,13 +1483,16 @@ static void coalesce_mov_registers(AsmMov* node) {
         if (src_index < REGISTER_MASK_SIZE) {
             // TODO
             // union(dst, src, coalesced_regs)
+            context->data_flow_analysis->open_data_map[dst_index] = src_index;
             // update_graph(graph, dst, src)
         }
         else {
             // TODO
             // union(src, dst, coalesced_regs)
+            context->data_flow_analysis->open_data_map[src_index] = dst_index;
             // update_graph(graph, src, dst)
         }
+        context->is_with_coalescing = true;
     }
 }
 
@@ -1553,7 +1556,6 @@ static bool coalesce_inference_graph() {
             coalesce_mov_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
         }
     }
-
     if (!context->is_with_coalescing) {
         return false;
     }
