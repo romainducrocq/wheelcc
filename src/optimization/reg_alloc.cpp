@@ -1239,6 +1239,7 @@ static size_t get_coalesced_index(AsmOperand* node) {
             break;
     }
 
+    // TODO maybe include only pseudo in open_data_map, not hards
     if (coalesced_index < context->data_flow_analysis->set_size) {
         while (coalesced_index != context->data_flow_analysis->open_data_map[coalesced_index]) {
             coalesced_index = context->data_flow_analysis->open_data_map[coalesced_index];
@@ -1473,6 +1474,21 @@ coalesce(graph, instructions):
 
     return coalesced_regs
 */
+
+static void coalesce_pseudo_register(
+    InferenceRegister* /*keep_infer*/, InferenceRegister* /*merge_infer*/, size_t keep_index, size_t merge_index) {
+    TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
+    TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
+    // TODO
+}
+
+static void coalesce_hard_register(
+    InferenceRegister* keep_infer, InferenceRegister* /*merge_infer*/, size_t merge_index) {
+    REGISTER_KIND keep_register_kind = keep_infer->register_kind;
+    TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
+    // TODO
+}
+
 static void coalesce_mov_registers(AsmMov* node) {
     InferenceRegister* src_infer = nullptr;
     InferenceRegister* dst_infer = nullptr;
@@ -1483,14 +1499,23 @@ static void coalesce_mov_registers(AsmMov* node) {
         if (src_index < REGISTER_MASK_SIZE) {
             // TODO
             // union(dst, src, coalesced_regs)
-            // context->data_flow_analysis->open_data_map[dst_index] = src_index;
             // update_graph(graph, dst, src)
+            coalesce_hard_register(src_infer, dst_infer, dst_index);
+            // TODO uncomment
+            // context->data_flow_analysis->open_data_map[dst_index] = src_index;
         }
         else {
             // TODO
             // union(src, dst, coalesced_regs)
-            // context->data_flow_analysis->open_data_map[src_index] = dst_index;
             // update_graph(graph, src, dst)
+            if (dst_index < REGISTER_MASK_SIZE) {
+                coalesce_hard_register(dst_infer, src_infer, src_index);
+            }
+            else {
+                coalesce_pseudo_register(src_infer, dst_infer, src_index, dst_index);
+            }
+            // TODO uncomment
+            // context->data_flow_analysis->open_data_map[src_index] = dst_index;
         }
         // TODO uncomment
         // context->is_with_coalescing = true;
