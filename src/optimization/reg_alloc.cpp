@@ -1240,8 +1240,8 @@ static size_t get_coalesced_index(AsmOperand* node) {
     }
 
     if (coalesced_index < context->data_flow_analysis->set_size) {
-        while (coalesced_index != context->data_flow_analysis->instruction_index_map[coalesced_index]) {
-            coalesced_index = context->data_flow_analysis->instruction_index_map[coalesced_index];
+        while (coalesced_index != context->data_flow_analysis->open_data_map[coalesced_index]) {
+            coalesced_index = context->data_flow_analysis->open_data_map[coalesced_index];
         }
     }
     return coalesced_index;
@@ -1533,11 +1533,11 @@ allocate_registers(instructions):
 */
 static bool coalesce_inference_graph() {
     context->is_with_coalescing = false;
-    if (context->data_flow_analysis->instruction_index_map.size() < context->data_flow_analysis->set_size) {
-        context->data_flow_analysis->instruction_index_map.resize(context->data_flow_analysis->set_size);
+    if (context->data_flow_analysis->open_data_map.size() < context->data_flow_analysis->set_size) {
+        context->data_flow_analysis->open_data_map.resize(context->data_flow_analysis->set_size);
     }
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        context->data_flow_analysis->instruction_index_map[i] = i;
+        context->data_flow_analysis->open_data_map[i] = i;
     }
     // {
     //     size_t coalesced_mask_sets_size =

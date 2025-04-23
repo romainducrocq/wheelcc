@@ -41,7 +41,7 @@ struct DataFlowAnalysis {
     size_t mask_size;
     size_t incoming_index;
     size_t static_index;
-    std::vector<size_t> open_block_ids;
+    std::vector<size_t> open_data_map;
     std::vector<size_t> instruction_index_map;
     std::vector<mask_t> blocks_mask_sets;
     std::vector<mask_t> instructions_mask_sets;
@@ -686,9 +686,9 @@ Lelse:
 
 #if __OPTIM_LEVEL__ == 1
 static void data_flow_analysis_forward_iterative_algorithm() {
-    size_t open_block_ids_size = context->control_flow_graph->blocks.size();
-    for (size_t i = 0; i < open_block_ids_size; ++i) {
-        size_t block_id = context->data_flow_analysis->open_block_ids[i];
+    size_t open_data_map_size = context->control_flow_graph->blocks.size();
+    for (size_t i = 0; i < open_data_map_size; ++i) {
+        size_t block_id = context->data_flow_analysis->open_data_map[i];
         if (block_id == context->control_flow_graph->exit_id) {
             continue;
         }
@@ -697,18 +697,18 @@ static void data_flow_analysis_forward_iterative_algorithm() {
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
-                    for (size_t j = i + 1; j < open_block_ids_size; ++j) {
-                        if (successor_id == context->data_flow_analysis->open_block_ids[j]) {
+                    for (size_t j = i + 1; j < open_data_map_size; ++j) {
+                        if (successor_id == context->data_flow_analysis->open_data_map[j]) {
                             goto Lelse;
                         }
                     }
-                    if (open_block_ids_size < context->data_flow_analysis->open_block_ids.size()) {
-                        context->data_flow_analysis->open_block_ids[open_block_ids_size] = successor_id;
+                    if (open_data_map_size < context->data_flow_analysis->open_data_map.size()) {
+                        context->data_flow_analysis->open_data_map[open_data_map_size] = successor_id;
                     }
                     else {
-                        context->data_flow_analysis->open_block_ids.push_back(successor_id);
+                        context->data_flow_analysis->open_data_map.push_back(successor_id);
                     }
-                    open_block_ids_size++;
+                    open_data_map_size++;
                 Lelse:;
                 }
                 else if (successor_id != context->control_flow_graph->exit_id) {
@@ -721,9 +721,9 @@ static void data_flow_analysis_forward_iterative_algorithm() {
 #endif
 
 static void data_flow_analysis_backward_iterative_algorithm() {
-    size_t open_block_ids_size = context->control_flow_graph->blocks.size();
-    for (size_t i = 0; i < open_block_ids_size; ++i) {
-        size_t block_id = context->data_flow_analysis->open_block_ids[i];
+    size_t open_data_map_size = context->control_flow_graph->blocks.size();
+    for (size_t i = 0; i < open_data_map_size; ++i) {
+        size_t block_id = context->data_flow_analysis->open_data_map[i];
         if (block_id == context->control_flow_graph->exit_id) {
             continue;
         }
@@ -732,18 +732,18 @@ static void data_flow_analysis_backward_iterative_algorithm() {
         if (!is_fixed_point) {
             for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
                 if (predecessor_id < context->control_flow_graph->exit_id) {
-                    for (size_t j = i + 1; j < open_block_ids_size; ++j) {
-                        if (predecessor_id == context->data_flow_analysis->open_block_ids[j]) {
+                    for (size_t j = i + 1; j < open_data_map_size; ++j) {
+                        if (predecessor_id == context->data_flow_analysis->open_data_map[j]) {
                             goto Lelse;
                         }
                     }
-                    if (open_block_ids_size < context->data_flow_analysis->open_block_ids.size()) {
-                        context->data_flow_analysis->open_block_ids[open_block_ids_size] = predecessor_id;
+                    if (open_data_map_size < context->data_flow_analysis->open_data_map.size()) {
+                        context->data_flow_analysis->open_data_map[open_data_map_size] = predecessor_id;
                     }
                     else {
-                        context->data_flow_analysis->open_block_ids.push_back(predecessor_id);
+                        context->data_flow_analysis->open_data_map.push_back(predecessor_id);
                     }
-                    open_block_ids_size++;
+                    open_data_map_size++;
                 Lelse:;
                 }
                 else if (predecessor_id != context->control_flow_graph->entry_id) {
@@ -779,7 +779,7 @@ static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
         context->control_flow_graph->reaching_code[block_id] = true;
         data_flow_analysis_forward_successor_open_block(block_id, i);
         i--;
-        context->data_flow_analysis->open_block_ids[i] = block_id;
+        context->data_flow_analysis->open_data_map[i] = block_id;
     }
 }
 #endif
@@ -788,7 +788,7 @@ static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
     if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
         context->control_flow_graph->reaching_code[block_id] = true;
         data_flow_analysis_backward_successor_open_block(block_id, i);
-        context->data_flow_analysis->open_block_ids[i] = block_id;
+        context->data_flow_analysis->open_data_map[i] = block_id;
         i++;
     }
 }
@@ -868,8 +868,8 @@ static bool data_flow_analysis_initialize(
     context->data_flow_analysis->set_size = 0;
     context->data_flow_analysis->incoming_index = context->p_instructions->size();
 
-    if (context->data_flow_analysis->open_block_ids.size() < context->control_flow_graph->blocks.size()) {
-        context->data_flow_analysis->open_block_ids.resize(context->control_flow_graph->blocks.size());
+    if (context->data_flow_analysis->open_data_map.size() < context->control_flow_graph->blocks.size()) {
+        context->data_flow_analysis->open_data_map.resize(context->control_flow_graph->blocks.size());
     }
     {
         size_t i =
@@ -1212,7 +1212,7 @@ static bool data_flow_analysis_initialize(
             }
         }
         while (i-- > 0) {
-            context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
+            context->data_flow_analysis->open_data_map[i] = context->control_flow_graph->exit_id;
         }
 
         mask_t mask_true_back = MASK_TRUE;
@@ -1259,7 +1259,7 @@ static bool data_flow_analysis_initialize(
             }
         }
         for (; i < context->control_flow_graph->blocks.size(); i++) {
-            context->data_flow_analysis->open_block_ids[i] = context->control_flow_graph->exit_id;
+            context->data_flow_analysis->open_data_map[i] = context->control_flow_graph->exit_id;
         }
 
 #if __OPTIM_LEVEL__ == 1
