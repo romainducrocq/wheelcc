@@ -1338,13 +1338,13 @@ static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister
     for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
         GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) = MASK_FALSE;
     }
-    for (TIdentifier pseudo_name : dst_infer->linked_pseudo_names) {
-        size_t i = context->control_flow_graph->identifier_id_map[pseudo_name];
+    for (TIdentifier name : dst_infer->linked_pseudo_names) {
+        size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i, true);
     }
-    for (TIdentifier pseudo_name : src_infer->linked_pseudo_names) {
-        size_t i = context->control_flow_graph->identifier_id_map[pseudo_name];
-        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+    for (TIdentifier name : src_infer->linked_pseudo_names) {
+        size_t i = context->control_flow_graph->identifier_id_map[name];
+        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
         if (GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
             if (linked_infer.degree > context->p_inference_graph->k) {
                 degree++;
@@ -1355,10 +1355,10 @@ static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister
             degree++;
         }
     }
-    for (TIdentifier pseudo_name : dst_infer->linked_pseudo_names) {
-        size_t i = context->control_flow_graph->identifier_id_map[pseudo_name];
+    for (TIdentifier name : dst_infer->linked_pseudo_names) {
+        size_t i = context->control_flow_graph->identifier_id_map[name];
         if (GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
-            InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+            InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
             if (linked_infer.degree >= context->p_inference_graph->k) {
                 degree++;
             }
@@ -1391,8 +1391,8 @@ static bool coalesce_george_test(InferenceRegister* hard_infer, InferenceRegiste
             }
         }
     }
-    for (TIdentifier pseudo_name : pseudo_infer->linked_pseudo_names) {
-        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[pseudo_name];
+    for (TIdentifier name : pseudo_infer->linked_pseudo_names) {
+        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
         if (!register_mask_get(linked_infer.linked_hard_mask, hard_infer->register_kind)
             && linked_infer.degree >= context->p_inference_graph->k) {
             return false;
@@ -1483,16 +1483,17 @@ static void coalesce_mov_registers(AsmMov* node) {
         if (src_index < REGISTER_MASK_SIZE) {
             // TODO
             // union(dst, src, coalesced_regs)
-            context->data_flow_analysis->open_data_map[dst_index] = src_index;
+            // context->data_flow_analysis->open_data_map[dst_index] = src_index;
             // update_graph(graph, dst, src)
         }
         else {
             // TODO
             // union(src, dst, coalesced_regs)
-            context->data_flow_analysis->open_data_map[src_index] = dst_index;
+            // context->data_flow_analysis->open_data_map[src_index] = dst_index;
             // update_graph(graph, src, dst)
         }
-        context->is_with_coalescing = true;
+        // TODO uncomment
+        // context->is_with_coalescing = true;
     }
 }
 
