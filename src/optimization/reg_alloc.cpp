@@ -342,13 +342,22 @@ static void inference_graph_remove_pseudo_edge(InferenceRegister& infer, TIdenti
             std::swap(infer.linked_pseudo_names[i], infer.linked_pseudo_names.back());
             infer.linked_pseudo_names.pop_back();
             infer.degree--;
-            break;
+            return;
         }
     }
+    RAISE_INTERNAL_ERROR;
 }
 
-static void inference_graph_remove_pseudo_register(TIdentifier /*name*/) {
-    // TODO
+static void inference_graph_remove_unpruned_pseudo_name(TIdentifier name) {
+    for (size_t i = context->p_inference_graph->unpruned_pseudo_names.size(); i-- > 0;) {
+        if (context->p_inference_graph->unpruned_pseudo_names[i] == name) {
+            std::swap(context->p_inference_graph->unpruned_pseudo_names[i],
+                context->p_inference_graph->unpruned_pseudo_names.back());
+            context->p_inference_graph->unpruned_pseudo_names.pop_back();
+            return;
+        }
+    }
+    RAISE_INTERNAL_ERROR;
 }
 
 static void inference_graph_initialize_used_name_edges(TIdentifier name) {
@@ -1198,12 +1207,12 @@ static void regalloc_instructions(size_t instruction_index) {
 }
 
 static void regalloc_inference_graph() {
-    if (!context->inference_graph->pseudo_register_map.empty()) {
+    if (!context->inference_graph->unpruned_pseudo_names.empty()) {
         inference_graph_set_p(false);
         regalloc_color_inference_graph();
         regalloc_color_register_map();
     }
-    if (!context->sse_inference_graph->pseudo_register_map.empty()) {
+    if (!context->sse_inference_graph->unpruned_pseudo_names.empty()) {
         inference_graph_set_p(true);
         regalloc_color_inference_graph();
         regalloc_color_register_map();
@@ -1481,16 +1490,6 @@ coalesce(graph, instructions):
 
     return coalesced_regs
 */
-
-
-/*
-update_graph(graph, x, y):
-    node_to_remove = get_node_by_id(graph, x)
-    for neighbor in node_to_remove.neighbors:
-        add_edge(graph, y, neighbor)
-        remove_edge(graph, x, neighbor)
-    remove_node_by_id(graph, x)
-*/
 static void coalesce_pseudo_register(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
@@ -1508,7 +1507,7 @@ static void coalesce_pseudo_register(InferenceRegister* infer, size_t merge_inde
         inference_graph_remove_pseudo_edge(linked_infer, merge_name);
         inference_graph_add_pseudo_edges(keep_name, name);
     }
-    inference_graph_remove_pseudo_register(merge_name);
+    inference_graph_remove_unpruned_pseudo_name(merge_name);
 }
 
 static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegister* infer, size_t merge_index) {
@@ -1526,7 +1525,7 @@ static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegiste
         inference_graph_remove_pseudo_edge(linked_infer, merge_name);
         inference_graph_add_reg_edge(register_kind, name);
     }
-    inference_graph_remove_pseudo_register(merge_name);
+    inference_graph_remove_unpruned_pseudo_name(merge_name);
 }
 
 static void coalesce_mov_registers(AsmMov* node) {
@@ -1537,28 +1536,19 @@ static void coalesce_mov_registers(AsmMov* node) {
     if (get_coalescable_registers(src_infer, dst_infer, src_index, dst_index)
         && coalesce_conservative_tests(src_infer, dst_infer)) {
         if (src_index < REGISTER_MASK_SIZE) {
-            // TODO
-            // union(dst, src, coalesced_regs)
-            // update_graph(graph, dst, src)
             coalesce_hard_register(src_infer->register_kind, dst_infer, dst_index);
-            // TODO uncomment
-            // context->data_flow_analysis->open_data_map[dst_index] = src_index;
+            context->data_flow_analysis->open_data_map[dst_index] = src_index;
         }
         else {
-            // TODO
-            // union(src, dst, coalesced_regs)
-            // update_graph(graph, src, dst)
             if (dst_index < REGISTER_MASK_SIZE) {
                 coalesce_hard_register(dst_infer->register_kind, src_infer, src_index);
             }
             else {
                 coalesce_pseudo_register(src_infer, src_index, dst_index);
             }
-            // TODO uncomment
-            // context->data_flow_analysis->open_data_map[src_index] = dst_index;
+            context->data_flow_analysis->open_data_map[src_index] = dst_index;
         }
-        // TODO uncomment
-        // context->is_with_coalescing = true;
+        context->is_with_coalescing = true;
     }
 }
 
@@ -1641,6 +1631,10 @@ static void regalloc_function_top_level(AsmFunction* node) {
 Ldowhile:
     if (inference_graph_initialize(node->name)) {
         if (context->is_with_coalescing && coalesce_inference_graph()) {
+            if (context->inference_graph->unpruned_pseudo_names.empty()
+                && context->sse_inference_graph->unpruned_pseudo_names.empty()) {
+                goto Lbreak;
+            }
             goto Ldowhile;
         }
         {
@@ -1650,6 +1644,7 @@ Ldowhile:
         regalloc_inference_graph();
         context->p_backend_fun_top_level = nullptr;
     }
+Lbreak:
     context->p_inference_graph = nullptr;
     context->p_instructions = nullptr;
 }
