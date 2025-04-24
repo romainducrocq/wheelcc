@@ -318,7 +318,7 @@ static void inference_graph_add_pseudo_edges(TIdentifier name_1, TIdentifier nam
     }
 }
 
-static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND register_kind) {
+static void inference_graph_add_reg_edge(REGISTER_KIND register_kind, TIdentifier name) {
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name];
         if (!register_mask_get(infer.linked_hard_mask, register_kind)) {
@@ -334,6 +334,18 @@ static void inference_graph_add_reg_edge(TIdentifier name, REGISTER_KIND registe
             infer.degree++;
         }
     }
+}
+
+static void inference_graph_remove_pseudo_edges(TIdentifier /*name_1*/, TIdentifier /*name_2*/) {
+    // TODO
+}
+
+static void inference_graph_remove_reg_edge(TIdentifier /*name*/, REGISTER_KIND /*register_kind*/) {
+    // TODO
+}
+
+static void inference_graph_remove_pseudo_register(TIdentifier /*name*/) {
+    // TODO
 }
 
 static void inference_graph_initialize_used_name_edges(TIdentifier name) {
@@ -382,7 +394,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t j = 0; j < register_kinds_size; ++j) {
-                        inference_graph_add_reg_edge(pseudo_name, register_kinds[j]);
+                        inference_graph_add_reg_edge(register_kinds[j], pseudo_name);
                     }
                 }
             }
@@ -403,7 +415,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t k = 0; k < register_kinds_size; ++k) {
-                        inference_graph_add_reg_edge(pseudo_name, register_kinds[k]);
+                        inference_graph_add_reg_edge(register_kinds[k], pseudo_name);
                     }
                 }
             }
@@ -477,7 +489,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 REGISTER_KIND register_kind = context->hard_registers[i].register_kind;
-                inference_graph_add_reg_edge(name, register_kind);
+                inference_graph_add_reg_edge(register_kind, name);
             }
         }
         i = REGISTER_MASK_SIZE;
@@ -1383,18 +1395,10 @@ george_test(graph, hardreg, pseudoreg):
         return False
     return True
 */
-static bool coalesce_george_test(InferenceRegister* hard_infer, InferenceRegister* pseudo_infer) {
-    if (pseudo_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
-        for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
-            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
-            if (linked_infer.degree >= context->p_inference_graph->k) {
-                return false;
-            }
-        }
-    }
-    for (TIdentifier name : pseudo_infer->linked_pseudo_names) {
+static bool coalesce_george_test(REGISTER_KIND register_kind, InferenceRegister* infer) {
+    for (TIdentifier name : infer->linked_pseudo_names) {
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
-        if (!register_mask_get(linked_infer.linked_hard_mask, hard_infer->register_kind)
+        if (!register_mask_get(linked_infer.linked_hard_mask, register_kind)
             && linked_infer.degree >= context->p_inference_graph->k) {
             return false;
         }
@@ -1417,10 +1421,10 @@ static bool coalesce_conservative_tests(InferenceRegister* src_infer, InferenceR
         return true;
     }
     else if (src_infer->register_kind != REGISTER_KIND::Sp) {
-        return coalesce_george_test(src_infer, dst_infer);
+        return coalesce_george_test(src_infer->register_kind, dst_infer);
     }
     else if (dst_infer->register_kind != REGISTER_KIND::Sp) {
-        return coalesce_george_test(dst_infer, src_infer);
+        return coalesce_george_test(dst_infer->register_kind, src_infer);
     }
     else {
         return false;
@@ -1475,6 +1479,15 @@ coalesce(graph, instructions):
     return coalesced_regs
 */
 
+
+/*
+update_graph(graph, x, y):
+    node_to_remove = get_node_by_id(graph, x)
+    for neighbor in node_to_remove.neighbors:
+        add_edge(graph, y, neighbor)
+        remove_edge(graph, x, neighbor)
+    remove_node_by_id(graph, x)
+*/
 static void coalesce_pseudo_register(
     InferenceRegister* /*keep_infer*/, InferenceRegister* /*merge_infer*/, size_t keep_index, size_t merge_index) {
     TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
@@ -1482,11 +1495,23 @@ static void coalesce_pseudo_register(
     // TODO
 }
 
-static void coalesce_hard_register(
-    InferenceRegister* keep_infer, InferenceRegister* /*merge_infer*/, size_t merge_index) {
-    REGISTER_KIND keep_register_kind = keep_infer->register_kind;
+static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegister* merge_infer, size_t merge_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
-    // TODO
+    if (merge_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
+        for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
+            if (register_mask_get(merge_infer->linked_hard_mask, linked_infer.register_kind)) {
+                // TODO is this needed if we remove it from graph ?
+                inference_graph_remove_reg_edge(merge_name, linked_infer.register_kind);
+            }
+        }
+    }
+    for (TIdentifier name : merge_infer->linked_pseudo_names) {
+        // TODO remove only one way if we remove it from graph ?
+        inference_graph_remove_pseudo_edges(merge_name, name); // ?
+        inference_graph_add_reg_edge(register_kind, name);
+    }
+    inference_graph_remove_pseudo_register(merge_name);
 }
 
 static void coalesce_mov_registers(AsmMov* node) {
@@ -1500,7 +1525,7 @@ static void coalesce_mov_registers(AsmMov* node) {
             // TODO
             // union(dst, src, coalesced_regs)
             // update_graph(graph, dst, src)
-            coalesce_hard_register(src_infer, dst_infer, dst_index);
+            coalesce_hard_register(src_infer->register_kind, dst_infer, dst_index);
             // TODO uncomment
             // context->data_flow_analysis->open_data_map[dst_index] = src_index;
         }
@@ -1509,7 +1534,7 @@ static void coalesce_mov_registers(AsmMov* node) {
             // union(src, dst, coalesced_regs)
             // update_graph(graph, src, dst)
             if (dst_index < REGISTER_MASK_SIZE) {
-                coalesce_hard_register(dst_infer, src_infer, src_index);
+                coalesce_hard_register(dst_infer->register_kind, src_infer, src_index);
             }
             else {
                 coalesce_pseudo_register(src_infer, dst_infer, src_index, dst_index);
