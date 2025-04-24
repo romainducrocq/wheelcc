@@ -336,12 +336,15 @@ static void inference_graph_add_reg_edge(REGISTER_KIND register_kind, TIdentifie
     }
 }
 
-static void inference_graph_remove_pseudo_edges(TIdentifier /*name_1*/, TIdentifier /*name_2*/) {
-    // TODO
-}
-
-static void inference_graph_remove_reg_edge(TIdentifier /*name*/, REGISTER_KIND /*register_kind*/) {
-    // TODO
+static void inference_graph_remove_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
+    for (size_t i = infer.linked_pseudo_names.size(); i-- > 0;) {
+        if (infer.linked_pseudo_names[i] == name) {
+            std::swap(infer.linked_pseudo_names[i], infer.linked_pseudo_names.back());
+            infer.linked_pseudo_names.pop_back();
+            infer.degree--;
+            break;
+        }
+    }
 }
 
 static void inference_graph_remove_pseudo_register(TIdentifier /*name*/) {
@@ -1488,27 +1491,39 @@ update_graph(graph, x, y):
         remove_edge(graph, x, neighbor)
     remove_node_by_id(graph, x)
 */
-static void coalesce_pseudo_register(
-    InferenceRegister* /*keep_infer*/, InferenceRegister* /*merge_infer*/, size_t keep_index, size_t merge_index) {
+static void coalesce_pseudo_register(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
+    TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
-    TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
-    // TODO
-}
-
-static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegister* merge_infer, size_t merge_index) {
-    TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
-    if (merge_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
+    if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
-            if (register_mask_get(merge_infer->linked_hard_mask, linked_infer.register_kind)) {
-                // TODO is this needed if we remove it from graph ?
-                inference_graph_remove_reg_edge(merge_name, linked_infer.register_kind);
+            if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
+                inference_graph_remove_pseudo_edge(linked_infer, merge_name);
+                inference_graph_add_reg_edge(linked_infer.register_kind, keep_name);
             }
         }
     }
-    for (TIdentifier name : merge_infer->linked_pseudo_names) {
-        // TODO remove only one way if we remove it from graph ?
-        inference_graph_remove_pseudo_edges(merge_name, name); // ?
+    for (TIdentifier name : infer->linked_pseudo_names) {
+        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
+        inference_graph_remove_pseudo_edge(linked_infer, merge_name);
+        inference_graph_add_pseudo_edges(keep_name, name);
+    }
+    inference_graph_remove_pseudo_register(merge_name);
+}
+
+static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegister* infer, size_t merge_index) {
+    TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
+    if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
+        for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
+            InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
+            if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
+                inference_graph_remove_pseudo_edge(linked_infer, merge_name);
+            }
+        }
+    }
+    for (TIdentifier name : infer->linked_pseudo_names) {
+        InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
+        inference_graph_remove_pseudo_edge(linked_infer, merge_name);
         inference_graph_add_reg_edge(register_kind, name);
     }
     inference_graph_remove_pseudo_register(merge_name);
@@ -1537,7 +1552,7 @@ static void coalesce_mov_registers(AsmMov* node) {
                 coalesce_hard_register(dst_infer->register_kind, src_infer, src_index);
             }
             else {
-                coalesce_pseudo_register(src_infer, dst_infer, src_index, dst_index);
+                coalesce_pseudo_register(src_infer, src_index, dst_index);
             }
             // TODO uncomment
             // context->data_flow_analysis->open_data_map[src_index] = dst_index;
