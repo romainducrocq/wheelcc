@@ -1263,10 +1263,10 @@ static size_t get_coalesced_index(AsmOperand* node) {
             break;
     }
 
-    // TODO maybe include only pseudo in open_data_map, not hards
     if (coalesced_index < context->data_flow_analysis->set_size) {
-        while (coalesced_index != context->data_flow_analysis->open_data_map[coalesced_index]) {
-            coalesced_index = context->data_flow_analysis->open_data_map[coalesced_index];
+        while (coalesced_index >= REGISTER_MASK_SIZE
+               && coalesced_index != context->data_flow_analysis->open_data_map[coalesced_index - REGISTER_MASK_SIZE]) {
+            coalesced_index = context->data_flow_analysis->open_data_map[coalesced_index - REGISTER_MASK_SIZE];
         }
     }
     return coalesced_index;
@@ -1537,7 +1537,7 @@ static void coalesce_mov_registers(AsmMov* node) {
         && coalesce_conservative_tests(src_infer, dst_infer)) {
         if (src_index < REGISTER_MASK_SIZE) {
             coalesce_hard_register(src_infer->register_kind, dst_infer, dst_index);
-            context->data_flow_analysis->open_data_map[dst_index] = src_index;
+            context->data_flow_analysis->open_data_map[dst_index - REGISTER_MASK_SIZE] = src_index;
         }
         else {
             if (dst_index < REGISTER_MASK_SIZE) {
@@ -1546,7 +1546,7 @@ static void coalesce_mov_registers(AsmMov* node) {
             else {
                 coalesce_pseudo_register(src_infer, src_index, dst_index);
             }
-            context->data_flow_analysis->open_data_map[src_index] = dst_index;
+            context->data_flow_analysis->open_data_map[src_index - REGISTER_MASK_SIZE] = dst_index;
         }
         context->is_with_coalescing = true;
     }
@@ -1592,11 +1592,14 @@ allocate_registers(instructions):
 */
 static bool coalesce_inference_graph() {
     context->is_with_coalescing = false;
-    if (context->data_flow_analysis->open_data_map.size() < context->data_flow_analysis->set_size) {
-        context->data_flow_analysis->open_data_map.resize(context->data_flow_analysis->set_size);
+    {
+        size_t open_data_map_size = context->data_flow_analysis->set_size - REGISTER_MASK_SIZE;
+        if (context->data_flow_analysis->open_data_map.size() < open_data_map_size) {
+            context->data_flow_analysis->open_data_map.resize(open_data_map_size);
+        }
     }
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        context->data_flow_analysis->open_data_map[i] = i;
+    for (size_t i = REGISTER_MASK_SIZE; i < context->data_flow_analysis->set_size; ++i) {
+        context->data_flow_analysis->open_data_map[i - REGISTER_MASK_SIZE] = i;
     }
     // {
     //     size_t coalesced_mask_sets_size =
