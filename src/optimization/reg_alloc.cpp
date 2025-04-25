@@ -977,7 +977,7 @@ static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
                 node->src = std::move(hard_register);
             }
         }
-        if (node->dst->type() == AST_T::AsmPseudo_t) {
+        if (dst_operand->type() == AST_T::AsmPseudo_t) {
             std::shared_ptr<AsmOperand> hard_register =
                 regalloc_hard_register(static_cast<AsmPseudo*>(dst_operand)->name);
             if (hard_register) {
@@ -1528,7 +1528,7 @@ static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegiste
     inference_graph_remove_unpruned_pseudo_name(merge_name);
 }
 
-static void coalesce_mov_registers(AsmMov* node) {
+static void coalesce_registers(AsmMov* node) {
     InferenceRegister* src_infer = nullptr;
     InferenceRegister* dst_infer = nullptr;
     size_t src_index = get_coalesced_index(node->src.get());
@@ -1590,6 +1590,161 @@ allocate_registers(instructions):
     transformed_instructions = replace_pseudoregs(instructions, register_map)
     return transformed_instructions
 */
+
+static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index) {
+    AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
+    AsmOperand* dst_operand = static_cast<AsmPseudo*>(node->dst.get());
+    if (src_operand->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (dst_operand->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_mov_sx_instructions(AsmMovSx* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_lea_instructions(AsmLea* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_cvttsd2si_instructions(AsmCvttsd2si* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_unary_instructions(AsmUnary* node) {
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_binary_instructions(AsmBinary* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_cmp_instructions(AsmCmp* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_idiv_instructions(AsmIdiv* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_div_instructions(AsmDiv* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_set_cc_instructions(AsmSetCC* node) {
+    if (node->dst->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_push_instructions(AsmPush* node) {
+    if (node->src->type() == AST_T::AsmPseudo_t) {
+        // TODO
+    }
+}
+
+static void coalesce_instructions(size_t instruction_index) {
+    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
+    switch (node->type()) {
+        case AST_T::AsmMov_t:
+            coalesce_mov_instructions(static_cast<AsmMov*>(node), instruction_index);
+            break;
+        case AST_T::AsmMovSx_t:
+            coalesce_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            break;
+        case AST_T::AsmMovZeroExtend_t:
+            coalesce_mov_zero_extend_instructions(static_cast<AsmMovZeroExtend*>(node));
+            break;
+        case AST_T::AsmLea_t:
+            coalesce_lea_instructions(static_cast<AsmLea*>(node));
+            break;
+        case AST_T::AsmCvttsd2si_t:
+            coalesce_cvttsd2si_instructions(static_cast<AsmCvttsd2si*>(node));
+            break;
+        case AST_T::AsmCvtsi2sd_t:
+            coalesce_cvtsi2sd_instructions(static_cast<AsmCvtsi2sd*>(node));
+            break;
+        case AST_T::AsmUnary_t:
+            coalesce_unary_instructions(static_cast<AsmUnary*>(node));
+            break;
+        case AST_T::AsmBinary_t:
+            coalesce_binary_instructions(static_cast<AsmBinary*>(node));
+            break;
+        case AST_T::AsmCmp_t:
+            coalesce_cmp_instructions(static_cast<AsmCmp*>(node));
+            break;
+        case AST_T::AsmIdiv_t:
+            coalesce_idiv_instructions(static_cast<AsmIdiv*>(node));
+            break;
+        case AST_T::AsmDiv_t:
+            coalesce_div_instructions(static_cast<AsmDiv*>(node));
+            break;
+        case AST_T::AsmSetCC_t:
+            coalesce_set_cc_instructions(static_cast<AsmSetCC*>(node));
+            break;
+        case AST_T::AsmPush_t:
+            coalesce_push_instructions(static_cast<AsmPush*>(node));
+            break;
+        case AST_T::AsmCdq_t:
+        case AST_T::AsmCall_t:
+            break;
+        default:
+            break;
+    }
+}
+
 static bool coalesce_inference_graph() {
     context->is_with_coalescing = false;
     {
@@ -1612,7 +1767,7 @@ static bool coalesce_inference_graph() {
     // }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t) {
-            coalesce_mov_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
+            coalesce_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
         }
     }
     if (!context->is_with_coalescing) {
@@ -1620,6 +1775,11 @@ static bool coalesce_inference_graph() {
     }
 
     // TODO spill cost is modified during coalescing !!
+    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        if (GET_INSTRUCTION(instruction_index)) {
+            coalesce_instructions(instruction_index);
+        }
+    }
 
     // TODO
     return true;
