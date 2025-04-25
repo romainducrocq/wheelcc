@@ -1593,9 +1593,6 @@ allocate_registers(instructions):
 */
 
 static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, size_t coalesced_index) {
-    // TODO This is probably not needed as it is already removed from graph
-    // inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
-    // context->p_inference_graph->pseudo_register_map[name].spill_cost--;
     if (coalesced_index < context->data_flow_analysis->set_size
         && coalesced_index != context->control_flow_graph->identifier_id_map[name]) {
         if (coalesced_index < REGISTER_MASK_SIZE) {
@@ -1921,9 +1918,6 @@ static bool coalesce_inference_graph() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// TODO only mov instructions are removed.
-// maybe we need to only run the data flow analysis again and not the control flow graph
 
 static void regalloc_function_top_level(AsmFunction* node) {
     context->p_instructions = &node->instructions;
