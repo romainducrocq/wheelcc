@@ -1259,6 +1259,7 @@ static size_t get_coalesced_index(AsmOperand* node) {
             }
             break;
         }
+        // TODO handle case memory
         default:
             break;
     }
@@ -1275,9 +1276,8 @@ static size_t get_coalesced_index(AsmOperand* node) {
 // src_coalesced.index != dst_coalesced.index
 // && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
 // && get_coalesced_register(src_coalesced)
-// && get_coalesced_register(dst_coalesced) // TODO remove CoalescedRegister struct, as needed only here
+// && get_coalesced_register(dst_coalesced)
 // && src_coalesced.is_double == dst_coalesced.is_double
-// TODO maybe we need src_index, dst_index, dst_name in callee
 static bool get_coalescable_inference_registers(
     InferenceRegister*& src_infer, InferenceRegister*& dst_infer, size_t src_index, size_t dst_index) {
     if (src_index != dst_index && (src_index >= REGISTER_MASK_SIZE || dst_index >= REGISTER_MASK_SIZE)
@@ -1592,138 +1592,247 @@ allocate_registers(instructions):
     return transformed_instructions
 */
 
-static std::shared_ptr<AsmRegister> coalesce_pseudo_inference_register(TIdentifier name) {
-    // TODO
-    // if (is_aliased_name(name)) {
-    //     return nullptr;
-    // }
+static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, size_t coalesced_index) {
+    // TODO This is probably not needed as it is already removed from graph
     // inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
-    // REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
-    // if (color != REGISTER_KIND::Sp) {
-    //     REGISTER_KIND register_kind = context->register_color_map[register_mask_bit(color)];
-    //     std::shared_ptr<AsmRegister> hard_register = generate_register(register_kind);
-    //     if (is_register_callee_saved(register_kind)
-    //         && !register_mask_get(context->callee_saved_reg_mask, register_kind)) {
-    //         register_mask_set(context->callee_saved_reg_mask, register_kind, true);
-    //         std::shared_ptr<AsmOperand> callee_saved_register = hard_register;
-    //         context->p_backend_fun_top_level->callee_saved_registers.push_back(std::move(callee_saved_register));
-    //     }
-    //     return hard_register;
-    // }
-    // else {
-    //     return nullptr;
-    // }
+    // context->p_inference_graph->pseudo_register_map[name].spill_cost--;
+    if (coalesced_index < context->data_flow_analysis->set_size
+        && coalesced_index != context->control_flow_graph->identifier_id_map[name]) {
+        if (coalesced_index < REGISTER_MASK_SIZE) {
+            InferenceRegister& infer = context->hard_registers[coalesced_index];
+            infer.spill_cost++;
+            return generate_register(infer.register_kind);
+        }
+        else {
+            inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+            name = context->data_flow_analysis_o2->data_name_map[coalesced_index - REGISTER_MASK_SIZE];
+            context->p_inference_graph->pseudo_register_map[name].spill_cost++;
+            return std::make_shared<AsmPseudo>(std::move(name));
+        }
+    }
+    else {
+        return nullptr;
+    }
 }
 
-static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index) {
-    AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
-    AsmOperand* dst_operand = static_cast<AsmPseudo*>(node->dst.get());
-    if (src_operand->type() == AST_T::AsmPseudo_t) {
-        // TODO
+static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index, size_t block_id) {
+    size_t src_index = get_coalesced_index(node->src.get());
+    size_t dst_index = get_coalesced_index(node->dst.get());
+    if (src_index < context->data_flow_analysis->set_size && src_index == dst_index) {
+        // TODO handle case where src is memmory and dst is register or vice versa
+        control_flow_graph_remove_block_instruction(instruction_index, block_id);
     }
-    if (dst_operand->type() == AST_T::AsmPseudo_t) {
-        // TODO
+    else {
+        if (node->src->type() == AST_T::AsmPseudo_t) {
+            std::shared_ptr<AsmOperand> operand_register =
+                coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            if (operand_register) {
+                node->src = std::move(operand_register);
+            }
+        }
+        if (node->dst->type() == AST_T::AsmPseudo_t) {
+            std::shared_ptr<AsmOperand> operand_register =
+                coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            if (operand_register) {
+                node->dst = std::move(operand_register);
+            }
+        }
     }
 }
 
 static void coalesce_mov_sx_instructions(AsmMovSx* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_lea_instructions(AsmLea* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_cvttsd2si_instructions(AsmCvttsd2si* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_unary_instructions(AsmUnary* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_binary_instructions(AsmBinary* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_cmp_instructions(AsmCmp* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_idiv_instructions(AsmIdiv* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_div_instructions(AsmDiv* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_set_cc_instructions(AsmSetCC* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t dst_index = get_coalesced_index(node->dst.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+        if (operand_register) {
+            node->dst = std::move(operand_register);
+        }
     }
 }
 
 static void coalesce_push_instructions(AsmPush* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        // TODO
+        size_t src_index = get_coalesced_index(node->src.get());
+        std::shared_ptr<AsmOperand> operand_register =
+            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+        if (operand_register) {
+            node->src = std::move(operand_register);
+        }
     }
 }
 
-static void coalesce_instructions(size_t instruction_index) {
+static void coalesce_instructions(size_t instruction_index, size_t block_id) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            coalesce_mov_instructions(static_cast<AsmMov*>(node), instruction_index);
+            coalesce_mov_instructions(static_cast<AsmMov*>(node), instruction_index, block_id);
             break;
         case AST_T::AsmMovSx_t:
             coalesce_mov_sx_instructions(static_cast<AsmMovSx*>(node));
@@ -1798,14 +1907,16 @@ static bool coalesce_inference_graph() {
         return false;
     }
 
-    // TODO spill cost is modified during coalescing !!
-    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index)) {
-            coalesce_instructions(instruction_index);
+    for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+        if (GET_CFG_BLOCK(block_id).size > 0) {
+            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
+                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+                if (GET_INSTRUCTION(instruction_index)) {
+                    coalesce_instructions(instruction_index, block_id);
+                }
+            }
         }
     }
-
-    // TODO
     return true;
 }
 
