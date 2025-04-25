@@ -1278,7 +1278,7 @@ static size_t get_coalesced_index(AsmOperand* node) {
 // && get_coalesced_register(dst_coalesced) // TODO remove CoalescedRegister struct, as needed only here
 // && src_coalesced.is_double == dst_coalesced.is_double
 // TODO maybe we need src_index, dst_index, dst_name in callee
-static bool get_coalescable_registers(
+static bool get_coalescable_inference_registers(
     InferenceRegister*& src_infer, InferenceRegister*& dst_infer, size_t src_index, size_t dst_index) {
     if (src_index != dst_index && (src_index >= REGISTER_MASK_SIZE || dst_index >= REGISTER_MASK_SIZE)
         && src_index < context->data_flow_analysis->set_size && dst_index < context->data_flow_analysis->set_size) {
@@ -1490,7 +1490,7 @@ coalesce(graph, instructions):
 
     return coalesced_regs
 */
-static void coalesce_pseudo_register(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
+static void coalesce_pseudo_inference_register(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
@@ -1510,7 +1510,8 @@ static void coalesce_pseudo_register(InferenceRegister* infer, size_t merge_inde
     inference_graph_remove_unpruned_pseudo_name(merge_name);
 }
 
-static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegister* infer, size_t merge_index) {
+static void coalesce_hard_inference_register(
+    REGISTER_KIND register_kind, InferenceRegister* infer, size_t merge_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
@@ -1528,23 +1529,23 @@ static void coalesce_hard_register(REGISTER_KIND register_kind, InferenceRegiste
     inference_graph_remove_unpruned_pseudo_name(merge_name);
 }
 
-static void coalesce_registers(AsmMov* node) {
+static void coalesce_inference_registers(AsmMov* node) {
     InferenceRegister* src_infer = nullptr;
     InferenceRegister* dst_infer = nullptr;
     size_t src_index = get_coalesced_index(node->src.get());
     size_t dst_index = get_coalesced_index(node->dst.get());
-    if (get_coalescable_registers(src_infer, dst_infer, src_index, dst_index)
+    if (get_coalescable_inference_registers(src_infer, dst_infer, src_index, dst_index)
         && coalesce_conservative_tests(src_infer, dst_infer)) {
         if (src_index < REGISTER_MASK_SIZE) {
-            coalesce_hard_register(src_infer->register_kind, dst_infer, dst_index);
+            coalesce_hard_inference_register(src_infer->register_kind, dst_infer, dst_index);
             context->data_flow_analysis->open_data_map[dst_index - REGISTER_MASK_SIZE] = src_index;
         }
         else {
             if (dst_index < REGISTER_MASK_SIZE) {
-                coalesce_hard_register(dst_infer->register_kind, src_infer, src_index);
+                coalesce_hard_inference_register(dst_infer->register_kind, src_infer, src_index);
             }
             else {
-                coalesce_pseudo_register(src_infer, src_index, dst_index);
+                coalesce_pseudo_inference_register(src_infer, src_index, dst_index);
             }
             context->data_flow_analysis->open_data_map[src_index - REGISTER_MASK_SIZE] = dst_index;
         }
@@ -1590,6 +1591,29 @@ allocate_registers(instructions):
     transformed_instructions = replace_pseudoregs(instructions, register_map)
     return transformed_instructions
 */
+
+static std::shared_ptr<AsmRegister> coalesce_pseudo_inference_register(TIdentifier name) {
+    // TODO
+    // if (is_aliased_name(name)) {
+    //     return nullptr;
+    // }
+    // inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+    // REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
+    // if (color != REGISTER_KIND::Sp) {
+    //     REGISTER_KIND register_kind = context->register_color_map[register_mask_bit(color)];
+    //     std::shared_ptr<AsmRegister> hard_register = generate_register(register_kind);
+    //     if (is_register_callee_saved(register_kind)
+    //         && !register_mask_get(context->callee_saved_reg_mask, register_kind)) {
+    //         register_mask_set(context->callee_saved_reg_mask, register_kind, true);
+    //         std::shared_ptr<AsmOperand> callee_saved_register = hard_register;
+    //         context->p_backend_fun_top_level->callee_saved_registers.push_back(std::move(callee_saved_register));
+    //     }
+    //     return hard_register;
+    // }
+    // else {
+    //     return nullptr;
+    // }
+}
 
 static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index) {
     AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
@@ -1767,7 +1791,7 @@ static bool coalesce_inference_graph() {
     // }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t) {
-            coalesce_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
+            coalesce_inference_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
         }
     }
     if (!context->is_with_coalescing) {
