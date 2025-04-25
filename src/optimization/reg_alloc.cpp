@@ -1619,6 +1619,8 @@ static bool coalesce_inference_graph() {
         return false;
     }
 
+    // TODO spill cost is modified during coalescing !!
+
     // TODO
     return true;
 }
