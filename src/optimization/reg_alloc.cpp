@@ -1596,9 +1596,8 @@ static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, s
     if (coalesced_index < context->data_flow_analysis->set_size
         && coalesced_index != context->control_flow_graph->identifier_id_map[name]) {
         if (coalesced_index < REGISTER_MASK_SIZE) {
-            InferenceRegister& infer = context->hard_registers[coalesced_index];
-            infer.spill_cost++;
-            return generate_register(infer.register_kind);
+            REGISTER_KIND register_kind = context->hard_registers[coalesced_index].register_kind;
+            return generate_register(register_kind);
         }
         else {
             inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
