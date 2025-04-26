@@ -1529,7 +1529,7 @@ static void coalesce_hard_inference_register(
     inference_graph_remove_unpruned_pseudo_name(merge_name);
 }
 
-static void coalesce_inference_registers(AsmMov* node) {
+static bool coalesce_inference_registers(AsmMov* node) {
     InferenceRegister* src_infer = nullptr;
     InferenceRegister* dst_infer = nullptr;
     size_t src_index = get_coalesced_index(node->src.get());
@@ -1549,7 +1549,10 @@ static void coalesce_inference_registers(AsmMov* node) {
             }
             context->data_flow_analysis->open_data_map[src_index - REGISTER_MASK_SIZE] = dst_index;
         }
-        context->is_with_coalescing = true;
+        return true;
+    }
+    else {
+        return false;
     }
 }
 
@@ -1875,7 +1878,6 @@ static void coalesce_instructions(size_t instruction_index, size_t block_id) {
 }
 
 static bool coalesce_inference_graph() {
-    context->is_with_coalescing = false;
     {
         size_t open_data_map_size = context->data_flow_analysis->set_size - REGISTER_MASK_SIZE;
         if (context->data_flow_analysis->open_data_map.size() < open_data_map_size) {
@@ -1894,13 +1896,17 @@ static bool coalesce_inference_graph() {
     //     std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
     //         context->data_flow_analysis->blocks_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
     // }
-    for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t) {
-            coalesce_inference_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()));
+    {
+        bool is_fixed_point = true;
+        for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+            if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t
+                && coalesce_inference_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()))) {
+                is_fixed_point = false;
+            }
         }
-    }
-    if (!context->is_with_coalescing) {
-        return false;
+        if (is_fixed_point) {
+            return false;
+        }
     }
 
     for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
