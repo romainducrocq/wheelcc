@@ -1228,20 +1228,8 @@ static void regalloc_inference_graph() {
 
 // Register coalescing
 
-// #define GET_COALESCED_SET_MASK(X, Y) GET_DFA_BLOCK_SET_MASK(X, Y)
-// #define GET_COALESCED_SET_AT(X, Y) GET_DFA_BLOCK_SET_AT(X, Y)
-// #define SET_COALESCED_SET_AT(X, Y, Z) mask_set(GET_COALESCED_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
+// TOOD handle edge case from blog: coalesced registers should be the same size
 
-// find(x):
-//     find(y)
-//         return y
-/*
-find(r, reg_map):
-    if r is in reg_map:
-        result = reg_map.get(r)
-        return find(result, reg_map)
-    return r
-*/
 static size_t get_coalesced_index(AsmOperand* node) {
     size_t coalesced_index = context->data_flow_analysis->set_size;
     switch (node->type()) {
@@ -1259,7 +1247,6 @@ static size_t get_coalesced_index(AsmOperand* node) {
             }
             break;
         }
-        // TODO handle case memory
         default:
             break;
     }
@@ -1273,11 +1260,6 @@ static size_t get_coalesced_index(AsmOperand* node) {
     return coalesced_index;
 }
 
-// src_coalesced.index != dst_coalesced.index
-// && (src_coalesced.index >= REGISTER_MASK_SIZE || dst_coalesced.index >= REGISTER_MASK_SIZE)
-// && get_coalesced_register(src_coalesced)
-// && get_coalesced_register(dst_coalesced)
-// && src_coalesced.is_double == dst_coalesced.is_double
 static bool get_coalescable_inference_registers(
     InferenceRegister*& src_infer, InferenceRegister*& dst_infer, size_t src_index, size_t dst_index) {
     if (src_index != dst_index && (src_index >= REGISTER_MASK_SIZE || dst_index >= REGISTER_MASK_SIZE)
@@ -1318,25 +1300,6 @@ static bool get_coalescable_inference_registers(
     return false;
 }
 
-/*
-briggs_test(graph, x, y):
-    significant_neighbors = 0
-
-    x_node = get_node_by_id(graph, x)
-    y_node = get_node_by_id(graph, y)
-
-    combined_neighbors = set(x_node.neighbors)
-    combined_neighbors.add_all(y_node.neighbors)
-    for n in combined_neighbors:
-        neighbor_node = get_node_by_id(graph, n)
-        degree = length(neighbor_node.neighbors)
-        if are_neighbors(graph, n, x) && are_neighbors(graph, n, y):
-            degree -= 1
-        if degree >= k:
-            significant_neighbors += 1
-
-    return (significant_neighbors < k)
-*/
 static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
     size_t degree = 0;
 
@@ -1393,20 +1356,6 @@ static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister
     return degree < context->p_inference_graph->k;
 }
 
-/*
-george_test(graph, hardreg, pseudoreg):
-    pseudo_node = get_node_by_id(graph, pseudoreg)
-    for n in pseudo_node.neighbors:
-        if are_neighbors(graph, n, hardreg):
-            continue
-
-        neighbor_node = get_node_by_id(graph, n)
-        if length(neighbor_node.neighbors) < k:
-            continue
-
-        return False
-    return True
-*/
 static bool coalesce_george_test(REGISTER_KIND register_kind, InferenceRegister* infer) {
     for (TIdentifier name : infer->linked_pseudo_names) {
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
@@ -1418,16 +1367,6 @@ static bool coalesce_george_test(REGISTER_KIND register_kind, InferenceRegister*
     return true;
 }
 
-/*
-conservative_coalesceable(graph, src, dst):
-    if briggs_test(graph, src, dst):
-        return True
-    if src is a hard register:
-        return george_test(graph, src, dst)
-    if dst is a hard register:
-        return george_test(graph, dst, src)
-    return False
-*/
 static bool coalesce_conservative_tests(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
     if (coalesce_briggs_test(src_infer, dst_infer)) {
         return true;
@@ -1443,53 +1382,6 @@ static bool coalesce_conservative_tests(InferenceRegister* src_infer, InferenceR
     }
 }
 
-/*
-init_disjoint_sets():
-    return <empty map>
-*/
-// union:
-//     x -> y
-//     y := { x | y }
-/*
-union(x, y, reg_map):
-    reg_map.add(x, y)
-*/
-/*
-update_graph(graph, x, y):
-    node_to_remove = get_node_by_id(graph, x)
-    for neighbor in node_to_remove.neighbors:
-        add_edge(graph, y, neighbor)
-        remove_edge(graph, x, neighbor)
-    remove_node_by_id(graph, x)
-*/
-/*
-coalesce(graph, instructions):
-    coalesced_regs = init_disjoint_sets()
-
-    for i in instructions:
-        match i with
-        | Mov(src, dst) ->
-            src = find(src, coalesced_regs)
-            dst = find(dst, coalesced_regs)
-
-            if (src is in graph) && (dst is in graph) && (src != dst)
-                && (not are_neighbors(graph, src, dst))
-                && conservative_coalesceable(graph, src, dst):
-
-                if src is a hard register:
-                    to_keep = src
-                    to_merge = dst
-                else:
-                    to_keep = dst
-                    to_merge = src
-
-                union(to_merge, to_keep, coalesced_regs)
-                update_graph(graph, to_merge, to_keep)
-
-        | _ -> continue
-
-    return coalesced_regs
-*/
 static void coalesce_pseudo_inference_register(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
@@ -1555,45 +1447,6 @@ static bool coalesce_inference_registers(AsmMov* node) {
         return false;
     }
 }
-
-/*
-nothing_was_coalesced(reg_map):
-    if reg_map is empty:
-        return True
-    return False
-*/
-/*
-rewrite_coalesced(instructions, coalesced_regs):
-    new_instructions = []
-    for i in instructions:
-        match i with
-        | Mov(src, dst) ->
-            src = find(src, coalesced_regs)
-            dst = find(dst, coalesced_regs)
-            if src != dst:
-                new_instructions.append(Mov(src, dst))
-        | Binary(op, src, dst) ->
-            src = find(src, coalesced_regs)
-            dst = find(dst, coalesced_regs)
-            new_instructions.append(Binary(op, src, dst))
-    | --snip--
-
-    return new_instructions
-*/
-/*
-allocate_registers(instructions):
-    while True:
-        interference_graph = build_graph(instructions)
-        coalesced_regs = coalesce(interference_graph, instructions)
-        if nothing_was_coalesced(coalesced_regs):
-            break
-        instructions = rewrite_coalesced(instructions, coalesced_regs)
-    add_spill_costs(interference_graph, instructions)
-    color_graph(interference_graph)
-    register_map = create_register_map(interference_graph)
-    transformed_instructions = replace_pseudoregs(instructions, register_map)
-    return transformed_instructions
-*/
 
 static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, size_t coalesced_index) {
     if (coalesced_index < context->data_flow_analysis->set_size
@@ -1887,15 +1740,7 @@ static bool coalesce_inference_graph() {
     for (size_t i = REGISTER_MASK_SIZE; i < context->data_flow_analysis->set_size; ++i) {
         context->data_flow_analysis->open_data_map[i - REGISTER_MASK_SIZE] = i;
     }
-    // {
-    //     size_t coalesced_mask_sets_size =
-    //         context->data_flow_analysis->set_size * context->data_flow_analysis->mask_size;
-    //     if (context->data_flow_analysis->blocks_mask_sets.size() < coalesced_mask_sets_size) {
-    //         context->data_flow_analysis->blocks_mask_sets.resize(coalesced_mask_sets_size);
-    //     }
-    //     std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
-    //         context->data_flow_analysis->blocks_mask_sets.begin() + coalesced_mask_sets_size, MASK_FALSE);
-    // }
+
     {
         bool is_fixed_point = true;
         for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
