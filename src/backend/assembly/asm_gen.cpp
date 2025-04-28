@@ -923,7 +923,6 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
     std::shared_ptr<AsmOperand> src = generate_operand(node->src.get());
     std::shared_ptr<AsmOperand> dst = generate_operand(node->dst.get());
     std::shared_ptr<AsmOperand> dst_out_of_range_sd = generate_register(REGISTER_KIND::Xmm1);
-    std::shared_ptr<AsmOperand> src_out_of_range_si = generate_register(REGISTER_KIND::Dx);
     std::shared_ptr<AssemblyType> assembly_type_sd = std::make_shared<BackendDouble>();
     std::shared_ptr<AssemblyType> assembly_type_si = std::make_shared<QuadWord>();
     push_instruction(std::make_unique<AsmCmp>(assembly_type_sd, upper_bound_sd, src));
@@ -942,14 +941,11 @@ static void generate_ulong_double_to_unsigned_instructions(TacDoubleToUInt* node
     }
     push_instruction(std::make_unique<AsmCvttsd2si>(assembly_type_si, std::move(dst_out_of_range_sd), dst));
     {
+        std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_si_add = std::make_unique<AsmAdd>();
         std::shared_ptr<AsmOperand> upper_bound_si =
             std::make_shared<AsmImm>(9223372036854775808ul, false, true, false);
-        push_instruction(std::make_unique<AsmMov>(assembly_type_si, std::move(upper_bound_si), src_out_of_range_si));
-    }
-    {
-        std::unique_ptr<AsmBinaryOp> binary_op_out_of_range_si_add = std::make_unique<AsmAdd>();
         push_instruction(std::make_unique<AsmBinary>(std::move(binary_op_out_of_range_si_add),
-            std::move(assembly_type_si), std::move(src_out_of_range_si), std::move(dst)));
+            std::move(assembly_type_si), std::move(upper_bound_si), std::move(dst)));
     }
     push_instruction(std::make_unique<AsmLabel>(std::move(target_after)));
 }
