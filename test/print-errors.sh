@@ -5,11 +5,10 @@ PACKAGE_NAME="$(cat ../bin/package_name.txt)"
 TEST_DIR="${PWD}/tests/compiler"
 
 function print_errors () {
-    for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid)
-    do
+    for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid | sort --uniq); do
         cat <(${PACKAGE_NAME} -s ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
         if [ -f ${FILE%.*}.s ]; then
-             rm ${FILE%.*}.s
+            rm ${FILE%.*}.s
         fi
     done
 }
@@ -28,7 +27,7 @@ fi
 if [ ! -z "${ARG}" ]; then
     print_errors ${ARG}
 else
-    for i in $(seq 1 19); do
+    for i in $(seq 1 20); do
         print_errors ${i}
     done
 fi
