@@ -21,7 +21,7 @@ NC='\033[0m'
 
 TEST_DIR="${PWD}/tests/compiler"
 TEST_SRCS=()
-for i in $(seq 1 19); do
+for i in $(seq 1 20); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
 done
 
