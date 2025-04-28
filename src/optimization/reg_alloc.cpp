@@ -1228,7 +1228,24 @@ static void regalloc_inference_graph() {
 
 // Register coalescing
 
-// TOOD handle edge case from blog: coalesced registers should be the same size
+static TInt get_type_size(Type* type) {
+    switch (type->type()) {
+        case AST_T::Char_t:
+        case AST_T::SChar_t:
+        case AST_T::UChar_t:
+            return 1;
+        case AST_T::Int_t:
+        case AST_T::UInt_t:
+            return 4;
+        case AST_T::Long_t:
+        case AST_T::Double_t:
+        case AST_T::ULong_t:
+        case AST_T::Pointer_t:
+            return 8;
+        default:
+            RAISE_INTERNAL_ERROR;
+    }
+}
 
 static size_t get_coalesced_index(AsmOperand* node) {
     size_t coalesced_index = context->data_flow_analysis->set_size;
@@ -1288,7 +1305,9 @@ static bool get_coalescable_inference_registers(
             TIdentifier src_name = context->data_flow_analysis_o2->data_name_map[src_index - REGISTER_MASK_SIZE];
             TIdentifier dst_name = context->data_flow_analysis_o2->data_name_map[dst_index - REGISTER_MASK_SIZE];
             bool is_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
-            if (is_double == (frontend->symbol_table[dst_name]->type_t->type() == AST_T::Double_t)) {
+            if (is_double == (frontend->symbol_table[dst_name]->type_t->type() == AST_T::Double_t)
+                && get_type_size(frontend->symbol_table[src_name]->type_t.get())
+                       == get_type_size(frontend->symbol_table[dst_name]->type_t.get())) {
                 inference_graph_set_p(is_double);
                 src_infer = &context->p_inference_graph->pseudo_register_map[src_name];
                 dst_infer = &context->p_inference_graph->pseudo_register_map[dst_name];
@@ -1471,7 +1490,6 @@ static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index, si
     size_t src_index = get_coalesced_index(node->src.get());
     size_t dst_index = get_coalesced_index(node->dst.get());
     if (src_index < context->data_flow_analysis->set_size && src_index == dst_index) {
-        // TODO handle case where src is memmory and dst is register or vice versa
         control_flow_graph_remove_block_instruction(instruction_index, block_id);
     }
     else {
