@@ -55,9 +55,9 @@ mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/special_values/negative_zero.c ${TEST_D
 mv -v ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/fold_nan.c ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/fold_nan__+lm.c 
 mv -v ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/return_nan.c ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/return_nan__+lm.c 
 mv -v ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy.c ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy__+lm.c 
-mv -v ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_double_lib.c ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double_client.c
 
 # Merge multiple helpers into one
+cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_double_lib.c >> ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/track_arg_registers_lib.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/track_dbl_arg_registers_lib.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_funcall_generates_args_lib.c
@@ -65,7 +65,7 @@ cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[1
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_arg_registers_lib.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/target_shim.c
 
-# Add os assembly helpers
+# Add assembly tests
 mv -v ${TEST_DIR}/${TEST_SRCS[8]}/valid/stack_arguments/stack_alignment_check_linux.s ${TEST_DIR}/${TEST_SRCS[8]}/valid/stack_arguments/stack_alignment_linux.s
 mv -v ${TEST_DIR}/${TEST_SRCS[9]}/valid/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[9]}/valid/push_arg_on_page_boundary_linux.s
 mv -v ${TEST_DIR}/${TEST_SRCS[15]}/valid/chars/data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[15]}/valid/chars/push_arg_on_page_boundary_linux.s
@@ -75,6 +75,10 @@ mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_space_address
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/big_data_on_page_boundary_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_big_struct_on_page_boundary_linux.s
 mv -v ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/validate_return_pointer_linux.s ${TEST_DIR}/${TEST_SRCS[17]}/valid/params_and_returns/return_pointer_in_rax_linux.s
 mv -v ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/clobber_xmm_regs_linux.s ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/dbl_fun_call_linux.s
+cp -v ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/aliasing_optimized_away_linux.s
+cp -v ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/dbl_trivially_colorable_linux.s
+cp -v ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/fourteen_pseudos_interfere_linux.s
+cp -v ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/cmp_no_updates_linux.s
 
 # Generate assembly for helpers that use libc
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
@@ -187,7 +191,7 @@ cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TE
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/trivially_colorable_linux.s
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/use_all_hardregs_linux.s
 
-# Cleanup assembly helpers
+# Cleanup assembly tests
 for i in $(find ${TEST_DIR}/ -name "*_linux.s" -type f); do
     sed -i '/\.ident/d' ${i}
     sed -i '/\.file/d' ${i}
