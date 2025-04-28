@@ -57,7 +57,6 @@ mv -v ${TEST_DIR}/${TEST_SRCS[18]}/constant_folding/all_types/extra_credit/retur
 mv -v ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy.c ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy__+lm.c 
 
 # Merge multiple helpers into one
-cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_double_lib.c >> ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/track_arg_registers_lib.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/track_dbl_arg_registers_lib.c
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_funcall_generates_args_lib.c
@@ -89,16 +88,17 @@ ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/nan.c -o ${TEST_DIR}/${TEST_SRCS[18]}/copy_propagation/all_types/extra_credit/redundant_nan_copy__+lm_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/unreachable_code_elimination/infinite_loop_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/exit.c -o ${TEST_DIR}/${TEST_SRCS[18]}/dead_store_elimination/int_only/static_not_always_live_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/coalesce_prevents_spill_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/with_coalescing/coalesce_prevents_spill_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/funcall_generates_args_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/dbl_funcall_generates_args_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/funcall_generates_args_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/funcall_generates_args_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_arg_registers_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/mixed_type_arg_registers_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_funcall_generates_args_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/mixed_type_funcall_generates_args_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_all_int_struct_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_all_int_struct_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_double_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_double_struct_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double_struct_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
+${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/target_shim.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/with_coalescing/george_coalesce_xmm_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/track_arg_registers_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/track_arg_registers_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/track_dbl_arg_registers_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/track_dbl_arg_registers_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_funcall_generates_args_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/mixed_type_funcall_generates_args_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/funcall_generates_args_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/funcall_generates_args_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/funcall_generates_args_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/dbl_funcall_generates_args_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_all_int_struct_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_all_int_struct_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/return_double_struct_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double_struct_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/mixed_type_arg_registers_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/mixed_type_arg_registers_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/coalesce_prevents_spill_lib.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/with_coalescing/coalesce_prevents_spill_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
-${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/target_shim.c -o ${TEST_DIR}/${TEST_SRCS[19]}/all_types/with_coalescing/george_coalesce_xmm_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/use_all_hardregs_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/eax_live_at_exit_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
 ${CC} -v -S ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/util.c -o ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/cmp_generates_operands_linux.s 2>&1 | grep COLLECT_GCC_OPTIONS
@@ -180,6 +180,7 @@ cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TE
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/optimistic_coloring_linux.s
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/preserve_across_fun_call_linux.s
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_all_int_struct_linux.s
+cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double_linux.s
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/all_types/no_coalescing/return_double_struct_linux.s
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/rewrite_regression_test_linux.s
 cat ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/wrapper_linux.s >> ${TEST_DIR}/${TEST_SRCS[19]}/int_only/no_coalescing/same_instr_no_interference_linux.s
