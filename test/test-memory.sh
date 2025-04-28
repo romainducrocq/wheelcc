@@ -88,15 +88,13 @@ function check_test () {
 
 function test_src () {
     SRC=${1}
-    for FILE in $(find ${SRC} -name "*.c" -type f | sort --uniq)
-    do
+    for FILE in $(find ${SRC} -name "*.c" -type f | sort --uniq); do
         check_test ${FILE}
     done
 }
 
 function test_all () {
-    for SRC in ${TEST_SRCS[@]}
-    do
+    for SRC in ${TEST_SRCS[@]}; do
         test_src ${SRC}
     done
 }

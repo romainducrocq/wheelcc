@@ -7,8 +7,7 @@ function apt_install () {
     for PKG in $(echo "\
         diffutils \
         valgrind  \
-    ")
-    do
+    "); do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             sudo apt-get -y install ${PKG}
         fi
@@ -22,8 +21,7 @@ function dnf_install () {
     for PKG in $(echo "\
         diffutils.x86_64 \
         valgrind.x86_64  \
-    ")
-    do
+    "); do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             sudo dnf -y install ${PKG}
         fi
@@ -37,8 +35,7 @@ function pacman_install () {
     for PKG in $(echo "\
         diffutils \
         valgrind  \
-    ")
-    do
+    "); do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             sudo pacman -Syu ${PKG}
         fi
@@ -57,8 +54,7 @@ function get_install () {
     for PKG in $(echo "\
         diffutils \
         valgrind  \
-    ")
-    do
+    "); do
         if [ ${INSTALL_PKGS[${i}]} -eq 1 ]; then
             if [ ! "${INSTALL_Y}" = "y" ]; then
                 INSTALL_Y="y"

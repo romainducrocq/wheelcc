@@ -32,8 +32,7 @@ function parse () {
         | sed "s/\s*:.*{\s*/\", [/g" > ast.out.1
 
     echo -n "" > ast.out.2
-    while read l ;
-    do
+    while read l; do
         if [[ "${l}" == "["* ]]; then
             echo ${l} >> ast.out.2
         elif [[ "${l}" == "("* ]]; then
@@ -46,8 +45,7 @@ function parse () {
 
     line=""
     echo -n "" > ast.out.1
-    while read l;
-    do
+    while read l; do
         if [[ "${l}" == "["* ]]; then
             echo "${line}]]," >> ast.out.1
             line="${l} "
@@ -74,8 +72,7 @@ function parse () {
 
     echo ""
     echo "    # /include/ast/${1}.hpp"
-    while read l;
-    do
+    while read l; do
         echo "    ${l}"
     done < <(tail -n +2 ast.out.2)
     rm ast.out.2

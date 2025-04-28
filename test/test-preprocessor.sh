@@ -53,8 +53,7 @@ function print_error () {
 
 function header_dir () {
     HEADER_DIR=""
-    for i in $(seq 1 ${1})
-    do
+    for i in $(seq 1 ${1}); do
         HEADER_DIR="${HEADER_DIR}${i}/"
     done
     mkdir -p ${TEST_SRC}/${HEADER_DIR}
@@ -67,8 +66,7 @@ function make_test () {
     fi
     mkdir -p ${TEST_SRC}
 
-    for i in $(seq 1 $((N-1)))
-    do
+    for i in $(seq 1 $((N-1))); do
         echo "int x${i} = 1;" > ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "// a single-line comment ${i}" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
         echo "#pragma pragma${i}" >> ${TEST_SRC}/$(header_dir ${i})test-header_${i}.h
@@ -98,8 +96,7 @@ function make_test () {
     echo "// a single-line comment $((${N}+1))" >> ${FILE}.c
     echo "#pragma pragma$((${N}+1))" >> ${FILE}.c
     echo "" >> ${FILE}.c
-    for i in $(seq 1 $((N-1)))
-    do
+    for i in $(seq 1 $((N-1))); do
         echo "#include \"$(header_dir ${i})test-header_${i}.h\"" >> ${FILE}.c
     done
     echo "#include \"test-header_${N}.h\"" >> ${FILE}.c
@@ -111,13 +108,11 @@ function make_test () {
     echo "char* s$((${N}+1)) = \"Hello $((${N}+1))!\";" >> ${FILE}.c
     echo "" >> ${FILE}.c
     echo "int main(void) {" >> ${FILE}.c
-    for i in $(seq 1 $((${N}+1)))
-    do
+    for i in $(seq 1 $((${N}+1))); do
         echo "    puts(s${i});" >> ${FILE}.c
     done
         echo "    return 0" >> ${FILE}.c;
-    for i in $(seq 1 $((${N}+1)))
-    do
+    for i in $(seq 1 $((${N}+1))); do
         echo "    + x${i}" >> ${FILE}.c
     done
     echo "    ;" >> ${FILE}.c
@@ -140,8 +135,7 @@ check_preprocess () {
         rm ${FILE}
 
         diff -sq <(echo "${STDOUT}") <(
-            for i in $(seq 1 $((${N}+1)))
-            do
+            for i in $(seq 1 $((${N}+1))); do
                 echo "Hello ${i}!"
             done
         ) | grep -q "identical"
@@ -177,8 +171,7 @@ check_error () {
     else
         diff -sq <(echo "${STDOUT}") <(
             echo -e -n "\033[1m${TEST_SRC}/"
-            for i in $(seq 1 $((${ERR})))
-            do
+            for i in $(seq 1 $((${ERR}))); do
                 echo -n "${i}/"
             done
             echo -e "test-header_${ERR}.h:10:${NC}"

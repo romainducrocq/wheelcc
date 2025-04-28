@@ -18,20 +18,17 @@ function performance () {
     echo "----------------------------------------------------------------------"
     echo ""
     echo "${PACKAGE_NAME} ${OPTIM}"
-    { time for FILE in ${FILES}
-    do
+    { time for FILE in ${FILES}; do
         ${PACKAGE_NAME} ${OPTIM} -s ${FILE} > /dev/null 2>&1
     done } 2>&1
     if [ 1 -eq 0 ]; then
         echo ""
         echo "nqcc2 ${OPTIM_NQCC2}"
-        { time for FILE in ${FILES}
-        do
+        { time for FILE in ${FILES}; do
             ${NQCC2}/_build/default/bin/main.exe ${OPTIM_NQCC2} -S $(readlink -f ${FILE}) > /dev/null 2>&1
         done } 2>&1
     fi
-    for FILE in ${FILES}
-    do
+    for FILE in ${FILES}; do
         FILE=${FILE%.*}.s
         if [ -f ${FILE} ]; then
              rm ${FILE}
@@ -47,8 +44,7 @@ function time_src () {
 
 function time_all () {
     i=1
-    for SRC in ${TEST_SRCS[@]}
-    do
+    for SRC in ${TEST_SRCS[@]}; do
         time_src ${SRC} ${i}
         i=$((i+1))
     done
