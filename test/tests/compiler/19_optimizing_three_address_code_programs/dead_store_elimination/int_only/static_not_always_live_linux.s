@@ -1,4 +1,3 @@
-	.file	"exit.c"
 	.text
 	.globl	exit_wrapper
 	.type	exit_wrapper, @function
@@ -18,5 +17,4 @@ exit_wrapper:
 	.cfi_endproc
 .LFE0:
 	.size	exit_wrapper, .-exit_wrapper
-	.ident	"GCC: (Debian 12.2.0-14) 12.2.0"
-	.section	.note.GNU-stack,"",@progbits
+    .section        ".note.GNU-stack","",@progbits

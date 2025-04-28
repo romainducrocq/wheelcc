@@ -1,4 +1,3 @@
-	.file	"nan.c"
 	.text
 	.globl	double_isnan
 	.type	double_isnan, @function
@@ -21,5 +20,4 @@ double_isnan:
 	.cfi_endproc
 .LFE0:
 	.size	double_isnan, .-double_isnan
-	.ident	"GCC: (Debian 12.2.0-14) 12.2.0"
-	.section	.note.GNU-stack,"",@progbits
+    .section        ".note.GNU-stack","",@progbits

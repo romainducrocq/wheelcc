@@ -78,4 +78,4 @@ odd_arguments:
     call    exit@PLT
     popq    %rbp
     retq
-	.section	".note.GNU-stack","",@progbits
+    .section        ".note.GNU-stack","",@progbits

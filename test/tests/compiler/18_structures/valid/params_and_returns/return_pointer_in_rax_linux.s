@@ -26,4 +26,4 @@ main:
     movq    %rbp, %rsp
     popq    %rbp
     retq
-	.section	".note.GNU-stack","",@progbits
+    .section        ".note.GNU-stack","",@progbits
