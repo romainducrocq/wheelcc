@@ -155,7 +155,7 @@ function check_single () {
 }
 
 function check_data () {
-    ${CC} -c ${FILE}_data.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
+    ${CC} -c ${FILE}_linux.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
     ${CC} -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
     ${CC} ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
     STDOUT_GCC=$(${FILE})
@@ -168,7 +168,7 @@ function check_data () {
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
-        ${CC} ${FILE}.o ${FILE}_data.s ${LIBS} -o ${FILE} > /dev/null 2>&1
+        ${CC} ${FILE}.o ${FILE}_linux.s ${LIBS} -o ${FILE} > /dev/null 2>&1
         RETURN_THIS=${?}
     fi
 
@@ -254,7 +254,7 @@ function check_test () {
         LIBS=" -"$(echo "${FILE}" | cut -d "+" -f2- | tr "+" "-" | tr "_" " ")
     fi
 
-    if [ -f "${FILE}_data.s" ]; then
+    if [ -f "${FILE}_linux.s" ]; then
         check_data
         return
     fi
