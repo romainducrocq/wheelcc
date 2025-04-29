@@ -23,7 +23,7 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 Next development milestones planned for this year:  
 - [x] Add IR optimizations
-- [ ] Add a register allocator
+- [x] Add a register allocator
 - [ ] Clean up the codebase
 - [ ] Migrate the compiler to C
 - [ ] Support MacOS
@@ -31,7 +31,7 @@ Next development milestones planned for this year:
 
 ## Migrating to C
 
-A C compiler should be written in C, right? wheelcc was implemented from the start with the goal to switch to plain C at some point. C++ was used for development for its very handy std that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C! The migration is done on branch `cpp2c/develop` until complete.
+(Starting soon) A C compiler should be written in C, right? wheelcc was implemented from the start with the goal to switch to plain C at some point. C++ was used for development for its very handy std that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C! The migration is done on branch `cpp2c/develop` until complete.
 
 ### Progress
 
@@ -191,9 +191,19 @@ $ ./test-compiler.sh [-O0 | -O1 | -O2 | -O3]
 $ ./test-preprocessor.sh
 ```
 
+- Test error handling  
+```
+$ ./test-errors.sh
+```
+
 - Test memory leaks  
 ```
 $ ./test-memory.sh [-O0 | -O1 | -O2 | -O3]
+```
+
+- Run all tests  
+```
+$ ./test-all.sh
 ```
 
 ## Compiler overview
@@ -277,8 +287,8 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 - [x] [Unreachable code elimination](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/unreachable_code_elimination)
 - [x] [Copy propagation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/copy_propagation)
 - [x] [Dead store elimination](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/19_optimizing_three_address_code_programs/dead_store_elimination)
-- [ ] Register allocation
-- [ ] Register allocation with coalescing
+- [x] [Register allocation](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/20_register_allocation)
+- [x] [Register allocation with coalescing](https://github.com/romainducrocq/wheelcc/tree/master/test/tests/compiler/20_register_allocation/all_types/with_coalescing)
 
 ### Language grammar
 
