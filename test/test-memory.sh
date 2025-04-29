@@ -23,8 +23,10 @@ function total () {
     RESULT="${PASS} / ${TOTAL}"
     if [ ${PASS} -eq ${TOTAL} ]; then
         RESULT="${LIGHT_GREEN}PASS: ${RESULT}${NC}"
+        RETURN=0
     else
         RESULT="${LIGHT_RED}FAIL: ${RESULT}${NC}"
+        RETURN=1
     fi
     echo -e "${RESULT}"
 }
@@ -109,6 +111,7 @@ esac
 
 PASS=0
 TOTAL=0
+RETURN=0
 
 ARG=${1}
 
@@ -134,4 +137,4 @@ else
 fi
 total
 
-exit 0
+exit ${RETURN}
