@@ -19,6 +19,8 @@ function test () {
     if [ ${RETURN} -ne 0 ]; then exit 1; fi
 }
 
+test "test-preprocessor.sh"
+
 test "test-compiler.sh" "-O0"
 test "test-compiler.sh" "-O1"
 test "test-compiler.sh" "-O2"
@@ -28,8 +30,6 @@ test "test-memory.sh" "-O0"
 test "test-memory.sh" "-O1"
 test "test-memory.sh" "-O2"
 test "test-memory.sh" "-O3"
-
-test "test-preprocessor.sh"
 
 test "test-errors.sh"
 
