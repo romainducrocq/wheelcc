@@ -2,10 +2,10 @@
 
 CC="gcc -pedantic-errors -std=c17"
 
-ROOT="${PWD}/.."
+ROOT="${PWD}/../.."
 TEST_SUITE="${ROOT}/../writing-a-c-compiler-tests"
 
-TEST_DIR="${PWD}/tests/compiler"
+TEST_DIR="${PWD}/../tests/compiler"
 TEST_SRCS=(
 "1_int_constants"
 "2_unary_operators"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT="${PWD}/.."
+ROOT="${PWD}/../.."
 
 function format () {
     FILE="$(readlink -f ${1})"

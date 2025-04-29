@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+PACKAGE_NAME="$(cat ../../bin/package_name.txt)"
 
-TEST_DIR="${PWD}/tests/compiler"
+TEST_DIR="${PWD}/../tests/compiler"
 
 function print_errors () {
     for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid | sort --uniq); do

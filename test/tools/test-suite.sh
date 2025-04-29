@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT="${PWD}/.."
+ROOT="${PWD}/../.."
 TEST_SUITE="${ROOT}/../writing-a-c-compiler-tests"
 
 function test () {
