@@ -9,13 +9,10 @@ class TUInt: name = "TUInt"
 class TULong: name = "TULong"
 class TDouble: name = "TDouble"
 class Bool: name = "Bool"
-class List: name = "List"
-
-""" AST """ ############################################################################################################
 
 ast = [
 
-    # /include/ast/ast.hpp
+    # /ast/ast
     ["CConst", [], []],
     ["CConstInt", [(TInt, "value")], []],
     ["CConstLong", [(TLong, "value")], []],
@@ -26,7 +23,7 @@ ast = [
     ["CConstUChar", [(TUChar, "value")], []],
     ["CStringLiteral", [(TChar, "[value")], []],
 
-    # /include/ast/front_symt.hpp
+    # /ast/front_symt
     ["Type", [], []],
     ["Char", [], []],
     ["SChar", [], []],
@@ -65,7 +62,7 @@ ast = [
     ["StructMember", [(TLong, "offset")], ["member_type"]],
     ["StructTypedef", [(TInt, "alignment"), (TLong, "size"), (TIdentifier, "[member_names")], ["(members"]],
 
-    # /include/ast/back_symt.hpp
+    # /ast/back_symt
     ["AssemblyType", [], []],
     ["Byte", [], []],
     ["LongWord", [], []],
@@ -76,7 +73,7 @@ ast = [
     ["BackendObj", [(Bool, "is_static"), (Bool, "is_constant")], ["assembly_type"]],
     ["BackendFun", [(Bool, "is_defined")], ["[callee_saved_registers"]],
 
-    # /include/ast/front_ast.hpp
+    # /ast/front_ast
     ["CUnaryOp", [], []],
     ["CComplement", [], []],
     ["CNegate", [], []],
@@ -170,7 +167,7 @@ ast = [
     ["CStructDecl", [], ["struct_decl"]],
     ["CProgram", [], ["[declarations"]],
 
-    # /include/ast/interm_ast.hpp
+    # /ast/interm_ast
     ["TacUnaryOp", [], []],
     ["TacComplement", [], []],
     ["TacNegate", [], []],
@@ -229,7 +226,7 @@ ast = [
     ["TacStaticConstant", [(TIdentifier, "name")], ["static_init_type", "static_init"]],
     ["TacProgram", [], ["[static_constant_top_levels", "[static_variable_top_levels", "[function_top_levels"]],
 
-    # /include/ast/back_ast.hpp
+    # /ast/back_ast
     ["AsmReg", [], []],
     ["AsmAx", [], []],
     ["AsmBx", [], []],
@@ -325,4 +322,3 @@ ast = [
     ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["static_init"]],
     ["AsmProgram", [], ["[static_constant_top_levels", "[top_levels"]],
 ]
-
