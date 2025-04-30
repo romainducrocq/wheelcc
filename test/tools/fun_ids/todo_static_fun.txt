@@ -13,7 +13,7 @@
 [ ] main.cpp
 [ ] optimization/optim_tac.cpp
 [ ] optimization/reg_alloc.cpp
-[ ] backend/emitter/gas_code.cpp
+[x] backend/emitter/gas_code.cpp
 [x] backend/assembly/stack_fix.cpp
 [x] backend/assembly/asm_gen.cpp
 [x] backend/assembly/symt_cvt.cpp
