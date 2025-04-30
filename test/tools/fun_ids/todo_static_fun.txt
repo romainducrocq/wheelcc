@@ -24,7 +24,7 @@
 [x] backend/assembly/asm_gen.cpp
 [ ] backend/assembly/symt_cvt.cpp
 [ ] backend/assembly/regs.hpp
-[ ] backend/assembly/registers.cpp
+[x] backend/assembly/registers.cpp
 [ ] util/throw.cpp
 [ ] util/pprint.cpp
 [ ] util/str2t.cpp
