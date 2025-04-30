@@ -2353,8 +2353,7 @@ static void stack_param_fun_instr(TIdentifier name, TLong stack_bytes) {
     push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
-static void reg_8b_param_fun_instr(
-    TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+static void reg_8b_param_fun_instr(TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     ret_8b_call_instr(name, offset, struct_type, arg_register);
 }
 
