@@ -1,0 +1,5 @@
+hex_string_to_int32
+hex_string_to_int64
+hex_string_to_int8
+hex_string_to_intmax
+string_literal_byte_to_hex_string

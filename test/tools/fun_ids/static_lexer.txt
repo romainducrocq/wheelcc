@@ -1,0 +1,5 @@
+find_header
+strip_filename_extension
+tokenize_file
+tokenize_header
+tokenize_source

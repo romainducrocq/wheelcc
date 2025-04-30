@@ -1,0 +1,13 @@
+arg_parse_uint8
+arg_parse
+compile
+debug_addressed_set
+debug_asm_code
+debug_ast
+debug_backend_symbol_table
+debug_string_constant_table
+debug_struct_typedef_table
+debug_symbol_table
+debug_tokens
+shift_args
+verbose

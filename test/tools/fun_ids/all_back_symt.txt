@@ -1,0 +1,2 @@
+BackendFun::BackendFun(bool is_defined) : is_defined(
+ByteArray::ByteArray(TLong size, TInt alignment) : size(size), alignment(

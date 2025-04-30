@@ -1,0 +1,16 @@
+TInt generate_type_alignment(
+static TInt generate_array_aggregate_type_alignment(
+static TInt generate_scalar_type_alignment(
+static TInt generate_structure_aggregate_type_alignment(
+static std::shared_ptr<ByteArray> convert_array_aggregate_assembly_type(
+static std::shared_ptr<ByteArray> convert_structure_aggregate_assembly_type(
+static void convert_backend_symbol(
+static void convert_double_static_constant(
+static void convert_fun_type(
+static void convert_obj_type(
+static void convert_program(
+static void convert_static_constant_top_level(
+static void convert_string_static_constant(
+static void convert_top_level(
+std::shared_ptr<AssemblyType> convert_backend_assembly_type(
+void convert_symbol_table(

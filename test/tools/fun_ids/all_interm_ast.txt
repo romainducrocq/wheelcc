@@ -1,0 +1,8 @@
+TacConstant::TacConstant(std::shared_ptr<CConst> constant) : constant(
+TacDereferencedPointer::TacDereferencedPointer(std::shared_ptr<TacValue> val) : val(
+TacJump::TacJump(TIdentifier target) : target(
+TacLabel::TacLabel(TIdentifier name) : name(
+TacPlainOperand::TacPlainOperand(std::shared_ptr<TacValue> val) : val(
+TacReturn::TacReturn(std::shared_ptr<TacValue> val) : val(
+TacSubObject::TacSubObject(TIdentifier base_name, TLong offset) : base_name(base_name), offset(
+TacVariable::TacVariable(TIdentifier name) : name(

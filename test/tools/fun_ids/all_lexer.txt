@@ -1,0 +1,6 @@
+static bool find_header(
+static void strip_filename_extension(
+static void tokenize_file(
+static void tokenize_header(
+static void tokenize_source(
+std::vector<Token> lexing(

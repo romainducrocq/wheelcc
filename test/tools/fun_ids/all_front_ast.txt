@@ -1,0 +1,27 @@
+CAddrOf::CAddrOf(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(
+CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items) : block_items(
+CBreak::CBreak(size_t line) : line(
+CCompound::CCompound(std::unique_ptr<CBlock> block) : block(
+CConstant::CConstant(std::shared_ptr<CConst> constant, size_t line) : CExp(line), constant(
+CContinue::CContinue(size_t line) : line(
+CD::CD(std::unique_ptr<CDeclaration> declaration) : declaration(
+CDefault::CDefault(std::unique_ptr<CStatement> jump_to, size_t line) : jump_to(std::move(jump_to)), line(
+CDereference::CDereference(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(
+CExp::CExp(size_t line) : line(
+CExpression::CExpression(std::unique_ptr<CExp> exp) : exp(
+CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl) : function_decl(
+CGoto::CGoto(TIdentifier target, size_t line) : target(target), line(
+CIdent::CIdent(TIdentifier name) : name(
+CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init) : init(
+CInitExp::CInitExp(std::unique_ptr<CExp> init) : init(
+CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator) : declarator(
+CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations) : declarations(
+CReturn::CReturn(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(
+CS::CS(std::unique_ptr<CStatement> statement) : statement(
+CSingleInit::CSingleInit(std::unique_ptr<CExp> exp) : exp(
+CSizeOf::CSizeOf(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(
+CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type, size_t line) : CExp(line), target_type(
+CString::CString(std::shared_ptr<CStringLiteral> literal, size_t line) : CExp(line), literal(
+CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl) : struct_decl(
+CVar::CVar(TIdentifier name, size_t line) : CExp(line), name(
+CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl) : variable_decl(

@@ -1,0 +1,4 @@
+get_array_type_hr
+get_function_type_hr
+get_pointer_type_hr
+get_structure_type_hr

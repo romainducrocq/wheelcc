@@ -1,0 +1,20 @@
+double string_to_double(
+hash_t string_to_hash(
+int32_t intmax_to_int32(
+int32_t string_literal_bytes_to_int32(
+int32_t string_to_char_ascii(
+int64_t intmax_to_int64(
+int64_t string_literal_bytes_to_int64(
+int8_t string_literal_bytes_to_int8(
+intmax_t string_to_intmax(
+static int32_t hex_string_to_int32(
+static int64_t hex_string_to_int64(
+static int8_t hex_string_to_int8(
+static intmax_t hex_string_to_intmax(
+static std::string string_literal_byte_to_hex_string(
+std::string string_literal_to_string_constant(
+uint32_t uintmax_to_uint32(
+uint64_t double_to_binary(
+uint64_t uintmax_to_uint64(
+uintmax_t string_to_uintmax(
+void string_to_string_literal(
