@@ -636,7 +636,7 @@ static void mov_sx_to_addr(AsmMovSx* node) {
     push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void mov_sx_instrs(AsmMovSx* node) {
+static void mov_sx_instr(AsmMovSx* node) {
     if (node->src->type() == AST_T::AsmImm_t) {
         mov_sx_from_imm(node);
     }
@@ -976,7 +976,7 @@ static void fix_instr(AsmInstruction* node) {
             fix_mov_instr(static_cast<AsmMov*>(node));
             break;
         case AST_T::AsmMovSx_t:
-            mov_sx_instrs(static_cast<AsmMovSx*>(node));
+            mov_sx_instr(static_cast<AsmMovSx*>(node));
             break;
         case AST_T::AsmMovZeroExtend_t:
             zero_extend_instr(static_cast<AsmMovZeroExtend*>(node));
