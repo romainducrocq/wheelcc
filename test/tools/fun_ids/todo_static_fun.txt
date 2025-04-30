@@ -20,7 +20,7 @@
 [ ] optimization/reg_alloc.cpp
 [ ] optimization/impl_olvl.hpp
 [ ] backend/emitter/gas_code.cpp
-[ ] backend/assembly/stack_fix.cpp
+[x] backend/assembly/stack_fix.cpp
 [x] backend/assembly/asm_gen.cpp
 [ ] backend/assembly/symt_cvt.cpp
 [ ] backend/assembly/regs.hpp

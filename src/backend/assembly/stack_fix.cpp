@@ -33,23 +33,23 @@ static std::unique_ptr<StackFixContext> context;
 
 // Pseudo register replacement
 
-static std::shared_ptr<AsmData> replace_pseudo_register_data(AsmPseudo* node) {
+static std::shared_ptr<AsmData> pseudo_data(AsmPseudo* node) {
     TIdentifier name = node->name;
     return std::make_shared<AsmData>(std::move(name), 0l);
 }
 
-static std::shared_ptr<AsmData> replace_pseudo_mem_register_data(AsmPseudoMem* node) {
+static std::shared_ptr<AsmData> pseudo_mem_data(AsmPseudoMem* node) {
     TIdentifier name = node->name;
     TLong offset = node->offset;
     return std::make_shared<AsmData>(std::move(name), std::move(offset));
 }
 
-static std::shared_ptr<AsmMemory> replace_pseudo_register_memory(AsmPseudo* node) {
+static std::shared_ptr<AsmMemory> pseudo_memory(AsmPseudo* node) {
     TLong value = -1l * context->pseudo_stack_bytes_map[node->name];
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
 
-static std::shared_ptr<AsmMemory> replace_pseudo_mem_register_memory(AsmPseudoMem* node) {
+static std::shared_ptr<AsmMemory> pseudo_mem_memory(AsmPseudoMem* node) {
     TLong value = -1l * (context->pseudo_stack_bytes_map[node->name] - node->offset);
     return generate_memory(REGISTER_KIND::Bp, std::move(value));
 }
@@ -61,33 +61,33 @@ static void align_offset_stack_bytes(TInt alignment) {
     }
 }
 
-static void align_offset_pseudo_register(TLong size, TInt alignment) {
+static void align_offset_pseudo(TLong size, TInt alignment) {
     context->stack_bytes += size;
     align_offset_stack_bytes(alignment);
 }
 
-static void allocate_offset_pseudo_register(AssemblyType* assembly_type) {
+static void alloc_offset_pseudo(AssemblyType* assembly_type) {
     switch (assembly_type->type()) {
         case AST_T::Byte_t:
-            align_offset_pseudo_register(1l, 1);
+            align_offset_pseudo(1l, 1);
             break;
         case AST_T::LongWord_t:
-            align_offset_pseudo_register(4l, 4);
+            align_offset_pseudo(4l, 4);
             break;
         case AST_T::QuadWord_t:
         case AST_T::BackendDouble_t:
-            align_offset_pseudo_register(8l, 8);
+            align_offset_pseudo(8l, 8);
             break;
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-static void allocate_offset_pseudo_mem_register(AssemblyType* assembly_type) {
+static void alloc_offset_pseudo_mem(AssemblyType* assembly_type) {
     switch (assembly_type->type()) {
         case AST_T::ByteArray_t: {
             ByteArray* p_assembly_type = static_cast<ByteArray*>(assembly_type);
-            align_offset_pseudo_register(p_assembly_type->size, p_assembly_type->alignment);
+            align_offset_pseudo(p_assembly_type->size, p_assembly_type->alignment);
             break;
         }
         default:
@@ -95,46 +95,46 @@ static void allocate_offset_pseudo_mem_register(AssemblyType* assembly_type) {
     }
 }
 
-static std::shared_ptr<AsmOperand> replace_operand_pseudo_register(AsmPseudo* node) {
+static std::shared_ptr<AsmOperand> pseudo_op(AsmPseudo* node) {
     if (context->pseudo_stack_bytes_map.find(node->name) == context->pseudo_stack_bytes_map.end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get());
         if (backend_obj->is_static) {
-            return replace_pseudo_register_data(node);
+            return pseudo_data(node);
         }
         else {
-            allocate_offset_pseudo_register(backend_obj->assembly_type.get());
+            alloc_offset_pseudo(backend_obj->assembly_type.get());
             context->pseudo_stack_bytes_map[node->name] = context->stack_bytes;
         }
     }
 
-    return replace_pseudo_register_memory(node);
+    return pseudo_memory(node);
 }
 
-static std::shared_ptr<AsmOperand> replace_operand_pseudo_mem_register(AsmPseudoMem* node) {
+static std::shared_ptr<AsmOperand> pseudo_mem_op(AsmPseudoMem* node) {
     if (context->pseudo_stack_bytes_map.find(node->name) == context->pseudo_stack_bytes_map.end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get());
         if (backend_obj->is_static) {
-            return replace_pseudo_mem_register_data(node);
+            return pseudo_mem_data(node);
         }
         else {
-            allocate_offset_pseudo_mem_register(backend_obj->assembly_type.get());
+            alloc_offset_pseudo_mem(backend_obj->assembly_type.get());
             context->pseudo_stack_bytes_map[node->name] = context->stack_bytes;
         }
     }
 
-    return replace_pseudo_mem_register_memory(node);
+    return pseudo_mem_memory(node);
 }
 
-static void replace_mov_pseudo_registers(AsmMov* node) {
+static void repl_mov_pseudo(AsmMov* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -142,11 +142,11 @@ static void replace_mov_pseudo_registers(AsmMov* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -154,14 +154,14 @@ static void replace_mov_pseudo_registers(AsmMov* node) {
     }
 }
 
-static void replace_mov_sx_pseudo_registers(AsmMovSx* node) {
+static void repl_mov_sx_pseudo(AsmMovSx* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -169,11 +169,11 @@ static void replace_mov_sx_pseudo_registers(AsmMovSx* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -181,14 +181,14 @@ static void replace_mov_sx_pseudo_registers(AsmMovSx* node) {
     }
 }
 
-static void replace_mov_zero_extend_pseudo_registers(AsmMovZeroExtend* node) {
+static void repl_zero_extend_pseudo(AsmMovZeroExtend* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -196,11 +196,11 @@ static void replace_mov_zero_extend_pseudo_registers(AsmMovZeroExtend* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -208,14 +208,14 @@ static void replace_mov_zero_extend_pseudo_registers(AsmMovZeroExtend* node) {
     }
 }
 
-static void replace_lea_pseudo_registers(AsmLea* node) {
+static void repl_lea_pseudo(AsmLea* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -223,11 +223,11 @@ static void replace_lea_pseudo_registers(AsmLea* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -235,14 +235,14 @@ static void replace_lea_pseudo_registers(AsmLea* node) {
     }
 }
 
-static void replace_cvttsd2si_pseudo_registers(AsmCvttsd2si* node) {
+static void repl_cvttsd2si_pseudo(AsmCvttsd2si* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -250,11 +250,11 @@ static void replace_cvttsd2si_pseudo_registers(AsmCvttsd2si* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -262,14 +262,14 @@ static void replace_cvttsd2si_pseudo_registers(AsmCvttsd2si* node) {
     }
 }
 
-static void replace_cvtsi2sd_pseudo_registers(AsmCvtsi2sd* node) {
+static void repl_cvtsi2sd_pseudo(AsmCvtsi2sd* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -277,11 +277,11 @@ static void replace_cvtsi2sd_pseudo_registers(AsmCvtsi2sd* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -289,14 +289,14 @@ static void replace_cvtsi2sd_pseudo_registers(AsmCvtsi2sd* node) {
     }
 }
 
-static void replace_unary_pseudo_registers(AsmUnary* node) {
+static void repl_unary(AsmUnary* node) {
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -304,41 +304,14 @@ static void replace_unary_pseudo_registers(AsmUnary* node) {
     }
 }
 
-static void replace_binary_pseudo_registers(AsmBinary* node) {
+static void repl_binary_pseudo(AsmBinary* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
-            break;
-        }
-        default:
-            break;
-    }
-    switch (node->dst->type()) {
-        case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
-            break;
-        }
-        case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-static void replace_cmp_pseudo_registers(AsmCmp* node) {
-    switch (node->src->type()) {
-        case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
-            break;
-        }
-        case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -346,11 +319,11 @@ static void replace_cmp_pseudo_registers(AsmCmp* node) {
     }
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -358,44 +331,26 @@ static void replace_cmp_pseudo_registers(AsmCmp* node) {
     }
 }
 
-static void replace_idiv_pseudo_registers(AsmIdiv* node) {
+static void repl_cmp_pseudo(AsmCmp* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
             break;
     }
-}
-
-static void replace_div_pseudo_registers(AsmDiv* node) {
-    switch (node->src->type()) {
-        case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
-            break;
-        }
-        case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-static void replace_set_cc_pseudo_registers(AsmSetCC* node) {
     switch (node->dst->type()) {
         case AST_T::AsmPseudo_t: {
-            node->dst = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->dst.get()));
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->dst = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->dst.get()));
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
             break;
         }
         default:
@@ -403,14 +358,14 @@ static void replace_set_cc_pseudo_registers(AsmSetCC* node) {
     }
 }
 
-static void replace_push_pseudo_registers(AsmPush* node) {
+static void repl_idiv_pseudo(AsmIdiv* node) {
     switch (node->src->type()) {
         case AST_T::AsmPseudo_t: {
-            node->src = replace_operand_pseudo_register(static_cast<AsmPseudo*>(node->src.get()));
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
             break;
         }
         case AST_T::AsmPseudoMem_t: {
-            node->src = replace_operand_pseudo_mem_register(static_cast<AsmPseudoMem*>(node->src.get()));
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
             break;
         }
         default:
@@ -418,46 +373,91 @@ static void replace_push_pseudo_registers(AsmPush* node) {
     }
 }
 
-static void replace_pseudo_registers(AsmInstruction* node) {
+static void repl_div_pseudo(AsmDiv* node) {
+    switch (node->src->type()) {
+        case AST_T::AsmPseudo_t: {
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        }
+        case AST_T::AsmPseudoMem_t: {
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+static void repl_set_cc_pseudo(AsmSetCC* node) {
+    switch (node->dst->type()) {
+        case AST_T::AsmPseudo_t: {
+            node->dst = pseudo_op(static_cast<AsmPseudo*>(node->dst.get()));
+            break;
+        }
+        case AST_T::AsmPseudoMem_t: {
+            node->dst = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->dst.get()));
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+static void repl_push_pseudo(AsmPush* node) {
+    switch (node->src->type()) {
+        case AST_T::AsmPseudo_t: {
+            node->src = pseudo_op(static_cast<AsmPseudo*>(node->src.get()));
+            break;
+        }
+        case AST_T::AsmPseudoMem_t: {
+            node->src = pseudo_mem_op(static_cast<AsmPseudoMem*>(node->src.get()));
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+static void repl_pseudo_regs(AsmInstruction* node) {
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            replace_mov_pseudo_registers(static_cast<AsmMov*>(node));
+            repl_mov_pseudo(static_cast<AsmMov*>(node));
             break;
         case AST_T::AsmMovSx_t:
-            replace_mov_sx_pseudo_registers(static_cast<AsmMovSx*>(node));
+            repl_mov_sx_pseudo(static_cast<AsmMovSx*>(node));
             break;
         case AST_T::AsmMovZeroExtend_t:
-            replace_mov_zero_extend_pseudo_registers(static_cast<AsmMovZeroExtend*>(node));
+            repl_zero_extend_pseudo(static_cast<AsmMovZeroExtend*>(node));
             break;
         case AST_T::AsmLea_t:
-            replace_lea_pseudo_registers(static_cast<AsmLea*>(node));
+            repl_lea_pseudo(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
-            replace_cvttsd2si_pseudo_registers(static_cast<AsmCvttsd2si*>(node));
+            repl_cvttsd2si_pseudo(static_cast<AsmCvttsd2si*>(node));
             break;
         case AST_T::AsmCvtsi2sd_t:
-            replace_cvtsi2sd_pseudo_registers(static_cast<AsmCvtsi2sd*>(node));
+            repl_cvtsi2sd_pseudo(static_cast<AsmCvtsi2sd*>(node));
             break;
         case AST_T::AsmUnary_t:
-            replace_unary_pseudo_registers(static_cast<AsmUnary*>(node));
+            repl_unary(static_cast<AsmUnary*>(node));
             break;
         case AST_T::AsmBinary_t:
-            replace_binary_pseudo_registers(static_cast<AsmBinary*>(node));
+            repl_binary_pseudo(static_cast<AsmBinary*>(node));
             break;
         case AST_T::AsmCmp_t:
-            replace_cmp_pseudo_registers(static_cast<AsmCmp*>(node));
+            repl_cmp_pseudo(static_cast<AsmCmp*>(node));
             break;
         case AST_T::AsmIdiv_t:
-            replace_idiv_pseudo_registers(static_cast<AsmIdiv*>(node));
+            repl_idiv_pseudo(static_cast<AsmIdiv*>(node));
             break;
         case AST_T::AsmDiv_t:
-            replace_div_pseudo_registers(static_cast<AsmDiv*>(node));
+            repl_div_pseudo(static_cast<AsmDiv*>(node));
             break;
         case AST_T::AsmSetCC_t:
-            replace_set_cc_pseudo_registers(static_cast<AsmSetCC*>(node));
+            repl_set_cc_pseudo(static_cast<AsmSetCC*>(node));
             break;
         case AST_T::AsmPush_t:
-            replace_push_pseudo_registers(static_cast<AsmPush*>(node));
+            repl_push_pseudo(static_cast<AsmPush*>(node));
             break;
         default:
             break;
@@ -498,16 +498,16 @@ std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-static void push_fix_instruction(std::unique_ptr<AsmInstruction>&& fix_instruction) {
-    context->p_fix_instructions->push_back(std::move(fix_instruction));
+static void push_fix_instr(std::unique_ptr<AsmInstruction>&& fix_instr) {
+    context->p_fix_instructions->push_back(std::move(fix_instr));
 }
 
-static void swap_fix_instruction_back() {
+static void swap_fix_instr_back() {
     std::swap(
         (*context->p_fix_instructions)[context->p_fix_instructions->size() - 2], context->p_fix_instructions->back());
 }
 
-static void fix_allocate_stack_bytes(TLong callee_saved_size) {
+static void alloc_stack_bytes(TLong callee_saved_size) {
     TLong callee_saved_bytes = callee_saved_size * 8l;
     context->stack_bytes += callee_saved_bytes;
     if (context->stack_bytes > 0l) {
@@ -517,13 +517,13 @@ static void fix_allocate_stack_bytes(TLong callee_saved_size) {
     }
 }
 
-static void fix_push_callee_saved_registers(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
+static void push_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
     for (std::shared_ptr<AsmOperand> src : callee_saved_registers) {
-        push_fix_instruction(std::make_unique<AsmPush>(std::move(src)));
+        push_fix_instr(std::make_unique<AsmPush>(std::move(src)));
     }
 }
 
-static void fix_pop_callee_saved_registers(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
+static void pop_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
     for (size_t i = callee_saved_registers.size(); i-- > 0;) {
         if (callee_saved_registers[i]->type() != AST_T::AsmRegister_t) {
             RAISE_INTERNAL_ERROR;
@@ -555,11 +555,11 @@ static void fix_pop_callee_saved_registers(const std::vector<std::shared_ptr<Asm
             default:
                 RAISE_INTERNAL_ERROR;
         }
-        push_fix_instruction(std::make_unique<AsmPop>(std::move(reg)));
+        push_fix_instr(std::make_unique<AsmPop>(std::move(reg)));
     }
 }
 
-static bool is_operand_addr(AsmOperand* node) {
+static bool is_op_addr(AsmOperand* node) {
     switch (node->type()) {
         case AST_T::AsmMemory_t:
         case AST_T::AsmData_t:
@@ -570,16 +570,16 @@ static bool is_operand_addr(AsmOperand* node) {
     }
 }
 
-static void fix_double_mov_from_addr_to_addr_instruction(AsmMov* node) {
+static void mov_dbl_from_addr_to_addr(AsmMov* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm14);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_mov_from_quad_word_imm_instruction(AsmMov* node) {
+static void mov_from_quad_imm(AsmMov* node) {
     if (node->dst->type() == AST_T::AsmRegister_t) {
         if (node->assembly_type->type() != AST_T::QuadWord_t) {
             node->assembly_type = std::make_shared<QuadWord>();
@@ -590,79 +590,79 @@ static void fix_mov_from_quad_word_imm_instruction(AsmMov* node) {
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_mov_from_addr_to_addr_instruction(AsmMov* node) {
+static void mov_from_addr_to_addr(AsmMov* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_mov_instruction(AsmMov* node) {
+static void fix_mov_instr(AsmMov* node) {
     if (node->assembly_type->type() == AST_T::BackendDouble_t) {
-        if (is_operand_addr(node->src.get()) && is_operand_addr(node->dst.get())) {
-            fix_double_mov_from_addr_to_addr_instruction(node);
+        if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
+            mov_dbl_from_addr_to_addr(node);
         }
     }
     else {
         if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-            fix_mov_from_quad_word_imm_instruction(node);
+            mov_from_quad_imm(node);
         }
-        if (is_operand_addr(node->src.get()) && is_operand_addr(node->dst.get())) {
-            fix_mov_from_addr_to_addr_instruction(node);
+        if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
+            mov_from_addr_to_addr(node);
         }
     }
 }
 
-static void fix_mov_sx_from_imm_instruction(AsmMovSx* node) {
+static void mov_sx_from_imm(AsmMovSx* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type_src;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_mov_sx_to_addr_instruction(AsmMovSx* node) {
+static void mov_sx_to_addr(AsmMovSx* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type_dst;
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void fix_mov_sx_instruction(AsmMovSx* node) {
+static void mov_sx_instrs(AsmMovSx* node) {
     if (node->src->type() == AST_T::AsmImm_t) {
-        fix_mov_sx_from_imm_instruction(node);
+        mov_sx_from_imm(node);
     }
-    if (is_operand_addr(node->dst.get())) {
-        fix_mov_sx_to_addr_instruction(node);
+    if (is_op_addr(node->dst.get())) {
+        mov_sx_to_addr(node);
     }
 }
 
-static void fix_byte_mov_zero_extend_from_imm_instruction(AsmMovZeroExtend* node) {
+static void byte_zero_extend_from_imm(AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<Byte>();
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_byte_mov_zero_extend_to_addr_instruction(AsmMovZeroExtend* node) {
+static void byte_zero_extend_to_addr(AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type_dst;
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static AsmMov* fix_mov_zero_extend_as_mov_instruction(AsmMovZeroExtend* node) {
+static AsmMov* zero_extend_as_mov(AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<LongWord>();
@@ -671,124 +671,124 @@ static AsmMov* fix_mov_zero_extend_as_mov_instruction(AsmMovZeroExtend* node) {
     return static_cast<AsmMov*>(context->p_fix_instructions->back().get());
 }
 
-static void fix_mov_zero_extend_to_addr_instruction(AsmMov* node) {
+static void zero_extend_to_addr(AsmMov* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void fix_mov_zero_extend_instruction(AsmMovZeroExtend* node) {
+static void zero_extend_instr(AsmMovZeroExtend* node) {
     if (node->assembly_type_src->type() == AST_T::Byte_t) {
         if (node->src->type() == AST_T::AsmImm_t) {
-            fix_byte_mov_zero_extend_from_imm_instruction(node);
+            byte_zero_extend_from_imm(node);
         }
-        if (is_operand_addr(node->dst.get())) {
-            fix_byte_mov_zero_extend_to_addr_instruction(node);
+        if (is_op_addr(node->dst.get())) {
+            byte_zero_extend_to_addr(node);
         }
     }
     else {
-        AsmMov* mov = fix_mov_zero_extend_as_mov_instruction(node);
-        if (is_operand_addr(mov->dst.get())) {
-            fix_mov_zero_extend_to_addr_instruction(mov);
+        AsmMov* mov = zero_extend_as_mov(node);
+        if (is_op_addr(mov->dst.get())) {
+            zero_extend_to_addr(mov);
         }
     }
 }
 
-static void fix_lea_to_addr_instruction(AsmLea* node) {
+static void lea_to_addr(AsmLea* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void fix_lea_instruction(AsmLea* node) {
-    if (is_operand_addr(node->dst.get())) {
-        fix_lea_to_addr_instruction(node);
+static void fix_lea_instr(AsmLea* node) {
+    if (is_op_addr(node->dst.get())) {
+        lea_to_addr(node);
     }
 }
 
-static void fix_cvttsd2si_to_addr_instruction(AsmCvttsd2si* node) {
+static void cvttsd2si_to_addr(AsmCvttsd2si* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void fix_cvttsd2si_instruction(AsmCvttsd2si* node) {
-    if (is_operand_addr(node->dst.get())) {
-        fix_cvttsd2si_to_addr_instruction(node);
+static void fix_cvttsd2si_instr(AsmCvttsd2si* node) {
+    if (is_op_addr(node->dst.get())) {
+        cvttsd2si_to_addr(node);
     }
 }
 
-static void fix_cvtsi2sd_from_imm_instruction(AsmCvtsi2sd* node) {
+static void cvtsi2sd_from_imm(AsmCvtsi2sd* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_cvtsi2sd_to_addr_instruction(AsmCvtsi2sd* node) {
+static void cvtsi2sd_to_addr(AsmCvtsi2sd* node) {
     std::shared_ptr<AsmOperand> src = generate_register(REGISTER_KIND::Xmm15);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
     node->dst = src;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
 }
 
-static void fix_cvtsi2sd_instruction(AsmCvtsi2sd* node) {
+static void fix_cvtsi2sd_instr(AsmCvtsi2sd* node) {
     if (node->src->type() == AST_T::AsmImm_t) {
-        fix_cvtsi2sd_from_imm_instruction(node);
+        cvtsi2sd_from_imm(node);
     }
-    if (is_operand_addr(node->dst.get())) {
-        fix_cvtsi2sd_to_addr_instruction(node);
+    if (is_op_addr(node->dst.get())) {
+        cvtsi2sd_to_addr(node);
     }
 }
 
-static void fix_double_binary_to_addr_instruction(AsmBinary* node) {
+static void binary_dbl_to_addr(AsmBinary* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->dst);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm15);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
     node->dst = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(assembly_type, src, dst));
-    swap_fix_instruction_back();
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
+    push_fix_instr(std::make_unique<AsmMov>(assembly_type, src, dst));
+    swap_fix_instr_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
 }
 
-static void fix_binary_from_quad_word_imm_instruction(AsmBinary* node) {
+static void binary_from_quad_imm(AsmBinary* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_binary_any_from_addr_to_addr_instruction(AsmBinary* node) {
+static void binary_from_addr_to_addr(AsmBinary* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_binary_imul_to_addr_instruction(AsmBinary* node) {
+static void binary_imul_to_addr(AsmBinary* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->dst);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->dst = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(assembly_type, src, dst));
-    swap_fix_instruction_back();
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
+    push_fix_instr(std::make_unique<AsmMov>(assembly_type, src, dst));
+    swap_fix_instr_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(dst), std::move(src)));
 }
 
-static void fix_binary_shx_from_not_imm_instruction(AsmBinary* node) {
+static void binary_shx_from_not_imm(AsmBinary* node) {
     if (node->src->type() == AST_T::AsmRegister_t
         && register_mask_kind(static_cast<AsmRegister*>(node->src.get())->reg.get()) == REGISTER_KIND::Cx) {
         return;
@@ -797,14 +797,14 @@ static void fix_binary_shx_from_not_imm_instruction(AsmBinary* node) {
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Cx);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_binary_instruction(AsmBinary* node) {
+static void fix_binary_instr(AsmBinary* node) {
     if (node->assembly_type->type() == AST_T::BackendDouble_t) {
-        if (is_operand_addr(node->dst.get())) {
-            fix_double_binary_to_addr_instruction(node);
+        if (is_op_addr(node->dst.get())) {
+            binary_dbl_to_addr(node);
         }
     }
     else {
@@ -815,19 +815,19 @@ static void fix_binary_instruction(AsmBinary* node) {
             case AST_T::AsmBitOr_t:
             case AST_T::AsmBitXor_t: {
                 if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-                    fix_binary_from_quad_word_imm_instruction(node);
+                    binary_from_quad_imm(node);
                 }
-                if (is_operand_addr(node->src.get()) && is_operand_addr(node->dst.get())) {
-                    fix_binary_any_from_addr_to_addr_instruction(node);
+                if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
+                    binary_from_addr_to_addr(node);
                 }
                 break;
             }
             case AST_T::AsmMult_t: {
                 if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-                    fix_binary_from_quad_word_imm_instruction(node);
+                    binary_from_quad_imm(node);
                 }
-                if (is_operand_addr(node->dst.get())) {
-                    fix_binary_imul_to_addr_instruction(node);
+                if (is_op_addr(node->dst.get())) {
+                    binary_imul_to_addr(node);
                 }
                 break;
             }
@@ -835,10 +835,10 @@ static void fix_binary_instruction(AsmBinary* node) {
             case AST_T::AsmBitShiftRight_t:
             case AST_T::AsmBitShrArithmetic_t: {
                 if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-                    fix_binary_from_quad_word_imm_instruction(node);
+                    binary_from_quad_imm(node);
                 }
                 if (node->src->type() != AST_T::AsmImm_t) {
-                    fix_binary_shx_from_not_imm_instruction(node);
+                    binary_shx_from_not_imm(node);
                 }
                 break;
             }
@@ -848,92 +848,92 @@ static void fix_binary_instruction(AsmBinary* node) {
     }
 }
 
-static void fix_double_cmp_to_addr_instruction(AsmCmp* node) {
+static void cmp_dbl_to_addr(AsmCmp* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->dst);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::Xmm15);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
     node->dst = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_cmp_from_quad_word_imm_instruction(AsmCmp* node) {
+static void cmp_from_quad_imm(AsmCmp* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_cmp_from_addr_to_addr_instruction(AsmCmp* node) {
+static void cmp_from_addr_to_addr(AsmCmp* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_cmp_to_imm_instruction(AsmCmp* node) {
+static void cmp_to_imm(AsmCmp* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->dst);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R11);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->dst = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_cmp_instruction(AsmCmp* node) {
+static void fix_cmp_instr(AsmCmp* node) {
     if (node->assembly_type->type() == AST_T::BackendDouble_t) {
-        if (is_operand_addr(node->dst.get())) {
-            fix_double_cmp_to_addr_instruction(node);
+        if (is_op_addr(node->dst.get())) {
+            cmp_dbl_to_addr(node);
         }
     }
     else {
         if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-            fix_cmp_from_quad_word_imm_instruction(node);
+            cmp_from_quad_imm(node);
         }
-        if (is_operand_addr(node->src.get()) && is_operand_addr(node->dst.get())) {
-            fix_cmp_from_addr_to_addr_instruction(node);
+        if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
+            cmp_from_addr_to_addr(node);
         }
         else if (node->dst->type() == AST_T::AsmImm_t) {
-            fix_cmp_to_imm_instruction(node);
+            cmp_to_imm(node);
         }
     }
 }
 
-static void fix_idiv_from_imm_instruction(AsmIdiv* node) {
+static void idiv_from_imm(AsmIdiv* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_idiv_instruction(AsmIdiv* node) {
+static void fix_idiv_instr(AsmIdiv* node) {
     if (node->src->type() == AST_T::AsmImm_t) {
-        fix_idiv_from_imm_instruction(node);
+        idiv_from_imm(node);
     }
 }
 
-static void fix_div_from_imm_instruction(AsmDiv* node) {
+static void div_from_imm(AsmDiv* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = node->assembly_type;
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_div_instruction(AsmDiv* node) {
+static void fix_div_instr(AsmDiv* node) {
     if (node->src->type() == AST_T::AsmImm_t) {
-        fix_div_from_imm_instruction(node);
+        div_from_imm(node);
     }
 }
 
-static void fix_double_push_from_xmm_reg_instruction(AsmPush* node) {
+static void push_dbl_from_xmm_reg(AsmPush* node) {
     std::shared_ptr<AsmOperand> src_reg = std::move(node->src);
     std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
     {
@@ -945,73 +945,72 @@ static void fix_double_push_from_xmm_reg_instruction(AsmPush* node) {
     }
     {
         std::shared_ptr<AsmOperand> dst = generate_memory(REGISTER_KIND::Sp, 0l);
-        push_fix_instruction(
-            std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src_reg), std::move(dst)));
+        push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src_reg), std::move(dst)));
     }
 }
 
-static void fix_push_from_quad_word_imm_instruction(AsmPush* node) {
+static void push_from_quad_imm(AsmPush* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = generate_register(REGISTER_KIND::R10);
     std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
     node->src = dst;
-    push_fix_instruction(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
-    swap_fix_instruction_back();
+    push_fix_instr(std::make_unique<AsmMov>(std::move(assembly_type), std::move(src), std::move(dst)));
+    swap_fix_instr_back();
 }
 
-static void fix_push_instruction(AsmPush* node) {
+static void fix_push_instr(AsmPush* node) {
     if (node->src->type() == AST_T::AsmRegister_t) {
         REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node->src.get())->reg.get());
         if (register_kind != REGISTER_KIND::Sp && register_mask_bit(register_kind) > 11) {
-            fix_double_push_from_xmm_reg_instruction(node);
+            push_dbl_from_xmm_reg(node);
         }
     }
     else if (node->src->type() == AST_T::AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-        fix_push_from_quad_word_imm_instruction(node);
+        push_from_quad_imm(node);
     }
 }
 
-static void fix_instruction(AsmInstruction* node) {
+static void fix_instr(AsmInstruction* node) {
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            fix_mov_instruction(static_cast<AsmMov*>(node));
+            fix_mov_instr(static_cast<AsmMov*>(node));
             break;
         case AST_T::AsmMovSx_t:
-            fix_mov_sx_instruction(static_cast<AsmMovSx*>(node));
+            mov_sx_instrs(static_cast<AsmMovSx*>(node));
             break;
         case AST_T::AsmMovZeroExtend_t:
-            fix_mov_zero_extend_instruction(static_cast<AsmMovZeroExtend*>(node));
+            zero_extend_instr(static_cast<AsmMovZeroExtend*>(node));
             break;
         case AST_T::AsmLea_t:
-            fix_lea_instruction(static_cast<AsmLea*>(node));
+            fix_lea_instr(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
-            fix_cvttsd2si_instruction(static_cast<AsmCvttsd2si*>(node));
+            fix_cvttsd2si_instr(static_cast<AsmCvttsd2si*>(node));
             break;
         case AST_T::AsmCvtsi2sd_t:
-            fix_cvtsi2sd_instruction(static_cast<AsmCvtsi2sd*>(node));
+            fix_cvtsi2sd_instr(static_cast<AsmCvtsi2sd*>(node));
             break;
         case AST_T::AsmBinary_t:
-            fix_binary_instruction(static_cast<AsmBinary*>(node));
+            fix_binary_instr(static_cast<AsmBinary*>(node));
             break;
         case AST_T::AsmCmp_t:
-            fix_cmp_instruction(static_cast<AsmCmp*>(node));
+            fix_cmp_instr(static_cast<AsmCmp*>(node));
             break;
         case AST_T::AsmIdiv_t:
-            fix_idiv_instruction(static_cast<AsmIdiv*>(node));
+            fix_idiv_instr(static_cast<AsmIdiv*>(node));
             break;
         case AST_T::AsmDiv_t:
-            fix_div_instruction(static_cast<AsmDiv*>(node));
+            fix_div_instr(static_cast<AsmDiv*>(node));
             break;
         case AST_T::AsmPush_t:
-            fix_push_instruction(static_cast<AsmPush*>(node));
+            fix_push_instr(static_cast<AsmPush*>(node));
             break;
         default:
             break;
     }
 }
 
-static void fix_function_top_level(AsmFunction* node) {
+static void fun_toplvl(AsmFunction* node) {
     std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
     BackendFun* backend_fun = static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get());
 
@@ -1024,33 +1023,33 @@ static void fix_function_top_level(AsmFunction* node) {
     context->p_fix_instructions->emplace_back();
 
     bool is_ret = false;
-    fix_push_callee_saved_registers(backend_fun->callee_saved_registers);
+    push_callee_saved_regs(backend_fun->callee_saved_registers);
     for (size_t i = 0; i < instructions.size(); ++i) {
         if (instructions[i]) {
             if (instructions[i]->type() == AST_T::AsmRet_t) {
-                fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
+                pop_callee_saved_regs(backend_fun->callee_saved_registers);
                 is_ret = true;
             }
-            push_fix_instruction(std::move(instructions[i]));
+            push_fix_instr(std::move(instructions[i]));
 
-            replace_pseudo_registers(context->p_fix_instructions->back().get());
-            fix_instruction(context->p_fix_instructions->back().get());
+            repl_pseudo_regs(context->p_fix_instructions->back().get());
+            fix_instr(context->p_fix_instructions->back().get());
         }
     }
     if (!is_ret) {
-        fix_pop_callee_saved_registers(backend_fun->callee_saved_registers);
+        pop_callee_saved_regs(backend_fun->callee_saved_registers);
     }
     {
         TLong callee_saved_size = static_cast<TLong>(backend_fun->callee_saved_registers.size());
-        fix_allocate_stack_bytes(callee_saved_size);
+        alloc_stack_bytes(callee_saved_size);
     }
     context->p_fix_instructions = nullptr;
 }
 
-static void fix_top_level(AsmTopLevel* node) {
+static void fix_toplvl(AsmTopLevel* node) {
     switch (node->type()) {
         case AST_T::AsmFunction_t:
-            fix_function_top_level(static_cast<AsmFunction*>(node));
+            fun_toplvl(static_cast<AsmFunction*>(node));
             break;
         case AST_T::AsmStaticVariable_t:
             break;
@@ -1061,7 +1060,7 @@ static void fix_top_level(AsmTopLevel* node) {
 
 static void fix_program(AsmProgram* node) {
     for (const auto& top_level : node->top_levels) {
-        fix_top_level(top_level.get());
+        fix_toplvl(top_level.get());
     }
 }
 
