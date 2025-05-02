@@ -2,7 +2,7 @@
 [ ] frontend/parser/lexer.cpp
 [ ] frontend/parser/parser.cpp
 [ ] frontend/intermediate/semantic.cpp
-[ ] frontend/intermediate/tac_repr.cpp
+[x] frontend/intermediate/tac_repr.cpp
 [ ] frontend/intermediate/idents.cpp
 [ ] ast/ast.cpp
 [ ] ast/back_symt.cpp
