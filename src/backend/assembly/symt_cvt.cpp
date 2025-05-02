@@ -137,7 +137,7 @@ static void string_static_const(Array* arr_type) {
     cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
 }
 
-static void static_const_toplvl(AsmStaticConstant* node) {
+static void cvt_static_const_toplvl(AsmStaticConstant* node) {
     context->symbol = node->name;
     switch (node->static_init->type()) {
         case AST_T::DoubleInit_t:
@@ -154,7 +154,7 @@ static void static_const_toplvl(AsmStaticConstant* node) {
 static void cvt_toplvl(AsmTopLevel* node) {
     switch (node->type()) {
         case AST_T::AsmStaticConstant_t:
-            static_const_toplvl(static_cast<AsmStaticConstant*>(node));
+            cvt_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;

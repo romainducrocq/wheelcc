@@ -819,7 +819,7 @@ static void glob_directive_toplvl(const std::string& name, bool is_global) {
 //                                                        $     pushq %rbp
 //                                                        $     movq %rsp, %rbp
 //                                                        $     <instructions>
-static void fun_toplvl(AsmFunction* node) {
+static void emit_fun_toplvl(AsmFunction* node) {
     const std::string& name = emit_identifier(node->name);
     glob_directive_toplvl(name, node->is_global);
     emit(".text", 1);
@@ -924,7 +924,7 @@ static void section_static_toplvl(const std::vector<std::shared_ptr<StaticInit>>
 //                                     -> $     <alignment-directive>
 //                                     -> $ <name>:
 //                                     -> $     <init_list>
-static void static_var_toplvl(AsmStaticVariable* node) {
+static void emit_static_var_toplvl(AsmStaticVariable* node) {
     const std::string& name = emit_identifier(node->name);
     glob_directive_toplvl(name, node->is_global);
     section_static_toplvl(node->static_inits);
@@ -943,7 +943,7 @@ static void static_var_toplvl(AsmStaticVariable* node) {
 //                                      $     <alignment-directive>
 //                                      $ .L<name>:
 //                                      $     <init>
-static void static_const_toplvl(AsmStaticConstant* node) {
+static void emit_static_const_toplvl(AsmStaticConstant* node) {
     emit(".section .rodata", 1);
     align_directive_toplvl(node->alignment);
     {
@@ -962,13 +962,13 @@ static void emit_toplvl(AsmTopLevel* node) {
     emit("", 0);
     switch (node->type()) {
         case AST_T::AsmFunction_t:
-            fun_toplvl(static_cast<AsmFunction*>(node));
+            emit_fun_toplvl(static_cast<AsmFunction*>(node));
             break;
         case AST_T::AsmStaticVariable_t:
-            static_var_toplvl(static_cast<AsmStaticVariable*>(node));
+            emit_static_var_toplvl(static_cast<AsmStaticVariable*>(node));
             break;
         case AST_T::AsmStaticConstant_t:
-            static_const_toplvl(static_cast<AsmStaticConstant*>(node));
+            emit_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;

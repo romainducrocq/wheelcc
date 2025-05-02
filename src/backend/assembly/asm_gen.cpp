@@ -209,7 +209,7 @@ static std::shared_ptr<AsmOperand> gen_op(TacValue* node) {
 }
 
 // (signed) cond_code = E | NE | L | LE | G | GE
-static std::unique_ptr<AsmCondCode> signed_cond_code(TacBinaryOp* node) {
+static std::unique_ptr<AsmCondCode> gen_signed_cond_code(TacBinaryOp* node) {
     switch (node->type()) {
         case AST_T::TacEqual_t:
             return std::make_unique<AsmE>();
@@ -229,7 +229,7 @@ static std::unique_ptr<AsmCondCode> signed_cond_code(TacBinaryOp* node) {
 }
 
 // (unsigned) cond_code = E | NE | B | BE | A | AE
-static std::unique_ptr<AsmCondCode> unsigned_cond_code(TacBinaryOp* node) {
+static std::unique_ptr<AsmCondCode> gen_unsigned_cond_code(TacBinaryOp* node) {
     switch (node->type()) {
         case AST_T::TacEqual_t:
             return std::make_unique<AsmE>();
@@ -1066,7 +1066,7 @@ static void ulong_to_dbl_instr(TacUIntToDouble* node) {
     push_instr(std::make_unique<AsmLabel>(std::move(target_after)));
 }
 
-static void unsigned_to_double_instr(TacUIntToDouble* node) {
+static void unsigned_to_dbl_instr(TacUIntToDouble* node) {
     if (is_value_1b(node->src.get())) {
         uchar_to_dbl_instr(node);
     }
@@ -1658,10 +1658,10 @@ static void binop_int_conditional_intrs(TacBinary* node) {
     {
         std::unique_ptr<AsmCondCode> cond_code;
         if (is_value_signed(node->src1.get())) {
-            cond_code = signed_cond_code(node->binary_op.get());
+            cond_code = gen_signed_cond_code(node->binary_op.get());
         }
         else {
-            cond_code = unsigned_cond_code(node->binary_op.get());
+            cond_code = gen_unsigned_cond_code(node->binary_op.get());
         }
         push_instr(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
     }
@@ -1686,7 +1686,7 @@ static void binop_dbl_conditional_intrs(TacBinary* node) {
         push_instr(std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
     }
     {
-        std::unique_ptr<AsmCondCode> cond_code = unsigned_cond_code(node->binary_op.get());
+        std::unique_ptr<AsmCondCode> cond_code = gen_unsigned_cond_code(node->binary_op.get());
         if (cond_code->type() == AST_T::AsmNE_t) {
             TIdentifier target_nan_ne = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
             push_instr(std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
@@ -2267,7 +2267,7 @@ static void gen_instr(TacInstruction* node) {
             signed_to_dbl_instr(static_cast<TacIntToDouble*>(node));
             break;
         case AST_T::TacUIntToDouble_t:
-            unsigned_to_double_instr(static_cast<TacUIntToDouble*>(node));
+            unsigned_to_dbl_instr(static_cast<TacUIntToDouble*>(node));
             break;
         case AST_T::TacFunCall_t:
             call_instr(static_cast<TacFunCall*>(node));
@@ -2460,7 +2460,7 @@ static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
     fun_param_reg_mask(fun_type, reg_size, sse_size);
 }
 
-static std::unique_ptr<AsmFunction> fun_toplvl(TacFunction* node) {
+static std::unique_ptr<AsmFunction> gen_fun_toplvl(TacFunction* node) {
     TIdentifier name = node->name;
     bool is_global = node->is_global;
     bool is_return_memory = false;
@@ -2495,7 +2495,7 @@ static std::unique_ptr<AsmFunction> fun_toplvl(TacFunction* node) {
         std::move(name), std::move(is_global), std::move(is_return_memory), std::move(body));
 }
 
-static std::unique_ptr<AsmStaticVariable> static_var_toplvl(TacStaticVariable* node) {
+static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(TacStaticVariable* node) {
     TIdentifier name = node->name;
     bool is_global = node->is_global;
     TInt alignment = generate_type_alignment(node->static_init_type.get());
@@ -2516,7 +2516,7 @@ static void dbl_static_const_toplvl(TIdentifier identifier, TIdentifier double_c
         std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init)));
 }
 
-static std::unique_ptr<AsmStaticConstant> static_const_toplvl(TacStaticConstant* node) {
+static std::unique_ptr<AsmStaticConstant> gen_static_const_toplvl(TacStaticConstant* node) {
     TIdentifier name = node->name;
     TInt alignment = generate_type_alignment(node->static_init_type.get());
     std::shared_ptr<StaticInit> static_init = node->static_init;
@@ -2528,11 +2528,11 @@ static std::unique_ptr<AsmStaticConstant> static_const_toplvl(TacStaticConstant*
 static std::unique_ptr<AsmTopLevel> gen_toplvl(TacTopLevel* node) {
     switch (node->type()) {
         case AST_T::TacFunction_t:
-            return fun_toplvl(static_cast<TacFunction*>(node));
+            return gen_fun_toplvl(static_cast<TacFunction*>(node));
         case AST_T::TacStaticVariable_t:
-            return static_var_toplvl(static_cast<TacStaticVariable*>(node));
+            return gen_static_var_toplvl(static_cast<TacStaticVariable*>(node));
         case AST_T::TacStaticConstant_t:
-            return static_const_toplvl(static_cast<TacStaticConstant*>(node));
+            return gen_static_const_toplvl(static_cast<TacStaticConstant*>(node));
         default:
             RAISE_INTERNAL_ERROR;
     }
