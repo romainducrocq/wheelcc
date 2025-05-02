@@ -97,7 +97,7 @@ static std::shared_ptr<AsmImm> ulong_imm_op(CConstULong* node) {
     return std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), false);
 }
 
-static TIdentifier make_asm_label(ASM_LABEL_KIND asm_label_kind) {
+static TIdentifier repr_asm_label(ASM_LABEL_KIND asm_label_kind) {
     std::string name;
     switch (asm_label_kind) {
         case ASM_LABEL_KIND::Lcomisd_nan: {
@@ -140,7 +140,7 @@ static std::shared_ptr<AsmData> dbl_static_const_op(TULong binary, TInt byte) {
             double_constant_label = context->double_constant_table[double_constant];
         }
         else {
-            double_constant_label = make_asm_label(ASM_LABEL_KIND::Ldouble);
+            double_constant_label = repr_asm_label(ASM_LABEL_KIND::Ldouble);
             context->double_constant_table[double_constant] = double_constant_label;
             dbl_static_const_toplvl(double_constant_label, double_constant, byte);
         }
@@ -913,8 +913,8 @@ static void dbl_to_uint_instr(TacDoubleToUInt* node) {
 }
 
 static void dbl_to_ulong_instr(TacDoubleToUInt* node) {
-    TIdentifier target_out_of_range = make_asm_label(ASM_LABEL_KIND::Lsd2si_out_of_range);
-    TIdentifier target_after = make_asm_label(ASM_LABEL_KIND::Lsd2si_after);
+    TIdentifier target_out_of_range = repr_asm_label(ASM_LABEL_KIND::Lsd2si_out_of_range);
+    TIdentifier target_after = repr_asm_label(ASM_LABEL_KIND::Lsd2si_after);
     std::shared_ptr<AsmOperand> upper_bound_sd = dbl_static_const_op(4890909195324358656ul, 8);
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
@@ -1020,8 +1020,8 @@ static void uint_to_dbl_instr(TacUIntToDouble* node) {
 }
 
 static void ulong_to_dbl_instr(TacUIntToDouble* node) {
-    TIdentifier target_out_of_range = make_asm_label(ASM_LABEL_KIND::Lsi2sd_out_of_range);
-    TIdentifier target_after = make_asm_label(ASM_LABEL_KIND::Lsi2sd_after);
+    TIdentifier target_out_of_range = repr_asm_label(ASM_LABEL_KIND::Lsi2sd_out_of_range);
+    TIdentifier target_after = repr_asm_label(ASM_LABEL_KIND::Lsi2sd_after);
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
     std::shared_ptr<AsmOperand> dst_out_of_range_si = generate_register(REGISTER_KIND::Ax);
@@ -1475,7 +1475,7 @@ static void unop_int_conditional_instr(TacUnary* node) {
 }
 
 static void unop_dbl_conditional_instr(TacUnary* node) {
-    TIdentifier target_nan = make_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(node->dst.get());
     zero_xmm_reg_instr();
     {
@@ -1668,7 +1668,7 @@ static void binop_int_conditional_intrs(TacBinary* node) {
 }
 
 static void binop_dbl_conditional_intrs(TacBinary* node) {
-    TIdentifier target_nan = make_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(node->src1.get());
@@ -1688,7 +1688,7 @@ static void binop_dbl_conditional_intrs(TacBinary* node) {
     {
         std::unique_ptr<AsmCondCode> cond_code = unsigned_cond_code(node->binary_op.get());
         if (cond_code->type() == AST_T::AsmNE_t) {
-            TIdentifier target_nan_ne = make_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
+            TIdentifier target_nan_ne = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
             push_instr(std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
             push_instr(std::make_unique<AsmJmp>(target_nan_ne));
             push_instr(std::make_unique<AsmLabel>(std::move(target_nan)));
@@ -2158,7 +2158,7 @@ static void jmp_eq_0_int_instr(TacJumpIfZero* node) {
 }
 
 static void jmp_eq_0_dbl_instr(TacJumpIfZero* node) {
-    TIdentifier target_nan = make_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
     zero_xmm_reg_instr();
     {
         std::shared_ptr<AsmOperand> condition = gen_op(node->condition.get());
@@ -2203,8 +2203,8 @@ static void jmp_ne_0_int_instr(TacJumpIfNotZero* node) {
 
 static void jmp_ne_0_dbl_instr(TacJumpIfNotZero* node) {
     TIdentifier target = node->target;
-    TIdentifier target_nan = make_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
-    TIdentifier target_nan_ne = make_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
+    TIdentifier target_nan_ne = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
     zero_xmm_reg_instr();
     {
         std::shared_ptr<AsmOperand> condition = gen_op(node->condition.get());
