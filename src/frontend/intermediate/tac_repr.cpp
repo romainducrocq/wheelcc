@@ -1274,11 +1274,9 @@ static void var_decl_instr(CVariableDeclaration* node) {
     }
 }
 
-static void declaration_var_decl_instr(CVarDecl* node) {
-    if (frontend->symbol_table[node->variable_decl->name]->attrs->type() == AST_T::StaticAttr_t) {
-        return;
-    }
-    if (node->variable_decl->init) {
+static void var_declaration_instr(CVarDecl* node) {
+    if (frontend->symbol_table[node->variable_decl->name]->attrs->type() != AST_T::StaticAttr_t
+        && node->variable_decl->init) {
         var_decl_instr(node->variable_decl.get());
     }
 }
@@ -1289,7 +1287,7 @@ static void declaration_instr(CDeclaration* node) {
         case AST_T::CStructDecl_t:
             break;
         case AST_T::CVarDecl_t:
-            declaration_var_decl_instr(static_cast<CVarDecl*>(node));
+            var_declaration_instr(static_cast<CVarDecl*>(node));
             break;
         default:
             RAISE_INTERNAL_ERROR;
