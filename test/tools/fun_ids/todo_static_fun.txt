@@ -1,6 +1,6 @@
 [x] frontend/parser/errors.cpp
 [x] frontend/parser/lexer.cpp
-[ ] frontend/parser/parser.cpp
+[x] frontend/parser/parser.cpp
 [x] frontend/intermediate/semantic.cpp
 [x] frontend/intermediate/tac_repr.cpp
 [x] frontend/intermediate/idents.cpp
