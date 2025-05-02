@@ -1,6 +1,6 @@
-get_scalar_type_size
-get_array_aggregate_type_scale
-get_structure_aggregate_type_scale
+get_scalar_type_size get_scalar_type_size
+get_array_aggregate_type_scale get_arr_type_scale
+get_structure_aggregate_type_scale get_struct_type_scale
 get_type_scale
 is_type_signed
 represent_constant_value

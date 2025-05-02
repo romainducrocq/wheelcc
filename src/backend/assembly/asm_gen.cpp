@@ -467,9 +467,9 @@ static std::shared_ptr<AssemblyType> asm_type_8b(Structure* struct_type, TLong o
     }
 }
 
-static void struct_type_clss(Structure* struct_type);
+static void struct_8b_clss(Structure* struct_type);
 
-static std::vector<STRUCT_8B_CLS> struct_mem_type_clss(Structure* struct_type) {
+static std::vector<STRUCT_8B_CLS> struct_mem_8b_clss(Structure* struct_type) {
     std::vector<STRUCT_8B_CLS> struct_8b_cls;
     TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
     while (size > 0l) {
@@ -479,7 +479,7 @@ static std::vector<STRUCT_8B_CLS> struct_mem_type_clss(Structure* struct_type) {
     return struct_8b_cls;
 }
 
-static std::vector<STRUCT_8B_CLS> struct_1_reg_type_clss(Structure* struct_type) {
+static std::vector<STRUCT_8B_CLS> struct_1_reg_8b_clss(Structure* struct_type) {
     std::vector<STRUCT_8B_CLS> struct_8b_cls {STRUCT_8B_CLS::SSE};
     size_t members_front = struct_type->is_union ? frontend->struct_typedef_table[struct_type->tag]->members.size() : 1;
     for (size_t i = 0; i < members_front; ++i) {
@@ -492,7 +492,7 @@ static std::vector<STRUCT_8B_CLS> struct_1_reg_type_clss(Structure* struct_type)
         }
         if (member_type->type() == AST_T::Structure_t) {
             Structure* member_struct_type = static_cast<Structure*>(member_type);
-            struct_type_clss(member_struct_type);
+            struct_8b_clss(member_struct_type);
             if (context->struct_8b_cls_map[member_struct_type->tag][0] == STRUCT_8B_CLS::INTEGER) {
                 struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
             }
@@ -504,7 +504,7 @@ static std::vector<STRUCT_8B_CLS> struct_1_reg_type_clss(Structure* struct_type)
     return struct_8b_cls;
 }
 
-static std::vector<STRUCT_8B_CLS> struct_2_reg_type_clss(Structure* struct_type) {
+static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Structure* struct_type) {
     std::vector<STRUCT_8B_CLS> struct_8b_cls {STRUCT_8B_CLS::SSE, STRUCT_8B_CLS::SSE};
     size_t members_front = struct_type->is_union ? frontend->struct_typedef_table[struct_type->tag]->members.size() : 1;
     for (size_t i = 0; i < members_front; ++i) {
@@ -530,7 +530,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_type_clss(Structure* struct_type)
         if (size > 8l) {
             if (member_type->type() == AST_T::Structure_t) {
                 Structure* member_struct_type = static_cast<Structure*>(member_type);
-                struct_type_clss(member_struct_type);
+                struct_8b_clss(member_struct_type);
                 if (context->struct_8b_cls_map[member_struct_type->tag].size() > 1) {
                     if (context->struct_8b_cls_map[member_struct_type->tag][0] == STRUCT_8B_CLS::INTEGER) {
                         struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
@@ -554,7 +554,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_type_clss(Structure* struct_type)
         else {
             if (member_type->type() == AST_T::Structure_t) {
                 Structure* member_struct_type = static_cast<Structure*>(member_type);
-                struct_type_clss(member_struct_type);
+                struct_8b_clss(member_struct_type);
                 if (context->struct_8b_cls_map[member_struct_type->tag][0] == STRUCT_8B_CLS::INTEGER) {
                     struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
                 }
@@ -569,7 +569,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_type_clss(Structure* struct_type)
                 }
                 if (member_type->type() == AST_T::Structure_t) {
                     Structure* member_struct_type = static_cast<Structure*>(member_type);
-                    struct_type_clss(member_struct_type);
+                    struct_8b_clss(member_struct_type);
                     if (context->struct_8b_cls_map[member_struct_type->tag][0] == STRUCT_8B_CLS::INTEGER) {
                         struct_8b_cls[1] = STRUCT_8B_CLS::INTEGER;
                     }
@@ -583,17 +583,17 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_type_clss(Structure* struct_type)
     return struct_8b_cls;
 }
 
-static void struct_type_clss(Structure* struct_type) {
+static void struct_8b_clss(Structure* struct_type) {
     if (context->struct_8b_cls_map.find(struct_type->tag) == context->struct_8b_cls_map.end()) {
         std::vector<STRUCT_8B_CLS> struct_8b_cls;
         if (frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
-            struct_8b_cls = struct_mem_type_clss(struct_type);
+            struct_8b_cls = struct_mem_8b_clss(struct_type);
         }
         else if (frontend->struct_typedef_table[struct_type->tag]->size > 8l) {
-            struct_8b_cls = struct_2_reg_type_clss(struct_type);
+            struct_8b_cls = struct_2_reg_8b_clss(struct_type);
         }
         else {
-            struct_8b_cls = struct_1_reg_type_clss(struct_type);
+            struct_8b_cls = struct_1_reg_8b_clss(struct_type);
         }
         context->struct_8b_cls_map[struct_type->tag] = std::move(struct_8b_cls);
     }
@@ -702,7 +702,7 @@ static void ret_8b_instr(TIdentifier name, TLong offset, Structure* struct_type,
 static void ret_struct_instr(TacReturn* node) {
     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
     Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-    struct_type_clss(struct_type);
+    struct_8b_clss(struct_type);
     if (context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
         {
             std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, -8l);
@@ -1223,7 +1223,7 @@ static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_
             size_t struct_sse_size = 9;
             TIdentifier name = static_cast<TacVariable*>(arg.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-            struct_type_clss(struct_type);
+            struct_8b_clss(struct_type);
             if (context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
@@ -1334,7 +1334,7 @@ static void call_instr(TacFunCall* node) {
         if (node->dst && is_value_struct(node->dst.get())) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-            struct_type_clss(struct_type);
+            struct_8b_clss(struct_type);
             if (context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
                 is_return_memory = true;
                 {
@@ -2420,7 +2420,7 @@ static void param_fun_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[param]->type_t.get());
-            struct_type_clss(struct_type);
+            struct_8b_clss(struct_type);
             if (context->struct_8b_cls_map[struct_type->tag][0] != STRUCT_8B_CLS::MEMORY) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
@@ -2472,7 +2472,7 @@ static std::unique_ptr<AsmFunction> fun_toplvl(TacFunction* node) {
         FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
         if (fun_type->ret_type->type() == AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(fun_type->ret_type.get());
-            struct_type_clss(struct_type);
+            struct_8b_clss(struct_type);
             if (context->struct_8b_cls_map[struct_type->tag][0] == STRUCT_8B_CLS::MEMORY) {
                 is_return_memory = true;
                 {

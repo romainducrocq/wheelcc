@@ -20,7 +20,7 @@ static std::unique_ptr<SymtCvtContext> context;
 
 // Symbol table conversion
 
-static TInt scalar_type_align(Type* type) {
+static TInt get_scalar_alignment(Type* type) {
     switch (type->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
@@ -39,7 +39,7 @@ static TInt scalar_type_align(Type* type) {
     }
 }
 
-static TInt arr_type_align(Array* arr_type, TLong& size) {
+static TInt get_arr_alignment(Array* arr_type, TLong& size) {
     size = arr_type->size;
     while (arr_type->elem_type->type() == AST_T::Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
@@ -62,7 +62,7 @@ static TInt arr_type_align(Array* arr_type, TLong& size) {
     return alignment;
 }
 
-static TInt struct_type_align(Structure* struct_type) {
+static TInt get_struct_alignment(Structure* struct_type) {
     return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
 
@@ -70,18 +70,18 @@ TInt generate_type_alignment(Type* type) {
     switch (type->type()) {
         case AST_T::Array_t: {
             TLong size;
-            return arr_type_align(static_cast<Array*>(type), size);
+            return get_arr_alignment(static_cast<Array*>(type), size);
         }
         case AST_T::Structure_t:
-            return struct_type_align(static_cast<Structure*>(type));
+            return get_struct_alignment(static_cast<Structure*>(type));
         default:
-            return scalar_type_align(type);
+            return get_scalar_alignment(type);
     }
 }
 
 static std::shared_ptr<ByteArray> arr_asm_type(Array* arr_type) {
     TLong size;
-    TInt alignment = arr_type_align(arr_type, size);
+    TInt alignment = get_arr_alignment(arr_type, size);
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
@@ -151,7 +151,7 @@ static void static_const_toplvl(AsmStaticConstant* node) {
     }
 }
 
-static void convert_top_level(AsmTopLevel* node) {
+static void cvt_toplvl(AsmTopLevel* node) {
     switch (node->type()) {
         case AST_T::AsmStaticConstant_t:
             static_const_toplvl(static_cast<AsmStaticConstant*>(node));
@@ -199,7 +199,7 @@ static void cvt_program(AsmProgram* node) {
     }
 
     for (const auto& top_level : node->static_constant_top_levels) {
-        convert_top_level(top_level.get());
+        cvt_toplvl(top_level.get());
     }
 }
 
