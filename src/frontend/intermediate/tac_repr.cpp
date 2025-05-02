@@ -1326,7 +1326,7 @@ static void repr_block(CBlock* node) {
     }
 }
 
-static std::unique_ptr<TacFunction> fun_toplvl(CFunctionDeclaration* node) {
+static std::unique_ptr<TacFunction> repr_fun_toplvl(CFunctionDeclaration* node) {
     TIdentifier name = node->name;
     bool is_global = static_cast<FunAttr*>(frontend->symbol_table[node->name]->attrs.get())->is_global;
 
@@ -1353,7 +1353,7 @@ static void push_toplvl(std::unique_ptr<TacTopLevel>&& top_level) {
 
 static void fun_decl_toplvl(CFunDecl* node) {
     if (node->function_decl->body) {
-        push_toplvl(fun_toplvl(node->function_decl.get()));
+        push_toplvl(repr_fun_toplvl(node->function_decl.get()));
     }
 }
 
@@ -1386,7 +1386,7 @@ static std::vector<std::shared_ptr<StaticInit>> initial_static_toplvl(Initial* n
     return static_inits;
 }
 
-static void static_var_toplvl(Symbol* node, TIdentifier symbol) {
+static void repr_static_var_toplvl(Symbol* node, TIdentifier symbol) {
     StaticAttr* static_attr = static_cast<StaticAttr*>(node->attrs.get());
     if (static_attr->init->type() == AST_T::NoInitializer_t) {
         return;
@@ -1415,7 +1415,7 @@ static void push_static_const_toplvl(std::unique_ptr<TacTopLevel>&& static_const
     context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
 }
 
-static void static_const_toplvl(Symbol* node, TIdentifier symbol) {
+static void repr_static_const_toplvl(Symbol* node, TIdentifier symbol) {
     TIdentifier name = symbol;
     std::shared_ptr<Type> static_init_type = node->type_t;
     std::shared_ptr<StaticInit> static_init = static_cast<ConstantAttr*>(node->attrs.get())->static_init;
@@ -1428,10 +1428,10 @@ static void static_const_toplvl(Symbol* node, TIdentifier symbol) {
 static void symbol_toplvl(Symbol* node, TIdentifier symbol) {
     switch (node->attrs->type()) {
         case AST_T::StaticAttr_t:
-            static_var_toplvl(node, symbol);
+            repr_static_var_toplvl(node, symbol);
             break;
         case AST_T::ConstantAttr_t:
-            static_const_toplvl(node, symbol);
+            repr_static_const_toplvl(node, symbol);
             break;
         default:
             break;
