@@ -1,15 +1,15 @@
 [ ] frontend/parser/errors.cpp
 [ ] frontend/parser/lexer.cpp
 [ ] frontend/parser/parser.cpp
-[ ] frontend/intermediate/semantic.cpp
+[x] frontend/intermediate/semantic.cpp
 [x] frontend/intermediate/tac_repr.cpp
-[ ] frontend/intermediate/idents.cpp
-[ ] ast/ast.cpp
-[ ] ast/back_symt.cpp
-[ ] ast/front_symt.cpp
-[ ] ast/back_ast.cpp
-[ ] ast/front_ast.cpp
-[ ] ast/interm_ast.cpp
+[x] frontend/intermediate/idents.cpp
+[x] ast/ast.cpp
+[x] ast/back_symt.cpp
+[x] ast/front_symt.cpp
+[x] ast/back_ast.cpp
+[x] ast/front_ast.cpp
+[x] ast/interm_ast.cpp
 [ ] main.cpp
 [ ] optimization/optim_tac.cpp
 [ ] optimization/reg_alloc.cpp
