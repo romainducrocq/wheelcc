@@ -29,12 +29,12 @@ extern std::unique_ptr<FileIoContext> fileio;
 #define FREE_FILEIO_CONTEXT fileio.reset()
 
 void set_filename(const std::string& filename);
-void file_open_read(const std::string& filename);
-void file_open_write(const std::string& filename);
+void open_fread(const std::string& filename);
+void open_fwrite(const std::string& filename);
 bool find_file(const std::string& filename);
 bool read_line(std::string& line);
 void write_line(std::string&& line);
-void file_close_read(size_t line_number);
-void file_close_write();
+void close_fread(size_t line_number);
+void close_fwrite();
 
 #endif

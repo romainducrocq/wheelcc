@@ -57,14 +57,14 @@ TIdentifier make_label_identifier(std::string&& name) {
     return make_string_identifier(std::move(name));
 }
 
-TIdentifier make_variable_identifier(std::string&& name) {
+TIdentifier make_var_identifier(std::string&& name) {
     name += UID_SEPARATOR;
     name += std::to_string(identifiers->variable_counter);
     identifiers->variable_counter++;
     return make_string_identifier(std::move(name));
 }
 
-TIdentifier make_structure_identifier(std::string&& name) {
+TIdentifier make_struct_identifier(std::string&& name) {
     name += UID_SEPARATOR;
     name += std::to_string(identifiers->structure_counter);
     identifiers->structure_counter++;

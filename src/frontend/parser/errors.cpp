@@ -13,7 +13,7 @@
 
 // Errors
 
-std::string get_token_kind_hr(TOKEN_KIND token_kind) {
+std::string get_tok_fmt(TOKEN_KIND token_kind) {
     switch (token_kind) {
         case TOKEN_KIND::assignment_bitshiftleft:
             return "<<=";
@@ -174,22 +174,22 @@ std::string get_token_kind_hr(TOKEN_KIND token_kind) {
     }
 }
 
-std::string get_name_hr(TIdentifier name) {
+std::string get_name_fmt(TIdentifier name) {
     return identifiers->hash_table[name].substr(0, identifiers->hash_table[name].find(UID_SEPARATOR[0]));
 }
 
-std::string get_struct_name_hr(TIdentifier name, bool is_union) {
+std::string get_struct_name_fmt(TIdentifier name, bool is_union) {
     std::string type_hr = is_union ? "union " : "struct ";
-    type_hr += get_name_hr(name);
+    type_hr += get_name_fmt(name);
     return type_hr;
 }
 
 static std::string get_fun_fmt(FunType* fun_type) {
     std::string type_hr = "(";
-    type_hr += get_type_hr(fun_type->ret_type.get());
+    type_hr += get_type_fmt(fun_type->ret_type.get());
     type_hr += ")(";
     for (const auto& param_type : fun_type->param_types) {
-        type_hr += get_type_hr(param_type.get());
+        type_hr += get_type_fmt(param_type.get());
         type_hr += ", ";
     }
     if (!fun_type->param_types.empty()) {
@@ -206,7 +206,7 @@ static std::string get_ptr_fmt(Pointer* ptr_type) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
         decl_type_hr += "*";
     }
-    std::string type_hr = get_type_hr(ptr_type->ref_type.get());
+    std::string type_hr = get_type_fmt(ptr_type->ref_type.get());
     type_hr += decl_type_hr;
     return type_hr;
 }
@@ -221,16 +221,16 @@ static std::string get_arr_fmt(Array* arr_type) {
         decl_type_hr += std::to_string(arr_type->size);
         decl_type_hr += "]";
     }
-    std::string type_hr = get_type_hr(arr_type->elem_type.get());
+    std::string type_hr = get_type_fmt(arr_type->elem_type.get());
     type_hr += decl_type_hr;
     return type_hr;
 }
 
 static std::string get_structure_type_hr(Structure* struct_type) {
-    return get_struct_name_hr(struct_type->tag, struct_type->is_union);
+    return get_struct_name_fmt(struct_type->tag, struct_type->is_union);
 }
 
-std::string get_type_hr(Type* type) {
+std::string get_type_fmt(Type* type) {
     switch (type->type()) {
         case AST_T::Char_t:
             return "char";
@@ -263,7 +263,7 @@ std::string get_type_hr(Type* type) {
     }
 }
 
-std::string get_const_hr(CConst* node) {
+std::string get_const_fmt(CConst* node) {
     switch (node->type()) {
         case AST_T::CConstInt_t:
             return "int";
@@ -284,7 +284,7 @@ std::string get_const_hr(CConst* node) {
     }
 }
 
-std::string get_storage_class_hr(CStorageClass* node) {
+std::string get_storage_class_fmt(CStorageClass* node) {
     switch (node->type()) {
         case AST_T::CStatic_t:
             return "static";
@@ -295,7 +295,7 @@ std::string get_storage_class_hr(CStorageClass* node) {
     }
 }
 
-std::string get_unary_op_hr(CUnaryOp* node) {
+std::string get_unop_fmt(CUnaryOp* node) {
     switch (node->type()) {
         case AST_T::CComplement_t:
             return "~";
@@ -308,7 +308,7 @@ std::string get_unary_op_hr(CUnaryOp* node) {
     }
 }
 
-std::string get_binary_op_hr(CBinaryOp* node) {
+std::string get_binop_fmt(CBinaryOp* node) {
     switch (node->type()) {
         case CAdd_t:
             return "+";
@@ -353,7 +353,7 @@ std::string get_binary_op_hr(CBinaryOp* node) {
     }
 }
 
-std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
+std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op) {
     if (!node) {
         return "=";
     }
@@ -418,7 +418,7 @@ std::string get_assignment_hr(CBinaryOp* node, CUnaryOp* unary_op) {
 #define EM_VARG "\033[1m‘%s’\033[0m"
 #define RETURN_ERRNO return "(no. %i) "
 
-const char* get_fatal_message(MESSAGE_FATAL message) {
+const char* get_fatal_msg(MESSAGE_FATAL message) {
     switch (message) {
         case MESSAGE_FATAL::operating_system_not_supported:
             RETURN_ERRNO EM_VARG " operating system is not supported, requires \033[1m‘GNU/Linux’\033[0m (x86_64)";
@@ -433,7 +433,7 @@ const char* get_fatal_message(MESSAGE_FATAL message) {
     }
 }
 
-const char* get_argument_message(MESSAGE_ARGUMENT message) {
+const char* get_arg_msg(MESSAGE_ARGUMENT message) {
     switch (message) {
         case MESSAGE_ARGUMENT::no_debug_code_in_argument:
             RETURN_ERRNO "no debug code passed in first argument";
@@ -456,7 +456,7 @@ const char* get_argument_message(MESSAGE_ARGUMENT message) {
     }
 }
 
-const char* get_util_message(MESSAGE_UTIL message) {
+const char* get_util_msg(MESSAGE_UTIL message) {
     switch (message) {
         case MESSAGE_UTIL::failed_to_read_input_file:
             RETURN_ERRNO "cannot read input file " EM_VARG;
@@ -473,7 +473,7 @@ const char* get_util_message(MESSAGE_UTIL message) {
     }
 }
 
-const char* get_lexer_message(MESSAGE_LEXER message) {
+const char* get_lexer_msg(MESSAGE_LEXER message) {
     switch (message) {
         case MESSAGE_LEXER::invalid_token:
             RETURN_ERRNO "found invalid token " EM_VARG;
@@ -484,7 +484,7 @@ const char* get_lexer_message(MESSAGE_LEXER message) {
     }
 }
 
-const char* get_parser_message(MESSAGE_PARSER message) {
+const char* get_parser_msg(MESSAGE_PARSER message) {
     switch (message) {
         case MESSAGE_PARSER::unexpected_next_token:
             RETURN_ERRNO "found token " EM_VARG ", but expected " EM_VARG " next";
@@ -565,7 +565,7 @@ const char* get_parser_message(MESSAGE_PARSER message) {
     }
 }
 
-const char* get_semantic_message(MESSAGE_SEMANTIC message) {
+const char* get_semantic_msg(MESSAGE_SEMANTIC message) {
     switch (message) {
         case MESSAGE_SEMANTIC::array_of_incomplete_type:
             RETURN_ERRNO "array type " EM_VARG " of incomplete type " EM_VARG ", requires a complete type";

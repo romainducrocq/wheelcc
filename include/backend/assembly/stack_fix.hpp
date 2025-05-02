@@ -17,8 +17,8 @@ struct AsmProgram;
 // Pseudo register replacement
 // Instruction fix up
 
-std::unique_ptr<AsmBinary> allocate_stack_bytes(TLong byte);
-std::unique_ptr<AsmBinary> deallocate_stack_bytes(TLong byte);
-void fix_stack(AsmProgram* node);
+std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte);
+std::unique_ptr<AsmBinary> dealloc_stack_bytes(TLong byte);
+void stack_fixup(AsmProgram* node);
 
 #endif

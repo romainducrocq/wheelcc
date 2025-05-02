@@ -17,7 +17,7 @@ std::unique_ptr<FileIoContext> fileio;
 
 void set_filename(const std::string& filename) { fileio->filename = filename; }
 
-void file_open_read(const std::string& filename) {
+void open_fread(const std::string& filename) {
     for (size_t i = 0; i < fileio->file_reads.size(); ++i) {
         if (fileio->file_reads[i].file_descriptor) {
             size_t n_open_files = fileio->file_reads.size() - i;
@@ -47,7 +47,7 @@ void file_open_read(const std::string& filename) {
     fileio->file_reads.back().filename = filename;
 }
 
-void file_open_write(const std::string& filename) {
+void open_fwrite(const std::string& filename) {
     if (!fileio->file_reads.empty()) {
         RAISE_INTERNAL_ERROR;
     }
@@ -99,7 +99,7 @@ void write_line(std::string&& line) {
     write_file(std::move(line), 4096);
 }
 
-void file_close_read(size_t line_number) {
+void close_fread(size_t line_number) {
     fclose(fileio->file_reads.back().file_descriptor);
     fileio->file_reads.back().file_descriptor = nullptr;
     fileio->file_reads.pop_back();
@@ -123,7 +123,7 @@ void file_close_read(size_t line_number) {
     }
 }
 
-void file_close_write() {
+void close_fwrite() {
     write_chunk(fileio->write_buffer);
     fileio->write_buffer = "";
 

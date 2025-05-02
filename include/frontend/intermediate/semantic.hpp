@@ -13,6 +13,6 @@ struct CProgram;
 // Loop labeling
 // Identifier resolution
 
-void analyze_semantic(CProgram* node);
+void semantic_analysis(CProgram* node);
 
 #endif

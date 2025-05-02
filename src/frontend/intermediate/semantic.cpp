@@ -1722,7 +1722,7 @@ static void check_static_const_init(CConstant* node, Type* static_init_type) {
         }
         case AST_T::Double_t: {
             TDouble value = get_const_dbl_value(node);
-            TULong binary = double_to_binary(value);
+            TULong binary = dbl_to_binary(value);
             if (binary == 0ul) {
                 push_zero_static_init(8l);
             }
@@ -1804,14 +1804,14 @@ static void check_static_ptr_string_init(CString* node, Pointer* static_ptr_type
     {
         TIdentifier string_constant;
         {
-            std::string value = string_literal_to_string_constant(node->literal->value);
+            std::string value = string_literal_to_const(node->literal->value);
             string_constant = make_string_identifier(std::move(value));
         }
         if (frontend->string_constant_table.find(string_constant) != frontend->string_constant_table.end()) {
             string_constant_label = frontend->string_constant_table[string_constant];
         }
         else {
-            string_constant_label = represent_label_identifier(LABEL_KIND::Lstring);
+            string_constant_label = repr_label_identifier(LABEL_KIND::Lstring);
             frontend->string_constant_table[string_constant] = string_constant_label;
             std::shared_ptr<Type> constant_type;
             {
@@ -1842,7 +1842,7 @@ static void check_static_arr_string_init(CString* node, Array* static_arr_type) 
         bool is_null_terminated = byte >= 0l;
         TIdentifier string_constant;
         {
-            std::string value = string_literal_to_string_constant(node->literal->value);
+            std::string value = string_literal_to_const(node->literal->value);
             string_constant = make_string_identifier(std::move(value));
         }
         std::shared_ptr<CStringLiteral> literal = node->literal;
@@ -2209,26 +2209,26 @@ static void annotate_goto_label(CLabel* node) {
 }
 
 static void annotate_while_loop(CWhile* node) {
-    node->target = represent_label_identifier(LABEL_KIND::Lwhile);
+    node->target = repr_label_identifier(LABEL_KIND::Lwhile);
     context->break_loop_labels.push_back(node->target);
     context->continue_loop_labels.push_back(node->target);
 }
 
 static void annotate_do_while_loop(CDoWhile* node) {
-    node->target = represent_label_identifier(LABEL_KIND::Ldo_while);
+    node->target = repr_label_identifier(LABEL_KIND::Ldo_while);
     context->break_loop_labels.push_back(node->target);
     context->continue_loop_labels.push_back(node->target);
 }
 
 static void annotate_for_loop(CFor* node) {
-    node->target = represent_label_identifier(LABEL_KIND::Lfor);
+    node->target = repr_label_identifier(LABEL_KIND::Lfor);
     context->break_loop_labels.push_back(node->target);
     context->continue_loop_labels.push_back(node->target);
 }
 
 static void annotate_switch_lookup(CSwitch* node) {
     node->is_default = false;
-    node->target = represent_label_identifier(LABEL_KIND::Lswitch);
+    node->target = repr_label_identifier(LABEL_KIND::Lswitch);
     context->break_loop_labels.push_back(node->target);
 }
 
@@ -2237,8 +2237,8 @@ static void annotate_case_jump(CCase* node) {
         RAISE_RUNTIME_ERROR_AT_LINE(
             GET_SEMANTIC_MESSAGE_0(MESSAGE_SEMANTIC::case_outside_of_switch), node->value->line);
     }
-    node->target = represent_case_identifier(
-        context->p_switch_statement->target, false, context->p_switch_statement->cases.size());
+    node->target =
+        repr_case_identifier(context->p_switch_statement->target, false, context->p_switch_statement->cases.size());
 }
 
 static void annotate_default_jump(CDefault* node) {
@@ -2581,7 +2581,7 @@ static void reslv_goto_statement(CGoto* node) {
         errors->line_buffer_map[node->target] = node->line;
     }
     else {
-        context->goto_map[node->target] = resolve_label_identifier(node->target);
+        context->goto_map[node->target] = rslv_label_identifier(node->target);
         node->target = context->goto_map[node->target];
         errors->line_buffer_map[node->target] = node->line;
     }
@@ -2593,7 +2593,7 @@ static void reslv_label_statement(CLabel* node) {
         node->target = context->goto_map[node->target];
     }
     else {
-        context->goto_map[node->target] = resolve_label_identifier(node->target);
+        context->goto_map[node->target] = rslv_label_identifier(node->target);
         node->target = context->goto_map[node->target];
     }
     reslv_statement(node->jump_to.get());
@@ -2814,7 +2814,7 @@ static void reslv_fun_params_decl(CFunctionDeclaration* node) {
                 GET_SEMANTIC_MESSAGE(MESSAGE_SEMANTIC::variable_redeclared_in_scope, get_name_hr_c_str(param)),
                 node->line);
         }
-        context->scoped_identifier_maps.back()[param] = resolve_variable_identifier(param);
+        context->scoped_identifier_maps.back()[param] = rslv_var_identifier(param);
         param = context->scoped_identifier_maps.back()[param];
     }
     check_fun_params_decl(node);
@@ -2885,7 +2885,7 @@ static void reslv_block_var_decl(CVariableDeclaration* node) {
         return;
     }
 
-    context->scoped_identifier_maps.back()[node->name] = resolve_variable_identifier(node->name);
+    context->scoped_identifier_maps.back()[node->name] = rslv_var_identifier(node->name);
     node->name = context->scoped_identifier_maps.back()[node->name];
     check_block_var_decl(node);
 
@@ -2920,7 +2920,7 @@ static void reslv_struct_declaration(CStructDeclaration* node) {
         }
     }
     else {
-        context->scoped_structure_type_maps.back()[node->tag] = {resolve_structure_tag(node->tag), node->is_union};
+        context->scoped_structure_type_maps.back()[node->tag] = {rslv_struct_tag(node->tag), node->is_union};
         node->tag = context->scoped_structure_type_maps.back()[node->tag].tag;
         if (node->is_union) {
             context->union_definition_set.insert(node->tag);
@@ -2985,7 +2985,7 @@ static void reslv_identifiers(CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void analyze_semantic(CProgram* node) {
+void semantic_analysis(CProgram* node) {
     context = std::make_unique<SemanticContext>();
     reslv_identifiers(node);
     context.reset();

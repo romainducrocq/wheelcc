@@ -920,7 +920,7 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
     REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
     if (color != REGISTER_KIND::Sp) {
         REGISTER_KIND register_kind = context->register_color_map[register_mask_bit(color)];
-        std::shared_ptr<AsmRegister> hard_register = generate_register(register_kind);
+        std::shared_ptr<AsmRegister> hard_register = gen_register(register_kind);
         if (is_register_callee_saved(register_kind)
             && !register_mask_get(context->callee_saved_reg_mask, register_kind)) {
             register_mask_set(context->callee_saved_reg_mask, register_kind, true);
@@ -1472,7 +1472,7 @@ static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, s
         && coalesced_index != context->control_flow_graph->identifier_id_map[name]) {
         if (coalesced_index < REGISTER_MASK_SIZE) {
             REGISTER_KIND register_kind = context->hard_registers[coalesced_index].register_kind;
-            return generate_register(register_kind);
+            return gen_register(register_kind);
         }
         else {
             inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);

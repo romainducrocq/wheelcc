@@ -313,13 +313,13 @@ static void tokenize_header(std::string filename, size_t line_number) {
     }
 
     std::string include_filename = errors->file_open_lines.back().filename;
-    file_open_read(filename);
+    open_fread(filename);
     {
         FileOpenLine file_open_line = {1, context->total_line_number + 1, std::move(filename)};
         errors->file_open_lines.emplace_back(std::move(file_open_line));
     }
     tokenize_file();
-    file_close_read(line_number);
+    close_fread(line_number);
     {
         FileOpenLine file_open_line = {line_number + 1, context->total_line_number + 1, std::move(include_filename)};
         errors->file_open_lines.emplace_back(std::move(file_open_line));
@@ -341,7 +341,7 @@ static void strip_filename_ext(std::string& filename) { filename = filename.subs
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
-    file_open_read(filename);
+    open_fread(filename);
     {
         FileOpenLine file_open_line = {1, 1, filename};
         errors->file_open_lines.emplace_back(std::move(file_open_line));
@@ -352,7 +352,7 @@ std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& incl
     tokenize_source();
     context.reset();
 
-    file_close_read(0);
+    close_fread(0);
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
     set_filename(filename);

@@ -23,16 +23,16 @@
 
 static void header_string(const std::string& header) { std::cout << "+\n+\n@@ " << header << " @@"; }
 
-void pretty_print_tokens(const std::vector<Token>& tokens) {
+void pprint_toks(const std::vector<Token>& tokens) {
     header_string("Tokens");
     std::cout << "\nList[" << std::to_string(tokens.size()) << "]:";
     for (const auto& token : tokens) {
         std::cout << "\n  ";
-        if (token.token.compare(get_token_kind_hr(token.token_kind)) == 0) {
+        if (token.token.compare(get_tok_fmt(token.token_kind)) == 0) {
             std::cout << token.token;
             continue;
         }
-        std::cout << get_token_kind_hr(token.token_kind) << "(" << token.token << ")";
+        std::cout << get_tok_fmt(token.token_kind) << "(" << token.token << ")";
     }
     std::cout << std::endl;
 }
@@ -1780,13 +1780,13 @@ static void print_ast(Ast* node, size_t t) {
     }
 }
 
-void pretty_print_ast(Ast* node, const std::string& name) {
+void pprint_ast(Ast* node, const std::string& name) {
     header_string(name);
     print_ast(node, 0);
     std::cout << std::endl;
 }
 
-void pretty_print_addressed_set() {
+void pprint_addressed_set() {
     header_string("Addressed Set");
     std::cout << "\nSet(" << std::to_string(frontend->addressed_set.size()) << "):";
     for (const TIdentifier& name : frontend->addressed_set) {
@@ -1795,7 +1795,7 @@ void pretty_print_addressed_set() {
     std::cout << std::endl;
 }
 
-void pretty_print_string_constant_table() {
+void pprint_string_const_table() {
     header_string("String Constant Table");
     std::cout << "\nDict(" << std::to_string(frontend->string_constant_table.size()) << "):";
     for (const auto& static_constant : frontend->string_constant_table) {
@@ -1856,7 +1856,7 @@ void pretty_print_string_constant_table() {
     std::cout << std::endl;
 }
 
-void pretty_print_struct_typedef_table() {
+void pprint_struct_typedef_table() {
     header_string("Structure Typedef Table");
     std::cout << "\nDict(" << std::to_string(frontend->struct_typedef_table.size()) << "):";
     for (const auto& struct_typedef : frontend->struct_typedef_table) {
@@ -1866,7 +1866,7 @@ void pretty_print_struct_typedef_table() {
     std::cout << std::endl;
 }
 
-void pretty_print_symbol_table() {
+void pprint_symbol_table() {
     header_string("Symbol Table");
     std::cout << "\nDict(" << std::to_string(frontend->symbol_table.size()) << "):";
     for (const auto& symbol : frontend->symbol_table) {
@@ -1876,7 +1876,7 @@ void pretty_print_symbol_table() {
     std::cout << std::endl;
 }
 
-void pretty_print_backend_symbol_table() {
+void pprint_backend_symbol_table() {
     header_string("Backend Symbol Table");
     std::cout << "\nDict(" << std::to_string(backend->backend_symbol_table.size()) << "):";
     for (const auto& backend_symbol : backend->backend_symbol_table) {
@@ -1886,7 +1886,7 @@ void pretty_print_backend_symbol_table() {
     std::cout << std::endl;
 }
 
-void pretty_print_asm_code() {
+void pprint_asm_code() {
     header_string("ASM Code");
     std::cout << std::endl;
 }

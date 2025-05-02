@@ -70,7 +70,7 @@ size_t handle_error_at_line(size_t total_line_number) {
     throw std::runtime_error(message);
 }
 
-[[noreturn]] void raise_runtime_error(const char* error_message) {
+[[noreturn]] void raise_rt_error(const char* error_message) {
     free_fileio();
     const std::string& filename = get_filename();
     std::string message = "\033[1m";
@@ -82,7 +82,7 @@ size_t handle_error_at_line(size_t total_line_number) {
 
 [[noreturn]] void raise_runtime_error_at_line(const char* error_message, size_t line_number) {
     if (line_number == 0) {
-        raise_runtime_error(error_message);
+        raise_rt_error(error_message);
     }
     free_fileio();
     const std::string& filename = get_filename();
@@ -92,7 +92,7 @@ size_t handle_error_at_line(size_t total_line_number) {
         char* buffer = nullptr;
         FILE* file_descriptor = fopen(filename.c_str(), "rb");
         if (!file_descriptor) {
-            raise_runtime_error(error_message);
+            raise_rt_error(error_message);
         }
         for (size_t i = 0; i < line_number; ++i) {
             if (getline(&buffer, &len, file_descriptor) == -1) {
@@ -100,7 +100,7 @@ size_t handle_error_at_line(size_t total_line_number) {
                 fclose(file_descriptor);
                 buffer = nullptr;
                 file_descriptor = nullptr;
-                raise_runtime_error(error_message);
+                raise_rt_error(error_message);
             }
         }
         line = buffer;

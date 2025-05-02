@@ -13,8 +13,8 @@ struct AsmProgram;
 
 // Symbol table conversion
 
-TInt generate_type_alignment(Type* type);
-std::shared_ptr<AssemblyType> convert_backend_assembly_type(TIdentifier name);
-void convert_symbol_table(AsmProgram* node);
+TInt gen_type_alignment(Type* type);
+std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name);
+void symbol_table_conversion(AsmProgram* node);
 
 #endif

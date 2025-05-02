@@ -66,49 +66,49 @@ static void verbose(std::string&& out, bool end) {
 #ifndef __NDEBUG__
 static void debug_tokens(const std::vector<Token>& tokens) {
     if (context->is_verbose) {
-        pretty_print_tokens(tokens);
+        pprint_toks(tokens);
     }
 }
 
 static void debug_ast(Ast* node, std::string&& name) {
     if (context->is_verbose) {
-        pretty_print_ast(node, name);
+        pprint_ast(node, name);
     }
 }
 
 static void debug_addressed_set() {
     if (context->is_verbose) {
-        pretty_print_addressed_set();
+        pprint_addressed_set();
     }
 }
 
 static void debug_string_constant_table() {
     if (context->is_verbose) {
-        pretty_print_string_constant_table();
+        pprint_string_const_table();
     }
 }
 
 static void debug_struct_typedef_table() {
     if (context->is_verbose) {
-        pretty_print_struct_typedef_table();
+        pprint_struct_typedef_table();
     }
 }
 
 static void debug_symbol_table() {
     if (context->is_verbose) {
-        pretty_print_symbol_table();
+        pprint_symbol_table();
     }
 }
 
 static void debug_backend_symbol_table() {
     if (context->is_verbose) {
-        pretty_print_backend_symbol_table();
+        pprint_backend_symbol_table();
     }
 }
 
 static void debug_asm_code() {
     if (context->is_verbose) {
-        pretty_print_asm_code();
+        pprint_asm_code();
     }
 }
 #endif
@@ -147,7 +147,7 @@ static void compile() {
     INIT_FRONT_END_CONTEXT;
 
     verbose("-- Semantic analysis ... ", false);
-    analyze_semantic(c_ast.get());
+    semantic_analysis(c_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 253) {
@@ -162,11 +162,11 @@ static void compile() {
     FREE_ERRORS_CONTEXT;
 
     verbose("-- TAC representation ... ", false);
-    std::unique_ptr<TacProgram> tac_ast = three_address_code_representation(std::move(c_ast));
+    std::unique_ptr<TacProgram> tac_ast = tac_representation(std::move(c_ast));
     if (context->optim_1_mask > 0) {
         verbose("OK", true);
         verbose("-- Level 1 optimization ... ", false);
-        three_address_code_optimization(tac_ast.get(), context->optim_1_mask);
+        tac_optimization(tac_ast.get(), context->optim_1_mask);
     }
     verbose("OK", true);
 #ifndef __NDEBUG__
@@ -183,13 +183,13 @@ static void compile() {
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
-    convert_symbol_table(asm_ast.get());
+    symbol_table_conversion(asm_ast.get());
     if (context->optim_2_code > 0) {
         verbose("OK", true);
         verbose("-- Level 2 optimization ... ", false);
         register_allocation(asm_ast.get(), context->optim_2_code);
     }
-    fix_stack(asm_ast.get());
+    stack_fixup(asm_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 251) {

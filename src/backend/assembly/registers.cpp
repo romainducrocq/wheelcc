@@ -83,17 +83,17 @@ static std::unique_ptr<AsmReg> gen_reg(REGISTER_KIND register_kind) {
     }
 }
 
-std::shared_ptr<AsmRegister> generate_register(REGISTER_KIND register_kind) {
+std::shared_ptr<AsmRegister> gen_register(REGISTER_KIND register_kind) {
     std::unique_ptr<AsmReg> reg = gen_reg(register_kind);
     return std::make_shared<AsmRegister>(std::move(reg));
 }
 
-std::shared_ptr<AsmMemory> generate_memory(REGISTER_KIND register_kind, TLong value) {
+std::shared_ptr<AsmMemory> gen_memory(REGISTER_KIND register_kind, TLong value) {
     std::unique_ptr<AsmReg> reg = gen_reg(register_kind);
     return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
 }
 
-std::shared_ptr<AsmIndexed> generate_indexed(
+std::shared_ptr<AsmIndexed> gen_indexed(
     REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index, TLong scale) {
     std::unique_ptr<AsmReg> reg_base = gen_reg(register_kind_base);
     std::unique_ptr<AsmReg> reg_index = gen_reg(register_kind_index);

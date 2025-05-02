@@ -1466,7 +1466,7 @@ static bool is_double_constant_same_value(CConstDouble* constant_1, CConstDouble
             return true;
         }
         else {
-            return double_to_binary(constant_1->value) == double_to_binary(constant_2->value);
+            return dbl_to_binary(constant_1->value) == dbl_to_binary(constant_2->value);
         }
     }
     else if (constant_1->value != constant_1->value && constant_2->value != constant_2->value) {
@@ -2842,7 +2842,7 @@ static void optimize_program(TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void three_address_code_optimization(TacProgram* node, uint8_t optim_1_mask) {
+void tac_optimization(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(std::move(optim_1_mask));
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();

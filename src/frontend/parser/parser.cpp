@@ -117,10 +117,10 @@ static TIdentifier parse_identifier(size_t i) { return make_string_identifier(st
 static std::shared_ptr<CStringLiteral> parse_string_literal() {
     std::vector<TChar> value;
     {
-        string_to_string_literal(context->next_token->token, value);
+        string_to_literal(context->next_token->token, value);
         while (peek_next().token_kind == TOKEN_KIND::string_literal) {
             pop_next();
-            string_to_string_literal(context->next_token->token, value);
+            string_to_literal(context->next_token->token, value);
         }
     }
     return std::make_shared<CStringLiteral>(std::move(value));
@@ -146,7 +146,7 @@ static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
 
 // <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_dbl_const() {
-    TDouble value = string_to_double(context->next_token->token, context->next_token->line);
+    TDouble value = string_to_dbl(context->next_token->token, context->next_token->line);
     return std::make_shared<CConstDouble>(std::move(value));
 }
 

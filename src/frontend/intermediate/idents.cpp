@@ -12,22 +12,22 @@
 
 // Identifiers
 
-TIdentifier resolve_label_identifier(TIdentifier label) {
+TIdentifier rslv_label_identifier(TIdentifier label) {
     std::string name = identifiers->hash_table[label];
     return make_label_identifier(std::move(name));
 }
 
-TIdentifier resolve_variable_identifier(TIdentifier variable) {
+TIdentifier rslv_var_identifier(TIdentifier variable) {
     std::string name = identifiers->hash_table[variable];
-    return make_variable_identifier(std::move(name));
+    return make_var_identifier(std::move(name));
 }
 
-TIdentifier resolve_structure_tag(TIdentifier structure) {
+TIdentifier rslv_struct_tag(TIdentifier structure) {
     std::string name = identifiers->hash_table[structure];
-    return make_structure_identifier(std::move(name));
+    return make_struct_identifier(std::move(name));
 }
 
-TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
+TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
     std::string name;
     switch (label_kind) {
         case LABEL_KIND::Land_false: {
@@ -96,7 +96,7 @@ TIdentifier represent_label_identifier(LABEL_KIND label_kind) {
     return make_label_identifier(std::move(name));
 }
 
-TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
+TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
     std::string name;
     switch (label_kind) {
         case LABEL_KIND::Lbreak: {
@@ -122,14 +122,14 @@ TIdentifier represent_loop_identifier(LABEL_KIND label_kind, TIdentifier target)
     return make_string_identifier(std::move(name));
 }
 
-TIdentifier represent_case_identifier(TIdentifier target, bool is_label, size_t i) {
+TIdentifier repr_case_identifier(TIdentifier target, bool is_label, size_t i) {
     std::string name = is_label ? "case_" : "";
     name += std::to_string(i);
     name += identifiers->hash_table[target];
     return make_string_identifier(std::move(name));
 }
 
-TIdentifier represent_variable_identifier(CExp* node) {
+TIdentifier repr_var_identifier(CExp* node) {
     std::string name;
     switch (node->type()) {
         case AST_T::CConstant_t: {
@@ -191,5 +191,5 @@ TIdentifier represent_variable_identifier(CExp* node) {
         default:
             RAISE_INTERNAL_ERROR;
     }
-    return make_variable_identifier(std::move(name));
+    return make_var_identifier(std::move(name));
 }

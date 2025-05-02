@@ -47,7 +47,7 @@ static TInt get_arr_alignment(Array* arr_type, TLong& size) {
     }
     TInt alignment;
     {
-        alignment = generate_type_alignment(arr_type->elem_type.get());
+        alignment = gen_type_alignment(arr_type->elem_type.get());
         if (arr_type->elem_type->type() == AST_T::Structure_t) {
             Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
             size *= frontend->struct_typedef_table[struct_type->tag]->size;
@@ -66,7 +66,7 @@ static TInt get_struct_alignment(Structure* struct_type) {
     return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
 
-TInt generate_type_alignment(Type* type) {
+TInt gen_type_alignment(Type* type) {
     switch (type->type()) {
         case AST_T::Array_t: {
             TLong size;
@@ -99,7 +99,7 @@ static std::shared_ptr<ByteArray> struct_asm_type(Structure* struct_type) {
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
-std::shared_ptr<AssemblyType> convert_backend_assembly_type(TIdentifier name) {
+std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name) {
     switch (frontend->symbol_table[name]->type_t->type()) {
         case AST_T::Char_t:
         case AST_T::SChar_t:
@@ -179,7 +179,7 @@ static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
 
 static void cvt_obj_type(IdentifierAttr* node) {
     if (node->type() != AST_T::ConstantAttr_t) {
-        std::shared_ptr<AssemblyType> assembly_type = convert_backend_assembly_type(context->symbol);
+        std::shared_ptr<AssemblyType> assembly_type = cvt_backend_asm_type(context->symbol);
         bool is_static = node->type() == AST_T::StaticAttr_t;
         cvt_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(assembly_type)));
     }
@@ -205,7 +205,7 @@ static void cvt_program(AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void convert_symbol_table(AsmProgram* node) {
+void symbol_table_conversion(AsmProgram* node) {
     context = std::make_unique<SymtCvtContext>();
     cvt_program(node);
     context.reset();

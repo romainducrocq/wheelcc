@@ -1,156 +1,83 @@
-std::unique_ptr<AsmProgram> assembly_generation(
-CConstChar::CConstChar(TChar value) : value(
-CConstDouble::CConstDouble(TDouble value) : value(
-CConstInt::CConstInt(TInt value) : value(
-CConstLong::CConstLong(TLong value) : value(
-CConstUChar::CConstUChar(TUChar value) : value(
-CConstUInt::CConstUInt(TUInt value) : value(
-CConstULong::CConstULong(TULong value) : value(
-CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(
-IdentifierContext::IdentifierContext() : label_counter(0), variable_counter(0), structure_counter(
-TIdentifier make_label_identifier(
-TIdentifier make_string_identifier(
-TIdentifier make_structure_identifier(
-TIdentifier make_variable_identifier(
-TIdentifier string_to_hash(
-AsmCall::AsmCall(TIdentifier name) : name(
-AsmCdq::AsmCdq(std::shared_ptr<AssemblyType> assembly_type) : assembly_type(
-AsmData::AsmData(TIdentifier name, TLong offset) : name(name), offset(
-AsmJmp::AsmJmp(TIdentifier target) : target(
-AsmLabel::AsmLabel(TIdentifier name) : name(
-AsmMemory::AsmMemory(TLong value, std::unique_ptr<AsmReg> reg) : value(value), reg(
-AsmPop::AsmPop(std::unique_ptr<AsmReg> reg) : reg(
-AsmPseudo::AsmPseudo(TIdentifier name) : name(
-AsmPseudoMem::AsmPseudoMem(TIdentifier name, TLong offset) : name(name), offset(
-AsmPush::AsmPush(std::shared_ptr<AsmOperand> src) : src(
-AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg) : reg(
-BackendFun::BackendFun(bool is_defined) : is_defined(
-ByteArray::ByteArray(TLong size, TInt alignment) : size(size), alignment(
-const char* get_argument_message(
-const char* get_fatal_message(
-const char* get_lexer_message(
-const char* get_parser_message(
-const char* get_semantic_message(
-const char* get_util_message(
-std::string get_assignment_hr(
-std::string get_binary_op_hr(
-std::string get_const_hr(
-std::string get_name_hr(
-std::string get_storage_class_hr(
-std::string get_struct_name_hr(
-std::string get_token_kind_hr(
-std::string get_type_hr(
-std::string get_unary_op_hr(
-bool find_file(
-bool read_line(
-void file_close_read(
-void file_close_write(
-void file_open_read(
-void file_open_write(
-void set_filename(
-void write_line(
-CAddrOf::CAddrOf(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(
-CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items) : block_items(
-CBreak::CBreak(size_t line) : line(
-CCompound::CCompound(std::unique_ptr<CBlock> block) : block(
-CConstant::CConstant(std::shared_ptr<CConst> constant, size_t line) : CExp(line), constant(
-CContinue::CContinue(size_t line) : line(
-CD::CD(std::unique_ptr<CDeclaration> declaration) : declaration(
-CDefault::CDefault(std::unique_ptr<CStatement> jump_to, size_t line) : jump_to(std::move(jump_to)), line(
-CDereference::CDereference(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(
-CExp::CExp(size_t line) : line(
-CExpression::CExpression(std::unique_ptr<CExp> exp) : exp(
-CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl) : function_decl(
-CGoto::CGoto(TIdentifier target, size_t line) : target(target), line(
-CIdent::CIdent(TIdentifier name) : name(
-CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration> init) : init(
-CInitExp::CInitExp(std::unique_ptr<CExp> init) : init(
-CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator) : declarator(
-CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations) : declarations(
-CReturn::CReturn(std::unique_ptr<CExp> exp, size_t line) : exp(std::move(exp)), line(
-CS::CS(std::unique_ptr<CStatement> statement) : statement(
-CSingleInit::CSingleInit(std::unique_ptr<CExp> exp) : exp(
-CSizeOf::CSizeOf(std::unique_ptr<CExp> exp, size_t line) : CExp(line), exp(
-CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type, size_t line) : CExp(line), target_type(
-CString::CString(std::shared_ptr<CStringLiteral> literal, size_t line) : CExp(line), literal(
-CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl) : struct_decl(
-CVar::CVar(TIdentifier name, size_t line) : CExp(line), name(
-CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl) : variable_decl(
-Array::Array(TLong size, std::shared_ptr<Type> elem_type) : size(size), elem_type(
-CharInit::CharInit(TChar value) : value(
-ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init) : static_init(
-DoubleInit::DoubleInit(TIdentifier double_constant) : double_constant(
-FunAttr::FunAttr(bool is_defined, bool is_global) : is_defined(is_defined), is_global(
-Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits) : static_inits(
-IntInit::IntInit(TInt value) : value(
-LongInit::LongInit(TLong value) : value(
-Pointer::Pointer(std::shared_ptr<Type> ref_type) : ref_type(
-PointerInit::PointerInit(TIdentifier name) : name(
-Structure::Structure(TIdentifier tag, bool is_union) : tag(tag), is_union(
-UCharInit::UCharInit(TUChar value) : value(
-UIntInit::UIntInit(TUInt value) : value(
-ULongInit::ULongInit(TULong value) : value(
-ZeroInit::ZeroInit(TLong byte) : byte(
-void gas_code_emission(
-TIdentifier represent_case_identifier(
-TIdentifier represent_label_identifier(
-TIdentifier represent_loop_identifier(
-TIdentifier represent_variable_identifier(
-TIdentifier resolve_label_identifier(
-TIdentifier resolve_structure_tag(
-TIdentifier resolve_variable_identifier(
-TacConstant::TacConstant(std::shared_ptr<CConst> constant) : constant(
-TacDereferencedPointer::TacDereferencedPointer(std::shared_ptr<TacValue> val) : val(
-TacJump::TacJump(TIdentifier target) : target(
-TacLabel::TacLabel(TIdentifier name) : name(
-TacPlainOperand::TacPlainOperand(std::shared_ptr<TacValue> val) : val(
-TacReturn::TacReturn(std::shared_ptr<TacValue> val) : val(
-TacSubObject::TacSubObject(TIdentifier base_name, TLong offset) : base_name(base_name), offset(
-TacVariable::TacVariable(TIdentifier name) : name(
-std::vector<Token> lexing(
-MainContext::MainContext() : is_verbose(
-int main(
-void three_address_code_optimization(
-ParserContext::ParserContext(std::vector<Token>* p_tokens) : p_tokens(p_tokens), pop_index(
-std::unique_ptr<CProgram> parsing(
-void pretty_print_addressed_set(
-void pretty_print_asm_code(
-void pretty_print_ast(
-void pretty_print_backend_symbol_table(
-void pretty_print_string_constant_table(
-void pretty_print_struct_typedef_table(
-void pretty_print_symbol_table(
-void pretty_print_tokens(
-void register_allocation(
-REGISTER_KIND register_mask_kind(
-bool register_mask_get(
-size_t register_mask_bit(
-std::shared_ptr<AsmIndexed> generate_indexed(
-std::shared_ptr<AsmMemory> generate_memory(
-std::shared_ptr<AsmRegister> generate_register(
-void register_mask_set(
-void analyze_semantic(
-StackFixContext::StackFixContext() : stack_bytes(
-std::unique_ptr<AsmBinary> allocate_stack_bytes(
-std::unique_ptr<AsmBinary> deallocate_stack_bytes(
-void fix_stack(
-double string_to_double(
-hash_t string_to_hash(
-int32_t intmax_to_int32(
-int32_t string_literal_bytes_to_int32(
-int32_t string_to_char_ascii(
-int64_t intmax_to_int64(
-int64_t string_literal_bytes_to_int64(
-int8_t string_literal_bytes_to_int8(
-intmax_t string_to_intmax(
-std::string string_literal_to_string_constant(
-uint32_t uintmax_to_uint32(
-uint64_t double_to_binary(
-uint64_t uintmax_to_uint64(
-uintmax_t string_to_uintmax(
-void string_to_string_literal(
-TInt generate_type_alignment(
-std::shared_ptr<AssemblyType> convert_backend_assembly_type(
-void convert_symbol_table(
-std::unique_ptr<TacProgram> three_address_code_representation(
-size_t handle_error_at_line(
+make_string_identifier make_string_identifier
+make_label_identifier make_label_identifier
+make_variable_identifier make_var_identifier
+make_structure_identifier make_struct_identifier
+assembly_generation assembly_generation
+generate_register gen_register
+generate_memory gen_memory
+generate_indexed gen_indexed
+register_mask_kind register_mask_kind
+register_mask_bit register_mask_bit
+register_mask_get register_mask_get
+register_mask_set register_mask_set
+allocate_stack_bytes alloc_stack_bytes
+deallocate_stack_bytes dealloc_stack_bytes
+fix_stack stack_fixup
+generate_type_alignment gen_type_alignment
+convert_backend_assembly_type cvt_backend_asm_type
+convert_symbol_table symbol_table_conversion
+gas_code_emission gas_code_emission
+resolve_label_identifier rslv_label_identifier
+resolve_variable_identifier rslv_var_identifier
+resolve_structure_tag rslv_struct_tag
+represent_label_identifier repr_label_identifier
+represent_loop_identifier repr_loop_identifier
+represent_case_identifier repr_case_identifier
+represent_variable_identifier repr_var_identifier
+analyze_semantic semantic_analysis
+three_address_code_representation tac_representation
+get_token_kind_hr get_tok_fmt
+get_name_hr get_name_fmt
+get_struct_name_hr get_struct_name_fmt
+get_type_hr get_type_fmt
+get_const_hr get_const_fmt
+get_storage_class_hr get_storage_class_fmt
+get_unary_op_hr get_unop_fmt
+get_binary_op_hr get_binop_fmt
+get_assignment_hr get_assign_fmt
+get_fatal_message get_fatal_msg
+get_argument_message get_arg_msg
+get_util_message get_util_msg
+get_lexer_message get_lexer_msg
+get_parser_message get_parser_msg
+get_semantic_message get_semantic_msg
+lexing lexing
+parsing parsing
+three_address_code_optimization tac_optimization
+register_allocation register_allocation
+set_filename set_filename
+file_open_read open_fread
+file_open_write open_fwrite
+find_file find_file
+read_line read_line
+write_line write_line
+file_close_read close_fread
+file_close_write close_fwrite
+pretty_print_tokens pprint_toks
+pretty_print_ast pprint_ast
+pretty_print_addressed_set pprint_addressed_set
+pretty_print_string_constant_table pprint_string_const_table
+pretty_print_struct_typedef_table pprint_struct_typedef_table
+pretty_print_symbol_table pprint_symbol_table
+pretty_print_backend_symbol_table pprint_backend_symbol_table
+pretty_print_asm_code pprint_asm_code
+string_to_hash string_to_hash
+string_to_intmax string_to_intmax
+intmax_to_int32 intmax_to_int32
+intmax_to_int64 intmax_to_int64
+string_to_uintmax string_to_uintmax
+uintmax_to_uint32 uintmax_to_uint32
+uintmax_to_uint64 uintmax_to_uint64
+string_to_string_literal string_to_literal
+string_to_char_ascii string_to_char_ascii
+string_literal_bytes_to_int8 string_bytes_to_int8
+string_literal_bytes_to_int32 string_bytes_to_int32
+string_literal_bytes_to_int64 string_bytes_to_int64
+string_literal_to_string_constant string_literal_to_const
+string_to_double string_to_dbl
+double_to_binary dbl_to_binary
+handle_error_at_line handle_error_at_line
+raise_internal_error raise_internal_error
+raise_base_error raise_base_error
+raise_runtime_error raise_rt_error
+raise_runtime_error_at_line raise_rt_error_at_line

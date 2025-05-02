@@ -55,7 +55,7 @@ uint32_t uintmax_to_uint32(uintmax_t uintmax) { return static_cast<uint32_t>(uin
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) { return static_cast<uint64_t>(uintmax); }
 
-void string_to_string_literal(const std::string& s_string, std::vector<int8_t>& string_literal) {
+void string_to_literal(const std::string& s_string, std::vector<int8_t>& string_literal) {
     for (size_t byte = 1; byte < s_string.size() - 1; ++byte) {
         char c_char = static_cast<char>(s_string[byte]);
         if (c_char == '\\') {
@@ -170,7 +170,7 @@ static std::string string_literal_byte_to_hex(int8_t val) {
     return ss.str();
 }
 
-int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
     for (size_t byte = byte_at + 1; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
@@ -180,7 +180,7 @@ int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, s
     return hex_string_to_int8(s_hex);
 }
 
-int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
     for (size_t byte = byte_at + 4; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
@@ -190,7 +190,7 @@ int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal,
     return hex_string_to_int32(s_hex);
 }
 
-int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
     std::string s_hex = "";
     for (size_t byte = byte_at + 8; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
@@ -200,7 +200,7 @@ int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal,
     return hex_string_to_int64(s_hex);
 }
 
-std::string string_literal_to_string_constant(const std::vector<int8_t>& string_literal) {
+std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
     std::string string_constant = "";
     for (int8_t byte : string_literal) {
         switch (byte) {
@@ -245,7 +245,7 @@ std::string string_literal_to_string_constant(const std::vector<int8_t>& string_
     return string_constant;
 }
 
-double string_to_double(const std::string& s_double, size_t line) {
+double string_to_dbl(const std::string& s_double, size_t line) {
     std::vector<char> buffer(s_double.begin(), s_double.end());
     buffer.push_back('\0');
     char* end_ptr = nullptr;
@@ -260,7 +260,7 @@ double string_to_double(const std::string& s_double, size_t line) {
     return float64;
 }
 
-uint64_t double_to_binary(double decimal) {
+uint64_t dbl_to_binary(double decimal) {
     uint64_t binary;
     std::memcpy(&binary, &decimal, sizeof(uint64_t));
     return binary;
