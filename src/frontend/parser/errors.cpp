@@ -184,7 +184,7 @@ std::string get_struct_name_hr(TIdentifier name, bool is_union) {
     return type_hr;
 }
 
-static std::string get_function_type_hr(FunType* fun_type) {
+static std::string get_fun_fmt(FunType* fun_type) {
     std::string type_hr = "(";
     type_hr += get_type_hr(fun_type->ret_type.get());
     type_hr += ")(";
@@ -200,7 +200,7 @@ static std::string get_function_type_hr(FunType* fun_type) {
     return type_hr;
 }
 
-static std::string get_pointer_type_hr(Pointer* ptr_type) {
+static std::string get_ptr_fmt(Pointer* ptr_type) {
     std::string decl_type_hr = "*";
     while (ptr_type->ref_type->type() == Pointer_t) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
@@ -211,7 +211,7 @@ static std::string get_pointer_type_hr(Pointer* ptr_type) {
     return type_hr;
 }
 
-static std::string get_array_type_hr(Array* arr_type) {
+static std::string get_arr_fmt(Array* arr_type) {
     std::string decl_type_hr = "[";
     decl_type_hr += std::to_string(arr_type->size);
     decl_type_hr += "]";
@@ -251,11 +251,11 @@ std::string get_type_hr(Type* type) {
         case AST_T::Void_t:
             return "void";
         case AST_T::FunType_t:
-            return get_function_type_hr(static_cast<FunType*>(type));
+            return get_fun_fmt(static_cast<FunType*>(type));
         case AST_T::Pointer_t:
-            return get_pointer_type_hr(static_cast<Pointer*>(type));
+            return get_ptr_fmt(static_cast<Pointer*>(type));
         case AST_T::Array_t:
-            return get_array_type_hr(static_cast<Array*>(type));
+            return get_arr_fmt(static_cast<Array*>(type));
         case AST_T::Structure_t:
             return get_structure_type_hr(static_cast<Structure*>(type));
         default:

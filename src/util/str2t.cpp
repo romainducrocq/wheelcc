@@ -164,7 +164,7 @@ static int64_t hex_string_to_int64(const std::string& s_hex) {
     return static_cast<int64_t>(hex_string_to_intmax(s_hex));
 }
 
-static std::string string_literal_byte_to_hex_string(int8_t val) {
+static std::string string_literal_byte_to_hex(int8_t val) {
     std::stringstream ss;
     ss << std::setfill('0') << std::setw(sizeof(int8_t) * 2) << std::hex << (val | 0);
     return ss.str();
@@ -174,7 +174,7 @@ int8_t string_literal_bytes_to_int8(const std::vector<int8_t>& string_literal, s
     std::string s_hex = "";
     for (size_t byte = byte_at + 1; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
-            s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
+            s_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
     return hex_string_to_int8(s_hex);
@@ -184,7 +184,7 @@ int32_t string_literal_bytes_to_int32(const std::vector<int8_t>& string_literal,
     std::string s_hex = "";
     for (size_t byte = byte_at + 4; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
-            s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
+            s_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
     return hex_string_to_int32(s_hex);
@@ -194,7 +194,7 @@ int64_t string_literal_bytes_to_int64(const std::vector<int8_t>& string_literal,
     std::string s_hex = "";
     for (size_t byte = byte_at + 8; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
-            s_hex += string_literal_byte_to_hex_string(string_literal[byte]);
+            s_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
     return hex_string_to_int64(s_hex);

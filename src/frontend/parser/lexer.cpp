@@ -336,7 +336,7 @@ static void tokenize_source() {
     tokenize_file();
 }
 
-static void strip_filename_extension(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
+static void strip_filename_ext(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -356,6 +356,6 @@ std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& incl
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
     set_filename(filename);
-    strip_filename_extension(filename);
+    strip_filename_ext(filename);
     return tokens;
 }

@@ -1,5 +1,5 @@
-[ ] frontend/parser/errors.cpp
-[ ] frontend/parser/lexer.cpp
+[x] frontend/parser/errors.cpp
+[x] frontend/parser/lexer.cpp
 [ ] frontend/parser/parser.cpp
 [x] frontend/intermediate/semantic.cpp
 [x] frontend/intermediate/tac_repr.cpp
@@ -10,7 +10,7 @@
 [x] ast/back_ast.cpp
 [x] ast/front_ast.cpp
 [x] ast/interm_ast.cpp
-[ ] main.cpp
+[x] main.cpp
 [ ] optimization/optim_tac.cpp
 [ ] optimization/reg_alloc.cpp
 [x] backend/emitter/gas_code.cpp
@@ -18,9 +18,9 @@
 [x] backend/assembly/asm_gen.cpp
 [x] backend/assembly/symt_cvt.cpp
 [x] backend/assembly/registers.cpp
-[ ] util/throw.cpp
-[ ] util/pprint.cpp
-[ ] util/str2t.cpp
-[ ] util/fileio.cpp
+[x] util/throw.cpp
+[x] util/pprint.cpp
+[x] util/str2t.cpp
+[x] util/fileio.cpp
 
 [ ] optimization/impl_olvl.hpp
