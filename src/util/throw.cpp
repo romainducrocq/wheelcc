@@ -80,7 +80,7 @@ size_t handle_error_at_line(size_t total_line_number) {
     throw std::runtime_error(message);
 }
 
-[[noreturn]] void raise_runtime_error_at_line(const char* error_message, size_t line_number) {
+[[noreturn]] void raise_rt_error_at_line(const char* error_message, size_t line_number) {
     if (line_number == 0) {
         raise_rt_error(error_message);
     }
