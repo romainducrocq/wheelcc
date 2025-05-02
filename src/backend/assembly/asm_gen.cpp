@@ -599,7 +599,7 @@ static void struct_8b_clss(Structure* struct_type) {
     }
 }
 
-static void param_fun_reg_mask(FunType* fun_type, size_t reg_size, size_t sse_size) {
+static void fun_param_reg_mask(FunType* fun_type, size_t reg_size, size_t sse_size) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
         for (size_t i = 0; i < reg_size; ++i) {
@@ -1262,7 +1262,7 @@ static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_
             }
         }
     }
-    param_fun_reg_mask(fun_type, reg_size, sse_size);
+    fun_param_reg_mask(fun_type, reg_size, sse_size);
     if (stack_padding % 2l == 1l) {
         alloc_stack_instr(8l);
         stack_padding++;
@@ -2331,7 +2331,7 @@ static void gen_instr_list(const std::vector<std::unique_ptr<TacInstruction>>& l
     }
 }
 
-static void reg_param_fun_instr(TIdentifier name, REGISTER_KIND arg_register) {
+static void reg_fun_param_instr(TIdentifier name, REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = generate_register(arg_register);
     std::shared_ptr<AsmOperand> dst;
     {
@@ -2342,7 +2342,7 @@ static void reg_param_fun_instr(TIdentifier name, REGISTER_KIND arg_register) {
     push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
-static void stack_param_fun_instr(TIdentifier name, TLong stack_bytes) {
+static void stack_fun_param_instr(TIdentifier name, TLong stack_bytes) {
     std::shared_ptr<AsmOperand> src = generate_memory(REGISTER_KIND::Bp, stack_bytes);
     std::shared_ptr<AsmOperand> dst;
     {
@@ -2353,11 +2353,11 @@ static void stack_param_fun_instr(TIdentifier name, TLong stack_bytes) {
     push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
 }
 
-static void reg_8b_param_fun_instr(TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
+static void reg_8b_fun_param_instr(TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     ret_8b_call_instr(name, offset, struct_type, arg_register);
 }
 
-static void stack_8b_param_fun_instr(TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
+static void stack_8b_fun_param_instr(TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
     std::shared_ptr<AssemblyType> assembly_type_dst = asm_type_8b(struct_type, offset);
     if (assembly_type_dst->type() == AST_T::ByteArray_t) {
         TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size;
@@ -2391,28 +2391,28 @@ static void stack_8b_param_fun_instr(TIdentifier name, TLong stack_bytes, TLong 
     }
 }
 
-static void param_fun_toplvl(TacFunction* node, FunType* fun_type, bool is_return_memory) {
+static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_return_memory) {
     size_t reg_size = is_return_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
     for (TIdentifier param : node->params) {
         if (frontend->symbol_table[param]->type_t->type() == AST_T::Double_t) {
             if (sse_size < 8) {
-                reg_param_fun_instr(param, context->sse_arg_registers[sse_size]);
+                reg_fun_param_instr(param, context->sse_arg_registers[sse_size]);
                 sse_size++;
             }
             else {
-                stack_param_fun_instr(param, stack_bytes);
+                stack_fun_param_instr(param, stack_bytes);
                 stack_bytes += 8l;
             }
         }
         else if (frontend->symbol_table[param]->type_t->type() != AST_T::Structure_t) {
             if (reg_size < 6) {
-                reg_param_fun_instr(param, context->arg_registers[reg_size]);
+                reg_fun_param_instr(param, context->arg_registers[reg_size]);
                 reg_size++;
             }
             else {
-                stack_param_fun_instr(param, stack_bytes);
+                stack_fun_param_instr(param, stack_bytes);
                 stack_bytes += 8l;
             }
         }
@@ -2437,11 +2437,11 @@ static void param_fun_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
                 TLong offset = 0l;
                 for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == STRUCT_8B_CLS::SSE) {
-                        reg_8b_param_fun_instr(param, offset, nullptr, context->sse_arg_registers[sse_size]);
+                        reg_8b_fun_param_instr(param, offset, nullptr, context->sse_arg_registers[sse_size]);
                         sse_size++;
                     }
                     else {
-                        reg_8b_param_fun_instr(param, offset, struct_type, context->arg_registers[reg_size]);
+                        reg_8b_fun_param_instr(param, offset, struct_type, context->arg_registers[reg_size]);
                         reg_size++;
                     }
                     offset += 8l;
@@ -2450,14 +2450,14 @@ static void param_fun_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
             else {
                 TLong offset = 0l;
                 for (size_t i = 0; i < context->struct_8b_cls_map[struct_type->tag].size(); ++i) {
-                    stack_8b_param_fun_instr(param, stack_bytes, offset, struct_type);
+                    stack_8b_fun_param_instr(param, stack_bytes, offset, struct_type);
                     stack_bytes += 8l;
                     offset += 8l;
                 }
             }
         }
     }
-    param_fun_reg_mask(fun_type, reg_size, sse_size);
+    fun_param_reg_mask(fun_type, reg_size, sse_size);
 }
 
 static std::unique_ptr<AsmFunction> fun_toplvl(TacFunction* node) {
@@ -2483,7 +2483,7 @@ static std::unique_ptr<AsmFunction> fun_toplvl(TacFunction* node) {
                 }
             }
         }
-        param_fun_toplvl(node, fun_type, is_return_memory);
+        fun_param_toplvl(node, fun_type, is_return_memory);
 
         context->p_fun_type_top_level = fun_type;
         gen_instr_list(node->body);
