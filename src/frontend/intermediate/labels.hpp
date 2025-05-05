@@ -1,5 +1,5 @@
-#ifndef _FRONTEND_INTERMEDIATE_LABELS_HPP
-#define _FRONTEND_INTERMEDIATE_LABELS_HPP
+#ifndef _FRONT_INTERMEDIATE_LABELS_H
+#define _FRONT_INTERMEDIATE_LABELS_H
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

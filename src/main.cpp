@@ -132,7 +132,7 @@ static void compile() {
     }
 #endif
 
-    INIT_IDENTIFIER_CONTEXT;
+    INIT_IDENTIFIER_CTX;
 
     verbose("-- Parsing ... ", false);
     std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens));
@@ -144,7 +144,7 @@ static void compile() {
     }
 #endif
 
-    INIT_FRONT_END_CONTEXT;
+    INIT_FRONTEND_CTX;
 
     verbose("-- Semantic analysis ... ", false);
     analyze_semantic(c_ast.get());
@@ -159,7 +159,7 @@ static void compile() {
     }
 #endif
 
-    FREE_ERRORS_CONTEXT;
+    FREE_ERRORS_CTX;
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast));
@@ -179,7 +179,7 @@ static void compile() {
     }
 #endif
 
-    INIT_BACK_END_CONTEXT;
+    INIT_BACKEND_CTX;
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast));
@@ -203,7 +203,7 @@ static void compile() {
     }
 #endif
 
-    FREE_FRONT_END_CONTEXT;
+    FREE_FRONTEND_CTX;
 
     verbose("-- Code emission ... ", false);
     context->filename += ".s";
@@ -216,11 +216,11 @@ static void compile() {
     }
 #endif
 
-    FREE_BACK_END_CONTEXT;
+    FREE_BACKEND_CTX;
 
-    FREE_IDENTIFIER_CONTEXT;
+    FREE_IDENTIFIER_CTX;
 
-    FREE_FILEIO_CONTEXT;
+    FREE_FILEIO_CTX;
 }
 
 static void shift_args(std::string& arg) {
@@ -247,37 +247,37 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_debug_code_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MESSAGE_ARGUMENT::no_debug_code_in_argument));
     }
     else if (arg_parse_uint8(arg, context->debug_code)) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MESSAGE_ARGUMENT::invalid_debug_code_in_argument, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_optim_1_mask_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MESSAGE_ARGUMENT::no_optim_1_mask_in_argument));
     }
     else if (arg_parse_uint8(arg, context->optim_1_mask) || context->optim_1_mask > 15) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_optim_2_code_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MESSAGE_ARGUMENT::no_optim_2_code_in_argument));
     }
     else if (arg_parse_uint8(arg, context->optim_2_code) || context->optim_2_code > 2) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE(MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_input_files_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MESSAGE_ARGUMENT::no_input_files_in_argument));
     }
     context->filename = arg;
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARGUMENT_MESSAGE_0(MESSAGE_ARGUMENT::no_include_directories_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MESSAGE_ARGUMENT::no_include_directories_in_argument));
     }
     do {
         std::string includedir = arg;
@@ -305,28 +305,28 @@ int main(int argc, char** argv) {
             }
         }
 
-        INIT_FILEIO_CONTEXT;
+        INIT_FILEIO_CTX;
 
-        INIT_ERRORS_CONTEXT;
+        INIT_ERRORS_CTX;
 
 #ifdef _WIN32
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::operating_system_not_supported, "Windows"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::operating_system_not_supported, "Windows"));
 #elif defined(__APPLE__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::operating_system_not_supported, "MacOS"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::operating_system_not_supported, "MacOS"));
 #elif !defined(__linux__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::operating_system_not_supported, "unknown"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::operating_system_not_supported, "unknown"));
 #elif defined(__arm__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::architecture_not_supported, "arm"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::architecture_not_supported, "arm"));
 #elif defined(__i386__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::architecture_not_supported, "x86"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::architecture_not_supported, "x86"));
 #elif !defined(__x86_64__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::architecture_not_supported, "unknown"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::architecture_not_supported, "unknown"));
 #elif defined(__clang__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::compiler_not_supported, "clang"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::compiler_not_supported, "clang"));
 #elif !defined(__GNUC__)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::compiler_not_supported, "unknown"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::compiler_not_supported, "unknown"));
 #elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
-        RAISE_FATAL_ERROR(GET_FATAL_MESSAGE(MESSAGE_FATAL::gcc_version_not_supported, GCC_VERSION));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MESSAGE_FATAL::gcc_version_not_supported, GCC_VERSION));
 #endif
 
         arg_parse();

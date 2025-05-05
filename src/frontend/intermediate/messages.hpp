@@ -1,5 +1,5 @@
-#ifndef _FRONTEND_INTERMEDIATE_MESSAGES_HPP
-#define _FRONTEND_INTERMEDIATE_MESSAGES_HPP
+#ifndef _FRONT_INTERMEDIATE_MESSAGES_H
+#define _FRONT_INTERMEDIATE_MESSAGES_H
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

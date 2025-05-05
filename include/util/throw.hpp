@@ -1,5 +1,5 @@
-#ifndef _UTIL_THROW_HPP
-#define _UTIL_THROW_HPP
+#ifndef _UTIL_THROW_H
+#define _UTIL_THROW_H
 
 #include <memory>
 #include <string>
@@ -26,8 +26,8 @@ struct ErrorsContext {
 };
 
 extern std::unique_ptr<ErrorsContext> errors;
-#define INIT_ERRORS_CONTEXT errors = std::make_unique<ErrorsContext>()
-#define FREE_ERRORS_CONTEXT errors.reset()
+#define INIT_ERRORS_CTX errors = std::make_unique<ErrorsContext>()
+#define FREE_ERRORS_CTX errors.reset()
 
 size_t handle_error_at_line(size_t total_line_number);
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line);
@@ -40,6 +40,6 @@ size_t handle_error_at_line(size_t total_line_number);
 #define RAISE_RUNTIME_ERROR(X) X > 0 ? raise_rt_error(errors->message) : RAISE_INTERNAL_ERROR
 #define RAISE_RUNTIME_ERROR_AT(X, Y) X > 0 ? raise_rt_error_at_line(errors->message, Y) : RAISE_INTERNAL_ERROR
 #define RAISE_RUNTIME_ERROR_AT_LINE(X, Y) RAISE_RUNTIME_ERROR_AT(X, handle_error_at_line(Y))
-#define GET_ERROR_MESSAGE(X, ...) snprintf(errors->message, sizeof(char) * 1024, X, __VA_ARGS__)
+#define GET_ERROR_MSG(X, ...) snprintf(errors->message, sizeof(char) * 1024, X, __VA_ARGS__)
 
 #endif

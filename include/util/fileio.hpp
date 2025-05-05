@@ -1,5 +1,5 @@
-#ifndef _UTIL_FILEIO_HPP
-#define _UTIL_FILEIO_HPP
+#ifndef _UTIL_FILEIO_H
+#define _UTIL_FILEIO_H
 
 #include <memory>
 #include <stdio.h>
@@ -25,8 +25,8 @@ struct FileIoContext {
 };
 
 extern std::unique_ptr<FileIoContext> fileio;
-#define INIT_FILEIO_CONTEXT fileio = std::make_unique<FileIoContext>()
-#define FREE_FILEIO_CONTEXT fileio.reset()
+#define INIT_FILEIO_CTX fileio = std::make_unique<FileIoContext>()
+#define FREE_FILEIO_CTX fileio.reset()
 
 void set_filename(const std::string& filename);
 void open_fread(const std::string& filename);

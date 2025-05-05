@@ -1,5 +1,5 @@
-#ifndef _AST_FRONT_SYMT_HPP
-#define _AST_FRONT_SYMT_HPP
+#ifndef _AST_FRONT_SYMT_H
+#define _AST_FRONT_SYMT_H
 
 #include <inttypes.h>
 #include <memory>
@@ -322,12 +322,12 @@ struct FrontEndContext {
 };
 
 extern std::unique_ptr<FrontEndContext> frontend;
-#define INIT_FRONT_END_CONTEXT frontend = std::make_unique<FrontEndContext>()
-#define FREE_FRONT_END_CONTEXT frontend.reset()
+#define INIT_FRONTEND_CTX frontend = std::make_unique<FrontEndContext>()
+#define FREE_FRONTEND_CTX frontend.reset()
 
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
     frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names[Y]]
-#define GET_STRUCT_TYPEDEF_MEMBER_BACK(X) \
+#define GET_STRUCT_TYPEDEF_BACK(X) \
     frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names.back()]
 
 #endif

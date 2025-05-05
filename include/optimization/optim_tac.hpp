@@ -1,5 +1,5 @@
-#ifndef _OPTIMIZATION_OPTIM_TAC_HPP
-#define _OPTIMIZATION_OPTIM_TAC_HPP
+#ifndef _OPTIMIZATION_OPTIM_TAC_H
+#define _OPTIMIZATION_OPTIM_TAC_H
 
 #include <inttypes.h>
 

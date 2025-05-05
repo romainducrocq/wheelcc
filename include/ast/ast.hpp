@@ -1,5 +1,5 @@
-#ifndef _AST_AST_HPP
-#define _AST_AST_HPP
+#ifndef _AST_AST_H
+#define _AST_AST_H
 
 #include <inttypes.h>
 #include <memory>
@@ -113,8 +113,8 @@ struct IdentifierContext {
 };
 
 extern std::unique_ptr<IdentifierContext> identifiers;
-#define INIT_IDENTIFIER_CONTEXT identifiers = std::make_unique<IdentifierContext>()
-#define FREE_IDENTIFIER_CONTEXT identifiers.reset()
+#define INIT_IDENTIFIER_CTX identifiers = std::make_unique<IdentifierContext>()
+#define FREE_IDENTIFIER_CTX identifiers.reset()
 
 TIdentifier make_string_identifier(std::string&& value);
 TIdentifier make_label_identifier(std::string&& name);

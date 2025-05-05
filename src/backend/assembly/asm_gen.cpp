@@ -561,7 +561,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Structure* struct_type) {
                 struct_8b_cls[0] = STRUCT_8B_CLS::INTEGER;
             }
             if (!struct_type->is_union) {
-                member_type = GET_STRUCT_TYPEDEF_MEMBER_BACK(struct_type->tag)->member_type.get();
+                member_type = GET_STRUCT_TYPEDEF_BACK(struct_type->tag)->member_type.get();
                 while (member_type->type() == AST_T::Array_t) {
                     member_type = static_cast<Array*>(member_type)->elem_type.get();
                 }

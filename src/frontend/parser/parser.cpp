@@ -47,8 +47,8 @@ static std::unique_ptr<ParserContext> context;
 
 static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_next_token,
-                                        next_token_is.token.c_str(), get_token_kind_hr_c_str(expected_token)),
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::unexpected_next_token, next_token_is.token.c_str(),
+                                        fmt_tok_c_str(expected_token)),
             next_token_is.line);
     }
 }
@@ -56,7 +56,7 @@ static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
 static Token& pop_next() {
     if (context->pop_index >= context->p_tokens->size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
     }
 
     context->next_token = &(*context->p_tokens)[context->pop_index];
@@ -70,7 +70,7 @@ static Token& pop_next_i(size_t i) {
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
     }
 
     if (i == 1) {
@@ -90,7 +90,7 @@ static Token& pop_next_i(size_t i) {
 static const Token& peek_next() {
     if (context->pop_index >= context->p_tokens->size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
     }
 
     context->peek_token = &(*context->p_tokens)[context->pop_index];
@@ -103,7 +103,7 @@ static const Token& peek_next_i(size_t i) {
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
     }
 
     return (*context->p_tokens)[context->pop_index + i];
@@ -180,7 +180,7 @@ static std::shared_ptr<CConst> parse_const() {
     intmax_t value = string_to_intmax(context->next_token->token, context->next_token->line);
     if (value > 9223372036854775807ll) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE(MESSAGE_PARSER::number_too_large_for_long_constant, context->next_token->token.c_str()),
+            GET_PARSER_MSG(MESSAGE_PARSER::number_too_large_for_long_constant, context->next_token->token.c_str()),
             context->next_token->line);
     }
     if (context->next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
@@ -199,7 +199,7 @@ static std::shared_ptr<CConst> parse_unsigned_const() {
 
     uintmax_t value = string_to_uintmax(context->next_token->token, context->next_token->line);
     if (value > 18446744073709551615ull) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::number_too_large_for_unsigned_long_constant,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::number_too_large_for_unsigned_long_constant,
                                         context->next_token->token.c_str()),
             context->next_token->line);
     }
@@ -223,8 +223,8 @@ static TLong parse_arr_size() {
             constant = parse_unsigned_const();
             break;
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::array_size_not_a_constant_integer,
-                                            context->peek_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_PARSER_MSG(MESSAGE_PARSER::array_size_not_a_constant_integer, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
     expect_next(pop_next(), TOKEN_KIND::brackets_close);
@@ -254,7 +254,7 @@ static std::unique_ptr<CUnaryOp> parse_unop() {
             return std::make_unique<CNot>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_unary_operator, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_unary_operator, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -316,7 +316,7 @@ static std::unique_ptr<CBinaryOp> parse_binop() {
             return std::make_unique<CGreaterOrEqual>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_binary_operator, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_binary_operator, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -407,7 +407,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_decltor() {
             return parse_arr_abstract_decltor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_abstract_declarator, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_abstract_declarator, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -585,7 +585,7 @@ static std::unique_ptr<CExp> parse_ptr_unary_factor() {
             return parse_addrof_factor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_pointer_unary_factor, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_pointer_unary_factor, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -656,7 +656,7 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
         case TOKEN_KIND::parenthesis_open:
             return parse_inner_exp_factor();
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_primary_expression_factor,
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::unexpected_primary_expression_factor,
                                             context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
@@ -889,7 +889,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 break;
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_expression, context->peek_token->token.c_str()),
+                    GET_PARSER_MSG(MESSAGE_PARSER::unexpected_expression, context->peek_token->token.c_str()),
                     context->peek_token->line);
         }
     }
@@ -1024,7 +1024,7 @@ static std::unique_ptr<CCase> parse_case_statement() {
                 constant = parse_unsigned_const();
                 break;
             default:
-                RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::case_value_not_a_constant_integer,
+                RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::case_value_not_a_constant_integer,
                                                 context->peek_token->token.c_str()),
                     context->peek_token->line);
         }
@@ -1122,7 +1122,7 @@ static std::unique_ptr<CInitDecl> parse_for_init_decl() {
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
     if (declarator.derived_type->type() == AST_T::FunType_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::function_declared_in_for_initial,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::function_declared_in_for_initial,
                                         identifiers->hash_table[declarator.name].c_str()),
             context->next_token->line);
     }
@@ -1253,7 +1253,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             }
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_type_specifier, peek_next_i(i).token.c_str()),
+                    GET_PARSER_MSG(MESSAGE_PARSER::unexpected_type_specifier, peek_next_i(i).token.c_str()),
                     peek_next_i(i).line);
         }
     }
@@ -1348,7 +1348,7 @@ Lbreak:
     }
     std::string type_token_kinds_string = "(";
     for (TOKEN_KIND type_token_kind : type_token_kinds) {
-        type_token_kinds_string += get_token_kind_hr_c_str(type_token_kind);
+        type_token_kinds_string += fmt_tok_c_str(type_token_kind);
         type_token_kinds_string += ", ";
     }
     if (!type_token_kinds.empty()) {
@@ -1357,7 +1357,7 @@ Lbreak:
     }
     type_token_kinds_string += ")";
     RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_type_specifier_list, type_token_kinds_string.c_str()), line);
+        GET_PARSER_MSG(MESSAGE_PARSER::unexpected_type_specifier_list, type_token_kinds_string.c_str()), line);
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
@@ -1370,7 +1370,7 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
             return std::make_unique<CExtern>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_storage_class, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_storage_class, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -1398,7 +1398,7 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
     }
     if (initializers.empty()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE_0(MESSAGE_PARSER::empty_compound_initializer), context->peek_token->line);
+            GET_PARSER_MSG_0(MESSAGE_PARSER::empty_compound_initializer), context->peek_token->line);
     }
     pop_next();
     return std::make_unique<CCompoundInit>(std::move(initializers));
@@ -1437,7 +1437,7 @@ static void proc_arr_decltor(CArrayDeclarator* node, std::shared_ptr<Type> base_
 static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
     if (node->declarator->type() != AST_T::CIdent_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MESSAGE_0(MESSAGE_PARSER::type_derivation_on_function_declaration), context->next_token->line);
+            GET_PARSER_MSG_0(MESSAGE_PARSER::type_derivation_on_function_declaration), context->next_token->line);
     }
 
     std::vector<TIdentifier> params;
@@ -1500,7 +1500,7 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
             return parse_simple_decltor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_simple_declarator, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_simple_declarator, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -1556,7 +1556,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         }
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_parameter_list, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_parameter_list, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
     expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
@@ -1652,13 +1652,13 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
         std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
         if (storage_class) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MESSAGE(MESSAGE_PARSER::member_declared_with_non_automatic_storage,
-                    identifiers->hash_table[declarator.name].c_str(), get_storage_class_hr_c_str(storage_class.get())),
+                GET_PARSER_MSG(MESSAGE_PARSER::member_declared_with_non_automatic_storage,
+                    identifiers->hash_table[declarator.name].c_str(), fmt_storage_class_c_str(storage_class.get())),
                 context->next_token->line);
         }
     }
     if (declarator.derived_type->type() == AST_T::FunType_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::member_declared_as_function,
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::member_declared_as_function,
                                         identifiers->hash_table[declarator.name].c_str()),
             context->next_token->line);
     }

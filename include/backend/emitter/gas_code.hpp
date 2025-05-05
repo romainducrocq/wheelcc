@@ -1,5 +1,5 @@
-#ifndef _BACKEND_EMITTER_ATT_CODE_HPP
-#define _BACKEND_EMITTER_ATT_CODE_HPP
+#ifndef _BACK_EMITTER_GAS_CODE_H
+#define _BACK_EMITTER_GAS_CODE_H
 
 #include <memory>
 #include <string>

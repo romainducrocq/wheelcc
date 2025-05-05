@@ -1,5 +1,5 @@
-#ifndef _AST_INTERM_AST_HPP
-#define _AST_INTERM_AST_HPP
+#ifndef _AST_INTERM_AST_H
+#define _AST_INTERM_AST_H
 
 #include <memory>
 #include <vector>

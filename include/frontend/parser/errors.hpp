@@ -1,5 +1,5 @@
-#ifndef _FRONTEND_PARSER_ERRORS_HPP
-#define _FRONTEND_PARSER_ERRORS_HPP
+#ifndef _FRONT_PARSER_ERRORS_H
+#define _FRONT_PARSER_ERRORS_H
 
 #include <cstdio>
 #include <string>
@@ -59,15 +59,15 @@ std::string get_storage_class_fmt(CStorageClass* node);
 std::string get_unop_fmt(CUnaryOp* node);
 std::string get_binop_fmt(CBinaryOp* node);
 std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op);
-#define get_token_kind_hr_c_str(X) get_tok_fmt(X).c_str()
-#define get_name_hr_c_str(X) get_name_fmt(X).c_str()
-#define get_struct_name_hr_c_str(X, Y) get_struct_name_fmt(X, Y).c_str()
-#define get_type_hr_c_str(X) get_type_fmt(X).c_str()
-#define get_const_hr_c_str(X) get_const_fmt(X).c_str()
-#define get_storage_class_hr_c_str(X) get_storage_class_fmt(X).c_str()
-#define get_unary_op_hr_c_str(X) get_unop_fmt(X).c_str()
-#define get_binary_op_hr_c_str(X) get_binop_fmt(X).c_str()
-#define get_assignment_hr_c_str(X, Y) get_assign_fmt(X, Y).c_str()
+#define fmt_tok_c_str(X) get_tok_fmt(X).c_str()
+#define fmt_name_c_str(X) get_name_fmt(X).c_str()
+#define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(X, Y).c_str()
+#define fmt_type_c_str(X) get_type_fmt(X).c_str()
+#define fmt_const_c_str(X) get_const_fmt(X).c_str()
+#define fmt_storage_class_c_str(X) get_storage_class_fmt(X).c_str()
+#define fmt_unop_c_str(X) get_unop_fmt(X).c_str()
+#define fmt_binop_c_str(X) get_binop_fmt(X).c_str()
+#define fmt_assign_c_str(X, Y) get_assign_fmt(X, Y).c_str()
 
 const char* get_fatal_msg(MESSAGE_FATAL message);
 const char* get_arg_msg(MESSAGE_ARGUMENT message);
@@ -75,15 +75,15 @@ const char* get_util_msg(MESSAGE_UTIL message);
 const char* get_lexer_msg(MESSAGE_LEXER message);
 const char* get_parser_msg(MESSAGE_PARSER message);
 const char* get_semantic_msg(MESSAGE_SEMANTIC message);
-#define GET_FATAL_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_fatal_msg(X), (int)X, __VA_ARGS__)
-#define GET_ARGUMENT_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_arg_msg(X), (int)X, __VA_ARGS__)
-#define GET_UTIL_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_util_msg(X), (int)X, __VA_ARGS__)
-#define GET_LEXER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_lexer_msg(X), (int)X, __VA_ARGS__)
-#define GET_PARSER_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_parser_msg(X), (int)X, __VA_ARGS__)
-#define GET_SEMANTIC_MESSAGE(X, ...) GET_ERROR_MESSAGE(get_semantic_msg(X), (int)X, __VA_ARGS__)
-#define GET_ARGUMENT_MESSAGE_0(X) GET_ERROR_MESSAGE(get_arg_msg(X), (int)X)
-#define GET_PARSER_MESSAGE_0(X) GET_ERROR_MESSAGE(get_parser_msg(X), (int)X)
-#define GET_SEMANTIC_MESSAGE_0(X) GET_ERROR_MESSAGE(get_semantic_msg(X), (int)X)
+#define GET_FATAL_MSG(X, ...) GET_ERROR_MSG(get_fatal_msg(X), (int)X, __VA_ARGS__)
+#define GET_ARG_MSG(X, ...) GET_ERROR_MSG(get_arg_msg(X), (int)X, __VA_ARGS__)
+#define GET_UTIL_MSG(X, ...) GET_ERROR_MSG(get_util_msg(X), (int)X, __VA_ARGS__)
+#define GET_LEXER_MSG(X, ...) GET_ERROR_MSG(get_lexer_msg(X), (int)X, __VA_ARGS__)
+#define GET_PARSER_MSG(X, ...) GET_ERROR_MSG(get_parser_msg(X), (int)X, __VA_ARGS__)
+#define GET_SEMANTIC_MSG(X, ...) GET_ERROR_MSG(get_semantic_msg(X), (int)X, __VA_ARGS__)
+#define GET_ARG_MSG_0(X) GET_ERROR_MSG(get_arg_msg(X), (int)X)
+#define GET_PARSER_MSG_0(X) GET_ERROR_MSG(get_parser_msg(X), (int)X)
+#define GET_SEMANTIC_MSG_0(X) GET_ERROR_MSG(get_semantic_msg(X), (int)X)
 #define GCC_VERSION __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
 
 #endif

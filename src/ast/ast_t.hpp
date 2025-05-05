@@ -1,5 +1,5 @@
-#ifndef _AST_AST_T_HPP
-#define _AST_AST_T_HPP
+#ifndef _AST_AST_T_H
+#define _AST_AST_T_H
 
 #include <inttypes.h>
 #include <stddef.h>

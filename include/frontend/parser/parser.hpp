@@ -1,5 +1,5 @@
-#ifndef _FRONTEND_PARSER_PARSER_HPP
-#define _FRONTEND_PARSER_PARSER_HPP
+#ifndef _FRONT_PARSER_PARSER_H
+#define _FRONT_PARSER_PARSER_H
 
 #include <memory>
 #include <vector>

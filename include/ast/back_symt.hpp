@@ -1,5 +1,5 @@
-#ifndef _AST_BACK_SYMT_HPP
-#define _AST_BACK_SYMT_HPP
+#ifndef _AST_BACK_SYMT_H
+#define _AST_BACK_SYMT_H
 
 #include <memory>
 #include <unordered_map>
@@ -86,7 +86,7 @@ struct BackEndContext {
 };
 
 extern std::unique_ptr<BackEndContext> backend;
-#define INIT_BACK_END_CONTEXT backend = std::make_unique<BackEndContext>()
-#define FREE_BACK_END_CONTEXT backend.reset()
+#define INIT_BACKEND_CTX backend = std::make_unique<BackEndContext>()
+#define FREE_BACKEND_CTX backend.reset()
 
 #endif

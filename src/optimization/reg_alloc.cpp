@@ -72,7 +72,7 @@ static std::unique_ptr<RegAllocContext> context;
 
 #ifndef __OPTIM_LEVEL__
 #define __OPTIM_LEVEL__ 2
-#undef _OPTIMIZATION_IMPL_OLVL_HPP
+#undef _OPTIMIZATION_IMPL_OLVL_H
 #include "impl_olvl.hpp" // optimization
 #undef __OPTIM_LEVEL__
 #endif
@@ -93,13 +93,13 @@ static bool is_bitshift_cl(AsmBinary* node) {
 }
 
 static void infer_transfer_used_reg(REGISTER_KIND register_kind, size_t next_instruction_index) {
-    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
+    SET_DFA_INSTR_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
 }
 
 static void infer_transfer_used_name(TIdentifier name, size_t next_instruction_index) {
     if (!is_aliased_name(name)) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
-        SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
+        SET_DFA_INSTR_SET_AT(next_instruction_index, i, true);
     }
 }
 
@@ -141,17 +141,17 @@ static void infer_transfer_used_op(AsmOperand* node, size_t next_instruction_ind
 
 static void infer_transfer_used_call(AsmCall* node, size_t next_instruction_index) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
-    GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, 0) |= fun_type->param_reg_mask;
+    GET_DFA_INSTR_SET_MASK(next_instruction_index, 0) |= fun_type->param_reg_mask;
 }
 
 static void infer_transfer_updated_reg(REGISTER_KIND register_kind, size_t next_instruction_index) {
-    SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
+    SET_DFA_INSTR_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
 static void infer_transfer_updated_name(TIdentifier name, size_t next_instruction_index) {
     if (!is_aliased_name(name)) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
-        SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
+        SET_DFA_INSTR_SET_AT(next_instruction_index, i, false);
     }
 }
 
@@ -182,7 +182,7 @@ static void infer_transfer_updated_op(AsmOperand* node, size_t next_instruction_
 }
 
 static void infer_transfer_live_regs(size_t instruction_index, size_t next_instruction_index) {
-    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
+    AsmInstruction* node = GET_INSTR(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t: {
             AsmMov* p_node = static_cast<AsmMov*>(node);
@@ -368,9 +368,9 @@ static void infer_init_updated_regs_edges(
     REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
 
     size_t mov_mask_bit = context->data_flow_analysis->set_size;
-    bool is_mov = GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t;
+    bool is_mov = GET_INSTR(instruction_index)->type() == AST_T::AsmMov_t;
     if (is_mov) {
-        AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
+        AsmMov* mov = static_cast<AsmMov*>(GET_INSTR(instruction_index).get());
         if (mov->src->type() == AST_T::AsmPseudo_t) {
             TIdentifier src_name = static_cast<AsmPseudo*>(mov->src.get())->name;
             if (is_aliased_name(src_name)) {
@@ -390,10 +390,10 @@ static void infer_init_updated_regs_edges(
     }
     set_p_infer_graph(is_double);
 
-    if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
+    if (GET_DFA_INSTR_SET_MASK(instruction_index, 0) != MASK_FALSE) {
         for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
              i-- > REGISTER_MASK_SIZE;) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+            if (GET_DFA_INSTR_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t j = 0; j < register_kinds_size; ++j) {
@@ -405,7 +405,7 @@ static void infer_init_updated_regs_edges(
     }
     size_t i = 64;
     for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
-        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+        if (GET_DFA_INSTR_SET_MASK(instruction_index, j) == MASK_FALSE) {
             i += 64;
             continue;
         }
@@ -414,7 +414,7 @@ static void infer_init_updated_regs_edges(
             mask_set_size = context->data_flow_analysis->set_size;
         }
         for (; i < mask_set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+            if (GET_DFA_INSTR_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t k = 0; k < register_kinds_size; ++k) {
@@ -433,9 +433,9 @@ static void infer_init_updated_name_edges(TIdentifier name, size_t instruction_i
     bool is_double = frontend->symbol_table[name]->type_t->type() == AST_T::Double_t;
 
     size_t mov_mask_bit = context->data_flow_analysis->set_size;
-    bool is_mov = GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t;
+    bool is_mov = GET_INSTR(instruction_index)->type() == AST_T::AsmMov_t;
     if (is_mov) {
-        AsmMov* mov = static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get());
+        AsmMov* mov = static_cast<AsmMov*>(GET_INSTR(instruction_index).get());
         switch (mov->src->type()) {
             case AST_T::AsmRegister_t: {
                 REGISTER_KIND src_register_kind =
@@ -486,11 +486,11 @@ static void infer_init_updated_name_edges(TIdentifier name, size_t instruction_i
     set_p_infer_graph(is_double);
     context->p_inference_graph->pseudo_register_map[name].spill_cost++;
 
-    if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
+    if (GET_DFA_INSTR_SET_MASK(instruction_index, 0) != MASK_FALSE) {
         size_t i = context->p_inference_graph->offset;
         size_t mask_set_size = i + context->p_inference_graph->k;
         for (; i < mask_set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+            if (GET_DFA_INSTR_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 REGISTER_KIND register_kind = context->hard_registers[i].register_kind;
                 infer_add_reg_edge(register_kind, name);
             }
@@ -498,7 +498,7 @@ static void infer_init_updated_name_edges(TIdentifier name, size_t instruction_i
         i = REGISTER_MASK_SIZE;
         mask_set_size = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
         for (; i < mask_set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+            if (GET_DFA_INSTR_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
@@ -509,7 +509,7 @@ static void infer_init_updated_name_edges(TIdentifier name, size_t instruction_i
     }
     size_t i = 64;
     for (size_t j = 1; j < context->data_flow_analysis->mask_size; ++j) {
-        if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, j) == MASK_FALSE) {
+        if (GET_DFA_INSTR_SET_MASK(instruction_index, j) == MASK_FALSE) {
             i += 64;
             continue;
         }
@@ -518,7 +518,7 @@ static void infer_init_updated_name_edges(TIdentifier name, size_t instruction_i
             mask_set_size = context->data_flow_analysis->set_size;
         }
         for (; i < mask_set_size; ++i) {
-            if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
+            if (GET_DFA_INSTR_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
@@ -548,7 +548,7 @@ static void infer_init_updated_op_edges(AsmOperand* node, size_t instruction_ind
 }
 
 static void infer_init_edges(size_t instruction_index) {
-    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
+    AsmInstruction* node = GET_INSTR(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
             infer_init_updated_op_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index);
@@ -694,7 +694,7 @@ static bool init_inference_graph(TIdentifier function_name) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
-                if (GET_INSTRUCTION(instruction_index)) {
+                if (GET_INSTR(instruction_index)) {
                     infer_init_edges(instruction_index);
                 }
             }
@@ -1120,7 +1120,7 @@ static void alloc_push_instr(AsmPush* node) {
 }
 
 static void alloc_instr(size_t instruction_index) {
-    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
+    AsmInstruction* node = GET_INSTR(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
             alloc_mov_instr(static_cast<AsmMov*>(node), instruction_index);
@@ -1181,7 +1181,7 @@ static void reallocate_registers() {
         alloc_color_reg_map();
     }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index)) {
+        if (GET_INSTR(instruction_index)) {
             alloc_instr(instruction_index);
         }
     }
@@ -1306,20 +1306,20 @@ static bool coal_briggs_test(InferenceRegister* src_infer, InferenceRegister* ds
     }
 
     for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
-        GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) = MASK_FALSE;
+        GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->incoming_index, i) = MASK_FALSE;
     }
     for (TIdentifier name : dst_infer->linked_pseudo_names) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
-        SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i, true);
+        SET_DFA_INSTR_SET_AT(context->data_flow_analysis->incoming_index, i, true);
     }
     for (TIdentifier name : src_infer->linked_pseudo_names) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
-        if (GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+        if (GET_DFA_INSTR_SET_AT(context->data_flow_analysis->incoming_index, i)) {
             if (linked_infer.degree > context->p_inference_graph->k) {
                 degree++;
             }
-            SET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i, false);
+            SET_DFA_INSTR_SET_AT(context->data_flow_analysis->incoming_index, i, false);
         }
         else if (linked_infer.degree >= context->p_inference_graph->k) {
             degree++;
@@ -1327,7 +1327,7 @@ static bool coal_briggs_test(InferenceRegister* src_infer, InferenceRegister* ds
     }
     for (TIdentifier name : dst_infer->linked_pseudo_names) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
-        if (GET_DFA_INSTRUCTION_SET_AT(context->data_flow_analysis->incoming_index, i)) {
+        if (GET_DFA_INSTR_SET_AT(context->data_flow_analysis->incoming_index, i)) {
             InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
             if (linked_infer.degree >= context->p_inference_graph->k) {
                 degree++;
@@ -1661,7 +1661,7 @@ static void coal_push_instr(AsmPush* node) {
 }
 
 static void coal_instr(size_t instruction_index, size_t block_id) {
-    AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
+    AsmInstruction* node = GET_INSTR(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
             coal_mov_instr(static_cast<AsmMov*>(node), instruction_index, block_id);
@@ -1724,8 +1724,8 @@ static bool coalesce_registers() {
     {
         bool is_fixed_point = true;
         for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
-            if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t
-                && coal_infer_regs(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()))) {
+            if (GET_INSTR(instruction_index) && GET_INSTR(instruction_index)->type() == AST_T::AsmMov_t
+                && coal_infer_regs(static_cast<AsmMov*>(GET_INSTR(instruction_index).get()))) {
                 is_fixed_point = false;
             }
         }
@@ -1738,7 +1738,7 @@ static bool coalesce_registers() {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
-                if (GET_INSTRUCTION(instruction_index)) {
+                if (GET_INSTR(instruction_index)) {
                     coal_instr(instruction_index, block_id);
                 }
             }

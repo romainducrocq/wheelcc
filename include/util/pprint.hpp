@@ -1,5 +1,5 @@
-#ifndef _UTIL_PPRINT_HPP
-#define _UTIL_PPRINT_HPP
+#ifndef _UTIL_PPRINT_H
+#define _UTIL_PPRINT_H
 
 #ifndef __NDEBUG__
 #include <string>

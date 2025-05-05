@@ -1,5 +1,5 @@
-#ifndef _OPTIMIZATION_REG_ALLOC_HPP
-#define _OPTIMIZATION_REG_ALLOC_HPP
+#ifndef _OPTIMIZATION_REG_ALLOC_H
+#define _OPTIMIZATION_REG_ALLOC_H
 
 #include <inttypes.h>
 
