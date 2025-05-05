@@ -22,32 +22,32 @@ struct CStorageClass;
 // Errors
 
 enum MESSAGE_FATAL {
-    unhandled_fatal_error = 0,
-    operating_system_not_supported,
-    architecture_not_supported,
-    compiler_not_supported,
-    gcc_version_not_supported
+    MSG_unhandled_fatal_error = 0,
+    MSG_operating_system_not_supported,
+    MSG_architecture_not_supported,
+    MSG_compiler_not_supported,
+    MSG_gcc_version_not_supported
 };
 
-enum MESSAGE_ARGUMENT {
-    unhandled_argument_error = 100,
-    no_debug_code_in_argument,
-    invalid_debug_code_in_argument,
-    no_optim_1_mask_in_argument,
-    invalid_optim_1_mask_in_argument,
-    no_optim_2_code_in_argument,
-    invalid_optim_2_code_in_argument,
-    no_input_files_in_argument,
-    no_include_directories_in_argument
+enum MESSAGE_ARG {
+    MSG_unhandled_argument_error = 100,
+    MSG_no_debug_code_in_argument,
+    MSG_invalid_debug_code_in_argument,
+    MSG_no_optim_1_mask_in_argument,
+    MSG_invalid_optim_1_mask_in_argument,
+    MSG_no_optim_2_code_in_argument,
+    MSG_invalid_optim_2_code_in_argument,
+    MSG_no_input_files_in_argument,
+    MSG_no_include_directories_in_argument
 };
 
 enum MESSAGE_UTIL {
-    unhandled_util_error = 200,
-    failed_to_read_input_file,
-    failed_to_write_to_output_file,
-    failed_to_interpret_string_to_integer,
-    failed_to_interpret_string_to_unsigned_integer,
-    failed_to_interpret_string_to_float
+    MSG_unhandled_util_error = 200,
+    MSG_failed_to_read_input_file,
+    MSG_failed_to_write_to_output_file,
+    MSG_failed_to_interpret_string_to_integer,
+    MSG_failed_to_interpret_string_to_unsigned_integer,
+    MSG_failed_to_interpret_string_to_float
 };
 
 std::string fmt_tok_kind(TOKEN_KIND token_kind);
@@ -70,7 +70,7 @@ std::string fmt_assign(CBinaryOp* node, CUnaryOp* unary_op);
 #define fmt_assign_c_str(X, Y) fmt_assign(X, Y).c_str()
 
 const char* get_fatal_msg(MESSAGE_FATAL message);
-const char* get_arg_msg(MESSAGE_ARGUMENT message);
+const char* get_arg_msg(MESSAGE_ARG message);
 const char* get_util_msg(MESSAGE_UTIL message);
 const char* get_lexer_msg(MESSAGE_LEXER message);
 const char* get_parser_msg(MESSAGE_PARSER message);

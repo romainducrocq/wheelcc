@@ -47,16 +47,15 @@ static std::unique_ptr<ParserContext> context;
 
 static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::unexpected_next_token, next_token_is.token.c_str(),
-                                        fmt_tok_kind_c_str(expected_token)),
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_PARSER_MSG(MSG_unexpected_next_token, next_token_is.token.c_str(), fmt_tok_kind_c_str(expected_token)),
             next_token_is.line);
     }
 }
 
 static Token& pop_next() {
     if (context->pop_index >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
     }
 
     context->next_token = &(*context->p_tokens)[context->pop_index];
@@ -69,8 +68,7 @@ static Token& pop_next_i(size_t i) {
         return pop_next();
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
     }
 
     if (i == 1) {
@@ -89,8 +87,7 @@ static Token& pop_next_i(size_t i) {
 
 static const Token& peek_next() {
     if (context->pop_index >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
     }
 
     context->peek_token = &(*context->p_tokens)[context->pop_index];
@@ -102,8 +99,7 @@ static const Token& peek_next_i(size_t i) {
         return peek_next();
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MESSAGE_PARSER::reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
     }
 
     return (*context->p_tokens)[context->pop_index + i];
@@ -118,7 +114,7 @@ static std::shared_ptr<CStringLiteral> parse_string_literal() {
     std::vector<TChar> value;
     {
         string_to_literal(context->next_token->token, value);
-        while (peek_next().token_kind == TOKEN_KIND::string_literal) {
+        while (peek_next().token_kind == TOK_string_literal) {
             pop_next();
             string_to_literal(context->next_token->token, value);
         }
@@ -166,12 +162,12 @@ static std::shared_ptr<CConstULong> parse_ulong_const(uintmax_t uintmax) {
 // (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double) | ConstChar(int)
 static std::shared_ptr<CConst> parse_const() {
     switch (pop_next().token_kind) {
-        case TOKEN_KIND::long_constant:
+        case TOK_long_constant:
             context->next_token->token.pop_back();
             break;
-        case TOKEN_KIND::char_constant:
+        case TOK_char_constant:
             return parse_char_const();
-        case TOKEN_KIND::float_constant:
+        case TOK_float_constant:
             return parse_dbl_const();
         default:
             break;
@@ -180,10 +176,10 @@ static std::shared_ptr<CConst> parse_const() {
     intmax_t value = string_to_intmax(context->next_token->token, context->next_token->line);
     if (value > 9223372036854775807ll) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MESSAGE_PARSER::number_too_large_for_long_constant, context->next_token->token.c_str()),
+            GET_PARSER_MSG(MSG_number_too_large_for_long_constant, context->next_token->token.c_str()),
             context->next_token->line);
     }
-    if (context->next_token->token_kind == TOKEN_KIND::constant && value <= 2147483647l) {
+    if (context->next_token->token_kind == TOK_constant && value <= 2147483647l) {
         return parse_int_const(std::move(value));
     }
     return parse_long_const(std::move(value));
@@ -192,18 +188,18 @@ static std::shared_ptr<CConst> parse_const() {
 // <const> ::= <unsigned int> | <unsigned long>
 // (unsigned) const = ConstUInt(uint) | ConstULong(ulong) | ConstUChar(int)
 static std::shared_ptr<CConst> parse_unsigned_const() {
-    if (pop_next().token_kind == TOKEN_KIND::unsigned_long_constant) {
+    if (pop_next().token_kind == TOK_unsigned_long_constant) {
         context->next_token->token.pop_back();
     }
     context->next_token->token.pop_back();
 
     uintmax_t value = string_to_uintmax(context->next_token->token, context->next_token->line);
     if (value > 18446744073709551615ull) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::number_too_large_for_unsigned_long_constant,
-                                        context->next_token->token.c_str()),
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_PARSER_MSG(MSG_number_too_large_for_unsigned_long_constant, context->next_token->token.c_str()),
             context->next_token->line);
     }
-    if (context->next_token->token_kind == TOKEN_KIND::unsigned_constant && value <= 4294967295ul) {
+    if (context->next_token->token_kind == TOK_unsigned_constant && value <= 4294967295ul) {
         return parse_uint_const(std::move(value));
     }
     return parse_ulong_const(std::move(value));
@@ -213,29 +209,29 @@ static TLong parse_arr_size() {
     pop_next();
     std::shared_ptr<CConst> constant;
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::constant:
-        case TOKEN_KIND::long_constant:
-        case TOKEN_KIND::char_constant:
+        case TOK_constant:
+        case TOK_long_constant:
+        case TOK_char_constant:
             constant = parse_const();
             break;
-        case TOKEN_KIND::unsigned_constant:
-        case TOKEN_KIND::unsigned_long_constant:
+        case TOK_unsigned_constant:
+        case TOK_unsigned_long_constant:
             constant = parse_unsigned_const();
             break;
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::array_size_not_a_constant_integer, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MSG_array_size_not_a_constant_integer, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
-    expect_next(pop_next(), TOKEN_KIND::brackets_close);
+    expect_next(pop_next(), TOK_brackets_close);
     switch (constant->type()) {
-        case AST_T::CConstInt_t:
+        case AST_CConstInt_t:
             return static_cast<TLong>(static_cast<CConstInt*>(constant.get())->value);
-        case AST_T::CConstLong_t:
+        case AST_CConstLong_t:
             return static_cast<CConstLong*>(constant.get())->value;
-        case AST_T::CConstUInt_t:
+        case AST_CConstUInt_t:
             return static_cast<TLong>(static_cast<CConstUInt*>(constant.get())->value);
-        case AST_T::CConstULong_t:
+        case AST_CConstULong_t:
             return static_cast<TLong>(static_cast<CConstULong*>(constant.get())->value);
         default:
             RAISE_INTERNAL_ERROR;
@@ -246,15 +242,15 @@ static TLong parse_arr_size() {
 // unary_operator = Complement | Negate | Not | Prefix | Postfix
 static std::unique_ptr<CUnaryOp> parse_unop() {
     switch (pop_next().token_kind) {
-        case TOKEN_KIND::unop_complement:
+        case TOK_unop_complement:
             return std::make_unique<CComplement>();
-        case TOKEN_KIND::unop_negation:
+        case TOK_unop_negation:
             return std::make_unique<CNegate>();
-        case TOKEN_KIND::unop_not:
+        case TOK_unop_not:
             return std::make_unique<CNot>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_unary_operator, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_unary_operator, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -266,57 +262,57 @@ static std::unique_ptr<CUnaryOp> parse_unop() {
 //                 | GreaterThan | GreaterOrEqual
 static std::unique_ptr<CBinaryOp> parse_binop() {
     switch (pop_next().token_kind) {
-        case TOKEN_KIND::binop_addition:
-        case TOKEN_KIND::assignment_plus:
-        case TOKEN_KIND::unop_increment:
+        case TOK_binop_addition:
+        case TOK_assignment_plus:
+        case TOK_unop_increment:
             return std::make_unique<CAdd>();
-        case TOKEN_KIND::unop_negation:
-        case TOKEN_KIND::assignment_difference:
-        case TOKEN_KIND::unop_decrement:
+        case TOK_unop_negation:
+        case TOK_assignment_difference:
+        case TOK_unop_decrement:
             return std::make_unique<CSubtract>();
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::assignment_product:
+        case TOK_binop_multiplication:
+        case TOK_assignment_product:
             return std::make_unique<CMultiply>();
-        case TOKEN_KIND::binop_division:
-        case TOKEN_KIND::assignment_quotient:
+        case TOK_binop_division:
+        case TOK_assignment_quotient:
             return std::make_unique<CDivide>();
-        case TOKEN_KIND::binop_remainder:
-        case TOKEN_KIND::assignment_remainder:
+        case TOK_binop_remainder:
+        case TOK_assignment_remainder:
             return std::make_unique<CRemainder>();
-        case TOKEN_KIND::binop_bitand:
-        case TOKEN_KIND::assignment_bitand:
+        case TOK_binop_bitand:
+        case TOK_assignment_bitand:
             return std::make_unique<CBitAnd>();
-        case TOKEN_KIND::binop_bitor:
-        case TOKEN_KIND::assignment_bitor:
+        case TOK_binop_bitor:
+        case TOK_assignment_bitor:
             return std::make_unique<CBitOr>();
-        case TOKEN_KIND::binop_bitxor:
-        case TOKEN_KIND::assignment_bitxor:
+        case TOK_binop_bitxor:
+        case TOK_assignment_bitxor:
             return std::make_unique<CBitXor>();
-        case TOKEN_KIND::binop_bitshiftleft:
-        case TOKEN_KIND::assignment_bitshiftleft:
+        case TOK_binop_bitshiftleft:
+        case TOK_assignment_bitshiftleft:
             return std::make_unique<CBitShiftLeft>();
-        case TOKEN_KIND::binop_bitshiftright:
-        case TOKEN_KIND::assignment_bitshiftright:
+        case TOK_binop_bitshiftright:
+        case TOK_assignment_bitshiftright:
             return std::make_unique<CBitShiftRight>();
-        case TOKEN_KIND::binop_and:
+        case TOK_binop_and:
             return std::make_unique<CAnd>();
-        case TOKEN_KIND::binop_or:
+        case TOK_binop_or:
             return std::make_unique<COr>();
-        case TOKEN_KIND::binop_equalto:
+        case TOK_binop_equalto:
             return std::make_unique<CEqual>();
-        case TOKEN_KIND::binop_notequal:
+        case TOK_binop_notequal:
             return std::make_unique<CNotEqual>();
-        case TOKEN_KIND::binop_lessthan:
+        case TOK_binop_lessthan:
             return std::make_unique<CLessThan>();
-        case TOKEN_KIND::binop_lessthanorequal:
+        case TOK_binop_lessthanorequal:
             return std::make_unique<CLessOrEqual>();
-        case TOKEN_KIND::binop_greaterthan:
+        case TOK_binop_greaterthan:
             return std::make_unique<CGreaterThan>();
-        case TOKEN_KIND::binop_greaterthanorequal:
+        case TOK_binop_greaterthanorequal:
             return std::make_unique<CGreaterOrEqual>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_binary_operator, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_binary_operator, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -344,13 +340,13 @@ static void proc_base_abstract_decltor(std::shared_ptr<Type> base_type, Abstract
 static void proc_abstract_decltor(
     CAbstractDeclarator* node, std::shared_ptr<Type> base_type, AbstractDeclarator& abstract_declarator) {
     switch (node->type()) {
-        case AST_T::CAbstractPointer_t:
+        case AST_CAbstractPointer_t:
             proc_ptr_abstract_decltor(static_cast<CAbstractPointer*>(node), std::move(base_type), abstract_declarator);
             break;
-        case AST_T::CAbstractArray_t:
+        case AST_CAbstractArray_t:
             proc_arr_abstract_decltor(static_cast<CAbstractArray*>(node), std::move(base_type), abstract_declarator);
             break;
-        case AST_T::CAbstractBase_t:
+        case AST_CAbstractBase_t:
             proc_base_abstract_decltor(std::move(base_type), abstract_declarator);
             break;
         default:
@@ -367,7 +363,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
         TLong size = parse_arr_size();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
     }
-    while (peek_next().token_kind == TOKEN_KIND::brackets_open);
+    while (peek_next().token_kind == TOK_brackets_open);
     return abstract_declarator;
 }
 
@@ -375,8 +371,8 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
 static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_decltor();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
-    while (peek_next().token_kind == TOKEN_KIND::brackets_open) {
+    expect_next(pop_next(), TOK_parenthesis_close);
+    while (peek_next().token_kind == TOK_brackets_open) {
         TLong size = parse_arr_size();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
     }
@@ -386,7 +382,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor() {
 static std::unique_ptr<CAbstractPointer> parse_ptr_abstract_decltor() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator;
-    if (peek_next().token_kind == TOKEN_KIND::parenthesis_close) {
+    if (peek_next().token_kind == TOK_parenthesis_close) {
         abstract_declarator = std::make_unique<CAbstractBase>();
     }
     else {
@@ -399,15 +395,15 @@ static std::unique_ptr<CAbstractPointer> parse_ptr_abstract_decltor() {
 // abstract_declarator = AbstractPointer(abstract_declarator) | AbstractArray(int, abstract_declarator) | AbstractBase
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_decltor() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication:
+        case TOK_binop_multiplication:
             return parse_ptr_abstract_decltor();
-        case TOKEN_KIND::parenthesis_open:
+        case TOK_parenthesis_open:
             return parse_direct_abstract_decltor();
-        case TOKEN_KIND::brackets_open:
+        case TOK_brackets_open:
             return parse_arr_abstract_decltor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_abstract_declarator, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_abstract_declarator, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -428,9 +424,9 @@ static void parse_decltor_cast_factor(std::shared_ptr<Type>& target_type) {
 static std::shared_ptr<Type> parse_type_name() {
     std::shared_ptr<Type> type_name = parse_type_specifier();
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::parenthesis_open:
-        case TOKEN_KIND::brackets_open:
+        case TOK_binop_multiplication:
+        case TOK_parenthesis_open:
+        case TOK_brackets_open:
             parse_decltor_cast_factor(type_name);
         default:
             break;
@@ -445,7 +441,7 @@ static std::vector<std::unique_ptr<CExp>> parse_arg_list() {
         std::unique_ptr<CExp> arg = parse_exp(0);
         args.push_back(std::move(arg));
     }
-    while (peek_next().token_kind == TOKEN_KIND::separator_comma) {
+    while (peek_next().token_kind == TOK_separator_comma) {
         pop_next();
         std::unique_ptr<CExp> arg = parse_exp(0);
         args.push_back(std::move(arg));
@@ -483,17 +479,17 @@ static std::unique_ptr<CFunctionCall> parse_call_factor() {
     TIdentifier name = parse_identifier(0);
     pop_next();
     std::vector<std::unique_ptr<CExp>> args;
-    if (peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
+    if (peek_next().token_kind != TOK_parenthesis_close) {
         args = parse_arg_list();
     }
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     return std::make_unique<CFunctionCall>(std::move(name), std::move(args), std::move(line));
 }
 
 static std::unique_ptr<CExp> parse_inner_exp_factor() {
     pop_next();
     std::unique_ptr<CExp> inner_exp = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     return inner_exp;
 }
 
@@ -501,14 +497,14 @@ static std::unique_ptr<CSubscript> parse_subscript_factor(std::unique_ptr<CExp> 
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> subscript_exp = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::brackets_close);
+    expect_next(pop_next(), TOK_brackets_close);
     return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), std::move(line));
 }
 
 static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOK_identifier);
     TIdentifier member = parse_identifier(0);
     return std::make_unique<CDot>(std::move(member), std::move(structure), std::move(line));
 }
@@ -516,7 +512,7 @@ static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
 static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer) {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOK_identifier);
     TIdentifier member = parse_identifier(0);
     return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
@@ -579,13 +575,13 @@ static std::unique_ptr<CAddrOf> parse_addrof_factor() {
 
 static std::unique_ptr<CExp> parse_ptr_unary_factor() {
     switch (pop_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication:
+        case TOK_binop_multiplication:
             return parse_deref_factor();
-        case TOKEN_KIND::binop_bitand:
+        case TOK_binop_bitand:
             return parse_addrof_factor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_pointer_unary_factor, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_pointer_unary_factor, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -594,7 +590,7 @@ static std::unique_ptr<CSizeOfT> parse_sizeoft_factor() {
     size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     return std::make_unique<CSizeOfT>(std::move(target_type), std::move(line));
 }
 
@@ -606,17 +602,17 @@ static std::unique_ptr<CSizeOf> parse_sizeof_factor() {
 
 static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
     pop_next();
-    if (peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
+    if (peek_next().token_kind == TOK_parenthesis_open) {
         switch (peek_next_i(1).token_kind) {
-            case TOKEN_KIND::key_char:
-            case TOKEN_KIND::key_int:
-            case TOKEN_KIND::key_long:
-            case TOKEN_KIND::key_double:
-            case TOKEN_KIND::key_unsigned:
-            case TOKEN_KIND::key_signed:
-            case TOKEN_KIND::key_void:
-            case TOKEN_KIND::key_struct:
-            case TOKEN_KIND::key_union:
+            case TOK_key_char:
+            case TOK_key_int:
+            case TOK_key_long:
+            case TOK_key_double:
+            case TOK_key_unsigned:
+            case TOK_key_signed:
+            case TOK_key_void:
+            case TOK_key_struct:
+            case TOK_key_union:
                 return parse_sizeoft_factor();
             default:
                 break;
@@ -629,7 +625,7 @@ static std::unique_ptr<CCast> parse_cast_factor() {
     size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
     return std::make_unique<CCast>(std::move(exp), std::move(target_type), std::move(line));
 }
@@ -637,27 +633,27 @@ static std::unique_ptr<CCast> parse_cast_factor() {
 // <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
 static std::unique_ptr<CExp> parse_primary_exp_factor() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::constant:
-        case TOKEN_KIND::long_constant:
-        case TOKEN_KIND::char_constant:
-        case TOKEN_KIND::float_constant:
+        case TOK_constant:
+        case TOK_long_constant:
+        case TOK_char_constant:
+        case TOK_float_constant:
             return parse_const_factor();
-        case TOKEN_KIND::unsigned_constant:
-        case TOKEN_KIND::unsigned_long_constant:
+        case TOK_unsigned_constant:
+        case TOK_unsigned_long_constant:
             return parse_unsigned_const_factor();
-        case TOKEN_KIND::identifier: {
-            if (peek_next_i(1).token_kind == TOKEN_KIND::parenthesis_open) {
+        case TOK_identifier: {
+            if (peek_next_i(1).token_kind == TOK_parenthesis_open) {
                 return parse_call_factor();
             }
             return parse_var_factor();
         }
-        case TOKEN_KIND::string_literal:
+        case TOK_string_literal:
             return parse_string_literal_factor();
-        case TOKEN_KIND::parenthesis_open:
+        case TOK_parenthesis_open:
             return parse_inner_exp_factor();
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::unexpected_primary_expression_factor,
-                                            context->peek_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(
+                GET_PARSER_MSG(MSG_unexpected_primary_expression_factor, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -666,20 +662,20 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
 static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&& primary_exp) {
     std::unique_ptr<CExp> postfix_exp = std::move(primary_exp);
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::brackets_open: {
+        case TOK_brackets_open: {
             postfix_exp = parse_subscript_factor(std::move(postfix_exp));
             break;
         }
-        case TOKEN_KIND::structop_member: {
+        case TOK_structop_member: {
             postfix_exp = parse_dot_factor(std::move(postfix_exp));
             break;
         }
-        case TOKEN_KIND::structop_pointer: {
+        case TOK_structop_pointer: {
             postfix_exp = parse_arrow_factor(std::move(postfix_exp));
             break;
         }
-        case TOKEN_KIND::unop_increment:
-        case TOKEN_KIND::unop_decrement: {
+        case TOK_unop_increment:
+        case TOK_unop_decrement: {
             postfix_exp = parse_postfix_incr_factor(std::move(postfix_exp));
             break;
         }
@@ -693,11 +689,11 @@ static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&&
 static std::unique_ptr<CExp> parse_postfix_exp_factor() {
     std::unique_ptr<CExp> primary_exp = parse_primary_exp_factor();
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::brackets_open:
-        case TOKEN_KIND::structop_member:
-        case TOKEN_KIND::structop_pointer:
-        case TOKEN_KIND::unop_increment:
-        case TOKEN_KIND::unop_decrement:
+        case TOK_brackets_open:
+        case TOK_structop_member:
+        case TOK_structop_pointer:
+        case TOK_unop_increment:
+        case TOK_unop_decrement:
             return parse_postfix_op_exp_factor(std::move(primary_exp));
         default:
             return primary_exp;
@@ -707,17 +703,17 @@ static std::unique_ptr<CExp> parse_postfix_exp_factor() {
 //<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" | <postfix-exp>
 static std::unique_ptr<CExp> parse_unary_exp_factor() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::unop_complement:
-        case TOKEN_KIND::unop_negation:
-        case TOKEN_KIND::unop_not:
+        case TOK_unop_complement:
+        case TOK_unop_negation:
+        case TOK_unop_not:
             return parse_unary_factor();
-        case TOKEN_KIND::unop_increment:
-        case TOKEN_KIND::unop_decrement:
+        case TOK_unop_increment:
+        case TOK_unop_decrement:
             return parse_incr_unary_factor();
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::binop_bitand:
+        case TOK_binop_multiplication:
+        case TOK_binop_bitand:
             return parse_ptr_unary_factor();
-        case TOKEN_KIND::key_sizeof:
+        case TOK_key_sizeof:
             return parse_sizeof_unary_factor();
         default:
             return parse_postfix_exp_factor();
@@ -726,17 +722,17 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
 
 // <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
 static std::unique_ptr<CExp> parse_cast_exp_factor() {
-    if (peek_next().token_kind == TOKEN_KIND::parenthesis_open) {
+    if (peek_next().token_kind == TOK_parenthesis_open) {
         switch (peek_next_i(1).token_kind) {
-            case TOKEN_KIND::key_char:
-            case TOKEN_KIND::key_int:
-            case TOKEN_KIND::key_long:
-            case TOKEN_KIND::key_double:
-            case TOKEN_KIND::key_unsigned:
-            case TOKEN_KIND::key_signed:
-            case TOKEN_KIND::key_void:
-            case TOKEN_KIND::key_struct:
-            case TOKEN_KIND::key_union:
+            case TOK_key_char:
+            case TOK_key_int:
+            case TOK_key_long:
+            case TOK_key_double:
+            case TOK_key_unsigned:
+            case TOK_key_signed:
+            case TOK_key_void:
+            case TOK_key_struct:
+            case TOK_key_union:
                 return parse_cast_factor();
             default:
                 break;
@@ -779,7 +775,7 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp_middle = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::ternary_else);
+    expect_next(pop_next(), TOK_ternary_else);
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
     return std::make_unique<CConditional>(
         std::move(exp_left), std::move(exp_middle), std::move(exp_right), std::move(line));
@@ -787,47 +783,47 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
 
 static int32_t get_tok_precedence(TOKEN_KIND token_kind) {
     switch (token_kind) {
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::binop_division:
-        case TOKEN_KIND::binop_remainder:
+        case TOK_binop_multiplication:
+        case TOK_binop_division:
+        case TOK_binop_remainder:
             return 50;
-        case TOKEN_KIND::unop_negation:
-        case TOKEN_KIND::binop_addition:
+        case TOK_unop_negation:
+        case TOK_binop_addition:
             return 45;
-        case TOKEN_KIND::binop_bitshiftleft:
-        case TOKEN_KIND::binop_bitshiftright:
+        case TOK_binop_bitshiftleft:
+        case TOK_binop_bitshiftright:
             return 40;
-        case TOKEN_KIND::binop_lessthan:
-        case TOKEN_KIND::binop_lessthanorequal:
-        case TOKEN_KIND::binop_greaterthan:
-        case TOKEN_KIND::binop_greaterthanorequal:
+        case TOK_binop_lessthan:
+        case TOK_binop_lessthanorequal:
+        case TOK_binop_greaterthan:
+        case TOK_binop_greaterthanorequal:
             return 35;
-        case TOKEN_KIND::binop_equalto:
-        case TOKEN_KIND::binop_notequal:
+        case TOK_binop_equalto:
+        case TOK_binop_notequal:
             return 30;
-        case TOKEN_KIND::binop_bitand:
+        case TOK_binop_bitand:
             return 25;
-        case TOKEN_KIND::binop_bitxor:
+        case TOK_binop_bitxor:
             return 20;
-        case TOKEN_KIND::binop_bitor:
+        case TOK_binop_bitor:
             return 15;
-        case TOKEN_KIND::binop_and:
+        case TOK_binop_and:
             return 10;
-        case TOKEN_KIND::binop_or:
+        case TOK_binop_or:
             return 5;
-        case TOKEN_KIND::ternary_if:
+        case TOK_ternary_if:
             return 3;
-        case TOKEN_KIND::assignment_simple:
-        case TOKEN_KIND::assignment_plus:
-        case TOKEN_KIND::assignment_difference:
-        case TOKEN_KIND::assignment_product:
-        case TOKEN_KIND::assignment_quotient:
-        case TOKEN_KIND::assignment_remainder:
-        case TOKEN_KIND::assignment_bitand:
-        case TOKEN_KIND::assignment_bitor:
-        case TOKEN_KIND::assignment_bitxor:
-        case TOKEN_KIND::assignment_bitshiftleft:
-        case TOKEN_KIND::assignment_bitshiftright:
+        case TOK_assignment_simple:
+        case TOK_assignment_plus:
+        case TOK_assignment_difference:
+        case TOK_assignment_product:
+        case TOK_assignment_quotient:
+        case TOK_assignment_remainder:
+        case TOK_assignment_bitand:
+        case TOK_assignment_bitor:
+        case TOK_assignment_bitxor:
+        case TOK_assignment_bitshiftleft:
+        case TOK_assignment_bitshiftright:
             return 1;
         default:
             return -1;
@@ -849,47 +845,47 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             break;
         }
         switch (context->peek_token->token_kind) {
-            case TOKEN_KIND::binop_addition:
-            case TOKEN_KIND::unop_negation:
-            case TOKEN_KIND::binop_multiplication:
-            case TOKEN_KIND::binop_division:
-            case TOKEN_KIND::binop_remainder:
-            case TOKEN_KIND::binop_bitand:
-            case TOKEN_KIND::binop_bitor:
-            case TOKEN_KIND::binop_bitxor:
-            case TOKEN_KIND::binop_bitshiftleft:
-            case TOKEN_KIND::binop_bitshiftright:
-            case TOKEN_KIND::binop_lessthan:
-            case TOKEN_KIND::binop_lessthanorequal:
-            case TOKEN_KIND::binop_greaterthan:
-            case TOKEN_KIND::binop_greaterthanorequal:
-            case TOKEN_KIND::binop_equalto:
-            case TOKEN_KIND::binop_notequal:
-            case TOKEN_KIND::binop_and:
-            case TOKEN_KIND::binop_or:
+            case TOK_binop_addition:
+            case TOK_unop_negation:
+            case TOK_binop_multiplication:
+            case TOK_binop_division:
+            case TOK_binop_remainder:
+            case TOK_binop_bitand:
+            case TOK_binop_bitor:
+            case TOK_binop_bitxor:
+            case TOK_binop_bitshiftleft:
+            case TOK_binop_bitshiftright:
+            case TOK_binop_lessthan:
+            case TOK_binop_lessthanorequal:
+            case TOK_binop_greaterthan:
+            case TOK_binop_greaterthanorequal:
+            case TOK_binop_equalto:
+            case TOK_binop_notequal:
+            case TOK_binop_and:
+            case TOK_binop_or:
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
                 break;
-            case TOKEN_KIND::assignment_simple:
+            case TOK_assignment_simple:
                 exp_left = parse_assign_exp(std::move(exp_left), precedence);
                 break;
-            case TOKEN_KIND::assignment_plus:
-            case TOKEN_KIND::assignment_difference:
-            case TOKEN_KIND::assignment_product:
-            case TOKEN_KIND::assignment_quotient:
-            case TOKEN_KIND::assignment_remainder:
-            case TOKEN_KIND::assignment_bitand:
-            case TOKEN_KIND::assignment_bitor:
-            case TOKEN_KIND::assignment_bitxor:
-            case TOKEN_KIND::assignment_bitshiftleft:
-            case TOKEN_KIND::assignment_bitshiftright:
+            case TOK_assignment_plus:
+            case TOK_assignment_difference:
+            case TOK_assignment_product:
+            case TOK_assignment_quotient:
+            case TOK_assignment_remainder:
+            case TOK_assignment_bitand:
+            case TOK_assignment_bitor:
+            case TOK_assignment_bitxor:
+            case TOK_assignment_bitshiftleft:
+            case TOK_assignment_bitshiftright:
                 exp_left = parse_assign_compound_exp(std::move(exp_left), precedence);
                 break;
-            case TOKEN_KIND::ternary_if:
+            case TOK_ternary_if:
                 exp_left = parse_ternary_exp(std::move(exp_left), precedence);
                 break;
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MSG(MESSAGE_PARSER::unexpected_expression, context->peek_token->token.c_str()),
+                    GET_PARSER_MSG(MSG_unexpected_expression, context->peek_token->token.c_str()),
                     context->peek_token->line);
         }
     }
@@ -904,28 +900,28 @@ static std::unique_ptr<CReturn> parse_ret_statement() {
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp;
-    if (peek_next().token_kind != TOKEN_KIND::semicolon) {
+    if (peek_next().token_kind != TOK_semicolon) {
         exp = parse_exp(0);
     }
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CReturn>(std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CExpression> parse_exp_statement() {
     std::unique_ptr<CExp> exp = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CExpression>(std::move(exp));
 }
 
 static std::unique_ptr<CIf> parse_if_statement() {
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOK_parenthesis_open);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> then = parse_statement();
     std::unique_ptr<CStatement> else_fi;
-    if (peek_next().token_kind == TOKEN_KIND::key_else) {
+    if (peek_next().token_kind == TOK_key_else) {
         pop_next();
         peek_next();
         else_fi = parse_statement();
@@ -936,9 +932,9 @@ static std::unique_ptr<CIf> parse_if_statement() {
 static std::unique_ptr<CGoto> parse_goto_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOK_identifier);
     TIdentifier target = parse_identifier(0);
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CGoto>(std::move(target), std::move(line));
 }
 
@@ -958,9 +954,9 @@ static std::unique_ptr<CCompound> parse_compound_statement() {
 
 static std::unique_ptr<CWhile> parse_while_statement() {
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOK_parenthesis_open);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CWhile>(std::move(condition), std::move(body));
@@ -970,28 +966,28 @@ static std::unique_ptr<CDoWhile> parse_do_while_statement() {
     pop_next();
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
-    expect_next(pop_next(), TOKEN_KIND::key_while);
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOK_key_while);
+    expect_next(pop_next(), TOK_parenthesis_open);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CDoWhile>(std::move(condition), std::move(body));
 }
 
 static std::unique_ptr<CFor> parse_for_statement() {
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOK_parenthesis_open);
     std::unique_ptr<CForInit> init = parse_for_init();
     std::unique_ptr<CExp> condition;
-    if (peek_next().token_kind != TOKEN_KIND::semicolon) {
+    if (peek_next().token_kind != TOK_semicolon) {
         condition = parse_exp(0);
     }
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     std::unique_ptr<CExp> post;
-    if (peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
+    if (peek_next().token_kind != TOK_parenthesis_close) {
         post = parse_exp(0);
     }
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
@@ -999,9 +995,9 @@ static std::unique_ptr<CFor> parse_for_statement() {
 
 static std::unique_ptr<CSwitch> parse_switch_statement() {
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOK_parenthesis_open);
     std::unique_ptr<CExp> match = parse_exp(0);
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CSwitch>(std::move(match), std::move(body));
@@ -1014,23 +1010,23 @@ static std::unique_ptr<CCase> parse_case_statement() {
         size_t line = context->peek_token->line;
         std::shared_ptr<CConst> constant;
         switch (peek_next().token_kind) {
-            case TOKEN_KIND::constant:
-            case TOKEN_KIND::long_constant:
-            case TOKEN_KIND::char_constant:
+            case TOK_constant:
+            case TOK_long_constant:
+            case TOK_char_constant:
                 constant = parse_const();
                 break;
-            case TOKEN_KIND::unsigned_constant:
-            case TOKEN_KIND::unsigned_long_constant:
+            case TOK_unsigned_constant:
+            case TOK_unsigned_long_constant:
                 constant = parse_unsigned_const();
                 break;
             default:
-                RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::case_value_not_a_constant_integer,
-                                                context->peek_token->token.c_str()),
+                RAISE_RUNTIME_ERROR_AT_LINE(
+                    GET_PARSER_MSG(MSG_case_value_not_a_constant_integer, context->peek_token->token.c_str()),
                     context->peek_token->line);
         }
         value = std::make_unique<CConstant>(std::move(constant), std::move(line));
     }
-    expect_next(pop_next(), TOKEN_KIND::ternary_else);
+    expect_next(pop_next(), TOK_ternary_else);
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
     return std::make_unique<CCase>(std::move(value), std::move(jump_to));
@@ -1039,7 +1035,7 @@ static std::unique_ptr<CCase> parse_case_statement() {
 static std::unique_ptr<CDefault> parse_default_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::ternary_else);
+    expect_next(pop_next(), TOK_ternary_else);
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
     return std::make_unique<CDefault>(std::move(jump_to), std::move(line));
@@ -1048,14 +1044,14 @@ static std::unique_ptr<CDefault> parse_default_statement() {
 static std::unique_ptr<CBreak> parse_break_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CBreak>(std::move(line));
 }
 
 static std::unique_ptr<CContinue> parse_continue_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CContinue>(std::move(line));
 }
 
@@ -1076,37 +1072,37 @@ static std::unique_ptr<CNull> parse_null_statement() {
 //           | Default(identifier, statement) | Break(identifier) | Continue(identifier) | Null
 static std::unique_ptr<CStatement> parse_statement() {
     switch (context->peek_token->token_kind) {
-        case TOKEN_KIND::key_return:
+        case TOK_key_return:
             return parse_ret_statement();
-        case TOKEN_KIND::key_if:
+        case TOK_key_if:
             return parse_if_statement();
-        case TOKEN_KIND::key_goto:
+        case TOK_key_goto:
             return parse_goto_statement();
-        case TOKEN_KIND::identifier: {
-            if (peek_next_i(1).token_kind == TOKEN_KIND::ternary_else) {
+        case TOK_identifier: {
+            if (peek_next_i(1).token_kind == TOK_ternary_else) {
                 return parse_label_statement();
             }
             break;
         }
-        case TOKEN_KIND::brace_open:
+        case TOK_brace_open:
             return parse_compound_statement();
-        case TOKEN_KIND::key_while:
+        case TOK_key_while:
             return parse_while_statement();
-        case TOKEN_KIND::key_do:
+        case TOK_key_do:
             return parse_do_while_statement();
-        case TOKEN_KIND::key_for:
+        case TOK_key_for:
             return parse_for_statement();
-        case TOKEN_KIND::key_switch:
+        case TOK_key_switch:
             return parse_switch_statement();
-        case TOKEN_KIND::key_case:
+        case TOK_key_case:
             return parse_case_statement();
-        case TOKEN_KIND::key_default:
+        case TOK_key_default:
             return parse_default_statement();
-        case TOKEN_KIND::key_break:
+        case TOK_key_break:
             return parse_break_statement();
-        case TOKEN_KIND::key_continue:
+        case TOK_key_continue:
             return parse_continue_statement();
-        case TOKEN_KIND::semicolon:
+        case TOK_semicolon:
             return parse_null_statement();
         default:
             break;
@@ -1121,9 +1117,9 @@ static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
 static std::unique_ptr<CInitDecl> parse_for_init_decl() {
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
-    if (declarator.derived_type->type() == AST_T::FunType_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::function_declared_in_for_initial,
-                                        identifiers->hash_table[declarator.name].c_str()),
+    if (declarator.derived_type->type() == AST_FunType_t) {
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_PARSER_MSG(MSG_function_declared_in_for_initial, identifiers->hash_table[declarator.name].c_str()),
             context->next_token->line);
     }
     std::unique_ptr<CVariableDeclaration> init = parse_var_declaration(std::move(storage_class), std::move(declarator));
@@ -1132,10 +1128,10 @@ static std::unique_ptr<CInitDecl> parse_for_init_decl() {
 
 static std::unique_ptr<CInitExp> parse_for_init_exp() {
     std::unique_ptr<CExp> init;
-    if (peek_next().token_kind != TOKEN_KIND::semicolon) {
+    if (peek_next().token_kind != TOK_semicolon) {
         init = parse_exp(0);
     }
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CInitExp>(std::move(init));
 }
 
@@ -1143,17 +1139,17 @@ static std::unique_ptr<CInitExp> parse_for_init_exp() {
 // for_init = InitDecl(variable_declaration) | InitExp(exp?)
 static std::unique_ptr<CForInit> parse_for_init() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::key_char:
-        case TOKEN_KIND::key_int:
-        case TOKEN_KIND::key_long:
-        case TOKEN_KIND::key_double:
-        case TOKEN_KIND::key_unsigned:
-        case TOKEN_KIND::key_signed:
-        case TOKEN_KIND::key_void:
-        case TOKEN_KIND::key_struct:
-        case TOKEN_KIND::key_union:
-        case TOKEN_KIND::key_static:
-        case TOKEN_KIND::key_extern:
+        case TOK_key_char:
+        case TOK_key_int:
+        case TOK_key_long:
+        case TOK_key_double:
+        case TOK_key_unsigned:
+        case TOK_key_signed:
+        case TOK_key_void:
+        case TOK_key_struct:
+        case TOK_key_union:
+        case TOK_key_static:
+        case TOK_key_extern:
             return parse_for_init_decl();
         default:
             return parse_for_init_exp();
@@ -1176,17 +1172,17 @@ static std::unique_ptr<CD> parse_d_block_item() {
 // block_item = S(statement) | D(declaration)
 static std::unique_ptr<CBlockItem> parse_block_item() {
     switch (context->peek_token->token_kind) {
-        case TOKEN_KIND::key_char:
-        case TOKEN_KIND::key_int:
-        case TOKEN_KIND::key_long:
-        case TOKEN_KIND::key_double:
-        case TOKEN_KIND::key_unsigned:
-        case TOKEN_KIND::key_signed:
-        case TOKEN_KIND::key_void:
-        case TOKEN_KIND::key_struct:
-        case TOKEN_KIND::key_union:
-        case TOKEN_KIND::key_static:
-        case TOKEN_KIND::key_extern:
+        case TOK_key_char:
+        case TOK_key_int:
+        case TOK_key_long:
+        case TOK_key_double:
+        case TOK_key_unsigned:
+        case TOK_key_signed:
+        case TOK_key_void:
+        case TOK_key_struct:
+        case TOK_key_union:
+        case TOK_key_static:
+        case TOK_key_extern:
             return parse_d_block_item();
         default:
             return parse_s_block_item();
@@ -1195,7 +1191,7 @@ static std::unique_ptr<CBlockItem> parse_block_item() {
 
 static std::unique_ptr<CB> parse_b_block() {
     std::vector<std::unique_ptr<CBlockItem>> block_items;
-    while (peek_next().token_kind != TOKEN_KIND::brace_close) {
+    while (peek_next().token_kind != TOK_brace_close) {
         std::unique_ptr<CBlockItem> block_item = parse_block_item();
         block_items.push_back(std::move(block_item));
     }
@@ -1207,7 +1203,7 @@ static std::unique_ptr<CB> parse_b_block() {
 static std::unique_ptr<CBlock> parse_block() {
     pop_next();
     std::unique_ptr<CBlock> block = parse_b_block();
-    expect_next(pop_next(), TOKEN_KIND::brace_close);
+    expect_next(pop_next(), TOK_brace_close);
     return block;
 }
 
@@ -1219,33 +1215,33 @@ static std::shared_ptr<Type> parse_type_specifier() {
     std::vector<TOKEN_KIND> type_token_kinds;
     while (true) {
         switch (peek_next_i(i).token_kind) {
-            case TOKEN_KIND::identifier:
-            case TOKEN_KIND::parenthesis_close:
+            case TOK_identifier:
+            case TOK_parenthesis_close:
                 goto Lbreak;
-            case TOKEN_KIND::key_char:
-            case TOKEN_KIND::key_int:
-            case TOKEN_KIND::key_long:
-            case TOKEN_KIND::key_double:
-            case TOKEN_KIND::key_unsigned:
-            case TOKEN_KIND::key_signed:
-            case TOKEN_KIND::key_void:
+            case TOK_key_char:
+            case TOK_key_int:
+            case TOK_key_long:
+            case TOK_key_double:
+            case TOK_key_unsigned:
+            case TOK_key_signed:
+            case TOK_key_void:
                 type_token_kinds.push_back(pop_next_i(i).token_kind);
                 break;
-            case TOKEN_KIND::key_struct:
-            case TOKEN_KIND::key_union: {
+            case TOK_key_struct:
+            case TOK_key_union: {
                 type_token_kinds.push_back(pop_next_i(i).token_kind);
-                expect_next(peek_next_i(i), TOKEN_KIND::identifier);
+                expect_next(peek_next_i(i), TOK_identifier);
                 break;
             }
-            case TOKEN_KIND::key_static:
-            case TOKEN_KIND::key_extern:
-            case TOKEN_KIND::binop_multiplication:
-            case TOKEN_KIND::parenthesis_open:
+            case TOK_key_static:
+            case TOK_key_extern:
+            case TOK_binop_multiplication:
+            case TOK_parenthesis_open:
                 i++;
                 break;
-            case TOKEN_KIND::brackets_open: {
+            case TOK_brackets_open: {
                 i++;
-                while (peek_next_i(i).token_kind != TOKEN_KIND::brackets_close) {
+                while (peek_next_i(i).token_kind != TOK_brackets_close) {
                     i++;
                 }
                 i++;
@@ -1253,33 +1249,32 @@ static std::shared_ptr<Type> parse_type_specifier() {
             }
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MSG(MESSAGE_PARSER::unexpected_type_specifier, peek_next_i(i).token.c_str()),
-                    peek_next_i(i).line);
+                    GET_PARSER_MSG(MSG_unexpected_type_specifier, peek_next_i(i).token.c_str()), peek_next_i(i).line);
         }
     }
 Lbreak:
     switch (type_token_kinds.size()) {
         case 1: {
             switch (type_token_kinds[0]) {
-                case TOKEN_KIND::key_char:
+                case TOK_key_char:
                     return std::make_shared<Char>();
-                case TOKEN_KIND::key_int:
+                case TOK_key_int:
                     return std::make_shared<Int>();
-                case TOKEN_KIND::key_long:
+                case TOK_key_long:
                     return std::make_shared<Long>();
-                case TOKEN_KIND::key_double:
+                case TOK_key_double:
                     return std::make_shared<Double>();
-                case TOKEN_KIND::key_unsigned:
+                case TOK_key_unsigned:
                     return std::make_shared<UInt>();
-                case TOKEN_KIND::key_signed:
+                case TOK_key_signed:
                     return std::make_shared<Int>();
-                case TOKEN_KIND::key_void:
+                case TOK_key_void:
                     return std::make_shared<Void>();
-                case TOKEN_KIND::key_struct: {
+                case TOK_key_struct: {
                     TIdentifier tag = parse_identifier(i);
                     return std::make_shared<Structure>(std::move(tag), false);
                 }
-                case TOKEN_KIND::key_union: {
+                case TOK_key_union: {
                     TIdentifier tag = parse_identifier(i);
                     return std::make_shared<Structure>(std::move(tag), true);
                 }
@@ -1289,54 +1284,53 @@ Lbreak:
             break;
         }
         case 2: {
-            if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_unsigned)
+            if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_unsigned)
                 != type_token_kinds.end()) {
-                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_int)
+                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int)
                     != type_token_kinds.end()) {
                     return std::make_shared<UInt>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_long)
+                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
                          != type_token_kinds.end()) {
                     return std::make_shared<ULong>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_char)
+                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_char)
                          != type_token_kinds.end()) {
                     return std::make_shared<UChar>();
                 }
             }
-            else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_signed)
+            else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_signed)
                      != type_token_kinds.end()) {
-                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_int)
+                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int)
                     != type_token_kinds.end()) {
                     return std::make_shared<Int>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_long)
+                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
                          != type_token_kinds.end()) {
                     return std::make_shared<Long>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_char)
+                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_char)
                          != type_token_kinds.end()) {
                     return std::make_shared<SChar>();
                 }
             }
-            else if ((std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_int)
+            else if ((std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int)
                          != type_token_kinds.end())
-                     && (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_long)
+                     && (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
                          != type_token_kinds.end())) {
                 return std::make_shared<Long>();
             }
             break;
         }
         case 3: {
-            if ((std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_int)
-                    != type_token_kinds.end())
-                && (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_long)
+            if ((std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int) != type_token_kinds.end())
+                && (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
                     != type_token_kinds.end())) {
-                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_unsigned)
+                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_unsigned)
                     != type_token_kinds.end()) {
                     return std::make_shared<ULong>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOKEN_KIND::key_signed)
+                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_signed)
                          != type_token_kinds.end()) {
                     return std::make_shared<Long>();
                 }
@@ -1357,20 +1351,20 @@ Lbreak:
     }
     type_token_kinds_string += ")";
     RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_PARSER_MSG(MESSAGE_PARSER::unexpected_type_specifier_list, type_token_kinds_string.c_str()), line);
+        GET_PARSER_MSG(MSG_unexpected_type_specifier_list, type_token_kinds_string.c_str()), line);
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
 // storage_class = Static | Extern
 static std::unique_ptr<CStorageClass> parse_storage_class() {
     switch (pop_next().token_kind) {
-        case TOKEN_KIND::key_static:
+        case TOK_key_static:
             return std::make_unique<CStatic>();
-        case TOKEN_KIND::key_extern:
+        case TOK_key_extern:
             return std::make_unique<CExtern>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_storage_class, context->next_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_storage_class, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -1386,19 +1380,18 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
     pop_next();
     std::vector<std::unique_ptr<CInitializer>> initializers;
     while (true) {
-        if (peek_next().token_kind == TOKEN_KIND::brace_close) {
+        if (peek_next().token_kind == TOK_brace_close) {
             break;
         }
         std::unique_ptr<CInitializer> initializer = parse_initializer();
         initializers.push_back(std::move(initializer));
-        if (peek_next().token_kind == TOKEN_KIND::brace_close) {
+        if (peek_next().token_kind == TOK_brace_close) {
             break;
         }
-        expect_next(pop_next(), TOKEN_KIND::separator_comma);
+        expect_next(pop_next(), TOK_separator_comma);
     }
     if (initializers.empty()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MESSAGE_PARSER::empty_compound_initializer), context->peek_token->line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_empty_compound_initializer), context->peek_token->line);
     }
     pop_next();
     return std::make_unique<CCompoundInit>(std::move(initializers));
@@ -1407,7 +1400,7 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
 // <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [","] "}"
 // initializer = SingleInit(exp) | CompoundInit(initializer*)
 static std::unique_ptr<CInitializer> parse_initializer() {
-    if (peek_next().token_kind == TOKEN_KIND::brace_open) {
+    if (peek_next().token_kind == TOK_brace_open) {
         return parse_compound_init();
     }
     else {
@@ -1435,9 +1428,9 @@ static void proc_arr_decltor(CArrayDeclarator* node, std::shared_ptr<Type> base_
 }
 
 static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
-    if (node->declarator->type() != AST_T::CIdent_t) {
+    if (node->declarator->type() != AST_CIdent_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MESSAGE_PARSER::type_derivation_on_function_declaration), context->next_token->line);
+            GET_PARSER_MSG_0(MSG_type_derivation_on_function_declaration), context->next_token->line);
     }
 
     std::vector<TIdentifier> params;
@@ -1447,7 +1440,7 @@ static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_ty
     for (const auto& param : node->param_list) {
         Declarator param_declarator;
         proc_decltor(param->declarator.get(), param->param_type, param_declarator);
-        if (param_declarator.derived_type->type() == AST_T::FunType_t) {
+        if (param_declarator.derived_type->type() == AST_FunType_t) {
             RAISE_INTERNAL_ERROR;
         }
         params.push_back(std::move(param_declarator.name));
@@ -1462,16 +1455,16 @@ static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_ty
 
 static void proc_decltor(CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
     switch (node->type()) {
-        case AST_T::CIdent_t:
+        case AST_CIdent_t:
             proc_ident_decltor(static_cast<CIdent*>(node), std::move(base_type), declarator);
             break;
-        case AST_T::CPointerDeclarator_t:
+        case AST_CPointerDeclarator_t:
             proc_ptr_decltor(static_cast<CPointerDeclarator*>(node), std::move(base_type), declarator);
             break;
-        case AST_T::CArrayDeclarator_t:
+        case AST_CArrayDeclarator_t:
             proc_arr_decltor(static_cast<CArrayDeclarator*>(node), std::move(base_type), declarator);
             break;
-        case AST_T::CFunDeclarator_t:
+        case AST_CFunDeclarator_t:
             proc_fun_decltor(static_cast<CFunDeclarator*>(node), std::move(base_type), declarator);
             break;
         default:
@@ -1487,20 +1480,20 @@ static std::unique_ptr<CIdent> parse_ident_simple_decltor() {
 static std::unique_ptr<CDeclarator> parse_simple_decltor() {
     pop_next();
     std::unique_ptr<CDeclarator> declarator = parse_decltor();
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     return declarator;
 }
 
 // <simple-declarator> ::= <identifier> | "(" <declarator> ")"
 static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::identifier:
+        case TOK_identifier:
             return parse_ident_simple_decltor();
-        case TOKEN_KIND::parenthesis_open:
+        case TOK_parenthesis_open:
             return parse_simple_decltor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_simple_declarator, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_simple_declarator, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -1521,7 +1514,7 @@ static std::vector<std::unique_ptr<CParam>> parse_non_empty_param_list() {
         std::unique_ptr<CParam> param = parse_param();
         param_list.push_back(std::move(param));
     }
-    while (peek_next().token_kind == TOKEN_KIND::separator_comma) {
+    while (peek_next().token_kind == TOK_separator_comma) {
         pop_next();
         std::unique_ptr<CParam> param = parse_param();
         param_list.push_back(std::move(param));
@@ -1534,8 +1527,8 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
     pop_next();
     std::vector<std::unique_ptr<CParam>> param_list;
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::key_void: {
-            if (peek_next_i(1).token_kind == TOKEN_KIND::parenthesis_close) {
+        case TOK_key_void: {
+            if (peek_next_i(1).token_kind == TOK_parenthesis_close) {
                 parse_empty_param_list();
             }
             else {
@@ -1543,23 +1536,23 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
             }
             break;
         }
-        case TOKEN_KIND::key_char:
-        case TOKEN_KIND::key_int:
-        case TOKEN_KIND::key_long:
-        case TOKEN_KIND::key_double:
-        case TOKEN_KIND::key_unsigned:
-        case TOKEN_KIND::key_signed:
-        case TOKEN_KIND::key_struct:
-        case TOKEN_KIND::key_union: {
+        case TOK_key_char:
+        case TOK_key_int:
+        case TOK_key_long:
+        case TOK_key_double:
+        case TOK_key_unsigned:
+        case TOK_key_signed:
+        case TOK_key_struct:
+        case TOK_key_union: {
             param_list = parse_non_empty_param_list();
             break;
         }
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::unexpected_parameter_list, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MSG_unexpected_parameter_list, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
-    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOK_parenthesis_close);
     return param_list;
 }
 
@@ -1575,7 +1568,7 @@ static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDe
         TLong size = parse_arr_size();
         declarator = std::make_unique<CArrayDeclarator>(std::move(size), std::move(declarator));
     }
-    while (peek_next().token_kind == TOKEN_KIND::brackets_open);
+    while (peek_next().token_kind == TOK_brackets_open);
     return declarator;
 }
 
@@ -1583,10 +1576,10 @@ static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDe
 static std::unique_ptr<CDeclarator> parse_direct_decltor() {
     std::unique_ptr<CDeclarator> declarator = parse_simple_decltor_decl();
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::parenthesis_open: {
+        case TOK_parenthesis_open: {
             return parse_fun_decltor_suffix(std::move(declarator));
         }
-        case TOKEN_KIND::brackets_open: {
+        case TOK_brackets_open: {
             return parse_arr_decltor_suffix(std::move(declarator));
         }
         default:
@@ -1605,7 +1598,7 @@ static std::unique_ptr<CPointerDeclarator> parse_ptr_decltor() {
 //            | FunDeclarator(param_info*, declarator)
 static std::unique_ptr<CDeclarator> parse_decltor() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::binop_multiplication:
+        case TOK_binop_multiplication:
             return parse_ptr_decltor();
         default:
             return parse_direct_decltor();
@@ -1618,11 +1611,11 @@ static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& declarator) {
     size_t line = context->next_token->line;
     std::unique_ptr<CBlock> body;
-    if (peek_next().token_kind == TOKEN_KIND::semicolon) {
+    if (peek_next().token_kind == TOK_semicolon) {
         pop_next();
     }
     else {
-        expect_next(peek_next(), TOKEN_KIND::brace_open);
+        expect_next(peek_next(), TOK_brace_open);
         body = parse_block();
     }
     return std::make_unique<CFunctionDeclaration>(std::move(declarator.name), std::move(declarator.params),
@@ -1635,11 +1628,11 @@ static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& declarator) {
     size_t line = context->next_token->line;
     std::unique_ptr<CInitializer> init;
-    if (peek_next().token_kind == TOKEN_KIND::assignment_simple) {
+    if (peek_next().token_kind == TOK_assignment_simple) {
         pop_next();
         init = parse_initializer();
     }
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CVariableDeclaration>(std::move(declarator.name), std::move(init),
         std::move(declarator.derived_type), std::move(storage_class), std::move(line));
 }
@@ -1652,18 +1645,18 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
         std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
         if (storage_class) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MESSAGE_PARSER::member_declared_with_non_automatic_storage,
+                GET_PARSER_MSG(MSG_member_declared_with_non_automatic_storage,
                     identifiers->hash_table[declarator.name].c_str(), fmt_storage_class_c_str(storage_class.get())),
                 context->next_token->line);
         }
     }
-    if (declarator.derived_type->type() == AST_T::FunType_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::member_declared_as_function,
-                                        identifiers->hash_table[declarator.name].c_str()),
+    if (declarator.derived_type->type() == AST_FunType_t) {
+        RAISE_RUNTIME_ERROR_AT_LINE(
+            GET_PARSER_MSG(MSG_member_declared_as_function, identifiers->hash_table[declarator.name].c_str()),
             context->next_token->line);
     }
     size_t line = context->next_token->line;
-    expect_next(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CMemberDeclaration>(
         std::move(declarator.name), std::move(declarator.derived_type), std::move(line));
 }
@@ -1672,20 +1665,20 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
 // struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 static std::unique_ptr<CStructDeclaration> parse_struct_decl() {
     size_t line = context->peek_token->line;
-    bool is_union = pop_next().token_kind == TOKEN_KIND::key_union;
-    expect_next(peek_next(), TOKEN_KIND::identifier);
+    bool is_union = pop_next().token_kind == TOK_key_union;
+    expect_next(peek_next(), TOK_identifier);
     TIdentifier tag = parse_identifier(0);
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
-    if (pop_next().token_kind == TOKEN_KIND::brace_open) {
+    if (pop_next().token_kind == TOK_brace_open) {
         do {
             std::unique_ptr<CMemberDeclaration> member = parse_member_decl();
             members.push_back(std::move(member));
         }
-        while (peek_next().token_kind != TOKEN_KIND::brace_close);
+        while (peek_next().token_kind != TOK_brace_close);
         pop_next();
         pop_next();
     }
-    expect_next(*context->next_token, TOKEN_KIND::semicolon);
+    expect_next(*context->next_token, TOK_semicolon);
     return std::make_unique<CStructDeclaration>(std::move(tag), is_union, std::move(members), std::move(line));
 }
 
@@ -1710,9 +1703,9 @@ static std::unique_ptr<CStorageClass> parse_decltor_decl(Declarator& declarator)
     std::shared_ptr<Type> type_specifier = parse_type_specifier();
     std::unique_ptr<CStorageClass> storage_class;
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::identifier:
-        case TOKEN_KIND::binop_multiplication:
-        case TOKEN_KIND::parenthesis_open:
+        case TOK_identifier:
+        case TOK_binop_multiplication:
+        case TOK_parenthesis_open:
             break;
         default:
             storage_class = parse_storage_class();
@@ -1726,11 +1719,11 @@ static std::unique_ptr<CStorageClass> parse_decltor_decl(Declarator& declarator)
 // declaration = FunDecl(function_declaration) | VarDecl(variable_declaration) | StructDecl(struct_declaration)
 static std::unique_ptr<CDeclaration> parse_declaration() {
     switch (peek_next().token_kind) {
-        case TOKEN_KIND::key_struct:
-        case TOKEN_KIND::key_union: {
+        case TOK_key_struct:
+        case TOK_key_union: {
             switch (peek_next_i(2).token_kind) {
-                case TOKEN_KIND::brace_open:
-                case TOKEN_KIND::semicolon:
+                case TOK_brace_open:
+                case TOK_semicolon:
                     return parse_struct_declaration();
                 default:
                     break;
@@ -1741,7 +1734,7 @@ static std::unique_ptr<CDeclaration> parse_declaration() {
     }
     Declarator declarator;
     std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
-    if (declarator.derived_type->type() == AST_T::FunType_t) {
+    if (declarator.derived_type->type() == AST_FunType_t) {
         return parse_fun_decl(std::move(storage_class), std::move(declarator));
     }
     else {

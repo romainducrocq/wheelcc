@@ -25,8 +25,7 @@ intmax_t string_to_intmax(const std::string& s_int, size_t line) {
     intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
 
     if (end_ptr == &buffer[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_UTIL_MSG(MESSAGE_UTIL::failed_to_interpret_string_to_integer, s_int.c_str()), line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_to_interpret_string_to_integer, s_int.c_str()), line);
     }
 
     return intmax;
@@ -45,7 +44,7 @@ uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
 
     if (end_ptr == &buffer[0]) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_UTIL_MSG(MESSAGE_UTIL::failed_to_interpret_string_to_unsigned_integer, s_uint.c_str()), line);
+            GET_UTIL_MSG(MSG_failed_to_interpret_string_to_unsigned_integer, s_uint.c_str()), line);
     }
 
     return uintmax;
@@ -253,8 +252,7 @@ double string_to_dbl(const std::string& s_double, size_t line) {
     double float64 = strtod(&buffer[0], &end_ptr);
 
     if (end_ptr == &buffer[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_UTIL_MSG(MESSAGE_UTIL::failed_to_interpret_string_to_float, s_double.c_str()), line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_to_interpret_string_to_float, s_double.c_str()), line);
     }
 
     return float64;

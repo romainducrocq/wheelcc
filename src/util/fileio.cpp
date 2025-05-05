@@ -39,7 +39,7 @@ void open_fread(const std::string& filename) {
     fileio->file_reads.back().file_descriptor = nullptr;
     fileio->file_reads.back().file_descriptor = fopen(filename.c_str(), "rb");
     if (!fileio->file_reads.back().file_descriptor || filename.size() >= PATH_MAX) {
-        RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MESSAGE_UTIL::failed_to_read_input_file, filename.c_str()));
+        RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_to_read_input_file, filename.c_str()));
     }
 
     fileio->file_reads.back().len = 0;
@@ -55,7 +55,7 @@ void open_fwrite(const std::string& filename) {
     fileio->file_descriptor_write = nullptr;
     fileio->file_descriptor_write = fopen(filename.c_str(), "wb");
     if (!fileio->file_descriptor_write || filename.size() >= PATH_MAX) {
-        RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MESSAGE_UTIL::failed_to_write_to_output_file, filename.c_str()));
+        RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_to_write_to_output_file, filename.c_str()));
     }
 
     fileio->write_buffer.reserve(4096);
@@ -111,7 +111,7 @@ void close_fread(size_t line_number) {
         fileio->file_reads.back().file_descriptor = fopen(fileio->file_reads.back().filename.c_str(), "rb");
         if (!fileio->file_reads.back().file_descriptor) {
             RAISE_RUNTIME_ERROR(
-                GET_UTIL_MSG(MESSAGE_UTIL::failed_to_read_input_file, fileio->file_reads.back().filename.c_str()));
+                GET_UTIL_MSG(MSG_failed_to_read_input_file, fileio->file_reads.back().filename.c_str()));
         }
         for (size_t i = 0; i < line_number; ++i) {
             if (getline(&fileio->file_reads.back().buffer, &fileio->file_reads.back().len,

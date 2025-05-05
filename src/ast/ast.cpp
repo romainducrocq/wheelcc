@@ -10,15 +10,15 @@
 
 Ast::~Ast() {}
 
-AST_T CConst::type() { return AST_T::CConst_t; }
-AST_T CConstInt::type() { return AST_T::CConstInt_t; }
-AST_T CConstLong::type() { return AST_T::CConstLong_t; }
-AST_T CConstUInt::type() { return AST_T::CConstUInt_t; }
-AST_T CConstULong::type() { return AST_T::CConstULong_t; }
-AST_T CConstDouble::type() { return AST_T::CConstDouble_t; }
-AST_T CConstChar::type() { return AST_T::CConstChar_t; }
-AST_T CConstUChar::type() { return AST_T::CConstUChar_t; }
-AST_T CStringLiteral::type() { return AST_T::CStringLiteral_t; }
+AST_T CConst::type() { return AST_CConst_t; }
+AST_T CConstInt::type() { return AST_CConstInt_t; }
+AST_T CConstLong::type() { return AST_CConstLong_t; }
+AST_T CConstUInt::type() { return AST_CConstUInt_t; }
+AST_T CConstULong::type() { return AST_CConstULong_t; }
+AST_T CConstDouble::type() { return AST_CConstDouble_t; }
+AST_T CConstChar::type() { return AST_CConstChar_t; }
+AST_T CConstUChar::type() { return AST_CConstUChar_t; }
+AST_T CStringLiteral::type() { return AST_CStringLiteral_t; }
 
 CConstInt::CConstInt(TInt value) : value(value) {}
 

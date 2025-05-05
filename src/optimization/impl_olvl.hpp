@@ -228,9 +228,9 @@ static void cfg_init_block(size_t instruction_index, size_t& instructions_back_i
     AstInstruction* node = GET_INSTR(instruction_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
-        case AST_T::TacLabel_t:
+        case AST_TacLabel_t:
 #elif __OPTIM_LEVEL__ == 2
-        case AST_T::AsmLabel_t:
+        case AST_AsmLabel_t:
 #endif
         {
             if (instructions_back_index != context->p_instructions->size()) {
@@ -247,14 +247,14 @@ static void cfg_init_block(size_t instruction_index, size_t& instructions_back_i
             break;
         }
 #if __OPTIM_LEVEL__ == 1
-        case AST_T::TacReturn_t:
-        case AST_T::TacJump_t:
-        case AST_T::TacJumpIfZero_t:
-        case AST_T::TacJumpIfNotZero_t:
+        case AST_TacReturn_t:
+        case AST_TacJump_t:
+        case AST_TacJumpIfZero_t:
+        case AST_TacJumpIfNotZero_t:
 #elif __OPTIM_LEVEL__ == 2
-        case AST_T::AsmJmp_t:
-        case AST_T::AsmJmpCC_t:
-        case AST_T::AsmRet_t:
+        case AST_AsmJmp_t:
+        case AST_AsmJmpCC_t:
+        case AST_AsmRet_t:
 #endif
         {
             context->control_flow_graph->blocks.back().instructions_back_index = instruction_index;
@@ -297,27 +297,27 @@ static void cfg_init_edges(size_t block_id) {
     AstInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
-        case AST_T::TacReturn_t:
+        case AST_TacReturn_t:
 #elif __OPTIM_LEVEL__ == 2
-        case AST_T::AsmRet_t:
+        case AST_AsmRet_t:
 #endif
             cfg_add_succ_edge(block_id, context->control_flow_graph->exit_id);
             break;
 #if __OPTIM_LEVEL__ == 1
-        case AST_T::TacJump_t:
+        case AST_TacJump_t:
             cfg_init_jump_edges(static_cast<TacJump*>(node), block_id);
             break;
-        case AST_T::TacJumpIfZero_t:
+        case AST_TacJumpIfZero_t:
             cfg_init_jmp_eq_0_edges(static_cast<TacJumpIfZero*>(node), block_id);
             break;
-        case AST_T::TacJumpIfNotZero_t:
+        case AST_TacJumpIfNotZero_t:
             cfg_init_jmp_ne_0_edges(static_cast<TacJumpIfNotZero*>(node), block_id);
             break;
 #elif __OPTIM_LEVEL__ == 2
-        case AST_T::AsmJmp_t:
+        case AST_AsmJmp_t:
             cfg_init_jmp_edges(static_cast<AsmJmp*>(node), block_id);
             break;
-        case AST_T::AsmJmpCC_t:
+        case AST_AsmJmpCC_t:
             cfg_init_jmp_cc_edges(static_cast<AsmJmpCC*>(node), block_id);
             break;
 #endif
@@ -412,44 +412,44 @@ static bool is_transfer_instr(size_t instruction_index
 ) {
     switch (GET_INSTR(instruction_index)->type()) {
 #if __OPTIM_LEVEL__ == 1
-        case AST_T::TacSignExtend_t:
-        case AST_T::TacTruncate_t:
-        case AST_T::TacZeroExtend_t:
-        case AST_T::TacDoubleToInt_t:
-        case AST_T::TacDoubleToUInt_t:
-        case AST_T::TacIntToDouble_t:
-        case AST_T::TacUIntToDouble_t:
-        case AST_T::TacFunCall_t:
-        case AST_T::TacUnary_t:
-        case AST_T::TacBinary_t:
-        case AST_T::TacCopy_t:
-        case AST_T::TacGetAddress_t:
-        case AST_T::TacLoad_t:
-        case AST_T::TacStore_t:
-        case AST_T::TacAddPtr_t:
-        case AST_T::TacCopyToOffset_t:
-        case AST_T::TacCopyFromOffset_t:
+        case AST_TacSignExtend_t:
+        case AST_TacTruncate_t:
+        case AST_TacZeroExtend_t:
+        case AST_TacDoubleToInt_t:
+        case AST_TacDoubleToUInt_t:
+        case AST_TacIntToDouble_t:
+        case AST_TacUIntToDouble_t:
+        case AST_TacFunCall_t:
+        case AST_TacUnary_t:
+        case AST_TacBinary_t:
+        case AST_TacCopy_t:
+        case AST_TacGetAddress_t:
+        case AST_TacLoad_t:
+        case AST_TacStore_t:
+        case AST_TacAddPtr_t:
+        case AST_TacCopyToOffset_t:
+        case AST_TacCopyFromOffset_t:
             return true;
-        case AST_T::TacReturn_t:
-        case AST_T::TacJumpIfZero_t:
-        case AST_T::TacJumpIfNotZero_t:
+        case AST_TacReturn_t:
+        case AST_TacJumpIfZero_t:
+        case AST_TacJumpIfNotZero_t:
             return is_dead_store_elimination;
 #elif __OPTIM_LEVEL__ == 2
-        case AST_T::AsmMov_t:
-        case AST_T::AsmMovSx_t:
-        case AST_T::AsmMovZeroExtend_t:
-        case AST_T::AsmLea_t:
-        case AST_T::AsmCvttsd2si_t:
-        case AST_T::AsmCvtsi2sd_t:
-        case AST_T::AsmUnary_t:
-        case AST_T::AsmBinary_t:
-        case AST_T::AsmCmp_t:
-        case AST_T::AsmIdiv_t:
-        case AST_T::AsmDiv_t:
-        case AST_T::AsmCdq_t:
-        case AST_T::AsmSetCC_t:
-        case AST_T::AsmPush_t:
-        case AST_T::AsmCall_t:
+        case AST_AsmMov_t:
+        case AST_AsmMovSx_t:
+        case AST_AsmMovZeroExtend_t:
+        case AST_AsmLea_t:
+        case AST_AsmCvttsd2si_t:
+        case AST_AsmCvtsi2sd_t:
+        case AST_AsmUnary_t:
+        case AST_AsmBinary_t:
+        case AST_AsmCmp_t:
+        case AST_AsmIdiv_t:
+        case AST_AsmDiv_t:
+        case AST_AsmCdq_t:
+        case AST_AsmSetCC_t:
+        case AST_AsmPush_t:
+        case AST_AsmCall_t:
             return true;
 #endif
         default:
@@ -788,13 +788,13 @@ static void dfa_backward_open_block(size_t block_id, size_t& i) {
 }
 
 static bool is_aliased_name(TIdentifier name) {
-    return frontend->symbol_table[name]->attrs->type() == AST_T::StaticAttr_t
+    return frontend->symbol_table[name]->attrs->type() == AST_StaticAttr_t
            || frontend->addressed_set.find(name) != frontend->addressed_set.end();
 }
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_add_aliased_value(TacValue* node) {
-    if (node->type() == AST_T::TacVariable_t) {
+    if (node->type() == AST_TacVariable_t) {
         frontend->addressed_set.insert(static_cast<TacVariable*>(node)->name);
     }
 }
@@ -802,7 +802,7 @@ static void dfa_add_aliased_value(TacValue* node) {
 static bool is_same_value(TacValue* node_1, TacValue* node_2);
 
 static bool prop_add_data_idx(TacCopy* node, size_t instruction_index, size_t block_id) {
-    if (node->dst->type() != AST_T::TacVariable_t) {
+    if (node->dst->type() != AST_TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
     else if (is_same_value(node->src.get(), node->dst.get())) {
@@ -830,7 +830,7 @@ static void elim_add_data_name(TIdentifier name) {
 }
 
 static void elim_add_data_value(TacValue* node) {
-    if (node->type() == AST_T::TacVariable_t) {
+    if (node->type() == AST_TacVariable_t) {
         elim_add_data_name(static_cast<TacVariable*>(node)->name);
     }
 }
@@ -846,7 +846,7 @@ static void infer_add_data_name(TIdentifier name) {
 }
 
 static void infer_add_data_op(AsmOperand* node) {
-    if (node->type() == AST_T::AsmPseudo_t) {
+    if (node->type() == AST_AsmPseudo_t) {
         infer_add_data_name(static_cast<AsmPseudo*>(node)->name);
     }
 }
@@ -905,7 +905,7 @@ static bool init_data_flow_analysis(
                     AstInstruction* node = GET_INSTR(instruction_index).get();
                     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
-                        case AST_T::TacReturn_t: {
+                        case AST_TacReturn_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
@@ -915,7 +915,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacSignExtend_t: {
+                        case AST_TacSignExtend_t: {
                             if (is_dead_store_elimination) {
                                 TacSignExtend* p_node = static_cast<TacSignExtend*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -923,7 +923,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacTruncate_t: {
+                        case AST_TacTruncate_t: {
                             if (is_dead_store_elimination) {
                                 TacTruncate* p_node = static_cast<TacTruncate*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -931,7 +931,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacZeroExtend_t: {
+                        case AST_TacZeroExtend_t: {
                             if (is_dead_store_elimination) {
                                 TacZeroExtend* p_node = static_cast<TacZeroExtend*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -939,7 +939,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacDoubleToInt_t: {
+                        case AST_TacDoubleToInt_t: {
                             if (is_dead_store_elimination) {
                                 TacDoubleToInt* p_node = static_cast<TacDoubleToInt*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -947,7 +947,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacDoubleToUInt_t: {
+                        case AST_TacDoubleToUInt_t: {
                             if (is_dead_store_elimination) {
                                 TacDoubleToUInt* p_node = static_cast<TacDoubleToUInt*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -955,7 +955,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacIntToDouble_t: {
+                        case AST_TacIntToDouble_t: {
                             if (is_dead_store_elimination) {
                                 TacIntToDouble* p_node = static_cast<TacIntToDouble*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -963,7 +963,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacUIntToDouble_t: {
+                        case AST_TacUIntToDouble_t: {
                             if (is_dead_store_elimination) {
                                 TacUIntToDouble* p_node = static_cast<TacUIntToDouble*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -971,7 +971,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacFunCall_t: {
+                        case AST_TacFunCall_t: {
                             if (is_dead_store_elimination) {
                                 TacFunCall* p_node = static_cast<TacFunCall*>(node);
                                 for (const auto& arg : p_node->args) {
@@ -983,7 +983,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacUnary_t: {
+                        case AST_TacUnary_t: {
                             if (is_dead_store_elimination) {
                                 TacUnary* p_node = static_cast<TacUnary*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -991,7 +991,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacBinary_t: {
+                        case AST_TacBinary_t: {
                             if (is_dead_store_elimination) {
                                 TacBinary* p_node = static_cast<TacBinary*>(node);
                                 elim_add_data_value(p_node->src1.get());
@@ -1000,7 +1000,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacCopy_t: {
+                        case AST_TacCopy_t: {
                             TacCopy* p_node = static_cast<TacCopy*>(node);
                             if (is_copy_propagation) {
                                 if (!prop_add_data_idx(p_node, instruction_index, block_id)) {
@@ -1013,7 +1013,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacGetAddress_t: {
+                        case AST_TacGetAddress_t: {
                             TacGetAddress* p_node = static_cast<TacGetAddress*>(node);
                             if (is_dead_store_elimination) {
                                 elim_add_data_value(p_node->src.get());
@@ -1024,7 +1024,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacLoad_t: {
+                        case AST_TacLoad_t: {
                             if (is_dead_store_elimination) {
                                 TacLoad* p_node = static_cast<TacLoad*>(node);
                                 elim_add_data_value(p_node->src_ptr.get());
@@ -1032,7 +1032,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacStore_t: {
+                        case AST_TacStore_t: {
                             if (is_dead_store_elimination) {
                                 TacStore* p_node = static_cast<TacStore*>(node);
                                 elim_add_data_value(p_node->src.get());
@@ -1040,7 +1040,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacAddPtr_t: {
+                        case AST_TacAddPtr_t: {
                             if (is_dead_store_elimination) {
                                 TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
                                 elim_add_data_value(p_node->src_ptr.get());
@@ -1049,7 +1049,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacCopyToOffset_t: {
+                        case AST_TacCopyToOffset_t: {
                             if (is_dead_store_elimination) {
                                 TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
                                 elim_add_data_name(p_node->dst_name);
@@ -1057,7 +1057,7 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacCopyFromOffset_t: {
+                        case AST_TacCopyFromOffset_t: {
                             if (is_dead_store_elimination) {
                                 TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
                                 elim_add_data_name(p_node->src_name);
@@ -1065,14 +1065,14 @@ static bool init_data_flow_analysis(
                             }
                             break;
                         }
-                        case AST_T::TacJumpIfZero_t: {
+                        case AST_TacJumpIfZero_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
                             elim_add_data_value(static_cast<TacJumpIfZero*>(node)->condition.get());
                             break;
                         }
-                        case AST_T::TacJumpIfNotZero_t: {
+                        case AST_TacJumpIfNotZero_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
@@ -1080,71 +1080,71 @@ static bool init_data_flow_analysis(
                             break;
                         }
 #elif __OPTIM_LEVEL__ == 2
-                        case AST_T::AsmMov_t: {
+                        case AST_AsmMov_t: {
                             AsmMov* p_node = static_cast<AsmMov*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmMovSx_t: {
+                        case AST_AsmMovSx_t: {
                             AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmMovZeroExtend_t: {
+                        case AST_AsmMovZeroExtend_t: {
                             AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmLea_t: {
+                        case AST_AsmLea_t: {
                             AsmLea* p_node = static_cast<AsmLea*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmCvttsd2si_t: {
+                        case AST_AsmCvttsd2si_t: {
                             AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmCvtsi2sd_t: {
+                        case AST_AsmCvtsi2sd_t: {
                             AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmUnary_t:
+                        case AST_AsmUnary_t:
                             infer_add_data_op(static_cast<AsmUnary*>(node)->dst.get());
                             break;
-                        case AST_T::AsmBinary_t: {
+                        case AST_AsmBinary_t: {
                             AsmBinary* p_node = static_cast<AsmBinary*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmCmp_t: {
+                        case AST_AsmCmp_t: {
                             AsmCmp* p_node = static_cast<AsmCmp*>(node);
                             infer_add_data_op(p_node->src.get());
                             infer_add_data_op(p_node->dst.get());
                             break;
                         }
-                        case AST_T::AsmIdiv_t:
+                        case AST_AsmIdiv_t:
                             infer_add_data_op(static_cast<AsmIdiv*>(node)->src.get());
                             break;
-                        case AST_T::AsmDiv_t:
+                        case AST_AsmDiv_t:
                             infer_add_data_op(static_cast<AsmDiv*>(node)->src.get());
                             break;
-                        case AST_T::AsmSetCC_t:
+                        case AST_AsmSetCC_t:
                             infer_add_data_op(static_cast<AsmSetCC*>(node)->dst.get());
                             break;
-                        case AST_T::AsmPush_t:
+                        case AST_AsmPush_t:
                             infer_add_data_op(static_cast<AsmPush*>(node)->src.get());
                             break;
-                        case AST_T::AsmCdq_t:
-                        case AST_T::AsmCall_t:
+                        case AST_AsmCdq_t:
+                        case AST_AsmCall_t:
                             break;
 #endif
                         default:
@@ -1274,7 +1274,7 @@ static bool init_data_flow_analysis(
 
         for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
 #if __OPTIM_LEVEL__ == 1
-            if (frontend->symbol_table[name_id.first]->attrs->type() == AST_T::StaticAttr_t) {
+            if (frontend->symbol_table[name_id.first]->attrs->type() == AST_StaticAttr_t) {
                 SET_DFA_INSTR_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
             }
             if (frontend->addressed_set.find(name_id.first) != frontend->addressed_set.end()) {

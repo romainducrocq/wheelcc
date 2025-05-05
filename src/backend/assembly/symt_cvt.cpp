@@ -22,17 +22,17 @@ static std::unique_ptr<SymtCvtContext> context;
 
 static TInt get_scalar_alignment(Type* type) {
     switch (type->type()) {
-        case AST_T::Char_t:
-        case AST_T::SChar_t:
-        case AST_T::UChar_t:
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
             return 1;
-        case AST_T::Int_t:
-        case AST_T::UInt_t:
+        case AST_Int_t:
+        case AST_UInt_t:
             return 4;
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
+        case AST_Long_t:
+        case AST_Double_t:
+        case AST_ULong_t:
+        case AST_Pointer_t:
             return 8;
         default:
             RAISE_INTERNAL_ERROR;
@@ -41,14 +41,14 @@ static TInt get_scalar_alignment(Type* type) {
 
 static TInt get_arr_alignment(Array* arr_type, TLong& size) {
     size = arr_type->size;
-    while (arr_type->elem_type->type() == AST_T::Array_t) {
+    while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
         size *= arr_type->size;
     }
     TInt alignment;
     {
         alignment = gen_type_alignment(arr_type->elem_type.get());
-        if (arr_type->elem_type->type() == AST_T::Structure_t) {
+        if (arr_type->elem_type->type() == AST_Structure_t) {
             Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
             size *= frontend->struct_typedef_table[struct_type->tag]->size;
         }
@@ -68,11 +68,11 @@ static TInt get_struct_alignment(Structure* struct_type) {
 
 TInt gen_type_alignment(Type* type) {
     switch (type->type()) {
-        case AST_T::Array_t: {
+        case AST_Array_t: {
             TLong size;
             return get_arr_alignment(static_cast<Array*>(type), size);
         }
-        case AST_T::Structure_t:
+        case AST_Structure_t:
             return get_struct_alignment(static_cast<Structure*>(type));
         default:
             return get_scalar_alignment(type);
@@ -101,22 +101,22 @@ static std::shared_ptr<ByteArray> struct_asm_type(Structure* struct_type) {
 
 std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name) {
     switch (frontend->symbol_table[name]->type_t->type()) {
-        case AST_T::Char_t:
-        case AST_T::SChar_t:
-        case AST_T::UChar_t:
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
             return std::make_shared<Byte>();
-        case AST_T::Int_t:
-        case AST_T::UInt_t:
+        case AST_Int_t:
+        case AST_UInt_t:
             return std::make_shared<LongWord>();
-        case AST_T::Long_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
+        case AST_Long_t:
+        case AST_ULong_t:
+        case AST_Pointer_t:
             return std::make_shared<QuadWord>();
-        case AST_T::Double_t:
+        case AST_Double_t:
             return std::make_shared<BackendDouble>();
-        case AST_T::Array_t:
+        case AST_Array_t:
             return arr_asm_type(static_cast<Array*>(frontend->symbol_table[name]->type_t.get()));
-        case AST_T::Structure_t:
+        case AST_Structure_t:
             return struct_asm_type(static_cast<Structure*>(frontend->symbol_table[name]->type_t.get()));
         default:
             RAISE_INTERNAL_ERROR;
@@ -140,10 +140,10 @@ static void string_static_const(Array* arr_type) {
 static void cvt_static_const_toplvl(AsmStaticConstant* node) {
     context->symbol = node->name;
     switch (node->static_init->type()) {
-        case AST_T::DoubleInit_t:
+        case AST_DoubleInit_t:
             dbl_static_const();
             break;
-        case AST_T::StringInit_t:
+        case AST_StringInit_t:
             string_static_const(static_cast<Array*>(frontend->symbol_table[node->name]->type_t.get()));
             break;
         default:
@@ -153,7 +153,7 @@ static void cvt_static_const_toplvl(AsmStaticConstant* node) {
 
 static void cvt_toplvl(AsmTopLevel* node) {
     switch (node->type()) {
-        case AST_T::AsmStaticConstant_t:
+        case AST_AsmStaticConstant_t:
             cvt_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
             break;
         default:
@@ -178,9 +178,9 @@ static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
 }
 
 static void cvt_obj_type(IdentifierAttr* node) {
-    if (node->type() != AST_T::ConstantAttr_t) {
+    if (node->type() != AST_ConstantAttr_t) {
         std::shared_ptr<AssemblyType> assembly_type = cvt_backend_asm_type(context->symbol);
-        bool is_static = node->type() == AST_T::StaticAttr_t;
+        bool is_static = node->type() == AST_StaticAttr_t;
         cvt_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(assembly_type)));
     }
 }
@@ -189,7 +189,7 @@ static void cvt_program(AsmProgram* node) {
     backend->backend_symbol_table.reserve(frontend->symbol_table.size());
     for (const auto& symbol : frontend->symbol_table) {
         context->symbol = symbol.first;
-        if (symbol.second->type_t->type() == AST_T::FunType_t) {
+        if (symbol.second->type_t->type() == AST_FunType_t) {
             cvt_fun_type(
                 static_cast<FunAttr*>(symbol.second->attrs.get()), static_cast<FunType*>(symbol.second->type_t.get()));
         }

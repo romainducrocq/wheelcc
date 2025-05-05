@@ -29,11 +29,11 @@ static std::unique_ptr<TacReprContext> context;
 // unary_operator = Complement | Negate | Not
 static std::unique_ptr<TacUnaryOp> repr_unop(CUnaryOp* node) {
     switch (node->type()) {
-        case AST_T::CComplement_t:
+        case AST_CComplement_t:
             return std::make_unique<TacComplement>();
-        case AST_T::CNegate_t:
+        case AST_CNegate_t:
             return std::make_unique<TacNegate>();
-        case AST_T::CNot_t:
+        case AST_CNot_t:
             return std::make_unique<TacNot>();
         default:
             RAISE_INTERNAL_ERROR;
@@ -45,39 +45,39 @@ static std::unique_ptr<TacUnaryOp> repr_unop(CUnaryOp* node) {
 //                 GreaterOrEqual
 static std::unique_ptr<TacBinaryOp> repr_binop(CBinaryOp* node) {
     switch (node->type()) {
-        case AST_T::CAdd_t:
+        case AST_CAdd_t:
             return std::make_unique<TacAdd>();
-        case AST_T::CSubtract_t:
+        case AST_CSubtract_t:
             return std::make_unique<TacSubtract>();
-        case AST_T::CMultiply_t:
+        case AST_CMultiply_t:
             return std::make_unique<TacMultiply>();
-        case AST_T::CDivide_t:
+        case AST_CDivide_t:
             return std::make_unique<TacDivide>();
-        case AST_T::CRemainder_t:
+        case AST_CRemainder_t:
             return std::make_unique<TacRemainder>();
-        case AST_T::CBitAnd_t:
+        case AST_CBitAnd_t:
             return std::make_unique<TacBitAnd>();
-        case AST_T::CBitOr_t:
+        case AST_CBitOr_t:
             return std::make_unique<TacBitOr>();
-        case AST_T::CBitXor_t:
+        case AST_CBitXor_t:
             return std::make_unique<TacBitXor>();
-        case AST_T::CBitShiftLeft_t:
+        case AST_CBitShiftLeft_t:
             return std::make_unique<TacBitShiftLeft>();
-        case AST_T::CBitShiftRight_t:
+        case AST_CBitShiftRight_t:
             return std::make_unique<TacBitShiftRight>();
-        case AST_T::CBitShrArithmetic_t:
+        case AST_CBitShrArithmetic_t:
             return std::make_unique<TacBitShrArithmetic>();
-        case AST_T::CEqual_t:
+        case AST_CEqual_t:
             return std::make_unique<TacEqual>();
-        case AST_T::CNotEqual_t:
+        case AST_CNotEqual_t:
             return std::make_unique<TacNotEqual>();
-        case AST_T::CLessThan_t:
+        case AST_CLessThan_t:
             return std::make_unique<TacLessThan>();
-        case AST_T::CLessOrEqual_t:
+        case AST_CLessOrEqual_t:
             return std::make_unique<TacLessOrEqual>();
-        case AST_T::CGreaterThan_t:
+        case AST_CGreaterThan_t:
             return std::make_unique<TacGreaterThan>();
-        case AST_T::CGreaterOrEqual_t:
+        case AST_CGreaterOrEqual_t:
             return std::make_unique<TacGreaterOrEqual>();
         default:
             RAISE_INTERNAL_ERROR;
@@ -114,9 +114,9 @@ static std::shared_ptr<TacValue> ptr_inner_value(CExp* node) {
 // val = Constant(int) | Var(identifier)
 static std::shared_ptr<TacValue> repr_value(CExp* node) {
     switch (node->type()) {
-        case AST_T::CConstant_t:
+        case AST_CConstant_t:
             return const_value(static_cast<CConstant*>(node));
-        case AST_T::CVar_t:
+        case AST_CVar_t:
             return var_value(static_cast<CVar*>(node));
         default:
             RAISE_INTERNAL_ERROR;
@@ -147,7 +147,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(CString* node) {
             string_constant_label = frontend->string_constant_table[string_constant];
         }
         else {
-            string_constant_label = repr_label_identifier(LABEL_KIND::Lstring);
+            string_constant_label = repr_label_identifier(LBL_Lstring);
             frontend->string_constant_table[string_constant] = string_constant_label;
             std::shared_ptr<Type> constant_type;
             {
@@ -179,11 +179,11 @@ static std::unique_ptr<TacPlainOperand> var_res_instr(CVar* node) {
 
 static bool is_type_signed(Type* type) {
     switch (type->type()) {
-        case AST_T::Char_t:
-        case AST_T::SChar_t:
-        case AST_T::Int_t:
-        case AST_T::Long_t:
-        case AST_T::Double_t:
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_Double_t:
             return true;
         default:
             return false;
@@ -192,17 +192,17 @@ static bool is_type_signed(Type* type) {
 
 static TInt get_scalar_size(Type* type) {
     switch (type->type()) {
-        case AST_T::Char_t:
-        case AST_T::SChar_t:
-        case AST_T::UChar_t:
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
             return 1;
-        case AST_T::Int_t:
-        case AST_T::UInt_t:
+        case AST_Int_t:
+        case AST_UInt_t:
             return 4;
-        case AST_T::Long_t:
-        case AST_T::Double_t:
-        case AST_T::ULong_t:
-        case AST_T::Pointer_t:
+        case AST_Long_t:
+        case AST_Double_t:
+        case AST_ULong_t:
+        case AST_Pointer_t:
             return 8;
         default:
             RAISE_INTERNAL_ERROR;
@@ -213,7 +213,7 @@ static TLong get_type_scale(Type* type);
 
 static TLong get_arr_scale(Array* arr_type) {
     TLong size = arr_type->size;
-    while (arr_type->elem_type->type() == AST_T::Array_t) {
+    while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
         size *= arr_type->size;
     }
@@ -224,9 +224,9 @@ static TLong get_struct_scale(Structure* struct_type) { return frontend->struct_
 
 static TLong get_type_scale(Type* type) {
     switch (type->type()) {
-        case AST_T::Array_t:
+        case AST_Array_t:
             return get_arr_scale(static_cast<Array*>(type));
-        case AST_T::Structure_t:
+        case AST_Structure_t:
             return get_struct_scale(static_cast<Structure*>(type));
         default:
             return get_scalar_size(type);
@@ -240,7 +240,7 @@ static std::unique_ptr<TacPlainOperand> cast_complete_res_instr(CCast* node) {
     }
 
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
-    if (node->exp->exp_type->type() == AST_T::Double_t) {
+    if (node->exp->exp_type->type() == AST_Double_t) {
         if (is_type_signed(node->target_type.get())) {
             push_instr(std::make_unique<TacDoubleToInt>(std::move(src), dst));
         }
@@ -249,7 +249,7 @@ static std::unique_ptr<TacPlainOperand> cast_complete_res_instr(CCast* node) {
         }
         return std::make_unique<TacPlainOperand>(std::move(dst));
     }
-    else if (node->target_type->type() == AST_T::Double_t) {
+    else if (node->target_type->type() == AST_Double_t) {
         if (is_type_signed(node->exp->exp_type.get())) {
             push_instr(std::make_unique<TacIntToDouble>(std::move(src), dst));
         }
@@ -283,7 +283,7 @@ static std::unique_ptr<TacPlainOperand> cast_void_res_instr(CCast* node) {
 }
 
 static std::unique_ptr<TacPlainOperand> cast_res_instr(CCast* node) {
-    if (node->target_type->type() == AST_T::Void_t) {
+    if (node->target_type->type() == AST_Void_t) {
         return cast_void_res_instr(node);
     }
     else {
@@ -305,7 +305,7 @@ static std::unique_ptr<TacPlainOperand> binary_add_ptr_res_instr(CBinary* node) 
     TLong scale;
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
-    if (node->exp_left->exp_type->type() == AST_T::Pointer_t) {
+    if (node->exp_left->exp_type->type() == AST_Pointer_t) {
         scale = get_type_scale(static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
         src_ptr = repr_exp_instr(node->exp_left.get());
         index = repr_exp_instr(node->exp_right.get());
@@ -321,7 +321,7 @@ static std::unique_ptr<TacPlainOperand> binary_add_ptr_res_instr(CBinary* node) 
 }
 
 static std::unique_ptr<TacPlainOperand> binary_add_res_instr(CBinary* node) {
-    if (node->exp_left->exp_type->type() == AST_T::Pointer_t || node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+    if (node->exp_left->exp_type->type() == AST_Pointer_t || node->exp_right->exp_type->type() == AST_Pointer_t) {
         return binary_add_ptr_res_instr(node);
     }
     else {
@@ -368,8 +368,8 @@ static std::unique_ptr<TacPlainOperand> binary_subtract_ptr_res_instr(CBinary* n
 }
 
 static std::unique_ptr<TacPlainOperand> binary_subtract_res_instr(CBinary* node) {
-    if (node->exp_left->exp_type->type() == AST_T::Pointer_t) {
-        if (node->exp_right->exp_type->type() == AST_T::Pointer_t) {
+    if (node->exp_left->exp_type->type() == AST_Pointer_t) {
+        if (node->exp_right->exp_type->type() == AST_Pointer_t) {
             return binary_subtract_ptr_res_instr(node);
         }
         else {
@@ -382,8 +382,8 @@ static std::unique_ptr<TacPlainOperand> binary_subtract_res_instr(CBinary* node)
 }
 
 static std::unique_ptr<TacPlainOperand> binary_and_res_instr(CBinary* node) {
-    TIdentifier target_false = repr_label_identifier(LABEL_KIND::Land_false);
-    TIdentifier target_true = repr_label_identifier(LABEL_KIND::Land_true);
+    TIdentifier target_false = repr_label_identifier(LBL_Land_false);
+    TIdentifier target_true = repr_label_identifier(LBL_Land_true);
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = repr_exp_instr(node->exp_left.get());
@@ -410,8 +410,8 @@ static std::unique_ptr<TacPlainOperand> binary_and_res_instr(CBinary* node) {
 }
 
 static std::unique_ptr<TacPlainOperand> binary_or_res_instr(CBinary* node) {
-    TIdentifier target_true = repr_label_identifier(LABEL_KIND::Lor_true);
-    TIdentifier target_false = repr_label_identifier(LABEL_KIND::Lor_false);
+    TIdentifier target_true = repr_label_identifier(LBL_Lor_true);
+    TIdentifier target_false = repr_label_identifier(LBL_Lor_false);
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = repr_exp_instr(node->exp_left.get());
@@ -448,13 +448,13 @@ static std::unique_ptr<TacPlainOperand> binary_any_res_instr(CBinary* node) {
 
 static std::unique_ptr<TacPlainOperand> binary_res_instr(CBinary* node) {
     switch (node->binary_op->type()) {
-        case AST_T::CAdd_t:
+        case AST_CAdd_t:
             return binary_add_res_instr(node);
-        case AST_T::CSubtract_t:
+        case AST_CSubtract_t:
             return binary_subtract_res_instr(node);
-        case AST_T::CAnd_t:
+        case AST_CAnd_t:
             return binary_and_res_instr(node);
-        case AST_T::COr_t:
+        case AST_COr_t:
             return binary_or_res_instr(node);
         default:
             return binary_any_res_instr(node);
@@ -521,11 +521,11 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
 
         {
             CExp* exp_left = node->exp_right.get();
-            if (exp_left->type() == AST_T::CCast_t) {
+            if (exp_left->type() == AST_CCast_t) {
                 exp_left = static_cast<CCast*>(exp_left)->exp.get();
             }
             exp_left = static_cast<CBinary*>(exp_left)->exp_left.get();
-            if (exp_left->type() == AST_T::CCast_t) {
+            if (exp_left->type() == AST_CCast_t) {
                 exp_left = static_cast<CCast*>(exp_left)->exp.get();
             }
 
@@ -539,16 +539,16 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
             identifiers->variable_counter = variable_counter_2;
             identifiers->structure_counter = structure_counter_2;
 
-            if (node->unary_op && node->unary_op->type() == AST_T::CPostfix_t) {
+            if (node->unary_op && node->unary_op->type() == AST_CPostfix_t) {
                 std::shared_ptr<TacValue> dst = plain_inner_value(node);
                 switch (res->type()) {
-                    case AST_T::TacPlainOperand_t:
+                    case AST_TacPlainOperand_t:
                         plain_op_postfix_exp_instr(static_cast<TacPlainOperand*>(res.get()), dst);
                         break;
-                    case AST_T::TacDereferencedPointer_t:
+                    case AST_TacDereferencedPointer_t:
                         deref_ptr_postfix_exp_instr(static_cast<TacDereferencedPointer*>(res.get()), dst);
                         break;
-                    case AST_T::TacSubObject_t:
+                    case AST_TacSubObject_t:
                         sub_obj_postfix_exp_instr(static_cast<TacSubObject*>(res.get()), dst);
                         break;
                     default:
@@ -559,21 +559,21 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
         }
     }
     switch (res->type()) {
-        case AST_T::TacPlainOperand_t:
+        case AST_TacPlainOperand_t:
             plain_op_assign_res_instr(static_cast<TacPlainOperand*>(res.get()), std::move(src));
             break;
-        case AST_T::TacDereferencedPointer_t: {
+        case AST_TacDereferencedPointer_t: {
             res = deref_ptr_assign_res_instr(static_cast<TacDereferencedPointer*>(res.get()), std::move(src));
             break;
         }
-        case AST_T::TacSubObject_t: {
+        case AST_TacSubObject_t: {
             res = sub_obj_assign_res_instr(static_cast<TacSubObject*>(res.get()), std::move(src));
             break;
         }
         default:
             RAISE_INTERNAL_ERROR;
     }
-    if (node->unary_op && node->unary_op->type() == AST_T::CPostfix_t) {
+    if (node->unary_op && node->unary_op->type() == AST_CPostfix_t) {
         return res_postfix;
     }
     else {
@@ -582,8 +582,8 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
 }
 
 static std::unique_ptr<TacPlainOperand> conditional_complete_res_instr(CConditional* node) {
-    TIdentifier target_else = repr_label_identifier(LABEL_KIND::Lternary_else);
-    TIdentifier target_false = repr_label_identifier(LABEL_KIND::Lternary_false);
+    TIdentifier target_else = repr_label_identifier(LBL_Lternary_else);
+    TIdentifier target_false = repr_label_identifier(LBL_Lternary_false);
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
@@ -604,8 +604,8 @@ static std::unique_ptr<TacPlainOperand> conditional_complete_res_instr(CConditio
 }
 
 static std::unique_ptr<TacPlainOperand> conditional_void_res_instr(CConditional* node) {
-    TIdentifier target_else = repr_label_identifier(LABEL_KIND::Lternary_else);
-    TIdentifier target_false = repr_label_identifier(LABEL_KIND::Lternary_false);
+    TIdentifier target_else = repr_label_identifier(LBL_Lternary_else);
+    TIdentifier target_false = repr_label_identifier(LBL_Lternary_false);
     std::shared_ptr<TacValue> dst;
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
@@ -620,7 +620,7 @@ static std::unique_ptr<TacPlainOperand> conditional_void_res_instr(CConditional*
 }
 
 static std::unique_ptr<TacPlainOperand> conditional_res_instr(CConditional* node) {
-    if (node->exp_middle->exp_type->type() == AST_T::Void_t) {
+    if (node->exp_middle->exp_type->type() == AST_Void_t) {
         return conditional_void_res_instr(node);
     }
     else {
@@ -637,7 +637,7 @@ static std::unique_ptr<TacPlainOperand> call_res_instr(CFunctionCall* node) {
         args.push_back(std::move(arg_1));
     }
     std::shared_ptr<TacValue> dst;
-    if (node->exp_type->type() != AST_T::Void_t) {
+    if (node->exp_type->type() != AST_Void_t) {
         dst = plain_inner_value(node);
     }
     push_instr(std::make_unique<TacFunCall>(std::move(name), std::move(args), dst));
@@ -683,14 +683,14 @@ static std::unique_ptr<TacPlainOperand> sub_obj_addrof_res_instr(TacSubObject* r
 static std::unique_ptr<TacExpResult> addrof_res_instr(CAddrOf* node) {
     std::unique_ptr<TacExpResult> res = repr_res_instr(node->exp.get());
     switch (res->type()) {
-        case AST_T::TacPlainOperand_t:
+        case AST_TacPlainOperand_t:
             plain_op_addrof_res_instr(static_cast<TacPlainOperand*>(res.get()), node);
             break;
-        case AST_T::TacDereferencedPointer_t: {
+        case AST_TacDereferencedPointer_t: {
             res = deref_ptr_addrof_res_instr(static_cast<TacDereferencedPointer*>(res.get()));
             break;
         }
-        case AST_T::TacSubObject_t: {
+        case AST_TacSubObject_t: {
             res = sub_obj_addrof_res_instr(static_cast<TacSubObject*>(res.get()), node);
             break;
         }
@@ -704,7 +704,7 @@ static std::unique_ptr<TacDereferencedPointer> subscript_res_instr(CSubscript* n
     TLong scale;
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> index;
-    if (node->primary_exp->exp_type->type() == AST_T::Pointer_t) {
+    if (node->primary_exp->exp_type->type() == AST_Pointer_t) {
         scale = get_type_scale(static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get());
         src_ptr = repr_exp_instr(node->primary_exp.get());
         index = repr_exp_instr(node->subscript_exp.get());
@@ -740,7 +740,7 @@ static std::unique_ptr<TacPlainOperand> sizeoft_res_instr(CSizeOfT* node) {
 }
 
 static std::unique_ptr<TacSubObject> plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset) {
-    if (res->val->type() != AST_T::TacVariable_t) {
+    if (res->val->type() != AST_TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
     TIdentifier base_name = static_cast<TacVariable*>(res->val.get())->name;
@@ -769,21 +769,21 @@ static void sub_obj_dot_res_instr(TacSubObject* res, TLong member_offset) {
 }
 
 static std::unique_ptr<TacExpResult> dot_res_instr(CDot* node) {
-    if (node->structure->exp_type->type() != AST_T::Structure_t) {
+    if (node->structure->exp_type->type() != AST_Structure_t) {
         RAISE_INTERNAL_ERROR;
     }
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
     TLong member_offset = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->offset;
     std::unique_ptr<TacExpResult> res = repr_res_instr(node->structure.get());
     switch (res->type()) {
-        case AST_T::TacPlainOperand_t: {
+        case AST_TacPlainOperand_t: {
             res = plain_op_dot_res_instr(static_cast<TacPlainOperand*>(res.get()), member_offset);
             break;
         }
-        case AST_T::TacDereferencedPointer_t:
+        case AST_TacDereferencedPointer_t:
             deref_ptr_dot_res_instr(static_cast<TacDereferencedPointer*>(res.get()), node, member_offset);
             break;
-        case AST_T::TacSubObject_t:
+        case AST_TacSubObject_t:
             sub_obj_dot_res_instr(static_cast<TacSubObject*>(res.get()), member_offset);
             break;
         default:
@@ -793,11 +793,11 @@ static std::unique_ptr<TacExpResult> dot_res_instr(CDot* node) {
 }
 
 static std::unique_ptr<TacDereferencedPointer> arrow_res_instr(CArrow* node) {
-    if (node->pointer->exp_type->type() != AST_T::Pointer_t) {
+    if (node->pointer->exp_type->type() != AST_Pointer_t) {
         RAISE_INTERNAL_ERROR;
     }
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
-    if (ptr_type->ref_type->type() != AST_T::Structure_t) {
+    if (ptr_type->ref_type->type() != AST_Structure_t) {
         RAISE_INTERNAL_ERROR;
     }
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
@@ -819,37 +819,37 @@ static std::unique_ptr<TacDereferencedPointer> arrow_res_instr(CArrow* node) {
 
 static std::unique_ptr<TacExpResult> repr_res_instr(CExp* node) {
     switch (node->type()) {
-        case AST_T::CConstant_t:
+        case AST_CConstant_t:
             return const_res_instr(static_cast<CConstant*>(node));
-        case AST_T::CString_t:
+        case AST_CString_t:
             return string_res_instr(static_cast<CString*>(node));
-        case AST_T::CVar_t:
+        case AST_CVar_t:
             return var_res_instr(static_cast<CVar*>(node));
-        case AST_T::CCast_t:
+        case AST_CCast_t:
             return cast_res_instr(static_cast<CCast*>(node));
-        case AST_T::CUnary_t:
+        case AST_CUnary_t:
             return unary_res_instr(static_cast<CUnary*>(node));
-        case AST_T::CBinary_t:
+        case AST_CBinary_t:
             return binary_res_instr(static_cast<CBinary*>(node));
-        case AST_T::CAssignment_t:
+        case AST_CAssignment_t:
             return assign_res_instr(static_cast<CAssignment*>(node));
-        case AST_T::CConditional_t:
+        case AST_CConditional_t:
             return conditional_res_instr(static_cast<CConditional*>(node));
-        case AST_T::CFunctionCall_t:
+        case AST_CFunctionCall_t:
             return call_res_instr(static_cast<CFunctionCall*>(node));
-        case AST_T::CDereference_t:
+        case AST_CDereference_t:
             return deref_res_instr(static_cast<CDereference*>(node));
-        case AST_T::CAddrOf_t:
+        case AST_CAddrOf_t:
             return addrof_res_instr(static_cast<CAddrOf*>(node));
-        case AST_T::CSubscript_t:
+        case AST_CSubscript_t:
             return subscript_res_instr(static_cast<CSubscript*>(node));
-        case AST_T::CSizeOf_t:
+        case AST_CSizeOf_t:
             return sizeof_res_instr(static_cast<CSizeOf*>(node));
-        case AST_T::CSizeOfT_t:
+        case AST_CSizeOfT_t:
             return sizeoft_res_instr(static_cast<CSizeOfT*>(node));
-        case AST_T::CDot_t:
+        case AST_CDot_t:
             return dot_res_instr(static_cast<CDot*>(node));
-        case AST_T::CArrow_t:
+        case AST_CArrow_t:
             return arrow_res_instr(static_cast<CArrow*>(node));
         default:
             RAISE_INTERNAL_ERROR;
@@ -880,11 +880,11 @@ static std::shared_ptr<TacValue> sub_obj_exp_instr(TacSubObject* res, CExp* node
 static std::shared_ptr<TacValue> repr_exp_instr(CExp* node) {
     std::unique_ptr<TacExpResult> res = repr_res_instr(node);
     switch (res->type()) {
-        case AST_T::TacPlainOperand_t:
+        case AST_TacPlainOperand_t:
             return plain_op_exp_instr(static_cast<TacPlainOperand*>(res.get()));
-        case AST_T::TacDereferencedPointer_t:
+        case AST_TacDereferencedPointer_t:
             return deref_ptr_exp_instr(static_cast<TacDereferencedPointer*>(res.get()), node);
-        case AST_T::TacSubObject_t:
+        case AST_TacSubObject_t:
             return sub_obj_exp_instr(static_cast<TacSubObject*>(res.get()), node);
         default:
             RAISE_INTERNAL_ERROR;
@@ -907,7 +907,7 @@ static void ret_statement_instr(CReturn* node) {
 static void exp_statement_instr(CExpression* node) { repr_res_instr(node->exp.get()); }
 
 static void if_only_statement_instr(CIf* node) {
-    TIdentifier target_false = repr_label_identifier(LABEL_KIND::Lif_false);
+    TIdentifier target_false = repr_label_identifier(LBL_Lif_false);
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
         push_instr(std::make_unique<TacJumpIfZero>(target_false, std::move(condition)));
@@ -917,8 +917,8 @@ static void if_only_statement_instr(CIf* node) {
 }
 
 static void if_else_statement_instr(CIf* node) {
-    TIdentifier target_else = repr_label_identifier(LABEL_KIND::Lif_else);
-    TIdentifier target_false = repr_label_identifier(LABEL_KIND::Lif_false);
+    TIdentifier target_else = repr_label_identifier(LBL_Lif_else);
+    TIdentifier target_false = repr_label_identifier(LBL_Lif_false);
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
         push_instr(std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
@@ -953,8 +953,8 @@ static void label_statement_instr(CLabel* node) {
 static void statement_compound_instr(CCompound* node) { repr_block(node->block.get()); }
 
 static void while_statement_instr(CWhile* node) {
-    TIdentifier target_break = repr_loop_identifier(LABEL_KIND::Lbreak, node->target);
-    TIdentifier target_continue = repr_loop_identifier(LABEL_KIND::Lcontinue, node->target);
+    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
+    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
     push_instr(std::make_unique<TacLabel>(target_continue));
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
@@ -966,9 +966,9 @@ static void while_statement_instr(CWhile* node) {
 }
 
 static void do_while_statement_instr(CDoWhile* node) {
-    TIdentifier target_do_while_start = repr_label_identifier(LABEL_KIND::Ldo_while_start);
-    TIdentifier target_break = repr_loop_identifier(LABEL_KIND::Lbreak, node->target);
-    TIdentifier target_continue = repr_loop_identifier(LABEL_KIND::Lcontinue, node->target);
+    TIdentifier target_do_while_start = repr_label_identifier(LBL_Ldo_while_start);
+    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
+    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
     push_instr(std::make_unique<TacLabel>(target_do_while_start));
     statement_instr(node->body.get());
     push_instr(std::make_unique<TacLabel>(std::move(target_continue)));
@@ -989,10 +989,10 @@ static void for_init_exp_instr(CInitExp* node) {
 
 static void for_init_statement_instr(CForInit* node) {
     switch (node->type()) {
-        case AST_T::CInitDecl_t:
+        case AST_CInitDecl_t:
             for_init_decl_instr(static_cast<CInitDecl*>(node));
             break;
-        case AST_T::CInitExp_t:
+        case AST_CInitExp_t:
             for_init_exp_instr(static_cast<CInitExp*>(node));
             break;
         default:
@@ -1001,9 +1001,9 @@ static void for_init_statement_instr(CForInit* node) {
 }
 
 static void for_statement_instr(CFor* node) {
-    TIdentifier target_for_start = repr_label_identifier(LABEL_KIND::Lfor_start);
-    TIdentifier target_break = repr_loop_identifier(LABEL_KIND::Lbreak, node->target);
-    TIdentifier target_continue = repr_loop_identifier(LABEL_KIND::Lcontinue, node->target);
+    TIdentifier target_for_start = repr_label_identifier(LBL_Lfor_start);
+    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
+    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
     for_init_statement_instr(node->init.get());
     push_instr(std::make_unique<TacLabel>(target_for_start));
     if (node->condition) {
@@ -1020,7 +1020,7 @@ static void for_statement_instr(CFor* node) {
 }
 
 static void switch_statement_instr(CSwitch* node) {
-    TIdentifier target_break = repr_loop_identifier(LABEL_KIND::Lbreak, node->target);
+    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
     {
         std::shared_ptr<TacValue> match = repr_exp_instr(node->match.get());
         for (size_t i = 0; i < node->cases.size(); ++i) {
@@ -1036,7 +1036,7 @@ static void switch_statement_instr(CSwitch* node) {
         }
     }
     if (node->is_default) {
-        TIdentifier target_default = repr_loop_identifier(LABEL_KIND::Ldefault, node->target);
+        TIdentifier target_default = repr_loop_identifier(LBL_Ldefault, node->target);
         push_instr(std::make_unique<TacJump>(std::move(target_default)));
         statement_instr(node->body.get());
     }
@@ -1048,72 +1048,72 @@ static void switch_statement_instr(CSwitch* node) {
 }
 
 static void case_statement_instr(CCase* node) {
-    TIdentifier target_case = repr_loop_identifier(LABEL_KIND::Lcase, node->target);
+    TIdentifier target_case = repr_loop_identifier(LBL_Lcase, node->target);
     push_instr(std::make_unique<TacLabel>(std::move(target_case)));
     statement_instr(node->jump_to.get());
 }
 
 static void default_statement_instr(CDefault* node) {
-    TIdentifier target_default = repr_loop_identifier(LABEL_KIND::Ldefault, node->target);
+    TIdentifier target_default = repr_loop_identifier(LBL_Ldefault, node->target);
     push_instr(std::make_unique<TacLabel>(std::move(target_default)));
     statement_instr(node->jump_to.get());
 }
 
 static void break_statement_instr(CBreak* node) {
-    TIdentifier target_break = repr_loop_identifier(LABEL_KIND::Lbreak, node->target);
+    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
     push_instr(std::make_unique<TacJump>(std::move(target_break)));
 }
 
 static void continue_statement_instr(CContinue* node) {
-    TIdentifier target_continue = repr_loop_identifier(LABEL_KIND::Lcontinue, node->target);
+    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
     push_instr(std::make_unique<TacJump>(std::move(target_continue)));
 }
 
 static void statement_instr(CStatement* node) {
     switch (node->type()) {
-        case AST_T::CReturn_t:
+        case AST_CReturn_t:
             ret_statement_instr(static_cast<CReturn*>(node));
             break;
-        case AST_T::CExpression_t:
+        case AST_CExpression_t:
             exp_statement_instr(static_cast<CExpression*>(node));
             break;
-        case AST_T::CIf_t:
+        case AST_CIf_t:
             if_statement_instr(static_cast<CIf*>(node));
             break;
-        case AST_T::CGoto_t:
+        case AST_CGoto_t:
             goto_statement_instr(static_cast<CGoto*>(node));
             break;
-        case AST_T::CLabel_t:
+        case AST_CLabel_t:
             label_statement_instr(static_cast<CLabel*>(node));
             break;
-        case AST_T::CCompound_t:
+        case AST_CCompound_t:
             statement_compound_instr(static_cast<CCompound*>(node));
             break;
-        case AST_T::CWhile_t:
+        case AST_CWhile_t:
             while_statement_instr(static_cast<CWhile*>(node));
             break;
-        case AST_T::CDoWhile_t:
+        case AST_CDoWhile_t:
             do_while_statement_instr(static_cast<CDoWhile*>(node));
             break;
-        case AST_T::CFor_t:
+        case AST_CFor_t:
             for_statement_instr(static_cast<CFor*>(node));
             break;
-        case AST_T::CSwitch_t:
+        case AST_CSwitch_t:
             switch_statement_instr(static_cast<CSwitch*>(node));
             break;
-        case AST_T::CCase_t:
+        case AST_CCase_t:
             case_statement_instr(static_cast<CCase*>(node));
             break;
-        case AST_T::CDefault_t:
+        case AST_CDefault_t:
             default_statement_instr(static_cast<CDefault*>(node));
             break;
-        case AST_T::CBreak_t:
+        case AST_CBreak_t:
             break_statement_instr(static_cast<CBreak*>(node));
             break;
-        case AST_T::CContinue_t:
+        case AST_CContinue_t:
             continue_statement_instr(static_cast<CContinue*>(node));
             break;
-        case AST_T::CNull_t:
+        case AST_CNull_t:
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -1186,7 +1186,7 @@ static void string_single_init_instr(CString* node, Array* arr_type, TIdentifier
 }
 
 static void single_init_instr(CSingleInit* node, Type* init_type, TIdentifier symbol) {
-    if (node->exp->type() == AST_T::CString_t && init_type->type() == AST_T::Array_t) {
+    if (node->exp->type() == AST_CString_t && init_type->type() == AST_Array_t) {
         string_single_init_instr(static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, 0l);
     }
     else {
@@ -1202,7 +1202,7 @@ static void single_init_instr(CSingleInit* node, Type* init_type, TIdentifier sy
 }
 
 static void scalar_compound_init_instr(CSingleInit* node, Type* init_type, TIdentifier symbol, TLong& size) {
-    if (node->exp->type() == AST_T::CString_t && init_type->type() == AST_T::Array_t) {
+    if (node->exp->type() == AST_CString_t && init_type->type() == AST_Array_t) {
         string_single_init_instr(static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, size);
     }
     else {
@@ -1216,7 +1216,7 @@ static void scalar_compound_init_instr(CSingleInit* node, Type* init_type, TIden
 static void arr_compound_init_instr(CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong& size) {
     for (const auto& initializer : node->initializers) {
         compound_init_instr(initializer.get(), arr_type->elem_type.get(), symbol, size);
-        if (initializer->type() == AST_T::CSingleInit_t) {
+        if (initializer->type() == AST_CSingleInit_t) {
             size += get_type_scale(arr_type->elem_type.get());
         }
     }
@@ -1233,10 +1233,10 @@ static void struct_compound_init_instr(CCompoundInit* node, Structure* struct_ty
 
 static void aggr_compound_init_instr(CCompoundInit* node, Type* init_type, TIdentifier symbol, TLong& size) {
     switch (init_type->type()) {
-        case AST_T::Array_t:
+        case AST_Array_t:
             arr_compound_init_instr(node, static_cast<Array*>(init_type), symbol, size);
             break;
-        case AST_T::Structure_t:
+        case AST_Structure_t:
             struct_compound_init_instr(node, static_cast<Structure*>(init_type), symbol, size);
             break;
         default:
@@ -1246,10 +1246,10 @@ static void aggr_compound_init_instr(CCompoundInit* node, Type* init_type, TIden
 
 static void compound_init_instr(CInitializer* node, Type* init_type, TIdentifier symbol, TLong& size) {
     switch (node->type()) {
-        case AST_T::CSingleInit_t:
+        case AST_CSingleInit_t:
             scalar_compound_init_instr(static_cast<CSingleInit*>(node), init_type, symbol, size);
             break;
-        case AST_T::CCompoundInit_t:
+        case AST_CCompoundInit_t:
             aggr_compound_init_instr(static_cast<CCompoundInit*>(node), init_type, symbol, size);
             break;
         default:
@@ -1259,11 +1259,11 @@ static void compound_init_instr(CInitializer* node, Type* init_type, TIdentifier
 
 static void var_decl_instr(CVariableDeclaration* node) {
     switch (node->init->type()) {
-        case AST_T::CSingleInit_t:
+        case AST_CSingleInit_t:
             single_init_instr(static_cast<CSingleInit*>(node->init.get()),
                 frontend->symbol_table[node->name]->type_t.get(), node->name);
             break;
-        case AST_T::CCompoundInit_t: {
+        case AST_CCompoundInit_t: {
             TLong size = 0l;
             aggr_compound_init_instr(static_cast<CCompoundInit*>(node->init.get()),
                 frontend->symbol_table[node->name]->type_t.get(), node->name, size);
@@ -1275,7 +1275,7 @@ static void var_decl_instr(CVariableDeclaration* node) {
 }
 
 static void var_declaration_instr(CVarDecl* node) {
-    if (frontend->symbol_table[node->variable_decl->name]->attrs->type() != AST_T::StaticAttr_t
+    if (frontend->symbol_table[node->variable_decl->name]->attrs->type() != AST_StaticAttr_t
         && node->variable_decl->init) {
         var_decl_instr(node->variable_decl.get());
     }
@@ -1283,10 +1283,10 @@ static void var_declaration_instr(CVarDecl* node) {
 
 static void declaration_instr(CDeclaration* node) {
     switch (node->type()) {
-        case AST_T::CFunDecl_t:
-        case AST_T::CStructDecl_t:
+        case AST_CFunDecl_t:
+        case AST_CStructDecl_t:
             break;
-        case AST_T::CVarDecl_t:
+        case AST_CVarDecl_t:
             var_declaration_instr(static_cast<CVarDecl*>(node));
             break;
         default:
@@ -1304,10 +1304,10 @@ static void declaration_instr(CDeclaration* node) {
 static void repr_instr_list(const std::vector<std::unique_ptr<CBlockItem>>& list_node) {
     for (const auto& block_item : list_node) {
         switch (block_item->type()) {
-            case AST_T::CS_t:
+            case AST_CS_t:
                 statement_instr(static_cast<CS*>(block_item.get())->statement.get());
                 break;
-            case AST_T::CD_t:
+            case AST_CD_t:
                 declaration_instr(static_cast<CD*>(block_item.get())->declaration.get());
                 break;
             default:
@@ -1318,7 +1318,7 @@ static void repr_instr_list(const std::vector<std::unique_ptr<CBlockItem>>& list
 
 static void repr_block(CBlock* node) {
     switch (node->type()) {
-        case AST_T::CB_t:
+        case AST_CB_t:
             repr_instr_list(static_cast<CB*>(node)->block_items);
             break;
         default:
@@ -1360,11 +1360,11 @@ static void fun_decl_toplvl(CFunDecl* node) {
 // (function) top_level = Function(identifier, bool, identifier*, instruction*)
 static void declaration_toplvl(CDeclaration* node) {
     switch (node->type()) {
-        case AST_T::CFunDecl_t:
+        case AST_CFunDecl_t:
             fun_decl_toplvl(static_cast<CFunDecl*>(node));
             break;
-        case AST_T::CVarDecl_t:
-        case AST_T::CStructDecl_t:
+        case AST_CVarDecl_t:
+        case AST_CStructDecl_t:
             break;
         default:
             RAISE_INTERNAL_ERROR;
@@ -1388,7 +1388,7 @@ static std::vector<std::shared_ptr<StaticInit>> initial_static_toplvl(Initial* n
 
 static void repr_static_var_toplvl(Symbol* node, TIdentifier symbol) {
     StaticAttr* static_attr = static_cast<StaticAttr*>(node->attrs.get());
-    if (static_attr->init->type() == AST_T::NoInitializer_t) {
+    if (static_attr->init->type() == AST_NoInitializer_t) {
         return;
     }
 
@@ -1397,10 +1397,10 @@ static void repr_static_var_toplvl(Symbol* node, TIdentifier symbol) {
     std::shared_ptr<Type> static_init_type = node->type_t;
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     switch (static_attr->init->type()) {
-        case AST_T::Tentative_t:
+        case AST_Tentative_t:
             static_inits = tentative_static_toplvl(static_init_type.get());
             break;
-        case AST_T::Initial_t:
+        case AST_Initial_t:
             static_inits = initial_static_toplvl(static_cast<Initial*>(static_attr->init.get()));
             break;
         default:
@@ -1427,10 +1427,10 @@ static void repr_static_const_toplvl(Symbol* node, TIdentifier symbol) {
 // (static constant) top_level = StaticConstant(identifier, type, static_init)
 static void symbol_toplvl(Symbol* node, TIdentifier symbol) {
     switch (node->attrs->type()) {
-        case AST_T::StaticAttr_t:
+        case AST_StaticAttr_t:
             repr_static_var_toplvl(node, symbol);
             break;
-        case AST_T::ConstantAttr_t:
+        case AST_ConstantAttr_t:
             repr_static_const_toplvl(node, symbol);
             break;
         default:

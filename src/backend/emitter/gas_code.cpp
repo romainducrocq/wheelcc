@@ -62,41 +62,41 @@ static std::string emit_ulong(TULong value) { return std::to_string(value); }
 // Reg(XMM15) -> $ %xmm15
 static std::string reg_rsp_sse(AsmReg* node) {
     switch (node->type()) {
-        case AST_T::AsmSp_t:
+        case AST_AsmSp_t:
             return "rsp";
-        case AST_T::AsmBp_t:
+        case AST_AsmBp_t:
             return "rbp";
-        case AST_T::AsmXMM0_t:
+        case AST_AsmXMM0_t:
             return "xmm0";
-        case AST_T::AsmXMM1_t:
+        case AST_AsmXMM1_t:
             return "xmm1";
-        case AST_T::AsmXMM2_t:
+        case AST_AsmXMM2_t:
             return "xmm2";
-        case AST_T::AsmXMM3_t:
+        case AST_AsmXMM3_t:
             return "xmm3";
-        case AST_T::AsmXMM4_t:
+        case AST_AsmXMM4_t:
             return "xmm4";
-        case AST_T::AsmXMM5_t:
+        case AST_AsmXMM5_t:
             return "xmm5";
-        case AST_T::AsmXMM6_t:
+        case AST_AsmXMM6_t:
             return "xmm6";
-        case AST_T::AsmXMM7_t:
+        case AST_AsmXMM7_t:
             return "xmm7";
-        case AST_T::AsmXMM8_t:
+        case AST_AsmXMM8_t:
             return "xmm8";
-        case AST_T::AsmXMM9_t:
+        case AST_AsmXMM9_t:
             return "xmm9";
-        case AST_T::AsmXMM10_t:
+        case AST_AsmXMM10_t:
             return "xmm10";
-        case AST_T::AsmXMM11_t:
+        case AST_AsmXMM11_t:
             return "xmm11";
-        case AST_T::AsmXMM12_t:
+        case AST_AsmXMM12_t:
             return "xmm12";
-        case AST_T::AsmXMM13_t:
+        case AST_AsmXMM13_t:
             return "xmm13";
-        case AST_T::AsmXMM14_t:
+        case AST_AsmXMM14_t:
             return "xmm14";
-        case AST_T::AsmXMM15_t:
+        case AST_AsmXMM15_t:
             return "xmm15";
         default:
             RAISE_INTERNAL_ERROR;
@@ -119,33 +119,33 @@ static std::string reg_rsp_sse(AsmReg* node) {
 // Reg(R15) -> $ %r15b
 static std::string emit_reg_1b(AsmReg* node) {
     switch (node->type()) {
-        case AST_T::AsmAx_t:
+        case AST_AsmAx_t:
             return "al";
-        case AST_T::AsmBx_t:
+        case AST_AsmBx_t:
             return "bl";
-        case AST_T::AsmDx_t:
+        case AST_AsmDx_t:
             return "dl";
-        case AST_T::AsmCx_t:
+        case AST_AsmCx_t:
             return "cl";
-        case AST_T::AsmDi_t:
+        case AST_AsmDi_t:
             return "dil";
-        case AST_T::AsmSi_t:
+        case AST_AsmSi_t:
             return "sil";
-        case AST_T::AsmR8_t:
+        case AST_AsmR8_t:
             return "r8b";
-        case AST_T::AsmR9_t:
+        case AST_AsmR9_t:
             return "r9b";
-        case AST_T::AsmR10_t:
+        case AST_AsmR10_t:
             return "r10b";
-        case AST_T::AsmR11_t:
+        case AST_AsmR11_t:
             return "r11b";
-        case AST_T::AsmR12_t:
+        case AST_AsmR12_t:
             return "r12b";
-        case AST_T::AsmR13_t:
+        case AST_AsmR13_t:
             return "r13b";
-        case AST_T::AsmR14_t:
+        case AST_AsmR14_t:
             return "r14b";
-        case AST_T::AsmR15_t:
+        case AST_AsmR15_t:
             return "r15b";
         default:
             return reg_rsp_sse(node);
@@ -168,33 +168,33 @@ static std::string emit_reg_1b(AsmReg* node) {
 // Reg(R15) -> $ %r15d
 static std::string emit_reg_4b(AsmReg* node) {
     switch (node->type()) {
-        case AST_T::AsmAx_t:
+        case AST_AsmAx_t:
             return "eax";
-        case AST_T::AsmBx_t:
+        case AST_AsmBx_t:
             return "ebx";
-        case AST_T::AsmDx_t:
+        case AST_AsmDx_t:
             return "edx";
-        case AST_T::AsmCx_t:
+        case AST_AsmCx_t:
             return "ecx";
-        case AST_T::AsmDi_t:
+        case AST_AsmDi_t:
             return "edi";
-        case AST_T::AsmSi_t:
+        case AST_AsmSi_t:
             return "esi";
-        case AST_T::AsmR8_t:
+        case AST_AsmR8_t:
             return "r8d";
-        case AST_T::AsmR9_t:
+        case AST_AsmR9_t:
             return "r9d";
-        case AST_T::AsmR10_t:
+        case AST_AsmR10_t:
             return "r10d";
-        case AST_T::AsmR11_t:
+        case AST_AsmR11_t:
             return "r11d";
-        case AST_T::AsmR12_t:
+        case AST_AsmR12_t:
             return "r12d";
-        case AST_T::AsmR13_t:
+        case AST_AsmR13_t:
             return "r13d";
-        case AST_T::AsmR14_t:
+        case AST_AsmR14_t:
             return "r14d";
-        case AST_T::AsmR15_t:
+        case AST_AsmR15_t:
             return "r15d";
         default:
             return reg_rsp_sse(node);
@@ -217,33 +217,33 @@ static std::string emit_reg_4b(AsmReg* node) {
 // Reg(R15) -> $ %r15
 static std::string emit_reg_8b(AsmReg* node) {
     switch (node->type()) {
-        case AST_T::AsmAx_t:
+        case AST_AsmAx_t:
             return "rax";
-        case AST_T::AsmBx_t:
+        case AST_AsmBx_t:
             return "rbx";
-        case AST_T::AsmDx_t:
+        case AST_AsmDx_t:
             return "rdx";
-        case AST_T::AsmCx_t:
+        case AST_AsmCx_t:
             return "rcx";
-        case AST_T::AsmDi_t:
+        case AST_AsmDi_t:
             return "rdi";
-        case AST_T::AsmSi_t:
+        case AST_AsmSi_t:
             return "rsi";
-        case AST_T::AsmR8_t:
+        case AST_AsmR8_t:
             return "r8";
-        case AST_T::AsmR9_t:
+        case AST_AsmR9_t:
             return "r9";
-        case AST_T::AsmR10_t:
+        case AST_AsmR10_t:
             return "r10";
-        case AST_T::AsmR11_t:
+        case AST_AsmR11_t:
             return "r11";
-        case AST_T::AsmR12_t:
+        case AST_AsmR12_t:
             return "r12";
-        case AST_T::AsmR13_t:
+        case AST_AsmR13_t:
             return "r13";
-        case AST_T::AsmR14_t:
+        case AST_AsmR14_t:
             return "r14";
-        case AST_T::AsmR15_t:
+        case AST_AsmR15_t:
             return "r15";
         default:
             return reg_rsp_sse(node);
@@ -263,27 +263,27 @@ static std::string emit_reg_8b(AsmReg* node) {
 // P  -> $ p
 static std::string emit_cond_code(AsmCondCode* node) {
     switch (node->type()) {
-        case AST_T::AsmE_t:
+        case AST_AsmE_t:
             return "e";
-        case AST_T::AsmNE_t:
+        case AST_AsmNE_t:
             return "ne";
-        case AST_T::AsmL_t:
+        case AST_AsmL_t:
             return "l";
-        case AST_T::AsmLE_t:
+        case AST_AsmLE_t:
             return "le";
-        case AST_T::AsmG_t:
+        case AST_AsmG_t:
             return "g";
-        case AST_T::AsmGE_t:
+        case AST_AsmGE_t:
             return "ge";
-        case AST_T::AsmB_t:
+        case AST_AsmB_t:
             return "b";
-        case AST_T::AsmBE_t:
+        case AST_AsmBE_t:
             return "be";
-        case AST_T::AsmA_t:
+        case AST_AsmA_t:
             return "a";
-        case AST_T::AsmAE_t:
+        case AST_AsmAE_t:
             return "ae";
-        case AST_T::AsmP_t:
+        case AST_AsmP_t:
             return "p";
         default:
             RAISE_INTERNAL_ERROR;
@@ -297,14 +297,14 @@ static std::string emit_cond_code(AsmCondCode* node) {
 // ByteArray -> $ alignment
 static TInt type_align_bytes(AssemblyType* node) {
     switch (node->type()) {
-        case AST_T::Byte_t:
+        case AST_Byte_t:
             return 1;
-        case AST_T::LongWord_t:
+        case AST_LongWord_t:
             return 4;
-        case AST_T::QuadWord_t:
-        case AST_T::BackendDouble_t:
+        case AST_QuadWord_t:
+        case AST_BackendDouble_t:
             return 8;
-        case AST_T::ByteArray_t:
+        case AST_ByteArray_t:
             return static_cast<ByteArray*>(node)->alignment;
         default:
             RAISE_INTERNAL_ERROR;
@@ -318,13 +318,13 @@ static TInt type_align_bytes(AssemblyType* node) {
 //             else -> $ sd
 static std::string emit_type_suffix(AssemblyType* node, bool is_packed) {
     switch (node->type()) {
-        case AST_T::Byte_t:
+        case AST_Byte_t:
             return "b";
-        case AST_T::LongWord_t:
+        case AST_LongWord_t:
             return "l";
-        case AST_T::QuadWord_t:
+        case AST_QuadWord_t:
             return "q";
-        case AST_T::BackendDouble_t:
+        case AST_BackendDouble_t:
             return is_packed ? "pd" : "sd";
         default:
             RAISE_INTERNAL_ERROR;
@@ -371,7 +371,7 @@ static std::string memory_op(AsmMemory* node) {
 static std::string data_op(AsmData* node) {
     std::string operand =
         backend->backend_symbol_table.find(node->name) != backend->backend_symbol_table.end()
-                && backend->backend_symbol_table[node->name]->type() == AST_T::BackendObj_t
+                && backend->backend_symbol_table[node->name]->type() == AST_BackendObj_t
                 && static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get())->is_constant ?
             ".L" :
             "";
@@ -402,15 +402,15 @@ static std::string indexed_op(AsmIndexed* node) {
 // Indexed(reg1, reg2, int) -> $ (<reg1>, <reg2>, <int>)
 static std::string emit_op(AsmOperand* node, TInt byte) {
     switch (node->type()) {
-        case AST_T::AsmImm_t:
+        case AST_AsmImm_t:
             return imm_op(static_cast<AsmImm*>(node));
-        case AST_T::AsmRegister_t:
+        case AST_AsmRegister_t:
             return reg_op(static_cast<AsmRegister*>(node), byte);
-        case AST_T::AsmMemory_t:
+        case AST_AsmMemory_t:
             return memory_op(static_cast<AsmMemory*>(node));
-        case AST_T::AsmData_t:
+        case AST_AsmData_t:
             return data_op(static_cast<AsmData*>(node));
-        case AST_T::AsmIndexed_t:
+        case AST_AsmIndexed_t:
             return indexed_op(static_cast<AsmIndexed*>(node));
         default:
             RAISE_INTERNAL_ERROR;
@@ -422,11 +422,11 @@ static std::string emit_op(AsmOperand* node, TInt byte) {
 // Shr -> $ shr
 static std::string emit_unop(AsmUnaryOp* node) {
     switch (node->type()) {
-        case AST_T::AsmNeg_t:
+        case AST_AsmNeg_t:
             return "neg";
-        case AST_T::AsmNot_t:
+        case AST_AsmNot_t:
             return "not";
-        case AST_T::AsmShr_t:
+        case AST_AsmShr_t:
             return "shr";
         default:
             RAISE_INTERNAL_ERROR;
@@ -446,25 +446,25 @@ static std::string emit_unop(AsmUnaryOp* node) {
 // BitShrArithmetic -> $ sar
 static std::string emit_binop(AsmBinaryOp* node, bool is_double) {
     switch (node->type()) {
-        case AST_T::AsmAdd_t:
+        case AST_AsmAdd_t:
             return "add";
-        case AST_T::AsmSub_t:
+        case AST_AsmSub_t:
             return "sub";
-        case AST_T::AsmMult_t:
+        case AST_AsmMult_t:
             return is_double ? "mul" : "imul";
-        case AST_T::AsmDivDouble_t:
+        case AST_AsmDivDouble_t:
             return "div";
-        case AST_T::AsmBitAnd_t:
+        case AST_AsmBitAnd_t:
             return "and";
-        case AST_T::AsmBitOr_t:
+        case AST_AsmBitOr_t:
             return "or";
-        case AST_T::AsmBitXor_t:
+        case AST_AsmBitXor_t:
             return "xor";
-        case AST_T::AsmBitShiftLeft_t:
+        case AST_AsmBitShiftLeft_t:
             return "shl";
-        case AST_T::AsmBitShiftRight_t:
+        case AST_AsmBitShiftRight_t:
             return "shr";
-        case AST_T::AsmBitShrArithmetic_t:
+        case AST_AsmBitShrArithmetic_t:
             return "sar";
         default:
             RAISE_INTERNAL_ERROR;
@@ -575,10 +575,10 @@ static void unary_instr(AsmUnary* node) {
 }
 
 static void binary_instr(AsmBinary* node) {
-    bool is_double = node->assembly_type->type() == AST_T::BackendDouble_t;
+    bool is_double = node->assembly_type->type() == AST_BackendDouble_t;
     std::string instruction = emit_binop(node->binary_op.get(), is_double);
     {
-        bool is_packed = node->binary_op->type() == AST_T::AsmBitXor_t && is_double;
+        bool is_packed = node->binary_op->type() == AST_AsmBitXor_t && is_double;
         instruction += emit_type_suffix(node->assembly_type.get(), is_packed);
     }
     instruction += " ";
@@ -592,7 +592,7 @@ static void binary_instr(AsmBinary* node) {
 }
 
 static void cmp_instr(AsmCmp* node) {
-    std::string instruction = node->assembly_type->type() == AST_T::BackendDouble_t ? "comi" : "cmp";
+    std::string instruction = node->assembly_type->type() == AST_BackendDouble_t ? "comi" : "cmp";
     instruction += emit_type_suffix(node->assembly_type.get(), false);
     instruction += " ";
     {
@@ -628,10 +628,10 @@ static void div_instr(AsmDiv* node) {
 
 static void cdq_instr(AsmCdq* node) {
     switch (node->assembly_type->type()) {
-        case AST_T::LongWord_t:
+        case AST_LongWord_t:
             emit("cdq", 2);
             break;
-        case AST_T::QuadWord_t:
+        case AST_QuadWord_t:
             emit("cqo", 2);
             break;
         default:
@@ -683,7 +683,7 @@ static void pop_instr(AsmPop* node) {
 static void call_instr(AsmCall* node) {
     std::string instruction = "call ";
     instruction += emit_identifier(node->name);
-    if (backend->backend_symbol_table[node->name]->type() != AST_T::BackendFun_t) {
+    if (backend->backend_symbol_table[node->name]->type() != AST_BackendFun_t) {
         RAISE_INTERNAL_ERROR;
     }
     else if (!static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get())->is_defined) {
@@ -724,64 +724,64 @@ static void ret_instr() {
 //                                          $ ret
 static void emit_instr(AsmInstruction* node) {
     switch (node->type()) {
-        case AST_T::AsmMov_t:
+        case AST_AsmMov_t:
             mov_instr(static_cast<AsmMov*>(node));
             break;
-        case AST_T::AsmMovSx_t:
+        case AST_AsmMovSx_t:
             mov_sx_instr(static_cast<AsmMovSx*>(node));
             break;
-        case AST_T::AsmMovZeroExtend_t:
+        case AST_AsmMovZeroExtend_t:
             zero_extend_instr(static_cast<AsmMovZeroExtend*>(node));
             break;
-        case AST_T::AsmLea_t:
+        case AST_AsmLea_t:
             lea_instr(static_cast<AsmLea*>(node));
             break;
-        case AST_T::AsmCvttsd2si_t:
+        case AST_AsmCvttsd2si_t:
             cvttsd2si_instr(static_cast<AsmCvttsd2si*>(node));
             break;
-        case AST_T::AsmCvtsi2sd_t:
+        case AST_AsmCvtsi2sd_t:
             cvtsi2sd_instr(static_cast<AsmCvtsi2sd*>(node));
             break;
-        case AST_T::AsmUnary_t:
+        case AST_AsmUnary_t:
             unary_instr(static_cast<AsmUnary*>(node));
             break;
-        case AST_T::AsmBinary_t:
+        case AST_AsmBinary_t:
             binary_instr(static_cast<AsmBinary*>(node));
             break;
-        case AST_T::AsmCmp_t:
+        case AST_AsmCmp_t:
             cmp_instr(static_cast<AsmCmp*>(node));
             break;
-        case AST_T::AsmIdiv_t:
+        case AST_AsmIdiv_t:
             idiv_instr(static_cast<AsmIdiv*>(node));
             break;
-        case AST_T::AsmDiv_t:
+        case AST_AsmDiv_t:
             div_instr(static_cast<AsmDiv*>(node));
             break;
-        case AST_T::AsmCdq_t:
+        case AST_AsmCdq_t:
             cdq_instr(static_cast<AsmCdq*>(node));
             break;
-        case AST_T::AsmJmp_t:
+        case AST_AsmJmp_t:
             jmp_instr(static_cast<AsmJmp*>(node));
             break;
-        case AST_T::AsmJmpCC_t:
+        case AST_AsmJmpCC_t:
             jmp_cc_instr(static_cast<AsmJmpCC*>(node));
             break;
-        case AST_T::AsmSetCC_t:
+        case AST_AsmSetCC_t:
             set_cc_instr(static_cast<AsmSetCC*>(node));
             break;
-        case AST_T::AsmLabel_t:
+        case AST_AsmLabel_t:
             label_instr(static_cast<AsmLabel*>(node));
             break;
-        case AST_T::AsmPush_t:
+        case AST_AsmPush_t:
             push_instr(static_cast<AsmPush*>(node));
             break;
-        case AST_T::AsmPop_t:
+        case AST_AsmPop_t:
             pop_instr(static_cast<AsmPop*>(node));
             break;
-        case AST_T::AsmCall_t:
+        case AST_AsmCall_t:
             call_instr(static_cast<AsmCall*>(node));
             break;
-        case AST_T::AsmRet_t:
+        case AST_AsmRet_t:
             ret_instr();
             break;
         default:
@@ -846,47 +846,47 @@ static void emit_fun_toplvl(AsmFunction* node) {
 static void static_init_toplvl(StaticInit* node) {
     std::string directive;
     switch (node->type()) {
-        case AST_T::CharInit_t: {
+        case AST_CharInit_t: {
             directive = ".byte ";
             directive += emit_char(static_cast<CharInit*>(node)->value);
             break;
         }
-        case AST_T::IntInit_t: {
+        case AST_IntInit_t: {
             directive = ".long ";
             directive += emit_int(static_cast<IntInit*>(node)->value);
             break;
         }
-        case AST_T::LongInit_t: {
+        case AST_LongInit_t: {
             directive = ".quad ";
             directive += emit_long(static_cast<LongInit*>(node)->value);
             break;
         }
-        case AST_T::DoubleInit_t: {
+        case AST_DoubleInit_t: {
             directive = ".quad ";
             directive += emit_dbl(static_cast<DoubleInit*>(node)->double_constant);
             break;
         }
-        case AST_T::UCharInit_t: {
+        case AST_UCharInit_t: {
             directive = ".byte ";
             directive += emit_uchar(static_cast<UCharInit*>(node)->value);
             break;
         }
-        case AST_T::UIntInit_t: {
+        case AST_UIntInit_t: {
             directive = ".long ";
             directive += emit_uint(static_cast<UIntInit*>(node)->value);
             break;
         }
-        case AST_T::ULongInit_t: {
+        case AST_ULongInit_t: {
             directive = ".quad ";
             directive += emit_ulong(static_cast<ULongInit*>(node)->value);
             break;
         }
-        case AST_T::ZeroInit_t: {
+        case AST_ZeroInit_t: {
             directive = ".zero ";
             directive += emit_long(static_cast<ZeroInit*>(node)->byte);
             break;
         }
-        case AST_T::StringInit_t: {
+        case AST_StringInit_t: {
             directive = ".asci";
             {
                 StringInit* p_node = static_cast<StringInit*>(node);
@@ -897,7 +897,7 @@ static void static_init_toplvl(StaticInit* node) {
             directive += "\"";
             break;
         }
-        case AST_T::PointerInit_t: {
+        case AST_PointerInit_t: {
             directive = ".quad .L";
             directive += emit_identifier(static_cast<PointerInit*>(node)->name);
             break;
@@ -911,7 +911,7 @@ static void static_init_toplvl(StaticInit* node) {
 // -> if zero initialized $ .bss
 // ->                else $ .data
 static void static_section_toplvl(const std::vector<std::shared_ptr<StaticInit>>& list_node) {
-    if (list_node.size() == 1 && list_node[0]->type() == AST_T::ZeroInit_t) {
+    if (list_node.size() == 1 && list_node[0]->type() == AST_ZeroInit_t) {
         emit(".bss", 1);
     }
     else {
@@ -961,13 +961,13 @@ static void emit_static_const_toplvl(AsmStaticConstant* node) {
 static void emit_toplvl(AsmTopLevel* node) {
     emit("", 0);
     switch (node->type()) {
-        case AST_T::AsmFunction_t:
+        case AST_AsmFunction_t:
             emit_fun_toplvl(static_cast<AsmFunction*>(node));
             break;
-        case AST_T::AsmStaticVariable_t:
+        case AST_AsmStaticVariable_t:
             emit_static_var_toplvl(static_cast<AsmStaticVariable*>(node));
             break;
-        case AST_T::AsmStaticConstant_t:
+        case AST_AsmStaticConstant_t:
             emit_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
             break;
         default:

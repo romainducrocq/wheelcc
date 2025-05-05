@@ -6,25 +6,25 @@
 // Identifiers
 
 enum LABEL_KIND {
-    Land_false,
-    Land_true,
-    Lbreak,
-    Lcase,
-    Lcontinue,
-    Ldefault,
-    Ldo_while,
-    Ldo_while_start,
-    Lfor,
-    Lfor_start,
-    Lif_else,
-    Lif_false,
-    Lor_false,
-    Lor_true,
-    Lstring,
-    Lswitch,
-    Lternary_else,
-    Lternary_false,
-    Lwhile
+    LBL_Land_false,
+    LBL_Land_true,
+    LBL_Lbreak,
+    LBL_Lcase,
+    LBL_Lcontinue,
+    LBL_Ldefault,
+    LBL_Ldo_while,
+    LBL_Ldo_while_start,
+    LBL_Lfor,
+    LBL_Lfor_start,
+    LBL_Lif_else,
+    LBL_Lif_false,
+    LBL_Lor_false,
+    LBL_Lor_true,
+    LBL_Lstring,
+    LBL_Lswitch,
+    LBL_Lternary_else,
+    LBL_Lternary_false,
+    LBL_Lwhile
 };
 
 #endif

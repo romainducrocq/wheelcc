@@ -30,63 +30,63 @@ TIdentifier rslv_struct_tag(TIdentifier structure) {
 TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
     std::string name;
     switch (label_kind) {
-        case LABEL_KIND::Land_false: {
+        case LBL_Land_false: {
             name = "and_false";
             break;
         }
-        case LABEL_KIND::Land_true: {
+        case LBL_Land_true: {
             name = "and_true";
             break;
         }
-        case LABEL_KIND::Ldo_while: {
+        case LBL_Ldo_while: {
             name = "do_while";
             break;
         }
-        case LABEL_KIND::Ldo_while_start: {
+        case LBL_Ldo_while_start: {
             name = "do_while_start";
             break;
         }
-        case LABEL_KIND::Lfor: {
+        case LBL_Lfor: {
             name = "for";
             break;
         }
-        case LABEL_KIND::Lswitch: {
+        case LBL_Lswitch: {
             name = "switch";
             break;
         }
-        case LABEL_KIND::Lfor_start: {
+        case LBL_Lfor_start: {
             name = "for_start";
             break;
         }
-        case LABEL_KIND::Lif_else: {
+        case LBL_Lif_else: {
             name = "if_else";
             break;
         }
-        case LABEL_KIND::Lif_false: {
+        case LBL_Lif_false: {
             name = "if_false";
             break;
         }
-        case LABEL_KIND::Lor_false: {
+        case LBL_Lor_false: {
             name = "or_false";
             break;
         }
-        case LABEL_KIND::Lor_true: {
+        case LBL_Lor_true: {
             name = "or_true";
             break;
         }
-        case LABEL_KIND::Lstring: {
+        case LBL_Lstring: {
             name = "string";
             break;
         }
-        case LABEL_KIND::Lternary_else: {
+        case LBL_Lternary_else: {
             name = "ternary_else";
             break;
         }
-        case LABEL_KIND::Lternary_false: {
+        case LBL_Lternary_false: {
             name = "ternary_false";
             break;
         }
-        case LABEL_KIND::Lwhile: {
+        case LBL_Lwhile: {
             name = "while";
             break;
         }
@@ -99,19 +99,19 @@ TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
 TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
     std::string name;
     switch (label_kind) {
-        case LABEL_KIND::Lbreak: {
+        case LBL_Lbreak: {
             name = "break_";
             break;
         }
-        case LABEL_KIND::Lcase: {
+        case LBL_Lcase: {
             name = "case_";
             break;
         }
-        case LABEL_KIND::Lcontinue: {
+        case LBL_Lcontinue: {
             name = "continue_";
             break;
         }
-        case LABEL_KIND::Ldefault: {
+        case LBL_Ldefault: {
             name = "default_";
             break;
         }
@@ -132,59 +132,59 @@ TIdentifier repr_case_identifier(TIdentifier target, bool is_label, size_t i) {
 TIdentifier repr_var_identifier(CExp* node) {
     std::string name;
     switch (node->type()) {
-        case AST_T::CConstant_t: {
+        case AST_CConstant_t: {
             name = "const";
             break;
         }
-        case AST_T::CString_t: {
+        case AST_CString_t: {
             name = "string";
             break;
         }
-        case AST_T::CVar_t: {
+        case AST_CVar_t: {
             name = "var";
             break;
         }
-        case AST_T::CCast_t: {
+        case AST_CCast_t: {
             name = "cast";
             break;
         }
-        case AST_T::CUnary_t: {
+        case AST_CUnary_t: {
             name = "unop";
             break;
         }
-        case AST_T::CBinary_t: {
+        case AST_CBinary_t: {
             name = "binop";
             break;
         }
-        case AST_T::CAssignment_t: {
+        case AST_CAssignment_t: {
             name = "assign";
             break;
         }
-        case AST_T::CConditional_t: {
+        case AST_CConditional_t: {
             name = "ternop";
             break;
         }
-        case AST_T::CFunctionCall_t: {
+        case AST_CFunctionCall_t: {
             name = "call";
             break;
         }
-        case AST_T::CDereference_t: {
+        case AST_CDereference_t: {
             name = "deref";
             break;
         }
-        case AST_T::CAddrOf_t: {
+        case AST_CAddrOf_t: {
             name = "addr";
             break;
         }
-        case AST_T::CSubscript_t: {
+        case AST_CSubscript_t: {
             name = "subscr";
             break;
         }
-        case AST_T::CDot_t: {
+        case AST_CDot_t: {
             name = "smem";
             break;
         }
-        case AST_T::CArrow_t: {
+        case AST_CArrow_t: {
             name = "sptr";
             break;
         }

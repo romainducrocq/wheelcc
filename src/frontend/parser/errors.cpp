@@ -15,159 +15,159 @@
 
 std::string fmt_tok_kind(TOKEN_KIND token_kind) {
     switch (token_kind) {
-        case TOKEN_KIND::assignment_bitshiftleft:
+        case TOK_assignment_bitshiftleft:
             return "<<=";
-        case TOKEN_KIND::assignment_bitshiftright:
+        case TOK_assignment_bitshiftright:
             return ">>=";
-        case TOKEN_KIND::unop_increment:
+        case TOK_unop_increment:
             return "++";
-        case TOKEN_KIND::unop_decrement:
+        case TOK_unop_decrement:
             return "--";
-        case TOKEN_KIND::binop_bitshiftleft:
+        case TOK_binop_bitshiftleft:
             return "<<";
-        case TOKEN_KIND::binop_bitshiftright:
+        case TOK_binop_bitshiftright:
             return ">>";
-        case TOKEN_KIND::binop_and:
+        case TOK_binop_and:
             return "&&";
-        case TOKEN_KIND::binop_or:
+        case TOK_binop_or:
             return "||";
-        case TOKEN_KIND::binop_equalto:
+        case TOK_binop_equalto:
             return "==";
-        case TOKEN_KIND::binop_notequal:
+        case TOK_binop_notequal:
             return "!=";
-        case TOKEN_KIND::binop_lessthanorequal:
+        case TOK_binop_lessthanorequal:
             return "<=";
-        case TOKEN_KIND::binop_greaterthanorequal:
+        case TOK_binop_greaterthanorequal:
             return ">=";
-        case TOKEN_KIND::assignment_plus:
+        case TOK_assignment_plus:
             return "+=";
-        case TOKEN_KIND::assignment_difference:
+        case TOK_assignment_difference:
             return "-=";
-        case TOKEN_KIND::assignment_product:
+        case TOK_assignment_product:
             return "*=";
-        case TOKEN_KIND::assignment_quotient:
+        case TOK_assignment_quotient:
             return "/=";
-        case TOKEN_KIND::assignment_remainder:
+        case TOK_assignment_remainder:
             return "%=";
-        case TOKEN_KIND::assignment_bitand:
+        case TOK_assignment_bitand:
             return "&=";
-        case TOKEN_KIND::assignment_bitor:
+        case TOK_assignment_bitor:
             return "|=";
-        case TOKEN_KIND::assignment_bitxor:
+        case TOK_assignment_bitxor:
             return "^=";
-        case TOKEN_KIND::structop_pointer:
+        case TOK_structop_pointer:
             return "->";
-        case TOKEN_KIND::parenthesis_open:
+        case TOK_parenthesis_open:
             return "(";
-        case TOKEN_KIND::parenthesis_close:
+        case TOK_parenthesis_close:
             return ")";
-        case TOKEN_KIND::brace_open:
+        case TOK_brace_open:
             return "{";
-        case TOKEN_KIND::brace_close:
+        case TOK_brace_close:
             return "}";
-        case TOKEN_KIND::brackets_open:
+        case TOK_brackets_open:
             return "[";
-        case TOKEN_KIND::brackets_close:
+        case TOK_brackets_close:
             return "]";
-        case TOKEN_KIND::semicolon:
+        case TOK_semicolon:
             return ";";
-        case TOKEN_KIND::unop_complement:
+        case TOK_unop_complement:
             return "~";
-        case TOKEN_KIND::unop_negation:
+        case TOK_unop_negation:
             return "-";
-        case TOKEN_KIND::unop_not:
+        case TOK_unop_not:
             return "!";
-        case TOKEN_KIND::binop_addition:
+        case TOK_binop_addition:
             return "+";
-        case TOKEN_KIND::binop_multiplication:
+        case TOK_binop_multiplication:
             return "*";
-        case TOKEN_KIND::binop_division:
+        case TOK_binop_division:
             return "/";
-        case TOKEN_KIND::binop_remainder:
+        case TOK_binop_remainder:
             return "%";
-        case TOKEN_KIND::binop_bitand:
+        case TOK_binop_bitand:
             return "&";
-        case TOKEN_KIND::binop_bitor:
+        case TOK_binop_bitor:
             return "|";
-        case TOKEN_KIND::binop_bitxor:
+        case TOK_binop_bitxor:
             return "^";
-        case TOKEN_KIND::binop_lessthan:
+        case TOK_binop_lessthan:
             return "<";
-        case TOKEN_KIND::binop_greaterthan:
+        case TOK_binop_greaterthan:
             return ">";
-        case TOKEN_KIND::assignment_simple:
+        case TOK_assignment_simple:
             return "=";
-        case TOKEN_KIND::ternary_if:
+        case TOK_ternary_if:
             return "?";
-        case TOKEN_KIND::ternary_else:
+        case TOK_ternary_else:
             return ":";
-        case TOKEN_KIND::separator_comma:
+        case TOK_separator_comma:
             return ",";
-        case TOKEN_KIND::structop_member:
+        case TOK_structop_member:
             return ".";
-        case TOKEN_KIND::key_char:
+        case TOK_key_char:
             return "char";
-        case TOKEN_KIND::key_int:
+        case TOK_key_int:
             return "int";
-        case TOKEN_KIND::key_long:
+        case TOK_key_long:
             return "long";
-        case TOKEN_KIND::key_double:
+        case TOK_key_double:
             return "double";
-        case TOKEN_KIND::key_signed:
+        case TOK_key_signed:
             return "signed";
-        case TOKEN_KIND::key_unsigned:
+        case TOK_key_unsigned:
             return "unsigned";
-        case TOKEN_KIND::key_void:
+        case TOK_key_void:
             return "void";
-        case TOKEN_KIND::key_struct:
+        case TOK_key_struct:
             return "struct";
-        case TOKEN_KIND::key_union:
+        case TOK_key_union:
             return "union";
-        case TOKEN_KIND::key_sizeof:
+        case TOK_key_sizeof:
             return "sizeof";
-        case TOKEN_KIND::key_return:
+        case TOK_key_return:
             return "return";
-        case TOKEN_KIND::key_if:
+        case TOK_key_if:
             return "if";
-        case TOKEN_KIND::key_else:
+        case TOK_key_else:
             return "else";
-        case TOKEN_KIND::key_goto:
+        case TOK_key_goto:
             return "goto";
-        case TOKEN_KIND::key_do:
+        case TOK_key_do:
             return "do";
-        case TOKEN_KIND::key_while:
+        case TOK_key_while:
             return "while";
-        case TOKEN_KIND::key_for:
+        case TOK_key_for:
             return "for";
-        case TOKEN_KIND::key_switch:
+        case TOK_key_switch:
             return "switch";
-        case TOKEN_KIND::key_case:
+        case TOK_key_case:
             return "case";
-        case TOKEN_KIND::key_default:
+        case TOK_key_default:
             return "default";
-        case TOKEN_KIND::key_break:
+        case TOK_key_break:
             return "break";
-        case TOKEN_KIND::key_continue:
+        case TOK_key_continue:
             return "continue";
-        case TOKEN_KIND::key_static:
+        case TOK_key_static:
             return "static";
-        case TOKEN_KIND::key_extern:
+        case TOK_key_extern:
             return "extern";
-        case TOKEN_KIND::identifier:
+        case TOK_identifier:
             return "identifier";
-        case TOKEN_KIND::string_literal:
+        case TOK_string_literal:
             return "string literal";
-        case TOKEN_KIND::char_constant:
+        case TOK_char_constant:
             return "const char";
-        case TOKEN_KIND::constant:
+        case TOK_constant:
             return "const int";
-        case TOKEN_KIND::long_constant:
+        case TOK_long_constant:
             return "const long";
-        case TOKEN_KIND::unsigned_constant:
+        case TOK_unsigned_constant:
             return "const unsigned int";
-        case TOKEN_KIND::unsigned_long_constant:
+        case TOK_unsigned_long_constant:
             return "const unsigned long";
-        case TOKEN_KIND::float_constant:
+        case TOK_float_constant:
             return "const double";
         default:
             RAISE_INTERNAL_ERROR;
@@ -202,7 +202,7 @@ static std::string fmt_fun(FunType* fun_type) {
 
 static std::string fmt_ptr(Pointer* ptr_type) {
     std::string decl_type_hr = "*";
-    while (ptr_type->ref_type->type() == Pointer_t) {
+    while (ptr_type->ref_type->type() == AST_Pointer_t) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
         decl_type_hr += "*";
     }
@@ -215,7 +215,7 @@ static std::string fmt_arr(Array* arr_type) {
     std::string decl_type_hr = "[";
     decl_type_hr += std::to_string(arr_type->size);
     decl_type_hr += "]";
-    while (arr_type->elem_type->type() == Array_t) {
+    while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
         decl_type_hr += "[";
         decl_type_hr += std::to_string(arr_type->size);
@@ -232,31 +232,31 @@ static std::string fmt_struct(Structure* struct_type) {
 
 std::string fmt_type(Type* type) {
     switch (type->type()) {
-        case AST_T::Char_t:
+        case AST_Char_t:
             return "char";
-        case AST_T::SChar_t:
+        case AST_SChar_t:
             return "signed char";
-        case AST_T::UChar_t:
+        case AST_UChar_t:
             return "unsigned char";
-        case AST_T::Int_t:
+        case AST_Int_t:
             return "int";
-        case AST_T::Long_t:
+        case AST_Long_t:
             return "long";
-        case AST_T::UInt_t:
+        case AST_UInt_t:
             return "unsigned int";
-        case AST_T::ULong_t:
+        case AST_ULong_t:
             return "unsigned long";
-        case AST_T::Double_t:
+        case AST_Double_t:
             return "double";
-        case AST_T::Void_t:
+        case AST_Void_t:
             return "void";
-        case AST_T::FunType_t:
+        case AST_FunType_t:
             return fmt_fun(static_cast<FunType*>(type));
-        case AST_T::Pointer_t:
+        case AST_Pointer_t:
             return fmt_ptr(static_cast<Pointer*>(type));
-        case AST_T::Array_t:
+        case AST_Array_t:
             return fmt_arr(static_cast<Array*>(type));
-        case AST_T::Structure_t:
+        case AST_Structure_t:
             return fmt_struct(static_cast<Structure*>(type));
         default:
             RAISE_INTERNAL_ERROR;
@@ -265,19 +265,19 @@ std::string fmt_type(Type* type) {
 
 std::string fmt_const(CConst* node) {
     switch (node->type()) {
-        case AST_T::CConstInt_t:
+        case AST_CConstInt_t:
             return "int";
-        case AST_T::CConstLong_t:
+        case AST_CConstLong_t:
             return "long";
-        case AST_T::CConstUInt_t:
+        case AST_CConstUInt_t:
             return "unsigned int";
-        case AST_T::CConstULong_t:
+        case AST_CConstULong_t:
             return "unsigned long";
-        case AST_T::CConstDouble_t:
+        case AST_CConstDouble_t:
             return "double";
-        case AST_T::CConstChar_t:
+        case AST_CConstChar_t:
             return "char";
-        case AST_T::CConstUChar_t:
+        case AST_CConstUChar_t:
             return "unsigned char";
         default:
             RAISE_INTERNAL_ERROR;
@@ -286,9 +286,9 @@ std::string fmt_const(CConst* node) {
 
 std::string fmt_storage_class(CStorageClass* node) {
     switch (node->type()) {
-        case AST_T::CStatic_t:
+        case AST_CStatic_t:
             return "static";
-        case AST_T::CExtern_t:
+        case AST_CExtern_t:
             return "extern";
         default:
             RAISE_INTERNAL_ERROR;
@@ -297,11 +297,11 @@ std::string fmt_storage_class(CStorageClass* node) {
 
 std::string fmt_unop(CUnaryOp* node) {
     switch (node->type()) {
-        case AST_T::CComplement_t:
+        case AST_CComplement_t:
             return "~";
-        case AST_T::CNegate_t:
+        case AST_CNegate_t:
             return "-";
-        case AST_T::CNot_t:
+        case AST_CNot_t:
             return "!";
         default:
             RAISE_INTERNAL_ERROR;
@@ -310,43 +310,43 @@ std::string fmt_unop(CUnaryOp* node) {
 
 std::string fmt_binop(CBinaryOp* node) {
     switch (node->type()) {
-        case CAdd_t:
+        case AST_CAdd_t:
             return "+";
-        case CSubtract_t:
+        case AST_CSubtract_t:
             return "-";
-        case CMultiply_t:
+        case AST_CMultiply_t:
             return "*";
-        case CDivide_t:
+        case AST_CDivide_t:
             return "/";
-        case CRemainder_t:
+        case AST_CRemainder_t:
             return "%";
-        case CBitAnd_t:
+        case AST_CBitAnd_t:
             return "&";
-        case CBitOr_t:
+        case AST_CBitOr_t:
             return "|";
-        case CBitXor_t:
+        case AST_CBitXor_t:
             return "^";
-        case CBitShiftLeft_t:
+        case AST_CBitShiftLeft_t:
             return "<<";
-        case CBitShiftRight_t:
+        case AST_CBitShiftRight_t:
             return ">>";
-        case CBitShrArithmetic_t:
+        case AST_CBitShrArithmetic_t:
             return ">>";
-        case CAnd_t:
+        case AST_CAnd_t:
             return "&&";
-        case COr_t:
+        case AST_COr_t:
             return "||";
-        case CEqual_t:
+        case AST_CEqual_t:
             return "==";
-        case CNotEqual_t:
+        case AST_CNotEqual_t:
             return "!=";
-        case CLessThan_t:
+        case AST_CLessThan_t:
             return "<";
-        case CLessOrEqual_t:
+        case AST_CLessOrEqual_t:
             return "<=";
-        case CGreaterThan_t:
+        case AST_CGreaterThan_t:
             return ">";
-        case CGreaterOrEqual_t:
+        case AST_CGreaterOrEqual_t:
             return ">=";
         default:
             RAISE_INTERNAL_ERROR;
@@ -359,21 +359,21 @@ std::string fmt_assign(CBinaryOp* node, CUnaryOp* unary_op) {
     }
     else if (unary_op) {
         switch (unary_op->type()) {
-            case CPrefix_t: {
+            case AST_CPrefix_t: {
                 switch (node->type()) {
-                    case CAdd_t:
+                    case AST_CAdd_t:
                         return "prefix ++";
-                    case CSubtract_t:
+                    case AST_CSubtract_t:
                         return "prefix --";
                     default:
                         RAISE_INTERNAL_ERROR;
                 }
             }
-            case CPostfix_t: {
+            case AST_CPostfix_t: {
                 switch (node->type()) {
-                    case CAdd_t:
+                    case AST_CAdd_t:
                         return "postfix ++";
-                    case CSubtract_t:
+                    case AST_CSubtract_t:
                         return "postfix --";
                     default:
                         RAISE_INTERNAL_ERROR;
@@ -385,27 +385,27 @@ std::string fmt_assign(CBinaryOp* node, CUnaryOp* unary_op) {
     }
     else {
         switch (node->type()) {
-            case CAdd_t:
+            case AST_CAdd_t:
                 return "+=";
-            case CSubtract_t:
+            case AST_CSubtract_t:
                 return "-=";
-            case CMultiply_t:
+            case AST_CMultiply_t:
                 return "*=";
-            case CDivide_t:
+            case AST_CDivide_t:
                 return "/=";
-            case CRemainder_t:
+            case AST_CRemainder_t:
                 return "%=";
-            case CBitAnd_t:
+            case AST_CBitAnd_t:
                 return "&=";
-            case CBitOr_t:
+            case AST_CBitOr_t:
                 return "|=";
-            case CBitXor_t:
+            case AST_CBitXor_t:
                 return "^=";
-            case CBitShiftLeft_t:
+            case AST_CBitShiftLeft_t:
                 return "<<=";
-            case CBitShiftRight_t:
+            case AST_CBitShiftRight_t:
                 return ">>=";
-            case CBitShrArithmetic_t:
+            case AST_CBitShrArithmetic_t:
                 return ">>=";
             default:
                 RAISE_INTERNAL_ERROR;
@@ -420,36 +420,36 @@ std::string fmt_assign(CBinaryOp* node, CUnaryOp* unary_op) {
 
 const char* get_fatal_msg(MESSAGE_FATAL message) {
     switch (message) {
-        case MESSAGE_FATAL::operating_system_not_supported:
+        case MSG_operating_system_not_supported:
             RETURN_ERRNO EM_VARG " operating system is not supported, requires \033[1m‘GNU/Linux’\033[0m (x86_64)";
-        case MESSAGE_FATAL::architecture_not_supported:
+        case MSG_architecture_not_supported:
             RETURN_ERRNO EM_VARG " architecture is not supported, requires \033[1m‘x86_64’\033[0m";
-        case MESSAGE_FATAL::compiler_not_supported:
+        case MSG_compiler_not_supported:
             RETURN_ERRNO EM_VARG " compiler is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
-        case MESSAGE_FATAL::gcc_version_not_supported:
+        case MSG_gcc_version_not_supported:
             RETURN_ERRNO "\033[1m‘gcc’\033[0m %i.%i.%i is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-const char* get_arg_msg(MESSAGE_ARGUMENT message) {
+const char* get_arg_msg(MESSAGE_ARG message) {
     switch (message) {
-        case MESSAGE_ARGUMENT::no_debug_code_in_argument:
+        case MSG_no_debug_code_in_argument:
             RETURN_ERRNO "no debug code passed in first argument";
-        case MESSAGE_ARGUMENT::invalid_debug_code_in_argument:
+        case MSG_invalid_debug_code_in_argument:
             RETURN_ERRNO "invalid debug code " EM_VARG " passed in first argument";
-        case MESSAGE_ARGUMENT::no_optim_1_mask_in_argument:
+        case MSG_no_optim_1_mask_in_argument:
             RETURN_ERRNO "no level 1 optimization mask passed in second argument";
-        case MESSAGE_ARGUMENT::invalid_optim_1_mask_in_argument:
+        case MSG_invalid_optim_1_mask_in_argument:
             RETURN_ERRNO "invalid level 1 optimization mask " EM_VARG " passed in second argument";
-        case MESSAGE_ARGUMENT::no_optim_2_code_in_argument:
+        case MSG_no_optim_2_code_in_argument:
             RETURN_ERRNO "no level 2 optimization code passed in third argument";
-        case MESSAGE_ARGUMENT::invalid_optim_2_code_in_argument:
+        case MSG_invalid_optim_2_code_in_argument:
             RETURN_ERRNO "invalid level 2 optimization code " EM_VARG " passed in third argument";
-        case MESSAGE_ARGUMENT::no_input_files_in_argument:
+        case MSG_no_input_files_in_argument:
             RETURN_ERRNO "no input file passed in fourth argument";
-        case MESSAGE_ARGUMENT::no_include_directories_in_argument:
+        case MSG_no_include_directories_in_argument:
             RETURN_ERRNO "no include directories passed in fifth argument";
         default:
             RAISE_INTERNAL_ERROR;
@@ -458,15 +458,15 @@ const char* get_arg_msg(MESSAGE_ARGUMENT message) {
 
 const char* get_util_msg(MESSAGE_UTIL message) {
     switch (message) {
-        case MESSAGE_UTIL::failed_to_read_input_file:
+        case MSG_failed_to_read_input_file:
             RETURN_ERRNO "cannot read input file " EM_VARG;
-        case MESSAGE_UTIL::failed_to_write_to_output_file:
+        case MSG_failed_to_write_to_output_file:
             RETURN_ERRNO "cannot write output file " EM_VARG;
-        case MESSAGE_UTIL::failed_to_interpret_string_to_integer:
+        case MSG_failed_to_interpret_string_to_integer:
             RETURN_ERRNO "cannot interpret string " EM_VARG " to an integer value";
-        case MESSAGE_UTIL::failed_to_interpret_string_to_unsigned_integer:
+        case MSG_failed_to_interpret_string_to_unsigned_integer:
             RETURN_ERRNO "cannot interpret string " EM_VARG " to an unsigned integer value";
-        case MESSAGE_UTIL::failed_to_interpret_string_to_float:
+        case MSG_failed_to_interpret_string_to_float:
             RETURN_ERRNO "cannot interpret string " EM_VARG " to a floating point value";
         default:
             RAISE_INTERNAL_ERROR;
@@ -475,9 +475,9 @@ const char* get_util_msg(MESSAGE_UTIL message) {
 
 const char* get_lexer_msg(MESSAGE_LEXER message) {
     switch (message) {
-        case MESSAGE_LEXER::invalid_token:
+        case MSG_invalid_token:
             RETURN_ERRNO "found invalid token " EM_VARG;
-        case MESSAGE_LEXER::failed_to_include_header_file:
+        case MSG_failed_to_include_header_file:
             RETURN_ERRNO "cannot find " EM_VARG " header file in \033[1m‘include’\033[0m directive search";
         default:
             RAISE_INTERNAL_ERROR;
@@ -486,22 +486,22 @@ const char* get_lexer_msg(MESSAGE_LEXER message) {
 
 const char* get_parser_msg(MESSAGE_PARSER message) {
     switch (message) {
-        case MESSAGE_PARSER::unexpected_next_token:
+        case MSG_unexpected_next_token:
             RETURN_ERRNO "found token " EM_VARG ", but expected " EM_VARG " next";
-        case MESSAGE_PARSER::reached_end_of_file:
+        case MSG_reached_end_of_file:
             RETURN_ERRNO "reached end of file, but expected declaration or statement next";
-        case MESSAGE_PARSER::number_too_large_for_long_constant:
+        case MSG_number_too_large_for_long_constant:
             RETURN_ERRNO "cannot represent " EM_VARG " as a 64 bits signed integer constant, very large number";
-        case MESSAGE_PARSER::number_too_large_for_unsigned_long_constant:
+        case MSG_number_too_large_for_unsigned_long_constant:
             RETURN_ERRNO "cannot represent " EM_VARG " as a 64 bits unsigned integer constant, very large number";
-        case MESSAGE_PARSER::array_size_not_a_constant_integer:
+        case MSG_array_size_not_a_constant_integer:
             RETURN_ERRNO "illegal array size " EM_VARG ", requires a constant integer";
-        case MESSAGE_PARSER::case_value_not_a_constant_integer:
+        case MSG_case_value_not_a_constant_integer:
             RETURN_ERRNO "illegal \033[1m‘case’\033[0m value " EM_VARG ", requires a constant integer";
-        case MESSAGE_PARSER::unexpected_unary_operator:
+        case MSG_unexpected_unary_operator:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘~’\033[0m, \033[1m‘-’\033[0m or \033[1m‘!’\033[0m next";
-        case MESSAGE_PARSER::unexpected_binary_operator:
+        case MSG_unexpected_binary_operator:
             RETURN_ERRNO
             "found token " EM_VARG
             ", but expected \033[1m‘+’\033[0m, \033[1m‘+=’\033[0m, \033[1m‘++’\033[0m, \033[1m‘-’\033[0m, "
@@ -511,18 +511,18 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
             "\033[1m‘<<=’\033[0m, \033[1m‘>>’\033[0m, \033[1m‘>>=’\033[0m, \033[1m‘&&’\033[0m, \033[1m‘||’\033[0m, "
             "\033[1m‘==’\033[0m, \033[1m‘!=’\033[0m, \033[1m‘<’\033[0m, \033[1m‘<=’\033[0m, \033[1m‘>’\033[0m or "
             "\033[1m‘>=’\033[0m next";
-        case MESSAGE_PARSER::unexpected_abstract_declarator:
+        case MSG_unexpected_abstract_declarator:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘*’\033[0m, \033[1m‘(’\033[0m or \033[1m‘[’\033[0m next";
-        case MESSAGE_PARSER::unexpected_pointer_unary_factor:
+        case MSG_unexpected_pointer_unary_factor:
             RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘*’\033[0m or \033[1m‘&’\033[0m next";
-        case MESSAGE_PARSER::unexpected_primary_expression_factor:
+        case MSG_unexpected_primary_expression_factor:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘const int’\033[0m, \033[1m‘const long’\033[0m, \033[1m‘const "
                          "char’\033[0m, \033[1m‘const double’\033[0m, \033[1m‘const unsigned int’\033[0m, "
                          "\033[1m‘const unsigned long’\033[0m, \033[1m‘identifier’\033[0m, "
                          "\033[1m‘identifier(’\033[0m, \033[1m‘string literal’\033[0m or \033[1m‘(’\033[0m next";
-        case MESSAGE_PARSER::unexpected_expression:
+        case MSG_unexpected_expression:
             RETURN_ERRNO
             "found token " EM_VARG
             ", but expected \033[1m‘+’\033[0m, \033[1m‘-’\033[0m, \033[1m‘*’\033[0m, \033[1m‘/’\033[0m, "
@@ -532,33 +532,33 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
             "\033[1m‘+=’\033[0m, \033[1m‘-=’\033[0m, \033[1m‘*=’\033[0m, \033[1m‘/=’\033[0m, \033[1m‘%=’\033[0m, "
             "\033[1m‘&=’\033[0m, \033[1m‘|=’\033[0m, \033[1m‘^=’\033[0m, \033[1m‘<<=’\033[0m, \033[1m‘>>=’\033[0m "
             "or \033[1m‘?’\033[0m next";
-        case MESSAGE_PARSER::function_declared_in_for_initial:
+        case MSG_function_declared_in_for_initial:
             RETURN_ERRNO "function " EM_VARG " declared in \033[1m‘for’\033[0m loop initial declaration";
-        case MESSAGE_PARSER::unexpected_type_specifier:
+        case MSG_unexpected_type_specifier:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘identifier’\033[0m, \033[1m‘)’\033[0m, \033[1m‘char’\033[0m, "
                          "\033[1m‘int’\033[0m, \033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘void’\033[0m, \033[1m‘struct’\033[0m, \033[1m‘union’\033[0m, "
                          "\033[1m‘static’\033[0m, \033[1m‘extern’\033[0m, \033[1m‘*’\033[0m, \033[1m‘(’\033[0m or "
                          "\033[1m‘[’\033[0m next";
-        case MESSAGE_PARSER::unexpected_type_specifier_list:
+        case MSG_unexpected_type_specifier_list:
             RETURN_ERRNO "found tokens " EM_VARG ", but expected valid list of unique type specifiers next";
-        case MESSAGE_PARSER::unexpected_storage_class:
+        case MSG_unexpected_storage_class:
             RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘static’\033[0m or \033[1m‘extern’\033[0m next";
-        case MESSAGE_PARSER::empty_compound_initializer:
+        case MSG_empty_compound_initializer:
             RETURN_ERRNO "empty compound initializer requires at least one initializer";
-        case MESSAGE_PARSER::type_derivation_on_function_declaration:
+        case MSG_type_derivation_on_function_declaration:
             RETURN_ERRNO "cannot apply further type derivation to function declaration";
-        case MESSAGE_PARSER::unexpected_simple_declarator:
+        case MSG_unexpected_simple_declarator:
             RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘identifier’\033[0m or \033[1m‘(’\033[0m next";
-        case MESSAGE_PARSER::unexpected_parameter_list:
+        case MSG_unexpected_parameter_list:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘void’\033[0m, \033[1m‘char’\033[0m, \033[1m‘int’\033[0m, "
                          "\033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘struct’\033[0m or \033[1m‘union’\033[0m next";
-        case MESSAGE_PARSER::member_declared_with_non_automatic_storage:
+        case MSG_member_declared_with_non_automatic_storage:
             RETURN_ERRNO "data structure type declared with member " EM_VARG " with " EM_VARG " storage class";
-        case MESSAGE_PARSER::member_declared_as_function:
+        case MSG_member_declared_as_function:
             RETURN_ERRNO "data structure type declared with member " EM_VARG " as a function";
         default:
             RAISE_INTERNAL_ERROR;
@@ -567,165 +567,165 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
 
 const char* get_semantic_msg(MESSAGE_SEMANTIC message) {
     switch (message) {
-        case MESSAGE_SEMANTIC::array_of_incomplete_type:
+        case MSG_array_of_incomplete_type:
             RETURN_ERRNO "array type " EM_VARG " of incomplete type " EM_VARG ", requires a complete type";
-        case MESSAGE_SEMANTIC::joint_pointer_type_mismatch:
+        case MSG_joint_pointer_type_mismatch:
             RETURN_ERRNO "pointer type mismatch " EM_VARG " and " EM_VARG " in operator";
-        case MESSAGE_SEMANTIC::function_used_as_variable:
+        case MSG_function_used_as_variable:
             RETURN_ERRNO "function " EM_VARG " used as a variable";
-        case MESSAGE_SEMANTIC::illegal_conversion_from_type_to:
+        case MSG_illegal_conversion_from_type_to:
             RETURN_ERRNO "illegal cast, cannot convert expression from type " EM_VARG " to " EM_VARG;
-        case MESSAGE_SEMANTIC::unary_on_invalid_operand_type:
+        case MSG_unary_on_invalid_operand_type:
             RETURN_ERRNO "cannot apply unary operator " EM_VARG " on operand type " EM_VARG;
-        case MESSAGE_SEMANTIC::binary_on_invalid_operand_type:
+        case MSG_binary_on_invalid_operand_type:
             RETURN_ERRNO "cannot apply binary operator " EM_VARG " on operand type " EM_VARG;
-        case MESSAGE_SEMANTIC::binary_on_invalid_operand_types:
+        case MSG_binary_on_invalid_operand_types:
             RETURN_ERRNO "cannot apply binary operator " EM_VARG " on operand types " EM_VARG " and " EM_VARG;
-        case MESSAGE_SEMANTIC::assignment_to_void_type:
+        case MSG_assignment_to_void_type:
             RETURN_ERRNO "cannot assign \033[1m‘=’\033[0m to left operand type \033[1m‘void’\033[0m";
-        case MESSAGE_SEMANTIC::assignment_to_rvalue:
+        case MSG_assignment_to_rvalue:
             RETURN_ERRNO "assignment " EM_VARG " requires lvalue left operand, but got rvalue";
-        case MESSAGE_SEMANTIC::conditional_on_invalid_condition_type:
+        case MSG_conditional_on_invalid_condition_type:
             RETURN_ERRNO "cannot apply conditional \033[1m‘?’\033[0m on condition operand type " EM_VARG;
-        case MESSAGE_SEMANTIC::ternary_on_invalid_operand_types:
+        case MSG_ternary_on_invalid_operand_types:
             RETURN_ERRNO "cannot apply ternary operator \033[1m‘:’\033[0m on operand types " EM_VARG " and " EM_VARG;
-        case MESSAGE_SEMANTIC::variable_used_as_function:
+        case MSG_variable_used_as_function:
             RETURN_ERRNO "variable " EM_VARG " used as a function";
-        case MESSAGE_SEMANTIC::function_called_with_wrong_number_of_arguments:
+        case MSG_function_called_with_wrong_number_of_arguments:
             RETURN_ERRNO "function " EM_VARG " called with " EM_VARG " arguments instead of " EM_VARG;
-        case MESSAGE_SEMANTIC::dereference_non_pointer:
+        case MSG_dereference_non_pointer:
             RETURN_ERRNO "cannot apply dereference operator \033[1m‘*’\033[0m on non-pointer type " EM_VARG;
-        case MESSAGE_SEMANTIC::address_of_rvalue:
+        case MSG_address_of_rvalue:
             RETURN_ERRNO "addresssing \033[1m‘&’\033[0m requires lvalue operand, but got rvalue";
-        case MESSAGE_SEMANTIC::subscript_array_with_invalid_types:
+        case MSG_subscript_array_with_invalid_types:
             RETURN_ERRNO "cannot subscript array with operand types " EM_VARG " and " EM_VARG
                          ", requires a complete pointer and an integer types";
-        case MESSAGE_SEMANTIC::get_size_of_incomplete_type:
+        case MSG_get_size_of_incomplete_type:
             RETURN_ERRNO "cannot get size with \033[1m‘sizeof’\033[0m operator on incomplete type " EM_VARG;
-        case MESSAGE_SEMANTIC::dot_on_non_structure_type:
+        case MSG_dot_on_non_structure_type:
             RETURN_ERRNO "cannot access data structure member " EM_VARG
                          " with dot operator \033[1m‘.’\033[0m on non-data structure type " EM_VARG;
-        case MESSAGE_SEMANTIC::member_not_in_structure_type:
+        case MSG_member_not_in_structure_type:
             RETURN_ERRNO "data structure type " EM_VARG " has no member named " EM_VARG;
-        case MESSAGE_SEMANTIC::arrow_on_non_pointer_to_structure_type:
+        case MSG_arrow_on_non_pointer_to_structure_type:
             RETURN_ERRNO "cannot access data structure member " EM_VARG
                          " with arrow operator \033[1m‘->’\033[0m on non-pointer-to-data structure type " EM_VARG;
-        case MESSAGE_SEMANTIC::arrow_on_incomplete_structure_type:
+        case MSG_arrow_on_incomplete_structure_type:
             RETURN_ERRNO "cannot access data structure member " EM_VARG
                          " with arrow operator \033[1m‘->’\033[0m on incomplete data structure type " EM_VARG;
-        case MESSAGE_SEMANTIC::incomplete_structure_type_in_expression:
+        case MSG_incomplete_structure_type_in_expression:
             RETURN_ERRNO "incomplete data structure type " EM_VARG " in expression";
-        case MESSAGE_SEMANTIC::return_value_in_void_function:
+        case MSG_return_value_in_void_function:
             RETURN_ERRNO "found \033[1m‘return’\033[0m value in function " EM_VARG
                          " returning type \033[1m‘void’\033[0m";
-        case MESSAGE_SEMANTIC::no_return_value_in_non_void_function:
+        case MSG_no_return_value_in_non_void_function:
             RETURN_ERRNO "found \033[1m‘return’\033[0m with no value in function " EM_VARG " returning type " EM_VARG;
-        case MESSAGE_SEMANTIC::if_used_with_condition_type:
+        case MSG_if_used_with_condition_type:
             RETURN_ERRNO "cannot use \033[1m‘if’\033[0m statement with condition expression type " EM_VARG;
-        case MESSAGE_SEMANTIC::while_used_with_condition_type:
+        case MSG_while_used_with_condition_type:
             RETURN_ERRNO "cannot use \033[1m‘while’\033[0m loop statement with condition expression type " EM_VARG;
-        case MESSAGE_SEMANTIC::do_while_used_with_condition_type:
+        case MSG_do_while_used_with_condition_type:
             RETURN_ERRNO "cannot use \033[1m‘do while’\033[0m loop statement with condition expression type " EM_VARG;
-        case MESSAGE_SEMANTIC::for_used_with_condition_type:
+        case MSG_for_used_with_condition_type:
             RETURN_ERRNO "cannot use \033[1m‘for’\033[0m loop statement with condition expression type " EM_VARG;
-        case MESSAGE_SEMANTIC::switch_used_with_match_type:
+        case MSG_switch_used_with_match_type:
             RETURN_ERRNO "cannot use \033[1m‘switch’\033[0m statement with match expression type " EM_VARG
                          ", requires an integer type";
-        case MESSAGE_SEMANTIC::duplicate_case_value_in_switch:
+        case MSG_duplicate_case_value_in_switch:
             RETURN_ERRNO "found duplicate \033[1m‘case’\033[0m value " EM_VARG " in \033[1m‘switch’\033[0m statement";
-        case MESSAGE_SEMANTIC::non_char_array_initialized_from_string:
+        case MSG_non_char_array_initialized_from_string:
             RETURN_ERRNO "non-character array type " EM_VARG " initialized from string literal";
-        case MESSAGE_SEMANTIC::string_initialized_with_too_many_characters:
+        case MSG_string_initialized_with_too_many_characters:
             RETURN_ERRNO "size " EM_VARG " string literal initialized with " EM_VARG " characters";
-        case MESSAGE_SEMANTIC::array_initialized_with_too_many_initializers:
+        case MSG_array_initialized_with_too_many_initializers:
             RETURN_ERRNO "size " EM_VARG " array type " EM_VARG " initialized with " EM_VARG " initializers";
-        case MESSAGE_SEMANTIC::structure_initialized_with_too_many_members:
+        case MSG_structure_initialized_with_too_many_members:
             RETURN_ERRNO "data structure type " EM_VARG " initialized with " EM_VARG " members instead of " EM_VARG;
-        case MESSAGE_SEMANTIC::function_returns_array:
+        case MSG_function_returns_array:
             RETURN_ERRNO "function " EM_VARG " returns array type " EM_VARG ", instead of pointer type";
-        case MESSAGE_SEMANTIC::function_returns_incomplete_structure_type:
+        case MSG_function_returns_incomplete_structure_type:
             RETURN_ERRNO "function " EM_VARG " returns incomplete data structure type " EM_VARG;
-        case MESSAGE_SEMANTIC::parameter_with_type_void:
+        case MSG_parameter_with_type_void:
             RETURN_ERRNO "function " EM_VARG " declared with parameter " EM_VARG " with type \033[1m‘void’\033[0m";
-        case MESSAGE_SEMANTIC::parameter_with_incomplete_structure_type:
+        case MSG_parameter_with_incomplete_structure_type:
             RETURN_ERRNO "function " EM_VARG " defined with parameter " EM_VARG
                          " with incomplete data structure type " EM_VARG;
-        case MESSAGE_SEMANTIC::function_redeclared_with_conflicting_type:
+        case MSG_function_redeclared_with_conflicting_type:
             RETURN_ERRNO "function " EM_VARG " redeclared with function type " EM_VARG
                          ", but previous declaration has function type " EM_VARG;
-        case MESSAGE_SEMANTIC::function_redefined:
+        case MSG_function_redefined:
             RETURN_ERRNO "function " EM_VARG " already defined with function type " EM_VARG;
-        case MESSAGE_SEMANTIC::non_static_function_redeclared_static:
+        case MSG_non_static_function_redeclared_static:
             RETURN_ERRNO "function " EM_VARG " with \033[1m‘static’\033[0m storage class already declared non-static";
-        case MESSAGE_SEMANTIC::static_pointer_initialized_from_non_integer:
+        case MSG_static_pointer_initialized_from_non_integer:
             RETURN_ERRNO "cannot statically initialize pointer type " EM_VARG " from constant " EM_VARG
                          ", requires a constant integer";
-        case MESSAGE_SEMANTIC::static_pointer_initialized_from_non_null:
+        case MSG_static_pointer_initialized_from_non_null:
             RETURN_ERRNO "cannot statically initialize pointer type " EM_VARG " from non-null value " EM_VARG;
-        case MESSAGE_SEMANTIC::aggregate_initialized_with_single_initializer:
+        case MSG_aggregate_initialized_with_single_initializer:
             RETURN_ERRNO "aggregate type " EM_VARG " statically initialized with single initializer";
-        case MESSAGE_SEMANTIC::static_non_char_pointer_initialized_from_string:
+        case MSG_static_non_char_pointer_initialized_from_string:
             RETURN_ERRNO "non-character pointer type " EM_VARG " statically initialized from string literal";
-        case MESSAGE_SEMANTIC::static_initialized_with_non_constant:
+        case MSG_static_initialized_with_non_constant:
             RETURN_ERRNO "cannot statically initialize variable from non-constant type " EM_VARG
                          ", requires a constant";
-        case MESSAGE_SEMANTIC::scalar_initialized_with_compound_initializer:
+        case MSG_scalar_initialized_with_compound_initializer:
             RETURN_ERRNO "cannot initialize scalar type " EM_VARG " with compound initializer";
-        case MESSAGE_SEMANTIC::variable_declared_with_type_void:
+        case MSG_variable_declared_with_type_void:
             RETURN_ERRNO "variable " EM_VARG " declared with type \033[1m‘void’\033[0m";
-        case MESSAGE_SEMANTIC::variable_declared_with_incomplete_structure_type:
+        case MSG_variable_declared_with_incomplete_structure_type:
             RETURN_ERRNO "variable " EM_VARG " declared with incomplete data structure type " EM_VARG;
-        case MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_type:
+        case MSG_variable_redeclared_with_conflicting_type:
             RETURN_ERRNO "variable " EM_VARG " redeclared with conflicting type " EM_VARG
                          ", but previously declared with type " EM_VARG;
-        case MESSAGE_SEMANTIC::variable_redeclared_with_conflicting_storage:
+        case MSG_variable_redeclared_with_conflicting_storage:
             RETURN_ERRNO "variable " EM_VARG " redeclared with conflicting storage class";
-        case MESSAGE_SEMANTIC::extern_variable_defined:
+        case MSG_extern_variable_defined:
             RETURN_ERRNO "illegal initializer, can only declare variable " EM_VARG
                          " with \033[1m‘extern’\033[0m storage class";
-        case MESSAGE_SEMANTIC::structure_declared_with_duplicate_member:
+        case MSG_structure_declared_with_duplicate_member:
             RETURN_ERRNO "data structure type " EM_VARG " declared with duplicate member name " EM_VARG;
-        case MESSAGE_SEMANTIC::member_declared_with_incomplete_type:
+        case MSG_member_declared_with_incomplete_type:
             RETURN_ERRNO "data structure type " EM_VARG " declared with member " EM_VARG
                          " with incomplete type " EM_VARG;
-        case MESSAGE_SEMANTIC::structure_redeclared_in_scope:
+        case MSG_structure_redeclared_in_scope:
             RETURN_ERRNO "data structure type " EM_VARG " already declared in this scope";
-        case MESSAGE_SEMANTIC::case_outside_of_switch:
+        case MSG_case_outside_of_switch:
             RETURN_ERRNO "found \033[1m‘case’\033[0m statement outside of \033[1m‘switch’\033[0m";
-        case MESSAGE_SEMANTIC::default_outside_of_switch:
+        case MSG_default_outside_of_switch:
             RETURN_ERRNO "found \033[1m‘default’\033[0m statement outside of \033[1m‘switch’\033[0m";
-        case MESSAGE_SEMANTIC::more_than_one_default_in_switch:
+        case MSG_more_than_one_default_in_switch:
             RETURN_ERRNO "found more than one \033[1m‘default’\033[0m statement in \033[1m‘switch’\033[0m";
-        case MESSAGE_SEMANTIC::break_outside_of_loop:
+        case MSG_break_outside_of_loop:
             RETURN_ERRNO "found \033[1m‘break’\033[0m statement outside of loop";
-        case MESSAGE_SEMANTIC::continue_outside_of_loop:
+        case MSG_continue_outside_of_loop:
             RETURN_ERRNO "found \033[1m‘continue’\033[0m statement outside of loop";
-        case MESSAGE_SEMANTIC::goto_with_undefined_target_label:
+        case MSG_goto_with_undefined_target_label:
             RETURN_ERRNO "found \033[1m‘goto’\033[0m statement, but target label " EM_VARG
                          " not defined in function " EM_VARG;
-        case MESSAGE_SEMANTIC::structure_conflicts_with_previously_declared:
+        case MSG_structure_conflicts_with_previously_declared:
             RETURN_ERRNO EM_VARG " conflicts with data structure type " EM_VARG
                                  " previously declared or defined in this scope";
-        case MESSAGE_SEMANTIC::structure_not_defined_in_scope:
+        case MSG_structure_not_defined_in_scope:
             RETURN_ERRNO "data structure type " EM_VARG " not defined in this scope";
-        case MESSAGE_SEMANTIC::variable_not_declared_in_scope:
+        case MSG_variable_not_declared_in_scope:
             RETURN_ERRNO "variable " EM_VARG " not declared in this scope";
-        case MESSAGE_SEMANTIC::function_not_declared_in_scope:
+        case MSG_function_not_declared_in_scope:
             RETURN_ERRNO "function " EM_VARG " not declared in this scope";
-        case MESSAGE_SEMANTIC::for_initial_declared_with_non_automatic_storage:
+        case MSG_for_initial_declared_with_non_automatic_storage:
             RETURN_ERRNO "variable " EM_VARG " declared with " EM_VARG
                          " storage class in \033[1m‘for’\033[0m loop initial declaration";
-        case MESSAGE_SEMANTIC::label_redefined_in_scope:
+        case MSG_label_redefined_in_scope:
             RETURN_ERRNO "label " EM_VARG " already defined in this scope";
-        case MESSAGE_SEMANTIC::variable_redeclared_in_scope:
+        case MSG_variable_redeclared_in_scope:
             RETURN_ERRNO "variable " EM_VARG " already declared in this scope";
-        case MESSAGE_SEMANTIC::nested_function_defined:
+        case MSG_nested_function_defined:
             RETURN_ERRNO "function " EM_VARG
                          " defined inside another function, but nested function definition are not permitted";
-        case MESSAGE_SEMANTIC::nested_static_function_declared:
+        case MSG_nested_static_function_declared:
             RETURN_ERRNO "cannot declare nested function " EM_VARG
                          " in another function with \033[1m‘static’\033[0m storage class";
-        case MESSAGE_SEMANTIC::function_redeclared_in_scope:
+        case MSG_function_redeclared_in_scope:
             RETURN_ERRNO "function " EM_VARG " already declared in this scope";
         default:
             RAISE_INTERNAL_ERROR;
