@@ -87,9 +87,9 @@ static void tokenize_header(std::string include_match, size_t tokenize_header);
 
 static void
 #ifdef __WITH_CTRE__
-    re_match_current_token()
+    re_match_current_tok()
 #else
-    re_build_token_pattern(std::string& re_pattern)
+    re_build_tok_pattern(std::string& re_pattern)
 #endif
 {
     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOKEN_KIND::skip)
@@ -209,7 +209,7 @@ static void tokenize_file() {
         ) {
 #ifdef __WITH_CTRE__
             context->re_iterator_view_slice = re_iterator_view.substr(i);
-            re_match_current_token();
+            re_match_current_tok();
 #else
             {
                 boost::smatch re_match = *re_iterator_begin;
@@ -329,7 +329,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
 static void tokenize_source() {
 #ifndef __WITH_CTRE__
     std::string re_pattern("");
-    re_build_token_pattern(re_pattern);
+    re_build_tok_pattern(re_pattern);
     re_pattern.pop_back();
     context->re_compiled_pattern = std::make_unique<const boost::regex>(std::move(re_pattern));
 #endif
