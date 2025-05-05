@@ -1,7 +1,0 @@
-TIdentifier represent_case_identifier(
-TIdentifier represent_label_identifier(
-TIdentifier represent_loop_identifier(
-TIdentifier represent_variable_identifier(
-TIdentifier resolve_label_identifier(
-TIdentifier resolve_structure_tag(
-TIdentifier resolve_variable_identifier(

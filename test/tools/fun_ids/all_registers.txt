@@ -1,8 +1,0 @@
-REGISTER_KIND register_mask_kind(
-bool register_mask_get(
-size_t register_mask_bit(
-static std::unique_ptr<AsmReg> generate_reg(
-std::shared_ptr<AsmIndexed> generate_indexed(
-std::shared_ptr<AsmMemory> generate_memory(
-std::shared_ptr<AsmRegister> generate_register(
-void register_mask_set(

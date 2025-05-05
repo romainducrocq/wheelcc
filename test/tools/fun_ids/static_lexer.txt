@@ -1,5 +1,0 @@
-find_header
-strip_filename_extension strip_filename_ext
-tokenize_file
-tokenize_header
-tokenize_source

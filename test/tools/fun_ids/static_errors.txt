@@ -1,4 +1,0 @@
-get_array_type_hr get_arr_fmt
-get_function_type_hr get_fun_fmt
-get_pointer_type_hr get_ptr_fmt
-get_structure_type_hr get_struct_fmt

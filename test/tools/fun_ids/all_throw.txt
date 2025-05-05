@@ -1,3 +1,0 @@
-size_t handle_error_at_line(
-static const std::string& get_filename(
-static void free_fileio(
