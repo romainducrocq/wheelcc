@@ -453,7 +453,7 @@ static std::vector<std::unique_ptr<CExp>> parse_arg_list() {
     return args;
 }
 
-static std::unique_ptr<CConstant> parse_constant_factor() {
+static std::unique_ptr<CConstant> parse_const_factor() {
     size_t line = context->peek_token->line;
     std::shared_ptr<CConst> constant = parse_const();
     return std::make_unique<CConstant>(std::move(constant), std::move(line));
@@ -641,7 +641,7 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
         case TOKEN_KIND::long_constant:
         case TOKEN_KIND::char_constant:
         case TOKEN_KIND::float_constant:
-            return parse_constant_factor();
+            return parse_const_factor();
         case TOKEN_KIND::unsigned_constant:
         case TOKEN_KIND::unsigned_long_constant:
             return parse_unsigned_const_factor();
