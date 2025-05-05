@@ -1640,7 +1640,7 @@ static void binop_remainder_instr(TacBinary* node) {
     }
 }
 
-static void binop_int_conditional_intrs(TacBinary* node) {
+static void binop_int_conditional_instr(TacBinary* node) {
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(node->src1.get());
@@ -1665,7 +1665,7 @@ static void binop_int_conditional_intrs(TacBinary* node) {
     }
 }
 
-static void binop_dbl_conditional_intrs(TacBinary* node) {
+static void binop_dbl_conditional_instr(TacBinary* node) {
     TIdentifier target_nan = repr_asm_label(ASM_LABEL_KIND::Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(node->dst.get());
     {
@@ -1703,12 +1703,12 @@ static void binop_dbl_conditional_intrs(TacBinary* node) {
     }
 }
 
-static void binop_conditional_intrs(TacBinary* node) {
+static void binop_conditional_instr(TacBinary* node) {
     if (is_value_dbl(node->src1.get())) {
-        binop_dbl_conditional_intrs(node);
+        binop_dbl_conditional_instr(node);
     }
     else {
-        binop_int_conditional_intrs(node);
+        binop_int_conditional_instr(node);
     }
 }
 
@@ -1737,7 +1737,7 @@ static void binary_instr(TacBinary* node) {
         case AST_T::TacLessOrEqual_t:
         case AST_T::TacGreaterThan_t:
         case AST_T::TacGreaterOrEqual_t:
-            binop_conditional_intrs(node);
+            binop_conditional_instr(node);
             break;
         default:
             RAISE_INTERNAL_ERROR;
