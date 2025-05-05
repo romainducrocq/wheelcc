@@ -18,7 +18,6 @@ struct AsmProgram;
 // Instruction fix up
 
 std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte);
-std::unique_ptr<AsmBinary> dealloc_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node);
 
 #endif

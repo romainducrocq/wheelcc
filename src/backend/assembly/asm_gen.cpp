@@ -1078,7 +1078,21 @@ static void unsigned_to_dbl_instr(TacUIntToDouble* node) {
 
 static void alloc_stack_instr(TLong byte) { push_instr(alloc_stack_bytes(byte)); }
 
-static void dealloc_stack_instr(TLong byte) { push_instr(dealloc_stack_bytes(byte)); }
+static void dealloc_stack_instr(TLong byte) {
+    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
+    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    std::shared_ptr<AsmOperand> src;
+    {
+        TULong value = static_cast<TULong>(byte);
+        bool is_byte = byte <= 127l && byte >= -128l;
+        bool is_quad = byte > 2147483647l || byte < -2147483648l;
+        bool is_neg = byte < 0l;
+        src = std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), std::move(is_neg));
+    }
+    std::shared_ptr<AsmOperand> dst = gen_register(REGISTER_KIND::Sp);
+    push_instr(
+        std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst)));
+}
 
 static void reg_arg_call_instr(TacValue* node, REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = gen_op(node);

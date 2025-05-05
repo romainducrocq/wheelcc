@@ -483,21 +483,6 @@ std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte) {
     return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
 }
 
-std::unique_ptr<AsmBinary> dealloc_stack_bytes(TLong byte) {
-    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
-    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
-    std::shared_ptr<AsmOperand> src;
-    {
-        TULong value = static_cast<TULong>(byte);
-        bool is_byte = byte <= 127l && byte >= -128l;
-        bool is_quad = byte > 2147483647l || byte < -2147483648l;
-        bool is_neg = byte < 0l;
-        src = std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), std::move(is_neg));
-    }
-    std::shared_ptr<AsmOperand> dst = gen_register(REGISTER_KIND::Sp);
-    return std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst));
-}
-
 static void push_fix_instr(std::unique_ptr<AsmInstruction>&& fix_instr) {
     context->p_fix_instructions->push_back(std::move(fix_instr));
 }
