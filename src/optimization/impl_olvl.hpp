@@ -62,7 +62,7 @@ struct DataFlowAnalysisO2 {
 };
 #endif
 
-static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
+static void set_instr(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
     if (instruction) {
         GET_INSTRUCTION(instruction_index) = std::move(instruction);
     }
@@ -78,8 +78,8 @@ static void set_instruction(std::unique_ptr<AstInstruction>&& instruction, size_
 
 // Control flow graph
 
-static void control_flow_graph_add_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids,
-    size_t successor_id, size_t predecessor_id) {
+static void cfg_add_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids, size_t successor_id,
+    size_t predecessor_id) {
     if (std::find(successor_ids.begin(), successor_ids.end(), successor_id) == successor_ids.end()) {
         successor_ids.push_back(successor_id);
     }
@@ -88,36 +88,36 @@ static void control_flow_graph_add_edge(std::vector<size_t>& successor_ids, std:
     }
 }
 
-static void control_flow_graph_add_successor_edge(size_t block_id, size_t successor_id) {
+static void cfg_add_succ_edge(size_t block_id, size_t successor_id) {
     if (successor_id < context->control_flow_graph->exit_id) {
-        control_flow_graph_add_edge(
+        cfg_add_edge(
             GET_CFG_BLOCK(block_id).successor_ids, GET_CFG_BLOCK(successor_id).predecessor_ids, successor_id, block_id);
     }
     else if (successor_id == context->control_flow_graph->exit_id) {
-        control_flow_graph_add_edge(GET_CFG_BLOCK(block_id).successor_ids,
-            context->control_flow_graph->exit_predecessor_ids, successor_id, block_id);
+        cfg_add_edge(GET_CFG_BLOCK(block_id).successor_ids, context->control_flow_graph->exit_predecessor_ids,
+            successor_id, block_id);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void control_flow_graph_add_predecessor_edge(size_t block_id, size_t predecessor_id) {
+static void cfg_add_pred_edge(size_t block_id, size_t predecessor_id) {
     if (predecessor_id < context->control_flow_graph->exit_id) {
-        control_flow_graph_add_edge(GET_CFG_BLOCK(predecessor_id).successor_ids,
-            GET_CFG_BLOCK(block_id).predecessor_ids, block_id, predecessor_id);
+        cfg_add_edge(GET_CFG_BLOCK(predecessor_id).successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids, block_id,
+            predecessor_id);
     }
     else if (predecessor_id == context->control_flow_graph->entry_id) {
-        control_flow_graph_add_edge(context->control_flow_graph->entry_successor_ids,
-            GET_CFG_BLOCK(block_id).predecessor_ids, block_id, predecessor_id);
+        cfg_add_edge(context->control_flow_graph->entry_successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids,
+            block_id, predecessor_id);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void control_flow_graph_remove_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids,
-    size_t successor_id, size_t predecessor_id, bool is_reachable) {
+static void cfg_rm_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids, size_t successor_id,
+    size_t predecessor_id, bool is_reachable) {
     if (is_reachable) {
         for (size_t i = successor_ids.size(); i-- > 0;) {
             if (successor_ids[i] == successor_id) {
@@ -136,63 +136,63 @@ static void control_flow_graph_remove_edge(std::vector<size_t>& successor_ids, s
     }
 }
 
-static void control_flow_graph_remove_successor_edge(size_t block_id, size_t successor_id, bool is_reachable) {
+static void cfg_rm_succ_edge(size_t block_id, size_t successor_id, bool is_reachable) {
     if (successor_id < context->control_flow_graph->exit_id) {
-        control_flow_graph_remove_edge(GET_CFG_BLOCK(block_id).successor_ids,
-            GET_CFG_BLOCK(successor_id).predecessor_ids, successor_id, block_id, is_reachable);
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).successor_ids, GET_CFG_BLOCK(successor_id).predecessor_ids, successor_id,
+            block_id, is_reachable);
     }
     else if (successor_id == context->control_flow_graph->exit_id) {
-        control_flow_graph_remove_edge(GET_CFG_BLOCK(block_id).successor_ids,
-            context->control_flow_graph->exit_predecessor_ids, successor_id, block_id, is_reachable);
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).successor_ids, context->control_flow_graph->exit_predecessor_ids,
+            successor_id, block_id, is_reachable);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void control_flow_graph_remove_predecessor_edge(size_t block_id, size_t predecessor_id) {
+static void cfg_rm_pred_edge(size_t block_id, size_t predecessor_id) {
     if (predecessor_id < context->control_flow_graph->exit_id) {
-        control_flow_graph_remove_edge(GET_CFG_BLOCK(predecessor_id).successor_ids,
-            GET_CFG_BLOCK(block_id).predecessor_ids, block_id, predecessor_id, true);
+        cfg_rm_edge(GET_CFG_BLOCK(predecessor_id).successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids, block_id,
+            predecessor_id, true);
     }
     else if (predecessor_id == context->control_flow_graph->entry_id) {
-        control_flow_graph_remove_edge(context->control_flow_graph->entry_successor_ids,
-            GET_CFG_BLOCK(block_id).predecessor_ids, block_id, predecessor_id, true);
+        cfg_rm_edge(context->control_flow_graph->entry_successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids, block_id,
+            predecessor_id, true);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void control_flow_graph_remove_empty_block(size_t block_id, bool is_reachable) {
+static void cfg_rm_empty_block(size_t block_id, bool is_reachable) {
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
         if (is_reachable) {
             for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
                 if (predecessor_id == context->control_flow_graph->entry_id) {
-                    control_flow_graph_add_predecessor_edge(successor_id, predecessor_id);
+                    cfg_add_pred_edge(successor_id, predecessor_id);
                 }
                 else {
-                    control_flow_graph_add_successor_edge(predecessor_id, successor_id);
+                    cfg_add_succ_edge(predecessor_id, successor_id);
                 }
             }
         }
-        control_flow_graph_remove_successor_edge(block_id, successor_id, is_reachable);
+        cfg_rm_succ_edge(block_id, successor_id, is_reachable);
     }
     if (is_reachable) {
         for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-            control_flow_graph_remove_predecessor_edge(block_id, predecessor_id);
+            cfg_rm_pred_edge(block_id, predecessor_id);
         }
     }
     GET_CFG_BLOCK(block_id).instructions_front_index = context->control_flow_graph->exit_id;
     GET_CFG_BLOCK(block_id).instructions_back_index = context->control_flow_graph->exit_id;
 }
 
-static void control_flow_graph_remove_block_instruction(size_t instruction_index, size_t block_id) {
+static void cfg_rm_block_instr(size_t instruction_index, size_t block_id) {
     if (GET_INSTRUCTION(instruction_index)) {
-        set_instruction(nullptr, instruction_index);
+        set_instr(nullptr, instruction_index);
         GET_CFG_BLOCK(block_id).size--;
         if (GET_CFG_BLOCK(block_id).size == 0) {
-            control_flow_graph_remove_empty_block(block_id, true);
+            cfg_rm_empty_block(block_id, true);
         }
         else if (instruction_index == GET_CFG_BLOCK(block_id).instructions_front_index) {
             for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
@@ -215,16 +215,16 @@ static void control_flow_graph_remove_block_instruction(size_t instruction_index
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void control_flow_graph_initialize_label_block(TacLabel* node) {
+static void cfg_init_label_block(TacLabel* node) {
     context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
 #elif __OPTIM_LEVEL__ == 2
-static void control_flow_graph_initialize_label_block(AsmLabel* node) {
+static void cfg_init_label_block(AsmLabel* node) {
     context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
 }
 #endif
 
-static void control_flow_graph_initialize_block(size_t instruction_index, size_t& instructions_back_index) {
+static void cfg_init_block(size_t instruction_index, size_t& instructions_back_index) {
     AstInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
@@ -239,9 +239,9 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
                 context->control_flow_graph->blocks.emplace_back(std::move(block));
             }
 #if __OPTIM_LEVEL__ == 1
-            control_flow_graph_initialize_label_block(static_cast<TacLabel*>(node));
+            cfg_init_label_block(static_cast<TacLabel*>(node));
 #elif __OPTIM_LEVEL__ == 2
-            control_flow_graph_initialize_label_block(static_cast<AsmLabel*>(node));
+            cfg_init_label_block(static_cast<AsmLabel*>(node));
 #endif
             instructions_back_index = instruction_index;
             break;
@@ -269,31 +269,31 @@ static void control_flow_graph_initialize_block(size_t instruction_index, size_t
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void control_flow_graph_initialize_jump_edges(TacJump* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+static void cfg_init_jump_edges(TacJump* node, size_t block_id) {
+    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
 }
 
-static void control_flow_graph_initialize_jump_if_zero_edges(TacJumpIfZero* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
-    control_flow_graph_add_successor_edge(block_id, block_id + 1);
+static void cfg_init_jmp_eq_0_edges(TacJumpIfZero* node, size_t block_id) {
+    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, block_id + 1);
 }
 
-static void control_flow_graph_initialize_jump_if_not_zero_edges(TacJumpIfNotZero* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
-    control_flow_graph_add_successor_edge(block_id, block_id + 1);
+static void cfg_init_jmp_ne_0_edges(TacJumpIfNotZero* node, size_t block_id) {
+    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, block_id + 1);
 }
 #elif __OPTIM_LEVEL__ == 2
-static void control_flow_graph_initialize_jmp_edges(AsmJmp* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+static void cfg_init_jmp_edges(AsmJmp* node, size_t block_id) {
+    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
 }
 
-static void control_flow_graph_initialize_jmp_cc_edges(AsmJmpCC* node, size_t block_id) {
-    control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
-    control_flow_graph_add_successor_edge(block_id, block_id + 1);
+static void cfg_init_jmp_cc_edges(AsmJmpCC* node, size_t block_id) {
+    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, block_id + 1);
 }
 #endif
 
-static void control_flow_graph_initialize_edges(size_t block_id) {
+static void cfg_init_edges(size_t block_id) {
     AstInstruction* node = GET_INSTRUCTION(GET_CFG_BLOCK(block_id).instructions_back_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
@@ -301,33 +301,33 @@ static void control_flow_graph_initialize_edges(size_t block_id) {
 #elif __OPTIM_LEVEL__ == 2
         case AST_T::AsmRet_t:
 #endif
-            control_flow_graph_add_successor_edge(block_id, context->control_flow_graph->exit_id);
+            cfg_add_succ_edge(block_id, context->control_flow_graph->exit_id);
             break;
 #if __OPTIM_LEVEL__ == 1
         case AST_T::TacJump_t:
-            control_flow_graph_initialize_jump_edges(static_cast<TacJump*>(node), block_id);
+            cfg_init_jump_edges(static_cast<TacJump*>(node), block_id);
             break;
         case AST_T::TacJumpIfZero_t:
-            control_flow_graph_initialize_jump_if_zero_edges(static_cast<TacJumpIfZero*>(node), block_id);
+            cfg_init_jmp_eq_0_edges(static_cast<TacJumpIfZero*>(node), block_id);
             break;
         case AST_T::TacJumpIfNotZero_t:
-            control_flow_graph_initialize_jump_if_not_zero_edges(static_cast<TacJumpIfNotZero*>(node), block_id);
+            cfg_init_jmp_ne_0_edges(static_cast<TacJumpIfNotZero*>(node), block_id);
             break;
 #elif __OPTIM_LEVEL__ == 2
         case AST_T::AsmJmp_t:
-            control_flow_graph_initialize_jmp_edges(static_cast<AsmJmp*>(node), block_id);
+            cfg_init_jmp_edges(static_cast<AsmJmp*>(node), block_id);
             break;
         case AST_T::AsmJmpCC_t:
-            control_flow_graph_initialize_jmp_cc_edges(static_cast<AsmJmpCC*>(node), block_id);
+            cfg_init_jmp_cc_edges(static_cast<AsmJmpCC*>(node), block_id);
             break;
 #endif
         default:
-            control_flow_graph_add_successor_edge(block_id, block_id + 1);
+            cfg_add_succ_edge(block_id, block_id + 1);
             break;
     }
 }
 
-static void control_flow_graph_initialize() {
+static void cfg_init() {
     context->control_flow_graph->blocks.clear();
     context->control_flow_graph->identifier_id_map.clear();
     {
@@ -338,7 +338,7 @@ static void control_flow_graph_initialize() {
                     ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
                     context->control_flow_graph->blocks.emplace_back(std::move(block));
                 }
-                control_flow_graph_initialize_block(instruction_index, instructions_back_index);
+                cfg_init_block(instruction_index, instructions_back_index);
                 context->control_flow_graph->blocks.back().size++;
             }
         }
@@ -352,9 +352,9 @@ static void control_flow_graph_initialize() {
     context->control_flow_graph->entry_successor_ids.clear();
     context->control_flow_graph->exit_predecessor_ids.clear();
     if (!context->control_flow_graph->blocks.empty()) {
-        control_flow_graph_add_predecessor_edge(0, context->control_flow_graph->entry_id);
+        cfg_add_pred_edge(0, context->control_flow_graph->entry_id);
         for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
-            control_flow_graph_initialize_edges(block_id);
+            cfg_init_edges(block_id);
         }
     }
 }
@@ -405,7 +405,7 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
 #define GET_DFA_INSTRUCTION(X) GET_INSTRUCTION(context->data_flow_analysis_o1->data_index_map[X])
 #endif
 
-static bool is_transfer_instruction(size_t instruction_index
+static bool is_transfer_instr(size_t instruction_index
 #if __OPTIM_LEVEL__ == 1
     ,
     bool is_dead_store_elimination
@@ -459,7 +459,7 @@ static bool is_transfer_instruction(size_t instruction_index
 }
 
 #if __OPTIM_LEVEL__ == 1
-static size_t get_dfa_data_index(size_t instruction_index) {
+static size_t get_dfa_data_idx(size_t instruction_index) {
     for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
         if (context->data_flow_analysis_o1->data_index_map[i] == instruction_index) {
             return i;
@@ -468,7 +468,7 @@ static size_t get_dfa_data_index(size_t instruction_index) {
     RAISE_INTERNAL_ERROR;
 }
 
-static TacInstruction* get_dfa_bak_instruction(size_t i) {
+static TacInstruction* get_dfa_bak_instr(size_t i) {
     if (context->control_flow_graph->reaching_code[i]) {
         if (context->data_flow_analysis_o1->bak_instructions[i]) {
             return context->data_flow_analysis_o1->bak_instructions[i].get();
@@ -485,8 +485,8 @@ static TacInstruction* get_dfa_bak_instruction(size_t i) {
     }
 }
 
-static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
-    i = get_dfa_data_index(instruction_index);
+static bool set_dfa_bak_instr(size_t instruction_index, size_t& i) {
+    i = get_dfa_data_idx(instruction_index);
     if (!context->control_flow_graph->reaching_code[i]) {
         context->control_flow_graph->reaching_code[i] = true;
         return true;
@@ -498,22 +498,22 @@ static bool set_dfa_bak_instruction(size_t instruction_index, size_t& i) {
 #endif
 
 #if __OPTIM_LEVEL__ == 1
-static bool copy_propagation_transfer_reaching_copies(size_t instruction_index, size_t next_instruction_index);
-static void eliminate_dead_store_transfer_live_values(size_t instruction_index, size_t next_instruction_index);
+static bool prop_transfer_reach_cps(size_t instruction_index, size_t next_instruction_index);
+static void elim_transfer_live_values(size_t instruction_index, size_t next_instruction_index);
 #elif __OPTIM_LEVEL__ == 2
-static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index);
+static void infer_live_registers(size_t instruction_index, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
-static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index, size_t block_id) {
+static size_t dfa_forward_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
          next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
-        if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instruction(next_instruction_index, false)) {
+        if (GET_INSTRUCTION(next_instruction_index) && is_transfer_instr(next_instruction_index, false)) {
             for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
                 GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                     GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
             }
-            if (!copy_propagation_transfer_reaching_copies(instruction_index, next_instruction_index)) {
+            if (!prop_transfer_reach_cps(instruction_index, next_instruction_index)) {
                 for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
                     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                         GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
@@ -526,7 +526,7 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
         GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
             GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
     }
-    if (!copy_propagation_transfer_reaching_copies(instruction_index, context->data_flow_analysis->incoming_index)) {
+    if (!prop_transfer_reach_cps(instruction_index, context->data_flow_analysis->incoming_index)) {
         for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
                 GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
@@ -536,12 +536,12 @@ static size_t data_flow_analysis_forward_transfer_block(size_t instruction_index
 }
 #endif
 
-static size_t data_flow_analysis_backward_transfer_block(size_t instruction_index, size_t block_id) {
+static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block_id) {
     if (instruction_index > 0) {
         for (size_t next_instruction_index = instruction_index;
              next_instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
             if (GET_INSTRUCTION(next_instruction_index)
-                && is_transfer_instruction(next_instruction_index
+                && is_transfer_instr(next_instruction_index
 #if __OPTIM_LEVEL__ == 1
                     ,
                     true
@@ -552,9 +552,9 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
                         GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
                 }
 #if __OPTIM_LEVEL__ == 1
-                eliminate_dead_store_transfer_live_values
+                elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
-                inference_graph_transfer_live_registers
+                infer_live_registers
 #endif
                     (instruction_index, next_instruction_index);
                 instruction_index = next_instruction_index;
@@ -566,15 +566,15 @@ static size_t data_flow_analysis_backward_transfer_block(size_t instruction_inde
             GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
     }
 #if __OPTIM_LEVEL__ == 1
-    eliminate_dead_store_transfer_live_values
+    elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
-    inference_graph_transfer_live_registers
+    infer_live_registers
 #endif
         (instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
 }
 
-static bool data_flow_analysis_after_meet_block(size_t block_id) {
+static bool dfa_after_meet_block(size_t block_id) {
     bool is_fixed_point = true;
     {
         size_t i = 0;
@@ -594,10 +594,10 @@ static bool data_flow_analysis_after_meet_block(size_t block_id) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static bool data_flow_analysis_forward_meet_block(size_t block_id) {
+static bool dfa_forward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
     for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
-        if (GET_INSTRUCTION(instruction_index) && is_transfer_instruction(instruction_index, false)) {
+        if (GET_INSTRUCTION(instruction_index) && is_transfer_instr(instruction_index, false)) {
             goto Lelse;
         }
     }
@@ -625,21 +625,21 @@ Lelse:
     }
 
     if (instruction_index < context->data_flow_analysis->incoming_index) {
-        data_flow_analysis_forward_transfer_block(instruction_index, block_id);
+        dfa_forward_transfer_block(instruction_index, block_id);
     }
     else if (instruction_index != context->data_flow_analysis->incoming_index) {
         RAISE_INTERNAL_ERROR;
     }
 
-    return data_flow_analysis_after_meet_block(block_id);
+    return dfa_after_meet_block(block_id);
 }
 #endif
 
-static bool data_flow_analysis_backward_meet_block(size_t block_id) {
+static bool dfa_backward_meet_block(size_t block_id) {
     size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index + 1;
     while (instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index) {
         if (GET_INSTRUCTION(instruction_index)
-            && is_transfer_instruction(instruction_index
+            && is_transfer_instr(instruction_index
 #if __OPTIM_LEVEL__ == 1
                 ,
                 true
@@ -673,17 +673,17 @@ Lelse:
     }
 
     if (instruction_index < context->data_flow_analysis->incoming_index) {
-        data_flow_analysis_backward_transfer_block(instruction_index, block_id);
+        dfa_backward_transfer_block(instruction_index, block_id);
     }
     else if (instruction_index != context->data_flow_analysis->incoming_index) {
         RAISE_INTERNAL_ERROR;
     }
 
-    return data_flow_analysis_after_meet_block(block_id);
+    return dfa_after_meet_block(block_id);
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void data_flow_analysis_forward_iterative_algorithm() {
+static void dfa_forward_iter_alg() {
     size_t open_data_map_size = context->control_flow_graph->blocks.size();
     for (size_t i = 0; i < open_data_map_size; ++i) {
         size_t block_id = context->data_flow_analysis->open_data_map[i];
@@ -691,7 +691,7 @@ static void data_flow_analysis_forward_iterative_algorithm() {
             continue;
         }
 
-        bool is_fixed_point = data_flow_analysis_forward_meet_block(block_id);
+        bool is_fixed_point = dfa_forward_meet_block(block_id);
         if (!is_fixed_point) {
             for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
                 if (successor_id < context->control_flow_graph->exit_id) {
@@ -718,7 +718,7 @@ static void data_flow_analysis_forward_iterative_algorithm() {
 }
 #endif
 
-static void data_flow_analysis_backward_iterative_algorithm() {
+static void dfa_iter_alg() {
     size_t open_data_map_size = context->control_flow_graph->blocks.size();
     for (size_t i = 0; i < open_data_map_size; ++i) {
         size_t block_id = context->data_flow_analysis->open_data_map[i];
@@ -726,7 +726,7 @@ static void data_flow_analysis_backward_iterative_algorithm() {
             continue;
         }
 
-        bool is_fixed_point = data_flow_analysis_backward_meet_block(block_id);
+        bool is_fixed_point = dfa_backward_meet_block(block_id);
         if (!is_fixed_point) {
             for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
                 if (predecessor_id < context->control_flow_graph->exit_id) {
@@ -753,39 +753,39 @@ static void data_flow_analysis_backward_iterative_algorithm() {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i);
+static void dfa_forward_open_block(size_t block_id, size_t& i);
 #endif
-static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i);
+static void dfa_backward_open_block(size_t block_id, size_t& i);
 
 #if __OPTIM_LEVEL__ == 1
-static void data_flow_analysis_forward_successor_open_block(size_t block_id, size_t& i) {
+static void dfa_forward_succ_open_block(size_t block_id, size_t& i) {
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
-        data_flow_analysis_forward_open_block(successor_id, i);
+        dfa_forward_open_block(successor_id, i);
     }
 }
 #endif
 
-static void data_flow_analysis_backward_successor_open_block(size_t block_id, size_t& i) {
+static void dfa_backward_succ_open_block(size_t block_id, size_t& i) {
     for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
-        data_flow_analysis_backward_open_block(successor_id, i);
+        dfa_backward_open_block(successor_id, i);
     }
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void data_flow_analysis_forward_open_block(size_t block_id, size_t& i) {
+static void dfa_forward_open_block(size_t block_id, size_t& i) {
     if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
         context->control_flow_graph->reaching_code[block_id] = true;
-        data_flow_analysis_forward_successor_open_block(block_id, i);
+        dfa_forward_succ_open_block(block_id, i);
         i--;
         context->data_flow_analysis->open_data_map[i] = block_id;
     }
 }
 #endif
 
-static void data_flow_analysis_backward_open_block(size_t block_id, size_t& i) {
+static void dfa_backward_open_block(size_t block_id, size_t& i) {
     if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
         context->control_flow_graph->reaching_code[block_id] = true;
-        data_flow_analysis_backward_successor_open_block(block_id, i);
+        dfa_backward_succ_open_block(block_id, i);
         context->data_flow_analysis->open_data_map[i] = block_id;
         i++;
     }
@@ -797,7 +797,7 @@ static bool is_aliased_name(TIdentifier name) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void data_flow_analysis_add_aliased_value(TacValue* node) {
+static void dfa_add_aliased_value(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
         frontend->addressed_set.insert(static_cast<TacVariable*>(node)->name);
     }
@@ -805,12 +805,12 @@ static void data_flow_analysis_add_aliased_value(TacValue* node) {
 
 static bool is_same_value(TacValue* node_1, TacValue* node_2);
 
-static bool propagate_copies_add_data_index(TacCopy* node, size_t instruction_index, size_t block_id) {
+static bool prop_add_data_idx(TacCopy* node, size_t instruction_index, size_t block_id) {
     if (node->dst->type() != AST_T::TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
     else if (is_same_value(node->src.get(), node->dst.get())) {
-        control_flow_graph_remove_block_instruction(instruction_index, block_id);
+        cfg_rm_block_instr(instruction_index, block_id);
         return false;
     }
     else {
@@ -825,7 +825,7 @@ static bool propagate_copies_add_data_index(TacCopy* node, size_t instruction_in
     }
 }
 
-static void eliminate_dead_store_add_data_name(TIdentifier name) {
+static void elim_add_data_name(TIdentifier name) {
     if (context->control_flow_graph->identifier_id_map.find(name)
         == context->control_flow_graph->identifier_id_map.end()) {
         context->control_flow_graph->identifier_id_map[name] = context->data_flow_analysis->set_size;
@@ -833,13 +833,13 @@ static void eliminate_dead_store_add_data_name(TIdentifier name) {
     }
 }
 
-static void eliminate_dead_store_add_data_value(TacValue* node) {
+static void elim_add_data_value(TacValue* node) {
     if (node->type() == AST_T::TacVariable_t) {
-        eliminate_dead_store_add_data_name(static_cast<TacVariable*>(node)->name);
+        elim_add_data_name(static_cast<TacVariable*>(node)->name);
     }
 }
 #elif __OPTIM_LEVEL__ == 2
-static void inference_graph_add_data_name(TIdentifier name) {
+static void infer_add_data_name(TIdentifier name) {
     if (!is_aliased_name(name)
         && context->control_flow_graph->identifier_id_map.find(name)
                == context->control_flow_graph->identifier_id_map.end()) {
@@ -849,14 +849,14 @@ static void inference_graph_add_data_name(TIdentifier name) {
     }
 }
 
-static void inference_graph_add_data_operand(AsmOperand* node) {
+static void infer_add_data_op(AsmOperand* node) {
     if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_add_data_name(static_cast<AsmPseudo*>(node)->name);
+        infer_add_data_name(static_cast<AsmPseudo*>(node)->name);
     }
 }
 #endif
 
-static bool data_flow_analysis_initialize(
+static bool dfa_init(
 #if __OPTIM_LEVEL__ == 1
     bool is_dead_store_elimination, bool is_addressed_set
 #elif __OPTIM_LEVEL__ == 2
@@ -915,63 +915,63 @@ static bool data_flow_analysis_initialize(
                             }
                             TacReturn* p_node = static_cast<TacReturn*>(node);
                             if (p_node->val) {
-                                eliminate_dead_store_add_data_value(p_node->val.get());
+                                elim_add_data_value(p_node->val.get());
                             }
                             break;
                         }
                         case AST_T::TacSignExtend_t: {
                             if (is_dead_store_elimination) {
                                 TacSignExtend* p_node = static_cast<TacSignExtend*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacTruncate_t: {
                             if (is_dead_store_elimination) {
                                 TacTruncate* p_node = static_cast<TacTruncate*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacZeroExtend_t: {
                             if (is_dead_store_elimination) {
                                 TacZeroExtend* p_node = static_cast<TacZeroExtend*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacDoubleToInt_t: {
                             if (is_dead_store_elimination) {
                                 TacDoubleToInt* p_node = static_cast<TacDoubleToInt*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacDoubleToUInt_t: {
                             if (is_dead_store_elimination) {
                                 TacDoubleToUInt* p_node = static_cast<TacDoubleToUInt*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacIntToDouble_t: {
                             if (is_dead_store_elimination) {
                                 TacIntToDouble* p_node = static_cast<TacIntToDouble*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacUIntToDouble_t: {
                             if (is_dead_store_elimination) {
                                 TacUIntToDouble* p_node = static_cast<TacUIntToDouble*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
@@ -979,10 +979,10 @@ static bool data_flow_analysis_initialize(
                             if (is_dead_store_elimination) {
                                 TacFunCall* p_node = static_cast<TacFunCall*>(node);
                                 for (const auto& arg : p_node->args) {
-                                    eliminate_dead_store_add_data_value(arg.get());
+                                    elim_add_data_value(arg.get());
                                 }
                                 if (p_node->dst) {
-                                    eliminate_dead_store_add_data_value(p_node->dst.get());
+                                    elim_add_data_value(p_node->dst.get());
                                 }
                             }
                             break;
@@ -990,82 +990,82 @@ static bool data_flow_analysis_initialize(
                         case AST_T::TacUnary_t: {
                             if (is_dead_store_elimination) {
                                 TacUnary* p_node = static_cast<TacUnary*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacBinary_t: {
                             if (is_dead_store_elimination) {
                                 TacBinary* p_node = static_cast<TacBinary*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src1.get());
-                                eliminate_dead_store_add_data_value(p_node->src2.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src1.get());
+                                elim_add_data_value(p_node->src2.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacCopy_t: {
                             TacCopy* p_node = static_cast<TacCopy*>(node);
                             if (is_copy_propagation) {
-                                if (!propagate_copies_add_data_index(p_node, instruction_index, block_id)) {
+                                if (!prop_add_data_idx(p_node, instruction_index, block_id)) {
                                     goto Lcontinue;
                                 }
                             }
                             else {
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacGetAddress_t: {
                             TacGetAddress* p_node = static_cast<TacGetAddress*>(node);
                             if (is_dead_store_elimination) {
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             if (is_addressed_set) {
-                                data_flow_analysis_add_aliased_value(p_node->src.get());
+                                dfa_add_aliased_value(p_node->src.get());
                             }
                             break;
                         }
                         case AST_T::TacLoad_t: {
                             if (is_dead_store_elimination) {
                                 TacLoad* p_node = static_cast<TacLoad*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src_ptr.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src_ptr.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacStore_t: {
                             if (is_dead_store_elimination) {
                                 TacStore* p_node = static_cast<TacStore*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
-                                eliminate_dead_store_add_data_value(p_node->dst_ptr.get());
+                                elim_add_data_value(p_node->src.get());
+                                elim_add_data_value(p_node->dst_ptr.get());
                             }
                             break;
                         }
                         case AST_T::TacAddPtr_t: {
                             if (is_dead_store_elimination) {
                                 TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
-                                eliminate_dead_store_add_data_value(p_node->src_ptr.get());
-                                eliminate_dead_store_add_data_value(p_node->index.get());
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_value(p_node->src_ptr.get());
+                                elim_add_data_value(p_node->index.get());
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
                         case AST_T::TacCopyToOffset_t: {
                             if (is_dead_store_elimination) {
                                 TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
-                                eliminate_dead_store_add_data_name(p_node->dst_name);
-                                eliminate_dead_store_add_data_value(p_node->src.get());
+                                elim_add_data_name(p_node->dst_name);
+                                elim_add_data_value(p_node->src.get());
                             }
                             break;
                         }
                         case AST_T::TacCopyFromOffset_t: {
                             if (is_dead_store_elimination) {
                                 TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
-                                eliminate_dead_store_add_data_name(p_node->src_name);
-                                eliminate_dead_store_add_data_value(p_node->dst.get());
+                                elim_add_data_name(p_node->src_name);
+                                elim_add_data_value(p_node->dst.get());
                             }
                             break;
                         }
@@ -1073,79 +1073,79 @@ static bool data_flow_analysis_initialize(
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            eliminate_dead_store_add_data_value(static_cast<TacJumpIfZero*>(node)->condition.get());
+                            elim_add_data_value(static_cast<TacJumpIfZero*>(node)->condition.get());
                             break;
                         }
                         case AST_T::TacJumpIfNotZero_t: {
                             if (is_copy_propagation) {
                                 goto Lcontinue;
                             }
-                            eliminate_dead_store_add_data_value(static_cast<TacJumpIfNotZero*>(node)->condition.get());
+                            elim_add_data_value(static_cast<TacJumpIfNotZero*>(node)->condition.get());
                             break;
                         }
 #elif __OPTIM_LEVEL__ == 2
                         case AST_T::AsmMov_t: {
                             AsmMov* p_node = static_cast<AsmMov*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmMovSx_t: {
                             AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmMovZeroExtend_t: {
                             AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmLea_t: {
                             AsmLea* p_node = static_cast<AsmLea*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmCvttsd2si_t: {
                             AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmCvtsi2sd_t: {
                             AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmUnary_t:
-                            inference_graph_add_data_operand(static_cast<AsmUnary*>(node)->dst.get());
+                            infer_add_data_op(static_cast<AsmUnary*>(node)->dst.get());
                             break;
                         case AST_T::AsmBinary_t: {
                             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmCmp_t: {
                             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-                            inference_graph_add_data_operand(p_node->src.get());
-                            inference_graph_add_data_operand(p_node->dst.get());
+                            infer_add_data_op(p_node->src.get());
+                            infer_add_data_op(p_node->dst.get());
                             break;
                         }
                         case AST_T::AsmIdiv_t:
-                            inference_graph_add_data_operand(static_cast<AsmIdiv*>(node)->src.get());
+                            infer_add_data_op(static_cast<AsmIdiv*>(node)->src.get());
                             break;
                         case AST_T::AsmDiv_t:
-                            inference_graph_add_data_operand(static_cast<AsmDiv*>(node)->src.get());
+                            infer_add_data_op(static_cast<AsmDiv*>(node)->src.get());
                             break;
                         case AST_T::AsmSetCC_t:
-                            inference_graph_add_data_operand(static_cast<AsmSetCC*>(node)->dst.get());
+                            infer_add_data_op(static_cast<AsmSetCC*>(node)->dst.get());
                             break;
                         case AST_T::AsmPush_t:
-                            inference_graph_add_data_operand(static_cast<AsmPush*>(node)->src.get());
+                            infer_add_data_op(static_cast<AsmPush*>(node)->src.get());
                             break;
                         case AST_T::AsmCdq_t:
                         case AST_T::AsmCall_t:
@@ -1206,7 +1206,7 @@ static bool data_flow_analysis_initialize(
         size_t i = context->control_flow_graph->blocks.size();
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
             if (!context->control_flow_graph->reaching_code[successor_id]) {
-                data_flow_analysis_forward_open_block(successor_id, i);
+                dfa_forward_open_block(successor_id, i);
             }
         }
         while (i-- > 0) {
@@ -1253,7 +1253,7 @@ static bool data_flow_analysis_initialize(
         size_t i = 0;
         for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
             if (!context->control_flow_graph->reaching_code[successor_id]) {
-                data_flow_analysis_backward_open_block(successor_id, i);
+                dfa_backward_open_block(successor_id, i);
             }
         }
         for (; i < context->control_flow_graph->blocks.size(); i++) {

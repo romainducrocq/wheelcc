@@ -24,7 +24,7 @@ id_set = set({})
 for filename in filenames:
     with open(filename) as file:
         for line in file:
-            for x in finditer(r"^[a-zA-Z0-9_].+ [a-zA-Z_]\w*\b\(", line.rstrip()):
+            for x in finditer(r"^static [a-zA-Z0-9_\*\<\>\:]+ [a-zA-Z_]\w*\b\(", line.rstrip()):
                 id_set.add(x.group())
 
 for id in sorted(id_set):

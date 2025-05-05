@@ -185,7 +185,7 @@ static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* 
     }
 }
 
-static void inference_graph_transfer_live_registers(size_t instruction_index, size_t next_instruction_index) {
+static void infer_live_registers(size_t instruction_index, size_t next_instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t: {
@@ -646,10 +646,10 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
 }
 
 static bool inference_graph_initialize(TIdentifier function_name) {
-    if (!data_flow_analysis_initialize(function_name)) {
+    if (!dfa_init(function_name)) {
         return false;
     }
-    data_flow_analysis_backward_iterative_algorithm();
+    dfa_iter_alg();
     if (context->control_flow_graph->identifier_id_map.empty()) {
         return false;
     }
@@ -967,7 +967,7 @@ static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
     REGISTER_KIND src_register_kind = get_operand_register_kind(src_operand);
     REGISTER_KIND dst_register_kind = get_operand_register_kind(dst_operand);
     if (src_register_kind != REGISTER_KIND::Sp && src_register_kind == dst_register_kind) {
-        set_instruction(nullptr, instruction_index);
+        set_instr(nullptr, instruction_index);
     }
     else {
         if (src_operand->type() == AST_T::AsmPseudo_t) {
@@ -1490,7 +1490,7 @@ static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index, si
     size_t src_index = get_coalesced_index(node->src.get());
     size_t dst_index = get_coalesced_index(node->dst.get());
     if (src_index < context->data_flow_analysis->set_size && src_index == dst_index) {
-        control_flow_graph_remove_block_instruction(instruction_index, block_id);
+        cfg_rm_block_instr(instruction_index, block_id);
     }
     else {
         if (node->src->type() == AST_T::AsmPseudo_t) {
@@ -1789,7 +1789,7 @@ static bool coalesce_inference_graph() {
 
 static void regalloc_function_top_level(AsmFunction* node) {
     context->p_instructions = &node->instructions;
-    control_flow_graph_initialize();
+    cfg_init();
 Ldowhile:
     if (inference_graph_initialize(node->name)) {
         if (context->is_with_coalescing && coalesce_inference_graph()) {
