@@ -2985,7 +2985,7 @@ static void reslv_identifiers(CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void semantic_analysis(CProgram* node) {
+void analyze_semantic(CProgram* node) {
     context = std::make_unique<SemanticContext>();
     reslv_identifiers(node);
     context.reset();

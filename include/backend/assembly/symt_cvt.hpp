@@ -15,6 +15,6 @@ struct AsmProgram;
 
 TInt gen_type_alignment(Type* type);
 std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name);
-void symbol_table_conversion(AsmProgram* node);
+void convert_symbol_table(AsmProgram* node);
 
 #endif

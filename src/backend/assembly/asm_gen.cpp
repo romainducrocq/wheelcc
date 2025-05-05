@@ -2566,7 +2566,7 @@ static std::unique_ptr<AsmProgram> gen_program(TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_ast) {
+std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast) {
     context = std::make_unique<AsmGenContext>();
     std::unique_ptr<AsmProgram> asm_ast = gen_program(tac_ast.get());
     context.reset();

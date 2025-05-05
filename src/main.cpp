@@ -123,7 +123,7 @@ static void compile() {
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lexing(context->filename, std::move(context->includedirs));
+    std::vector<Token> tokens = lex_c_code(context->filename, std::move(context->includedirs));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 255) {
@@ -135,7 +135,7 @@ static void compile() {
     INIT_IDENTIFIER_CONTEXT;
 
     verbose("-- Parsing ... ", false);
-    std::unique_ptr<CProgram> c_ast = parsing(std::move(tokens));
+    std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 254) {
@@ -147,7 +147,7 @@ static void compile() {
     INIT_FRONT_END_CONTEXT;
 
     verbose("-- Semantic analysis ... ", false);
-    semantic_analysis(c_ast.get());
+    analyze_semantic(c_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 253) {
@@ -162,11 +162,11 @@ static void compile() {
     FREE_ERRORS_CONTEXT;
 
     verbose("-- TAC representation ... ", false);
-    std::unique_ptr<TacProgram> tac_ast = tac_representation(std::move(c_ast));
+    std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast));
     if (context->optim_1_mask > 0) {
         verbose("OK", true);
         verbose("-- Level 1 optimization ... ", false);
-        tac_optimization(tac_ast.get(), context->optim_1_mask);
+        optimize_three_address_code(tac_ast.get(), context->optim_1_mask);
     }
     verbose("OK", true);
 #ifndef __NDEBUG__
@@ -182,14 +182,14 @@ static void compile() {
     INIT_BACK_END_CONTEXT;
 
     verbose("-- Assembly generation ... ", false);
-    std::unique_ptr<AsmProgram> asm_ast = assembly_generation(std::move(tac_ast));
-    symbol_table_conversion(asm_ast.get());
+    std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast));
+    convert_symbol_table(asm_ast.get());
     if (context->optim_2_code > 0) {
         verbose("OK", true);
         verbose("-- Level 2 optimization ... ", false);
-        register_allocation(asm_ast.get(), context->optim_2_code);
+        allocate_registers(asm_ast.get(), context->optim_2_code);
     }
-    stack_fixup(asm_ast.get());
+    fix_stack(asm_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 251) {
@@ -207,7 +207,7 @@ static void compile() {
 
     verbose("-- Code emission ... ", false);
     context->filename += ".s";
-    gas_code_emission(std::move(asm_ast), std::move(context->filename));
+    emit_gas_code(std::move(asm_ast), std::move(context->filename));
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 250) {

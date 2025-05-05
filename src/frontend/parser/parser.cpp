@@ -1763,7 +1763,7 @@ static std::unique_ptr<CProgram> parse_program() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<CProgram> parsing(std::vector<Token>&& tokens) {
+std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens) {
     context = std::make_unique<ParserContext>(&tokens);
     std::unique_ptr<CProgram> c_ast = parse_program();
     if (context->pop_index != tokens.size()) {

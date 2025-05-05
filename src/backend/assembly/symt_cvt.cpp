@@ -205,7 +205,7 @@ static void cvt_program(AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void symbol_table_conversion(AsmProgram* node) {
+void convert_symbol_table(AsmProgram* node) {
     context = std::make_unique<SymtCvtContext>();
     cvt_program(node);
     context.reset();

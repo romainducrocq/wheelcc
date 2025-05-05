@@ -16,6 +16,6 @@ struct Token {
     size_t line;
 };
 
-std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& includedirs);
+std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs);
 
 #endif

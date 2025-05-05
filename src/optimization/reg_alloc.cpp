@@ -1169,7 +1169,7 @@ static void alloc_instr(size_t instruction_index) {
     }
 }
 
-static void register_allocation() {
+static void reallocate_registers() {
     if (!context->inference_graph->unpruned_pseudo_names.empty()) {
         set_p_infer_graph(false);
         alloc_color_infer_graph();
@@ -1710,7 +1710,7 @@ static void coal_instr(size_t instruction_index, size_t block_id) {
     }
 }
 
-static bool register_coalescing() {
+static bool coalesce_registers() {
     {
         size_t open_data_map_size = context->data_flow_analysis->set_size - REGISTER_MASK_SIZE;
         if (context->data_flow_analysis->open_data_map.size() < open_data_map_size) {
@@ -1754,7 +1754,7 @@ static void alloc_fun_toplvl(AsmFunction* node) {
     init_control_flow_graph();
 Ldowhile:
     if (init_inference_graph(node->name)) {
-        if (context->is_with_coalescing && register_coalescing()) {
+        if (context->is_with_coalescing && coalesce_registers()) {
             if (context->inference_graph->unpruned_pseudo_names.empty()
                 && context->sse_inference_graph->unpruned_pseudo_names.empty()) {
                 goto Lbreak;
@@ -1765,7 +1765,7 @@ Ldowhile:
             BackendFun* backend_fun = static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get());
             context->p_backend_fun_top_level = backend_fun;
         }
-        register_allocation();
+        reallocate_registers();
         context->p_backend_fun_top_level = nullptr;
     }
 Lbreak:
@@ -1793,7 +1793,7 @@ static void alloc_program(AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
+void allocate_registers(AsmProgram* node, uint8_t optim_2_code) {
     context = std::make_unique<RegAllocContext>(std::move(optim_2_code));
     context->control_flow_graph = std::make_unique<ControlFlowGraph>();
     context->data_flow_analysis = std::make_unique<DataFlowAnalysis>();

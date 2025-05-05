@@ -1066,7 +1066,7 @@ static void fix_program(AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void stack_fixup(AsmProgram* node) {
+void fix_stack(AsmProgram* node) {
     context = std::make_unique<StackFixContext>();
     fix_program(node);
     context.reset();

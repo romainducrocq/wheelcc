@@ -340,7 +340,7 @@ static void strip_filename_ext(std::string& filename) { filename = filename.subs
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<Token> lexing(std::string& filename, std::vector<std::string>&& includedirs) {
+std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs) {
     open_fread(filename);
     {
         FileOpenLine file_open_line = {1, 1, filename};

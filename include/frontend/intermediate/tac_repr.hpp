@@ -10,6 +10,6 @@ struct TacProgram;
 
 // Three address code representation
 
-std::unique_ptr<TacProgram> tac_representation(std::unique_ptr<CProgram> c_ast);
+std::unique_ptr<TacProgram> represent_three_address_code(std::unique_ptr<CProgram> c_ast);
 
 #endif

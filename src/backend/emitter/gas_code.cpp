@@ -989,7 +989,7 @@ static void emit_program(AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void gas_code_emission(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
+void emit_gas_code(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
     open_fwrite(filename);
     emit_program(asm_ast.get());
     asm_ast.reset();

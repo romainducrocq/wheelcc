@@ -1467,7 +1467,7 @@ static std::unique_ptr<TacProgram> repr_program(CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<TacProgram> tac_representation(std::unique_ptr<CProgram> c_ast) {
+std::unique_ptr<TacProgram> represent_three_address_code(std::unique_ptr<CProgram> c_ast) {
     context = std::make_unique<TacReprContext>();
     std::unique_ptr<TacProgram> tac_ast = repr_program(c_ast.get());
     context.reset();

@@ -16,6 +16,6 @@ struct TacProgram;
 // Copy propagation
 // Dead store elimination
 
-void tac_optimization(TacProgram* node, uint8_t optim_1_mask);
+void optimize_three_address_code(TacProgram* node, uint8_t optim_1_mask);
 
 #endif

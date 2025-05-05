@@ -14,6 +14,6 @@ struct AsmProgram;
 // Register allocation
 // Register coalescing
 
-void register_allocation(AsmProgram* node, uint8_t optim_2_code);
+void allocate_registers(AsmProgram* node, uint8_t optim_2_code);
 
 #endif

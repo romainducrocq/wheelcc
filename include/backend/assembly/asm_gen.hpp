@@ -10,6 +10,6 @@ struct AsmProgram;
 
 // Assembly generation
 
-std::unique_ptr<AsmProgram> assembly_generation(std::unique_ptr<TacProgram> tac_ast);
+std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast);
 
 #endif

@@ -1270,7 +1270,7 @@ static void fold_instr(size_t instruction_index) {
     }
 }
 
-static void constant_folding() {
+static void fold_constants() {
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index)) {
             fold_instr(instruction_index);
@@ -1345,7 +1345,7 @@ static void unreach_label_block(size_t block_id, size_t previous_block_id) {
     }
 }
 
-static void unreachable_code_elimination() {
+static void eliminate_unreachable_code() {
     if (context->control_flow_graph->blocks.empty()) {
         return;
     }
@@ -2450,7 +2450,7 @@ static void prop_instr(size_t instruction_index, size_t copy_instruction_index, 
     }
 }
 
-static void copy_propagation() {
+static void propagate_copies() {
     if (!init_data_flow_analysis(false, true)) {
         return;
     }
@@ -2735,7 +2735,7 @@ static void elim_instr(size_t instruction_index) {
     }
 }
 
-static void dead_store_elimination(bool is_addressed_set) {
+static void eliminate_dead_stores(bool is_addressed_set) {
     if (!init_data_flow_analysis(true, is_addressed_set)) {
         return;
     }
@@ -2766,18 +2766,18 @@ static void optim_fun_toplvl(TacFunction* node) {
     do {
         context->is_fixed_point = true;
         if (context->enabled_optimizations[CONSTANT_FOLDING]) {
-            constant_folding();
+            fold_constants();
         }
         if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
             init_control_flow_graph();
             if (context->enabled_optimizations[UNREACHABLE_CODE_ELIMINATION]) {
-                unreachable_code_elimination();
+                eliminate_unreachable_code();
             }
             if (context->enabled_optimizations[COPY_PROPAGATION]) {
-                copy_propagation();
+                propagate_copies();
             }
             if (context->enabled_optimizations[DEAD_STORE_ELMININATION]) {
-                dead_store_elimination(!context->enabled_optimizations[COPY_PROPAGATION]);
+                eliminate_dead_stores(!context->enabled_optimizations[COPY_PROPAGATION]);
             }
         }
     }
@@ -2803,7 +2803,7 @@ static void optim_program(TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void tac_optimization(TacProgram* node, uint8_t optim_1_mask) {
+void optimize_three_address_code(TacProgram* node, uint8_t optim_1_mask) {
     context = std::make_unique<OptimTacContext>(std::move(optim_1_mask));
     if (context->enabled_optimizations[CONTROL_FLOW_GRAPH]) {
         context->control_flow_graph = std::make_unique<ControlFlowGraph>();
