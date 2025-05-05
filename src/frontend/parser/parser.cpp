@@ -1492,7 +1492,7 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor() {
 }
 
 // <simple-declarator> ::= <identifier> | "(" <declarator> ")"
-static std::unique_ptr<CDeclarator> parse_decl_simple_decltor() {
+static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
     switch (peek_next().token_kind) {
         case TOKEN_KIND::identifier:
             return parse_ident_simple_decltor();
@@ -1581,7 +1581,7 @@ static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDe
 
 // <direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
 static std::unique_ptr<CDeclarator> parse_direct_decltor() {
-    std::unique_ptr<CDeclarator> declarator = parse_decl_simple_decltor();
+    std::unique_ptr<CDeclarator> declarator = parse_simple_decltor_decl();
     switch (peek_next().token_kind) {
         case TOKEN_KIND::parenthesis_open: {
             return parse_fun_decltor_suffix(std::move(declarator));

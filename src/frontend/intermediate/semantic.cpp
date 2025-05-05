@@ -2380,7 +2380,7 @@ Lelse:
     check_var_exp(node);
 }
 
-static void reslv_cast_expression(CCast* node) {
+static void reslv_cast_exp(CCast* node) {
     node->exp = reslv_typed_exp(std::move(node->exp));
     check_cast_exp(node);
 }
@@ -2474,7 +2474,7 @@ static void reslv_exp(CExp* node) {
             reslv_var_exp(static_cast<CVar*>(node));
             break;
         case AST_T::CCast_t:
-            reslv_cast_expression(static_cast<CCast*>(node));
+            reslv_cast_exp(static_cast<CCast*>(node));
             break;
         case AST_T::CUnary_t:
             reslv_unary_exp(static_cast<CUnary*>(node));
@@ -2976,7 +2976,7 @@ static void reslv_declaration(CDeclaration* node) {
     }
 }
 
-static void reslv_identifiers(CProgram* node) {
+static void resolve_identifiers(CProgram* node) {
     enter_scope();
     for (const auto& declaration : node->declarations) {
         reslv_declaration(declaration.get());
@@ -2987,6 +2987,6 @@ static void reslv_identifiers(CProgram* node) {
 
 void analyze_semantic(CProgram* node) {
     context = std::make_unique<SemanticContext>();
-    reslv_identifiers(node);
+    resolve_identifiers(node);
     context.reset();
 }

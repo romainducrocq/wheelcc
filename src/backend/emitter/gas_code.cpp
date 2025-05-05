@@ -910,7 +910,7 @@ static void static_init_toplvl(StaticInit* node) {
 
 // -> if zero initialized $ .bss
 // ->                else $ .data
-static void section_static_toplvl(const std::vector<std::shared_ptr<StaticInit>>& list_node) {
+static void static_section_toplvl(const std::vector<std::shared_ptr<StaticInit>>& list_node) {
     if (list_node.size() == 1 && list_node[0]->type() == AST_T::ZeroInit_t) {
         emit(".bss", 1);
     }
@@ -927,7 +927,7 @@ static void section_static_toplvl(const std::vector<std::shared_ptr<StaticInit>>
 static void emit_static_var_toplvl(AsmStaticVariable* node) {
     const std::string& name = emit_identifier(node->name);
     glob_directive_toplvl(name, node->is_global);
-    section_static_toplvl(node->static_inits);
+    static_section_toplvl(node->static_inits);
     align_directive_toplvl(node->alignment);
     {
         std::string directive = name;
