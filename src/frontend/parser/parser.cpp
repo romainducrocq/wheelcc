@@ -48,7 +48,7 @@ static std::unique_ptr<ParserContext> context;
 static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MESSAGE_PARSER::unexpected_next_token, next_token_is.token.c_str(),
-                                        fmt_tok_c_str(expected_token)),
+                                        fmt_tok_kind_c_str(expected_token)),
             next_token_is.line);
     }
 }
@@ -1348,7 +1348,7 @@ Lbreak:
     }
     std::string type_token_kinds_string = "(";
     for (TOKEN_KIND type_token_kind : type_token_kinds) {
-        type_token_kinds_string += fmt_tok_c_str(type_token_kind);
+        type_token_kinds_string += fmt_tok_kind_c_str(type_token_kind);
         type_token_kinds_string += ", ";
     }
     if (!type_token_kinds.empty()) {

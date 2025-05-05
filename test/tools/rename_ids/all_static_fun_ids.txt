@@ -320,7 +320,6 @@ exit_scope
 expect_next
 exp_inner_value
 exp_statement_instr
-field
 find_include
 fix_alloc_stack_bytes
 fix_binary_instr
@@ -337,6 +336,10 @@ fix_program
 fix_push_instr
 fix_toplvl
 fix_zero_extend_instr
+fmt_arr
+fmt_fun
+fmt_ptr
+fmt_struct
 fold_binary_const
 fold_binary_dbl_const
 fold_binary_instr
@@ -413,7 +416,6 @@ gen_unop
 gen_unsigned_cond_code
 getaddr_instr
 get_arr_alignment
-get_arr_fmt
 get_arr_scale
 get_coalescable_infer_regs
 get_coalesced_idx
@@ -429,15 +431,12 @@ get_const_ulong_value
 get_dfa_bak_copy_instr
 get_dfa_bak_instr
 get_dfa_data_idx
-get_fun_fmt
 get_joint_ptr_type
 get_joint_type
 get_op_register_kind
-get_ptr_fmt
 get_scalar_alignment
 get_scalar_size
 get_struct_alignment
-get_struct_fmt
 get_struct_scale
 get_tok_precedence
 get_type_alignment
@@ -445,7 +444,6 @@ get_type_scale
 get_type_size
 glob_directive_toplvl
 goto_statement_instr
-header_string
 hex_string_to_int32
 hex_string_to_int64
 hex_string_to_int8
@@ -670,6 +668,8 @@ plain_op_postfix_exp_instr
 pop_callee_saved_regs
 pop_instr
 print_ast
+print_field
+print_title
 proc_abstract_decltor
 proc_arr_abstract_decltor
 proc_arr_decltor

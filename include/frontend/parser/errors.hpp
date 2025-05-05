@@ -50,24 +50,24 @@ enum MESSAGE_UTIL {
     failed_to_interpret_string_to_float
 };
 
-std::string get_tok_fmt(TOKEN_KIND token_kind);
-std::string get_name_fmt(TIdentifier name);
-std::string get_struct_name_fmt(TIdentifier name, bool is_union);
-std::string get_type_fmt(Type* type);
-std::string get_const_fmt(CConst* node);
-std::string get_storage_class_fmt(CStorageClass* node);
-std::string get_unop_fmt(CUnaryOp* node);
-std::string get_binop_fmt(CBinaryOp* node);
-std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op);
-#define fmt_tok_c_str(X) get_tok_fmt(X).c_str()
-#define fmt_name_c_str(X) get_name_fmt(X).c_str()
-#define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(X, Y).c_str()
-#define fmt_type_c_str(X) get_type_fmt(X).c_str()
-#define fmt_const_c_str(X) get_const_fmt(X).c_str()
-#define fmt_storage_class_c_str(X) get_storage_class_fmt(X).c_str()
-#define fmt_unop_c_str(X) get_unop_fmt(X).c_str()
-#define fmt_binop_c_str(X) get_binop_fmt(X).c_str()
-#define fmt_assign_c_str(X, Y) get_assign_fmt(X, Y).c_str()
+std::string fmt_tok_kind(TOKEN_KIND token_kind);
+std::string fmt_name(TIdentifier name);
+std::string fmt_struct_name(TIdentifier name, bool is_union);
+std::string fmt_type(Type* type);
+std::string fmt_const(CConst* node);
+std::string fmt_storage_class(CStorageClass* node);
+std::string fmt_unop(CUnaryOp* node);
+std::string fmt_binop(CBinaryOp* node);
+std::string fmt_assign(CBinaryOp* node, CUnaryOp* unary_op);
+#define fmt_tok_kind_c_str(X) fmt_tok_kind(X).c_str()
+#define fmt_name_c_str(X) fmt_name(X).c_str()
+#define fmt_struct_name_c_str(X, Y) fmt_struct_name(X, Y).c_str()
+#define fmt_type_c_str(X) fmt_type(X).c_str()
+#define fmt_const_c_str(X) fmt_const(X).c_str()
+#define fmt_storage_class_c_str(X) fmt_storage_class(X).c_str()
+#define fmt_unop_c_str(X) fmt_unop(X).c_str()
+#define fmt_binop_c_str(X) fmt_binop(X).c_str()
+#define fmt_assign_c_str(X, Y) fmt_assign(X, Y).c_str()
 
 const char* get_fatal_msg(MESSAGE_FATAL message);
 const char* get_arg_msg(MESSAGE_ARGUMENT message);
