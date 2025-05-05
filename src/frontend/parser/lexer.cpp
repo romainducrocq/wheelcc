@@ -60,7 +60,7 @@ static std::unique_ptr<LexerContext> context;
 
 // Lexer
 
-static void tokenize_header(std::string include_match, size_t tokenize_header);
+static void tokenize_include(std::string include_match, size_t tokenize_include);
 
 #ifdef __WITH_CTRE__
 #define RE_MATCH_TOKEN(X, Y)                                                                  \
@@ -246,7 +246,7 @@ static void tokenize_file() {
 #ifdef __WITH_CTRE__
                         i += context->re_match_token.size();
 #endif
-                        tokenize_header(context->re_match_token, line_number);
+                        tokenize_include(context->re_match_token, line_number);
 #ifdef __WITH_CTRE__
                         context->re_match_token.clear();
 #endif
@@ -271,7 +271,7 @@ static void tokenize_file() {
     }
 }
 
-static bool find_header(std::vector<std::string>& dirnames, std::string& filename) {
+static bool find_include(std::vector<std::string>& dirnames, std::string& filename) {
     for (std::string dirname : dirnames) {
         dirname += filename;
         if (find_file(dirname)) {
@@ -282,7 +282,7 @@ static bool find_header(std::vector<std::string>& dirnames, std::string& filenam
     return false;
 }
 
-static void tokenize_header(std::string filename, size_t line_number) {
+static void tokenize_include(std::string filename, size_t line_number) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
         filename.pop_back();
@@ -291,8 +291,8 @@ static void tokenize_header(std::string filename, size_t line_number) {
             return;
         }
         context->filename_include_set.insert(filename_include);
-        if (!find_header(context->stdlibdirs, filename)) {
-            if (!find_header(*context->p_includedirs, filename)) {
+        if (!find_include(context->stdlibdirs, filename)) {
+            if (!find_include(*context->p_includedirs, filename)) {
                 RAISE_RUNTIME_ERROR_AT(
                     GET_LEXER_MESSAGE(MESSAGE_LEXER::failed_to_include_header_file, filename.c_str()), line_number);
             }
@@ -306,7 +306,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
             return;
         }
         context->filename_include_set.insert(filename_include);
-        if (!find_header(*context->p_includedirs, filename)) {
+        if (!find_include(*context->p_includedirs, filename)) {
             RAISE_RUNTIME_ERROR_AT(
                 GET_LEXER_MESSAGE(MESSAGE_LEXER::failed_to_include_header_file, filename.c_str()), line_number);
         }
@@ -326,7 +326,7 @@ static void tokenize_header(std::string filename, size_t line_number) {
     }
 }
 
-static void tokenize_source() {
+static void tokenize_src() {
 #ifndef __WITH_CTRE__
     std::string re_pattern("");
     re_build_tok_pattern(re_pattern);
@@ -349,7 +349,7 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
 
     std::vector<Token> tokens;
     context = std::make_unique<LexerContext>(&tokens, &includedirs);
-    tokenize_source();
+    tokenize_src();
     context.reset();
 
     close_fread(0);

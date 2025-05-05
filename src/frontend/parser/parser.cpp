@@ -45,7 +45,7 @@ static std::unique_ptr<ParserContext> context;
 
 // Parser
 
-static void expect_next_is(const Token& next_token_is, TOKEN_KIND expected_token) {
+static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_next_token,
                                         next_token_is.token.c_str(), get_token_kind_hr_c_str(expected_token)),
@@ -227,7 +227,7 @@ static TLong parse_arr_size() {
                                             context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
-    expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+    expect_next(pop_next(), TOKEN_KIND::brackets_close);
     switch (constant->type()) {
         case AST_T::CConstInt_t:
             return static_cast<TLong>(static_cast<CConstInt*>(constant.get())->value);
@@ -375,7 +375,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
 static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_decltor();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     while (peek_next().token_kind == TOKEN_KIND::brackets_open) {
         TLong size = parse_arr_size();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
@@ -486,14 +486,14 @@ static std::unique_ptr<CFunctionCall> parse_call_factor() {
     if (peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
         args = parse_arg_list();
     }
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     return std::make_unique<CFunctionCall>(std::move(name), std::move(args), std::move(line));
 }
 
 static std::unique_ptr<CExp> parse_inner_exp_factor() {
     pop_next();
     std::unique_ptr<CExp> inner_exp = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     return inner_exp;
 }
 
@@ -501,14 +501,14 @@ static std::unique_ptr<CSubscript> parse_subscript_factor(std::unique_ptr<CExp> 
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> subscript_exp = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::brackets_close);
+    expect_next(pop_next(), TOKEN_KIND::brackets_close);
     return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), std::move(line));
 }
 
 static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next_is(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOKEN_KIND::identifier);
     TIdentifier member = parse_identifier(0);
     return std::make_unique<CDot>(std::move(member), std::move(structure), std::move(line));
 }
@@ -516,7 +516,7 @@ static std::unique_ptr<CDot> parse_dot_factor(std::unique_ptr<CExp> structure) {
 static std::unique_ptr<CArrow> parse_arrow_factor(std::unique_ptr<CExp> pointer) {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next_is(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOKEN_KIND::identifier);
     TIdentifier member = parse_identifier(0);
     return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
@@ -594,7 +594,7 @@ static std::unique_ptr<CSizeOfT> parse_sizeoft_factor() {
     size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     return std::make_unique<CSizeOfT>(std::move(target_type), std::move(line));
 }
 
@@ -629,7 +629,7 @@ static std::unique_ptr<CCast> parse_cast_factor() {
     size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
     return std::make_unique<CCast>(std::move(exp), std::move(target_type), std::move(line));
 }
@@ -779,7 +779,7 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> exp_middle = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    expect_next(pop_next(), TOKEN_KIND::ternary_else);
     std::unique_ptr<CExp> exp_right = parse_exp(precedence);
     return std::make_unique<CConditional>(
         std::move(exp_left), std::move(exp_middle), std::move(exp_right), std::move(line));
@@ -907,21 +907,21 @@ static std::unique_ptr<CReturn> parse_ret_statement() {
     if (peek_next().token_kind != TOKEN_KIND::semicolon) {
         exp = parse_exp(0);
     }
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CReturn>(std::move(exp), std::move(line));
 }
 
 static std::unique_ptr<CExpression> parse_exp_statement() {
     std::unique_ptr<CExp> exp = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CExpression>(std::move(exp));
 }
 
 static std::unique_ptr<CIf> parse_if_statement() {
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> then = parse_statement();
     std::unique_ptr<CStatement> else_fi;
@@ -936,9 +936,9 @@ static std::unique_ptr<CIf> parse_if_statement() {
 static std::unique_ptr<CGoto> parse_goto_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next_is(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOKEN_KIND::identifier);
     TIdentifier target = parse_identifier(0);
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CGoto>(std::move(target), std::move(line));
 }
 
@@ -958,9 +958,9 @@ static std::unique_ptr<CCompound> parse_compound_statement() {
 
 static std::unique_ptr<CWhile> parse_while_statement() {
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CWhile>(std::move(condition), std::move(body));
@@ -970,28 +970,28 @@ static std::unique_ptr<CDoWhile> parse_do_while_statement() {
     pop_next();
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
-    expect_next_is(pop_next(), TOKEN_KIND::key_while);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOKEN_KIND::key_while);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CDoWhile>(std::move(condition), std::move(body));
 }
 
 static std::unique_ptr<CFor> parse_for_statement() {
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
     std::unique_ptr<CForInit> init = parse_for_init();
     std::unique_ptr<CExp> condition;
     if (peek_next().token_kind != TOKEN_KIND::semicolon) {
         condition = parse_exp(0);
     }
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     std::unique_ptr<CExp> post;
     if (peek_next().token_kind != TOKEN_KIND::parenthesis_close) {
         post = parse_exp(0);
     }
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
@@ -999,9 +999,9 @@ static std::unique_ptr<CFor> parse_for_statement() {
 
 static std::unique_ptr<CSwitch> parse_switch_statement() {
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_open);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_open);
     std::unique_ptr<CExp> match = parse_exp(0);
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CSwitch>(std::move(match), std::move(body));
@@ -1030,7 +1030,7 @@ static std::unique_ptr<CCase> parse_case_statement() {
         }
         value = std::make_unique<CConstant>(std::move(constant), std::move(line));
     }
-    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    expect_next(pop_next(), TOKEN_KIND::ternary_else);
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
     return std::make_unique<CCase>(std::move(value), std::move(jump_to));
@@ -1039,7 +1039,7 @@ static std::unique_ptr<CCase> parse_case_statement() {
 static std::unique_ptr<CDefault> parse_default_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::ternary_else);
+    expect_next(pop_next(), TOKEN_KIND::ternary_else);
     peek_next();
     std::unique_ptr<CStatement> jump_to = parse_statement();
     return std::make_unique<CDefault>(std::move(jump_to), std::move(line));
@@ -1048,14 +1048,14 @@ static std::unique_ptr<CDefault> parse_default_statement() {
 static std::unique_ptr<CBreak> parse_break_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CBreak>(std::move(line));
 }
 
 static std::unique_ptr<CContinue> parse_continue_statement() {
     size_t line = context->peek_token->line;
     pop_next();
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CContinue>(std::move(line));
 }
 
@@ -1135,7 +1135,7 @@ static std::unique_ptr<CInitExp> parse_for_init_exp() {
     if (peek_next().token_kind != TOKEN_KIND::semicolon) {
         init = parse_exp(0);
     }
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CInitExp>(std::move(init));
 }
 
@@ -1207,7 +1207,7 @@ static std::unique_ptr<CB> parse_b_block() {
 static std::unique_ptr<CBlock> parse_block() {
     pop_next();
     std::unique_ptr<CBlock> block = parse_b_block();
-    expect_next_is(pop_next(), TOKEN_KIND::brace_close);
+    expect_next(pop_next(), TOKEN_KIND::brace_close);
     return block;
 }
 
@@ -1234,7 +1234,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOKEN_KIND::key_struct:
             case TOKEN_KIND::key_union: {
                 type_token_kinds.push_back(pop_next_i(i).token_kind);
-                expect_next_is(peek_next_i(i), TOKEN_KIND::identifier);
+                expect_next(peek_next_i(i), TOKEN_KIND::identifier);
                 break;
             }
             case TOKEN_KIND::key_static:
@@ -1394,7 +1394,7 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
         if (peek_next().token_kind == TOKEN_KIND::brace_close) {
             break;
         }
-        expect_next_is(pop_next(), TOKEN_KIND::separator_comma);
+        expect_next(pop_next(), TOKEN_KIND::separator_comma);
     }
     if (initializers.empty()) {
         RAISE_RUNTIME_ERROR_AT_LINE(
@@ -1487,7 +1487,7 @@ static std::unique_ptr<CIdent> parse_ident_simple_decltor() {
 static std::unique_ptr<CDeclarator> parse_simple_decltor() {
     pop_next();
     std::unique_ptr<CDeclarator> declarator = parse_decltor();
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     return declarator;
 }
 
@@ -1559,7 +1559,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
                 GET_PARSER_MESSAGE(MESSAGE_PARSER::unexpected_parameter_list, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
-    expect_next_is(pop_next(), TOKEN_KIND::parenthesis_close);
+    expect_next(pop_next(), TOKEN_KIND::parenthesis_close);
     return param_list;
 }
 
@@ -1622,7 +1622,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
         pop_next();
     }
     else {
-        expect_next_is(peek_next(), TOKEN_KIND::brace_open);
+        expect_next(peek_next(), TOKEN_KIND::brace_open);
         body = parse_block();
     }
     return std::make_unique<CFunctionDeclaration>(std::move(declarator.name), std::move(declarator.params),
@@ -1639,7 +1639,7 @@ static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
         pop_next();
         init = parse_initializer();
     }
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CVariableDeclaration>(std::move(declarator.name), std::move(init),
         std::move(declarator.derived_type), std::move(storage_class), std::move(line));
 }
@@ -1663,7 +1663,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
             context->next_token->line);
     }
     size_t line = context->next_token->line;
-    expect_next_is(pop_next(), TOKEN_KIND::semicolon);
+    expect_next(pop_next(), TOKEN_KIND::semicolon);
     return std::make_unique<CMemberDeclaration>(
         std::move(declarator.name), std::move(declarator.derived_type), std::move(line));
 }
@@ -1673,7 +1673,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
 static std::unique_ptr<CStructDeclaration> parse_struct_decl() {
     size_t line = context->peek_token->line;
     bool is_union = pop_next().token_kind == TOKEN_KIND::key_union;
-    expect_next_is(peek_next(), TOKEN_KIND::identifier);
+    expect_next(peek_next(), TOKEN_KIND::identifier);
     TIdentifier tag = parse_identifier(0);
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
     if (pop_next().token_kind == TOKEN_KIND::brace_open) {
@@ -1685,7 +1685,7 @@ static std::unique_ptr<CStructDeclaration> parse_struct_decl() {
         pop_next();
         pop_next();
     }
-    expect_next_is(*context->next_token, TOKEN_KIND::semicolon);
+    expect_next(*context->next_token, TOKEN_KIND::semicolon);
     return std::make_unique<CStructDeclaration>(std::move(tag), is_union, std::move(members), std::move(line));
 }
 
