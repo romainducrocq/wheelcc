@@ -327,7 +327,7 @@ static void cfg_init_edges(size_t block_id) {
     }
 }
 
-static void cfg_init() {
+static void init_control_flow_graph() {
     context->control_flow_graph->blocks.clear();
     context->control_flow_graph->identifier_id_map.clear();
     {
@@ -498,10 +498,10 @@ static bool set_dfa_bak_instr(size_t instruction_index, size_t& i) {
 #endif
 
 #if __OPTIM_LEVEL__ == 1
-static bool prop_transfer_reach_cps(size_t instruction_index, size_t next_instruction_index);
+static bool prop_transfer_reach_copies(size_t instruction_index, size_t next_instruction_index);
 static void elim_transfer_live_values(size_t instruction_index, size_t next_instruction_index);
 #elif __OPTIM_LEVEL__ == 2
-static void infer_live_registers(size_t instruction_index, size_t next_instruction_index);
+static void infer_transfer_live_regs(size_t instruction_index, size_t next_instruction_index);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -513,7 +513,7 @@ static size_t dfa_forward_transfer_block(size_t instruction_index, size_t block_
                 GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                     GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
             }
-            if (!prop_transfer_reach_cps(instruction_index, next_instruction_index)) {
+            if (!prop_transfer_reach_copies(instruction_index, next_instruction_index)) {
                 for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
                     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, i) =
                         GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
@@ -526,7 +526,7 @@ static size_t dfa_forward_transfer_block(size_t instruction_index, size_t block_
         GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
             GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
     }
-    if (!prop_transfer_reach_cps(instruction_index, context->data_flow_analysis->incoming_index)) {
+    if (!prop_transfer_reach_copies(instruction_index, context->data_flow_analysis->incoming_index)) {
         for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
             GET_DFA_INSTRUCTION_SET_MASK(context->data_flow_analysis->incoming_index, i) =
                 GET_DFA_INSTRUCTION_SET_MASK(instruction_index, i);
@@ -554,7 +554,7 @@ static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block
 #if __OPTIM_LEVEL__ == 1
                 elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
-                infer_live_registers
+                infer_transfer_live_regs
 #endif
                     (instruction_index, next_instruction_index);
                 instruction_index = next_instruction_index;
@@ -568,7 +568,7 @@ static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block
 #if __OPTIM_LEVEL__ == 1
     elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
-    infer_live_registers
+    infer_transfer_live_regs
 #endif
         (instruction_index, context->data_flow_analysis->incoming_index);
     return instruction_index;
@@ -856,7 +856,7 @@ static void infer_add_data_op(AsmOperand* node) {
 }
 #endif
 
-static bool dfa_init(
+static bool init_data_flow_analysis(
 #if __OPTIM_LEVEL__ == 1
     bool is_dead_store_elimination, bool is_addressed_set
 #elif __OPTIM_LEVEL__ == 2

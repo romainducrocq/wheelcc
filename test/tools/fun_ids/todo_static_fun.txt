@@ -11,7 +11,7 @@
 [x] ast/front_ast.cpp
 [x] ast/interm_ast.cpp
 [x] main.cpp
-[ ] optimization/optim_tac.cpp
+[x] optimization/optim_tac.cpp
 [ ] optimization/reg_alloc.cpp
 [x] backend/emitter/gas_code.cpp
 [x] backend/assembly/stack_fix.cpp

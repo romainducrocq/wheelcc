@@ -185,7 +185,7 @@ static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* 
     }
 }
 
-static void infer_live_registers(size_t instruction_index, size_t next_instruction_index) {
+static void infer_transfer_live_regs(size_t instruction_index, size_t next_instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t: {
@@ -646,7 +646,7 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
 }
 
 static bool inference_graph_initialize(TIdentifier function_name) {
-    if (!dfa_init(function_name)) {
+    if (!init_data_flow_analysis(function_name)) {
         return false;
     }
     dfa_iter_alg();
@@ -1789,7 +1789,7 @@ static bool coalesce_inference_graph() {
 
 static void regalloc_function_top_level(AsmFunction* node) {
     context->p_instructions = &node->instructions;
-    cfg_init();
+    init_control_flow_graph();
 Ldowhile:
     if (inference_graph_initialize(node->name)) {
         if (context->is_with_coalescing && coalesce_inference_graph()) {
