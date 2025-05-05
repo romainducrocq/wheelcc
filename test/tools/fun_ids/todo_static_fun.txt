@@ -12,7 +12,7 @@
 [x] ast/interm_ast.cpp
 [x] main.cpp
 [x] optimization/optim_tac.cpp
-[ ] optimization/reg_alloc.cpp
+[x] optimization/reg_alloc.cpp
 [x] backend/emitter/gas_code.cpp
 [x] backend/assembly/stack_fix.cpp
 [x] backend/assembly/asm_gen.cpp

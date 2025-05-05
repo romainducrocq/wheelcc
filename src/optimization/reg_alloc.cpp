@@ -81,7 +81,7 @@ static std::unique_ptr<RegAllocContext> context;
 
 // Inference graph
 
-static bool is_binary_bitshift_cl(AsmBinary* node) {
+static bool is_bitshift_cl(AsmBinary* node) {
     switch (node->binary_op->type()) {
         case AST_T::AsmBitShiftLeft_t:
         case AST_T::AsmBitShiftRight_t:
@@ -92,35 +92,33 @@ static bool is_binary_bitshift_cl(AsmBinary* node) {
     }
 }
 
-static void inference_graph_transfer_used_reg_live_registers(
-    REGISTER_KIND register_kind, size_t next_instruction_index) {
+static void infer_transfer_used_reg(REGISTER_KIND register_kind, size_t next_instruction_index) {
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), true);
 }
 
-static void inference_graph_transfer_used_name_live_registers(TIdentifier name, size_t next_instruction_index) {
+static void infer_transfer_used_name(TIdentifier name, size_t next_instruction_index) {
     if (!is_aliased_name(name)) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, true);
     }
 }
 
-static void inference_graph_transfer_used_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
+static void infer_transfer_used_op(AsmOperand* node, size_t next_instruction_index) {
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
-                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+                infer_transfer_used_reg(register_kind, next_instruction_index);
             }
             break;
         }
         case AST_T::AsmPseudo_t:
-            inference_graph_transfer_used_name_live_registers(
-                static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+            infer_transfer_used_name(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
             break;
         case AST_T::AsmMemory_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmMemory*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
-                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+                infer_transfer_used_reg(register_kind, next_instruction_index);
             }
             break;
         }
@@ -128,11 +126,11 @@ static void inference_graph_transfer_used_operand_live_registers(AsmOperand* nod
             AsmIndexed* p_node = static_cast<AsmIndexed*>(node);
             {
                 REGISTER_KIND register_kind = register_mask_kind(p_node->reg_base.get());
-                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+                infer_transfer_used_reg(register_kind, next_instruction_index);
             }
             {
                 REGISTER_KIND register_kind = register_mask_kind(p_node->reg_index.get());
-                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+                infer_transfer_used_reg(register_kind, next_instruction_index);
             }
             break;
         }
@@ -141,40 +139,38 @@ static void inference_graph_transfer_used_operand_live_registers(AsmOperand* nod
     }
 }
 
-static void inference_graph_transfer_used_call_live_registers(AsmCall* node, size_t next_instruction_index) {
+static void infer_transfer_used_call(AsmCall* node, size_t next_instruction_index) {
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     GET_DFA_INSTRUCTION_SET_MASK(next_instruction_index, 0) |= fun_type->param_reg_mask;
 }
 
-static void inference_graph_transfer_updated_reg_live_registers(
-    REGISTER_KIND register_kind, size_t next_instruction_index) {
+static void infer_transfer_updated_reg(REGISTER_KIND register_kind, size_t next_instruction_index) {
     SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, register_mask_bit(register_kind), false);
 }
 
-static void inference_graph_transfer_updated_name_live_registers(TIdentifier name, size_t next_instruction_index) {
+static void infer_transfer_updated_name(TIdentifier name, size_t next_instruction_index) {
     if (!is_aliased_name(name)) {
         size_t i = context->control_flow_graph->identifier_id_map[name];
         SET_DFA_INSTRUCTION_SET_AT(next_instruction_index, i, false);
     }
 }
 
-static void inference_graph_transfer_updated_operand_live_registers(AsmOperand* node, size_t next_instruction_index) {
+static void infer_transfer_updated_op(AsmOperand* node, size_t next_instruction_index) {
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
-                inference_graph_transfer_updated_reg_live_registers(register_kind, next_instruction_index);
+                infer_transfer_updated_reg(register_kind, next_instruction_index);
             }
             break;
         }
         case AST_T::AsmPseudo_t:
-            inference_graph_transfer_updated_name_live_registers(
-                static_cast<AsmPseudo*>(node)->name, next_instruction_index);
+            infer_transfer_updated_name(static_cast<AsmPseudo*>(node)->name, next_instruction_index);
             break;
         case AST_T::AsmMemory_t: {
             REGISTER_KIND register_kind = register_mask_kind(static_cast<AsmMemory*>(node)->reg.get());
             if (register_kind != REGISTER_KIND::Sp) {
-                inference_graph_transfer_used_reg_live_registers(register_kind, next_instruction_index);
+                infer_transfer_used_reg(register_kind, next_instruction_index);
             }
             break;
         }
@@ -190,116 +186,111 @@ static void infer_transfer_live_regs(size_t instruction_index, size_t next_instr
     switch (node->type()) {
         case AST_T::AsmMov_t: {
             AsmMov* p_node = static_cast<AsmMov*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            infer_transfer_updated_op(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmMovSx_t: {
             AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            infer_transfer_updated_op(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmMovZeroExtend_t: {
             AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            infer_transfer_updated_op(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmLea_t: {
             AsmLea* p_node = static_cast<AsmLea*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            infer_transfer_updated_op(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmCvttsd2si_t: {
             AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            infer_transfer_updated_op(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmCvtsi2sd_t: {
             AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
-            inference_graph_transfer_updated_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
+            infer_transfer_updated_op(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmUnary_t:
-            inference_graph_transfer_used_operand_live_registers(
-                static_cast<AsmUnary*>(node)->dst.get(), next_instruction_index);
+            infer_transfer_used_op(static_cast<AsmUnary*>(node)->dst.get(), next_instruction_index);
             break;
         case AST_T::AsmBinary_t: {
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
-            if (is_binary_bitshift_cl(p_node)) {
-                inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->dst.get(), next_instruction_index);
+            if (is_bitshift_cl(p_node)) {
+                infer_transfer_used_reg(REGISTER_KIND::Cx, next_instruction_index);
             }
             break;
         }
         case AST_T::AsmCmp_t: {
             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-            inference_graph_transfer_used_operand_live_registers(p_node->src.get(), next_instruction_index);
-            inference_graph_transfer_used_operand_live_registers(p_node->dst.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->src.get(), next_instruction_index);
+            infer_transfer_used_op(p_node->dst.get(), next_instruction_index);
             break;
         }
         case AST_T::AsmIdiv_t:
-            inference_graph_transfer_used_operand_live_registers(
-                static_cast<AsmIdiv*>(node)->src.get(), next_instruction_index);
-            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
+            infer_transfer_used_op(static_cast<AsmIdiv*>(node)->src.get(), next_instruction_index);
+            infer_transfer_used_reg(REGISTER_KIND::Ax, next_instruction_index);
+            infer_transfer_used_reg(REGISTER_KIND::Dx, next_instruction_index);
             break;
         case AST_T::AsmDiv_t:
-            inference_graph_transfer_used_operand_live_registers(
-                static_cast<AsmDiv*>(node)->src.get(), next_instruction_index);
-            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            infer_transfer_used_op(static_cast<AsmDiv*>(node)->src.get(), next_instruction_index);
+            infer_transfer_used_reg(REGISTER_KIND::Ax, next_instruction_index);
             break;
         case AST_T::AsmCdq_t:
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            inference_graph_transfer_used_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Dx, next_instruction_index);
+            infer_transfer_used_reg(REGISTER_KIND::Ax, next_instruction_index);
             break;
         case AST_T::AsmSetCC_t:
-            inference_graph_transfer_updated_operand_live_registers(
-                static_cast<AsmSetCC*>(node)->dst.get(), next_instruction_index);
+            infer_transfer_updated_op(static_cast<AsmSetCC*>(node)->dst.get(), next_instruction_index);
             break;
         case AST_T::AsmPush_t:
-            inference_graph_transfer_used_operand_live_registers(
-                static_cast<AsmPush*>(node)->src.get(), next_instruction_index);
+            infer_transfer_used_op(static_cast<AsmPush*>(node)->src.get(), next_instruction_index);
             break;
         case AST_T::AsmCall_t:
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Ax, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Cx, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Dx, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Di, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Si, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::R8, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::R9, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm0, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm1, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm2, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm3, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm4, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm5, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm6, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm7, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm8, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm9, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm10, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm11, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm12, next_instruction_index);
-            inference_graph_transfer_updated_reg_live_registers(REGISTER_KIND::Xmm13, next_instruction_index);
-            inference_graph_transfer_used_call_live_registers(static_cast<AsmCall*>(node), next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Ax, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Cx, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Dx, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Di, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Si, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::R8, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::R9, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm0, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm1, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm2, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm3, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm4, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm5, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm6, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm7, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm8, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm9, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm10, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm11, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm12, next_instruction_index);
+            infer_transfer_updated_reg(REGISTER_KIND::Xmm13, next_instruction_index);
+            infer_transfer_used_call(static_cast<AsmCall*>(node), next_instruction_index);
             break;
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-static void inference_graph_set_p(bool is_double) {
+static void set_p_infer_graph(bool is_double) {
     context->p_inference_graph = is_double ? context->sse_inference_graph.get() : context->inference_graph.get();
 }
 
-static void inference_graph_add_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
+static void infer_add_pseudo_edges(TIdentifier name_1, TIdentifier name_2) {
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name_1];
         if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name_2)
@@ -318,7 +309,7 @@ static void inference_graph_add_pseudo_edges(TIdentifier name_1, TIdentifier nam
     }
 }
 
-static void inference_graph_add_reg_edge(REGISTER_KIND register_kind, TIdentifier name) {
+static void infer_add_reg_edge(REGISTER_KIND register_kind, TIdentifier name) {
     {
         InferenceRegister& infer = context->p_inference_graph->pseudo_register_map[name];
         if (!register_mask_get(infer.linked_hard_mask, register_kind)) {
@@ -336,7 +327,7 @@ static void inference_graph_add_reg_edge(REGISTER_KIND register_kind, TIdentifie
     }
 }
 
-static void inference_graph_remove_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
+static void infer_rm_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
     for (size_t i = infer.linked_pseudo_names.size(); i-- > 0;) {
         if (infer.linked_pseudo_names[i] == name) {
             std::swap(infer.linked_pseudo_names[i], infer.linked_pseudo_names.back());
@@ -348,7 +339,7 @@ static void inference_graph_remove_pseudo_edge(InferenceRegister& infer, TIdenti
     RAISE_INTERNAL_ERROR;
 }
 
-static void inference_graph_remove_unpruned_pseudo_name(TIdentifier name) {
+static void infer_rm_unpruned_pseudo_name(TIdentifier name) {
     for (size_t i = context->p_inference_graph->unpruned_pseudo_names.size(); i-- > 0;) {
         if (context->p_inference_graph->unpruned_pseudo_names[i] == name) {
             std::swap(context->p_inference_graph->unpruned_pseudo_names[i],
@@ -360,20 +351,20 @@ static void inference_graph_remove_unpruned_pseudo_name(TIdentifier name) {
     RAISE_INTERNAL_ERROR;
 }
 
-static void inference_graph_initialize_used_name_edges(TIdentifier name) {
+static void infer_init_used_name_edges(TIdentifier name) {
     if (!is_aliased_name(name)) {
-        inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+        set_p_infer_graph(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
         context->p_inference_graph->pseudo_register_map[name].spill_cost++;
     }
 }
 
-static void inference_graph_initialize_used_operand_edges(AsmOperand* node) {
+static void infer_init_used_op_edges(AsmOperand* node) {
     if (node->type() == AST_T::AsmPseudo_t) {
-        inference_graph_initialize_used_name_edges(static_cast<AsmPseudo*>(node)->name);
+        infer_init_used_name_edges(static_cast<AsmPseudo*>(node)->name);
     }
 }
 
-static void inference_graph_initialize_updated_regs_edges(
+static void infer_init_updated_regs_edges(
     REGISTER_KIND* register_kinds, size_t instruction_index, size_t register_kinds_size, bool is_double) {
 
     size_t mov_mask_bit = context->data_flow_analysis->set_size;
@@ -387,7 +378,7 @@ static void inference_graph_initialize_updated_regs_edges(
             }
             else {
                 bool is_src_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
-                inference_graph_set_p(is_src_double);
+                set_p_infer_graph(is_src_double);
                 context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
                 mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
                 is_mov = is_double == is_src_double;
@@ -397,7 +388,7 @@ static void inference_graph_initialize_updated_regs_edges(
             is_mov = false;
         }
     }
-    inference_graph_set_p(is_double);
+    set_p_infer_graph(is_double);
 
     if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
         for (size_t i = context->data_flow_analysis->set_size < 64 ? context->data_flow_analysis->set_size : 64;
@@ -406,7 +397,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t j = 0; j < register_kinds_size; ++j) {
-                        inference_graph_add_reg_edge(register_kinds[j], pseudo_name);
+                        infer_add_reg_edge(register_kinds[j], pseudo_name);
                     }
                 }
             }
@@ -427,7 +418,7 @@ static void inference_graph_initialize_updated_regs_edges(
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
                     for (size_t k = 0; k < register_kinds_size; ++k) {
-                        inference_graph_add_reg_edge(register_kinds[k], pseudo_name);
+                        infer_add_reg_edge(register_kinds[k], pseudo_name);
                     }
                 }
             }
@@ -435,7 +426,7 @@ static void inference_graph_initialize_updated_regs_edges(
     }
 }
 
-static void inference_graph_initialize_updated_name_edges(TIdentifier name, size_t instruction_index) {
+static void infer_init_updated_name_edges(TIdentifier name, size_t instruction_index) {
     if (is_aliased_name(name)) {
         return;
     }
@@ -465,7 +456,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 }
                 else {
                     bool is_src_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
-                    inference_graph_set_p(is_src_double);
+                    set_p_infer_graph(is_src_double);
                     context->p_inference_graph->pseudo_register_map[src_name].spill_cost++;
                     mov_mask_bit = context->control_flow_graph->identifier_id_map[src_name];
                     is_mov = is_double == is_src_double;
@@ -492,7 +483,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
             }
         }
     }
-    inference_graph_set_p(is_double);
+    set_p_infer_graph(is_double);
     context->p_inference_graph->pseudo_register_map[name].spill_cost++;
 
     if (GET_DFA_INSTRUCTION_SET_MASK(instruction_index, 0) != MASK_FALSE) {
@@ -501,7 +492,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTRUCTION_SET_AT(instruction_index, i) && !(is_mov && i == mov_mask_bit)) {
                 REGISTER_KIND register_kind = context->hard_registers[i].register_kind;
-                inference_graph_add_reg_edge(register_kind, name);
+                infer_add_reg_edge(register_kind, name);
             }
         }
         i = REGISTER_MASK_SIZE;
@@ -511,7 +502,7 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    inference_graph_add_pseudo_edges(name, pseudo_name);
+                    infer_add_pseudo_edges(name, pseudo_name);
                 }
             }
         }
@@ -531,112 +522,106 @@ static void inference_graph_initialize_updated_name_edges(TIdentifier name, size
                 TIdentifier pseudo_name = context->data_flow_analysis_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
                     && is_double == (frontend->symbol_table[pseudo_name]->type_t->type() == AST_T::Double_t)) {
-                    inference_graph_add_pseudo_edges(name, pseudo_name);
+                    infer_add_pseudo_edges(name, pseudo_name);
                 }
             }
         }
     }
 }
 
-static void inference_graph_initialize_updated_operand_edges(AsmOperand* node, size_t instruction_index) {
+static void infer_init_updated_op_edges(AsmOperand* node, size_t instruction_index) {
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
             REGISTER_KIND register_kinds[1] = {register_mask_kind(static_cast<AsmRegister*>(node)->reg.get())};
             if (register_kinds[0] != REGISTER_KIND::Sp) {
                 bool is_double = register_mask_bit(register_kinds[0]) > 11;
-                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, is_double);
+                infer_init_updated_regs_edges(register_kinds, instruction_index, 1, is_double);
             }
             break;
         }
         case AST_T::AsmPseudo_t:
-            inference_graph_initialize_updated_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index);
+            infer_init_updated_name_edges(static_cast<AsmPseudo*>(node)->name, instruction_index);
             break;
         default:
             break;
     }
 }
 
-static void inference_graph_initialize_edges(size_t instruction_index) {
+static void infer_init_edges(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            inference_graph_initialize_updated_operand_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmMov*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmMovSx_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmMovSx*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmMovSx*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmMovZeroExtend_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmMovZeroExtend*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmMovZeroExtend*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmLea_t:
-            inference_graph_initialize_updated_operand_edges(static_cast<AsmLea*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmLea*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmCvttsd2si_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmCvttsd2si*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmCvttsd2si*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmCvtsi2sd_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmCvtsi2sd*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmCvtsi2sd*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmUnary_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmUnary*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmUnary*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmBinary_t: {
             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-            if (is_binary_bitshift_cl(p_node)) {
+            if (is_bitshift_cl(p_node)) {
                 REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Cx};
-                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
+                infer_init_updated_regs_edges(register_kinds, instruction_index, 1, false);
             }
-            inference_graph_initialize_updated_operand_edges(p_node->dst.get(), instruction_index);
-            inference_graph_initialize_used_operand_edges(p_node->src.get());
+            infer_init_updated_op_edges(p_node->dst.get(), instruction_index);
+            infer_init_used_op_edges(p_node->src.get());
             break;
         }
         case AST_T::AsmCmp_t: {
             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-            inference_graph_initialize_used_operand_edges(p_node->src.get());
-            inference_graph_initialize_used_operand_edges(p_node->dst.get());
+            infer_init_used_op_edges(p_node->src.get());
+            infer_init_used_op_edges(p_node->dst.get());
             break;
         }
         case AST_T::AsmIdiv_t: {
             REGISTER_KIND register_kinds[2] = {REGISTER_KIND::Ax, REGISTER_KIND::Dx};
-            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 2, false);
-            inference_graph_initialize_used_operand_edges(static_cast<AsmIdiv*>(node)->src.get());
+            infer_init_updated_regs_edges(register_kinds, instruction_index, 2, false);
+            infer_init_used_op_edges(static_cast<AsmIdiv*>(node)->src.get());
             break;
         }
         case AST_T::AsmDiv_t: {
             REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Ax};
-            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
-            inference_graph_initialize_used_operand_edges(static_cast<AsmDiv*>(node)->src.get());
+            infer_init_updated_regs_edges(register_kinds, instruction_index, 1, false);
+            infer_init_used_op_edges(static_cast<AsmDiv*>(node)->src.get());
             break;
         }
         case AST_T::AsmCdq_t: {
             REGISTER_KIND register_kinds[1] = {REGISTER_KIND::Dx};
-            inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 1, false);
+            infer_init_updated_regs_edges(register_kinds, instruction_index, 1, false);
             break;
         }
         case AST_T::AsmSetCC_t:
-            inference_graph_initialize_updated_operand_edges(
-                static_cast<AsmSetCC*>(node)->dst.get(), instruction_index);
+            infer_init_updated_op_edges(static_cast<AsmSetCC*>(node)->dst.get(), instruction_index);
             break;
         case AST_T::AsmPush_t:
-            inference_graph_initialize_used_operand_edges(static_cast<AsmPush*>(node)->src.get());
+            infer_init_used_op_edges(static_cast<AsmPush*>(node)->src.get());
             break;
         case AST_T::AsmCall_t: {
             {
                 REGISTER_KIND register_kinds[7] = {REGISTER_KIND::Ax, REGISTER_KIND::Cx, REGISTER_KIND::Dx,
                     REGISTER_KIND::Di, REGISTER_KIND::Si, REGISTER_KIND::R8, REGISTER_KIND::R9};
-                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 7, false);
+                infer_init_updated_regs_edges(register_kinds, instruction_index, 7, false);
             }
             {
                 REGISTER_KIND register_kinds[14] = {REGISTER_KIND::Xmm0, REGISTER_KIND::Xmm1, REGISTER_KIND::Xmm2,
                     REGISTER_KIND::Xmm3, REGISTER_KIND::Xmm4, REGISTER_KIND::Xmm5, REGISTER_KIND::Xmm6,
                     REGISTER_KIND::Xmm7, REGISTER_KIND::Xmm8, REGISTER_KIND::Xmm9, REGISTER_KIND::Xmm10,
                     REGISTER_KIND::Xmm11, REGISTER_KIND::Xmm12, REGISTER_KIND::Xmm13};
-                inference_graph_initialize_updated_regs_edges(register_kinds, instruction_index, 14, true);
+                infer_init_updated_regs_edges(register_kinds, instruction_index, 14, true);
             }
             break;
         }
@@ -645,7 +630,7 @@ static void inference_graph_initialize_edges(size_t instruction_index) {
     }
 }
 
-static bool inference_graph_initialize(TIdentifier function_name) {
+static bool init_inference_graph(TIdentifier function_name) {
     if (!init_data_flow_analysis(function_name)) {
         return false;
     }
@@ -710,7 +695,7 @@ static bool inference_graph_initialize(TIdentifier function_name) {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
-                    inference_graph_initialize_edges(instruction_index);
+                    infer_init_edges(instruction_index);
                 }
             }
         }
@@ -722,7 +707,7 @@ static bool inference_graph_initialize(TIdentifier function_name) {
 
 // Register allocation
 
-static bool is_register_callee_saved(REGISTER_KIND register_kind) {
+static bool is_reg_callee_saved(REGISTER_KIND register_kind) {
     switch (register_kind) {
         case REGISTER_KIND::Bx:
         case REGISTER_KIND::R12:
@@ -735,7 +720,7 @@ static bool is_register_callee_saved(REGISTER_KIND register_kind) {
     }
 }
 
-static void regalloc_prune_inference_register(InferenceRegister* infer, size_t pruned_index) {
+static void alloc_prune_infer_reg(InferenceRegister* infer, size_t pruned_index) {
     if (infer->register_kind == REGISTER_KIND::Sp) {
         std::swap(context->p_inference_graph->unpruned_pseudo_names[pruned_index],
             context->p_inference_graph->unpruned_pseudo_names.back());
@@ -759,7 +744,7 @@ static void regalloc_prune_inference_register(InferenceRegister* infer, size_t p
     }
 }
 
-static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdentifier pruned_name) {
+static void alloc_unprune_infer_reg(InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->register_kind == REGISTER_KIND::Sp) {
         if (std::find(context->p_inference_graph->unpruned_pseudo_names.begin(),
                 context->p_inference_graph->unpruned_pseudo_names.end(), pruned_name)
@@ -790,16 +775,16 @@ static void regalloc_unprune_inference_register(InferenceRegister* infer, TIdent
     }
 }
 
-static void regalloc_color_inference_graph();
+static void alloc_color_infer_graph();
 
-static void regalloc_next_color_inference_graph() {
+static void alloc_next_color_infer_graph() {
     if (!context->p_inference_graph->unpruned_hard_mask_bits.empty()
         || !context->p_inference_graph->unpruned_pseudo_names.empty()) {
-        regalloc_color_inference_graph();
+        alloc_color_infer_graph();
     }
 }
 
-static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_name) {
+static InferenceRegister* alloc_prune_infer_graph(TIdentifier& pruned_name) {
     size_t pruned_index;
     InferenceRegister* infer = nullptr;
     for (size_t i = 0; i < context->p_inference_graph->unpruned_pseudo_names.size(); ++i) {
@@ -851,11 +836,11 @@ static InferenceRegister* regalloc_prune_inference_graph(TIdentifier& pruned_nam
             }
         }
     }
-    regalloc_prune_inference_register(infer, pruned_index);
+    alloc_prune_infer_reg(infer, pruned_index);
     return infer;
 }
 
-static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifier pruned_name) {
+static void alloc_unprune_infer_graph(InferenceRegister* infer, TIdentifier pruned_name) {
     mask_t color_reg_mask = context->p_inference_graph->hard_reg_mask;
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
@@ -874,7 +859,7 @@ static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifi
         }
     }
     if (color_reg_mask != REGISTER_MASK_FALSE) {
-        if (is_register_callee_saved(infer->register_kind)) {
+        if (is_reg_callee_saved(infer->register_kind)) {
             for (size_t i = context->p_inference_graph->k; i-- > 0;) {
                 REGISTER_KIND color = context->hard_registers[i + context->p_inference_graph->offset].register_kind;
                 if (register_mask_get(color_reg_mask, color)) {
@@ -892,18 +877,18 @@ static void regalloc_unprune_inference_graph(InferenceRegister* infer, TIdentifi
                 }
             }
         }
-        regalloc_unprune_inference_register(infer, pruned_name);
+        alloc_unprune_infer_reg(infer, pruned_name);
     }
 }
 
-static void regalloc_color_inference_graph() {
+static void alloc_color_infer_graph() {
     TIdentifier pruned_name;
-    InferenceRegister* infer = regalloc_prune_inference_graph(pruned_name);
-    regalloc_next_color_inference_graph();
-    regalloc_unprune_inference_graph(infer, pruned_name);
+    InferenceRegister* infer = alloc_prune_infer_graph(pruned_name);
+    alloc_next_color_infer_graph();
+    alloc_unprune_infer_graph(infer, pruned_name);
 }
 
-static void regalloc_color_register_map() {
+static void alloc_color_reg_map() {
     for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
         InferenceRegister& infer = context->hard_registers[i + context->p_inference_graph->offset];
         if (infer.color != REGISTER_KIND::Sp) {
@@ -912,17 +897,16 @@ static void regalloc_color_register_map() {
     }
 }
 
-static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
+static std::shared_ptr<AsmRegister> alloc_hard_reg(TIdentifier name) {
     if (is_aliased_name(name)) {
         return nullptr;
     }
-    inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+    set_p_infer_graph(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
     REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
     if (color != REGISTER_KIND::Sp) {
         REGISTER_KIND register_kind = context->register_color_map[register_mask_bit(color)];
         std::shared_ptr<AsmRegister> hard_register = gen_register(register_kind);
-        if (is_register_callee_saved(register_kind)
-            && !register_mask_get(context->callee_saved_reg_mask, register_kind)) {
+        if (is_reg_callee_saved(register_kind) && !register_mask_get(context->callee_saved_reg_mask, register_kind)) {
             register_mask_set(context->callee_saved_reg_mask, register_kind, true);
             std::shared_ptr<AsmOperand> callee_saved_register = hard_register;
             context->p_backend_fun_top_level->callee_saved_registers.push_back(std::move(callee_saved_register));
@@ -934,7 +918,7 @@ static std::shared_ptr<AsmRegister> regalloc_hard_register(TIdentifier name) {
     }
 }
 
-static REGISTER_KIND get_operand_register_kind(AsmOperand* node) {
+static REGISTER_KIND get_op_register_kind(AsmOperand* node) {
     switch (node->type()) {
         case AST_T::AsmRegister_t:
             return register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
@@ -943,7 +927,7 @@ static REGISTER_KIND get_operand_register_kind(AsmOperand* node) {
             if (is_aliased_name(name)) {
                 return REGISTER_KIND::Sp;
             }
-            inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+            set_p_infer_graph(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
             REGISTER_KIND color = context->p_inference_graph->pseudo_register_map[name].color;
             if (color == REGISTER_KIND::Sp) {
                 return REGISTER_KIND::Sp;
@@ -961,25 +945,23 @@ static REGISTER_KIND get_operand_register_kind(AsmOperand* node) {
     }
 }
 
-static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
+static void alloc_mov_instr(AsmMov* node, size_t instruction_index) {
     AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
     AsmOperand* dst_operand = static_cast<AsmPseudo*>(node->dst.get());
-    REGISTER_KIND src_register_kind = get_operand_register_kind(src_operand);
-    REGISTER_KIND dst_register_kind = get_operand_register_kind(dst_operand);
+    REGISTER_KIND src_register_kind = get_op_register_kind(src_operand);
+    REGISTER_KIND dst_register_kind = get_op_register_kind(dst_operand);
     if (src_register_kind != REGISTER_KIND::Sp && src_register_kind == dst_register_kind) {
         set_instr(nullptr, instruction_index);
     }
     else {
         if (src_operand->type() == AST_T::AsmPseudo_t) {
-            std::shared_ptr<AsmOperand> hard_register =
-                regalloc_hard_register(static_cast<AsmPseudo*>(src_operand)->name);
+            std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(src_operand)->name);
             if (hard_register) {
                 node->src = std::move(hard_register);
             }
         }
         if (dst_operand->type() == AST_T::AsmPseudo_t) {
-            std::shared_ptr<AsmOperand> hard_register =
-                regalloc_hard_register(static_cast<AsmPseudo*>(dst_operand)->name);
+            std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(dst_operand)->name);
             if (hard_register) {
                 node->dst = std::move(hard_register);
             }
@@ -987,216 +969,197 @@ static void regalloc_mov_instructions(AsmMov* node, size_t instruction_index) {
     }
 }
 
-static void regalloc_mov_sx_instructions(AsmMovSx* node) {
+static void alloc_mov_sx_instr(AsmMovSx* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
+static void alloc_zero_extend_instr(AsmMovZeroExtend* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_lea_instructions(AsmLea* node) {
+static void alloc_lea_instr(AsmLea* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_cvttsd2si_instructions(AsmCvttsd2si* node) {
+static void alloc_cvttsd2si_instr(AsmCvttsd2si* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
+static void alloc_cvtsi2sd_instr(AsmCvtsi2sd* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_unary_instructions(AsmUnary* node) {
+static void alloc_unary_instr(AsmUnary* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_binary_instructions(AsmBinary* node) {
+static void alloc_binary_instr(AsmBinary* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_cmp_instructions(AsmCmp* node) {
+static void alloc_cmp_instr(AsmCmp* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_idiv_instructions(AsmIdiv* node) {
+static void alloc_idiv_instr(AsmIdiv* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_div_instructions(AsmDiv* node) {
+static void alloc_div_instr(AsmDiv* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_set_cc_instructions(AsmSetCC* node) {
+static void alloc_set_cc_instr(AsmSetCC* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->dst.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->dst.get())->name);
         if (hard_register) {
             node->dst = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_push_instructions(AsmPush* node) {
+static void alloc_push_instr(AsmPush* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        std::shared_ptr<AsmOperand> hard_register =
-            regalloc_hard_register(static_cast<AsmPseudo*>(node->src.get())->name);
+        std::shared_ptr<AsmOperand> hard_register = alloc_hard_reg(static_cast<AsmPseudo*>(node->src.get())->name);
         if (hard_register) {
             node->src = std::move(hard_register);
         }
     }
 }
 
-static void regalloc_instructions(size_t instruction_index) {
+static void alloc_instr(size_t instruction_index) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            regalloc_mov_instructions(static_cast<AsmMov*>(node), instruction_index);
+            alloc_mov_instr(static_cast<AsmMov*>(node), instruction_index);
             break;
         case AST_T::AsmMovSx_t:
-            regalloc_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            alloc_mov_sx_instr(static_cast<AsmMovSx*>(node));
             break;
         case AST_T::AsmMovZeroExtend_t:
-            regalloc_mov_zero_extend_instructions(static_cast<AsmMovZeroExtend*>(node));
+            alloc_zero_extend_instr(static_cast<AsmMovZeroExtend*>(node));
             break;
         case AST_T::AsmLea_t:
-            regalloc_lea_instructions(static_cast<AsmLea*>(node));
+            alloc_lea_instr(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
-            regalloc_cvttsd2si_instructions(static_cast<AsmCvttsd2si*>(node));
+            alloc_cvttsd2si_instr(static_cast<AsmCvttsd2si*>(node));
             break;
         case AST_T::AsmCvtsi2sd_t:
-            regalloc_cvtsi2sd_instructions(static_cast<AsmCvtsi2sd*>(node));
+            alloc_cvtsi2sd_instr(static_cast<AsmCvtsi2sd*>(node));
             break;
         case AST_T::AsmUnary_t:
-            regalloc_unary_instructions(static_cast<AsmUnary*>(node));
+            alloc_unary_instr(static_cast<AsmUnary*>(node));
             break;
         case AST_T::AsmBinary_t:
-            regalloc_binary_instructions(static_cast<AsmBinary*>(node));
+            alloc_binary_instr(static_cast<AsmBinary*>(node));
             break;
         case AST_T::AsmCmp_t:
-            regalloc_cmp_instructions(static_cast<AsmCmp*>(node));
+            alloc_cmp_instr(static_cast<AsmCmp*>(node));
             break;
         case AST_T::AsmIdiv_t:
-            regalloc_idiv_instructions(static_cast<AsmIdiv*>(node));
+            alloc_idiv_instr(static_cast<AsmIdiv*>(node));
             break;
         case AST_T::AsmDiv_t:
-            regalloc_div_instructions(static_cast<AsmDiv*>(node));
+            alloc_div_instr(static_cast<AsmDiv*>(node));
             break;
         case AST_T::AsmSetCC_t:
-            regalloc_set_cc_instructions(static_cast<AsmSetCC*>(node));
+            alloc_set_cc_instr(static_cast<AsmSetCC*>(node));
             break;
         case AST_T::AsmPush_t:
-            regalloc_push_instructions(static_cast<AsmPush*>(node));
+            alloc_push_instr(static_cast<AsmPush*>(node));
             break;
         case AST_T::AsmCdq_t:
         case AST_T::AsmCall_t:
@@ -1206,20 +1169,20 @@ static void regalloc_instructions(size_t instruction_index) {
     }
 }
 
-static void regalloc_inference_graph() {
+static void register_allocation() {
     if (!context->inference_graph->unpruned_pseudo_names.empty()) {
-        inference_graph_set_p(false);
-        regalloc_color_inference_graph();
-        regalloc_color_register_map();
+        set_p_infer_graph(false);
+        alloc_color_infer_graph();
+        alloc_color_reg_map();
     }
     if (!context->sse_inference_graph->unpruned_pseudo_names.empty()) {
-        inference_graph_set_p(true);
-        regalloc_color_inference_graph();
-        regalloc_color_register_map();
+        set_p_infer_graph(true);
+        alloc_color_infer_graph();
+        alloc_color_reg_map();
     }
     for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
         if (GET_INSTRUCTION(instruction_index)) {
-            regalloc_instructions(instruction_index);
+            alloc_instr(instruction_index);
         }
     }
 }
@@ -1247,7 +1210,7 @@ static TInt get_type_size(Type* type) {
     }
 }
 
-static size_t get_coalesced_index(AsmOperand* node) {
+static size_t get_coalesced_idx(AsmOperand* node) {
     size_t coalesced_index = context->data_flow_analysis->set_size;
     switch (node->type()) {
         case AST_T::AsmRegister_t: {
@@ -1277,7 +1240,7 @@ static size_t get_coalesced_index(AsmOperand* node) {
     return coalesced_index;
 }
 
-static bool get_coalescable_inference_registers(
+static bool get_coalescable_infer_regs(
     InferenceRegister*& src_infer, InferenceRegister*& dst_infer, size_t src_index, size_t dst_index) {
     if (src_index != dst_index && (src_index >= REGISTER_MASK_SIZE || dst_index >= REGISTER_MASK_SIZE)
         && src_index < context->data_flow_analysis->set_size && dst_index < context->data_flow_analysis->set_size) {
@@ -1285,7 +1248,7 @@ static bool get_coalescable_inference_registers(
             TIdentifier dst_name = context->data_flow_analysis_o2->data_name_map[dst_index - REGISTER_MASK_SIZE];
             bool is_double = frontend->symbol_table[dst_name]->type_t->type() == AST_T::Double_t;
             if (is_double == (src_index > 11)) {
-                inference_graph_set_p(is_double);
+                set_p_infer_graph(is_double);
                 src_infer = &context->hard_registers[src_index];
                 dst_infer = &context->p_inference_graph->pseudo_register_map[dst_name];
                 return !register_mask_get(dst_infer->linked_hard_mask, src_infer->register_kind);
@@ -1295,7 +1258,7 @@ static bool get_coalescable_inference_registers(
             TIdentifier src_name = context->data_flow_analysis_o2->data_name_map[src_index - REGISTER_MASK_SIZE];
             bool is_double = frontend->symbol_table[src_name]->type_t->type() == AST_T::Double_t;
             if (is_double == (dst_index > 11)) {
-                inference_graph_set_p(is_double);
+                set_p_infer_graph(is_double);
                 src_infer = &context->p_inference_graph->pseudo_register_map[src_name];
                 dst_infer = &context->hard_registers[dst_index];
                 return !register_mask_get(src_infer->linked_hard_mask, dst_infer->register_kind);
@@ -1308,7 +1271,7 @@ static bool get_coalescable_inference_registers(
             if (is_double == (frontend->symbol_table[dst_name]->type_t->type() == AST_T::Double_t)
                 && get_type_size(frontend->symbol_table[src_name]->type_t.get())
                        == get_type_size(frontend->symbol_table[dst_name]->type_t.get())) {
-                inference_graph_set_p(is_double);
+                set_p_infer_graph(is_double);
                 src_infer = &context->p_inference_graph->pseudo_register_map[src_name];
                 dst_infer = &context->p_inference_graph->pseudo_register_map[dst_name];
                 return std::find(dst_infer->linked_pseudo_names.begin(), dst_infer->linked_pseudo_names.end(), src_name)
@@ -1319,7 +1282,7 @@ static bool get_coalescable_inference_registers(
     return false;
 }
 
-static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
+static bool coal_briggs_test(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
     size_t degree = 0;
 
     if (src_infer->linked_hard_mask != REGISTER_MASK_FALSE || dst_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
@@ -1375,7 +1338,7 @@ static bool coalesce_briggs_test(InferenceRegister* src_infer, InferenceRegister
     return degree < context->p_inference_graph->k;
 }
 
-static bool coalesce_george_test(REGISTER_KIND register_kind, InferenceRegister* infer) {
+static bool coal_george_test(REGISTER_KIND register_kind, InferenceRegister* infer) {
     for (TIdentifier name : infer->linked_pseudo_names) {
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
         if (!register_mask_get(linked_infer.linked_hard_mask, register_kind)
@@ -1386,77 +1349,76 @@ static bool coalesce_george_test(REGISTER_KIND register_kind, InferenceRegister*
     return true;
 }
 
-static bool coalesce_conservative_tests(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
-    if (coalesce_briggs_test(src_infer, dst_infer)) {
+static bool coal_conservative_tests(InferenceRegister* src_infer, InferenceRegister* dst_infer) {
+    if (coal_briggs_test(src_infer, dst_infer)) {
         return true;
     }
     else if (src_infer->register_kind != REGISTER_KIND::Sp) {
-        return coalesce_george_test(src_infer->register_kind, dst_infer);
+        return coal_george_test(src_infer->register_kind, dst_infer);
     }
     else if (dst_infer->register_kind != REGISTER_KIND::Sp) {
-        return coalesce_george_test(dst_infer->register_kind, src_infer);
+        return coal_george_test(dst_infer->register_kind, src_infer);
     }
     else {
         return false;
     }
 }
 
-static void coalesce_pseudo_inference_register(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
+static void coal_pseudo_infer_reg(InferenceRegister* infer, size_t merge_index, size_t keep_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     TIdentifier keep_name = context->data_flow_analysis_o2->data_name_map[keep_index - REGISTER_MASK_SIZE];
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
-                inference_graph_remove_pseudo_edge(linked_infer, merge_name);
-                inference_graph_add_reg_edge(linked_infer.register_kind, keep_name);
+                infer_rm_pseudo_edge(linked_infer, merge_name);
+                infer_add_reg_edge(linked_infer.register_kind, keep_name);
             }
         }
     }
     for (TIdentifier name : infer->linked_pseudo_names) {
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
-        inference_graph_remove_pseudo_edge(linked_infer, merge_name);
-        inference_graph_add_pseudo_edges(keep_name, name);
+        infer_rm_pseudo_edge(linked_infer, merge_name);
+        infer_add_pseudo_edges(keep_name, name);
     }
-    inference_graph_remove_unpruned_pseudo_name(merge_name);
+    infer_rm_unpruned_pseudo_name(merge_name);
 }
 
-static void coalesce_hard_inference_register(
-    REGISTER_KIND register_kind, InferenceRegister* infer, size_t merge_index) {
+static void coal_hard_infer_reg(REGISTER_KIND register_kind, InferenceRegister* infer, size_t merge_index) {
     TIdentifier merge_name = context->data_flow_analysis_o2->data_name_map[merge_index - REGISTER_MASK_SIZE];
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < context->p_inference_graph->k; ++i) {
             InferenceRegister& linked_infer = context->hard_registers[i + context->p_inference_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.register_kind)) {
-                inference_graph_remove_pseudo_edge(linked_infer, merge_name);
+                infer_rm_pseudo_edge(linked_infer, merge_name);
             }
         }
     }
     for (TIdentifier name : infer->linked_pseudo_names) {
         InferenceRegister& linked_infer = context->p_inference_graph->pseudo_register_map[name];
-        inference_graph_remove_pseudo_edge(linked_infer, merge_name);
-        inference_graph_add_reg_edge(register_kind, name);
+        infer_rm_pseudo_edge(linked_infer, merge_name);
+        infer_add_reg_edge(register_kind, name);
     }
-    inference_graph_remove_unpruned_pseudo_name(merge_name);
+    infer_rm_unpruned_pseudo_name(merge_name);
 }
 
-static bool coalesce_inference_registers(AsmMov* node) {
+static bool coal_infer_regs(AsmMov* node) {
     InferenceRegister* src_infer = nullptr;
     InferenceRegister* dst_infer = nullptr;
-    size_t src_index = get_coalesced_index(node->src.get());
-    size_t dst_index = get_coalesced_index(node->dst.get());
-    if (get_coalescable_inference_registers(src_infer, dst_infer, src_index, dst_index)
-        && coalesce_conservative_tests(src_infer, dst_infer)) {
+    size_t src_index = get_coalesced_idx(node->src.get());
+    size_t dst_index = get_coalesced_idx(node->dst.get());
+    if (get_coalescable_infer_regs(src_infer, dst_infer, src_index, dst_index)
+        && coal_conservative_tests(src_infer, dst_infer)) {
         if (src_index < REGISTER_MASK_SIZE) {
-            coalesce_hard_inference_register(src_infer->register_kind, dst_infer, dst_index);
+            coal_hard_infer_reg(src_infer->register_kind, dst_infer, dst_index);
             context->data_flow_analysis->open_data_map[dst_index - REGISTER_MASK_SIZE] = src_index;
         }
         else {
             if (dst_index < REGISTER_MASK_SIZE) {
-                coalesce_hard_inference_register(dst_infer->register_kind, src_infer, src_index);
+                coal_hard_infer_reg(dst_infer->register_kind, src_infer, src_index);
             }
             else {
-                coalesce_pseudo_inference_register(src_infer, src_index, dst_index);
+                coal_pseudo_infer_reg(src_infer, src_index, dst_index);
             }
             context->data_flow_analysis->open_data_map[src_index - REGISTER_MASK_SIZE] = dst_index;
         }
@@ -1467,7 +1429,7 @@ static bool coalesce_inference_registers(AsmMov* node) {
     }
 }
 
-static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, size_t coalesced_index) {
+static std::shared_ptr<AsmOperand> coal_op_reg(TIdentifier name, size_t coalesced_index) {
     if (coalesced_index < context->data_flow_analysis->set_size
         && coalesced_index != context->control_flow_graph->identifier_id_map[name]) {
         if (coalesced_index < REGISTER_MASK_SIZE) {
@@ -1475,7 +1437,7 @@ static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, s
             return gen_register(register_kind);
         }
         else {
-            inference_graph_set_p(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
+            set_p_infer_graph(frontend->symbol_table[name]->type_t->type() == AST_T::Double_t);
             name = context->data_flow_analysis_o2->data_name_map[coalesced_index - REGISTER_MASK_SIZE];
             context->p_inference_graph->pseudo_register_map[name].spill_cost++;
             return std::make_shared<AsmPseudo>(std::move(name));
@@ -1486,23 +1448,23 @@ static std::shared_ptr<AsmOperand> coalesce_operand_register(TIdentifier name, s
     }
 }
 
-static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index, size_t block_id) {
-    size_t src_index = get_coalesced_index(node->src.get());
-    size_t dst_index = get_coalesced_index(node->dst.get());
+static void coal_mov_instr(AsmMov* node, size_t instruction_index, size_t block_id) {
+    size_t src_index = get_coalesced_idx(node->src.get());
+    size_t dst_index = get_coalesced_idx(node->dst.get());
     if (src_index < context->data_flow_analysis->set_size && src_index == dst_index) {
         cfg_rm_block_instr(instruction_index, block_id);
     }
     else {
         if (node->src->type() == AST_T::AsmPseudo_t) {
             std::shared_ptr<AsmOperand> operand_register =
-                coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+                coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
             if (operand_register) {
                 node->src = std::move(operand_register);
             }
         }
         if (node->dst->type() == AST_T::AsmPseudo_t) {
             std::shared_ptr<AsmOperand> operand_register =
-                coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+                coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
             if (operand_register) {
                 node->dst = std::move(operand_register);
             }
@@ -1510,235 +1472,235 @@ static void coalesce_mov_instructions(AsmMov* node, size_t instruction_index, si
     }
 }
 
-static void coalesce_mov_sx_instructions(AsmMovSx* node) {
+static void coal_mov_sx_instr(AsmMovSx* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_mov_zero_extend_instructions(AsmMovZeroExtend* node) {
+static void coal_zero_extend_instr(AsmMovZeroExtend* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_lea_instructions(AsmLea* node) {
+static void coal_lea_instr(AsmLea* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_cvttsd2si_instructions(AsmCvttsd2si* node) {
+static void coal_cvttsd2si_instr(AsmCvttsd2si* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_cvtsi2sd_instructions(AsmCvtsi2sd* node) {
+static void coal_cvtsi2sd_instr(AsmCvtsi2sd* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_unary_instructions(AsmUnary* node) {
+static void coal_unary_instr(AsmUnary* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_binary_instructions(AsmBinary* node) {
+static void coal_binary_instr(AsmBinary* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_cmp_instructions(AsmCmp* node) {
+static void coal_cmp_instr(AsmCmp* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_idiv_instructions(AsmIdiv* node) {
+static void coal_idiv_instr(AsmIdiv* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_div_instructions(AsmDiv* node) {
+static void coal_div_instr(AsmDiv* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_set_cc_instructions(AsmSetCC* node) {
+static void coal_set_cc_instr(AsmSetCC* node) {
     if (node->dst->type() == AST_T::AsmPseudo_t) {
-        size_t dst_index = get_coalesced_index(node->dst.get());
+        size_t dst_index = get_coalesced_idx(node->dst.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->dst.get())->name, dst_index);
         if (operand_register) {
             node->dst = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_push_instructions(AsmPush* node) {
+static void coal_push_instr(AsmPush* node) {
     if (node->src->type() == AST_T::AsmPseudo_t) {
-        size_t src_index = get_coalesced_index(node->src.get());
+        size_t src_index = get_coalesced_idx(node->src.get());
         std::shared_ptr<AsmOperand> operand_register =
-            coalesce_operand_register(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
+            coal_op_reg(static_cast<AsmPseudo*>(node->src.get())->name, src_index);
         if (operand_register) {
             node->src = std::move(operand_register);
         }
     }
 }
 
-static void coalesce_instructions(size_t instruction_index, size_t block_id) {
+static void coal_instr(size_t instruction_index, size_t block_id) {
     AsmInstruction* node = GET_INSTRUCTION(instruction_index).get();
     switch (node->type()) {
         case AST_T::AsmMov_t:
-            coalesce_mov_instructions(static_cast<AsmMov*>(node), instruction_index, block_id);
+            coal_mov_instr(static_cast<AsmMov*>(node), instruction_index, block_id);
             break;
         case AST_T::AsmMovSx_t:
-            coalesce_mov_sx_instructions(static_cast<AsmMovSx*>(node));
+            coal_mov_sx_instr(static_cast<AsmMovSx*>(node));
             break;
         case AST_T::AsmMovZeroExtend_t:
-            coalesce_mov_zero_extend_instructions(static_cast<AsmMovZeroExtend*>(node));
+            coal_zero_extend_instr(static_cast<AsmMovZeroExtend*>(node));
             break;
         case AST_T::AsmLea_t:
-            coalesce_lea_instructions(static_cast<AsmLea*>(node));
+            coal_lea_instr(static_cast<AsmLea*>(node));
             break;
         case AST_T::AsmCvttsd2si_t:
-            coalesce_cvttsd2si_instructions(static_cast<AsmCvttsd2si*>(node));
+            coal_cvttsd2si_instr(static_cast<AsmCvttsd2si*>(node));
             break;
         case AST_T::AsmCvtsi2sd_t:
-            coalesce_cvtsi2sd_instructions(static_cast<AsmCvtsi2sd*>(node));
+            coal_cvtsi2sd_instr(static_cast<AsmCvtsi2sd*>(node));
             break;
         case AST_T::AsmUnary_t:
-            coalesce_unary_instructions(static_cast<AsmUnary*>(node));
+            coal_unary_instr(static_cast<AsmUnary*>(node));
             break;
         case AST_T::AsmBinary_t:
-            coalesce_binary_instructions(static_cast<AsmBinary*>(node));
+            coal_binary_instr(static_cast<AsmBinary*>(node));
             break;
         case AST_T::AsmCmp_t:
-            coalesce_cmp_instructions(static_cast<AsmCmp*>(node));
+            coal_cmp_instr(static_cast<AsmCmp*>(node));
             break;
         case AST_T::AsmIdiv_t:
-            coalesce_idiv_instructions(static_cast<AsmIdiv*>(node));
+            coal_idiv_instr(static_cast<AsmIdiv*>(node));
             break;
         case AST_T::AsmDiv_t:
-            coalesce_div_instructions(static_cast<AsmDiv*>(node));
+            coal_div_instr(static_cast<AsmDiv*>(node));
             break;
         case AST_T::AsmSetCC_t:
-            coalesce_set_cc_instructions(static_cast<AsmSetCC*>(node));
+            coal_set_cc_instr(static_cast<AsmSetCC*>(node));
             break;
         case AST_T::AsmPush_t:
-            coalesce_push_instructions(static_cast<AsmPush*>(node));
+            coal_push_instr(static_cast<AsmPush*>(node));
             break;
         case AST_T::AsmCdq_t:
         case AST_T::AsmCall_t:
@@ -1748,7 +1710,7 @@ static void coalesce_instructions(size_t instruction_index, size_t block_id) {
     }
 }
 
-static bool coalesce_inference_graph() {
+static bool register_coalescing() {
     {
         size_t open_data_map_size = context->data_flow_analysis->set_size - REGISTER_MASK_SIZE;
         if (context->data_flow_analysis->open_data_map.size() < open_data_map_size) {
@@ -1763,7 +1725,7 @@ static bool coalesce_inference_graph() {
         bool is_fixed_point = true;
         for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
             if (GET_INSTRUCTION(instruction_index) && GET_INSTRUCTION(instruction_index)->type() == AST_T::AsmMov_t
-                && coalesce_inference_registers(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()))) {
+                && coal_infer_regs(static_cast<AsmMov*>(GET_INSTRUCTION(instruction_index).get()))) {
                 is_fixed_point = false;
             }
         }
@@ -1777,7 +1739,7 @@ static bool coalesce_inference_graph() {
             for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
                  instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
                 if (GET_INSTRUCTION(instruction_index)) {
-                    coalesce_instructions(instruction_index, block_id);
+                    coal_instr(instruction_index, block_id);
                 }
             }
         }
@@ -1787,12 +1749,12 @@ static bool coalesce_inference_graph() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void regalloc_function_top_level(AsmFunction* node) {
+static void alloc_fun_toplvl(AsmFunction* node) {
     context->p_instructions = &node->instructions;
     init_control_flow_graph();
 Ldowhile:
-    if (inference_graph_initialize(node->name)) {
-        if (context->is_with_coalescing && coalesce_inference_graph()) {
+    if (init_inference_graph(node->name)) {
+        if (context->is_with_coalescing && register_coalescing()) {
             if (context->inference_graph->unpruned_pseudo_names.empty()
                 && context->sse_inference_graph->unpruned_pseudo_names.empty()) {
                 goto Lbreak;
@@ -1803,7 +1765,7 @@ Ldowhile:
             BackendFun* backend_fun = static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get());
             context->p_backend_fun_top_level = backend_fun;
         }
-        regalloc_inference_graph();
+        register_allocation();
         context->p_backend_fun_top_level = nullptr;
     }
 Lbreak:
@@ -1811,10 +1773,10 @@ Lbreak:
     context->p_instructions = nullptr;
 }
 
-static void regalloc_top_level(AsmTopLevel* node) {
+static void alloc_toplvl(AsmTopLevel* node) {
     switch (node->type()) {
         case AST_T::AsmFunction_t:
-            regalloc_function_top_level(static_cast<AsmFunction*>(node));
+            alloc_fun_toplvl(static_cast<AsmFunction*>(node));
             break;
         case AST_T::AsmStaticVariable_t:
             break;
@@ -1823,9 +1785,9 @@ static void regalloc_top_level(AsmTopLevel* node) {
     }
 }
 
-static void regalloc_program(AsmProgram* node) {
+static void alloc_program(AsmProgram* node) {
     for (const auto& top_level : node->top_levels) {
-        regalloc_top_level(top_level.get());
+        alloc_toplvl(top_level.get());
     }
 }
 
@@ -1905,6 +1867,6 @@ void register_allocation(AsmProgram* node, uint8_t optim_2_code) {
         register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm12, true);
         register_mask_set(context->sse_inference_graph->hard_reg_mask, REGISTER_KIND::Xmm13, true);
     }
-    regalloc_program(node);
+    alloc_program(node);
     context.reset();
 }
