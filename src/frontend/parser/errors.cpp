@@ -226,7 +226,7 @@ static std::string get_arr_fmt(Array* arr_type) {
     return type_hr;
 }
 
-static std::string get_structure_type_hr(Structure* struct_type) {
+static std::string get_struct_fmt(Structure* struct_type) {
     return get_struct_name_fmt(struct_type->tag, struct_type->is_union);
 }
 
@@ -257,7 +257,7 @@ std::string get_type_fmt(Type* type) {
         case AST_T::Array_t:
             return get_arr_fmt(static_cast<Array*>(type));
         case AST_T::Structure_t:
-            return get_structure_type_hr(static_cast<Structure*>(type));
+            return get_struct_fmt(static_cast<Structure*>(type));
         default:
             RAISE_INTERNAL_ERROR;
     }

@@ -1423,8 +1423,7 @@ static void proc_ident_decltor(CIdent* node, std::shared_ptr<Type> base_type, De
     declarator.derived_type = std::move(base_type);
 }
 
-static void parse_process_pointer_declarator(
-    CPointerDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
+static void proc_ptr_decltor(CPointerDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
     std::shared_ptr<Type> derived_type = std::make_shared<Pointer>(std::move(base_type));
     proc_decltor(node->declarator.get(), std::move(derived_type), declarator);
 }
@@ -1467,7 +1466,7 @@ static void proc_decltor(CDeclarator* node, std::shared_ptr<Type> base_type, Dec
             proc_ident_decltor(static_cast<CIdent*>(node), std::move(base_type), declarator);
             break;
         case AST_T::CPointerDeclarator_t:
-            parse_process_pointer_declarator(static_cast<CPointerDeclarator*>(node), std::move(base_type), declarator);
+            proc_ptr_decltor(static_cast<CPointerDeclarator*>(node), std::move(base_type), declarator);
             break;
         case AST_T::CArrayDeclarator_t:
             proc_arr_decltor(static_cast<CArrayDeclarator*>(node), std::move(base_type), declarator);
