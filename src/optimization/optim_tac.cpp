@@ -2323,7 +2323,7 @@ static void prop_cp_from_offset_instr(TacCopyFromOffset* node, size_t instructio
     }
 }
 
-static void prop_jump_eq_0_instr(TacJumpIfZero* node, size_t incoming_index, size_t exit_block) {
+static void prop_jmp_eq_0_instr(TacJumpIfZero* node, size_t incoming_index, size_t exit_block) {
     if (node->condition->type() == AST_T::TacVariable_t) {
         size_t i = 0;
         for (size_t j = 0; j < context->data_flow_analysis->mask_size; ++j) {
@@ -2440,7 +2440,7 @@ static void prop_instr(size_t instruction_index, size_t copy_instruction_index, 
             prop_cp_from_offset_instr(static_cast<TacCopyFromOffset*>(node), copy_instruction_index);
             break;
         case AST_T::TacJumpIfZero_t:
-            prop_jump_eq_0_instr(static_cast<TacJumpIfZero*>(node), copy_instruction_index, block_id > 0);
+            prop_jmp_eq_0_instr(static_cast<TacJumpIfZero*>(node), copy_instruction_index, block_id > 0);
             break;
         case AST_T::TacJumpIfNotZero_t:
             prop_jmp_ne_0_instr(static_cast<TacJumpIfNotZero*>(node), copy_instruction_index, block_id > 0);

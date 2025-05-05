@@ -2136,7 +2136,7 @@ static void cp_from_offset_instr(TacCopyFromOffset* node) {
     }
 }
 
-static void jmp_instr(TacJump* node) {
+static void jump_instr(TacJump* node) {
     TIdentifier target = node->target;
     push_instr(std::make_unique<AsmJmp>(std::move(target)));
 }
@@ -2298,7 +2298,7 @@ static void gen_instr(TacInstruction* node) {
             cp_from_offset_instr(static_cast<TacCopyFromOffset*>(node));
             break;
         case AST_T::TacJump_t:
-            jmp_instr(static_cast<TacJump*>(node));
+            jump_instr(static_cast<TacJump*>(node));
             break;
         case AST_T::TacJumpIfZero_t:
             jmp_eq_0_instr(static_cast<TacJumpIfZero*>(node));
