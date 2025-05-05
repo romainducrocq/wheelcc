@@ -64,7 +64,7 @@ static void verbose(std::string&& out, bool end) {
 }
 
 #ifndef __NDEBUG__
-static void debug_tokens(const std::vector<Token>& tokens) {
+static void debug_toks(const std::vector<Token>& tokens) {
     if (context->is_verbose) {
         pprint_toks(tokens);
     }
@@ -82,7 +82,7 @@ static void debug_addressed_set() {
     }
 }
 
-static void debug_string_constant_table() {
+static void debug_string_const_table() {
     if (context->is_verbose) {
         pprint_string_const_table();
     }
@@ -127,7 +127,7 @@ static void compile() {
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (context->debug_code == 255) {
-        debug_tokens(tokens);
+        debug_toks(tokens);
         return;
     }
 #endif
@@ -152,7 +152,7 @@ static void compile() {
 #ifndef __NDEBUG__
     if (context->debug_code == 253) {
         debug_ast(c_ast.get(), "C AST");
-        debug_string_constant_table();
+        debug_string_const_table();
         debug_struct_typedef_table();
         debug_symbol_table();
         return;
@@ -172,7 +172,7 @@ static void compile() {
 #ifndef __NDEBUG__
     if (context->debug_code == 252) {
         debug_ast(tac_ast.get(), "TAC AST");
-        debug_string_constant_table();
+        debug_string_const_table();
         debug_struct_typedef_table();
         debug_symbol_table();
         return;
@@ -195,7 +195,7 @@ static void compile() {
     if (context->debug_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
         debug_addressed_set();
-        debug_string_constant_table();
+        debug_string_const_table();
         debug_struct_typedef_table();
         debug_symbol_table();
         debug_backend_symbol_table();
