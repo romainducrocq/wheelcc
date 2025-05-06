@@ -172,9 +172,9 @@ struct UCharInit : StaticInit {
 struct DoubleInit : StaticInit {
     AST_T type() override;
     DoubleInit() = default;
-    DoubleInit(TIdentifier double_constant);
+    DoubleInit(TIdentifier dbl_const);
 
-    TIdentifier double_constant;
+    TIdentifier dbl_const;
 };
 
 struct ZeroInit : StaticInit {
@@ -188,10 +188,10 @@ struct ZeroInit : StaticInit {
 struct StringInit : StaticInit {
     AST_T type() override;
     StringInit() = default;
-    StringInit(TIdentifier string_constant, bool is_null_terminated, std::shared_ptr<CStringLiteral> literal);
+    StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral> literal);
 
-    TIdentifier string_constant;
-    bool is_null_terminated;
+    TIdentifier string_const;
+    bool is_null_term;
     std::shared_ptr<CStringLiteral> literal;
 };
 
@@ -241,18 +241,18 @@ struct IdentifierAttr : Ast {
 struct FunAttr : IdentifierAttr {
     AST_T type() override;
     FunAttr() = default;
-    FunAttr(bool is_defined, bool is_global);
+    FunAttr(bool is_def, bool is_glob);
 
-    bool is_defined;
-    bool is_global;
+    bool is_def;
+    bool is_glob;
 };
 
 struct StaticAttr : IdentifierAttr {
     AST_T type() override;
     StaticAttr() = default;
-    StaticAttr(bool is_global, std::shared_ptr<InitialValue> init);
+    StaticAttr(bool is_glob, std::shared_ptr<InitialValue> init);
 
-    bool is_global;
+    bool is_glob;
     std::shared_ptr<InitialValue> init;
 };
 
@@ -315,7 +315,7 @@ struct Dummy : Ast {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct FrontEndContext {
-    std::unordered_map<TIdentifier, TIdentifier> string_constant_table;
+    std::unordered_map<TIdentifier, TIdentifier> string_const_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
     std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
     std::unordered_set<TIdentifier> addressed_set;

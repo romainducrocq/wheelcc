@@ -48,14 +48,14 @@ struct MainContext {
 
 MainContext::MainContext() : is_verbose(false) {}
 
-static std::unique_ptr<MainContext> context;
+static std::unique_ptr<MainContext> ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Main
 
 static void verbose(std::string&& out, bool end) {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         std::cout << out;
         if (end) {
             std::cout << std::endl;
@@ -65,68 +65,68 @@ static void verbose(std::string&& out, bool end) {
 
 #ifndef __NDEBUG__
 static void debug_toks(const std::vector<Token>& tokens) {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_toks(tokens);
     }
 }
 
 static void debug_ast(Ast* node, std::string&& name) {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_ast(node, name);
     }
 }
 
 static void debug_addressed_set() {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_addressed_set();
     }
 }
 
 static void debug_string_const_table() {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_string_const_table();
     }
 }
 
 static void debug_struct_typedef_table() {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_struct_typedef_table();
     }
 }
 
 static void debug_symbol_table() {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_symbol_table();
     }
 }
 
 static void debug_backend_symbol_table() {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_backend_symbol_table();
     }
 }
 
 static void debug_asm_code() {
-    if (context->is_verbose) {
+    if (ctx->is_verbose) {
         pprint_asm_code();
     }
 }
 #endif
 
 static void compile() {
-    if (context->debug_code > 0
+    if (ctx->debug_code > 0
 #ifdef __NDEBUG__
-        && context->debug_code <= 127
+        && ctx->debug_code <= 127
 #endif
     ) {
-        context->is_verbose = true;
+        ctx->is_verbose = true;
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lex_c_code(context->filename, std::move(context->includedirs));
+    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->debug_code == 255) {
+    if (ctx->debug_code == 255) {
         debug_toks(tokens);
         return;
     }
@@ -138,7 +138,7 @@ static void compile() {
     std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->debug_code == 254) {
+    if (ctx->debug_code == 254) {
         debug_ast(c_ast.get(), "C AST");
         return;
     }
@@ -150,7 +150,7 @@ static void compile() {
     analyze_semantic(c_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->debug_code == 253) {
+    if (ctx->debug_code == 253) {
         debug_ast(c_ast.get(), "C AST");
         debug_string_const_table();
         debug_struct_typedef_table();
@@ -163,14 +163,14 @@ static void compile() {
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast));
-    if (context->optim_1_mask > 0) {
+    if (ctx->optim_1_mask > 0) {
         verbose("OK", true);
         verbose("-- Level 1 optimization ... ", false);
-        optimize_three_address_code(tac_ast.get(), context->optim_1_mask);
+        optimize_three_address_code(tac_ast.get(), ctx->optim_1_mask);
     }
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->debug_code == 252) {
+    if (ctx->debug_code == 252) {
         debug_ast(tac_ast.get(), "TAC AST");
         debug_string_const_table();
         debug_struct_typedef_table();
@@ -184,15 +184,15 @@ static void compile() {
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast));
     convert_symbol_table(asm_ast.get());
-    if (context->optim_2_code > 0) {
+    if (ctx->optim_2_code > 0) {
         verbose("OK", true);
         verbose("-- Level 2 optimization ... ", false);
-        allocate_registers(asm_ast.get(), context->optim_2_code);
+        allocate_registers(asm_ast.get(), ctx->optim_2_code);
     }
     fix_stack(asm_ast.get());
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->debug_code == 251) {
+    if (ctx->debug_code == 251) {
         debug_ast(asm_ast.get(), "ASM AST");
         debug_addressed_set();
         debug_string_const_table();
@@ -206,11 +206,11 @@ static void compile() {
     FREE_FRONTEND_CTX;
 
     verbose("-- Code emission ... ", false);
-    context->filename += ".s";
-    emit_gas_code(std::move(asm_ast), std::move(context->filename));
+    ctx->filename += ".s";
+    emit_gas_code(std::move(asm_ast), std::move(ctx->filename));
     verbose("OK", true);
 #ifndef __NDEBUG__
-    if (context->debug_code == 250) {
+    if (ctx->debug_code == 250) {
         debug_asm_code();
         return;
     }
@@ -224,21 +224,21 @@ static void compile() {
 }
 
 static void shift_args(std::string& arg) {
-    if (!context->args.empty()) {
-        arg = std::move(context->args.back());
-        context->args.pop_back();
+    if (!ctx->args.empty()) {
+        arg = std::move(ctx->args.back());
+        ctx->args.pop_back();
         return;
     }
     arg = "";
 }
 
 static bool arg_parse_uint8(std::string& arg, uint8_t& code) {
-    std::vector<char> buffer(arg.begin(), arg.end());
-    buffer.push_back('\0');
+    std::vector<char> buf(arg.begin(), arg.end());
+    buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
-    code = static_cast<uint8_t>(strtol(&buffer[0], &end_ptr, 10));
-    return end_ptr == &buffer[0];
+    code = static_cast<uint8_t>(strtol(&buf[0], &end_ptr, 10));
+    return end_ptr == &buf[0];
 }
 
 static void arg_parse() {
@@ -249,7 +249,7 @@ static void arg_parse() {
     if (arg.empty()) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_debug_arg));
     }
-    else if (arg_parse_uint8(arg, context->debug_code)) {
+    else if (arg_parse_uint8(arg, ctx->debug_code)) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_debug_arg, arg.c_str()));
     }
 
@@ -257,7 +257,7 @@ static void arg_parse() {
     if (arg.empty()) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_1_arg));
     }
-    else if (arg_parse_uint8(arg, context->optim_1_mask) || context->optim_1_mask > 15) {
+    else if (arg_parse_uint8(arg, ctx->optim_1_mask) || ctx->optim_1_mask > 15) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_1_arg, arg.c_str()));
     }
 
@@ -265,7 +265,7 @@ static void arg_parse() {
     if (arg.empty()) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_2_arg));
     }
-    else if (arg_parse_uint8(arg, context->optim_2_code) || context->optim_2_code > 2) {
+    else if (arg_parse_uint8(arg, ctx->optim_2_code) || ctx->optim_2_code > 2) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_2_arg, arg.c_str()));
     }
 
@@ -273,7 +273,7 @@ static void arg_parse() {
     if (arg.empty()) {
         RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_input_files_arg));
     }
-    context->filename = arg;
+    ctx->filename = arg;
 
     shift_args(arg);
     if (arg.empty()) {
@@ -281,27 +281,27 @@ static void arg_parse() {
     }
     do {
         std::string includedir = arg;
-        context->includedirs.emplace_back(std::move(includedir));
+        ctx->includedirs.emplace_back(std::move(includedir));
         shift_args(arg);
     }
     while (!arg.empty());
 
     arg = "";
-    context->args.clear();
-    std::vector<std::string>().swap(context->args);
+    ctx->args.clear();
+    std::vector<std::string>().swap(ctx->args);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
     try {
-        context = std::make_unique<MainContext>();
+        ctx = std::make_unique<MainContext>();
         {
             size_t i = static_cast<size_t>(argc);
-            context->args.reserve(i);
+            ctx->args.reserve(i);
             for (; i-- > 0;) {
                 std::string arg = argv[i];
-                context->args.emplace_back(std::move(arg));
+                ctx->args.emplace_back(std::move(arg));
             }
         }
 
@@ -333,7 +333,7 @@ int main(int argc, char** argv) {
 
         compile();
 
-        context.reset();
+        ctx.reset();
     }
     catch (const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;

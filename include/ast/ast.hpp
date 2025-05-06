@@ -106,9 +106,9 @@ struct Dummy : Ast {
 struct IdentifierContext {
     IdentifierContext();
 
-    uint32_t label_counter;
-    uint32_t variable_counter;
-    uint32_t structure_counter;
+    uint32_t label_count;
+    uint32_t var_count;
+    uint32_t struct_count;
     std::unordered_map<TIdentifier, std::string> hash_table;
 };
 

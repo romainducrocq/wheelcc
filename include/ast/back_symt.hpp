@@ -12,7 +12,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// assembly_type = Byte
+// asm_type = Byte
 //               | LongWord
 //               | QuadWord
 //               | BackendDouble
@@ -48,7 +48,7 @@ struct ByteArray : AssemblyType {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// symbol = Obj(assembly_type, bool, bool)
+// symbol = Obj(asm_type, bool, bool)
 //        | Fun(bool, operand*)
 struct BackendSymbol : Ast {
     AST_T type() override;
@@ -57,20 +57,20 @@ struct BackendSymbol : Ast {
 struct BackendObj : BackendSymbol {
     AST_T type() override;
     BackendObj() = default;
-    BackendObj(bool is_static, bool is_constant, std::shared_ptr<AssemblyType> assembly_type);
+    BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyType> asm_type);
 
     bool is_static;
-    bool is_constant;
-    std::shared_ptr<AssemblyType> assembly_type;
+    bool is_const;
+    std::shared_ptr<AssemblyType> asm_type;
 };
 
 struct AsmOperand;
 struct BackendFun : BackendSymbol {
     AST_T type() override;
     BackendFun() = default;
-    BackendFun(bool is_defined);
+    BackendFun(bool is_def);
 
-    bool is_defined;
+    bool is_def;
     std::vector<std::shared_ptr<AsmOperand>> callee_saved_registers;
 };
 
@@ -82,7 +82,7 @@ struct Dummy : Ast {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct BackEndContext {
-    std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> backend_symbol_table;
+    std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> symbol_table;
 };
 
 extern std::unique_ptr<BackEndContext> backend;

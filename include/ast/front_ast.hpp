@@ -145,8 +145,8 @@ struct CGreaterOrEqual : CBinaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// abstract_declarator = AbstractPointer(abstract_declarator)
-//                     | AbstractArray(int, abstract_declarator)
+// abstract_decltor = AbstractPointer(abstract_decltor)
+//                     | AbstractArray(int, abstract_decltor)
 //                     | AbstractBase
 struct CAbstractDeclarator : Ast {
     AST_T type() override;
@@ -155,18 +155,18 @@ struct CAbstractDeclarator : Ast {
 struct CAbstractPointer : CAbstractDeclarator {
     AST_T type() override;
     CAbstractPointer() = default;
-    CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator);
+    CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_decltor);
 
-    std::unique_ptr<CAbstractDeclarator> abstract_declarator;
+    std::unique_ptr<CAbstractDeclarator> abstract_decltor;
 };
 
 struct CAbstractArray : CAbstractDeclarator {
     AST_T type() override;
     CAbstractArray() = default;
-    CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator);
+    CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_decltor);
 
     TLong size;
-    std::unique_ptr<CAbstractDeclarator> abstract_declarator;
+    std::unique_ptr<CAbstractDeclarator> abstract_decltor;
 };
 
 struct CAbstractBase : CAbstractDeclarator {
@@ -175,23 +175,23 @@ struct CAbstractBase : CAbstractDeclarator {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// param_info = Param(type, declarator)
+// param_info = Param(type, decltor)
 struct CDeclarator;
 struct CParam : Ast {
     AST_T type() override;
     CParam() = default;
-    CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type);
+    CParam(std::unique_ptr<CDeclarator> decltor, std::shared_ptr<Type> param_type);
 
-    std::unique_ptr<CDeclarator> declarator;
+    std::unique_ptr<CDeclarator> decltor;
     std::shared_ptr<Type> param_type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// declarator = Ident(identifier)
-//            | PointerDeclarator(declarator)
-//            | ArrayDeclarator(int, declarator)
-//            | FunDeclarator(param_info*, declarator)
+// decltor = Ident(identifier)
+//            | PointerDeclarator(decltor)
+//            | ArrayDeclarator(int, decltor)
+//            | FunDeclarator(param_info*, decltor)
 struct CDeclarator : Ast {
     AST_T type() override;
 };
@@ -207,27 +207,27 @@ struct CIdent : CDeclarator {
 struct CPointerDeclarator : CDeclarator {
     AST_T type() override;
     CPointerDeclarator() = default;
-    CPointerDeclarator(std::unique_ptr<CDeclarator> declarator);
+    CPointerDeclarator(std::unique_ptr<CDeclarator> decltor);
 
-    std::unique_ptr<CDeclarator> declarator;
+    std::unique_ptr<CDeclarator> decltor;
 };
 
 struct CArrayDeclarator : CDeclarator {
     AST_T type() override;
     CArrayDeclarator() = default;
-    CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> declarator);
+    CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> decltor);
 
     TLong size;
-    std::unique_ptr<CDeclarator> declarator;
+    std::unique_ptr<CDeclarator> decltor;
 };
 
 struct CFunDeclarator : CDeclarator {
     AST_T type() override;
     CFunDeclarator() = default;
-    CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> declarator);
+    CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> decltor);
 
     std::vector<std::unique_ptr<CParam>> param_list;
-    std::unique_ptr<CDeclarator> declarator;
+    std::unique_ptr<CDeclarator> decltor;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -305,9 +305,9 @@ struct CCast : CExp {
 struct CUnary : CExp {
     AST_T type() override;
     CUnary() = default;
-    CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp, size_t line);
+    CUnary(std::unique_ptr<CUnaryOp> unop, std::unique_ptr<CExp> exp, size_t line);
 
-    std::unique_ptr<CUnaryOp> unary_op;
+    std::unique_ptr<CUnaryOp> unop;
     std::unique_ptr<CExp> exp;
     /*
     std::shared_ptr<Type> exp_type;
@@ -317,10 +317,10 @@ struct CUnary : CExp {
 struct CBinary : CExp {
     AST_T type() override;
     CBinary() = default;
-    CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
-        size_t line);
+    CBinary(
+        std::unique_ptr<CBinaryOp> binop, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
 
-    std::unique_ptr<CBinaryOp> binary_op;
+    std::unique_ptr<CBinaryOp> binop;
     std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
     /*
@@ -331,11 +331,11 @@ struct CBinary : CExp {
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
-    CAssignment(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
-        size_t line);
+    CAssignment(
+        std::unique_ptr<CUnaryOp> unop, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
 
     // Optional
-    std::unique_ptr<CUnaryOp> unary_op;
+    std::unique_ptr<CUnaryOp> unop;
     // Optional
     std::unique_ptr<CExp> exp_left;
     std::unique_ptr<CExp> exp_right;
@@ -807,17 +807,17 @@ struct CDeclaration : Ast {
 struct CFunDecl : CDeclaration {
     AST_T type() override;
     CFunDecl() = default;
-    CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl);
+    CFunDecl(std::unique_ptr<CFunctionDeclaration> fun_decl);
 
-    std::unique_ptr<CFunctionDeclaration> function_decl;
+    std::unique_ptr<CFunctionDeclaration> fun_decl;
 };
 
 struct CVarDecl : CDeclaration {
     AST_T type() override;
     CVarDecl() = default;
-    CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl);
+    CVarDecl(std::unique_ptr<CVariableDeclaration> var_decl);
 
-    std::unique_ptr<CVariableDeclaration> variable_decl;
+    std::unique_ptr<CVariableDeclaration> var_decl;
 };
 
 struct CStructDecl : CDeclaration {

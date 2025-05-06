@@ -71,21 +71,20 @@ CharInit::CharInit(TChar value) : value(value) {}
 
 UCharInit::UCharInit(TUChar value) : value(value) {}
 
-DoubleInit::DoubleInit(TIdentifier double_constant) : double_constant(double_constant) {}
+DoubleInit::DoubleInit(TIdentifier dbl_const) : dbl_const(dbl_const) {}
 
 ZeroInit::ZeroInit(TLong byte) : byte(byte) {}
 
-StringInit::StringInit(TIdentifier string_constant, bool is_null_terminated, std::shared_ptr<CStringLiteral> literal) :
-    string_constant(string_constant), is_null_terminated(is_null_terminated), literal(std::move(literal)) {}
+StringInit::StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral> literal) :
+    string_const(string_const), is_null_term(is_null_term), literal(std::move(literal)) {}
 
 PointerInit::PointerInit(TIdentifier name) : name(name) {}
 
 Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits) : static_inits(std::move(static_inits)) {}
 
-FunAttr::FunAttr(bool is_defined, bool is_global) : is_defined(is_defined), is_global(is_global) {}
+FunAttr::FunAttr(bool is_def, bool is_glob) : is_def(is_def), is_glob(is_glob) {}
 
-StaticAttr::StaticAttr(bool is_global, std::shared_ptr<InitialValue> init) :
-    is_global(is_global), init(std::move(init)) {}
+StaticAttr::StaticAttr(bool is_glob, std::shared_ptr<InitialValue> init) : is_glob(is_glob), init(std::move(init)) {}
 
 ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init) : static_init(std::move(static_init)) {}
 

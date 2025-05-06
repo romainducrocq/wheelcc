@@ -38,7 +38,7 @@ CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-IdentifierContext::IdentifierContext() : label_counter(0), variable_counter(0), structure_counter(0) {}
+IdentifierContext::IdentifierContext() : label_count(0), var_count(0), struct_count(0) {}
 
 std::unique_ptr<IdentifierContext> identifiers;
 
@@ -52,21 +52,21 @@ TIdentifier make_string_identifier(std::string&& value) {
 
 TIdentifier make_label_identifier(std::string&& name) {
     name += UID_SEPARATOR;
-    name += std::to_string(identifiers->label_counter);
-    identifiers->label_counter++;
+    name += std::to_string(identifiers->label_count);
+    identifiers->label_count++;
     return make_string_identifier(std::move(name));
 }
 
 TIdentifier make_var_identifier(std::string&& name) {
     name += UID_SEPARATOR;
-    name += std::to_string(identifiers->variable_counter);
-    identifiers->variable_counter++;
+    name += std::to_string(identifiers->var_count);
+    identifiers->var_count++;
     return make_string_identifier(std::move(name));
 }
 
 TIdentifier make_struct_identifier(std::string&& name) {
     name += UID_SEPARATOR;
-    name += std::to_string(identifiers->structure_counter);
-    identifiers->structure_counter++;
+    name += std::to_string(identifiers->struct_count);
+    identifiers->struct_count++;
     return make_string_identifier(std::move(name));
 }

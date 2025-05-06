@@ -14,7 +14,7 @@ struct SymtCvtContext {
     TIdentifier symbol;
 };
 
-static std::unique_ptr<SymtCvtContext> context;
+static std::unique_ptr<SymtCvtContext> ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -124,21 +124,21 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name) {
 }
 
 static void cvt_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
-    backend->backend_symbol_table[context->symbol] = std::move(node);
+    backend->symbol_table[ctx->symbol] = std::move(node);
 }
 
 static void dbl_static_const() {
-    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<BackendDouble>();
-    cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
+    std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
+    cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(asm_type)));
 }
 
 static void string_static_const(Array* arr_type) {
-    std::shared_ptr<AssemblyType> assembly_type = arr_asm_type(arr_type);
-    cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(assembly_type)));
+    std::shared_ptr<AssemblyType> asm_type = arr_asm_type(arr_type);
+    cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(asm_type)));
 }
 
 static void cvt_static_const_toplvl(AsmStaticConstant* node) {
-    context->symbol = node->name;
+    ctx->symbol = node->name;
     switch (node->static_init->type()) {
         case AST_DoubleInit_t:
             dbl_static_const();
@@ -163,7 +163,7 @@ static void cvt_toplvl(AsmTopLevel* node) {
 
 static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-        if (node->is_defined) {
+        if (node->is_def) {
             RAISE_INTERNAL_ERROR;
         }
         else {
@@ -173,22 +173,22 @@ static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
     }
-    bool is_defined = node->is_defined;
-    cvt_backend_symbol(std::make_unique<BackendFun>(std::move(is_defined)));
+    bool is_def = node->is_def;
+    cvt_backend_symbol(std::make_unique<BackendFun>(std::move(is_def)));
 }
 
 static void cvt_obj_type(IdentifierAttr* node) {
     if (node->type() != AST_ConstantAttr_t) {
-        std::shared_ptr<AssemblyType> assembly_type = cvt_backend_asm_type(context->symbol);
+        std::shared_ptr<AssemblyType> asm_type = cvt_backend_asm_type(ctx->symbol);
         bool is_static = node->type() == AST_StaticAttr_t;
-        cvt_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(assembly_type)));
+        cvt_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(asm_type)));
     }
 }
 
 static void cvt_program(AsmProgram* node) {
-    backend->backend_symbol_table.reserve(frontend->symbol_table.size());
+    backend->symbol_table.reserve(frontend->symbol_table.size());
     for (const auto& symbol : frontend->symbol_table) {
-        context->symbol = symbol.first;
+        ctx->symbol = symbol.first;
         if (symbol.second->type_t->type() == AST_FunType_t) {
             cvt_fun_type(
                 static_cast<FunAttr*>(symbol.second->attrs.get()), static_cast<FunType*>(symbol.second->type_t.get()));
@@ -206,7 +206,7 @@ static void cvt_program(AsmProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void convert_symbol_table(AsmProgram* node) {
-    context = std::make_unique<SymtCvtContext>();
+    ctx = std::make_unique<SymtCvtContext>();
     cvt_program(node);
-    context.reset();
+    ctx.reset();
 }

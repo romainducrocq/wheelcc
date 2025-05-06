@@ -36,20 +36,20 @@ enum ASM_LABEL_KIND {
 struct AsmGenContext {
     AsmGenContext();
 
-    FunType* p_fun_type_top_level;
-    std::array<REGISTER_KIND, 6> arg_registers;
-    std::array<REGISTER_KIND, 8> sse_arg_registers;
-    std::unordered_map<TIdentifier, TIdentifier> double_constant_table;
+    FunType* p_fun_type;
+    std::array<REGISTER_KIND, 6> arg_regs;
+    std::array<REGISTER_KIND, 8> sse_arg_regs;
+    std::unordered_map<TIdentifier, TIdentifier> dbl_const_table;
     std::unordered_map<TIdentifier, std::vector<STRUCT_8B_CLS>> struct_8b_cls_map;
-    std::vector<std::unique_ptr<AsmInstruction>>* p_instructions;
-    std::vector<std::unique_ptr<AsmTopLevel>>* p_static_constant_top_levels;
+    std::vector<std::unique_ptr<AsmInstruction>>* p_instrs;
+    std::vector<std::unique_ptr<AsmTopLevel>>* p_static_consts;
 };
 
 AsmGenContext::AsmGenContext() :
-    arg_registers({REG_Di, REG_Si, REG_Dx, REG_Cx, REG_R8, REG_R9}),
-    sse_arg_registers({REG_Xmm0, REG_Xmm1, REG_Xmm2, REG_Xmm3, REG_Xmm4, REG_Xmm5, REG_Xmm6, REG_Xmm7}) {}
+    arg_regs({REG_Di, REG_Si, REG_Dx, REG_Cx, REG_R8, REG_R9}),
+    sse_arg_regs({REG_Xmm0, REG_Xmm1, REG_Xmm2, REG_Xmm3, REG_Xmm4, REG_Xmm5, REG_Xmm6, REG_Xmm7}) {}
 
-static std::unique_ptr<AsmGenContext> context;
+static std::unique_ptr<AsmGenContext> ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -128,19 +128,19 @@ static TIdentifier repr_asm_label(ASM_LABEL_KIND asm_label_kind) {
     return make_label_identifier(std::move(name));
 }
 
-static void dbl_static_const_toplvl(TIdentifier identifier, TIdentifier double_constant, TInt byte);
+static void dbl_static_const_toplvl(TIdentifier identifier, TIdentifier dbl_const, TInt byte);
 
 static std::shared_ptr<AsmData> dbl_static_const_op(TULong binary, TInt byte) {
     TIdentifier double_constant_label;
     {
-        TIdentifier double_constant = make_string_identifier(std::to_string(binary));
-        if (context->double_constant_table.find(double_constant) != context->double_constant_table.end()) {
-            double_constant_label = context->double_constant_table[double_constant];
+        TIdentifier dbl_const = make_string_identifier(std::to_string(binary));
+        if (ctx->dbl_const_table.find(dbl_const) != ctx->dbl_const_table.end()) {
+            double_constant_label = ctx->dbl_const_table[dbl_const];
         }
         else {
             double_constant_label = repr_asm_label(LBL_Ldouble);
-            context->double_constant_table[double_constant] = double_constant_label;
-            dbl_static_const_toplvl(double_constant_label, double_constant, byte);
+            ctx->dbl_const_table[dbl_const] = double_constant_label;
+            dbl_static_const_toplvl(double_constant_label, dbl_const, byte);
         }
     }
     return std::make_shared<AsmData>(std::move(double_constant_label), 0l);
@@ -487,7 +487,7 @@ static std::vector<STRUCT_8B_CLS> struct_1_reg_8b_clss(Structure* struct_type) {
         if (member_type->type() == AST_Structure_t) {
             Structure* member_struct_type = static_cast<Structure*>(member_type);
             struct_8b_clss(member_struct_type);
-            if (context->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
+            if (ctx->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
                 struct_8b_cls[0] = CLS_integer;
             }
         }
@@ -525,16 +525,16 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Structure* struct_type) {
             if (member_type->type() == AST_Structure_t) {
                 Structure* member_struct_type = static_cast<Structure*>(member_type);
                 struct_8b_clss(member_struct_type);
-                if (context->struct_8b_cls_map[member_struct_type->tag].size() > 1) {
-                    if (context->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
+                if (ctx->struct_8b_cls_map[member_struct_type->tag].size() > 1) {
+                    if (ctx->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
                         struct_8b_cls[0] = CLS_integer;
                     }
-                    if (context->struct_8b_cls_map[member_struct_type->tag][1] == CLS_integer) {
+                    if (ctx->struct_8b_cls_map[member_struct_type->tag][1] == CLS_integer) {
                         struct_8b_cls[1] = CLS_integer;
                     }
                 }
                 else {
-                    if (context->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
+                    if (ctx->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
                         struct_8b_cls[0] = CLS_integer;
                         struct_8b_cls[1] = CLS_integer;
                     }
@@ -549,7 +549,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Structure* struct_type) {
             if (member_type->type() == AST_Structure_t) {
                 Structure* member_struct_type = static_cast<Structure*>(member_type);
                 struct_8b_clss(member_struct_type);
-                if (context->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
+                if (ctx->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
                     struct_8b_cls[0] = CLS_integer;
                 }
             }
@@ -564,7 +564,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Structure* struct_type) {
                 if (member_type->type() == AST_Structure_t) {
                     Structure* member_struct_type = static_cast<Structure*>(member_type);
                     struct_8b_clss(member_struct_type);
-                    if (context->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
+                    if (ctx->struct_8b_cls_map[member_struct_type->tag][0] == CLS_integer) {
                         struct_8b_cls[1] = CLS_integer;
                     }
                 }
@@ -578,7 +578,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Structure* struct_type) {
 }
 
 static void struct_8b_clss(Structure* struct_type) {
-    if (context->struct_8b_cls_map.find(struct_type->tag) == context->struct_8b_cls_map.end()) {
+    if (ctx->struct_8b_cls_map.find(struct_type->tag) == ctx->struct_8b_cls_map.end()) {
         std::vector<STRUCT_8B_CLS> struct_8b_cls;
         if (frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
             struct_8b_cls = struct_mem_8b_clss(struct_type);
@@ -589,7 +589,7 @@ static void struct_8b_clss(Structure* struct_type) {
         else {
             struct_8b_cls = struct_1_reg_8b_clss(struct_type);
         }
-        context->struct_8b_cls_map[struct_type->tag] = std::move(struct_8b_cls);
+        ctx->struct_8b_cls_map[struct_type->tag] = std::move(struct_8b_cls);
     }
 }
 
@@ -597,10 +597,10 @@ static void fun_param_reg_mask(FunType* fun_type, size_t reg_size, size_t sse_si
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
         for (size_t i = 0; i < reg_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, context->arg_registers[i], true);
+            register_mask_set(fun_type->param_reg_mask, ctx->arg_regs[i], true);
         }
         for (size_t i = 0; i < sse_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, context->sse_arg_registers[i], true);
+            register_mask_set(fun_type->param_reg_mask, ctx->sse_arg_regs[i], true);
         }
     }
 }
@@ -627,7 +627,7 @@ static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
 }
 
 static void push_instr(std::unique_ptr<AsmInstruction>&& instruction) {
-    context->p_instructions->push_back(std::move(instruction));
+    ctx->p_instrs->push_back(std::move(instruction));
 }
 
 static void ret_int_instr(TacReturn* node) {
@@ -635,7 +635,7 @@ static void ret_int_instr(TacReturn* node) {
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
     std::shared_ptr<AssemblyType> assembly_type_val = gen_asm_type(node->val.get());
     push_instr(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src), std::move(dst)));
-    ret_1_reg_mask(context->p_fun_type_top_level, true);
+    ret_1_reg_mask(ctx->p_fun_type, true);
 }
 
 static void ret_dbl_instr(TacReturn* node) {
@@ -643,44 +643,44 @@ static void ret_dbl_instr(TacReturn* node) {
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Xmm0);
     std::shared_ptr<AssemblyType> assembly_type_val = std::make_shared<BackendDouble>();
     push_instr(std::make_unique<AsmMov>(std::move(assembly_type_val), std::move(src), std::move(dst)));
-    ret_1_reg_mask(context->p_fun_type_top_level, false);
+    ret_1_reg_mask(ctx->p_fun_type, false);
 }
 
 static void ret_8b_instr(TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     TIdentifier src_name = name;
     std::shared_ptr<AsmOperand> dst = gen_register(arg_register);
-    std::shared_ptr<AssemblyType> assembly_type_src =
+    std::shared_ptr<AssemblyType> asm_type_src =
         struct_type ? asm_type_8b(struct_type, offset) : std::make_shared<BackendDouble>();
-    if (assembly_type_src->type() == AST_ByteArray_t) {
+    if (asm_type_src->type() == AST_ByteArray_t) {
         TLong size = offset + 2l;
-        offset += static_cast<ByteArray*>(assembly_type_src.get())->size - 1l;
-        assembly_type_src = std::make_shared<Byte>();
+        offset += static_cast<ByteArray*>(asm_type_src.get())->size - 1l;
+        asm_type_src = std::make_shared<Byte>();
         std::shared_ptr<AsmOperand> src_shl = std::make_shared<AsmImm>(8ul, true, false, false);
         std::shared_ptr<AssemblyType> assembly_type_shl = std::make_shared<QuadWord>();
         while (offset >= size) {
             {
                 std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
-                push_instr(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
+                push_instr(std::make_unique<AsmMov>(asm_type_src, std::move(src), dst));
             }
             {
-                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftLeft>();
-                push_instr(std::make_unique<AsmBinary>(std::move(binary_op), assembly_type_shl, src_shl, dst));
+                std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitShiftLeft>();
+                push_instr(std::make_unique<AsmBinary>(std::move(binop), assembly_type_shl, src_shl, dst));
             }
             offset--;
         }
         {
             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
-            push_instr(std::make_unique<AsmMov>(assembly_type_src, std::move(src), dst));
+            push_instr(std::make_unique<AsmMov>(asm_type_src, std::move(src), dst));
         }
         {
-            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftLeft>();
-            push_instr(std::make_unique<AsmBinary>(
-                std::move(binary_op), std::move(assembly_type_shl), std::move(src_shl), dst));
+            std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitShiftLeft>();
+            push_instr(
+                std::make_unique<AsmBinary>(std::move(binop), std::move(assembly_type_shl), std::move(src_shl), dst));
         }
         offset--;
         {
             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(offset));
-            push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+            push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
         }
     }
     else {
@@ -689,7 +689,7 @@ static void ret_8b_instr(TIdentifier name, TLong offset, Structure* struct_type,
             TLong from_offset = offset;
             src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
         }
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
 }
 
@@ -697,13 +697,13 @@ static void ret_struct_instr(TacReturn* node) {
     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
     Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
     struct_8b_clss(struct_type);
-    if (context->struct_8b_cls_map[struct_type->tag][0] == CLS_memory) {
+    if (ctx->struct_8b_cls_map[struct_type->tag][0] == CLS_memory) {
         {
             std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, -8l);
             std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-            std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-            push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
-            ret_1_reg_mask(context->p_fun_type_top_level, true);
+            std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+            push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
+            ret_1_reg_mask(ctx->p_fun_type, true);
         }
         {
             TLong size = frontend->struct_typedef_table[struct_type->tag]->size;
@@ -715,29 +715,29 @@ static void ret_struct_instr(TacReturn* node) {
                 }
                 static_cast<AsmPseudoMem*>(src.get())->offset = offset;
                 std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, offset);
-                std::shared_ptr<AssemblyType> assembly_type_src;
+                std::shared_ptr<AssemblyType> asm_type_src;
                 if (size >= 8l) {
-                    assembly_type_src = std::make_shared<QuadWord>();
+                    asm_type_src = std::make_shared<QuadWord>();
                     size -= 8l;
                     offset += 8l;
                 }
                 else if (size >= 4l) {
-                    assembly_type_src = std::make_shared<LongWord>();
+                    asm_type_src = std::make_shared<LongWord>();
                     size -= 4l;
                     offset += 4l;
                 }
                 else {
-                    assembly_type_src = std::make_shared<Byte>();
+                    asm_type_src = std::make_shared<Byte>();
                     size--;
                     offset++;
                 }
-                push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+                push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
             }
         }
     }
     else {
         bool reg_size = false;
-        switch (context->struct_8b_cls_map[struct_type->tag][0]) {
+        switch (ctx->struct_8b_cls_map[struct_type->tag][0]) {
             case CLS_integer: {
                 ret_8b_instr(name, 0l, struct_type, REG_Ax);
                 reg_size = true;
@@ -749,9 +749,9 @@ static void ret_struct_instr(TacReturn* node) {
             default:
                 RAISE_INTERNAL_ERROR;
         }
-        if (context->struct_8b_cls_map[struct_type->tag].size() == 2) {
+        if (ctx->struct_8b_cls_map[struct_type->tag].size() == 2) {
             bool sse_size = !reg_size;
-            switch (context->struct_8b_cls_map[struct_type->tag][1]) {
+            switch (ctx->struct_8b_cls_map[struct_type->tag][1]) {
                 case CLS_integer:
                     ret_8b_instr(name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
                     break;
@@ -763,10 +763,10 @@ static void ret_struct_instr(TacReturn* node) {
                 default:
                     RAISE_INTERNAL_ERROR;
             }
-            ret_2_reg_mask(context->p_fun_type_top_level, reg_size, sse_size);
+            ret_2_reg_mask(ctx->p_fun_type, reg_size, sse_size);
         }
         else {
-            ret_1_reg_mask(context->p_fun_type_top_level, reg_size);
+            ret_1_reg_mask(ctx->p_fun_type, reg_size);
         }
     }
 }
@@ -784,7 +784,7 @@ static void ret_instr(TacReturn* node) {
         }
     }
     else {
-        ret_2_reg_mask(context->p_fun_type_top_level, false, false);
+        ret_2_reg_mask(ctx->p_fun_type, false, false);
     }
     push_instr(std::make_unique<AsmRet>());
 }
@@ -792,10 +792,10 @@ static void ret_instr(TacReturn* node) {
 static void sign_extend_instr(TacSignExtend* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
-    std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->dst.get());
-    push_instr(std::make_unique<AsmMovSx>(
-        std::move(assembly_type_src), std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+    push_instr(
+        std::make_unique<AsmMovSx>(std::move(asm_type_src), std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void truncate_imm_byte_instr(AsmImm* node) {
@@ -807,11 +807,11 @@ static void truncate_imm_byte_instr(AsmImm* node) {
 static void truncate_byte_instr(TacTruncate* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<Byte>();
+    std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<Byte>();
     if (src->type() == AST_AsmImm_t) {
         truncate_imm_byte_instr(static_cast<AsmImm*>(src.get()));
     }
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void truncate_imm_long_instr(AsmImm* node) {
@@ -823,11 +823,11 @@ static void truncate_imm_long_instr(AsmImm* node) {
 static void truncate_long_instr(TacTruncate* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+    std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
     if (src->type() == AST_AsmImm_t) {
         truncate_imm_long_instr(static_cast<AsmImm*>(src.get()));
     }
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void truncate_instr(TacTruncate* node) {
@@ -842,31 +842,31 @@ static void truncate_instr(TacTruncate* node) {
 static void zero_extend_instr(TacZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
-    std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->dst.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
     push_instr(std::make_unique<AsmMovZeroExtend>(
-        std::move(assembly_type_src), std::move(assembly_type_dst), std::move(src), std::move(dst)));
+        std::move(asm_type_src), std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void dbl_to_char_instr(TacDoubleToInt* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
-        push_instr(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src), std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<LongWord>();
+        push_instr(std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<Byte>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src_dst), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<Byte>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
     }
 }
 
 static void dbl_to_long_instr(TacDoubleToInt* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->dst.get());
-    push_instr(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->dst.get());
+    push_instr(std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void dbl_to_signed_instr(TacDoubleToInt* node) {
@@ -882,13 +882,13 @@ static void dbl_to_uchar_instr(TacDoubleToUInt* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
-        push_instr(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src), std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<LongWord>();
+        push_instr(std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<Byte>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src_dst), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<Byte>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
     }
 }
 
@@ -896,13 +896,13 @@ static void dbl_to_uint_instr(TacDoubleToUInt* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmCvttsd2si>(std::move(assembly_type_src), std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src_dst), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
     }
 }
 
@@ -954,24 +954,23 @@ static void dbl_to_unsigned_instr(TacDoubleToUInt* node) {
 
 static void char_to_dbl_instr(TacIntToDouble* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+    std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<Byte>();
-        push_instr(
-            std::make_unique<AsmMovSx>(std::move(assembly_type_src), assembly_type_dst, std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<Byte>();
+        push_instr(std::make_unique<AsmMovSx>(std::move(asm_type_src), asm_type_dst, std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        push_instr(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_dst), std::move(src_dst), std::move(dst)));
+        push_instr(std::make_unique<AsmCvtsi2sd>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
     }
 }
 
 static void long_to_dbl_instr(TacIntToDouble* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
-    push_instr(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    push_instr(std::make_unique<AsmCvtsi2sd>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void signed_to_dbl_instr(TacIntToDouble* node) {
@@ -985,31 +984,29 @@ static void signed_to_dbl_instr(TacIntToDouble* node) {
 
 static void uchar_to_dbl_instr(TacUIntToDouble* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
+    std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<Byte>();
-        push_instr(std::make_unique<AsmMovZeroExtend>(
-            std::move(assembly_type_src), assembly_type_dst, std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<Byte>();
+        push_instr(std::make_unique<AsmMovZeroExtend>(std::move(asm_type_src), asm_type_dst, std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        push_instr(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_dst), std::move(src_dst), std::move(dst)));
+        push_instr(std::make_unique<AsmCvtsi2sd>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
     }
 }
 
 static void uint_to_dbl_instr(TacUIntToDouble* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<QuadWord>();
+    std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<QuadWord>();
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<LongWord>();
-        push_instr(std::make_unique<AsmMovZeroExtend>(
-            std::move(assembly_type_src), assembly_type_dst, std::move(src), src_dst));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<LongWord>();
+        push_instr(std::make_unique<AsmMovZeroExtend>(std::move(asm_type_src), asm_type_dst, std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        push_instr(std::make_unique<AsmCvtsi2sd>(std::move(assembly_type_dst), std::move(src_dst), std::move(dst)));
+        push_instr(std::make_unique<AsmCvtsi2sd>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
     }
 }
 
@@ -1075,8 +1072,8 @@ static void unsigned_to_dbl_instr(TacUIntToDouble* node) {
 static void alloc_stack_instr(TLong byte) { push_instr(alloc_stack_bytes(byte)); }
 
 static void dealloc_stack_instr(TLong byte) {
-    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmAdd>();
-    std::shared_ptr<AssemblyType> assembly_type = std::make_shared<QuadWord>();
+    std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmAdd>();
+    std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
         TULong value = static_cast<TULong>(byte);
@@ -1086,28 +1083,27 @@ static void dealloc_stack_instr(TLong byte) {
         src = std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), std::move(is_neg));
     }
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
-    push_instr(
-        std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type), std::move(src), std::move(dst)));
+    push_instr(std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type), std::move(src), std::move(dst)));
 }
 
 static void reg_arg_call_instr(TacValue* node, REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = gen_op(node);
     std::shared_ptr<AsmOperand> dst = gen_register(arg_register);
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node);
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node);
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void stack_arg_call_instr(TacValue* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node);
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node);
-    if (src->type() == AST_AsmRegister_t || src->type() == AST_AsmImm_t || assembly_type_src->type() == AST_QuadWord_t
-        || assembly_type_src->type() == AST_BackendDouble_t) {
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node);
+    if (src->type() == AST_AsmRegister_t || src->type() == AST_AsmImm_t || asm_type_src->type() == AST_QuadWord_t
+        || asm_type_src->type() == AST_BackendDouble_t) {
         push_instr(std::make_unique<AsmPush>(std::move(src)));
     }
     else {
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
         push_instr(std::make_unique<AsmPush>(dst));
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
 }
 
@@ -1125,7 +1121,7 @@ static void quad_stack_arg_call_instr(TIdentifier name, TLong offset) {
     push_instr(std::make_unique<AsmPush>(std::move(src)));
 }
 
-static void long_stack_arg_call_instr(TIdentifier name, TLong offset, std::shared_ptr<AssemblyType>&& assembly_type) {
+static void long_stack_arg_call_instr(TIdentifier name, TLong offset, std::shared_ptr<AssemblyType>&& asm_type) {
     std::shared_ptr<AsmOperand> src;
     {
         TIdentifier src_name = name;
@@ -1133,9 +1129,9 @@ static void long_stack_arg_call_instr(TIdentifier name, TLong offset, std::share
         src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
     }
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> assembly_type_src = std::move(assembly_type);
+    std::shared_ptr<AssemblyType> asm_type_src = std::move(asm_type);
     push_instr(std::make_unique<AsmPush>(dst));
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void bytearr_stack_arg_call_instr(TIdentifier name, TLong offset, ByteArray* bytearray_type) {
@@ -1148,21 +1144,20 @@ static void bytearr_stack_arg_call_instr(TIdentifier name, TLong offset, ByteArr
             {
                 std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
                 std::shared_ptr<AsmOperand> dst = gen_memory(REG_Sp, to_offset);
-                std::shared_ptr<AssemblyType> assembly_type_src;
+                std::shared_ptr<AssemblyType> asm_type_src;
                 if (size >= 4l) {
-                    assembly_type_src = std::make_shared<LongWord>();
+                    asm_type_src = std::make_shared<LongWord>();
                     size -= 4l;
                     offset += 4l;
                     to_offset += 4l;
                 }
                 else {
-                    assembly_type_src = std::make_shared<Byte>();
+                    asm_type_src = std::make_shared<Byte>();
                     size--;
                     offset++;
                     to_offset++;
                 }
-                byte_instruction =
-                    std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst));
+                byte_instruction = std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst));
             }
             byte_instructions.push_back(std::move(byte_instruction));
         }
@@ -1171,58 +1166,58 @@ static void bytearr_stack_arg_call_instr(TIdentifier name, TLong offset, ByteArr
         }
     }
     {
-        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmSub>();
+        std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmSub>();
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(8ul, true, false, false);
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmBinary>(
-            std::move(binary_op), std::move(assembly_type_src), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(
+            std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type_src), std::move(src), std::move(dst)));
     }
 }
 
 static void stack_8b_arg_call_instr(TIdentifier name, TLong offset, Structure* struct_type) {
-    std::shared_ptr<AssemblyType> assembly_type = asm_type_8b(struct_type, offset);
-    switch (assembly_type->type()) {
+    std::shared_ptr<AssemblyType> asm_type = asm_type_8b(struct_type, offset);
+    switch (asm_type->type()) {
         case AST_QuadWord_t:
             quad_stack_arg_call_instr(name, offset);
             break;
         case AST_ByteArray_t:
-            bytearr_stack_arg_call_instr(name, offset, static_cast<ByteArray*>(assembly_type.get()));
+            bytearr_stack_arg_call_instr(name, offset, static_cast<ByteArray*>(asm_type.get()));
             break;
         default:
-            long_stack_arg_call_instr(name, offset, std::move(assembly_type));
+            long_stack_arg_call_instr(name, offset, std::move(asm_type));
             break;
     }
 }
 
-static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_memory) {
-    size_t reg_size = is_return_memory ? 1 : 0;
+static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_ret_memory) {
+    size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_padding = 0l;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instructions;
-    std::vector<std::unique_ptr<AsmInstruction>>* p_instructions = context->p_instructions;
+    std::vector<std::unique_ptr<AsmInstruction>>* p_instrs = ctx->p_instrs;
     for (const auto& arg : node->args) {
         if (is_value_dbl(arg.get())) {
             if (sse_size < 8) {
-                reg_arg_call_instr(arg.get(), context->sse_arg_registers[sse_size]);
+                reg_arg_call_instr(arg.get(), ctx->sse_arg_regs[sse_size]);
                 sse_size++;
             }
             else {
-                context->p_instructions = &stack_instructions;
+                ctx->p_instrs = &stack_instructions;
                 stack_arg_call_instr(arg.get());
-                context->p_instructions = p_instructions;
+                ctx->p_instrs = p_instrs;
                 stack_padding++;
             }
         }
         else if (!is_value_struct(arg.get())) {
             if (reg_size < 6) {
-                reg_arg_call_instr(arg.get(), context->arg_registers[reg_size]);
+                reg_arg_call_instr(arg.get(), ctx->arg_regs[reg_size]);
                 reg_size++;
             }
             else {
-                context->p_instructions = &stack_instructions;
+                ctx->p_instrs = &stack_instructions;
                 stack_arg_call_instr(arg.get());
-                context->p_instructions = p_instructions;
+                ctx->p_instrs = p_instrs;
                 stack_padding++;
             }
         }
@@ -1232,10 +1227,10 @@ static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_
             TIdentifier name = static_cast<TacVariable*>(arg.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             struct_8b_clss(struct_type);
-            if (context->struct_8b_cls_map[struct_type->tag][0] != CLS_memory) {
+            if (ctx->struct_8b_cls_map[struct_type->tag][0] != CLS_memory) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : ctx->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == CLS_sse) {
                         struct_sse_size++;
                     }
@@ -1246,13 +1241,13 @@ static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : ctx->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == CLS_sse) {
-                        reg_8b_arg_call_instr(name, offset, nullptr, context->sse_arg_registers[sse_size]);
+                        reg_8b_arg_call_instr(name, offset, nullptr, ctx->sse_arg_regs[sse_size]);
                         sse_size++;
                     }
                     else {
-                        reg_8b_arg_call_instr(name, offset, struct_type, context->arg_registers[reg_size]);
+                        reg_8b_arg_call_instr(name, offset, struct_type, ctx->arg_regs[reg_size]);
                         reg_size++;
                     }
                     offset += 8l;
@@ -1260,13 +1255,13 @@ static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_
             }
             else {
                 TLong offset = 0l;
-                context->p_instructions = &stack_instructions;
-                for (size_t i = 0; i < context->struct_8b_cls_map[struct_type->tag].size(); ++i) {
+                ctx->p_instrs = &stack_instructions;
+                for (size_t i = 0; i < ctx->struct_8b_cls_map[struct_type->tag].size(); ++i) {
                     stack_8b_arg_call_instr(name, offset, struct_type);
                     offset += 8l;
                     stack_padding++;
                 }
-                context->p_instructions = p_instructions;
+                ctx->p_instrs = p_instrs;
             }
         }
     }
@@ -1285,44 +1280,44 @@ static TLong arg_call_instr(TacFunCall* node, FunType* fun_type, bool is_return_
 static void ret_call_instr(TacValue* node, REGISTER_KIND arg_register) {
     std::shared_ptr<AsmOperand> src = gen_register(arg_register);
     std::shared_ptr<AsmOperand> dst = gen_op(node);
-    std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node);
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node);
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void ret_8b_call_instr(TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
     TIdentifier dst_name = name;
     std::shared_ptr<AsmOperand> src = gen_register(arg_register);
-    std::shared_ptr<AssemblyType> assembly_type_dst =
+    std::shared_ptr<AssemblyType> asm_type_dst =
         struct_type ? asm_type_8b(struct_type, offset) : std::make_shared<BackendDouble>();
-    if (assembly_type_dst->type() == AST_ByteArray_t) {
-        TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size + offset - 2l;
-        assembly_type_dst = std::make_shared<Byte>();
+    if (asm_type_dst->type() == AST_ByteArray_t) {
+        TLong size = static_cast<ByteArray*>(asm_type_dst.get())->size + offset - 2l;
+        asm_type_dst = std::make_shared<Byte>();
         std::shared_ptr<AsmOperand> src_shr2op = std::make_shared<AsmImm>(8ul, true, false, false);
         std::shared_ptr<AssemblyType> assembly_type_shr2op = std::make_shared<QuadWord>();
         while (offset < size) {
             {
                 std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
-                push_instr(std::make_unique<AsmMov>(assembly_type_dst, src, std::move(dst)));
+                push_instr(std::make_unique<AsmMov>(asm_type_dst, src, std::move(dst)));
             }
             {
-                std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftRight>();
-                push_instr(std::make_unique<AsmBinary>(std::move(binary_op), assembly_type_shr2op, src_shr2op, src));
+                std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitShiftRight>();
+                push_instr(std::make_unique<AsmBinary>(std::move(binop), assembly_type_shr2op, src_shr2op, src));
             }
             offset++;
         }
         {
             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
-            push_instr(std::make_unique<AsmMov>(assembly_type_dst, src, std::move(dst)));
+            push_instr(std::make_unique<AsmMov>(asm_type_dst, src, std::move(dst)));
         }
         {
-            std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitShiftRight>();
+            std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitShiftRight>();
             push_instr(std::make_unique<AsmBinary>(
-                std::move(binary_op), std::move(assembly_type_shr2op), std::move(src_shr2op), src));
+                std::move(binop), std::move(assembly_type_shr2op), std::move(src_shr2op), src));
         }
         offset++;
         {
             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(offset));
-            push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+            push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
         }
     }
     else {
@@ -1331,20 +1326,20 @@ static void ret_8b_call_instr(TIdentifier name, TLong offset, Structure* struct_
             TLong to_offset = offset;
             dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
         }
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
 
 static void call_instr(TacFunCall* node) {
-    bool is_return_memory = false;
+    bool is_ret_memory = false;
     FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
     {
         if (node->dst && is_value_struct(node->dst.get())) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
             struct_8b_clss(struct_type);
-            if (context->struct_8b_cls_map[struct_type->tag][0] == CLS_memory) {
-                is_return_memory = true;
+            if (ctx->struct_8b_cls_map[struct_type->tag][0] == CLS_memory) {
+                is_ret_memory = true;
                 {
                     std::shared_ptr<AsmOperand> src = gen_op(node->dst.get());
                     std::shared_ptr<AsmOperand> dst = gen_register(REG_Di);
@@ -1352,7 +1347,7 @@ static void call_instr(TacFunCall* node) {
                 }
             }
         }
-        TLong stack_padding = arg_call_instr(node, fun_type, is_return_memory);
+        TLong stack_padding = arg_call_instr(node, fun_type, is_ret_memory);
 
         {
             TIdentifier name = node->name;
@@ -1365,7 +1360,7 @@ static void call_instr(TacFunCall* node) {
     }
 
     if (node->dst) {
-        if (is_return_memory) {
+        if (is_ret_memory) {
             ret_1_reg_mask(fun_type, true);
         }
         else {
@@ -1381,7 +1376,7 @@ static void call_instr(TacFunCall* node) {
                 bool reg_size = false;
                 TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
                 Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[name]->type_t.get());
-                switch (context->struct_8b_cls_map[struct_type->tag][0]) {
+                switch (ctx->struct_8b_cls_map[struct_type->tag][0]) {
                     case CLS_integer: {
                         ret_8b_call_instr(name, 0l, struct_type, REG_Ax);
                         reg_size = true;
@@ -1393,9 +1388,9 @@ static void call_instr(TacFunCall* node) {
                     default:
                         RAISE_INTERNAL_ERROR;
                 }
-                if (context->struct_8b_cls_map[struct_type->tag].size() == 2) {
+                if (ctx->struct_8b_cls_map[struct_type->tag].size() == 2) {
                     bool sse_size = !reg_size;
-                    switch (context->struct_8b_cls_map[struct_type->tag][1]) {
+                    switch (ctx->struct_8b_cls_map[struct_type->tag][1]) {
                         case CLS_integer:
                             ret_8b_call_instr(name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
                             break;
@@ -1421,22 +1416,22 @@ static void call_instr(TacFunCall* node) {
 }
 
 static void zero_xmm_reg_instr() {
-    std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
+    std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitXor>();
     std::shared_ptr<AsmOperand> src = gen_register(REG_Xmm0);
-    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<BackendDouble>();
-    push_instr(std::make_unique<AsmBinary>(std::move(binary_op), std::move(assembly_type_src), src, src));
+    std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<BackendDouble>();
+    push_instr(std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type_src), src, src));
 }
 
 static void unop_int_arithmetic_instr(TacUnary* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        push_instr(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
+        push_instr(std::make_unique<AsmMov>(asm_type_src, std::move(src), src_dst));
     }
     {
-        std::unique_ptr<AsmUnaryOp> unary_op = gen_unop(node->unary_op.get());
-        push_instr(std::make_unique<AsmUnary>(std::move(unary_op), std::move(assembly_type_src), std::move(src_dst)));
+        std::unique_ptr<AsmUnaryOp> unop = gen_unop(node->unop.get());
+        push_instr(std::make_unique<AsmUnary>(std::move(unop), std::move(asm_type_src), std::move(src_dst)));
     }
 }
 
@@ -1448,10 +1443,10 @@ static void unop_dbl_neg_instr(TacUnary* node) {
         push_instr(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1), src1_dst));
     }
     {
-        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmBitXor>();
+        std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitXor>();
         std::shared_ptr<AsmOperand> src2 = dbl_static_const_op(9223372036854775808ul, 16);
         push_instr(std::make_unique<AsmBinary>(
-            std::move(binary_op), std::move(assembly_type_src1), std::move(src2), std::move(src1_dst)));
+            std::move(binop), std::move(assembly_type_src1), std::move(src2), std::move(src1_dst)));
     }
 }
 
@@ -1469,12 +1464,12 @@ static void unop_int_conditional_instr(TacUnary* node) {
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(node->dst.get());
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
-        push_instr(std::make_unique<AsmCmp>(std::move(assembly_type_src), imm_zero, std::move(src)));
+        std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+        push_instr(std::make_unique<AsmCmp>(std::move(asm_type_src), imm_zero, std::move(src)));
     }
     {
-        std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->dst.get());
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
         std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
@@ -1489,13 +1484,13 @@ static void unop_dbl_conditional_instr(TacUnary* node) {
     {
         std::shared_ptr<AsmOperand> reg_zero = gen_register(REG_Xmm0);
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<BackendDouble>();
-        push_instr(std::make_unique<AsmCmp>(std::move(assembly_type_src), std::move(reg_zero), std::move(src)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<BackendDouble>();
+        push_instr(std::make_unique<AsmCmp>(std::move(asm_type_src), std::move(reg_zero), std::move(src)));
     }
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
+        std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
         std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
@@ -1518,7 +1513,7 @@ static void unop_conditional_instr(TacUnary* node) {
 }
 
 static void unary_instr(TacUnary* node) {
-    switch (node->unary_op->type()) {
+    switch (node->unop->type()) {
         case AST_TacComplement_t:
             unop_int_arithmetic_instr(node);
             break;
@@ -1541,10 +1536,10 @@ static void binop_arithmetic_instr(TacBinary* node) {
         push_instr(std::make_unique<AsmMov>(assembly_type_src1, std::move(src1), src1_dst));
     }
     {
-        std::unique_ptr<AsmBinaryOp> binary_op = gen_binop(node->binary_op.get());
+        std::unique_ptr<AsmBinaryOp> binop = gen_binop(node->binop.get());
         std::shared_ptr<AsmOperand> src2 = gen_op(node->src2.get());
         push_instr(std::make_unique<AsmBinary>(
-            std::move(binary_op), std::move(assembly_type_src1), std::move(src2), std::move(src1_dst)));
+            std::move(binop), std::move(assembly_type_src1), std::move(src2), std::move(src1_dst)));
     }
 }
 
@@ -1660,16 +1655,16 @@ static void binop_int_conditional_instr(TacBinary* node) {
     }
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-        std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->dst.get());
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
         std::unique_ptr<AsmCondCode> cond_code;
         if (is_value_signed(node->src1.get())) {
-            cond_code = gen_signed_cond_code(node->binary_op.get());
+            cond_code = gen_signed_cond_code(node->binop.get());
         }
         else {
-            cond_code = gen_unsigned_cond_code(node->binary_op.get());
+            cond_code = gen_unsigned_cond_code(node->binop.get());
         }
         push_instr(std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
     }
@@ -1686,15 +1681,15 @@ static void binop_dbl_conditional_instr(TacBinary* node) {
     }
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-        std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<LongWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(imm_zero), cmp_dst));
+        std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
         std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
         push_instr(std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
     }
     {
-        std::unique_ptr<AsmCondCode> cond_code = gen_unsigned_cond_code(node->binary_op.get());
+        std::unique_ptr<AsmCondCode> cond_code = gen_unsigned_cond_code(node->binop.get());
         if (cond_code->type() == AST_AsmNE_t) {
             TIdentifier target_nan_ne = repr_asm_label(LBL_Lcomisd_nan);
             push_instr(std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
@@ -1723,7 +1718,7 @@ static void binop_conditional_instr(TacBinary* node) {
 }
 
 static void binary_instr(TacBinary* node) {
-    switch (node->binary_op->type()) {
+    switch (node->binop->type()) {
         case AST_TacAdd_t:
         case AST_TacSubtract_t:
         case AST_TacMultiply_t:
@@ -1763,31 +1758,31 @@ static void copy_struct_instr(TacCopy* node) {
     while (size > 0l) {
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
         std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
-        std::shared_ptr<AssemblyType> assembly_type_src;
+        std::shared_ptr<AssemblyType> asm_type_src;
         if (size >= 8l) {
-            assembly_type_src = std::make_shared<QuadWord>();
+            asm_type_src = std::make_shared<QuadWord>();
             size -= 8l;
             offset += 8l;
         }
         else if (size >= 4l) {
-            assembly_type_src = std::make_shared<LongWord>();
+            asm_type_src = std::make_shared<LongWord>();
             size -= 4l;
             offset += 4l;
         }
         else {
-            assembly_type_src = std::make_shared<Byte>();
+            asm_type_src = std::make_shared<Byte>();
             size--;
             offset++;
         }
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
 }
 
 static void copy_scalar_instr(TacCopy* node) {
     std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void copy_instr(TacCopy* node) {
@@ -1822,8 +1817,8 @@ static void load_struct_instr(TacLoad* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
     {
         TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
@@ -1833,23 +1828,23 @@ static void load_struct_instr(TacLoad* node) {
         while (size > 0l) {
             std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, offset);
             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
-            std::shared_ptr<AssemblyType> assembly_type_dst;
+            std::shared_ptr<AssemblyType> asm_type_dst;
             if (size >= 8l) {
-                assembly_type_dst = std::make_shared<QuadWord>();
+                asm_type_dst = std::make_shared<QuadWord>();
                 size -= 8l;
                 offset += 8l;
             }
             else if (size >= 4l) {
-                assembly_type_dst = std::make_shared<LongWord>();
+                asm_type_dst = std::make_shared<LongWord>();
                 size -= 4l;
                 offset += 4l;
             }
             else {
-                assembly_type_dst = std::make_shared<Byte>();
+                asm_type_dst = std::make_shared<Byte>();
                 size--;
                 offset++;
             }
-            push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+            push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
         }
     }
 }
@@ -1858,14 +1853,14 @@ static void load_scalar_instr(TacLoad* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
     {
         std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, 0l);
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-        std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->dst.get());
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
 
@@ -1882,8 +1877,8 @@ static void store_struct_instr(TacStore* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->dst_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
     {
         TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
@@ -1893,23 +1888,23 @@ static void store_struct_instr(TacStore* node) {
         while (size > 0l) {
             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
             std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, offset);
-            std::shared_ptr<AssemblyType> assembly_type_dst;
+            std::shared_ptr<AssemblyType> asm_type_dst;
             if (size >= 8l) {
-                assembly_type_dst = std::make_shared<QuadWord>();
+                asm_type_dst = std::make_shared<QuadWord>();
                 size -= 8l;
                 offset += 8l;
             }
             else if (size >= 4l) {
-                assembly_type_dst = std::make_shared<LongWord>();
+                asm_type_dst = std::make_shared<LongWord>();
                 size -= 4l;
                 offset += 4l;
             }
             else {
-                assembly_type_dst = std::make_shared<Byte>();
+                asm_type_dst = std::make_shared<Byte>();
                 size--;
                 offset++;
             }
-            push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+            push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
         }
     }
 }
@@ -1918,14 +1913,14 @@ static void store_scalar_instr(TacStore* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->dst_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src.get());
         std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, 0l);
-        std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->src.get());
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->src.get());
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
 
@@ -1942,35 +1937,35 @@ static void const_idx_add_ptr_instr(TacAddPtr* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
     {
-        TLong index;
+        TLong idx;
         {
-            CConst* constant = static_cast<TacConstant*>(node->index.get())->constant.get();
+            CConst* constant = static_cast<TacConstant*>(node->idx.get())->constant.get();
             if (constant->type() != AST_CConstLong_t) {
                 RAISE_INTERNAL_ERROR;
             }
-            index = static_cast<CConstLong*>(constant)->value;
+            idx = static_cast<CConstLong*>(constant)->value;
         }
-        std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, index * node->scale);
+        std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, idx * node->scale);
         std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
         push_instr(std::make_unique<AsmLea>(std::move(src), std::move(dst)));
     }
 }
 
 static void scalar_idx_add_ptr_instr(TacAddPtr* node) {
-    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+    std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        push_instr(std::make_unique<AsmMov>(assembly_type_src, std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(asm_type_src, std::move(src), std::move(dst)));
     }
     {
-        std::shared_ptr<AsmOperand> src = gen_op(node->index.get());
+        std::shared_ptr<AsmOperand> src = gen_op(node->idx.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Dx);
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
     {
         std::shared_ptr<AsmOperand> src = gen_indexed(REG_Ax, REG_Dx, node->scale);
@@ -1980,16 +1975,16 @@ static void scalar_idx_add_ptr_instr(TacAddPtr* node) {
 }
 
 static void aggr_idx_add_ptr_instr(TacAddPtr* node) {
-    std::shared_ptr<AssemblyType> assembly_type_src = std::make_shared<QuadWord>();
+    std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Dx);
     {
         std::shared_ptr<AsmOperand> src = gen_op(node->src_ptr.get());
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-        push_instr(std::make_unique<AsmMov>(assembly_type_src, std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(asm_type_src, std::move(src), std::move(dst)));
     }
     {
-        std::shared_ptr<AsmOperand> src = gen_op(node->index.get());
-        push_instr(std::make_unique<AsmMov>(assembly_type_src, std::move(src), src_dst));
+        std::shared_ptr<AsmOperand> src = gen_op(node->idx.get());
+        push_instr(std::make_unique<AsmMov>(asm_type_src, std::move(src), src_dst));
     }
     {
         std::shared_ptr<AsmOperand> src;
@@ -2000,9 +1995,9 @@ static void aggr_idx_add_ptr_instr(TacAddPtr* node) {
             bool is_neg = node->scale < 0l;
             src = std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), std::move(is_neg));
         }
-        std::unique_ptr<AsmBinaryOp> binary_op = std::make_unique<AsmMult>();
-        push_instr(std::make_unique<AsmBinary>(
-            std::move(binary_op), std::move(assembly_type_src), std::move(src), std::move(src_dst)));
+        std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmMult>();
+        push_instr(
+            std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type_src), std::move(src), std::move(src_dst)));
     }
     {
         std::shared_ptr<AsmOperand> src = gen_indexed(REG_Ax, REG_Dx, 1l);
@@ -2026,7 +2021,7 @@ static void var_idx_add_ptr_instr(TacAddPtr* node) {
 }
 
 static void add_ptr_instr(TacAddPtr* node) {
-    switch (node->index->type()) {
+    switch (node->idx->type()) {
         case AST_TacConstant_t:
             const_idx_add_ptr_instr(node);
             break;
@@ -2051,23 +2046,23 @@ static void cp_to_offset_struct_instr(TacCopyToOffset* node) {
             TLong to_offset = offset + node->offset;
             dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
         }
-        std::shared_ptr<AssemblyType> assembly_type_src;
+        std::shared_ptr<AssemblyType> asm_type_src;
         if (size >= 8l) {
-            assembly_type_src = std::make_shared<QuadWord>();
+            asm_type_src = std::make_shared<QuadWord>();
             size -= 8l;
             offset += 8l;
         }
         else if (size >= 4l) {
-            assembly_type_src = std::make_shared<LongWord>();
+            asm_type_src = std::make_shared<LongWord>();
             size -= 4l;
             offset += 4l;
         }
         else {
-            assembly_type_src = std::make_shared<Byte>();
+            asm_type_src = std::make_shared<Byte>();
             size--;
             offset++;
         }
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
     }
 }
 
@@ -2079,8 +2074,8 @@ static void cp_to_offset_scalar_instr(TacCopyToOffset* node) {
         TLong to_offset = node->offset;
         dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
     }
-    std::shared_ptr<AssemblyType> assembly_type_src = gen_asm_type(node->src.get());
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_src), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void cp_to_offset_instr(TacCopyToOffset* node) {
@@ -2105,23 +2100,23 @@ static void cp_from_offset_struct_instr(TacCopyFromOffset* node) {
             src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
         }
         std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(dst_name, offset);
-        std::shared_ptr<AssemblyType> assembly_type_dst;
+        std::shared_ptr<AssemblyType> asm_type_dst;
         if (size >= 8l) {
-            assembly_type_dst = std::make_shared<QuadWord>();
+            asm_type_dst = std::make_shared<QuadWord>();
             size -= 8l;
             offset += 8l;
         }
         else if (size >= 4l) {
-            assembly_type_dst = std::make_shared<LongWord>();
+            asm_type_dst = std::make_shared<LongWord>();
             size -= 4l;
             offset += 4l;
         }
         else {
-            assembly_type_dst = std::make_shared<Byte>();
+            asm_type_dst = std::make_shared<Byte>();
             size--;
             offset++;
         }
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
 
@@ -2133,8 +2128,8 @@ static void cp_from_offset_scalar_instr(TacCopyFromOffset* node) {
         src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
     }
     std::shared_ptr<AsmOperand> dst = gen_op(node->dst.get());
-    std::shared_ptr<AssemblyType> assembly_type_dst = gen_asm_type(node->dst.get());
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void cp_from_offset_instr(TacCopyFromOffset* node) {
@@ -2324,12 +2319,12 @@ static void gen_instr(TacInstruction* node) {
     }
 }
 
-// instruction = Mov(assembly_type, operand, operand) | MovSx(assembly_type, assembly_type, operand, operand)
-//             | MovZeroExtend(assembly_type, assembly_type, operand, operand) | Lea(operand, operand)
-//             | Cvttsd2si(assembly_type, operand, operand) | Cvtsi2sd(assembly_type, operand, operand)
-//             | Unary(unary_operator, assembly_type, operand) | Binary(binary_operator, assembly_type, operand,
-//             operand) | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type,
-//             operand) | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
+// instruction = Mov(asm_type, operand, operand) | MovSx(asm_type, asm_type, operand, operand)
+//             | MovZeroExtend(asm_type, asm_type, operand, operand) | Lea(operand, operand)
+//             | Cvttsd2si(asm_type, operand, operand) | Cvtsi2sd(asm_type, operand, operand)
+//             | Unary(unary_operator, asm_type, operand) | Binary(binary_operator, asm_type, operand,
+//             operand) | Cmp(asm_type, operand, operand) | Idiv(asm_type, operand) | Div(asm_type,
+//             operand) | Cdq(asm_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
 //             operand) | Label(identifier) | Push(operand) | Pop(reg) | Call(identifier) | Ret
 static void gen_instr_list(const std::vector<std::unique_ptr<TacInstruction>>& list_node) {
     for (const auto& instruction : list_node) {
@@ -2346,8 +2341,8 @@ static void reg_fun_param_instr(TIdentifier name, REGISTER_KIND arg_register) {
         TIdentifier dst_name = name;
         dst = std::make_shared<AsmPseudo>(std::move(dst_name));
     }
-    std::shared_ptr<AssemblyType> assembly_type_dst = cvt_backend_asm_type(name);
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(name);
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void stack_fun_param_instr(TIdentifier name, TLong stack_bytes) {
@@ -2357,8 +2352,8 @@ static void stack_fun_param_instr(TIdentifier name, TLong stack_bytes) {
         TIdentifier dst_name = name;
         dst = std::make_shared<AsmPseudo>(std::move(dst_name));
     }
-    std::shared_ptr<AssemblyType> assembly_type_dst = cvt_backend_asm_type(name);
-    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+    std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(name);
+    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
 static void reg_8b_fun_param_instr(TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_register) {
@@ -2366,25 +2361,25 @@ static void reg_8b_fun_param_instr(TIdentifier name, TLong offset, Structure* st
 }
 
 static void stack_8b_fun_param_instr(TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
-    std::shared_ptr<AssemblyType> assembly_type_dst = asm_type_8b(struct_type, offset);
-    if (assembly_type_dst->type() == AST_ByteArray_t) {
-        TLong size = static_cast<ByteArray*>(assembly_type_dst.get())->size;
+    std::shared_ptr<AssemblyType> asm_type_dst = asm_type_8b(struct_type, offset);
+    if (asm_type_dst->type() == AST_ByteArray_t) {
+        TLong size = static_cast<ByteArray*>(asm_type_dst.get())->size;
         while (size > 0l) {
             std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, stack_bytes);
             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
             if (size >= 4l) {
-                assembly_type_dst = std::make_shared<LongWord>();
+                asm_type_dst = std::make_shared<LongWord>();
                 size -= 4l;
                 offset += 4l;
                 stack_bytes += 4l;
             }
             else {
-                assembly_type_dst = std::make_shared<Byte>();
+                asm_type_dst = std::make_shared<Byte>();
                 size--;
                 offset++;
                 stack_bytes++;
             }
-            push_instr(std::make_unique<AsmMov>(assembly_type_dst, std::move(src), std::move(dst)));
+            push_instr(std::make_unique<AsmMov>(asm_type_dst, std::move(src), std::move(dst)));
         }
     }
     else {
@@ -2395,18 +2390,18 @@ static void stack_8b_fun_param_instr(TIdentifier name, TLong stack_bytes, TLong 
             TLong to_offset = offset;
             dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
         }
-        push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+        push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
 
-static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_return_memory) {
-    size_t reg_size = is_return_memory ? 1 : 0;
+static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_ret_memory) {
+    size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
     for (TIdentifier param : node->params) {
         if (frontend->symbol_table[param]->type_t->type() == AST_Double_t) {
             if (sse_size < 8) {
-                reg_fun_param_instr(param, context->sse_arg_registers[sse_size]);
+                reg_fun_param_instr(param, ctx->sse_arg_regs[sse_size]);
                 sse_size++;
             }
             else {
@@ -2416,7 +2411,7 @@ static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
         }
         else if (frontend->symbol_table[param]->type_t->type() != AST_Structure_t) {
             if (reg_size < 6) {
-                reg_fun_param_instr(param, context->arg_registers[reg_size]);
+                reg_fun_param_instr(param, ctx->arg_regs[reg_size]);
                 reg_size++;
             }
             else {
@@ -2429,10 +2424,10 @@ static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
             size_t struct_sse_size = 9;
             Structure* struct_type = static_cast<Structure*>(frontend->symbol_table[param]->type_t.get());
             struct_8b_clss(struct_type);
-            if (context->struct_8b_cls_map[struct_type->tag][0] != CLS_memory) {
+            if (ctx->struct_8b_cls_map[struct_type->tag][0] != CLS_memory) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : ctx->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == CLS_sse) {
                         struct_sse_size++;
                     }
@@ -2443,13 +2438,13 @@ static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (STRUCT_8B_CLS struct_8b_cls : context->struct_8b_cls_map[struct_type->tag]) {
+                for (STRUCT_8B_CLS struct_8b_cls : ctx->struct_8b_cls_map[struct_type->tag]) {
                     if (struct_8b_cls == CLS_sse) {
-                        reg_8b_fun_param_instr(param, offset, nullptr, context->sse_arg_registers[sse_size]);
+                        reg_8b_fun_param_instr(param, offset, nullptr, ctx->sse_arg_regs[sse_size]);
                         sse_size++;
                     }
                     else {
-                        reg_8b_fun_param_instr(param, offset, struct_type, context->arg_registers[reg_size]);
+                        reg_8b_fun_param_instr(param, offset, struct_type, ctx->arg_regs[reg_size]);
                         reg_size++;
                     }
                     offset += 8l;
@@ -2457,7 +2452,7 @@ static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
             }
             else {
                 TLong offset = 0l;
-                for (size_t i = 0; i < context->struct_8b_cls_map[struct_type->tag].size(); ++i) {
+                for (size_t i = 0; i < ctx->struct_8b_cls_map[struct_type->tag].size(); ++i) {
                     stack_8b_fun_param_instr(param, stack_bytes, offset, struct_type);
                     stack_bytes += 8l;
                     offset += 8l;
@@ -2470,56 +2465,56 @@ static void fun_param_toplvl(TacFunction* node, FunType* fun_type, bool is_retur
 
 static std::unique_ptr<AsmFunction> gen_fun_toplvl(TacFunction* node) {
     TIdentifier name = node->name;
-    bool is_global = node->is_global;
-    bool is_return_memory = false;
+    bool is_glob = node->is_glob;
+    bool is_ret_memory = false;
 
     std::vector<std::unique_ptr<AsmInstruction>> body;
     {
-        context->p_instructions = &body;
+        ctx->p_instrs = &body;
 
         FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[node->name]->type_t.get());
         if (fun_type->ret_type->type() == AST_Structure_t) {
             Structure* struct_type = static_cast<Structure*>(fun_type->ret_type.get());
             struct_8b_clss(struct_type);
-            if (context->struct_8b_cls_map[struct_type->tag][0] == CLS_memory) {
-                is_return_memory = true;
+            if (ctx->struct_8b_cls_map[struct_type->tag][0] == CLS_memory) {
+                is_ret_memory = true;
                 {
                     std::shared_ptr<AsmOperand> src = gen_register(REG_Di);
                     std::shared_ptr<AsmOperand> dst = gen_memory(REG_Bp, -8l);
-                    std::shared_ptr<AssemblyType> assembly_type_dst = std::make_shared<QuadWord>();
-                    push_instr(std::make_unique<AsmMov>(std::move(assembly_type_dst), std::move(src), std::move(dst)));
+                    std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<QuadWord>();
+                    push_instr(std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
                 }
             }
         }
-        fun_param_toplvl(node, fun_type, is_return_memory);
+        fun_param_toplvl(node, fun_type, is_ret_memory);
 
-        context->p_fun_type_top_level = fun_type;
+        ctx->p_fun_type = fun_type;
         gen_instr_list(node->body);
-        context->p_fun_type_top_level = nullptr;
-        context->p_instructions = nullptr;
+        ctx->p_fun_type = nullptr;
+        ctx->p_instrs = nullptr;
     }
 
     return std::make_unique<AsmFunction>(
-        std::move(name), std::move(is_global), std::move(is_return_memory), std::move(body));
+        std::move(name), std::move(is_glob), std::move(is_ret_memory), std::move(body));
 }
 
 static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(TacStaticVariable* node) {
     TIdentifier name = node->name;
-    bool is_global = node->is_global;
+    bool is_glob = node->is_glob;
     TInt alignment = gen_type_alignment(node->static_init_type.get());
     std::vector<std::shared_ptr<StaticInit>> static_inits(node->static_inits.begin(), node->static_inits.end());
     return std::make_unique<AsmStaticVariable>(
-        std::move(name), std::move(alignment), std::move(is_global), std::move(static_inits));
+        std::move(name), std::move(alignment), std::move(is_glob), std::move(static_inits));
 }
 
 static void push_static_const_toplvl(std::unique_ptr<AsmTopLevel>&& static_constant_top_levels) {
-    context->p_static_constant_top_levels->push_back(std::move(static_constant_top_levels));
+    ctx->p_static_consts->push_back(std::move(static_constant_top_levels));
 }
 
-static void dbl_static_const_toplvl(TIdentifier identifier, TIdentifier double_constant, TInt byte) {
+static void dbl_static_const_toplvl(TIdentifier identifier, TIdentifier dbl_const, TInt byte) {
     TIdentifier name = identifier;
     TInt alignment = byte;
-    std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(std::move(double_constant));
+    std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(std::move(dbl_const));
     push_static_const_toplvl(
         std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init)));
 }
@@ -2558,7 +2553,7 @@ static std::unique_ptr<AsmProgram> gen_program(TacProgram* node) {
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
     top_levels.reserve(node->static_variable_top_levels.size() + node->function_top_levels.size());
     {
-        context->p_static_constant_top_levels = &static_constant_top_levels;
+        ctx->p_static_consts = &static_constant_top_levels;
 
         for (const auto& top_level : node->static_variable_top_levels) {
             std::unique_ptr<AsmTopLevel> static_variable_top_level = gen_toplvl(top_level.get());
@@ -2568,7 +2563,7 @@ static std::unique_ptr<AsmProgram> gen_program(TacProgram* node) {
             std::unique_ptr<AsmTopLevel> function_top_level = gen_toplvl(top_level.get());
             top_levels.push_back(std::move(function_top_level));
         }
-        context->p_static_constant_top_levels = nullptr;
+        ctx->p_static_consts = nullptr;
     }
 
     return std::make_unique<AsmProgram>(std::move(static_constant_top_levels), std::move(top_levels));
@@ -2577,9 +2572,9 @@ static std::unique_ptr<AsmProgram> gen_program(TacProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast) {
-    context = std::make_unique<AsmGenContext>();
+    ctx = std::make_unique<AsmGenContext>();
     std::unique_ptr<AsmProgram> asm_ast = gen_program(tac_ast.get());
-    context.reset();
+    ctx.reset();
 
     tac_ast.reset();
     if (!asm_ast) {

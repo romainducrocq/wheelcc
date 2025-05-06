@@ -19,7 +19,7 @@
 static const std::string& emit_identifier(TIdentifier identifier) { return identifiers->hash_table[identifier]; }
 
 // string -> $ string
-static const std::string& emit_string(TIdentifier string_constant) { return identifiers->hash_table[string_constant]; }
+static const std::string& emit_string(TIdentifier string_const) { return identifiers->hash_table[string_const]; }
 
 // char -> $ char
 static std::string emit_char(TChar value) { return std::to_string(value); }
@@ -31,7 +31,7 @@ static std::string emit_int(TInt value) { return std::to_string(value); }
 static std::string emit_long(TLong value) { return std::to_string(value); }
 
 // double -> $ double
-static std::string emit_dbl(TIdentifier double_constant) { return identifiers->hash_table[double_constant]; }
+static std::string emit_dbl(TIdentifier dbl_const) { return identifiers->hash_table[dbl_const]; }
 
 // uchar -> $ uchar
 static std::string emit_uchar(TUChar value) { return std::to_string(value); }
@@ -369,12 +369,11 @@ static std::string memory_op(AsmMemory* node) {
 }
 
 static std::string data_op(AsmData* node) {
-    std::string operand =
-        backend->backend_symbol_table.find(node->name) != backend->backend_symbol_table.end()
-                && backend->backend_symbol_table[node->name]->type() == AST_BackendObj_t
-                && static_cast<BackendObj*>(backend->backend_symbol_table[node->name].get())->is_constant ?
-            ".L" :
-            "";
+    std::string operand = backend->symbol_table.find(node->name) != backend->symbol_table.end()
+                                  && backend->symbol_table[node->name]->type() == AST_BackendObj_t
+                                  && static_cast<BackendObj*>(backend->symbol_table[node->name].get())->is_const ?
+                              ".L" :
+                              "";
     operand += emit_identifier(node->name);
     if (node->offset != 0l) {
         operand += "+";
@@ -488,10 +487,10 @@ static void emit(std::string&& line, size_t t) {
 
 static void mov_instr(AsmMov* node) {
     std::string instruction = "mov";
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
         instruction += ", ";
         instruction += emit_op(node->dst.get(), byte);
@@ -501,16 +500,16 @@ static void mov_instr(AsmMov* node) {
 
 static void mov_sx_instr(AsmMovSx* node) {
     std::string instruction = "movs";
-    instruction += emit_type_suffix(node->assembly_type_src.get(), false);
-    instruction += emit_type_suffix(node->assembly_type_dst.get(), false);
+    instruction += emit_type_suffix(node->asm_type_src.get(), false);
+    instruction += emit_type_suffix(node->asm_type_dst.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type_src.get());
+        TInt byte = type_align_bytes(node->asm_type_src.get());
         instruction += emit_op(node->src.get(), byte);
     }
     instruction += ", ";
     {
-        TInt byte = type_align_bytes(node->assembly_type_dst.get());
+        TInt byte = type_align_bytes(node->asm_type_dst.get());
         instruction += emit_op(node->dst.get(), byte);
     }
     emit(std::move(instruction), 2);
@@ -518,12 +517,12 @@ static void mov_sx_instr(AsmMovSx* node) {
 
 static void zero_extend_instr(AsmMovZeroExtend* node) {
     std::string instruction = "movzb";
-    instruction += emit_type_suffix(node->assembly_type_dst.get(), false);
+    instruction += emit_type_suffix(node->asm_type_dst.get(), false);
     instruction += " ";
     instruction += emit_op(node->src.get(), 1);
     instruction += ", ";
     {
-        TInt byte = type_align_bytes(node->assembly_type_dst.get());
+        TInt byte = type_align_bytes(node->asm_type_dst.get());
         instruction += emit_op(node->dst.get(), byte);
     }
     emit(std::move(instruction), 2);
@@ -539,10 +538,10 @@ static void lea_instr(AsmLea* node) {
 
 static void cvttsd2si_instr(AsmCvttsd2si* node) {
     std::string instruction = "cvttsd2si";
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
         instruction += ", ";
         instruction += emit_op(node->dst.get(), byte);
@@ -552,10 +551,10 @@ static void cvttsd2si_instr(AsmCvttsd2si* node) {
 
 static void cvtsi2sd_instr(AsmCvtsi2sd* node) {
     std::string instruction = "cvtsi2sd";
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
         instruction += ", ";
         instruction += emit_op(node->dst.get(), byte);
@@ -564,26 +563,26 @@ static void cvtsi2sd_instr(AsmCvtsi2sd* node) {
 }
 
 static void unary_instr(AsmUnary* node) {
-    std::string instruction = emit_unop(node->unary_op.get());
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    std::string instruction = emit_unop(node->unop.get());
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->dst.get(), byte);
     }
     emit(std::move(instruction), 2);
 }
 
 static void binary_instr(AsmBinary* node) {
-    bool is_double = node->assembly_type->type() == AST_BackendDouble_t;
-    std::string instruction = emit_binop(node->binary_op.get(), is_double);
+    bool is_double = node->asm_type->type() == AST_BackendDouble_t;
+    std::string instruction = emit_binop(node->binop.get(), is_double);
     {
-        bool is_packed = node->binary_op->type() == AST_AsmBitXor_t && is_double;
-        instruction += emit_type_suffix(node->assembly_type.get(), is_packed);
+        bool is_packed = node->binop->type() == AST_AsmBitXor_t && is_double;
+        instruction += emit_type_suffix(node->asm_type.get(), is_packed);
     }
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
         instruction += ", ";
         instruction += emit_op(node->dst.get(), byte);
@@ -592,11 +591,11 @@ static void binary_instr(AsmBinary* node) {
 }
 
 static void cmp_instr(AsmCmp* node) {
-    std::string instruction = node->assembly_type->type() == AST_BackendDouble_t ? "comi" : "cmp";
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    std::string instruction = node->asm_type->type() == AST_BackendDouble_t ? "comi" : "cmp";
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
         instruction += ", ";
         instruction += emit_op(node->dst.get(), byte);
@@ -606,10 +605,10 @@ static void cmp_instr(AsmCmp* node) {
 
 static void idiv_instr(AsmIdiv* node) {
     std::string instruction = "idiv";
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
     }
     emit(std::move(instruction), 2);
@@ -617,17 +616,17 @@ static void idiv_instr(AsmIdiv* node) {
 
 static void div_instr(AsmDiv* node) {
     std::string instruction = "div";
-    instruction += emit_type_suffix(node->assembly_type.get(), false);
+    instruction += emit_type_suffix(node->asm_type.get(), false);
     instruction += " ";
     {
-        TInt byte = type_align_bytes(node->assembly_type.get());
+        TInt byte = type_align_bytes(node->asm_type.get());
         instruction += emit_op(node->src.get(), byte);
     }
     emit(std::move(instruction), 2);
 }
 
 static void cdq_instr(AsmCdq* node) {
-    switch (node->assembly_type->type()) {
+    switch (node->asm_type->type()) {
         case AST_LongWord_t:
             emit("cdq", 2);
             break;
@@ -683,10 +682,10 @@ static void pop_instr(AsmPop* node) {
 static void call_instr(AsmCall* node) {
     std::string instruction = "call ";
     instruction += emit_identifier(node->name);
-    if (backend->backend_symbol_table[node->name]->type() != AST_BackendFun_t) {
+    if (backend->symbol_table[node->name]->type() != AST_BackendFun_t) {
         RAISE_INTERNAL_ERROR;
     }
-    else if (!static_cast<BackendFun*>(backend->backend_symbol_table[node->name].get())->is_defined) {
+    else if (!static_cast<BackendFun*>(backend->symbol_table[node->name].get())->is_def) {
         instruction += "@PLT";
     }
     emit(std::move(instruction), 2);
@@ -804,9 +803,9 @@ static void align_directive_toplvl(TInt alignment) {
     }
 }
 
-// -> if is_global $ .globl <identifier>
-static void glob_directive_toplvl(const std::string& name, bool is_global) {
-    if (is_global) {
+// -> if is_glob $ .globl <identifier>
+static void glob_directive_toplvl(const std::string& name, bool is_glob) {
+    if (is_glob) {
         std::string directive = ".globl ";
         directive += name;
         emit(std::move(directive), 1);
@@ -821,7 +820,7 @@ static void glob_directive_toplvl(const std::string& name, bool is_global) {
 //                                                        $     <instructions>
 static void emit_fun_toplvl(AsmFunction* node) {
     const std::string& name = emit_identifier(node->name);
-    glob_directive_toplvl(name, node->is_global);
+    glob_directive_toplvl(name, node->is_glob);
     emit(".text", 1);
     {
         std::string directive = name;
@@ -863,7 +862,7 @@ static void static_init_toplvl(StaticInit* node) {
         }
         case AST_DoubleInit_t: {
             directive = ".quad ";
-            directive += emit_dbl(static_cast<DoubleInit*>(node)->double_constant);
+            directive += emit_dbl(static_cast<DoubleInit*>(node)->dbl_const);
             break;
         }
         case AST_UCharInit_t: {
@@ -890,9 +889,9 @@ static void static_init_toplvl(StaticInit* node) {
             directive = ".asci";
             {
                 StringInit* p_node = static_cast<StringInit*>(node);
-                directive += p_node->is_null_terminated ? "z" : "i";
+                directive += p_node->is_null_term ? "z" : "i";
                 directive += " \"";
-                directive += emit_string(p_node->string_constant);
+                directive += emit_string(p_node->string_const);
             }
             directive += "\"";
             break;
@@ -926,7 +925,7 @@ static void static_section_toplvl(const std::vector<std::shared_ptr<StaticInit>>
 //                                     -> $     <init_list>
 static void emit_static_var_toplvl(AsmStaticVariable* node) {
     const std::string& name = emit_identifier(node->name);
-    glob_directive_toplvl(name, node->is_global);
+    glob_directive_toplvl(name, node->is_glob);
     static_section_toplvl(node->static_inits);
     align_directive_toplvl(node->alignment);
     {

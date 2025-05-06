@@ -102,26 +102,24 @@ AST_T CVarDecl::type() { return AST_CVarDecl_t; }
 AST_T CStructDecl::type() { return AST_CStructDecl_t; }
 AST_T CProgram::type() { return AST_CProgram_t; }
 
-CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_declarator) :
-    abstract_declarator(std::move(abstract_declarator)) {}
+CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_decltor) :
+    abstract_decltor(std::move(abstract_decltor)) {}
 
-CAbstractArray::CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_declarator) :
-    size(size), abstract_declarator(std::move(abstract_declarator)) {}
+CAbstractArray::CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_decltor) :
+    size(size), abstract_decltor(std::move(abstract_decltor)) {}
 
-CParam::CParam(std::unique_ptr<CDeclarator> declarator, std::shared_ptr<Type> param_type) :
-    declarator(std::move(declarator)), param_type(std::move(param_type)) {}
+CParam::CParam(std::unique_ptr<CDeclarator> decltor, std::shared_ptr<Type> param_type) :
+    decltor(std::move(decltor)), param_type(std::move(param_type)) {}
 
 CIdent::CIdent(TIdentifier name) : name(name) {}
 
-CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> declarator) : declarator(std::move(declarator)) {}
+CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator> decltor) : decltor(std::move(decltor)) {}
 
-CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> declarator) :
-    size(size), declarator(std::move(declarator)) {}
+CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> decltor) :
+    size(size), decltor(std::move(decltor)) {}
 
-CFunDeclarator::CFunDeclarator(
-    std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> declarator) :
-    param_list(std::move(param_list)),
-    declarator(std::move(declarator)) {}
+CFunDeclarator::CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> decltor) :
+    param_list(std::move(param_list)), decltor(std::move(decltor)) {}
 
 CExp::CExp(size_t line) : line(line) {}
 
@@ -134,18 +132,18 @@ CVar::CVar(TIdentifier name, size_t line) : CExp(line), name(name) {}
 CCast::CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type, size_t line) :
     CExp(line), exp(std::move(exp)), target_type(std::move(target_type)) {}
 
-CUnary::CUnary(std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp, size_t line) :
-    CExp(line), unary_op(std::move(unary_op)), exp(std::move(exp)) {}
+CUnary::CUnary(std::unique_ptr<CUnaryOp> unop, std::unique_ptr<CExp> exp, size_t line) :
+    CExp(line), unop(std::move(unop)), exp(std::move(exp)) {}
 
-CBinary::CBinary(std::unique_ptr<CBinaryOp> binary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right,
-    size_t line) :
+CBinary::CBinary(
+    std::unique_ptr<CBinaryOp> binop, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
     CExp(line),
-    binary_op(std::move(binary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+    binop(std::move(binop)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CAssignment::CAssignment(
-    std::unique_ptr<CUnaryOp> unary_op, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
+    std::unique_ptr<CUnaryOp> unop, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line) :
     CExp(line),
-    unary_op(std::move(unary_op)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
+    unop(std::move(unop)), exp_left(std::move(exp_left)), exp_right(std::move(exp_right)) {}
 
 CConditional::CConditional(
     std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right, size_t line) :
@@ -244,9 +242,9 @@ CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CIn
     name(name),
     init(std::move(init)), var_type(std::move(var_type)), storage_class(std::move(storage_class)), line(line) {}
 
-CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> function_decl) : function_decl(std::move(function_decl)) {}
+CFunDecl::CFunDecl(std::unique_ptr<CFunctionDeclaration> fun_decl) : fun_decl(std::move(fun_decl)) {}
 
-CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> variable_decl) : variable_decl(std::move(variable_decl)) {}
+CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration> var_decl) : var_decl(std::move(var_decl)) {}
 
 CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl) : struct_decl(std::move(struct_decl)) {}
 

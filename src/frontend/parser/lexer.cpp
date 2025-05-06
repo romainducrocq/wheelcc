@@ -28,33 +28,33 @@
 #endif
 
 struct LexerContext {
-    LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
+    LexerContext(std::vector<Token>* p_toks, std::vector<std::string>* p_includedirs);
 
-    TOKEN_KIND re_match_token_kind;
-    std::string re_match_token;
+    TOKEN_KIND re_match_tok_kind;
+    std::string re_match_tok;
 #ifdef __WITH_CTRE__
-    std::string_view re_iterator_view_slice;
+    std::string_view re_iter_sv_slice;
 #else
     std::string re_capture_groups[TOKEN_KIND_SIZE];
     std::unique_ptr<const boost::regex> re_compiled_pattern;
 #endif
-    std::vector<Token>* p_tokens;
+    std::vector<Token>* p_toks;
     std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;
-    std::unordered_set<hash_t> filename_include_set;
-    size_t total_line_number;
+    std::unordered_set<hash_t> includename_set;
+    size_t total_linenum;
 };
 
-LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
-    p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+LexerContext::LexerContext(std::vector<Token>* p_toks, std::vector<std::string>* p_includedirs) :
+    p_toks(p_toks), p_includedirs(p_includedirs), stdlibdirs({
 #ifdef __GNUC__
-                                                          "/usr/include/", "/usr/local/include/"
+                                                      "/usr/include/", "/usr/local/include/"
 #endif
-                                                      }),
-    total_line_number(0) {
+                                                  }),
+    total_linenum(0) {
 }
 
-static std::unique_ptr<LexerContext> context;
+static std::unique_ptr<LexerContext> ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,25 +63,25 @@ static std::unique_ptr<LexerContext> context;
 static void tokenize_include(std::string include_match, size_t tokenize_include);
 
 #ifdef __WITH_CTRE__
-#define RE_MATCH_TOKEN(X, Y)                                                                  \
-    {                                                                                         \
-        ctre::regex_results re_match = ctre::starts_with<X>(context->re_iterator_view_slice); \
-        if (re_match.size()) {                                                                \
-            context->re_match_token_kind = Y;                                                 \
-            context->re_match_token = std::string(re_match.get<0>());                         \
-            return;                                                                           \
-        }                                                                                     \
+#define RE_MATCH_TOKEN(X, Y)                                                        \
+    {                                                                               \
+        ctre::regex_results re_match = ctre::starts_with<X>(ctx->re_iter_sv_slice); \
+        if (re_match.size()) {                                                      \
+            ctx->re_match_tok_kind = Y;                                             \
+            ctx->re_match_tok = std::string(re_match.get<0>());                     \
+            return;                                                                 \
+        }                                                                           \
     }
 #else
-#define RE_MATCH_TOKEN(X, Y)                               \
-    {                                                      \
-        size_t i = static_cast<size_t>(Y);                 \
-        context->re_capture_groups[i] = std::to_string(i); \
-        re_pattern += "(?<";                               \
-        re_pattern += context->re_capture_groups[i];       \
-        re_pattern += ">";                                 \
-        re_pattern += X;                                   \
-        re_pattern += ")|";                                \
+#define RE_MATCH_TOKEN(X, Y)                           \
+    {                                                  \
+        size_t i = static_cast<size_t>(Y);             \
+        ctx->re_capture_groups[i] = std::to_string(i); \
+        re_pattern += "(?<";                           \
+        re_pattern += ctx->re_capture_groups[i];       \
+        re_pattern += ">";                             \
+        re_pattern += X;                               \
+        re_pattern += ")|";                            \
     }
 #endif
 
@@ -189,8 +189,8 @@ static void
 static void tokenize_file() {
     std::string line;
     bool is_comment = false;
-    for (size_t line_number = 1; read_line(line); ++line_number) {
-        context->total_line_number++;
+    for (size_t linenum = 1; read_line(line); ++linenum) {
+        ctx->total_linenum++;
 
 #ifdef __WITH_CTRE__
         const std::string_view re_iterator_view(line);
@@ -199,23 +199,23 @@ static void tokenize_file() {
 #endif
         for (
 #ifdef __WITH_CTRE__
-            size_t i = 0; i < line.size(); i += context->re_match_token.size()
+            size_t i = 0; i < line.size(); i += ctx->re_match_tok.size()
 #else
             boost::sregex_iterator re_iterator_begin =
-                boost::sregex_iterator(line.begin(), line.end(), *context->re_compiled_pattern);
+                boost::sregex_iterator(line.begin(), line.end(), *ctx->re_compiled_pattern);
             re_iterator_begin != re_iterator_end; re_iterator_begin++
 #endif
         ) {
 #ifdef __WITH_CTRE__
-            context->re_iterator_view_slice = re_iterator_view.substr(i);
+            ctx->re_iter_sv_slice = re_iterator_view.substr(i);
             re_match_current_tok();
 #else
             {
                 boost::smatch re_match = *re_iterator_begin;
                 for (size_t i = TOKEN_KIND_SIZE; i-- > 0;) {
-                    if (re_match[context->re_capture_groups[i]].matched) {
-                        context->re_match_token_kind = static_cast<TOKEN_KIND>(i);
-                        context->re_match_token = re_match.get_last_closed_paren();
+                    if (re_match[ctx->re_capture_groups[i]].matched) {
+                        ctx->re_match_tok_kind = static_cast<TOKEN_KIND>(i);
+                        ctx->re_match_tok = re_match.get_last_closed_paren();
                         break;
                     }
                 }
@@ -223,17 +223,16 @@ static void tokenize_file() {
 #endif
 
             if (is_comment) {
-                if (context->re_match_token_kind == TOK_comment_end) {
+                if (ctx->re_match_tok_kind == TOK_comment_end) {
                     is_comment = false;
                 }
                 continue;
             }
             else {
-                switch (context->re_match_token_kind) {
+                switch (ctx->re_match_tok_kind) {
                     case TOK_error:
                     case TOK_comment_end:
-                        RAISE_RUNTIME_ERROR_AT(
-                            GET_LEXER_MSG(MSG_invalid_tok, context->re_match_token.c_str()), line_number);
+                        RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
                     case TOK_skip:
                         goto Lcontinue;
                     case TOK_comment_start: {
@@ -242,11 +241,11 @@ static void tokenize_file() {
                     }
                     case TOK_include_preproc: {
 #ifdef __WITH_CTRE__
-                        i += context->re_match_token.size();
+                        i += ctx->re_match_tok.size();
 #endif
-                        tokenize_include(context->re_match_token, line_number);
+                        tokenize_include(ctx->re_match_tok, linenum);
 #ifdef __WITH_CTRE__
-                        context->re_match_token.clear();
+                        ctx->re_match_tok.clear();
 #endif
                         goto Lcontinue;
                     }
@@ -263,8 +262,8 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            Token token = {context->re_match_token_kind, context->re_match_token, context->total_line_number};
-            context->p_tokens->emplace_back(std::move(token));
+            Token tok = {ctx->re_match_tok_kind, ctx->re_match_tok, ctx->total_linenum};
+            ctx->p_toks->emplace_back(std::move(tok));
         }
     }
 }
@@ -280,18 +279,18 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
     return false;
 }
 
-static void tokenize_include(std::string filename, size_t line_number) {
+static void tokenize_include(std::string filename, size_t linenum) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
         filename.pop_back();
         hash_t filename_include = string_to_hash(filename);
-        if (context->filename_include_set.find(filename_include) != context->filename_include_set.end()) {
+        if (ctx->includename_set.find(filename_include) != ctx->includename_set.end()) {
             return;
         }
-        context->filename_include_set.insert(filename_include);
-        if (!find_include(context->stdlibdirs, filename)) {
-            if (!find_include(*context->p_includedirs, filename)) {
-                RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), line_number);
+        ctx->includename_set.insert(filename_include);
+        if (!find_include(ctx->stdlibdirs, filename)) {
+            if (!find_include(*ctx->p_includedirs, filename)) {
+                RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
             }
         }
     }
@@ -299,26 +298,26 @@ static void tokenize_include(std::string filename, size_t line_number) {
         filename = filename.substr(filename.find('"') + 1);
         filename.pop_back();
         hash_t filename_include = string_to_hash(filename);
-        if (context->filename_include_set.find(filename_include) != context->filename_include_set.end()) {
+        if (ctx->includename_set.find(filename_include) != ctx->includename_set.end()) {
             return;
         }
-        context->filename_include_set.insert(filename_include);
-        if (!find_include(*context->p_includedirs, filename)) {
-            RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), line_number);
+        ctx->includename_set.insert(filename_include);
+        if (!find_include(*ctx->p_includedirs, filename)) {
+            RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
         }
     }
 
-    std::string include_filename = errors->file_open_lines.back().filename;
+    std::string include_filename = errors->fopen_lines.back().filename;
     open_fread(filename);
     {
-        FileOpenLine file_open_line = {1, context->total_line_number + 1, std::move(filename)};
-        errors->file_open_lines.emplace_back(std::move(file_open_line));
+        FileOpenLine file_open_line = {1, ctx->total_linenum + 1, std::move(filename)};
+        errors->fopen_lines.emplace_back(std::move(file_open_line));
     }
     tokenize_file();
-    close_fread(line_number);
+    close_fread(linenum);
     {
-        FileOpenLine file_open_line = {line_number + 1, context->total_line_number + 1, std::move(include_filename)};
-        errors->file_open_lines.emplace_back(std::move(file_open_line));
+        FileOpenLine file_open_line = {linenum + 1, ctx->total_linenum + 1, std::move(include_filename)};
+        errors->fopen_lines.emplace_back(std::move(file_open_line));
     }
 }
 
@@ -327,7 +326,7 @@ static void tokenize_src() {
     std::string re_pattern("");
     re_build_tok_pattern(re_pattern);
     re_pattern.pop_back();
-    context->re_compiled_pattern = std::make_unique<const boost::regex>(std::move(re_pattern));
+    ctx->re_compiled_pattern = std::make_unique<const boost::regex>(std::move(re_pattern));
 #endif
     tokenize_file();
 }
@@ -340,13 +339,13 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
     open_fread(filename);
     {
         FileOpenLine file_open_line = {1, 1, filename};
-        errors->file_open_lines.emplace_back(std::move(file_open_line));
+        errors->fopen_lines.emplace_back(std::move(file_open_line));
     }
 
     std::vector<Token> tokens;
-    context = std::make_unique<LexerContext>(&tokens, &includedirs);
+    ctx = std::make_unique<LexerContext>(&tokens, &includedirs);
     tokenize_src();
-    context.reset();
+    ctx.reset();
 
     close_fread(0);
     includedirs.clear();

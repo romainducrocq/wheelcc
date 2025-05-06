@@ -103,12 +103,12 @@ TacUIntToDouble::TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<
 TacFunCall::TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args, std::shared_ptr<TacValue> dst) :
     name(name), args(std::move(args)), dst(std::move(dst)) {}
 
-TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst) :
-    unary_op(std::move(unary_op)), src(std::move(src)), dst(std::move(dst)) {}
+TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst) :
+    unop(std::move(unop)), src(std::move(src)), dst(std::move(dst)) {}
 
-TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1,
-    std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst) :
-    binary_op(std::move(binary_op)),
+TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binop, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2,
+    std::shared_ptr<TacValue> dst) :
+    binop(std::move(binop)),
     src1(std::move(src1)), src2(std::move(src2)), dst(std::move(dst)) {}
 
 TacCopy::TacCopy(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst) :
@@ -124,9 +124,9 @@ TacStore::TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_
     src(std::move(src)), dst_ptr(std::move(dst_ptr)) {}
 
 TacAddPtr::TacAddPtr(
-    TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index, std::shared_ptr<TacValue> dst) :
+    TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> idx, std::shared_ptr<TacValue> dst) :
     scale(scale),
-    src_ptr(std::move(src_ptr)), index(std::move(index)), dst(std::move(dst)) {}
+    src_ptr(std::move(src_ptr)), idx(std::move(idx)), dst(std::move(dst)) {}
 
 TacCopyToOffset::TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src) :
     dst_name(dst_name), offset(offset), src(std::move(src)) {}
@@ -144,15 +144,15 @@ TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue>
 
 TacLabel::TacLabel(TIdentifier name) : name(name) {}
 
-TacFunction::TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
+TacFunction::TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier> params,
     std::vector<std::unique_ptr<TacInstruction>> body) :
     name(name),
-    is_global(is_global), params(std::move(params)), body(std::move(body)) {}
+    is_glob(is_glob), params(std::move(params)), body(std::move(body)) {}
 
-TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
+TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type,
     std::vector<std::shared_ptr<StaticInit>> static_inits) :
     name(name),
-    is_global(is_global), static_init_type(std::move(static_init_type)), static_inits(std::move(static_inits)) {}
+    is_glob(is_glob), static_init_type(std::move(static_init_type)), static_inits(std::move(static_inits)) {}
 
 TacStaticConstant::TacStaticConstant(
     TIdentifier name, std::shared_ptr<Type> static_init_type, std::shared_ptr<StaticInit> static_init) :

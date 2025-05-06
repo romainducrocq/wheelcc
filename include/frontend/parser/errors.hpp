@@ -50,7 +50,7 @@ enum MESSAGE_UTIL {
     MSG_failed_strtod
 };
 
-std::string get_tok_kind_fmt(TOKEN_KIND token_kind);
+std::string get_tok_kind_fmt(TOKEN_KIND tok_kind);
 std::string get_name_fmt(TIdentifier name);
 std::string get_struct_name_fmt(TIdentifier name, bool is_union);
 std::string get_type_fmt(Type* type);
@@ -58,7 +58,7 @@ std::string get_const_fmt(CConst* node);
 std::string get_storage_class_fmt(CStorageClass* node);
 std::string get_unop_fmt(CUnaryOp* node);
 std::string get_binop_fmt(CBinaryOp* node);
-std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op);
+std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
 #define fmt_tok_kind_c_str(X) get_tok_kind_fmt(X).c_str()
 #define fmt_name_c_str(X) get_name_fmt(X).c_str()
 #define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(X, Y).c_str()
@@ -69,12 +69,12 @@ std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op);
 #define fmt_binop_c_str(X) get_binop_fmt(X).c_str()
 #define fmt_assign_c_str(X, Y) get_assign_fmt(X, Y).c_str()
 
-const char* get_fatal_msg(MESSAGE_FATAL message);
-const char* get_arg_msg(MESSAGE_ARG message);
-const char* get_util_msg(MESSAGE_UTIL message);
-const char* get_lexer_msg(MESSAGE_LEXER message);
-const char* get_parser_msg(MESSAGE_PARSER message);
-const char* get_semantic_msg(MESSAGE_SEMANTIC message);
+const char* get_fatal_msg(MESSAGE_FATAL msg);
+const char* get_arg_msg(MESSAGE_ARG msg);
+const char* get_util_msg(MESSAGE_UTIL msg);
+const char* get_lexer_msg(MESSAGE_LEXER msg);
+const char* get_parser_msg(MESSAGE_PARSER msg);
+const char* get_semantic_msg(MESSAGE_SEMANTIC msg);
 #define GET_FATAL_MSG(X, ...) GET_ERROR_MSG(get_fatal_msg(X), (int)X, __VA_ARGS__)
 #define GET_ARG_MSG(X, ...) GET_ERROR_MSG(get_arg_msg(X), (int)X, __VA_ARGS__)
 #define GET_UTIL_MSG(X, ...) GET_ERROR_MSG(get_util_msg(X), (int)X, __VA_ARGS__)

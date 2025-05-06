@@ -11,8 +11,8 @@
 // Lexer
 
 struct Token {
-    TOKEN_KIND token_kind;
-    std::string token;
+    TOKEN_KIND tok_kind;
+    std::string tok;
     size_t line;
 };
 

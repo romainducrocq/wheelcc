@@ -12,8 +12,8 @@
 
 // reg = AX | BX | CX | DX | DI | SI | R8 | R9 | R10 | R11 | R12 | R13 | R14 | R15 | SP | XMM0 | XMM1 | XMM2 | XMM3
 //     | XMM4 | XMM5 | XMM6 | XMM7 | XMM8 | XMM9 | XMM10 | XMM11 | XMM12 | XMM13 | XMM14 | XMM15
-static std::unique_ptr<AsmReg> gen_reg(REGISTER_KIND register_kind) {
-    switch (register_kind) {
+static std::unique_ptr<AsmReg> gen_reg(REGISTER_KIND reg_kind) {
+    switch (reg_kind) {
         case REG_Ax:
             return std::make_unique<AsmAx>();
         case REG_Bx:
@@ -83,13 +83,13 @@ static std::unique_ptr<AsmReg> gen_reg(REGISTER_KIND register_kind) {
     }
 }
 
-std::shared_ptr<AsmRegister> gen_register(REGISTER_KIND register_kind) {
-    std::unique_ptr<AsmReg> reg = gen_reg(register_kind);
+std::shared_ptr<AsmRegister> gen_register(REGISTER_KIND reg_kind) {
+    std::unique_ptr<AsmReg> reg = gen_reg(reg_kind);
     return std::make_shared<AsmRegister>(std::move(reg));
 }
 
-std::shared_ptr<AsmMemory> gen_memory(REGISTER_KIND register_kind, TLong value) {
-    std::unique_ptr<AsmReg> reg = gen_reg(register_kind);
+std::shared_ptr<AsmMemory> gen_memory(REGISTER_KIND reg_kind, TLong value) {
+    std::unique_ptr<AsmReg> reg = gen_reg(reg_kind);
     return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
 }
 
@@ -167,8 +167,8 @@ REGISTER_KIND register_mask_kind(AsmReg* node) {
     }
 }
 
-size_t register_mask_bit(REGISTER_KIND register_kind) {
-    switch (register_kind) {
+size_t register_mask_bit(REGISTER_KIND reg_kind) {
+    switch (reg_kind) {
         case REG_Ax:
             return 0;
         case REG_Bx:
@@ -233,15 +233,15 @@ size_t register_mask_bit(REGISTER_KIND register_kind) {
     }
 }
 
-bool register_mask_get(TULong register_mask, REGISTER_KIND register_kind) {
-    return (register_mask & (static_cast<TULong>(1ul) << register_mask_bit(register_kind))) > 0;
+bool register_mask_get(TULong register_mask, REGISTER_KIND reg_kind) {
+    return (register_mask & (static_cast<TULong>(1ul) << register_mask_bit(reg_kind))) > 0;
 }
 
-void register_mask_set(TULong& register_mask, REGISTER_KIND register_kind, bool value) {
+void register_mask_set(TULong& register_mask, REGISTER_KIND reg_kind, bool value) {
     if (value) {
-        register_mask |= static_cast<TULong>(1ul) << register_mask_bit(register_kind);
+        register_mask |= static_cast<TULong>(1ul) << register_mask_bit(reg_kind);
     }
     else {
-        register_mask &= ~(static_cast<TULong>(1ul) << register_mask_bit(register_kind));
+        register_mask &= ~(static_cast<TULong>(1ul) << register_mask_bit(reg_kind));
     }
 }

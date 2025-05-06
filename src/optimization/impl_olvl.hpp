@@ -4,8 +4,8 @@
 #ifdef __OPTIM_LEVEL__
 #if __OPTIM_LEVEL__ >= 1 && __OPTIM_LEVEL__ <= 2
 
-#define GET_INSTR(X) (*context->p_instructions)[X]
-#define GET_CFG_BLOCK(X) context->control_flow_graph->blocks[X]
+#define GET_INSTR(X) (*ctx->p_instrs)[X]
+#define GET_CFG_BLOCK(X) ctx->cfg->blocks[X]
 
 #ifndef __MASK_TYPE__
 using mask_t = TULong;
@@ -20,17 +20,17 @@ using AstInstruction =
 
 struct ControlFlowBlock {
     size_t size;
-    size_t instructions_front_index;
-    size_t instructions_back_index;
-    std::vector<size_t> predecessor_ids;
-    std::vector<size_t> successor_ids;
+    size_t instrs_front_idx;
+    size_t instrs_back_idx;
+    std::vector<size_t> pred_ids;
+    std::vector<size_t> succ_ids;
 };
 
 struct ControlFlowGraph {
     size_t entry_id;
     size_t exit_id;
-    std::vector<size_t> entry_successor_ids;
-    std::vector<size_t> exit_predecessor_ids;
+    std::vector<size_t> entry_succ_ids;
+    std::vector<size_t> exit_pred_ids;
     std::vector<bool> reaching_code;
     std::vector<ControlFlowBlock> blocks;
     std::unordered_map<TIdentifier, size_t> identifier_id_map;
@@ -39,21 +39,21 @@ struct ControlFlowGraph {
 struct DataFlowAnalysis {
     size_t set_size;
     size_t mask_size;
-    size_t incoming_index;
-    size_t static_index;
+    size_t incoming_idx;
+    size_t static_idx;
     std::vector<size_t> open_data_map;
-    std::vector<size_t> instruction_index_map;
+    std::vector<size_t> instr_idx_map;
     std::vector<mask_t> blocks_mask_sets;
-    std::vector<mask_t> instructions_mask_sets;
+    std::vector<mask_t> instrs_mask_sets;
 };
 
 #if __OPTIM_LEVEL__ == 1
 struct DataFlowAnalysisO1 {
     // Copy propagation
-    std::vector<size_t> data_index_map;
-    std::vector<std::unique_ptr<TacInstruction>> bak_instructions;
+    std::vector<size_t> data_idx_map;
+    std::vector<std::unique_ptr<TacInstruction>> bak_instrs;
     // Dead store elimination
-    size_t addressed_index;
+    size_t addressed_idx;
 };
 #elif __OPTIM_LEVEL__ == 2
 struct DataFlowAnalysisO2 {
@@ -70,7 +70,7 @@ static void set_instr(std::unique_ptr<AstInstruction>&& instruction, size_t inst
         GET_INSTR(instruction_index).reset();
     }
 #if __OPTIM_LEVEL__ == 1
-    context->is_fixed_point = false;
+    ctx->is_fixed_point = false;
 #endif
 }
 
@@ -78,24 +78,22 @@ static void set_instr(std::unique_ptr<AstInstruction>&& instruction, size_t inst
 
 // Control flow graph
 
-static void cfg_add_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids, size_t successor_id,
-    size_t predecessor_id) {
-    if (std::find(successor_ids.begin(), successor_ids.end(), successor_id) == successor_ids.end()) {
-        successor_ids.push_back(successor_id);
+static void cfg_add_edge(
+    std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t successor_id, size_t predecessor_id) {
+    if (std::find(succ_ids.begin(), succ_ids.end(), successor_id) == succ_ids.end()) {
+        succ_ids.push_back(successor_id);
     }
-    if (std::find(predecessor_ids.begin(), predecessor_ids.end(), predecessor_id) == predecessor_ids.end()) {
-        predecessor_ids.push_back(predecessor_id);
+    if (std::find(pred_ids.begin(), pred_ids.end(), predecessor_id) == pred_ids.end()) {
+        pred_ids.push_back(predecessor_id);
     }
 }
 
 static void cfg_add_succ_edge(size_t block_id, size_t successor_id) {
-    if (successor_id < context->control_flow_graph->exit_id) {
-        cfg_add_edge(
-            GET_CFG_BLOCK(block_id).successor_ids, GET_CFG_BLOCK(successor_id).predecessor_ids, successor_id, block_id);
+    if (successor_id < ctx->cfg->exit_id) {
+        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(successor_id).pred_ids, successor_id, block_id);
     }
-    else if (successor_id == context->control_flow_graph->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(block_id).successor_ids, context->control_flow_graph->exit_predecessor_ids,
-            successor_id, block_id);
+    else if (successor_id == ctx->cfg->exit_id) {
+        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, successor_id, block_id);
     }
     else {
         RAISE_INTERNAL_ERROR;
@@ -103,47 +101,45 @@ static void cfg_add_succ_edge(size_t block_id, size_t successor_id) {
 }
 
 static void cfg_add_pred_edge(size_t block_id, size_t predecessor_id) {
-    if (predecessor_id < context->control_flow_graph->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(predecessor_id).successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids, block_id,
-            predecessor_id);
+    if (predecessor_id < ctx->cfg->exit_id) {
+        cfg_add_edge(
+            GET_CFG_BLOCK(predecessor_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id);
     }
-    else if (predecessor_id == context->control_flow_graph->entry_id) {
-        cfg_add_edge(context->control_flow_graph->entry_successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids,
-            block_id, predecessor_id);
+    else if (predecessor_id == ctx->cfg->entry_id) {
+        cfg_add_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void cfg_rm_edge(std::vector<size_t>& successor_ids, std::vector<size_t>& predecessor_ids, size_t successor_id,
+static void cfg_rm_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t successor_id,
     size_t predecessor_id, bool is_reachable) {
     if (is_reachable) {
-        for (size_t i = successor_ids.size(); i-- > 0;) {
-            if (successor_ids[i] == successor_id) {
-                std::swap(successor_ids[i], successor_ids.back());
-                successor_ids.pop_back();
+        for (size_t i = succ_ids.size(); i-- > 0;) {
+            if (succ_ids[i] == successor_id) {
+                std::swap(succ_ids[i], succ_ids.back());
+                succ_ids.pop_back();
                 break;
             }
         }
     }
-    for (size_t i = predecessor_ids.size(); i-- > 0;) {
-        if (predecessor_ids[i] == predecessor_id) {
-            std::swap(predecessor_ids[i], predecessor_ids.back());
-            predecessor_ids.pop_back();
+    for (size_t i = pred_ids.size(); i-- > 0;) {
+        if (pred_ids[i] == predecessor_id) {
+            std::swap(pred_ids[i], pred_ids.back());
+            pred_ids.pop_back();
             break;
         }
     }
 }
 
 static void cfg_rm_succ_edge(size_t block_id, size_t successor_id, bool is_reachable) {
-    if (successor_id < context->control_flow_graph->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(block_id).successor_ids, GET_CFG_BLOCK(successor_id).predecessor_ids, successor_id,
-            block_id, is_reachable);
+    if (successor_id < ctx->cfg->exit_id) {
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(successor_id).pred_ids, successor_id, block_id,
+            is_reachable);
     }
-    else if (successor_id == context->control_flow_graph->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(block_id).successor_ids, context->control_flow_graph->exit_predecessor_ids,
-            successor_id, block_id, is_reachable);
+    else if (successor_id == ctx->cfg->exit_id) {
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, successor_id, block_id, is_reachable);
     }
     else {
         RAISE_INTERNAL_ERROR;
@@ -151,13 +147,12 @@ static void cfg_rm_succ_edge(size_t block_id, size_t successor_id, bool is_reach
 }
 
 static void cfg_rm_pred_edge(size_t block_id, size_t predecessor_id) {
-    if (predecessor_id < context->control_flow_graph->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(predecessor_id).successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids, block_id,
-            predecessor_id, true);
+    if (predecessor_id < ctx->cfg->exit_id) {
+        cfg_rm_edge(
+            GET_CFG_BLOCK(predecessor_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id, true);
     }
-    else if (predecessor_id == context->control_flow_graph->entry_id) {
-        cfg_rm_edge(context->control_flow_graph->entry_successor_ids, GET_CFG_BLOCK(block_id).predecessor_ids, block_id,
-            predecessor_id, true);
+    else if (predecessor_id == ctx->cfg->entry_id) {
+        cfg_rm_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id, true);
     }
     else {
         RAISE_INTERNAL_ERROR;
@@ -165,10 +160,10 @@ static void cfg_rm_pred_edge(size_t block_id, size_t predecessor_id) {
 }
 
 static void cfg_rm_empty_block(size_t block_id, bool is_reachable) {
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
         if (is_reachable) {
-            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-                if (predecessor_id == context->control_flow_graph->entry_id) {
+            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
+                if (predecessor_id == ctx->cfg->entry_id) {
                     cfg_add_pred_edge(successor_id, predecessor_id);
                 }
                 else {
@@ -179,12 +174,12 @@ static void cfg_rm_empty_block(size_t block_id, bool is_reachable) {
         cfg_rm_succ_edge(block_id, successor_id, is_reachable);
     }
     if (is_reachable) {
-        for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
+        for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
             cfg_rm_pred_edge(block_id, predecessor_id);
         }
     }
-    GET_CFG_BLOCK(block_id).instructions_front_index = context->control_flow_graph->exit_id;
-    GET_CFG_BLOCK(block_id).instructions_back_index = context->control_flow_graph->exit_id;
+    GET_CFG_BLOCK(block_id).instrs_front_idx = ctx->cfg->exit_id;
+    GET_CFG_BLOCK(block_id).instrs_back_idx = ctx->cfg->exit_id;
 }
 
 static void cfg_rm_block_instr(size_t instruction_index, size_t block_id) {
@@ -194,19 +189,19 @@ static void cfg_rm_block_instr(size_t instruction_index, size_t block_id) {
         if (GET_CFG_BLOCK(block_id).size == 0) {
             cfg_rm_empty_block(block_id, true);
         }
-        else if (instruction_index == GET_CFG_BLOCK(block_id).instructions_front_index) {
-            for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+        else if (instruction_index == GET_CFG_BLOCK(block_id).instrs_front_idx) {
+            for (; instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instruction_index) {
                 if (GET_INSTR(instruction_index)) {
-                    GET_CFG_BLOCK(block_id).instructions_front_index = instruction_index;
+                    GET_CFG_BLOCK(block_id).instrs_front_idx = instruction_index;
                     break;
                 }
             }
         }
-        else if (instruction_index == GET_CFG_BLOCK(block_id).instructions_back_index) {
+        else if (instruction_index == GET_CFG_BLOCK(block_id).instrs_back_idx) {
             instruction_index++;
-            for (; instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
+            for (; instruction_index-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
                 if (GET_INSTR(instruction_index)) {
-                    GET_CFG_BLOCK(block_id).instructions_back_index = instruction_index;
+                    GET_CFG_BLOCK(block_id).instrs_back_idx = instruction_index;
                     break;
                 }
             }
@@ -216,15 +211,15 @@ static void cfg_rm_block_instr(size_t instruction_index, size_t block_id) {
 
 #if __OPTIM_LEVEL__ == 1
 static void cfg_init_label_block(TacLabel* node) {
-    context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
+    ctx->cfg->identifier_id_map[node->name] = ctx->cfg->blocks.size() - 1;
 }
 #elif __OPTIM_LEVEL__ == 2
 static void cfg_init_label_block(AsmLabel* node) {
-    context->control_flow_graph->identifier_id_map[node->name] = context->control_flow_graph->blocks.size() - 1;
+    ctx->cfg->identifier_id_map[node->name] = ctx->cfg->blocks.size() - 1;
 }
 #endif
 
-static void cfg_init_block(size_t instruction_index, size_t& instructions_back_index) {
+static void cfg_init_block(size_t instruction_index, size_t& instrs_back_idx) {
     AstInstruction* node = GET_INSTR(instruction_index).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
@@ -233,17 +228,17 @@ static void cfg_init_block(size_t instruction_index, size_t& instructions_back_i
         case AST_AsmLabel_t:
 #endif
         {
-            if (instructions_back_index != context->p_instructions->size()) {
-                context->control_flow_graph->blocks.back().instructions_back_index = instructions_back_index;
+            if (instrs_back_idx != ctx->p_instrs->size()) {
+                ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
                 ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
-                context->control_flow_graph->blocks.emplace_back(std::move(block));
+                ctx->cfg->blocks.emplace_back(std::move(block));
             }
 #if __OPTIM_LEVEL__ == 1
             cfg_init_label_block(static_cast<TacLabel*>(node));
 #elif __OPTIM_LEVEL__ == 2
             cfg_init_label_block(static_cast<AsmLabel*>(node));
 #endif
-            instructions_back_index = instruction_index;
+            instrs_back_idx = instruction_index;
             break;
         }
 #if __OPTIM_LEVEL__ == 1
@@ -257,12 +252,12 @@ static void cfg_init_block(size_t instruction_index, size_t& instructions_back_i
         case AST_AsmRet_t:
 #endif
         {
-            context->control_flow_graph->blocks.back().instructions_back_index = instruction_index;
-            instructions_back_index = context->p_instructions->size();
+            ctx->cfg->blocks.back().instrs_back_idx = instruction_index;
+            instrs_back_idx = ctx->p_instrs->size();
             break;
         }
         default: {
-            instructions_back_index = instruction_index;
+            instrs_back_idx = instruction_index;
             break;
         }
     }
@@ -270,38 +265,38 @@ static void cfg_init_block(size_t instruction_index, size_t& instructions_back_i
 
 #if __OPTIM_LEVEL__ == 1
 static void cfg_init_jump_edges(TacJump* node, size_t block_id) {
-    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, ctx->cfg->identifier_id_map[node->target]);
 }
 
 static void cfg_init_jmp_eq_0_edges(TacJumpIfZero* node, size_t block_id) {
-    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, ctx->cfg->identifier_id_map[node->target]);
     cfg_add_succ_edge(block_id, block_id + 1);
 }
 
 static void cfg_init_jmp_ne_0_edges(TacJumpIfNotZero* node, size_t block_id) {
-    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, ctx->cfg->identifier_id_map[node->target]);
     cfg_add_succ_edge(block_id, block_id + 1);
 }
 #elif __OPTIM_LEVEL__ == 2
 static void cfg_init_jmp_edges(AsmJmp* node, size_t block_id) {
-    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, ctx->cfg->identifier_id_map[node->target]);
 }
 
 static void cfg_init_jmp_cc_edges(AsmJmpCC* node, size_t block_id) {
-    cfg_add_succ_edge(block_id, context->control_flow_graph->identifier_id_map[node->target]);
+    cfg_add_succ_edge(block_id, ctx->cfg->identifier_id_map[node->target]);
     cfg_add_succ_edge(block_id, block_id + 1);
 }
 #endif
 
 static void cfg_init_edges(size_t block_id) {
-    AstInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instructions_back_index).get();
+    AstInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instrs_back_idx).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_TacReturn_t:
 #elif __OPTIM_LEVEL__ == 2
         case AST_AsmRet_t:
 #endif
-            cfg_add_succ_edge(block_id, context->control_flow_graph->exit_id);
+            cfg_add_succ_edge(block_id, ctx->cfg->exit_id);
             break;
 #if __OPTIM_LEVEL__ == 1
         case AST_TacJump_t:
@@ -328,32 +323,32 @@ static void cfg_init_edges(size_t block_id) {
 }
 
 static void init_control_flow_graph() {
-    context->control_flow_graph->blocks.clear();
-    context->control_flow_graph->identifier_id_map.clear();
+    ctx->cfg->blocks.clear();
+    ctx->cfg->identifier_id_map.clear();
     {
-        size_t instructions_back_index = context->p_instructions->size();
-        for (size_t instruction_index = 0; instruction_index < context->p_instructions->size(); ++instruction_index) {
+        size_t instrs_back_idx = ctx->p_instrs->size();
+        for (size_t instruction_index = 0; instruction_index < ctx->p_instrs->size(); ++instruction_index) {
             if (GET_INSTR(instruction_index)) {
-                if (instructions_back_index == context->p_instructions->size()) {
+                if (instrs_back_idx == ctx->p_instrs->size()) {
                     ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
-                    context->control_flow_graph->blocks.emplace_back(std::move(block));
+                    ctx->cfg->blocks.emplace_back(std::move(block));
                 }
-                cfg_init_block(instruction_index, instructions_back_index);
-                context->control_flow_graph->blocks.back().size++;
+                cfg_init_block(instruction_index, instrs_back_idx);
+                ctx->cfg->blocks.back().size++;
             }
         }
-        if (instructions_back_index != context->p_instructions->size()) {
-            context->control_flow_graph->blocks.back().instructions_back_index = instructions_back_index;
+        if (instrs_back_idx != ctx->p_instrs->size()) {
+            ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
         }
     }
 
-    context->control_flow_graph->exit_id = context->control_flow_graph->blocks.size();
-    context->control_flow_graph->entry_id = context->control_flow_graph->exit_id + 1;
-    context->control_flow_graph->entry_successor_ids.clear();
-    context->control_flow_graph->exit_predecessor_ids.clear();
-    if (!context->control_flow_graph->blocks.empty()) {
-        cfg_add_pred_edge(0, context->control_flow_graph->entry_id);
-        for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+    ctx->cfg->exit_id = ctx->cfg->blocks.size();
+    ctx->cfg->entry_id = ctx->cfg->exit_id + 1;
+    ctx->cfg->entry_succ_ids.clear();
+    ctx->cfg->exit_pred_ids.clear();
+    if (!ctx->cfg->blocks.empty()) {
+        cfg_add_pred_edge(0, ctx->cfg->entry_id);
+        for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
             cfg_init_edges(block_id);
         }
     }
@@ -388,12 +383,11 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
 #endif
 #define MASK_OFFSET(X) X > 63 ? X / 64 : 0
 
-#define GET_DFA_BLOCK_SET_IDX(X, Y) (X) * context->data_flow_analysis->mask_size + (Y)
-#define GET_DFA_INSTR_SET_IDX(X, Y) \
-    context->data_flow_analysis->instruction_index_map[X] * context->data_flow_analysis->mask_size + (Y)
+#define GET_DFA_BLOCK_SET_IDX(X, Y) (X) * ctx->dfa->mask_size + (Y)
+#define GET_DFA_INSTR_SET_IDX(X, Y) ctx->dfa->instr_idx_map[X] * ctx->dfa->mask_size + (Y)
 
-#define GET_DFA_BLOCK_SET_MASK(X, Y) context->data_flow_analysis->blocks_mask_sets[GET_DFA_BLOCK_SET_IDX(X, Y)]
-#define GET_DFA_INSTR_SET_MASK(X, Y) context->data_flow_analysis->instructions_mask_sets[GET_DFA_INSTR_SET_IDX(X, Y)]
+#define GET_DFA_BLOCK_SET_MASK(X, Y) ctx->dfa->blocks_mask_sets[GET_DFA_BLOCK_SET_IDX(X, Y)]
+#define GET_DFA_INSTR_SET_MASK(X, Y) ctx->dfa->instrs_mask_sets[GET_DFA_INSTR_SET_IDX(X, Y)]
 
 #define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y)
 #define GET_DFA_INSTR_SET_AT(X, Y) mask_get(GET_DFA_INSTR_SET_MASK(X, MASK_OFFSET(Y)), Y)
@@ -401,7 +395,7 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
 #define SET_DFA_INSTR_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTR_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
 #if __OPTIM_LEVEL__ == 1
-#define GET_DFA_INSTR(X) GET_INSTR(context->data_flow_analysis_o1->data_index_map[X])
+#define GET_DFA_INSTR(X) GET_INSTR(ctx->dfa_o1->data_idx_map[X])
 #endif
 
 static bool is_transfer_instr(size_t instruction_index
@@ -459,8 +453,8 @@ static bool is_transfer_instr(size_t instruction_index
 
 #if __OPTIM_LEVEL__ == 1
 static size_t get_dfa_data_idx(size_t instruction_index) {
-    for (size_t i = 0; i < context->data_flow_analysis->set_size; ++i) {
-        if (context->data_flow_analysis_o1->data_index_map[i] == instruction_index) {
+    for (size_t i = 0; i < ctx->dfa->set_size; ++i) {
+        if (ctx->dfa_o1->data_idx_map[i] == instruction_index) {
             return i;
         }
     }
@@ -468,9 +462,9 @@ static size_t get_dfa_data_idx(size_t instruction_index) {
 }
 
 static TacInstruction* get_dfa_bak_instr(size_t i) {
-    if (context->control_flow_graph->reaching_code[i]) {
-        if (context->data_flow_analysis_o1->bak_instructions[i]) {
-            return context->data_flow_analysis_o1->bak_instructions[i].get();
+    if (ctx->cfg->reaching_code[i]) {
+        if (ctx->dfa_o1->bak_instrs[i]) {
+            return ctx->dfa_o1->bak_instrs[i].get();
         }
         else {
             RAISE_INTERNAL_ERROR;
@@ -486,8 +480,8 @@ static TacInstruction* get_dfa_bak_instr(size_t i) {
 
 static bool set_dfa_bak_instr(size_t instruction_index, size_t& i) {
     i = get_dfa_data_idx(instruction_index);
-    if (!context->control_flow_graph->reaching_code[i]) {
-        context->control_flow_graph->reaching_code[i] = true;
+    if (!ctx->cfg->reaching_code[i]) {
+        ctx->cfg->reaching_code[i] = true;
         return true;
     }
     else {
@@ -506,27 +500,25 @@ static void infer_transfer_live_regs(size_t instruction_index, size_t next_instr
 #if __OPTIM_LEVEL__ == 1
 static size_t dfa_forward_transfer_block(size_t instruction_index, size_t block_id) {
     for (size_t next_instruction_index = instruction_index + 1;
-         next_instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++next_instruction_index) {
+         next_instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++next_instruction_index) {
         if (GET_INSTR(next_instruction_index) && is_transfer_instr(next_instruction_index, false)) {
-            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
                 GET_DFA_INSTR_SET_MASK(next_instruction_index, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
             }
             if (!prop_transfer_reach_copies(instruction_index, next_instruction_index)) {
-                for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+                for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
                     GET_DFA_INSTR_SET_MASK(next_instruction_index, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
                 }
             }
             instruction_index = next_instruction_index;
         }
     }
-    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
-        GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->incoming_index, i) =
-            GET_DFA_INSTR_SET_MASK(instruction_index, i);
+    for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
+        GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
     }
-    if (!prop_transfer_reach_copies(instruction_index, context->data_flow_analysis->incoming_index)) {
-        for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
-            GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->incoming_index, i) =
-                GET_DFA_INSTR_SET_MASK(instruction_index, i);
+    if (!prop_transfer_reach_copies(instruction_index, ctx->dfa->incoming_idx)) {
+        for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
+            GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
         }
     }
     return instruction_index;
@@ -536,7 +528,7 @@ static size_t dfa_forward_transfer_block(size_t instruction_index, size_t block_
 static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block_id) {
     if (instruction_index > 0) {
         for (size_t next_instruction_index = instruction_index;
-             next_instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index;) {
+             next_instruction_index-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
             if (GET_INSTR(next_instruction_index)
                 && is_transfer_instr(next_instruction_index
 #if __OPTIM_LEVEL__ == 1
@@ -544,7 +536,7 @@ static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block
                     true
 #endif
                     )) {
-                for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+                for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
                     GET_DFA_INSTR_SET_MASK(next_instruction_index, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
                 }
 #if __OPTIM_LEVEL__ == 1
@@ -557,16 +549,15 @@ static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block
             }
         }
     }
-    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
-        GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->incoming_index, i) =
-            GET_DFA_INSTR_SET_MASK(instruction_index, i);
+    for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
+        GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
     }
 #if __OPTIM_LEVEL__ == 1
     elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
     infer_transfer_live_regs
 #endif
-        (instruction_index, context->data_flow_analysis->incoming_index);
+        (instruction_index, ctx->dfa->incoming_idx);
     return instruction_index;
 }
 
@@ -574,16 +565,14 @@ static bool dfa_after_meet_block(size_t block_id) {
     bool is_fixed_point = true;
     {
         size_t i = 0;
-        for (; i < context->data_flow_analysis->mask_size; ++i) {
-            if (GET_DFA_BLOCK_SET_MASK(block_id, i)
-                != GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->incoming_index, i)) {
+        for (; i < ctx->dfa->mask_size; ++i) {
+            if (GET_DFA_BLOCK_SET_MASK(block_id, i) != GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i)) {
                 is_fixed_point = false;
                 break;
             }
         }
-        for (; i < context->data_flow_analysis->mask_size; ++i) {
-            GET_DFA_BLOCK_SET_MASK(block_id, i) =
-                GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->incoming_index, i);
+        for (; i < ctx->dfa->mask_size; ++i) {
+            GET_DFA_BLOCK_SET_MASK(block_id, i) = GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i);
         }
     }
     return is_fixed_point;
@@ -591,26 +580,26 @@ static bool dfa_after_meet_block(size_t block_id) {
 
 #if __OPTIM_LEVEL__ == 1
 static bool dfa_forward_meet_block(size_t block_id) {
-    size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
-    for (; instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+    size_t instruction_index = GET_CFG_BLOCK(block_id).instrs_front_idx;
+    for (; instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instruction_index) {
         if (GET_INSTR(instruction_index) && is_transfer_instr(instruction_index, false)) {
             goto Lelse;
         }
     }
-    instruction_index = context->data_flow_analysis->incoming_index;
+    instruction_index = ctx->dfa->incoming_idx;
 Lelse:
-    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+    for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
         GET_DFA_INSTR_SET_MASK(instruction_index, i) = MASK_TRUE;
     }
 
-    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-        if (predecessor_id < context->control_flow_graph->exit_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
+        if (predecessor_id < ctx->cfg->exit_id) {
+            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
                 GET_DFA_INSTR_SET_MASK(instruction_index, i) &= GET_DFA_BLOCK_SET_MASK(predecessor_id, i);
             }
         }
-        else if (predecessor_id == context->control_flow_graph->entry_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+        else if (predecessor_id == ctx->cfg->entry_id) {
+            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
                 GET_DFA_INSTR_SET_MASK(instruction_index, i) = MASK_FALSE;
             }
             break;
@@ -620,10 +609,10 @@ Lelse:
         }
     }
 
-    if (instruction_index < context->data_flow_analysis->incoming_index) {
+    if (instruction_index < ctx->dfa->incoming_idx) {
         dfa_forward_transfer_block(instruction_index, block_id);
     }
-    else if (instruction_index != context->data_flow_analysis->incoming_index) {
+    else if (instruction_index != ctx->dfa->incoming_idx) {
         RAISE_INTERNAL_ERROR;
     }
 
@@ -632,8 +621,8 @@ Lelse:
 #endif
 
 static bool dfa_backward_meet_block(size_t block_id) {
-    size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_back_index + 1;
-    while (instruction_index-- > GET_CFG_BLOCK(block_id).instructions_front_index) {
+    size_t instruction_index = GET_CFG_BLOCK(block_id).instrs_back_idx + 1;
+    while (instruction_index-- > GET_CFG_BLOCK(block_id).instrs_front_idx) {
         if (GET_INSTR(instruction_index)
             && is_transfer_instr(instruction_index
 #if __OPTIM_LEVEL__ == 1
@@ -644,22 +633,21 @@ static bool dfa_backward_meet_block(size_t block_id) {
             goto Lelse;
         }
     }
-    instruction_index = context->data_flow_analysis->incoming_index;
+    instruction_index = ctx->dfa->incoming_idx;
 Lelse:
-    for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+    for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
         GET_DFA_INSTR_SET_MASK(instruction_index, i) = MASK_FALSE;
     }
 
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
-        if (successor_id < context->control_flow_graph->exit_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
+        if (successor_id < ctx->cfg->exit_id) {
+            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
                 GET_DFA_INSTR_SET_MASK(instruction_index, i) |= GET_DFA_BLOCK_SET_MASK(successor_id, i);
             }
         }
-        else if (successor_id == context->control_flow_graph->exit_id) {
-            for (size_t i = 0; i < context->data_flow_analysis->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instruction_index, i) =
-                    GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->static_index, i);
+        else if (successor_id == ctx->cfg->exit_id) {
+            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
+                GET_DFA_INSTR_SET_MASK(instruction_index, i) = GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, i);
             }
             break;
         }
@@ -668,10 +656,10 @@ Lelse:
         }
     }
 
-    if (instruction_index < context->data_flow_analysis->incoming_index) {
+    if (instruction_index < ctx->dfa->incoming_idx) {
         dfa_backward_transfer_block(instruction_index, block_id);
     }
-    else if (instruction_index != context->data_flow_analysis->incoming_index) {
+    else if (instruction_index != ctx->dfa->incoming_idx) {
         RAISE_INTERNAL_ERROR;
     }
 
@@ -680,32 +668,32 @@ Lelse:
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_forward_iter_alg() {
-    size_t open_data_map_size = context->control_flow_graph->blocks.size();
+    size_t open_data_map_size = ctx->cfg->blocks.size();
     for (size_t i = 0; i < open_data_map_size; ++i) {
-        size_t block_id = context->data_flow_analysis->open_data_map[i];
-        if (block_id == context->control_flow_graph->exit_id) {
+        size_t block_id = ctx->dfa->open_data_map[i];
+        if (block_id == ctx->cfg->exit_id) {
             continue;
         }
 
         bool is_fixed_point = dfa_forward_meet_block(block_id);
         if (!is_fixed_point) {
-            for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
-                if (successor_id < context->control_flow_graph->exit_id) {
+            for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
+                if (successor_id < ctx->cfg->exit_id) {
                     for (size_t j = i + 1; j < open_data_map_size; ++j) {
-                        if (successor_id == context->data_flow_analysis->open_data_map[j]) {
+                        if (successor_id == ctx->dfa->open_data_map[j]) {
                             goto Lelse;
                         }
                     }
-                    if (open_data_map_size < context->data_flow_analysis->open_data_map.size()) {
-                        context->data_flow_analysis->open_data_map[open_data_map_size] = successor_id;
+                    if (open_data_map_size < ctx->dfa->open_data_map.size()) {
+                        ctx->dfa->open_data_map[open_data_map_size] = successor_id;
                     }
                     else {
-                        context->data_flow_analysis->open_data_map.push_back(successor_id);
+                        ctx->dfa->open_data_map.push_back(successor_id);
                     }
                     open_data_map_size++;
                 Lelse:;
                 }
-                else if (successor_id != context->control_flow_graph->exit_id) {
+                else if (successor_id != ctx->cfg->exit_id) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
@@ -715,32 +703,32 @@ static void dfa_forward_iter_alg() {
 #endif
 
 static void dfa_iter_alg() {
-    size_t open_data_map_size = context->control_flow_graph->blocks.size();
+    size_t open_data_map_size = ctx->cfg->blocks.size();
     for (size_t i = 0; i < open_data_map_size; ++i) {
-        size_t block_id = context->data_flow_analysis->open_data_map[i];
-        if (block_id == context->control_flow_graph->exit_id) {
+        size_t block_id = ctx->dfa->open_data_map[i];
+        if (block_id == ctx->cfg->exit_id) {
             continue;
         }
 
         bool is_fixed_point = dfa_backward_meet_block(block_id);
         if (!is_fixed_point) {
-            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).predecessor_ids) {
-                if (predecessor_id < context->control_flow_graph->exit_id) {
+            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
+                if (predecessor_id < ctx->cfg->exit_id) {
                     for (size_t j = i + 1; j < open_data_map_size; ++j) {
-                        if (predecessor_id == context->data_flow_analysis->open_data_map[j]) {
+                        if (predecessor_id == ctx->dfa->open_data_map[j]) {
                             goto Lelse;
                         }
                     }
-                    if (open_data_map_size < context->data_flow_analysis->open_data_map.size()) {
-                        context->data_flow_analysis->open_data_map[open_data_map_size] = predecessor_id;
+                    if (open_data_map_size < ctx->dfa->open_data_map.size()) {
+                        ctx->dfa->open_data_map[open_data_map_size] = predecessor_id;
                     }
                     else {
-                        context->data_flow_analysis->open_data_map.push_back(predecessor_id);
+                        ctx->dfa->open_data_map.push_back(predecessor_id);
                     }
                     open_data_map_size++;
                 Lelse:;
                 }
-                else if (predecessor_id != context->control_flow_graph->entry_id) {
+                else if (predecessor_id != ctx->cfg->entry_id) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
@@ -755,34 +743,34 @@ static void dfa_backward_open_block(size_t block_id, size_t& i);
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_forward_succ_open_block(size_t block_id, size_t& i) {
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
         dfa_forward_open_block(successor_id, i);
     }
 }
 #endif
 
 static void dfa_backward_succ_open_block(size_t block_id, size_t& i) {
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).successor_ids) {
+    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
         dfa_backward_open_block(successor_id, i);
     }
 }
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_forward_open_block(size_t block_id, size_t& i) {
-    if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
-        context->control_flow_graph->reaching_code[block_id] = true;
+    if (block_id < ctx->cfg->exit_id && !ctx->cfg->reaching_code[block_id]) {
+        ctx->cfg->reaching_code[block_id] = true;
         dfa_forward_succ_open_block(block_id, i);
         i--;
-        context->data_flow_analysis->open_data_map[i] = block_id;
+        ctx->dfa->open_data_map[i] = block_id;
     }
 }
 #endif
 
 static void dfa_backward_open_block(size_t block_id, size_t& i) {
-    if (block_id < context->control_flow_graph->exit_id && !context->control_flow_graph->reaching_code[block_id]) {
-        context->control_flow_graph->reaching_code[block_id] = true;
+    if (block_id < ctx->cfg->exit_id && !ctx->cfg->reaching_code[block_id]) {
+        ctx->cfg->reaching_code[block_id] = true;
         dfa_backward_succ_open_block(block_id, i);
-        context->data_flow_analysis->open_data_map[i] = block_id;
+        ctx->dfa->open_data_map[i] = block_id;
         i++;
     }
 }
@@ -810,22 +798,21 @@ static bool prop_add_data_idx(TacCopy* node, size_t instruction_index, size_t bl
         return false;
     }
     else {
-        if (context->data_flow_analysis->set_size < context->data_flow_analysis_o1->data_index_map.size()) {
-            context->data_flow_analysis_o1->data_index_map[context->data_flow_analysis->set_size] = instruction_index;
+        if (ctx->dfa->set_size < ctx->dfa_o1->data_idx_map.size()) {
+            ctx->dfa_o1->data_idx_map[ctx->dfa->set_size] = instruction_index;
         }
         else {
-            context->data_flow_analysis_o1->data_index_map.push_back(instruction_index);
+            ctx->dfa_o1->data_idx_map.push_back(instruction_index);
         }
-        context->data_flow_analysis->set_size++;
+        ctx->dfa->set_size++;
         return true;
     }
 }
 
 static void elim_add_data_name(TIdentifier name) {
-    if (context->control_flow_graph->identifier_id_map.find(name)
-        == context->control_flow_graph->identifier_id_map.end()) {
-        context->control_flow_graph->identifier_id_map[name] = context->data_flow_analysis->set_size;
-        context->data_flow_analysis->set_size++;
+    if (ctx->cfg->identifier_id_map.find(name) == ctx->cfg->identifier_id_map.end()) {
+        ctx->cfg->identifier_id_map[name] = ctx->dfa->set_size;
+        ctx->dfa->set_size++;
     }
 }
 
@@ -836,12 +823,9 @@ static void elim_add_data_value(TacValue* node) {
 }
 #elif __OPTIM_LEVEL__ == 2
 static void infer_add_data_name(TIdentifier name) {
-    if (!is_aliased_name(name)
-        && context->control_flow_graph->identifier_id_map.find(name)
-               == context->control_flow_graph->identifier_id_map.end()) {
-        context->control_flow_graph->identifier_id_map[name] =
-            REGISTER_MASK_SIZE + context->data_flow_analysis->set_size;
-        context->data_flow_analysis->set_size++;
+    if (!is_aliased_name(name) && ctx->cfg->identifier_id_map.find(name) == ctx->cfg->identifier_id_map.end()) {
+        ctx->cfg->identifier_id_map[name] = REGISTER_MASK_SIZE + ctx->dfa->set_size;
+        ctx->dfa->set_size++;
     }
 }
 
@@ -859,11 +843,11 @@ static bool init_data_flow_analysis(
     TIdentifier function_name
 #endif
 ) {
-    context->data_flow_analysis->set_size = 0;
-    context->data_flow_analysis->incoming_index = context->p_instructions->size();
+    ctx->dfa->set_size = 0;
+    ctx->dfa->incoming_idx = ctx->p_instrs->size();
 
-    if (context->data_flow_analysis->open_data_map.size() < context->control_flow_graph->blocks.size()) {
-        context->data_flow_analysis->open_data_map.resize(context->control_flow_graph->blocks.size());
+    if (ctx->dfa->open_data_map.size() < ctx->cfg->blocks.size()) {
+        ctx->dfa->open_data_map.resize(ctx->cfg->blocks.size());
     }
     {
         size_t i =
@@ -873,34 +857,33 @@ static bool init_data_flow_analysis(
             2
 #endif
             ;
-        if (context->data_flow_analysis->instruction_index_map.size() < context->p_instructions->size() + i) {
-            context->data_flow_analysis->instruction_index_map.resize(context->p_instructions->size() + i);
+        if (ctx->dfa->instr_idx_map.size() < ctx->p_instrs->size() + i) {
+            ctx->dfa->instr_idx_map.resize(ctx->p_instrs->size() + i);
         }
     }
-    if (context->control_flow_graph->reaching_code.size() < context->control_flow_graph->blocks.size()) {
-        context->control_flow_graph->reaching_code.resize(context->control_flow_graph->blocks.size());
+    if (ctx->cfg->reaching_code.size() < ctx->cfg->blocks.size()) {
+        ctx->cfg->reaching_code.resize(ctx->cfg->blocks.size());
     }
-    std::fill(context->control_flow_graph->reaching_code.begin(),
-        context->control_flow_graph->reaching_code.begin() + context->control_flow_graph->blocks.size(), false);
+    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->cfg->blocks.size(), false);
 
     size_t instructions_mask_sets_size = 0;
 #if __OPTIM_LEVEL__ == 1
     bool is_copy_propagation = !is_dead_store_elimination;
     if (is_dead_store_elimination) {
 #endif
-        context->control_flow_graph->identifier_id_map.clear();
-        context->data_flow_analysis->static_index = context->data_flow_analysis->incoming_index + 1;
+        ctx->cfg->identifier_id_map.clear();
+        ctx->dfa->static_idx = ctx->dfa->incoming_idx + 1;
 #if __OPTIM_LEVEL__ == 1
-        context->data_flow_analysis_o1->addressed_index = context->data_flow_analysis->static_index + 1;
+        ctx->dfa_o1->addressed_idx = ctx->dfa->static_idx + 1;
     }
     if (is_addressed_set) {
         frontend->addressed_set.clear();
     }
 #endif
-    for (size_t block_id = 0; block_id < context->control_flow_graph->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
-            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instructions_front_index;
-                 instruction_index <= GET_CFG_BLOCK(block_id).instructions_back_index; ++instruction_index) {
+            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instrs_front_idx;
+                 instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instruction_index) {
                 if (GET_INSTR(instruction_index)) {
                     AstInstruction* node = GET_INSTR(instruction_index).get();
                     switch (node->type()) {
@@ -1044,7 +1027,7 @@ static bool init_data_flow_analysis(
                             if (is_dead_store_elimination) {
                                 TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
                                 elim_add_data_value(p_node->src_ptr.get());
-                                elim_add_data_value(p_node->index.get());
+                                elim_add_data_value(p_node->idx.get());
                                 elim_add_data_value(p_node->dst.get());
                             }
                             break;
@@ -1150,143 +1133,139 @@ static bool init_data_flow_analysis(
                         default:
                             goto Lcontinue;
                     }
-                    context->data_flow_analysis->instruction_index_map[instruction_index] = instructions_mask_sets_size;
+                    ctx->dfa->instr_idx_map[instruction_index] = instructions_mask_sets_size;
                     instructions_mask_sets_size++;
                 Lcontinue:;
                 }
             }
         }
         else {
-            context->control_flow_graph->reaching_code[block_id] = true;
+            ctx->cfg->reaching_code[block_id] = true;
         }
     }
-    if (context->data_flow_analysis->set_size == 0) {
+    if (ctx->dfa->set_size == 0) {
         return false;
     }
 
 #if __OPTIM_LEVEL__ == 2
-    if (context->data_flow_analysis_o2->data_name_map.size() < context->data_flow_analysis->set_size) {
-        context->data_flow_analysis_o2->data_name_map.resize(context->data_flow_analysis->set_size);
+    if (ctx->dfa_o2->data_name_map.size() < ctx->dfa->set_size) {
+        ctx->dfa_o2->data_name_map.resize(ctx->dfa->set_size);
     }
-    context->data_flow_analysis->set_size += REGISTER_MASK_SIZE;
+    ctx->dfa->set_size += REGISTER_MASK_SIZE;
 #endif
 
-    context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->incoming_index] =
-        instructions_mask_sets_size;
+    ctx->dfa->instr_idx_map[ctx->dfa->incoming_idx] = instructions_mask_sets_size;
     instructions_mask_sets_size++;
 #if __OPTIM_LEVEL__ == 1
     if (is_dead_store_elimination) {
 #endif
-        context->data_flow_analysis->instruction_index_map[context->data_flow_analysis->static_index] =
-            instructions_mask_sets_size;
+        ctx->dfa->instr_idx_map[ctx->dfa->static_idx] = instructions_mask_sets_size;
         instructions_mask_sets_size++;
 #if __OPTIM_LEVEL__ == 1
-        context->data_flow_analysis->instruction_index_map[context->data_flow_analysis_o1->addressed_index] =
-            instructions_mask_sets_size;
+        ctx->dfa->instr_idx_map[ctx->dfa_o1->addressed_idx] = instructions_mask_sets_size;
         instructions_mask_sets_size++;
     }
 #endif
-    context->data_flow_analysis->mask_size = (context->data_flow_analysis->set_size + 63) / 64;
-    instructions_mask_sets_size *= context->data_flow_analysis->mask_size;
-    size_t blocks_mask_sets_size = context->data_flow_analysis->mask_size * context->control_flow_graph->blocks.size();
+    ctx->dfa->mask_size = (ctx->dfa->set_size + 63) / 64;
+    instructions_mask_sets_size *= ctx->dfa->mask_size;
+    size_t blocks_mask_sets_size = ctx->dfa->mask_size * ctx->cfg->blocks.size();
 
-    if (context->data_flow_analysis->blocks_mask_sets.size() < blocks_mask_sets_size) {
-        context->data_flow_analysis->blocks_mask_sets.resize(blocks_mask_sets_size);
+    if (ctx->dfa->blocks_mask_sets.size() < blocks_mask_sets_size) {
+        ctx->dfa->blocks_mask_sets.resize(blocks_mask_sets_size);
     }
-    if (context->data_flow_analysis->instructions_mask_sets.size() < instructions_mask_sets_size) {
-        context->data_flow_analysis->instructions_mask_sets.resize(instructions_mask_sets_size);
+    if (ctx->dfa->instrs_mask_sets.size() < instructions_mask_sets_size) {
+        ctx->dfa->instrs_mask_sets.resize(instructions_mask_sets_size);
     }
 
 #if __OPTIM_LEVEL__ == 1
     if (is_copy_propagation) {
-        size_t i = context->control_flow_graph->blocks.size();
-        for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
-            if (!context->control_flow_graph->reaching_code[successor_id]) {
+        size_t i = ctx->cfg->blocks.size();
+        for (size_t successor_id : ctx->cfg->entry_succ_ids) {
+            if (!ctx->cfg->reaching_code[successor_id]) {
                 dfa_forward_open_block(successor_id, i);
             }
         }
         while (i-- > 0) {
-            context->data_flow_analysis->open_data_map[i] = context->control_flow_graph->exit_id;
+            ctx->dfa->open_data_map[i] = ctx->cfg->exit_id;
         }
 
         mask_t mask_true_back = MASK_TRUE;
-        i = context->data_flow_analysis->set_size - (context->data_flow_analysis->mask_size - 1) * 64;
+        i = ctx->dfa->set_size - (ctx->dfa->mask_size - 1) * 64;
         if (i > 0) {
             for (; i < 64; ++i) {
                 mask_set(mask_true_back, i, false);
             }
         }
 
-        if (context->control_flow_graph->reaching_code.size() < context->data_flow_analysis->set_size) {
-            context->control_flow_graph->reaching_code.resize(context->data_flow_analysis->set_size);
+        if (ctx->cfg->reaching_code.size() < ctx->dfa->set_size) {
+            ctx->cfg->reaching_code.resize(ctx->dfa->set_size);
         }
-        if (context->data_flow_analysis_o1->bak_instructions.size() < context->data_flow_analysis->set_size) {
-            context->data_flow_analysis_o1->bak_instructions.resize(context->data_flow_analysis->set_size);
+        if (ctx->dfa_o1->bak_instrs.size() < ctx->dfa->set_size) {
+            ctx->dfa_o1->bak_instrs.resize(ctx->dfa->set_size);
         }
 
-        std::fill(context->control_flow_graph->reaching_code.begin(),
-            context->control_flow_graph->reaching_code.begin() + context->data_flow_analysis->set_size, false);
+        std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->dfa->set_size, false);
 
-        if (context->data_flow_analysis->mask_size > 1) {
+        if (ctx->dfa->mask_size > 1) {
             i = 0;
             do {
-                for (size_t j = context->data_flow_analysis->mask_size - 1; j-- > 0;) {
-                    context->data_flow_analysis->blocks_mask_sets[i] = MASK_TRUE;
+                for (size_t j = ctx->dfa->mask_size - 1; j-- > 0;) {
+                    ctx->dfa->blocks_mask_sets[i] = MASK_TRUE;
                     i++;
                 }
-                context->data_flow_analysis->blocks_mask_sets[i] = mask_true_back;
+                ctx->dfa->blocks_mask_sets[i] = mask_true_back;
                 i++;
             }
             while (i < blocks_mask_sets_size);
         }
         else {
-            std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
-                context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, mask_true_back);
+            std::fill(ctx->dfa->blocks_mask_sets.begin(), ctx->dfa->blocks_mask_sets.begin() + blocks_mask_sets_size,
+                mask_true_back);
         }
     }
     else {
 #endif
         size_t i = 0;
-        for (size_t successor_id : context->control_flow_graph->entry_successor_ids) {
-            if (!context->control_flow_graph->reaching_code[successor_id]) {
+        for (size_t successor_id : ctx->cfg->entry_succ_ids) {
+            if (!ctx->cfg->reaching_code[successor_id]) {
                 dfa_backward_open_block(successor_id, i);
             }
         }
-        for (; i < context->control_flow_graph->blocks.size(); i++) {
-            context->data_flow_analysis->open_data_map[i] = context->control_flow_graph->exit_id;
+        for (; i < ctx->cfg->blocks.size(); i++) {
+            ctx->dfa->open_data_map[i] = ctx->cfg->exit_id;
         }
 
 #if __OPTIM_LEVEL__ == 1
-        GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->static_index, 0) = MASK_FALSE;
-        GET_DFA_INSTR_SET_MASK(context->data_flow_analysis_o1->addressed_index, 0) = MASK_FALSE;
+        GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, 0) = MASK_FALSE;
+        GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, 0) = MASK_FALSE;
 #elif __OPTIM_LEVEL__ == 2
     {
         FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[function_name]->type_t.get());
-        GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->static_index, 0) = fun_type->ret_reg_mask;
+        GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, 0) = fun_type->ret_reg_mask;
     }
 #endif
-        for (i = 1; i < context->data_flow_analysis->mask_size; ++i) {
-            GET_DFA_INSTR_SET_MASK(context->data_flow_analysis->static_index, i) = MASK_FALSE;
+        for (i = 1; i < ctx->dfa->mask_size; ++i) {
+            GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, i) = MASK_FALSE;
 #if __OPTIM_LEVEL__ == 1
-            GET_DFA_INSTR_SET_MASK(context->data_flow_analysis_o1->addressed_index, i) = MASK_FALSE;
+            GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, i) = MASK_FALSE;
 #endif
         }
 
-        for (const auto& name_id : context->control_flow_graph->identifier_id_map) {
+        for (const auto& name_id : ctx->cfg->identifier_id_map) {
 #if __OPTIM_LEVEL__ == 1
             if (frontend->symbol_table[name_id.first]->attrs->type() == AST_StaticAttr_t) {
-                SET_DFA_INSTR_SET_AT(context->data_flow_analysis->static_index, name_id.second, true);
+                SET_DFA_INSTR_SET_AT(ctx->dfa->static_idx, name_id.second, true);
             }
             if (frontend->addressed_set.find(name_id.first) != frontend->addressed_set.end()) {
-                SET_DFA_INSTR_SET_AT(context->data_flow_analysis_o1->addressed_index, name_id.second, true);
+                SET_DFA_INSTR_SET_AT(ctx->dfa_o1->addressed_idx, name_id.second, true);
             }
 #elif __OPTIM_LEVEL__ == 2
-        context->data_flow_analysis_o2->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
+        ctx->dfa_o2->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
 #endif
         }
 
-        std::fill(context->data_flow_analysis->blocks_mask_sets.begin(),
-            context->data_flow_analysis->blocks_mask_sets.begin() + blocks_mask_sets_size, MASK_FALSE);
+        std::fill(
+            ctx->dfa->blocks_mask_sets.begin(), ctx->dfa->blocks_mask_sets.begin() + blocks_mask_sets_size, MASK_FALSE);
 #if __OPTIM_LEVEL__ == 1
     }
 #endif

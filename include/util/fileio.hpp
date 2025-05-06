@@ -12,16 +12,16 @@
 
 struct FileRead {
     size_t len;
-    char* buffer;
-    FILE* file_descriptor;
+    char* buf;
+    FILE* fd;
     std::string filename;
 };
 
 struct FileIoContext {
-    FILE* file_descriptor_write;
-    std::string write_buffer;
+    FILE* fd_write;
+    std::string write_buf;
     std::string filename;
-    std::vector<FileRead> file_reads;
+    std::vector<FileRead> freads;
 };
 
 extern std::unique_ptr<FileIoContext> fileio;
@@ -34,7 +34,7 @@ void open_fwrite(const std::string& filename);
 bool find_file(const std::string& filename);
 bool read_line(std::string& line);
 void write_line(std::string&& line);
-void close_fread(size_t line_number);
+void close_fread(size_t linenum);
 void close_fwrite();
 
 #endif

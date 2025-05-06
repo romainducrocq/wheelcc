@@ -18,13 +18,13 @@
 hash_t string_to_hash(const std::string& string) { return std::hash<std::string> {}(string); }
 
 intmax_t string_to_intmax(const std::string& s_int, size_t line) {
-    std::vector<char> buffer(s_int.begin(), s_int.end());
-    buffer.push_back('\0');
+    std::vector<char> buf(s_int.begin(), s_int.end());
+    buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
-    intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 10);
+    intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
 
-    if (end_ptr == &buffer[0]) {
+    if (end_ptr == &buf[0]) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, s_int.c_str()), line);
     }
 
@@ -36,13 +36,13 @@ int32_t intmax_to_int32(intmax_t intmax) { return static_cast<int32_t>(intmax); 
 int64_t intmax_to_int64(intmax_t intmax) { return static_cast<int64_t>(intmax); }
 
 uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
-    std::vector<char> buffer(s_uint.begin(), s_uint.end());
-    buffer.push_back('\0');
+    std::vector<char> buf(s_uint.begin(), s_uint.end());
+    buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
-    uintmax_t uintmax = strtoumax(&buffer[0], &end_ptr, 10);
+    uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
 
-    if (end_ptr == &buffer[0]) {
+    if (end_ptr == &buf[0]) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, s_uint.c_str()), line);
     }
 
@@ -139,13 +139,13 @@ int32_t string_to_char_ascii(const std::string& s_char) {
 }
 
 static intmax_t hex_string_to_intmax(const std::string& s_hex) {
-    std::vector<char> buffer(s_hex.begin(), s_hex.end());
-    buffer.push_back('\0');
+    std::vector<char> buf(s_hex.begin(), s_hex.end());
+    buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
-    intmax_t intmax = strtoimax(&buffer[0], &end_ptr, 16);
+    intmax_t intmax = strtoimax(&buf[0], &end_ptr, 16);
 
-    if (end_ptr == &buffer[0]) {
+    if (end_ptr == &buf[0]) {
         RAISE_INTERNAL_ERROR;
     }
 
@@ -199,58 +199,58 @@ int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t 
 }
 
 std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
-    std::string string_constant = "";
+    std::string string_const = "";
     for (int8_t byte : string_literal) {
         switch (byte) {
             case 39:
-                string_constant += "\\047";
+                string_const += "\\047";
                 break;
             case 34:
-                string_constant += "\\042";
+                string_const += "\\042";
                 break;
             case 63:
-                string_constant += "\\077";
+                string_const += "\\077";
                 break;
             case 92:
-                string_constant += "\\134";
+                string_const += "\\134";
                 break;
             case 7:
-                string_constant += "\\007";
+                string_const += "\\007";
                 break;
             case 8:
-                string_constant += "\\010";
+                string_const += "\\010";
                 break;
             case 12:
-                string_constant += "\\014";
+                string_const += "\\014";
                 break;
             case 10:
-                string_constant += "\\012";
+                string_const += "\\012";
                 break;
             case 13:
-                string_constant += "\\013";
+                string_const += "\\013";
                 break;
             case 9:
-                string_constant += "\\011";
+                string_const += "\\011";
                 break;
             case 11:
-                string_constant += "\\013";
+                string_const += "\\013";
                 break;
             default:
-                string_constant += static_cast<char>(byte);
+                string_const += static_cast<char>(byte);
                 break;
         }
     }
-    return string_constant;
+    return string_const;
 }
 
 double string_to_dbl(const std::string& s_double, size_t line) {
-    std::vector<char> buffer(s_double.begin(), s_double.end());
-    buffer.push_back('\0');
+    std::vector<char> buf(s_double.begin(), s_double.end());
+    buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
-    double float64 = strtod(&buffer[0], &end_ptr);
+    double float64 = strtod(&buf[0], &end_ptr);
 
-    if (end_ptr == &buffer[0]) {
+    if (end_ptr == &buf[0]) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, s_double.c_str()), line);
     }
 

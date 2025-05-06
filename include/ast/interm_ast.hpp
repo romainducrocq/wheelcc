@@ -295,9 +295,9 @@ struct TacFunCall : TacInstruction {
 struct TacUnary : TacInstruction {
     AST_T type() override;
     TacUnary() = default;
-    TacUnary(std::unique_ptr<TacUnaryOp> unary_op, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacUnary(std::unique_ptr<TacUnaryOp> unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
 
-    std::unique_ptr<TacUnaryOp> unary_op;
+    std::unique_ptr<TacUnaryOp> unop;
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
 };
@@ -305,10 +305,10 @@ struct TacUnary : TacInstruction {
 struct TacBinary : TacInstruction {
     AST_T type() override;
     TacBinary() = default;
-    TacBinary(std::unique_ptr<TacBinaryOp> binary_op, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2,
+    TacBinary(std::unique_ptr<TacBinaryOp> binop, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2,
         std::shared_ptr<TacValue> dst);
 
-    std::unique_ptr<TacBinaryOp> binary_op;
+    std::unique_ptr<TacBinaryOp> binop;
     std::shared_ptr<TacValue> src1;
     std::shared_ptr<TacValue> src2;
     std::shared_ptr<TacValue> dst;
@@ -354,11 +354,11 @@ struct TacAddPtr : TacInstruction {
     AST_T type() override;
     TacAddPtr() = default;
     TacAddPtr(
-        TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> index, std::shared_ptr<TacValue> dst);
+        TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> idx, std::shared_ptr<TacValue> dst);
 
     TLong scale;
     std::shared_ptr<TacValue> src_ptr;
-    std::shared_ptr<TacValue> index;
+    std::shared_ptr<TacValue> idx;
     std::shared_ptr<TacValue> dst;
 };
 
@@ -428,11 +428,11 @@ struct TacTopLevel : Ast {
 struct TacFunction : TacTopLevel {
     AST_T type() override;
     TacFunction() = default;
-    TacFunction(TIdentifier name, bool is_global, std::vector<TIdentifier> params,
+    TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier> params,
         std::vector<std::unique_ptr<TacInstruction>> body);
 
     TIdentifier name;
-    bool is_global;
+    bool is_glob;
     std::vector<TIdentifier> params;
     std::vector<std::unique_ptr<TacInstruction>> body;
 };
@@ -440,11 +440,11 @@ struct TacFunction : TacTopLevel {
 struct TacStaticVariable : TacTopLevel {
     AST_T type() override;
     TacStaticVariable() = default;
-    TacStaticVariable(TIdentifier name, bool is_global, std::shared_ptr<Type> static_init_type,
+    TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type,
         std::vector<std::shared_ptr<StaticInit>> static_inits);
 
     TIdentifier name;
-    bool is_global;
+    bool is_glob;
     std::shared_ptr<Type> static_init_type;
     std::vector<std::shared_ptr<StaticInit>> static_inits;
 };
