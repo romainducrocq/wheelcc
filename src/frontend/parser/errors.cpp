@@ -13,7 +13,7 @@
 
 // Errors
 
-std::string fmt_tok_kind(TOKEN_KIND token_kind) {
+std::string get_tok_kind_fmt(TOKEN_KIND token_kind) {
     switch (token_kind) {
         case TOK_assign_shiftleft:
             return "<<=";
@@ -174,22 +174,22 @@ std::string fmt_tok_kind(TOKEN_KIND token_kind) {
     }
 }
 
-std::string fmt_name(TIdentifier name) {
+std::string get_name_fmt(TIdentifier name) {
     return identifiers->hash_table[name].substr(0, identifiers->hash_table[name].find(UID_SEPARATOR[0]));
 }
 
-std::string fmt_struct_name(TIdentifier name, bool is_union) {
+std::string get_struct_name_fmt(TIdentifier name, bool is_union) {
     std::string type_hr = is_union ? "union " : "struct ";
-    type_hr += fmt_name(name);
+    type_hr += get_name_fmt(name);
     return type_hr;
 }
 
-static std::string fmt_fun(FunType* fun_type) {
+static std::string get_fun_fmt(FunType* fun_type) {
     std::string type_hr = "(";
-    type_hr += fmt_type(fun_type->ret_type.get());
+    type_hr += get_type_fmt(fun_type->ret_type.get());
     type_hr += ")(";
     for (const auto& param_type : fun_type->param_types) {
-        type_hr += fmt_type(param_type.get());
+        type_hr += get_type_fmt(param_type.get());
         type_hr += ", ";
     }
     if (!fun_type->param_types.empty()) {
@@ -200,18 +200,18 @@ static std::string fmt_fun(FunType* fun_type) {
     return type_hr;
 }
 
-static std::string fmt_ptr(Pointer* ptr_type) {
+static std::string get_ptr_fmt(Pointer* ptr_type) {
     std::string decl_type_hr = "*";
     while (ptr_type->ref_type->type() == AST_Pointer_t) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
         decl_type_hr += "*";
     }
-    std::string type_hr = fmt_type(ptr_type->ref_type.get());
+    std::string type_hr = get_type_fmt(ptr_type->ref_type.get());
     type_hr += decl_type_hr;
     return type_hr;
 }
 
-static std::string fmt_arr(Array* arr_type) {
+static std::string get_arr_fmt(Array* arr_type) {
     std::string decl_type_hr = "[";
     decl_type_hr += std::to_string(arr_type->size);
     decl_type_hr += "]";
@@ -221,16 +221,16 @@ static std::string fmt_arr(Array* arr_type) {
         decl_type_hr += std::to_string(arr_type->size);
         decl_type_hr += "]";
     }
-    std::string type_hr = fmt_type(arr_type->elem_type.get());
+    std::string type_hr = get_type_fmt(arr_type->elem_type.get());
     type_hr += decl_type_hr;
     return type_hr;
 }
 
-static std::string fmt_struct(Structure* struct_type) {
-    return fmt_struct_name(struct_type->tag, struct_type->is_union);
+static std::string get_struct_fmt(Structure* struct_type) {
+    return get_struct_name_fmt(struct_type->tag, struct_type->is_union);
 }
 
-std::string fmt_type(Type* type) {
+std::string get_type_fmt(Type* type) {
     switch (type->type()) {
         case AST_Char_t:
             return "char";
@@ -251,19 +251,19 @@ std::string fmt_type(Type* type) {
         case AST_Void_t:
             return "void";
         case AST_FunType_t:
-            return fmt_fun(static_cast<FunType*>(type));
+            return get_fun_fmt(static_cast<FunType*>(type));
         case AST_Pointer_t:
-            return fmt_ptr(static_cast<Pointer*>(type));
+            return get_ptr_fmt(static_cast<Pointer*>(type));
         case AST_Array_t:
-            return fmt_arr(static_cast<Array*>(type));
+            return get_arr_fmt(static_cast<Array*>(type));
         case AST_Structure_t:
-            return fmt_struct(static_cast<Structure*>(type));
+            return get_struct_fmt(static_cast<Structure*>(type));
         default:
             RAISE_INTERNAL_ERROR;
     }
 }
 
-std::string fmt_const(CConst* node) {
+std::string get_const_fmt(CConst* node) {
     switch (node->type()) {
         case AST_CConstInt_t:
             return "int";
@@ -284,7 +284,7 @@ std::string fmt_const(CConst* node) {
     }
 }
 
-std::string fmt_storage_class(CStorageClass* node) {
+std::string get_storage_class_fmt(CStorageClass* node) {
     switch (node->type()) {
         case AST_CStatic_t:
             return "static";
@@ -295,7 +295,7 @@ std::string fmt_storage_class(CStorageClass* node) {
     }
 }
 
-std::string fmt_unop(CUnaryOp* node) {
+std::string get_unop_fmt(CUnaryOp* node) {
     switch (node->type()) {
         case AST_CComplement_t:
             return "~";
@@ -308,7 +308,7 @@ std::string fmt_unop(CUnaryOp* node) {
     }
 }
 
-std::string fmt_binop(CBinaryOp* node) {
+std::string get_binop_fmt(CBinaryOp* node) {
     switch (node->type()) {
         case AST_CAdd_t:
             return "+";
@@ -353,7 +353,7 @@ std::string fmt_binop(CBinaryOp* node) {
     }
 }
 
-std::string fmt_assign(CBinaryOp* node, CUnaryOp* unary_op) {
+std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op) {
     if (!node) {
         return "=";
     }

@@ -28,11 +28,11 @@ void pprint_toks(const std::vector<Token>& tokens) {
     std::cout << "\nList[" << std::to_string(tokens.size()) << "]:";
     for (const auto& token : tokens) {
         std::cout << "\n  ";
-        if (token.token.compare(fmt_tok_kind(token.token_kind)) == 0) {
+        if (token.token.compare(get_tok_kind_fmt(token.token_kind)) == 0) {
             std::cout << token.token;
             continue;
         }
-        std::cout << fmt_tok_kind(token.token_kind) << "(" << token.token << ")";
+        std::cout << get_tok_kind_fmt(token.token_kind) << "(" << token.token << ")";
     }
     std::cout << std::endl;
 }

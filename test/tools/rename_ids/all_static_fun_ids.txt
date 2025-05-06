@@ -336,10 +336,10 @@ fix_program
 fix_push_instr
 fix_toplvl
 fix_zero_extend_instr
-fmt_arr
-fmt_fun
-fmt_ptr
-fmt_struct
+get_arr_fmt
+get_fun_fmt
+get_ptr_fmt
+get_struct_fmt
 fold_binary_const
 fold_binary_dbl_const
 fold_binary_instr
