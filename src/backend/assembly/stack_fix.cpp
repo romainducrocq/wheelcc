@@ -993,7 +993,7 @@ static void fix_instr(AsmInstruction* node) {
     }
 }
 
-static void fun_toplvl(AsmFunction* node) {
+static void fix_fun_toplvl(AsmFunction* node) {
     std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
     BackendFun* backend_fun = static_cast<BackendFun*>(backend->symbol_table[node->name].get());
 
@@ -1032,7 +1032,7 @@ static void fun_toplvl(AsmFunction* node) {
 static void fix_toplvl(AsmTopLevel* node) {
     switch (node->type()) {
         case AST_AsmFunction_t:
-            fun_toplvl(static_cast<AsmFunction*>(node));
+            fix_fun_toplvl(static_cast<AsmFunction*>(node));
             break;
         case AST_AsmStaticVariable_t:
             break;

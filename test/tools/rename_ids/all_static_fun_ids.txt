@@ -327,6 +327,7 @@ fix_cmp_instr
 fix_cvtsi2sd_instr
 fix_cvttsd2si_instr
 fix_div_instr
+fix_fun_toplvl
 fix_idiv_instr
 fix_instr
 fix_lea_instr
@@ -336,10 +337,6 @@ fix_program
 fix_push_instr
 fix_toplvl
 fix_zero_extend_instr
-get_arr_fmt
-get_fun_fmt
-get_ptr_fmt
-get_struct_fmt
 fold_binary_const
 fold_binary_dbl_const
 fold_binary_instr
@@ -399,7 +396,6 @@ free_fileio
 fun_decl_toplvl
 fun_param_reg_mask
 fun_param_toplvl
-fun_toplvl
 gen_asm_type
 gen_binop
 gen_fun_toplvl
@@ -416,6 +412,7 @@ gen_unop
 gen_unsigned_cond_code
 getaddr_instr
 get_arr_alignment
+get_arr_fmt
 get_arr_scale
 get_coalescable_infer_regs
 get_coalesced_idx
@@ -431,12 +428,15 @@ get_const_ulong_value
 get_dfa_bak_copy_instr
 get_dfa_bak_instr
 get_dfa_data_idx
+get_fun_fmt
 get_joint_ptr_type
 get_joint_type
 get_op_reg_kind
+get_ptr_fmt
 get_scalar_alignment
 get_scalar_size
 get_struct_alignment
+get_struct_fmt
 get_struct_scale
 get_tok_precedence
 get_type_alignment
@@ -607,8 +607,8 @@ parse_fun_decl
 parse_fun_declaration
 parse_fun_decltor_suffix
 parse_goto_statement
-parse_identifier
 parse_ident_decltor
+parse_identifier
 parse_if_statement
 parse_incr_unary_factor
 parse_initializer
