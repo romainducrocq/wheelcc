@@ -556,7 +556,7 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
                          ", but expected \033[1m‘void’\033[0m, \033[1m‘char’\033[0m, \033[1m‘int’\033[0m, "
                          "\033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘struct’\033[0m or \033[1m‘union’\033[0m next";
-        case MSG_non_auto_member_decl:
+        case MSG_member_decl_not_auto:
             RETURN_ERRNO "data structure type declared with member " EM_VARG " with " EM_VARG " storage class";
         case MSG_member_decl_as_fun:
             RETURN_ERRNO "data structure type declared with member " EM_VARG " as a function";
@@ -567,165 +567,165 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
 
 const char* get_semantic_msg(MESSAGE_SEMANTIC message) {
     switch (message) {
-        case MSG_array_of_incomplete_type:
+        case MSG_incomplete_arr:
             RETURN_ERRNO "array type " EM_VARG " of incomplete type " EM_VARG ", requires a complete type";
-        case MSG_joint_pointer_type_mismatch:
+        case MSG_joint_ptr_mismatch:
             RETURN_ERRNO "pointer type mismatch " EM_VARG " and " EM_VARG " in operator";
-        case MSG_function_used_as_variable:
+        case MSG_fun_used_as_var:
             RETURN_ERRNO "function " EM_VARG " used as a variable";
-        case MSG_illegal_conversion_from_type_to:
+        case MSG_illegal_cast:
             RETURN_ERRNO "illegal cast, cannot convert expression from type " EM_VARG " to " EM_VARG;
-        case MSG_unary_on_invalid_operand_type:
+        case MSG_invalid_unary_op:
             RETURN_ERRNO "cannot apply unary operator " EM_VARG " on operand type " EM_VARG;
-        case MSG_binary_on_invalid_operand_type:
+        case MSG_invalid_binary_op:
             RETURN_ERRNO "cannot apply binary operator " EM_VARG " on operand type " EM_VARG;
-        case MSG_binary_on_invalid_operand_types:
+        case MSG_invalid_binary_ops:
             RETURN_ERRNO "cannot apply binary operator " EM_VARG " on operand types " EM_VARG " and " EM_VARG;
-        case MSG_assignment_to_void_type:
+        case MSG_assign_to_void:
             RETURN_ERRNO "cannot assign \033[1m‘=’\033[0m to left operand type \033[1m‘void’\033[0m";
-        case MSG_assignment_to_rvalue:
+        case MSG_assign_to_rvalue:
             RETURN_ERRNO "assignment " EM_VARG " requires lvalue left operand, but got rvalue";
-        case MSG_conditional_on_invalid_condition_type:
+        case MSG_invalid_condition:
             RETURN_ERRNO "cannot apply conditional \033[1m‘?’\033[0m on condition operand type " EM_VARG;
-        case MSG_ternary_on_invalid_operand_types:
+        case MSG_invalid_ternary_op:
             RETURN_ERRNO "cannot apply ternary operator \033[1m‘:’\033[0m on operand types " EM_VARG " and " EM_VARG;
-        case MSG_variable_used_as_function:
+        case MSG_var_used_as_fun:
             RETURN_ERRNO "variable " EM_VARG " used as a function";
-        case MSG_function_called_with_wrong_number_of_arguments:
+        case MSG_call_with_wrong_argc:
             RETURN_ERRNO "function " EM_VARG " called with " EM_VARG " arguments instead of " EM_VARG;
-        case MSG_dereference_non_pointer:
+        case MSG_deref_not_ptr:
             RETURN_ERRNO "cannot apply dereference operator \033[1m‘*’\033[0m on non-pointer type " EM_VARG;
-        case MSG_address_of_rvalue:
+        case MSG_addrof_rvalue:
             RETURN_ERRNO "addresssing \033[1m‘&’\033[0m requires lvalue operand, but got rvalue";
-        case MSG_subscript_array_with_invalid_types:
+        case MSG_invalid_subscript:
             RETURN_ERRNO "cannot subscript array with operand types " EM_VARG " and " EM_VARG
                          ", requires a complete pointer and an integer types";
-        case MSG_get_size_of_incomplete_type:
+        case MSG_sizeof_incomplete:
             RETURN_ERRNO "cannot get size with \033[1m‘sizeof’\033[0m operator on incomplete type " EM_VARG;
-        case MSG_dot_on_non_structure_type:
+        case MSG_dot_not_struct:
             RETURN_ERRNO "cannot access data structure member " EM_VARG
                          " with dot operator \033[1m‘.’\033[0m on non-data structure type " EM_VARG;
-        case MSG_member_not_in_structure_type:
+        case MSG_member_not_in_struct:
             RETURN_ERRNO "data structure type " EM_VARG " has no member named " EM_VARG;
-        case MSG_arrow_on_non_pointer_to_structure_type:
+        case MSG_arrow_not_struct_ptr:
             RETURN_ERRNO "cannot access data structure member " EM_VARG
                          " with arrow operator \033[1m‘->’\033[0m on non-pointer-to-data structure type " EM_VARG;
-        case MSG_arrow_on_incomplete_structure_type:
+        case MSG_arrow_incomplete:
             RETURN_ERRNO "cannot access data structure member " EM_VARG
                          " with arrow operator \033[1m‘->’\033[0m on incomplete data structure type " EM_VARG;
-        case MSG_incomplete_structure_type_in_expression:
+        case MSG_exp_incomplete:
             RETURN_ERRNO "incomplete data structure type " EM_VARG " in expression";
-        case MSG_return_value_in_void_function:
+        case MSG_ret_value_in_void_fun:
             RETURN_ERRNO "found \033[1m‘return’\033[0m value in function " EM_VARG
                          " returning type \033[1m‘void’\033[0m";
-        case MSG_no_return_value_in_non_void_function:
+        case MSG_no_ret_value_in_fun:
             RETURN_ERRNO "found \033[1m‘return’\033[0m with no value in function " EM_VARG " returning type " EM_VARG;
-        case MSG_if_used_with_condition_type:
+        case MSG_invalid_if:
             RETURN_ERRNO "cannot use \033[1m‘if’\033[0m statement with condition expression type " EM_VARG;
-        case MSG_while_used_with_condition_type:
+        case MSG_invalid_while:
             RETURN_ERRNO "cannot use \033[1m‘while’\033[0m loop statement with condition expression type " EM_VARG;
-        case MSG_do_while_used_with_condition_type:
+        case MSG_invalid_do_while:
             RETURN_ERRNO "cannot use \033[1m‘do while’\033[0m loop statement with condition expression type " EM_VARG;
-        case MSG_for_used_with_condition_type:
+        case MSG_invalid_for:
             RETURN_ERRNO "cannot use \033[1m‘for’\033[0m loop statement with condition expression type " EM_VARG;
-        case MSG_switch_used_with_match_type:
+        case MSG_invalid_switch:
             RETURN_ERRNO "cannot use \033[1m‘switch’\033[0m statement with match expression type " EM_VARG
                          ", requires an integer type";
-        case MSG_duplicate_case_value_in_switch:
+        case MSG_duplicate_case_value:
             RETURN_ERRNO "found duplicate \033[1m‘case’\033[0m value " EM_VARG " in \033[1m‘switch’\033[0m statement";
-        case MSG_non_char_array_initialized_from_string:
+        case MSG_string_init_not_char_arr:
             RETURN_ERRNO "non-character array type " EM_VARG " initialized from string literal";
-        case MSG_string_initialized_with_too_many_characters:
+        case MSG_string_init_overflow:
             RETURN_ERRNO "size " EM_VARG " string literal initialized with " EM_VARG " characters";
-        case MSG_array_initialized_with_too_many_initializers:
+        case MSG_arr_init_overflow:
             RETURN_ERRNO "size " EM_VARG " array type " EM_VARG " initialized with " EM_VARG " initializers";
-        case MSG_structure_initialized_with_too_many_members:
+        case MSG_struct_init_overflow:
             RETURN_ERRNO "data structure type " EM_VARG " initialized with " EM_VARG " members instead of " EM_VARG;
-        case MSG_function_returns_array:
+        case MSG_ret_arr:
             RETURN_ERRNO "function " EM_VARG " returns array type " EM_VARG ", instead of pointer type";
-        case MSG_function_returns_incomplete_structure_type:
+        case MSG_ret_incomplete:
             RETURN_ERRNO "function " EM_VARG " returns incomplete data structure type " EM_VARG;
-        case MSG_parameter_with_type_void:
+        case MSG_void_param:
             RETURN_ERRNO "function " EM_VARG " declared with parameter " EM_VARG " with type \033[1m‘void’\033[0m";
-        case MSG_parameter_with_incomplete_structure_type:
+        case MSG_incomplete_param:
             RETURN_ERRNO "function " EM_VARG " defined with parameter " EM_VARG
                          " with incomplete data structure type " EM_VARG;
-        case MSG_function_redeclared_with_conflicting_type:
+        case MSG_redecl_fun_conflict:
             RETURN_ERRNO "function " EM_VARG " redeclared with function type " EM_VARG
                          ", but previous declaration has function type " EM_VARG;
-        case MSG_function_redefined:
+        case MSG_redef_fun:
             RETURN_ERRNO "function " EM_VARG " already defined with function type " EM_VARG;
-        case MSG_non_static_function_redeclared_static:
+        case MSG_redecl_static_conflict:
             RETURN_ERRNO "function " EM_VARG " with \033[1m‘static’\033[0m storage class already declared non-static";
-        case MSG_static_pointer_initialized_from_non_integer:
+        case MSG_static_ptr_init_not_int:
             RETURN_ERRNO "cannot statically initialize pointer type " EM_VARG " from constant " EM_VARG
                          ", requires a constant integer";
-        case MSG_static_pointer_initialized_from_non_null:
+        case MSG_static_ptr_init_not_null:
             RETURN_ERRNO "cannot statically initialize pointer type " EM_VARG " from non-null value " EM_VARG;
-        case MSG_aggregate_initialized_with_single_initializer:
+        case MSG_agg_init_with_single:
             RETURN_ERRNO "aggregate type " EM_VARG " statically initialized with single initializer";
-        case MSG_static_non_char_pointer_initialized_from_string:
+        case MSG_static_ptr_init_string:
             RETURN_ERRNO "non-character pointer type " EM_VARG " statically initialized from string literal";
-        case MSG_static_initialized_with_non_constant:
+        case MSG_static_init_not_const:
             RETURN_ERRNO "cannot statically initialize variable from non-constant type " EM_VARG
                          ", requires a constant";
-        case MSG_scalar_initialized_with_compound_initializer:
+        case MSG_scalar_init_with_compound:
             RETURN_ERRNO "cannot initialize scalar type " EM_VARG " with compound initializer";
-        case MSG_variable_declared_with_type_void:
+        case MSG_void_var_decl:
             RETURN_ERRNO "variable " EM_VARG " declared with type \033[1m‘void’\033[0m";
-        case MSG_variable_declared_with_incomplete_structure_type:
+        case MSG_incomplete_var_decl:
             RETURN_ERRNO "variable " EM_VARG " declared with incomplete data structure type " EM_VARG;
-        case MSG_variable_redeclared_with_conflicting_type:
+        case MSG_redecl_var_conflict:
             RETURN_ERRNO "variable " EM_VARG " redeclared with conflicting type " EM_VARG
                          ", but previously declared with type " EM_VARG;
-        case MSG_variable_redeclared_with_conflicting_storage:
+        case MSG_redecl_var_storage:
             RETURN_ERRNO "variable " EM_VARG " redeclared with conflicting storage class";
-        case MSG_extern_variable_defined:
+        case MSG_redef_extern_var:
             RETURN_ERRNO "illegal initializer, can only declare variable " EM_VARG
                          " with \033[1m‘extern’\033[0m storage class";
-        case MSG_structure_declared_with_duplicate_member:
+        case MSG_duplicate_member_decl:
             RETURN_ERRNO "data structure type " EM_VARG " declared with duplicate member name " EM_VARG;
-        case MSG_member_declared_with_incomplete_type:
+        case MSG_incomplete_member_decl:
             RETURN_ERRNO "data structure type " EM_VARG " declared with member " EM_VARG
                          " with incomplete type " EM_VARG;
-        case MSG_structure_redeclared_in_scope:
+        case MSG_redecl_struct_in_scope:
             RETURN_ERRNO "data structure type " EM_VARG " already declared in this scope";
-        case MSG_case_outside_of_switch:
+        case MSG_case_out_of_switch:
             RETURN_ERRNO "found \033[1m‘case’\033[0m statement outside of \033[1m‘switch’\033[0m";
-        case MSG_default_outside_of_switch:
+        case MSG_default_out_of_switch:
             RETURN_ERRNO "found \033[1m‘default’\033[0m statement outside of \033[1m‘switch’\033[0m";
-        case MSG_more_than_one_default_in_switch:
+        case MSG_multiple_default:
             RETURN_ERRNO "found more than one \033[1m‘default’\033[0m statement in \033[1m‘switch’\033[0m";
-        case MSG_break_outside_of_loop:
+        case MSG_break_out_of_loop:
             RETURN_ERRNO "found \033[1m‘break’\033[0m statement outside of loop";
-        case MSG_continue_outside_of_loop:
+        case MSG_continue_out_of_loop:
             RETURN_ERRNO "found \033[1m‘continue’\033[0m statement outside of loop";
-        case MSG_goto_with_undefined_target_label:
+        case MSG_undef_goto_target:
             RETURN_ERRNO "found \033[1m‘goto’\033[0m statement, but target label " EM_VARG
                          " not defined in function " EM_VARG;
-        case MSG_structure_conflicts_with_previously_declared:
+        case MSG_redecl_struct_conflict:
             RETURN_ERRNO EM_VARG " conflicts with data structure type " EM_VARG
                                  " previously declared or defined in this scope";
-        case MSG_structure_not_defined_in_scope:
+        case MSG_undef_struct_in_scope:
             RETURN_ERRNO "data structure type " EM_VARG " not defined in this scope";
-        case MSG_variable_not_declared_in_scope:
+        case MSG_undecl_var_in_scope:
             RETURN_ERRNO "variable " EM_VARG " not declared in this scope";
-        case MSG_function_not_declared_in_scope:
+        case MSG_undecl_fun_in_scope:
             RETURN_ERRNO "function " EM_VARG " not declared in this scope";
-        case MSG_for_initial_declared_with_non_automatic_storage:
+        case MSG_for_init_decl_not_auto:
             RETURN_ERRNO "variable " EM_VARG " declared with " EM_VARG
                          " storage class in \033[1m‘for’\033[0m loop initial declaration";
-        case MSG_label_redefined_in_scope:
+        case MSG_redef_label_in_scope:
             RETURN_ERRNO "label " EM_VARG " already defined in this scope";
-        case MSG_variable_redeclared_in_scope:
+        case MSG_redecl_var_in_scope:
             RETURN_ERRNO "variable " EM_VARG " already declared in this scope";
-        case MSG_nested_function_defined:
+        case MSG_def_nested_fun:
             RETURN_ERRNO "function " EM_VARG
                          " defined inside another function, but nested function definition are not permitted";
-        case MSG_nested_static_function_declared:
+        case MSG_decl_nested_static_fun:
             RETURN_ERRNO "cannot declare nested function " EM_VARG
                          " in another function with \033[1m‘static’\033[0m storage class";
-        case MSG_function_redeclared_in_scope:
+        case MSG_redecl_fun_in_scope:
             RETURN_ERRNO "function " EM_VARG " already declared in this scope";
         default:
             RAISE_INTERNAL_ERROR;

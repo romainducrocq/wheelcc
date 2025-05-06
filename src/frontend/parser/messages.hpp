@@ -33,7 +33,7 @@ enum MESSAGE_PARSER {
     MSG_derived_fun_decl,
     MSG_expect_simple_decltor,
     MSG_expect_param_list,
-    MSG_non_auto_member_decl,
+    MSG_member_decl_not_auto,
     MSG_member_decl_as_fun
 };
 

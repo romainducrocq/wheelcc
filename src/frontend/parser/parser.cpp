@@ -1632,7 +1632,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
         std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
         if (storage_class) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_non_auto_member_decl, identifiers->hash_table[declarator.name].c_str(),
+                GET_PARSER_MSG(MSG_member_decl_not_auto, identifiers->hash_table[declarator.name].c_str(),
                     fmt_storage_class_c_str(storage_class.get())),
                 context->next_token->line);
         }
