@@ -1472,7 +1472,7 @@ static void proc_decltor(CDeclarator* node, std::shared_ptr<Type> base_type, Dec
     }
 }
 
-static std::unique_ptr<CIdent> parse_ident_simple_decltor() {
+static std::unique_ptr<CIdent> parse_ident_decltor() {
     TIdentifier name = parse_identifier(0);
     return std::make_unique<CIdent>(std::move(name));
 }
@@ -1488,7 +1488,7 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor() {
 static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
     switch (peek_next().token_kind) {
         case TOK_identifier:
-            return parse_ident_simple_decltor();
+            return parse_ident_decltor();
         case TOK_open_paren:
             return parse_simple_decltor();
         default:

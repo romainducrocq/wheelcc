@@ -433,7 +433,7 @@ get_dfa_bak_instr
 get_dfa_data_idx
 get_joint_ptr_type
 get_joint_type
-get_op_register_kind
+get_op_reg_kind
 get_scalar_alignment
 get_scalar_size
 get_struct_alignment
@@ -608,7 +608,7 @@ parse_fun_declaration
 parse_fun_decltor_suffix
 parse_goto_statement
 parse_identifier
-parse_ident_simple_decltor
+parse_ident_decltor
 parse_if_statement
 parse_incr_unary_factor
 parse_initializer

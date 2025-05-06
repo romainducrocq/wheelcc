@@ -915,7 +915,7 @@ static std::shared_ptr<AsmRegister> alloc_hard_reg(TIdentifier name) {
     }
 }
 
-static REGISTER_KIND get_op_register_kind(AsmOperand* node) {
+static REGISTER_KIND get_op_reg_kind(AsmOperand* node) {
     switch (node->type()) {
         case AST_AsmRegister_t:
             return register_mask_kind(static_cast<AsmRegister*>(node)->reg.get());
@@ -945,8 +945,8 @@ static REGISTER_KIND get_op_register_kind(AsmOperand* node) {
 static void alloc_mov_instr(AsmMov* node, size_t instruction_index) {
     AsmOperand* src_operand = static_cast<AsmPseudo*>(node->src.get());
     AsmOperand* dst_operand = static_cast<AsmPseudo*>(node->dst.get());
-    REGISTER_KIND src_register_kind = get_op_register_kind(src_operand);
-    REGISTER_KIND dst_register_kind = get_op_register_kind(dst_operand);
+    REGISTER_KIND src_register_kind = get_op_reg_kind(src_operand);
+    REGISTER_KIND dst_register_kind = get_op_reg_kind(dst_operand);
     if (src_register_kind != REG_Sp && src_register_kind == dst_register_kind) {
         set_instr(nullptr, instruction_index);
     }
