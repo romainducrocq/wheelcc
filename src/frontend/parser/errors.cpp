@@ -15,73 +15,73 @@
 
 std::string fmt_tok_kind(TOKEN_KIND token_kind) {
     switch (token_kind) {
-        case TOK_assignment_bitshiftleft:
+        case TOK_assign_shiftleft:
             return "<<=";
-        case TOK_assignment_bitshiftright:
+        case TOK_assign_shiftright:
             return ">>=";
-        case TOK_unop_increment:
+        case TOK_unop_incr:
             return "++";
-        case TOK_unop_decrement:
+        case TOK_unop_decr:
             return "--";
-        case TOK_binop_bitshiftleft:
+        case TOK_binop_shiftleft:
             return "<<";
-        case TOK_binop_bitshiftright:
+        case TOK_binop_shiftright:
             return ">>";
         case TOK_binop_and:
             return "&&";
         case TOK_binop_or:
             return "||";
-        case TOK_binop_equalto:
+        case TOK_binop_eq:
             return "==";
-        case TOK_binop_notequal:
+        case TOK_binop_ne:
             return "!=";
-        case TOK_binop_lessthanorequal:
+        case TOK_binop_le:
             return "<=";
-        case TOK_binop_greaterthanorequal:
+        case TOK_binop_ge:
             return ">=";
-        case TOK_assignment_plus:
+        case TOK_assign_add:
             return "+=";
-        case TOK_assignment_difference:
+        case TOK_assign_subtract:
             return "-=";
-        case TOK_assignment_product:
+        case TOK_assign_multiply:
             return "*=";
-        case TOK_assignment_quotient:
+        case TOK_assign_divide:
             return "/=";
-        case TOK_assignment_remainder:
+        case TOK_assign_remainder:
             return "%=";
-        case TOK_assignment_bitand:
+        case TOK_assign_bitand:
             return "&=";
-        case TOK_assignment_bitor:
+        case TOK_assign_bitor:
             return "|=";
-        case TOK_assignment_bitxor:
+        case TOK_assign_xor:
             return "^=";
-        case TOK_structop_pointer:
+        case TOK_structop_ptr:
             return "->";
-        case TOK_parenthesis_open:
+        case TOK_open_paren:
             return "(";
-        case TOK_parenthesis_close:
+        case TOK_close_paren:
             return ")";
-        case TOK_brace_open:
+        case TOK_open_brace:
             return "{";
-        case TOK_brace_close:
+        case TOK_close_brace:
             return "}";
-        case TOK_brackets_open:
+        case TOK_open_bracket:
             return "[";
-        case TOK_brackets_close:
+        case TOK_close_bracket:
             return "]";
         case TOK_semicolon:
             return ";";
         case TOK_unop_complement:
             return "~";
-        case TOK_unop_negation:
+        case TOK_unop_neg:
             return "-";
         case TOK_unop_not:
             return "!";
-        case TOK_binop_addition:
+        case TOK_binop_add:
             return "+";
-        case TOK_binop_multiplication:
+        case TOK_binop_multiply:
             return "*";
-        case TOK_binop_division:
+        case TOK_binop_divide:
             return "/";
         case TOK_binop_remainder:
             return "%";
@@ -89,19 +89,19 @@ std::string fmt_tok_kind(TOKEN_KIND token_kind) {
             return "&";
         case TOK_binop_bitor:
             return "|";
-        case TOK_binop_bitxor:
+        case TOK_binop_xor:
             return "^";
-        case TOK_binop_lessthan:
+        case TOK_binop_lt:
             return "<";
-        case TOK_binop_greaterthan:
+        case TOK_binop_gt:
             return ">";
-        case TOK_assignment_simple:
+        case TOK_assign:
             return "=";
         case TOK_ternary_if:
             return "?";
         case TOK_ternary_else:
             return ":";
-        case TOK_separator_comma:
+        case TOK_comma_separator:
             return ",";
         case TOK_structop_member:
             return ".";
@@ -157,17 +157,17 @@ std::string fmt_tok_kind(TOKEN_KIND token_kind) {
             return "identifier";
         case TOK_string_literal:
             return "string literal";
-        case TOK_char_constant:
+        case TOK_char_const:
             return "const char";
-        case TOK_constant:
+        case TOK_int_const:
             return "const int";
-        case TOK_long_constant:
+        case TOK_long_const:
             return "const long";
-        case TOK_unsigned_constant:
+        case TOK_uint_const:
             return "const unsigned int";
-        case TOK_unsigned_long_constant:
+        case TOK_ulong_const:
             return "const unsigned long";
-        case TOK_float_constant:
+        case TOK_dbl_const:
             return "const double";
         default:
             RAISE_INTERNAL_ERROR;

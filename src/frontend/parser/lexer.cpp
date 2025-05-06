@@ -94,56 +94,56 @@ static void
 {
     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOK_skip)
 
-    RE_MATCH_TOKEN(R"(<<=)", TOK_assignment_bitshiftleft)
-    RE_MATCH_TOKEN(R"(>>=)", TOK_assignment_bitshiftright)
+    RE_MATCH_TOKEN(R"(<<=)", TOK_assign_shiftleft)
+    RE_MATCH_TOKEN(R"(>>=)", TOK_assign_shiftright)
 
-    RE_MATCH_TOKEN(R"(\+\+)", TOK_unop_increment)
-    RE_MATCH_TOKEN(R"(--)", TOK_unop_decrement)
-    RE_MATCH_TOKEN(R"(<<)", TOK_binop_bitshiftleft)
-    RE_MATCH_TOKEN(R"(>>)", TOK_binop_bitshiftright)
+    RE_MATCH_TOKEN(R"(\+\+)", TOK_unop_incr)
+    RE_MATCH_TOKEN(R"(--)", TOK_unop_decr)
+    RE_MATCH_TOKEN(R"(<<)", TOK_binop_shiftleft)
+    RE_MATCH_TOKEN(R"(>>)", TOK_binop_shiftright)
     RE_MATCH_TOKEN(R"(&&)", TOK_binop_and)
     RE_MATCH_TOKEN(R"(\|\|)", TOK_binop_or)
-    RE_MATCH_TOKEN(R"(==)", TOK_binop_equalto)
-    RE_MATCH_TOKEN(R"(!=)", TOK_binop_notequal)
-    RE_MATCH_TOKEN(R"(<=)", TOK_binop_lessthanorequal)
-    RE_MATCH_TOKEN(R"(>=)", TOK_binop_greaterthanorequal)
-    RE_MATCH_TOKEN(R"(\+=)", TOK_assignment_plus)
-    RE_MATCH_TOKEN(R"(-=)", TOK_assignment_difference)
-    RE_MATCH_TOKEN(R"(\*=)", TOK_assignment_product)
-    RE_MATCH_TOKEN(R"(/=)", TOK_assignment_quotient)
-    RE_MATCH_TOKEN(R"(%=)", TOK_assignment_remainder)
-    RE_MATCH_TOKEN(R"(&=)", TOK_assignment_bitand)
-    RE_MATCH_TOKEN(R"(\|=)", TOK_assignment_bitor)
-    RE_MATCH_TOKEN(R"(\^=)", TOK_assignment_bitxor)
-    RE_MATCH_TOKEN(R"(->)", TOK_structop_pointer)
+    RE_MATCH_TOKEN(R"(==)", TOK_binop_eq)
+    RE_MATCH_TOKEN(R"(!=)", TOK_binop_ne)
+    RE_MATCH_TOKEN(R"(<=)", TOK_binop_le)
+    RE_MATCH_TOKEN(R"(>=)", TOK_binop_ge)
+    RE_MATCH_TOKEN(R"(\+=)", TOK_assign_add)
+    RE_MATCH_TOKEN(R"(-=)", TOK_assign_subtract)
+    RE_MATCH_TOKEN(R"(\*=)", TOK_assign_multiply)
+    RE_MATCH_TOKEN(R"(/=)", TOK_assign_divide)
+    RE_MATCH_TOKEN(R"(%=)", TOK_assign_remainder)
+    RE_MATCH_TOKEN(R"(&=)", TOK_assign_bitand)
+    RE_MATCH_TOKEN(R"(\|=)", TOK_assign_bitor)
+    RE_MATCH_TOKEN(R"(\^=)", TOK_assign_xor)
+    RE_MATCH_TOKEN(R"(->)", TOK_structop_ptr)
 
-    RE_MATCH_TOKEN(R"(//)", TOK_comment_singleline)
-    RE_MATCH_TOKEN(R"(/\*)", TOK_comment_multilinestart)
-    RE_MATCH_TOKEN(R"(\*/)", TOK_comment_multilineend)
+    RE_MATCH_TOKEN(R"(//)", TOK_comment_line)
+    RE_MATCH_TOKEN(R"(/\*)", TOK_comment_start)
+    RE_MATCH_TOKEN(R"(\*/)", TOK_comment_end)
 
-    RE_MATCH_TOKEN(R"(\()", TOK_parenthesis_open)
-    RE_MATCH_TOKEN(R"(\))", TOK_parenthesis_close)
-    RE_MATCH_TOKEN(R"(\{)", TOK_brace_open)
-    RE_MATCH_TOKEN(R"(\})", TOK_brace_close)
-    RE_MATCH_TOKEN(R"(\[)", TOK_brackets_open)
-    RE_MATCH_TOKEN(R"(\])", TOK_brackets_close)
+    RE_MATCH_TOKEN(R"(\()", TOK_open_paren)
+    RE_MATCH_TOKEN(R"(\))", TOK_close_paren)
+    RE_MATCH_TOKEN(R"(\{)", TOK_open_brace)
+    RE_MATCH_TOKEN(R"(\})", TOK_close_brace)
+    RE_MATCH_TOKEN(R"(\[)", TOK_open_bracket)
+    RE_MATCH_TOKEN(R"(\])", TOK_close_bracket)
     RE_MATCH_TOKEN(R"(;)", TOK_semicolon)
     RE_MATCH_TOKEN(R"(~)", TOK_unop_complement)
-    RE_MATCH_TOKEN(R"(-)", TOK_unop_negation)
+    RE_MATCH_TOKEN(R"(-)", TOK_unop_neg)
     RE_MATCH_TOKEN(R"(!)", TOK_unop_not)
-    RE_MATCH_TOKEN(R"(\+)", TOK_binop_addition)
-    RE_MATCH_TOKEN(R"(\*)", TOK_binop_multiplication)
-    RE_MATCH_TOKEN(R"(/)", TOK_binop_division)
+    RE_MATCH_TOKEN(R"(\+)", TOK_binop_add)
+    RE_MATCH_TOKEN(R"(\*)", TOK_binop_multiply)
+    RE_MATCH_TOKEN(R"(/)", TOK_binop_divide)
     RE_MATCH_TOKEN(R"(%)", TOK_binop_remainder)
     RE_MATCH_TOKEN(R"(&)", TOK_binop_bitand)
     RE_MATCH_TOKEN(R"(\|)", TOK_binop_bitor)
-    RE_MATCH_TOKEN(R"(\^)", TOK_binop_bitxor)
-    RE_MATCH_TOKEN(R"(<)", TOK_binop_lessthan)
-    RE_MATCH_TOKEN(R"(>)", TOK_binop_greaterthan)
-    RE_MATCH_TOKEN(R"(=)", TOK_assignment_simple)
+    RE_MATCH_TOKEN(R"(\^)", TOK_binop_xor)
+    RE_MATCH_TOKEN(R"(<)", TOK_binop_lt)
+    RE_MATCH_TOKEN(R"(>)", TOK_binop_gt)
+    RE_MATCH_TOKEN(R"(=)", TOK_assign)
     RE_MATCH_TOKEN(R"(\?)", TOK_ternary_if)
     RE_MATCH_TOKEN(R"(:)", TOK_ternary_else)
-    RE_MATCH_TOKEN(R"(,)", TOK_separator_comma)
+    RE_MATCH_TOKEN(R"(,)", TOK_comma_separator)
     RE_MATCH_TOKEN(R"(\.(?![0-9]+))", TOK_structop_member)
 
     RE_MATCH_TOKEN(R"(char\b)", TOK_key_char)
@@ -173,16 +173,15 @@ static void
 
     RE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOK_identifier)
     RE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOK_string_literal)
-    RE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOK_char_constant)
-    RE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOK_constant)
-    RE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOK_long_constant)
-    RE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOK_unsigned_constant)
-    RE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))", TOK_unsigned_long_constant)
-    RE_MATCH_TOKEN(
-        R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))", TOK_float_constant)
+    RE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOK_char_const)
+    RE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOK_int_const)
+    RE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOK_long_const)
+    RE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOK_uint_const)
+    RE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))", TOK_ulong_const)
+    RE_MATCH_TOKEN(R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))", TOK_dbl_const)
 
-    RE_MATCH_TOKEN(R"(#\s*include\s*[<"][^>"]+\.h[>"])", TOK_include_directive)
-    RE_MATCH_TOKEN(R"(#\s*[_acdefgilmnoprstuwx]+\b)", TOK_preprocessor_directive)
+    RE_MATCH_TOKEN(R"(#\s*include\s*[<"][^>"]+\.h[>"])", TOK_include_preproc)
+    RE_MATCH_TOKEN(R"(#\s*[_acdefgilmnoprstuwx]+\b)", TOK_strip_preproc)
 
     RE_MATCH_TOKEN(R"(.)", TOK_error)
 }
@@ -224,7 +223,7 @@ static void tokenize_file() {
 #endif
 
             if (is_comment) {
-                if (context->re_match_token_kind == TOK_comment_multilineend) {
+                if (context->re_match_token_kind == TOK_comment_end) {
                     is_comment = false;
                 }
                 continue;
@@ -232,16 +231,16 @@ static void tokenize_file() {
             else {
                 switch (context->re_match_token_kind) {
                     case TOK_error:
-                    case TOK_comment_multilineend:
+                    case TOK_comment_end:
                         RAISE_RUNTIME_ERROR_AT(
                             GET_LEXER_MSG(MSG_invalid_token, context->re_match_token.c_str()), line_number);
                     case TOK_skip:
                         goto Lcontinue;
-                    case TOK_comment_multilinestart: {
+                    case TOK_comment_start: {
                         is_comment = true;
                         goto Lcontinue;
                     }
-                    case TOK_include_directive: {
+                    case TOK_include_preproc: {
 #ifdef __WITH_CTRE__
                         i += context->re_match_token.size();
 #endif
@@ -251,8 +250,8 @@ static void tokenize_file() {
 #endif
                         goto Lcontinue;
                     }
-                    case TOK_comment_singleline:
-                    case TOK_preprocessor_directive:
+                    case TOK_comment_line:
+                    case TOK_strip_preproc:
                         goto Lbreak;
                     default:
                         goto Lpass;

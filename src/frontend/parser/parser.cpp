@@ -162,12 +162,12 @@ static std::shared_ptr<CConstULong> parse_ulong_const(uintmax_t uintmax) {
 // (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double) | ConstChar(int)
 static std::shared_ptr<CConst> parse_const() {
     switch (pop_next().token_kind) {
-        case TOK_long_constant:
+        case TOK_long_const:
             context->next_token->token.pop_back();
             break;
-        case TOK_char_constant:
+        case TOK_char_const:
             return parse_char_const();
-        case TOK_float_constant:
+        case TOK_dbl_const:
             return parse_dbl_const();
         default:
             break;
@@ -179,7 +179,7 @@ static std::shared_ptr<CConst> parse_const() {
             GET_PARSER_MSG(MSG_number_too_large_for_long_constant, context->next_token->token.c_str()),
             context->next_token->line);
     }
-    if (context->next_token->token_kind == TOK_constant && value <= 2147483647l) {
+    if (context->next_token->token_kind == TOK_int_const && value <= 2147483647l) {
         return parse_int_const(std::move(value));
     }
     return parse_long_const(std::move(value));
@@ -188,7 +188,7 @@ static std::shared_ptr<CConst> parse_const() {
 // <const> ::= <unsigned int> | <unsigned long>
 // (unsigned) const = ConstUInt(uint) | ConstULong(ulong) | ConstUChar(int)
 static std::shared_ptr<CConst> parse_unsigned_const() {
-    if (pop_next().token_kind == TOK_unsigned_long_constant) {
+    if (pop_next().token_kind == TOK_ulong_const) {
         context->next_token->token.pop_back();
     }
     context->next_token->token.pop_back();
@@ -199,7 +199,7 @@ static std::shared_ptr<CConst> parse_unsigned_const() {
             GET_PARSER_MSG(MSG_number_too_large_for_unsigned_long_constant, context->next_token->token.c_str()),
             context->next_token->line);
     }
-    if (context->next_token->token_kind == TOK_unsigned_constant && value <= 4294967295ul) {
+    if (context->next_token->token_kind == TOK_uint_const && value <= 4294967295ul) {
         return parse_uint_const(std::move(value));
     }
     return parse_ulong_const(std::move(value));
@@ -209,13 +209,13 @@ static TLong parse_arr_size() {
     pop_next();
     std::shared_ptr<CConst> constant;
     switch (peek_next().token_kind) {
-        case TOK_constant:
-        case TOK_long_constant:
-        case TOK_char_constant:
+        case TOK_int_const:
+        case TOK_long_const:
+        case TOK_char_const:
             constant = parse_const();
             break;
-        case TOK_unsigned_constant:
-        case TOK_unsigned_long_constant:
+        case TOK_uint_const:
+        case TOK_ulong_const:
             constant = parse_unsigned_const();
             break;
         default:
@@ -223,7 +223,7 @@ static TLong parse_arr_size() {
                 GET_PARSER_MSG(MSG_array_size_not_a_constant_integer, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
-    expect_next(pop_next(), TOK_brackets_close);
+    expect_next(pop_next(), TOK_close_bracket);
     switch (constant->type()) {
         case AST_CConstInt_t:
             return static_cast<TLong>(static_cast<CConstInt*>(constant.get())->value);
@@ -244,7 +244,7 @@ static std::unique_ptr<CUnaryOp> parse_unop() {
     switch (pop_next().token_kind) {
         case TOK_unop_complement:
             return std::make_unique<CComplement>();
-        case TOK_unop_negation:
+        case TOK_unop_neg:
             return std::make_unique<CNegate>();
         case TOK_unop_not:
             return std::make_unique<CNot>();
@@ -262,53 +262,53 @@ static std::unique_ptr<CUnaryOp> parse_unop() {
 //                 | GreaterThan | GreaterOrEqual
 static std::unique_ptr<CBinaryOp> parse_binop() {
     switch (pop_next().token_kind) {
-        case TOK_binop_addition:
-        case TOK_assignment_plus:
-        case TOK_unop_increment:
+        case TOK_binop_add:
+        case TOK_assign_add:
+        case TOK_unop_incr:
             return std::make_unique<CAdd>();
-        case TOK_unop_negation:
-        case TOK_assignment_difference:
-        case TOK_unop_decrement:
+        case TOK_unop_neg:
+        case TOK_assign_subtract:
+        case TOK_unop_decr:
             return std::make_unique<CSubtract>();
-        case TOK_binop_multiplication:
-        case TOK_assignment_product:
+        case TOK_binop_multiply:
+        case TOK_assign_multiply:
             return std::make_unique<CMultiply>();
-        case TOK_binop_division:
-        case TOK_assignment_quotient:
+        case TOK_binop_divide:
+        case TOK_assign_divide:
             return std::make_unique<CDivide>();
         case TOK_binop_remainder:
-        case TOK_assignment_remainder:
+        case TOK_assign_remainder:
             return std::make_unique<CRemainder>();
         case TOK_binop_bitand:
-        case TOK_assignment_bitand:
+        case TOK_assign_bitand:
             return std::make_unique<CBitAnd>();
         case TOK_binop_bitor:
-        case TOK_assignment_bitor:
+        case TOK_assign_bitor:
             return std::make_unique<CBitOr>();
-        case TOK_binop_bitxor:
-        case TOK_assignment_bitxor:
+        case TOK_binop_xor:
+        case TOK_assign_xor:
             return std::make_unique<CBitXor>();
-        case TOK_binop_bitshiftleft:
-        case TOK_assignment_bitshiftleft:
+        case TOK_binop_shiftleft:
+        case TOK_assign_shiftleft:
             return std::make_unique<CBitShiftLeft>();
-        case TOK_binop_bitshiftright:
-        case TOK_assignment_bitshiftright:
+        case TOK_binop_shiftright:
+        case TOK_assign_shiftright:
             return std::make_unique<CBitShiftRight>();
         case TOK_binop_and:
             return std::make_unique<CAnd>();
         case TOK_binop_or:
             return std::make_unique<COr>();
-        case TOK_binop_equalto:
+        case TOK_binop_eq:
             return std::make_unique<CEqual>();
-        case TOK_binop_notequal:
+        case TOK_binop_ne:
             return std::make_unique<CNotEqual>();
-        case TOK_binop_lessthan:
+        case TOK_binop_lt:
             return std::make_unique<CLessThan>();
-        case TOK_binop_lessthanorequal:
+        case TOK_binop_le:
             return std::make_unique<CLessOrEqual>();
-        case TOK_binop_greaterthan:
+        case TOK_binop_gt:
             return std::make_unique<CGreaterThan>();
-        case TOK_binop_greaterthanorequal:
+        case TOK_binop_ge:
             return std::make_unique<CGreaterOrEqual>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
@@ -363,7 +363,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
         TLong size = parse_arr_size();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
     }
-    while (peek_next().token_kind == TOK_brackets_open);
+    while (peek_next().token_kind == TOK_open_bracket);
     return abstract_declarator;
 }
 
@@ -371,8 +371,8 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
 static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator = parse_abstract_decltor();
-    expect_next(pop_next(), TOK_parenthesis_close);
-    while (peek_next().token_kind == TOK_brackets_open) {
+    expect_next(pop_next(), TOK_close_paren);
+    while (peek_next().token_kind == TOK_open_bracket) {
         TLong size = parse_arr_size();
         abstract_declarator = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_declarator));
     }
@@ -382,7 +382,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor() {
 static std::unique_ptr<CAbstractPointer> parse_ptr_abstract_decltor() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_declarator;
-    if (peek_next().token_kind == TOK_parenthesis_close) {
+    if (peek_next().token_kind == TOK_close_paren) {
         abstract_declarator = std::make_unique<CAbstractBase>();
     }
     else {
@@ -395,11 +395,11 @@ static std::unique_ptr<CAbstractPointer> parse_ptr_abstract_decltor() {
 // abstract_declarator = AbstractPointer(abstract_declarator) | AbstractArray(int, abstract_declarator) | AbstractBase
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_decltor() {
     switch (peek_next().token_kind) {
-        case TOK_binop_multiplication:
+        case TOK_binop_multiply:
             return parse_ptr_abstract_decltor();
-        case TOK_parenthesis_open:
+        case TOK_open_paren:
             return parse_direct_abstract_decltor();
-        case TOK_brackets_open:
+        case TOK_open_bracket:
             return parse_arr_abstract_decltor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
@@ -424,9 +424,9 @@ static void parse_decltor_cast_factor(std::shared_ptr<Type>& target_type) {
 static std::shared_ptr<Type> parse_type_name() {
     std::shared_ptr<Type> type_name = parse_type_specifier();
     switch (peek_next().token_kind) {
-        case TOK_binop_multiplication:
-        case TOK_parenthesis_open:
-        case TOK_brackets_open:
+        case TOK_binop_multiply:
+        case TOK_open_paren:
+        case TOK_open_bracket:
             parse_decltor_cast_factor(type_name);
         default:
             break;
@@ -441,7 +441,7 @@ static std::vector<std::unique_ptr<CExp>> parse_arg_list() {
         std::unique_ptr<CExp> arg = parse_exp(0);
         args.push_back(std::move(arg));
     }
-    while (peek_next().token_kind == TOK_separator_comma) {
+    while (peek_next().token_kind == TOK_comma_separator) {
         pop_next();
         std::unique_ptr<CExp> arg = parse_exp(0);
         args.push_back(std::move(arg));
@@ -479,17 +479,17 @@ static std::unique_ptr<CFunctionCall> parse_call_factor() {
     TIdentifier name = parse_identifier(0);
     pop_next();
     std::vector<std::unique_ptr<CExp>> args;
-    if (peek_next().token_kind != TOK_parenthesis_close) {
+    if (peek_next().token_kind != TOK_close_paren) {
         args = parse_arg_list();
     }
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     return std::make_unique<CFunctionCall>(std::move(name), std::move(args), std::move(line));
 }
 
 static std::unique_ptr<CExp> parse_inner_exp_factor() {
     pop_next();
     std::unique_ptr<CExp> inner_exp = parse_exp(0);
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     return inner_exp;
 }
 
@@ -497,7 +497,7 @@ static std::unique_ptr<CSubscript> parse_subscript_factor(std::unique_ptr<CExp> 
     size_t line = context->peek_token->line;
     pop_next();
     std::unique_ptr<CExp> subscript_exp = parse_exp(0);
-    expect_next(pop_next(), TOK_brackets_close);
+    expect_next(pop_next(), TOK_close_bracket);
     return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), std::move(line));
 }
 
@@ -575,7 +575,7 @@ static std::unique_ptr<CAddrOf> parse_addrof_factor() {
 
 static std::unique_ptr<CExp> parse_ptr_unary_factor() {
     switch (pop_next().token_kind) {
-        case TOK_binop_multiplication:
+        case TOK_binop_multiply:
             return parse_deref_factor();
         case TOK_binop_bitand:
             return parse_addrof_factor();
@@ -590,7 +590,7 @@ static std::unique_ptr<CSizeOfT> parse_sizeoft_factor() {
     size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     return std::make_unique<CSizeOfT>(std::move(target_type), std::move(line));
 }
 
@@ -602,7 +602,7 @@ static std::unique_ptr<CSizeOf> parse_sizeof_factor() {
 
 static std::unique_ptr<CExp> parse_sizeof_unary_factor() {
     pop_next();
-    if (peek_next().token_kind == TOK_parenthesis_open) {
+    if (peek_next().token_kind == TOK_open_paren) {
         switch (peek_next_i(1).token_kind) {
             case TOK_key_char:
             case TOK_key_int:
@@ -625,7 +625,7 @@ static std::unique_ptr<CCast> parse_cast_factor() {
     size_t line = context->peek_token->line;
     pop_next();
     std::shared_ptr<Type> target_type = parse_type_name();
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     std::unique_ptr<CExp> exp = parse_cast_exp_factor();
     return std::make_unique<CCast>(std::move(exp), std::move(target_type), std::move(line));
 }
@@ -633,23 +633,23 @@ static std::unique_ptr<CCast> parse_cast_factor() {
 // <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
 static std::unique_ptr<CExp> parse_primary_exp_factor() {
     switch (peek_next().token_kind) {
-        case TOK_constant:
-        case TOK_long_constant:
-        case TOK_char_constant:
-        case TOK_float_constant:
+        case TOK_int_const:
+        case TOK_long_const:
+        case TOK_char_const:
+        case TOK_dbl_const:
             return parse_const_factor();
-        case TOK_unsigned_constant:
-        case TOK_unsigned_long_constant:
+        case TOK_uint_const:
+        case TOK_ulong_const:
             return parse_unsigned_const_factor();
         case TOK_identifier: {
-            if (peek_next_i(1).token_kind == TOK_parenthesis_open) {
+            if (peek_next_i(1).token_kind == TOK_open_paren) {
                 return parse_call_factor();
             }
             return parse_var_factor();
         }
         case TOK_string_literal:
             return parse_string_literal_factor();
-        case TOK_parenthesis_open:
+        case TOK_open_paren:
             return parse_inner_exp_factor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
@@ -662,7 +662,7 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
 static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&& primary_exp) {
     std::unique_ptr<CExp> postfix_exp = std::move(primary_exp);
     switch (peek_next().token_kind) {
-        case TOK_brackets_open: {
+        case TOK_open_bracket: {
             postfix_exp = parse_subscript_factor(std::move(postfix_exp));
             break;
         }
@@ -670,12 +670,12 @@ static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&&
             postfix_exp = parse_dot_factor(std::move(postfix_exp));
             break;
         }
-        case TOK_structop_pointer: {
+        case TOK_structop_ptr: {
             postfix_exp = parse_arrow_factor(std::move(postfix_exp));
             break;
         }
-        case TOK_unop_increment:
-        case TOK_unop_decrement: {
+        case TOK_unop_incr:
+        case TOK_unop_decr: {
             postfix_exp = parse_postfix_incr_factor(std::move(postfix_exp));
             break;
         }
@@ -689,11 +689,11 @@ static std::unique_ptr<CExp> parse_postfix_op_exp_factor(std::unique_ptr<CExp>&&
 static std::unique_ptr<CExp> parse_postfix_exp_factor() {
     std::unique_ptr<CExp> primary_exp = parse_primary_exp_factor();
     switch (peek_next().token_kind) {
-        case TOK_brackets_open:
+        case TOK_open_bracket:
         case TOK_structop_member:
-        case TOK_structop_pointer:
-        case TOK_unop_increment:
-        case TOK_unop_decrement:
+        case TOK_structop_ptr:
+        case TOK_unop_incr:
+        case TOK_unop_decr:
             return parse_postfix_op_exp_factor(std::move(primary_exp));
         default:
             return primary_exp;
@@ -704,13 +704,13 @@ static std::unique_ptr<CExp> parse_postfix_exp_factor() {
 static std::unique_ptr<CExp> parse_unary_exp_factor() {
     switch (peek_next().token_kind) {
         case TOK_unop_complement:
-        case TOK_unop_negation:
+        case TOK_unop_neg:
         case TOK_unop_not:
             return parse_unary_factor();
-        case TOK_unop_increment:
-        case TOK_unop_decrement:
+        case TOK_unop_incr:
+        case TOK_unop_decr:
             return parse_incr_unary_factor();
-        case TOK_binop_multiplication:
+        case TOK_binop_multiply:
         case TOK_binop_bitand:
             return parse_ptr_unary_factor();
         case TOK_key_sizeof:
@@ -722,7 +722,7 @@ static std::unique_ptr<CExp> parse_unary_exp_factor() {
 
 // <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
 static std::unique_ptr<CExp> parse_cast_exp_factor() {
-    if (peek_next().token_kind == TOK_parenthesis_open) {
+    if (peek_next().token_kind == TOK_open_paren) {
         switch (peek_next_i(1).token_kind) {
             case TOK_key_char:
             case TOK_key_int:
@@ -783,27 +783,27 @@ static std::unique_ptr<CConditional> parse_ternary_exp(std::unique_ptr<CExp> exp
 
 static int32_t get_tok_precedence(TOKEN_KIND token_kind) {
     switch (token_kind) {
-        case TOK_binop_multiplication:
-        case TOK_binop_division:
+        case TOK_binop_multiply:
+        case TOK_binop_divide:
         case TOK_binop_remainder:
             return 50;
-        case TOK_unop_negation:
-        case TOK_binop_addition:
+        case TOK_unop_neg:
+        case TOK_binop_add:
             return 45;
-        case TOK_binop_bitshiftleft:
-        case TOK_binop_bitshiftright:
+        case TOK_binop_shiftleft:
+        case TOK_binop_shiftright:
             return 40;
-        case TOK_binop_lessthan:
-        case TOK_binop_lessthanorequal:
-        case TOK_binop_greaterthan:
-        case TOK_binop_greaterthanorequal:
+        case TOK_binop_lt:
+        case TOK_binop_le:
+        case TOK_binop_gt:
+        case TOK_binop_ge:
             return 35;
-        case TOK_binop_equalto:
-        case TOK_binop_notequal:
+        case TOK_binop_eq:
+        case TOK_binop_ne:
             return 30;
         case TOK_binop_bitand:
             return 25;
-        case TOK_binop_bitxor:
+        case TOK_binop_xor:
             return 20;
         case TOK_binop_bitor:
             return 15;
@@ -813,17 +813,17 @@ static int32_t get_tok_precedence(TOKEN_KIND token_kind) {
             return 5;
         case TOK_ternary_if:
             return 3;
-        case TOK_assignment_simple:
-        case TOK_assignment_plus:
-        case TOK_assignment_difference:
-        case TOK_assignment_product:
-        case TOK_assignment_quotient:
-        case TOK_assignment_remainder:
-        case TOK_assignment_bitand:
-        case TOK_assignment_bitor:
-        case TOK_assignment_bitxor:
-        case TOK_assignment_bitshiftleft:
-        case TOK_assignment_bitshiftright:
+        case TOK_assign:
+        case TOK_assign_add:
+        case TOK_assign_subtract:
+        case TOK_assign_multiply:
+        case TOK_assign_divide:
+        case TOK_assign_remainder:
+        case TOK_assign_bitand:
+        case TOK_assign_bitor:
+        case TOK_assign_xor:
+        case TOK_assign_shiftleft:
+        case TOK_assign_shiftright:
             return 1;
         default:
             return -1;
@@ -845,39 +845,39 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
             break;
         }
         switch (context->peek_token->token_kind) {
-            case TOK_binop_addition:
-            case TOK_unop_negation:
-            case TOK_binop_multiplication:
-            case TOK_binop_division:
+            case TOK_binop_add:
+            case TOK_unop_neg:
+            case TOK_binop_multiply:
+            case TOK_binop_divide:
             case TOK_binop_remainder:
             case TOK_binop_bitand:
             case TOK_binop_bitor:
-            case TOK_binop_bitxor:
-            case TOK_binop_bitshiftleft:
-            case TOK_binop_bitshiftright:
-            case TOK_binop_lessthan:
-            case TOK_binop_lessthanorequal:
-            case TOK_binop_greaterthan:
-            case TOK_binop_greaterthanorequal:
-            case TOK_binop_equalto:
-            case TOK_binop_notequal:
+            case TOK_binop_xor:
+            case TOK_binop_shiftleft:
+            case TOK_binop_shiftright:
+            case TOK_binop_lt:
+            case TOK_binop_le:
+            case TOK_binop_gt:
+            case TOK_binop_ge:
+            case TOK_binop_eq:
+            case TOK_binop_ne:
             case TOK_binop_and:
             case TOK_binop_or:
                 exp_left = parse_binary_exp(std::move(exp_left), precedence);
                 break;
-            case TOK_assignment_simple:
+            case TOK_assign:
                 exp_left = parse_assign_exp(std::move(exp_left), precedence);
                 break;
-            case TOK_assignment_plus:
-            case TOK_assignment_difference:
-            case TOK_assignment_product:
-            case TOK_assignment_quotient:
-            case TOK_assignment_remainder:
-            case TOK_assignment_bitand:
-            case TOK_assignment_bitor:
-            case TOK_assignment_bitxor:
-            case TOK_assignment_bitshiftleft:
-            case TOK_assignment_bitshiftright:
+            case TOK_assign_add:
+            case TOK_assign_subtract:
+            case TOK_assign_multiply:
+            case TOK_assign_divide:
+            case TOK_assign_remainder:
+            case TOK_assign_bitand:
+            case TOK_assign_bitor:
+            case TOK_assign_xor:
+            case TOK_assign_shiftleft:
+            case TOK_assign_shiftright:
                 exp_left = parse_assign_compound_exp(std::move(exp_left), precedence);
                 break;
             case TOK_ternary_if:
@@ -915,9 +915,9 @@ static std::unique_ptr<CExpression> parse_exp_statement() {
 
 static std::unique_ptr<CIf> parse_if_statement() {
     pop_next();
-    expect_next(pop_next(), TOK_parenthesis_open);
+    expect_next(pop_next(), TOK_open_paren);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     peek_next();
     std::unique_ptr<CStatement> then = parse_statement();
     std::unique_ptr<CStatement> else_fi;
@@ -954,9 +954,9 @@ static std::unique_ptr<CCompound> parse_compound_statement() {
 
 static std::unique_ptr<CWhile> parse_while_statement() {
     pop_next();
-    expect_next(pop_next(), TOK_parenthesis_open);
+    expect_next(pop_next(), TOK_open_paren);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CWhile>(std::move(condition), std::move(body));
@@ -967,16 +967,16 @@ static std::unique_ptr<CDoWhile> parse_do_while_statement() {
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     expect_next(pop_next(), TOK_key_while);
-    expect_next(pop_next(), TOK_parenthesis_open);
+    expect_next(pop_next(), TOK_open_paren);
     std::unique_ptr<CExp> condition = parse_exp(0);
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     expect_next(pop_next(), TOK_semicolon);
     return std::make_unique<CDoWhile>(std::move(condition), std::move(body));
 }
 
 static std::unique_ptr<CFor> parse_for_statement() {
     pop_next();
-    expect_next(pop_next(), TOK_parenthesis_open);
+    expect_next(pop_next(), TOK_open_paren);
     std::unique_ptr<CForInit> init = parse_for_init();
     std::unique_ptr<CExp> condition;
     if (peek_next().token_kind != TOK_semicolon) {
@@ -984,10 +984,10 @@ static std::unique_ptr<CFor> parse_for_statement() {
     }
     expect_next(pop_next(), TOK_semicolon);
     std::unique_ptr<CExp> post;
-    if (peek_next().token_kind != TOK_parenthesis_close) {
+    if (peek_next().token_kind != TOK_close_paren) {
         post = parse_exp(0);
     }
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
@@ -995,9 +995,9 @@ static std::unique_ptr<CFor> parse_for_statement() {
 
 static std::unique_ptr<CSwitch> parse_switch_statement() {
     pop_next();
-    expect_next(pop_next(), TOK_parenthesis_open);
+    expect_next(pop_next(), TOK_open_paren);
     std::unique_ptr<CExp> match = parse_exp(0);
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     peek_next();
     std::unique_ptr<CStatement> body = parse_statement();
     return std::make_unique<CSwitch>(std::move(match), std::move(body));
@@ -1010,13 +1010,13 @@ static std::unique_ptr<CCase> parse_case_statement() {
         size_t line = context->peek_token->line;
         std::shared_ptr<CConst> constant;
         switch (peek_next().token_kind) {
-            case TOK_constant:
-            case TOK_long_constant:
-            case TOK_char_constant:
+            case TOK_int_const:
+            case TOK_long_const:
+            case TOK_char_const:
                 constant = parse_const();
                 break;
-            case TOK_unsigned_constant:
-            case TOK_unsigned_long_constant:
+            case TOK_uint_const:
+            case TOK_ulong_const:
                 constant = parse_unsigned_const();
                 break;
             default:
@@ -1084,7 +1084,7 @@ static std::unique_ptr<CStatement> parse_statement() {
             }
             break;
         }
-        case TOK_brace_open:
+        case TOK_open_brace:
             return parse_compound_statement();
         case TOK_key_while:
             return parse_while_statement();
@@ -1191,7 +1191,7 @@ static std::unique_ptr<CBlockItem> parse_block_item() {
 
 static std::unique_ptr<CB> parse_b_block() {
     std::vector<std::unique_ptr<CBlockItem>> block_items;
-    while (peek_next().token_kind != TOK_brace_close) {
+    while (peek_next().token_kind != TOK_close_brace) {
         std::unique_ptr<CBlockItem> block_item = parse_block_item();
         block_items.push_back(std::move(block_item));
     }
@@ -1203,7 +1203,7 @@ static std::unique_ptr<CB> parse_b_block() {
 static std::unique_ptr<CBlock> parse_block() {
     pop_next();
     std::unique_ptr<CBlock> block = parse_b_block();
-    expect_next(pop_next(), TOK_brace_close);
+    expect_next(pop_next(), TOK_close_brace);
     return block;
 }
 
@@ -1216,7 +1216,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
     while (true) {
         switch (peek_next_i(i).token_kind) {
             case TOK_identifier:
-            case TOK_parenthesis_close:
+            case TOK_close_paren:
                 goto Lbreak;
             case TOK_key_char:
             case TOK_key_int:
@@ -1235,13 +1235,13 @@ static std::shared_ptr<Type> parse_type_specifier() {
             }
             case TOK_key_static:
             case TOK_key_extern:
-            case TOK_binop_multiplication:
-            case TOK_parenthesis_open:
+            case TOK_binop_multiply:
+            case TOK_open_paren:
                 i++;
                 break;
-            case TOK_brackets_open: {
+            case TOK_open_bracket: {
                 i++;
-                while (peek_next_i(i).token_kind != TOK_brackets_close) {
+                while (peek_next_i(i).token_kind != TOK_close_bracket) {
                     i++;
                 }
                 i++;
@@ -1380,15 +1380,15 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
     pop_next();
     std::vector<std::unique_ptr<CInitializer>> initializers;
     while (true) {
-        if (peek_next().token_kind == TOK_brace_close) {
+        if (peek_next().token_kind == TOK_close_brace) {
             break;
         }
         std::unique_ptr<CInitializer> initializer = parse_initializer();
         initializers.push_back(std::move(initializer));
-        if (peek_next().token_kind == TOK_brace_close) {
+        if (peek_next().token_kind == TOK_close_brace) {
             break;
         }
-        expect_next(pop_next(), TOK_separator_comma);
+        expect_next(pop_next(), TOK_comma_separator);
     }
     if (initializers.empty()) {
         RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_empty_compound_initializer), context->peek_token->line);
@@ -1400,7 +1400,7 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
 // <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [","] "}"
 // initializer = SingleInit(exp) | CompoundInit(initializer*)
 static std::unique_ptr<CInitializer> parse_initializer() {
-    if (peek_next().token_kind == TOK_brace_open) {
+    if (peek_next().token_kind == TOK_open_brace) {
         return parse_compound_init();
     }
     else {
@@ -1480,7 +1480,7 @@ static std::unique_ptr<CIdent> parse_ident_simple_decltor() {
 static std::unique_ptr<CDeclarator> parse_simple_decltor() {
     pop_next();
     std::unique_ptr<CDeclarator> declarator = parse_decltor();
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     return declarator;
 }
 
@@ -1489,7 +1489,7 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
     switch (peek_next().token_kind) {
         case TOK_identifier:
             return parse_ident_simple_decltor();
-        case TOK_parenthesis_open:
+        case TOK_open_paren:
             return parse_simple_decltor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
@@ -1514,7 +1514,7 @@ static std::vector<std::unique_ptr<CParam>> parse_non_empty_param_list() {
         std::unique_ptr<CParam> param = parse_param();
         param_list.push_back(std::move(param));
     }
-    while (peek_next().token_kind == TOK_separator_comma) {
+    while (peek_next().token_kind == TOK_comma_separator) {
         pop_next();
         std::unique_ptr<CParam> param = parse_param();
         param_list.push_back(std::move(param));
@@ -1528,7 +1528,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
     std::vector<std::unique_ptr<CParam>> param_list;
     switch (peek_next().token_kind) {
         case TOK_key_void: {
-            if (peek_next_i(1).token_kind == TOK_parenthesis_close) {
+            if (peek_next_i(1).token_kind == TOK_close_paren) {
                 parse_empty_param_list();
             }
             else {
@@ -1552,7 +1552,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
                 GET_PARSER_MSG(MSG_unexpected_parameter_list, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
-    expect_next(pop_next(), TOK_parenthesis_close);
+    expect_next(pop_next(), TOK_close_paren);
     return param_list;
 }
 
@@ -1568,7 +1568,7 @@ static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDe
         TLong size = parse_arr_size();
         declarator = std::make_unique<CArrayDeclarator>(std::move(size), std::move(declarator));
     }
-    while (peek_next().token_kind == TOK_brackets_open);
+    while (peek_next().token_kind == TOK_open_bracket);
     return declarator;
 }
 
@@ -1576,10 +1576,10 @@ static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDe
 static std::unique_ptr<CDeclarator> parse_direct_decltor() {
     std::unique_ptr<CDeclarator> declarator = parse_simple_decltor_decl();
     switch (peek_next().token_kind) {
-        case TOK_parenthesis_open: {
+        case TOK_open_paren: {
             return parse_fun_decltor_suffix(std::move(declarator));
         }
-        case TOK_brackets_open: {
+        case TOK_open_bracket: {
             return parse_arr_decltor_suffix(std::move(declarator));
         }
         default:
@@ -1598,7 +1598,7 @@ static std::unique_ptr<CPointerDeclarator> parse_ptr_decltor() {
 //            | FunDeclarator(param_info*, declarator)
 static std::unique_ptr<CDeclarator> parse_decltor() {
     switch (peek_next().token_kind) {
-        case TOK_binop_multiplication:
+        case TOK_binop_multiply:
             return parse_ptr_decltor();
         default:
             return parse_direct_decltor();
@@ -1615,7 +1615,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
         pop_next();
     }
     else {
-        expect_next(peek_next(), TOK_brace_open);
+        expect_next(peek_next(), TOK_open_brace);
         body = parse_block();
     }
     return std::make_unique<CFunctionDeclaration>(std::move(declarator.name), std::move(declarator.params),
@@ -1628,7 +1628,7 @@ static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& declarator) {
     size_t line = context->next_token->line;
     std::unique_ptr<CInitializer> init;
-    if (peek_next().token_kind == TOK_assignment_simple) {
+    if (peek_next().token_kind == TOK_assign) {
         pop_next();
         init = parse_initializer();
     }
@@ -1669,12 +1669,12 @@ static std::unique_ptr<CStructDeclaration> parse_struct_decl() {
     expect_next(peek_next(), TOK_identifier);
     TIdentifier tag = parse_identifier(0);
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
-    if (pop_next().token_kind == TOK_brace_open) {
+    if (pop_next().token_kind == TOK_open_brace) {
         do {
             std::unique_ptr<CMemberDeclaration> member = parse_member_decl();
             members.push_back(std::move(member));
         }
-        while (peek_next().token_kind != TOK_brace_close);
+        while (peek_next().token_kind != TOK_close_brace);
         pop_next();
         pop_next();
     }
@@ -1704,8 +1704,8 @@ static std::unique_ptr<CStorageClass> parse_decltor_decl(Declarator& declarator)
     std::unique_ptr<CStorageClass> storage_class;
     switch (peek_next().token_kind) {
         case TOK_identifier:
-        case TOK_binop_multiplication:
-        case TOK_parenthesis_open:
+        case TOK_binop_multiply:
+        case TOK_open_paren:
             break;
         default:
             storage_class = parse_storage_class();
@@ -1722,7 +1722,7 @@ static std::unique_ptr<CDeclaration> parse_declaration() {
         case TOK_key_struct:
         case TOK_key_union: {
             switch (peek_next_i(2).token_kind) {
-                case TOK_brace_open:
+                case TOK_open_brace:
                 case TOK_semicolon:
                     return parse_struct_declaration();
                 default:
