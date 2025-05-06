@@ -18,37 +18,37 @@ std::unique_ptr<FileIoContext> fileio;
 void set_filename(const std::string& filename) { fileio->filename = filename; }
 
 void open_fread(const std::string& filename) {
-    for (size_t i = 0; i < fileio->freads.size(); ++i) {
-        if (fileio->freads[i].fd) {
-            size_t n_open_files = fileio->freads.size() - i;
+    for (size_t i = 0; i < fileio->file_reads.size(); ++i) {
+        if (fileio->file_reads[i].fd) {
+            size_t n_open_files = fileio->file_reads.size() - i;
             if (n_open_files > FOPEN_MAX) {
                 RAISE_INTERNAL_ERROR;
             }
             else if (n_open_files == FOPEN_MAX) {
-                fileio->freads[i].len = 0;
-                free(fileio->freads[i].buf);
-                fileio->freads[i].buf = nullptr;
-                fclose(fileio->freads[i].fd);
-                fileio->freads[i].fd = nullptr;
+                fileio->file_reads[i].len = 0;
+                free(fileio->file_reads[i].buf);
+                fileio->file_reads[i].buf = nullptr;
+                fclose(fileio->file_reads[i].fd);
+                fileio->file_reads[i].fd = nullptr;
             }
             break;
         }
     }
 
-    fileio->freads.emplace_back();
-    fileio->freads.back().fd = nullptr;
-    fileio->freads.back().fd = fopen(filename.c_str(), "rb");
-    if (!fileio->freads.back().fd || filename.size() >= PATH_MAX) {
+    fileio->file_reads.emplace_back();
+    fileio->file_reads.back().fd = nullptr;
+    fileio->file_reads.back().fd = fopen(filename.c_str(), "rb");
+    if (!fileio->file_reads.back().fd || filename.size() >= PATH_MAX) {
         RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()));
     }
 
-    fileio->freads.back().len = 0;
-    fileio->freads.back().buf = nullptr;
-    fileio->freads.back().filename = filename;
+    fileio->file_reads.back().len = 0;
+    fileio->file_reads.back().buf = nullptr;
+    fileio->file_reads.back().filename = filename;
 }
 
 void open_fwrite(const std::string& filename) {
-    if (!fileio->freads.empty()) {
+    if (!fileio->file_reads.empty()) {
         RAISE_INTERNAL_ERROR;
     }
 
@@ -68,15 +68,15 @@ bool find_file(const std::string& filename) {
 }
 
 bool read_line(std::string& line) {
-    if (getline(&fileio->freads.back().buf, &fileio->freads.back().len, fileio->freads.back().fd) == -1) {
+    if (getline(&fileio->file_reads.back().buf, &fileio->file_reads.back().len, fileio->file_reads.back().fd) == -1) {
         line = "";
-        fileio->freads.back().len = 0;
-        free(fileio->freads.back().buf);
-        fileio->freads.back().buf = nullptr;
+        fileio->file_reads.back().len = 0;
+        free(fileio->file_reads.back().buf);
+        fileio->file_reads.back().buf = nullptr;
         return false;
     }
 
-    line = fileio->freads.back().buf;
+    line = fileio->file_reads.back().buf;
     return true;
 }
 
@@ -98,20 +98,21 @@ void write_line(std::string&& line) {
 }
 
 void close_fread(size_t linenum) {
-    fclose(fileio->freads.back().fd);
-    fileio->freads.back().fd = nullptr;
-    fileio->freads.pop_back();
+    fclose(fileio->file_reads.back().fd);
+    fileio->file_reads.back().fd = nullptr;
+    fileio->file_reads.pop_back();
 
-    if (!fileio->freads.empty() && !fileio->freads.back().fd) {
-        if (fileio->freads.back().buf || fileio->freads.back().len != 0) {
+    if (!fileio->file_reads.empty() && !fileio->file_reads.back().fd) {
+        if (fileio->file_reads.back().buf || fileio->file_reads.back().len != 0) {
             RAISE_INTERNAL_ERROR;
         }
-        fileio->freads.back().fd = fopen(fileio->freads.back().filename.c_str(), "rb");
-        if (!fileio->freads.back().fd) {
-            RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_fread, fileio->freads.back().filename.c_str()));
+        fileio->file_reads.back().fd = fopen(fileio->file_reads.back().filename.c_str(), "rb");
+        if (!fileio->file_reads.back().fd) {
+            RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()));
         }
         for (size_t i = 0; i < linenum; ++i) {
-            if (getline(&fileio->freads.back().buf, &fileio->freads.back().len, fileio->freads.back().fd) == -1) {
+            if (getline(&fileio->file_reads.back().buf, &fileio->file_reads.back().len, fileio->file_reads.back().fd)
+                == -1) {
                 RAISE_INTERNAL_ERROR;
             }
         }

@@ -15,7 +15,7 @@ std::unique_ptr<ErrorsContext> errors;
 // Throw
 
 static void free_fileio() {
-    for (auto& file_read : fileio->freads) {
+    for (auto& file_read : fileio->file_reads) {
         if (file_read.buf != nullptr) {
             free(file_read.buf);
             file_read.buf = nullptr;
@@ -32,8 +32,8 @@ static void free_fileio() {
 }
 
 static const std::string& get_filename() {
-    if (!fileio->freads.empty()) {
-        return fileio->freads.back().filename;
+    if (!fileio->file_reads.empty()) {
+        return fileio->file_reads.back().filename;
     }
     else {
         return fileio->filename;

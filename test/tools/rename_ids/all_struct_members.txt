@@ -61,7 +61,7 @@ fd
 fd_write
 filename
 fopen_lines
-freads
+file_reads
 fun_decl
 fun_def_name
 fun_def_set

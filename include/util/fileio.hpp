@@ -21,7 +21,7 @@ struct FileIoContext {
     FILE* fd_write;
     std::string write_buf;
     std::string filename;
-    std::vector<FileRead> freads;
+    std::vector<FileRead> file_reads;
 };
 
 extern std::unique_ptr<FileIoContext> fileio;
