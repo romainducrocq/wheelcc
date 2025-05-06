@@ -71,7 +71,7 @@ ast = [
     ["ByteArray", [(TLong, "size"), (TInt, "alignment")], []],
     ["BackendSymbol", [], []],
     ["BackendObj", [(Bool, "is_static"), (Bool, "is_const")], ["asm_type"]],
-    ["BackendFun", [(Bool, "is_def")], ["[callee_saved_registers"]],
+    ["BackendFun", [(Bool, "is_def")], ["[callee_saved_regs"]],
 
     # /ast/front_ast
     ["CUnaryOp", [], []],
@@ -224,7 +224,7 @@ ast = [
     ["TacFunction", [(TIdentifier, "name"), (Bool, "is_glob"), (TIdentifier, "[params")], ["[body"]],
     ["TacStaticVariable", [(TIdentifier, "name"), (Bool, "is_glob")], ["static_init_type", "[static_inits"]],
     ["TacStaticConstant", [(TIdentifier, "name")], ["static_init_type", "static_init"]],
-    ["TacProgram", [], ["[static_constant_top_levels", "[static_variable_top_levels", "[function_top_levels"]],
+    ["TacProgram", [], ["[static_const_toplvls", "[static_var_toplvls", "[fun_toplvls"]],
 
     # /ast/back_ast
     ["AsmReg", [], []],
@@ -320,5 +320,5 @@ ast = [
     ["AsmFunction", [(TIdentifier, "name"), (Bool, "is_glob"), (Bool, "is_ret_memory")], ["[instructions"]],
     ["AsmStaticVariable", [(TIdentifier, "name"), (TInt, "alignment"), (Bool, "is_glob")], ["[static_inits"]],
     ["AsmStaticConstant", [(TIdentifier, "name"), (TInt, "alignment")], ["static_init"]],
-    ["AsmProgram", [], ["[static_constant_top_levels", "[top_levels"]],
+    ["AsmProgram", [], ["[static_const_toplvls", "[top_levels"]],
 ]

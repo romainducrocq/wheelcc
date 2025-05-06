@@ -71,7 +71,7 @@ struct BackendFun : BackendSymbol {
     BackendFun(bool is_def);
 
     bool is_def;
-    std::vector<std::shared_ptr<AsmOperand>> callee_saved_registers;
+    std::vector<std::shared_ptr<AsmOperand>> callee_saved_regs;
 };
 
 /*

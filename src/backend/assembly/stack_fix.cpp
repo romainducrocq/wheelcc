@@ -501,19 +501,18 @@ static void fix_alloc_stack_bytes(TLong callee_saved_size) {
     }
 }
 
-static void push_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
-    for (std::shared_ptr<AsmOperand> src : callee_saved_registers) {
+static void push_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_regs) {
+    for (std::shared_ptr<AsmOperand> src : callee_saved_regs) {
         push_fix_instr(std::make_unique<AsmPush>(std::move(src)));
     }
 }
 
-static void pop_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_registers) {
-    for (size_t i = callee_saved_registers.size(); i-- > 0;) {
-        if (callee_saved_registers[i]->type() != AST_AsmRegister_t) {
+static void pop_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_regs) {
+    for (size_t i = callee_saved_regs.size(); i-- > 0;) {
+        if (callee_saved_regs[i]->type() != AST_AsmRegister_t) {
             RAISE_INTERNAL_ERROR;
         }
-        REGISTER_KIND reg_kind =
-            register_mask_kind(static_cast<AsmRegister*>(callee_saved_registers[i].get())->reg.get());
+        REGISTER_KIND reg_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_regs[i].get())->reg.get());
         std::unique_ptr<AsmReg> reg;
         switch (reg_kind) {
             case REG_Bx: {
@@ -1006,11 +1005,11 @@ static void fix_fun_toplvl(AsmFunction* node) {
     ctx->p_fix_instrs->emplace_back();
 
     bool is_ret = false;
-    push_callee_saved_regs(backend_fun->callee_saved_registers);
+    push_callee_saved_regs(backend_fun->callee_saved_regs);
     for (size_t i = 0; i < instructions.size(); ++i) {
         if (instructions[i]) {
             if (instructions[i]->type() == AST_AsmRet_t) {
-                pop_callee_saved_regs(backend_fun->callee_saved_registers);
+                pop_callee_saved_regs(backend_fun->callee_saved_regs);
                 is_ret = true;
             }
             push_fix_instr(std::move(instructions[i]));
@@ -1020,10 +1019,10 @@ static void fix_fun_toplvl(AsmFunction* node) {
         }
     }
     if (!is_ret) {
-        pop_callee_saved_regs(backend_fun->callee_saved_registers);
+        pop_callee_saved_regs(backend_fun->callee_saved_regs);
     }
     {
-        TLong callee_saved_size = static_cast<TLong>(backend_fun->callee_saved_registers.size());
+        TLong callee_saved_size = static_cast<TLong>(backend_fun->callee_saved_regs.size());
         fix_alloc_stack_bytes(callee_saved_size);
     }
     ctx->p_fix_instrs = nullptr;

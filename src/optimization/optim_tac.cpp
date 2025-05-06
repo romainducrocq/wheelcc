@@ -2788,7 +2788,7 @@ static void optim_toplvl(TacTopLevel* node) {
 }
 
 static void optim_program(TacProgram* node) {
-    for (const auto& top_level : node->function_top_levels) {
+    for (const auto& top_level : node->fun_toplvls) {
         optim_toplvl(top_level.get());
     }
     frontend->addressed_set.clear();

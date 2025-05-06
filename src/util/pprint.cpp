@@ -369,8 +369,8 @@ static void print_ast(Ast* node, size_t t) {
             print_field("BackendFun", "", ++t);
             BackendFun* p_node = static_cast<BackendFun*>(node);
             print_field("Bool", std::to_string(p_node->is_def), t + 1);
-            print_field("List[" + std::to_string(p_node->callee_saved_registers.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->callee_saved_registers) {
+            print_field("List[" + std::to_string(p_node->callee_saved_regs.size()) + "]", "", t + 1);
+            for (const auto& item : p_node->callee_saved_regs) {
                 print_ast(item.get(), t + 1);
             }
             break;
@@ -1272,16 +1272,16 @@ static void print_ast(Ast* node, size_t t) {
         case AST_TacProgram_t: {
             print_field("TacProgram", "", ++t);
             TacProgram* p_node = static_cast<TacProgram*>(node);
-            print_field("List[" + std::to_string(p_node->static_constant_top_levels.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->static_constant_top_levels) {
+            print_field("List[" + std::to_string(p_node->static_const_toplvls.size()) + "]", "", t + 1);
+            for (const auto& item : p_node->static_const_toplvls) {
                 print_ast(item.get(), t + 1);
             }
-            print_field("List[" + std::to_string(p_node->static_variable_top_levels.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->static_variable_top_levels) {
+            print_field("List[" + std::to_string(p_node->static_var_toplvls.size()) + "]", "", t + 1);
+            for (const auto& item : p_node->static_var_toplvls) {
                 print_ast(item.get(), t + 1);
             }
-            print_field("List[" + std::to_string(p_node->function_top_levels.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->function_top_levels) {
+            print_field("List[" + std::to_string(p_node->fun_toplvls.size()) + "]", "", t + 1);
+            for (const auto& item : p_node->fun_toplvls) {
                 print_ast(item.get(), t + 1);
             }
             break;
@@ -1765,8 +1765,8 @@ static void print_ast(Ast* node, size_t t) {
         case AST_AsmProgram_t: {
             print_field("AsmProgram", "", ++t);
             AsmProgram* p_node = static_cast<AsmProgram*>(node);
-            print_field("List[" + std::to_string(p_node->static_constant_top_levels.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->static_constant_top_levels) {
+            print_field("List[" + std::to_string(p_node->static_const_toplvls.size()) + "]", "", t + 1);
+            for (const auto& item : p_node->static_const_toplvls) {
                 print_ast(item.get(), t + 1);
             }
             print_field("List[" + std::to_string(p_node->top_levels.size()) + "]", "", t + 1);

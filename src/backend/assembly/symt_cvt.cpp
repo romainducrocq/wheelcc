@@ -198,7 +198,7 @@ static void cvt_program(AsmProgram* node) {
         }
     }
 
-    for (const auto& top_level : node->static_constant_top_levels) {
+    for (const auto& top_level : node->static_const_toplvls) {
         cvt_toplvl(top_level.get());
     }
 }

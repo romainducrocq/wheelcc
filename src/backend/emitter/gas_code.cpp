@@ -977,7 +977,7 @@ static void emit_toplvl(AsmTopLevel* node) {
 // Program(top_level*) -> $ [<top_level>]
 //                        $     .section .note.GNU-stack,"",@progbits
 static void emit_program(AsmProgram* node) {
-    for (const auto& top_level : node->static_constant_top_levels) {
+    for (const auto& top_level : node->static_const_toplvls) {
         emit_toplvl(top_level.get());
     }
     for (const auto& top_level : node->top_levels) {

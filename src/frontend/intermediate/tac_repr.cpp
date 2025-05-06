@@ -1408,8 +1408,8 @@ static void repr_static_var_toplvl(Symbol* node, TIdentifier symbol) {
         std::move(name), std::move(is_glob), std::move(static_init_type), std::move(static_inits)));
 }
 
-static void push_static_const_toplvl(std::unique_ptr<TacTopLevel>&& static_constant_top_levels) {
-    ctx->p_static_consts->push_back(std::move(static_constant_top_levels));
+static void push_static_const_toplvl(std::unique_ptr<TacTopLevel>&& static_const_toplvls) {
+    ctx->p_static_consts->push_back(std::move(static_const_toplvls));
 }
 
 static void repr_static_const_toplvl(Symbol* node, TIdentifier symbol) {
@@ -1437,20 +1437,20 @@ static void symbol_toplvl(Symbol* node, TIdentifier symbol) {
 
 // AST = Program(top_level*, top_level*, top_level*)
 static std::unique_ptr<TacProgram> repr_program(CProgram* node) {
-    std::vector<std::unique_ptr<TacTopLevel>> function_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> fun_toplvls;
     {
-        ctx->p_toplvls = &function_top_levels;
+        ctx->p_toplvls = &fun_toplvls;
         for (const auto& declaration : node->declarations) {
             declaration_toplvl(declaration.get());
         }
         ctx->p_toplvls = nullptr;
     }
 
-    std::vector<std::unique_ptr<TacTopLevel>> static_variable_top_levels;
-    std::vector<std::unique_ptr<TacTopLevel>> static_constant_top_levels;
+    std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls;
+    std::vector<std::unique_ptr<TacTopLevel>> static_const_toplvls;
     {
-        ctx->p_toplvls = &static_variable_top_levels;
-        ctx->p_static_consts = &static_constant_top_levels;
+        ctx->p_toplvls = &static_var_toplvls;
+        ctx->p_static_consts = &static_const_toplvls;
         for (const auto& symbol : frontend->symbol_table) {
             symbol_toplvl(symbol.second.get(), symbol.first);
         }
@@ -1459,7 +1459,7 @@ static std::unique_ptr<TacProgram> repr_program(CProgram* node) {
     }
 
     return std::make_unique<TacProgram>(
-        std::move(static_constant_top_levels), std::move(static_variable_top_levels), std::move(function_top_levels));
+        std::move(static_const_toplvls), std::move(static_var_toplvls), std::move(fun_toplvls));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

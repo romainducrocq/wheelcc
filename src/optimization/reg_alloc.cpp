@@ -903,7 +903,7 @@ static std::shared_ptr<AsmRegister> alloc_hard_reg(TIdentifier name) {
         if (is_reg_callee_saved(reg_kind) && !register_mask_get(ctx->callee_saved_reg_mask, reg_kind)) {
             register_mask_set(ctx->callee_saved_reg_mask, reg_kind, true);
             std::shared_ptr<AsmOperand> callee_saved_register = hard_register;
-            ctx->p_backend_fun->callee_saved_registers.push_back(std::move(callee_saved_register));
+            ctx->p_backend_fun->callee_saved_regs.push_back(std::move(callee_saved_register));
         }
         return hard_register;
     }

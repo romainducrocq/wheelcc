@@ -653,10 +653,10 @@ struct AsmStaticConstant : AsmTopLevel {
 struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram() = default;
-    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
+    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls,
         std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
 
-    std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels;
+    std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls;
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
 };
 

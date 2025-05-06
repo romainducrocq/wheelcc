@@ -201,7 +201,7 @@ AsmStaticVariable::AsmStaticVariable(
 AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> static_init) :
     name(name), alignment(alignment), static_init(std::move(static_init)) {}
 
-AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_constant_top_levels,
+AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls,
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels) :
-    static_constant_top_levels(std::move(static_constant_top_levels)),
+    static_const_toplvls(std::move(static_const_toplvls)),
     top_levels(std::move(top_levels)) {}
