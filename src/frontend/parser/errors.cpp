@@ -420,13 +420,13 @@ std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unary_op) {
 
 const char* get_fatal_msg(MESSAGE_FATAL message) {
     switch (message) {
-        case MSG_operating_system_not_supported:
+        case MSG_unsupported_os:
             RETURN_ERRNO EM_VARG " operating system is not supported, requires \033[1m‘GNU/Linux’\033[0m (x86_64)";
-        case MSG_architecture_not_supported:
+        case MSG_unsupported_arch:
             RETURN_ERRNO EM_VARG " architecture is not supported, requires \033[1m‘x86_64’\033[0m";
-        case MSG_compiler_not_supported:
+        case MSG_unsupported_compiler:
             RETURN_ERRNO EM_VARG " compiler is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
-        case MSG_gcc_version_not_supported:
+        case MSG_unsupported_gcc_ver:
             RETURN_ERRNO "\033[1m‘gcc’\033[0m %i.%i.%i is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
         default:
             RAISE_INTERNAL_ERROR;
@@ -435,21 +435,21 @@ const char* get_fatal_msg(MESSAGE_FATAL message) {
 
 const char* get_arg_msg(MESSAGE_ARG message) {
     switch (message) {
-        case MSG_no_debug_code_in_argument:
+        case MSG_no_debug_arg:
             RETURN_ERRNO "no debug code passed in first argument";
-        case MSG_invalid_debug_code_in_argument:
+        case MSG_invalid_debug_arg:
             RETURN_ERRNO "invalid debug code " EM_VARG " passed in first argument";
-        case MSG_no_optim_1_mask_in_argument:
+        case MSG_no_optim_1_arg:
             RETURN_ERRNO "no level 1 optimization mask passed in second argument";
-        case MSG_invalid_optim_1_mask_in_argument:
+        case MSG_invalid_optim_1_arg:
             RETURN_ERRNO "invalid level 1 optimization mask " EM_VARG " passed in second argument";
-        case MSG_no_optim_2_code_in_argument:
+        case MSG_no_optim_2_arg:
             RETURN_ERRNO "no level 2 optimization code passed in third argument";
-        case MSG_invalid_optim_2_code_in_argument:
+        case MSG_invalid_optim_2_arg:
             RETURN_ERRNO "invalid level 2 optimization code " EM_VARG " passed in third argument";
-        case MSG_no_input_files_in_argument:
+        case MSG_no_input_files_arg:
             RETURN_ERRNO "no input file passed in fourth argument";
-        case MSG_no_include_directories_in_argument:
+        case MSG_no_include_dir_arg:
             RETURN_ERRNO "no include directories passed in fifth argument";
         default:
             RAISE_INTERNAL_ERROR;
@@ -458,15 +458,15 @@ const char* get_arg_msg(MESSAGE_ARG message) {
 
 const char* get_util_msg(MESSAGE_UTIL message) {
     switch (message) {
-        case MSG_failed_to_read_input_file:
+        case MSG_failed_fread:
             RETURN_ERRNO "cannot read input file " EM_VARG;
-        case MSG_failed_to_write_to_output_file:
+        case MSG_failed_fwrite:
             RETURN_ERRNO "cannot write output file " EM_VARG;
-        case MSG_failed_to_interpret_string_to_integer:
+        case MSG_failed_strtoi:
             RETURN_ERRNO "cannot interpret string " EM_VARG " to an integer value";
-        case MSG_failed_to_interpret_string_to_unsigned_integer:
+        case MSG_failed_strtou:
             RETURN_ERRNO "cannot interpret string " EM_VARG " to an unsigned integer value";
-        case MSG_failed_to_interpret_string_to_float:
+        case MSG_failed_strtod:
             RETURN_ERRNO "cannot interpret string " EM_VARG " to a floating point value";
         default:
             RAISE_INTERNAL_ERROR;

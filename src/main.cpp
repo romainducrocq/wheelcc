@@ -247,37 +247,37 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_debug_code_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_debug_arg));
     }
     else if (arg_parse_uint8(arg, context->debug_code)) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_debug_code_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_debug_arg, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_1_mask_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_1_arg));
     }
     else if (arg_parse_uint8(arg, context->optim_1_mask) || context->optim_1_mask > 15) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_1_mask_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_1_arg, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_2_code_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_2_arg));
     }
     else if (arg_parse_uint8(arg, context->optim_2_code) || context->optim_2_code > 2) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_2_code_in_argument, arg.c_str()));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_2_arg, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_input_files_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_input_files_arg));
     }
     context->filename = arg;
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_include_directories_in_argument));
+        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
         std::string includedir = arg;
@@ -310,23 +310,23 @@ int main(int argc, char** argv) {
         INIT_ERRORS_CTX;
 
 #ifdef _WIN32
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_operating_system_not_supported, "Windows"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
 #elif defined(__APPLE__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_operating_system_not_supported, "MacOS"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_os, "MacOS"));
 #elif !defined(__linux__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_operating_system_not_supported, "unknown"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
 #elif defined(__arm__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_architecture_not_supported, "arm"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
 #elif defined(__i386__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_architecture_not_supported, "x86"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_arch, "x86"));
 #elif !defined(__x86_64__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_architecture_not_supported, "unknown"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
 #elif defined(__clang__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_compiler_not_supported, "clang"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_compiler, "clang"));
 #elif !defined(__GNUC__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_compiler_not_supported, "unknown"));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
 #elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_gcc_version_not_supported, GCC_VERSION));
+        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_gcc_ver, GCC_VERSION));
 #endif
 
         arg_parse();

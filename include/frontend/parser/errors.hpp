@@ -23,31 +23,31 @@ struct CStorageClass;
 
 enum MESSAGE_FATAL {
     MSG_unhandled_fatal_error = 0,
-    MSG_operating_system_not_supported,
-    MSG_architecture_not_supported,
-    MSG_compiler_not_supported,
-    MSG_gcc_version_not_supported
+    MSG_unsupported_os,
+    MSG_unsupported_arch,
+    MSG_unsupported_compiler,
+    MSG_unsupported_gcc_ver
 };
 
 enum MESSAGE_ARG {
-    MSG_unhandled_argument_error = 100,
-    MSG_no_debug_code_in_argument,
-    MSG_invalid_debug_code_in_argument,
-    MSG_no_optim_1_mask_in_argument,
-    MSG_invalid_optim_1_mask_in_argument,
-    MSG_no_optim_2_code_in_argument,
-    MSG_invalid_optim_2_code_in_argument,
-    MSG_no_input_files_in_argument,
-    MSG_no_include_directories_in_argument
+    MSG_unhandled_arg_error = 100,
+    MSG_no_debug_arg,
+    MSG_invalid_debug_arg,
+    MSG_no_optim_1_arg,
+    MSG_invalid_optim_1_arg,
+    MSG_no_optim_2_arg,
+    MSG_invalid_optim_2_arg,
+    MSG_no_input_files_arg,
+    MSG_no_include_dir_arg
 };
 
 enum MESSAGE_UTIL {
     MSG_unhandled_util_error = 200,
-    MSG_failed_to_read_input_file,
-    MSG_failed_to_write_to_output_file,
-    MSG_failed_to_interpret_string_to_integer,
-    MSG_failed_to_interpret_string_to_unsigned_integer,
-    MSG_failed_to_interpret_string_to_float
+    MSG_failed_fread,
+    MSG_failed_fwrite,
+    MSG_failed_strtoi,
+    MSG_failed_strtou,
+    MSG_failed_strtod
 };
 
 std::string get_tok_kind_fmt(TOKEN_KIND token_kind);
