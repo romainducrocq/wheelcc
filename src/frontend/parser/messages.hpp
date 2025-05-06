@@ -7,34 +7,34 @@
 
 enum MESSAGE_LEXER {
     MSG_unhandled_lexer_error = 300,
-    MSG_invalid_token,
-    MSG_failed_to_include_header_file
+    MSG_invalid_tok,
+    MSG_failed_include
 };
 
 enum MESSAGE_PARSER {
     MSG_unhandled_parser_error = 400,
-    MSG_unexpected_next_token,
-    MSG_reached_end_of_file,
-    MSG_number_too_large_for_long_constant,
-    MSG_number_too_large_for_unsigned_long_constant,
-    MSG_array_size_not_a_constant_integer,
-    MSG_case_value_not_a_constant_integer,
-    MSG_unexpected_unary_operator,
-    MSG_unexpected_binary_operator,
-    MSG_unexpected_abstract_declarator,
-    MSG_unexpected_pointer_unary_factor,
-    MSG_unexpected_primary_expression_factor,
-    MSG_unexpected_expression,
-    MSG_function_declared_in_for_initial,
-    MSG_unexpected_type_specifier,
-    MSG_unexpected_type_specifier_list,
-    MSG_unexpected_storage_class,
-    MSG_empty_compound_initializer,
-    MSG_type_derivation_on_function_declaration,
-    MSG_unexpected_simple_declarator,
-    MSG_unexpected_parameter_list,
-    MSG_member_declared_with_non_automatic_storage,
-    MSG_member_declared_as_function
+    MSG_unexpected_next_tok,
+    MSG_reached_eof,
+    MSG_overflow_long_const,
+    MSG_overflow_ulong_const,
+    MSG_arr_size_not_int_const,
+    MSG_case_value_not_int_const,
+    MSG_expect_unop,
+    MSG_expect_binop,
+    MSG_expect_abstract_decltor,
+    MSG_expect_ptr_unary_factor,
+    MSG_expect_primary_exp_factor,
+    MSG_expect_exp,
+    MSG_for_init_decl_as_fun,
+    MSG_expect_specifier,
+    MSG_expect_specifier_list,
+    MSG_expect_storage_class,
+    MSG_empty_compound_init,
+    MSG_derived_fun_decl,
+    MSG_expect_simple_decltor,
+    MSG_expect_param_list,
+    MSG_non_auto_member_decl,
+    MSG_member_decl_as_fun
 };
 
 #endif

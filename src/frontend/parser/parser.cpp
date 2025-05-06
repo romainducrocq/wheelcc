@@ -48,14 +48,14 @@ static std::unique_ptr<ParserContext> context;
 static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
     if (next_token_is.token_kind != expected_token) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MSG_unexpected_next_token, next_token_is.token.c_str(), fmt_tok_kind_c_str(expected_token)),
+            GET_PARSER_MSG(MSG_unexpected_next_tok, next_token_is.token.c_str(), fmt_tok_kind_c_str(expected_token)),
             next_token_is.line);
     }
 }
 
 static Token& pop_next() {
     if (context->pop_index >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), context->p_tokens->back().line);
     }
 
     context->next_token = &(*context->p_tokens)[context->pop_index];
@@ -68,7 +68,7 @@ static Token& pop_next_i(size_t i) {
         return pop_next();
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), context->p_tokens->back().line);
     }
 
     if (i == 1) {
@@ -87,7 +87,7 @@ static Token& pop_next_i(size_t i) {
 
 static const Token& peek_next() {
     if (context->pop_index >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), context->p_tokens->back().line);
     }
 
     context->peek_token = &(*context->p_tokens)[context->pop_index];
@@ -99,7 +99,7 @@ static const Token& peek_next_i(size_t i) {
         return peek_next();
     }
     if (context->pop_index + i >= context->p_tokens->size()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_end_of_file), context->p_tokens->back().line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), context->p_tokens->back().line);
     }
 
     return (*context->p_tokens)[context->pop_index + i];
@@ -176,8 +176,7 @@ static std::shared_ptr<CConst> parse_const() {
     intmax_t value = string_to_intmax(context->next_token->token, context->next_token->line);
     if (value > 9223372036854775807ll) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MSG_number_too_large_for_long_constant, context->next_token->token.c_str()),
-            context->next_token->line);
+            GET_PARSER_MSG(MSG_overflow_long_const, context->next_token->token.c_str()), context->next_token->line);
     }
     if (context->next_token->token_kind == TOK_int_const && value <= 2147483647l) {
         return parse_int_const(std::move(value));
@@ -196,8 +195,7 @@ static std::shared_ptr<CConst> parse_unsigned_const() {
     uintmax_t value = string_to_uintmax(context->next_token->token, context->next_token->line);
     if (value > 18446744073709551615ull) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MSG_number_too_large_for_unsigned_long_constant, context->next_token->token.c_str()),
-            context->next_token->line);
+            GET_PARSER_MSG(MSG_overflow_ulong_const, context->next_token->token.c_str()), context->next_token->line);
     }
     if (context->next_token->token_kind == TOK_uint_const && value <= 4294967295ul) {
         return parse_uint_const(std::move(value));
@@ -219,8 +217,7 @@ static TLong parse_arr_size() {
             constant = parse_unsigned_const();
             break;
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_array_size_not_a_constant_integer, context->peek_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_arr_size_not_int_const, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
     expect_next(pop_next(), TOK_close_bracket);
@@ -250,8 +247,7 @@ static std::unique_ptr<CUnaryOp> parse_unop() {
             return std::make_unique<CNot>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_unary_operator, context->next_token->token.c_str()),
-                context->next_token->line);
+                GET_PARSER_MSG(MSG_expect_unop, context->next_token->token.c_str()), context->next_token->line);
     }
 }
 
@@ -312,8 +308,7 @@ static std::unique_ptr<CBinaryOp> parse_binop() {
             return std::make_unique<CGreaterOrEqual>();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_binary_operator, context->next_token->token.c_str()),
-                context->next_token->line);
+                GET_PARSER_MSG(MSG_expect_binop, context->next_token->token.c_str()), context->next_token->line);
     }
 }
 
@@ -402,8 +397,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_abstract_decltor() {
         case TOK_open_bracket:
             return parse_arr_abstract_decltor();
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_abstract_declarator, context->peek_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_abstract_decltor, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -580,8 +574,7 @@ static std::unique_ptr<CExp> parse_ptr_unary_factor() {
         case TOK_binop_bitand:
             return parse_addrof_factor();
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_pointer_unary_factor, context->next_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_ptr_unary_factor, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -653,7 +646,7 @@ static std::unique_ptr<CExp> parse_primary_exp_factor() {
             return parse_inner_exp_factor();
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_primary_expression_factor, context->peek_token->token.c_str()),
+                GET_PARSER_MSG(MSG_expect_primary_exp_factor, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -885,8 +878,7 @@ static std::unique_ptr<CExp> parse_exp(int32_t min_precedence) {
                 break;
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MSG(MSG_unexpected_expression, context->peek_token->token.c_str()),
-                    context->peek_token->line);
+                    GET_PARSER_MSG(MSG_expect_exp, context->peek_token->token.c_str()), context->peek_token->line);
         }
     }
     return exp_left;
@@ -1021,7 +1013,7 @@ static std::unique_ptr<CCase> parse_case_statement() {
                 break;
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MSG(MSG_case_value_not_a_constant_integer, context->peek_token->token.c_str()),
+                    GET_PARSER_MSG(MSG_case_value_not_int_const, context->peek_token->token.c_str()),
                     context->peek_token->line);
         }
         value = std::make_unique<CConstant>(std::move(constant), std::move(line));
@@ -1119,7 +1111,7 @@ static std::unique_ptr<CInitDecl> parse_for_init_decl() {
     std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
     if (declarator.derived_type->type() == AST_FunType_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MSG_function_declared_in_for_initial, identifiers->hash_table[declarator.name].c_str()),
+            GET_PARSER_MSG(MSG_for_init_decl_as_fun, identifiers->hash_table[declarator.name].c_str()),
             context->next_token->line);
     }
     std::unique_ptr<CVariableDeclaration> init = parse_var_declaration(std::move(storage_class), std::move(declarator));
@@ -1249,7 +1241,7 @@ static std::shared_ptr<Type> parse_type_specifier() {
             }
             default:
                 RAISE_RUNTIME_ERROR_AT_LINE(
-                    GET_PARSER_MSG(MSG_unexpected_type_specifier, peek_next_i(i).token.c_str()), peek_next_i(i).line);
+                    GET_PARSER_MSG(MSG_expect_specifier, peek_next_i(i).token.c_str()), peek_next_i(i).line);
         }
     }
 Lbreak:
@@ -1350,8 +1342,7 @@ Lbreak:
         type_token_kinds_string.pop_back();
     }
     type_token_kinds_string += ")";
-    RAISE_RUNTIME_ERROR_AT_LINE(
-        GET_PARSER_MSG(MSG_unexpected_type_specifier_list, type_token_kinds_string.c_str()), line);
+    RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier_list, type_token_kinds_string.c_str()), line);
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
@@ -1363,8 +1354,7 @@ static std::unique_ptr<CStorageClass> parse_storage_class() {
         case TOK_key_extern:
             return std::make_unique<CExtern>();
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_storage_class, context->next_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_storage_class, context->next_token->token.c_str()),
                 context->next_token->line);
     }
 }
@@ -1391,7 +1381,7 @@ static std::unique_ptr<CCompoundInit> parse_compound_init() {
         expect_next(pop_next(), TOK_comma_separator);
     }
     if (initializers.empty()) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_empty_compound_initializer), context->peek_token->line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_empty_compound_init), context->peek_token->line);
     }
     pop_next();
     return std::make_unique<CCompoundInit>(std::move(initializers));
@@ -1429,8 +1419,7 @@ static void proc_arr_decltor(CArrayDeclarator* node, std::shared_ptr<Type> base_
 
 static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_type, Declarator& declarator) {
     if (node->declarator->type() != AST_CIdent_t) {
-        RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG_0(MSG_type_derivation_on_function_declaration), context->next_token->line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG_0(MSG_derived_fun_decl), context->next_token->line);
     }
 
     std::vector<TIdentifier> params;
@@ -1492,8 +1481,7 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
         case TOK_open_paren:
             return parse_simple_decltor();
         default:
-            RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_simple_declarator, context->peek_token->token.c_str()),
+            RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_simple_decltor, context->peek_token->token.c_str()),
                 context->peek_token->line);
     }
 }
@@ -1549,8 +1537,7 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
         }
         default:
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_unexpected_parameter_list, context->peek_token->token.c_str()),
-                context->peek_token->line);
+                GET_PARSER_MSG(MSG_expect_param_list, context->peek_token->token.c_str()), context->peek_token->line);
     }
     expect_next(pop_next(), TOK_close_paren);
     return param_list;
@@ -1645,14 +1632,14 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
         std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(declarator);
         if (storage_class) {
             RAISE_RUNTIME_ERROR_AT_LINE(
-                GET_PARSER_MSG(MSG_member_declared_with_non_automatic_storage,
-                    identifiers->hash_table[declarator.name].c_str(), fmt_storage_class_c_str(storage_class.get())),
+                GET_PARSER_MSG(MSG_non_auto_member_decl, identifiers->hash_table[declarator.name].c_str(),
+                    fmt_storage_class_c_str(storage_class.get())),
                 context->next_token->line);
         }
     }
     if (declarator.derived_type->type() == AST_FunType_t) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MSG_member_declared_as_function, identifiers->hash_table[declarator.name].c_str()),
+            GET_PARSER_MSG(MSG_member_decl_as_fun, identifiers->hash_table[declarator.name].c_str()),
             context->next_token->line);
     }
     size_t line = context->next_token->line;

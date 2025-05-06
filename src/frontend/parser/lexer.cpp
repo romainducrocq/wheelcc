@@ -233,7 +233,7 @@ static void tokenize_file() {
                     case TOK_error:
                     case TOK_comment_end:
                         RAISE_RUNTIME_ERROR_AT(
-                            GET_LEXER_MSG(MSG_invalid_token, context->re_match_token.c_str()), line_number);
+                            GET_LEXER_MSG(MSG_invalid_tok, context->re_match_token.c_str()), line_number);
                     case TOK_skip:
                         goto Lcontinue;
                     case TOK_comment_start: {
@@ -291,7 +291,7 @@ static void tokenize_include(std::string filename, size_t line_number) {
         context->filename_include_set.insert(filename_include);
         if (!find_include(context->stdlibdirs, filename)) {
             if (!find_include(*context->p_includedirs, filename)) {
-                RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_to_include_header_file, filename.c_str()), line_number);
+                RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), line_number);
             }
         }
     }
@@ -304,7 +304,7 @@ static void tokenize_include(std::string filename, size_t line_number) {
         }
         context->filename_include_set.insert(filename_include);
         if (!find_include(*context->p_includedirs, filename)) {
-            RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_to_include_header_file, filename.c_str()), line_number);
+            RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), line_number);
         }
     }
 

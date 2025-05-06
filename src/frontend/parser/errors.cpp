@@ -475,9 +475,9 @@ const char* get_util_msg(MESSAGE_UTIL message) {
 
 const char* get_lexer_msg(MESSAGE_LEXER message) {
     switch (message) {
-        case MSG_invalid_token:
+        case MSG_invalid_tok:
             RETURN_ERRNO "found invalid token " EM_VARG;
-        case MSG_failed_to_include_header_file:
+        case MSG_failed_include:
             RETURN_ERRNO "cannot find " EM_VARG " header file in \033[1m‘include’\033[0m directive search";
         default:
             RAISE_INTERNAL_ERROR;
@@ -486,22 +486,22 @@ const char* get_lexer_msg(MESSAGE_LEXER message) {
 
 const char* get_parser_msg(MESSAGE_PARSER message) {
     switch (message) {
-        case MSG_unexpected_next_token:
+        case MSG_unexpected_next_tok:
             RETURN_ERRNO "found token " EM_VARG ", but expected " EM_VARG " next";
-        case MSG_reached_end_of_file:
+        case MSG_reached_eof:
             RETURN_ERRNO "reached end of file, but expected declaration or statement next";
-        case MSG_number_too_large_for_long_constant:
+        case MSG_overflow_long_const:
             RETURN_ERRNO "cannot represent " EM_VARG " as a 64 bits signed integer constant, very large number";
-        case MSG_number_too_large_for_unsigned_long_constant:
+        case MSG_overflow_ulong_const:
             RETURN_ERRNO "cannot represent " EM_VARG " as a 64 bits unsigned integer constant, very large number";
-        case MSG_array_size_not_a_constant_integer:
+        case MSG_arr_size_not_int_const:
             RETURN_ERRNO "illegal array size " EM_VARG ", requires a constant integer";
-        case MSG_case_value_not_a_constant_integer:
+        case MSG_case_value_not_int_const:
             RETURN_ERRNO "illegal \033[1m‘case’\033[0m value " EM_VARG ", requires a constant integer";
-        case MSG_unexpected_unary_operator:
+        case MSG_expect_unop:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘~’\033[0m, \033[1m‘-’\033[0m or \033[1m‘!’\033[0m next";
-        case MSG_unexpected_binary_operator:
+        case MSG_expect_binop:
             RETURN_ERRNO
             "found token " EM_VARG
             ", but expected \033[1m‘+’\033[0m, \033[1m‘+=’\033[0m, \033[1m‘++’\033[0m, \033[1m‘-’\033[0m, "
@@ -511,18 +511,18 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
             "\033[1m‘<<=’\033[0m, \033[1m‘>>’\033[0m, \033[1m‘>>=’\033[0m, \033[1m‘&&’\033[0m, \033[1m‘||’\033[0m, "
             "\033[1m‘==’\033[0m, \033[1m‘!=’\033[0m, \033[1m‘<’\033[0m, \033[1m‘<=’\033[0m, \033[1m‘>’\033[0m or "
             "\033[1m‘>=’\033[0m next";
-        case MSG_unexpected_abstract_declarator:
+        case MSG_expect_abstract_decltor:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘*’\033[0m, \033[1m‘(’\033[0m or \033[1m‘[’\033[0m next";
-        case MSG_unexpected_pointer_unary_factor:
+        case MSG_expect_ptr_unary_factor:
             RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘*’\033[0m or \033[1m‘&’\033[0m next";
-        case MSG_unexpected_primary_expression_factor:
+        case MSG_expect_primary_exp_factor:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘const int’\033[0m, \033[1m‘const long’\033[0m, \033[1m‘const "
                          "char’\033[0m, \033[1m‘const double’\033[0m, \033[1m‘const unsigned int’\033[0m, "
                          "\033[1m‘const unsigned long’\033[0m, \033[1m‘identifier’\033[0m, "
                          "\033[1m‘identifier(’\033[0m, \033[1m‘string literal’\033[0m or \033[1m‘(’\033[0m next";
-        case MSG_unexpected_expression:
+        case MSG_expect_exp:
             RETURN_ERRNO
             "found token " EM_VARG
             ", but expected \033[1m‘+’\033[0m, \033[1m‘-’\033[0m, \033[1m‘*’\033[0m, \033[1m‘/’\033[0m, "
@@ -532,33 +532,33 @@ const char* get_parser_msg(MESSAGE_PARSER message) {
             "\033[1m‘+=’\033[0m, \033[1m‘-=’\033[0m, \033[1m‘*=’\033[0m, \033[1m‘/=’\033[0m, \033[1m‘%=’\033[0m, "
             "\033[1m‘&=’\033[0m, \033[1m‘|=’\033[0m, \033[1m‘^=’\033[0m, \033[1m‘<<=’\033[0m, \033[1m‘>>=’\033[0m "
             "or \033[1m‘?’\033[0m next";
-        case MSG_function_declared_in_for_initial:
+        case MSG_for_init_decl_as_fun:
             RETURN_ERRNO "function " EM_VARG " declared in \033[1m‘for’\033[0m loop initial declaration";
-        case MSG_unexpected_type_specifier:
+        case MSG_expect_specifier:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘identifier’\033[0m, \033[1m‘)’\033[0m, \033[1m‘char’\033[0m, "
                          "\033[1m‘int’\033[0m, \033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘void’\033[0m, \033[1m‘struct’\033[0m, \033[1m‘union’\033[0m, "
                          "\033[1m‘static’\033[0m, \033[1m‘extern’\033[0m, \033[1m‘*’\033[0m, \033[1m‘(’\033[0m or "
                          "\033[1m‘[’\033[0m next";
-        case MSG_unexpected_type_specifier_list:
+        case MSG_expect_specifier_list:
             RETURN_ERRNO "found tokens " EM_VARG ", but expected valid list of unique type specifiers next";
-        case MSG_unexpected_storage_class:
+        case MSG_expect_storage_class:
             RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘static’\033[0m or \033[1m‘extern’\033[0m next";
-        case MSG_empty_compound_initializer:
+        case MSG_empty_compound_init:
             RETURN_ERRNO "empty compound initializer requires at least one initializer";
-        case MSG_type_derivation_on_function_declaration:
+        case MSG_derived_fun_decl:
             RETURN_ERRNO "cannot apply further type derivation to function declaration";
-        case MSG_unexpected_simple_declarator:
+        case MSG_expect_simple_decltor:
             RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘identifier’\033[0m or \033[1m‘(’\033[0m next";
-        case MSG_unexpected_parameter_list:
+        case MSG_expect_param_list:
             RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘void’\033[0m, \033[1m‘char’\033[0m, \033[1m‘int’\033[0m, "
                          "\033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘struct’\033[0m or \033[1m‘union’\033[0m next";
-        case MSG_member_declared_with_non_automatic_storage:
+        case MSG_non_auto_member_decl:
             RETURN_ERRNO "data structure type declared with member " EM_VARG " with " EM_VARG " storage class";
-        case MSG_member_declared_as_function:
+        case MSG_member_decl_as_fun:
             RETURN_ERRNO "data structure type declared with member " EM_VARG " as a function";
         default:
             RAISE_INTERNAL_ERROR;
