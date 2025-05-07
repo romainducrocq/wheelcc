@@ -105,11 +105,11 @@ static const Token& peek_next_i(size_t i) {
     return (*ctx->p_toks)[ctx->pop_idx + i];
 }
 
-// <identifier> ::= ? An identifier tok ?
+// <identifier> ::= ? An identifier token ?
 static TIdentifier parse_identifier(size_t i) { return make_string_identifier(std::move(pop_next_i(i).tok)); }
 
 // string = StringLiteral(int*)
-// <string> ::= ? A string tok ?
+// <string> ::= ? A string token ?
 static std::shared_ptr<CStringLiteral> parse_string_literal() {
     std::vector<TChar> value;
     {
@@ -122,37 +122,37 @@ static std::shared_ptr<CStringLiteral> parse_string_literal() {
     return std::make_shared<CStringLiteral>(std::move(value));
 }
 
-// <int> ::= ? An int constant tok ?
+// <int> ::= ? An int constant token ?
 static std::shared_ptr<CConstInt> parse_int_const(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
     return std::make_shared<CConstInt>(std::move(value));
 }
 
-// <char> ::= ? A char tok ?
+// <char> ::= ? A char token ?
 static std::shared_ptr<CConstInt> parse_char_const() {
     TInt value = string_to_char_ascii(ctx->next_tok->tok);
     return std::make_shared<CConstInt>(std::move(value));
 }
 
-// <long> ::= ? An int or long constant tok ?
+// <long> ::= ? An int or long constant token ?
 static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
     TLong value = intmax_to_int64(intmax);
     return std::make_shared<CConstLong>(std::move(value));
 }
 
-// <double> ::= ? A floating-point constant tok ?
+// <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_dbl_const() {
     TDouble value = string_to_dbl(ctx->next_tok->tok, ctx->next_tok->line);
     return std::make_shared<CConstDouble>(std::move(value));
 }
 
-// <unsigned int> ::= ? An unsigned int constant tok ?
+// <unsigned int> ::= ? An unsigned int constant token ?
 static std::shared_ptr<CConstUInt> parse_uint_const(uintmax_t uintmax) {
     TUInt value = uintmax_to_uint32(uintmax);
     return std::make_shared<CConstUInt>(std::move(value));
 }
 
-// <unsigned long> ::= ? An unsigned int or unsigned long constant tok ?
+// <unsigned long> ::= ? An unsigned int or unsigned long constant token ?
 static std::shared_ptr<CConstULong> parse_ulong_const(uintmax_t uintmax) {
     TULong value = uintmax_to_uint64(uintmax);
     return std::make_shared<CConstULong>(std::move(value));
@@ -351,7 +351,7 @@ static void proc_abstract_decltor(
 
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_decltor();
 
-// (array) <direct-abstract-decltor> ::= { "[" <const> "]" }+
+// (array) <direct-abstract-declarator> ::= { "[" <const> "]" }+
 static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
     std::unique_ptr<CAbstractDeclarator> abstract_decltor = std::make_unique<CAbstractBase>();
     do {
@@ -362,7 +362,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor() {
     return abstract_decltor;
 }
 
-// (direct) <direct-abstract-decltor> ::= "(" <abstract-decltor> ")" { "[" <const> "]" }
+// (direct) <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" }
 static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor() {
     pop_next();
     std::unique_ptr<CAbstractDeclarator> abstract_decltor = parse_abstract_decltor();
@@ -386,8 +386,8 @@ static std::unique_ptr<CAbstractPointer> parse_ptr_abstract_decltor() {
     return std::make_unique<CAbstractPointer>(std::move(abstract_decltor));
 }
 
-// <abstract-decltor> ::= "*" [ <abstract-decltor> ] | <direct-abstract-decltor>
-// abstract_decltor = AbstractPointer(abstract_decltor) | AbstractArray(int, abstract_decltor) | AbstractBase
+// <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
+// abstract_declarator = AbstractPointer(abstract_declarator) | AbstractArray(int, abstract_declarator) | AbstractBase
 static std::unique_ptr<CAbstractDeclarator> parse_abstract_decltor() {
     switch (peek_next().tok_kind) {
         case TOK_binop_multiply:
@@ -414,7 +414,7 @@ static void parse_decltor_cast_factor(std::shared_ptr<Type>& target_type) {
     target_type = std::move(abstract_decltor.derived_type);
 }
 
-// <type-name> ::= { <type-specifier> }+ [ <abstract-decltor> ]
+// <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
 static std::shared_ptr<Type> parse_type_name() {
     std::shared_ptr<Type> type_name = parse_type_specifier();
     switch (peek_next().tok_kind) {
@@ -1463,7 +1463,7 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor() {
     return decltor;
 }
 
-// <simple-decltor> ::= <identifier> | "(" <decltor> ")"
+// <simple-declarator> ::= <identifier> | "(" <declarator> ")"
 static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
     switch (peek_next().tok_kind) {
         case TOK_identifier:
@@ -1476,8 +1476,8 @@ static std::unique_ptr<CDeclarator> parse_simple_decltor_decl() {
     }
 }
 
-// <param> ::= { <type-specifier> }+ <decltor>
-// param_info = Param(type, decltor)
+// <param> ::= { <type-specifier> }+ <declarator>
+// param_info = Param(type, declarator)
 static std::unique_ptr<CParam> parse_param() {
     std::shared_ptr<Type> param_type = parse_type_specifier();
     std::unique_ptr<CDeclarator> decltor = parse_decltor();
@@ -1533,13 +1533,13 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list() {
     return param_list;
 }
 
-// (fun) <decltor-suffix> ::= <param-list>
+// (fun) <declarator-suffix> ::= <param-list>
 static std::unique_ptr<CFunDeclarator> parse_fun_decltor_suffix(std::unique_ptr<CDeclarator> decltor) {
     std::vector<std::unique_ptr<CParam>> param_list = parse_param_list();
     return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(decltor));
 }
 
-// (array) <decltor-suffix> ::= { "[" <const> "]" }+
+// (array) <declarator-suffix> ::= { "[" <const> "]" }+
 static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDeclarator> decltor) {
     do {
         TLong size = parse_arr_size();
@@ -1549,7 +1549,7 @@ static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(std::unique_ptr<CDe
     return decltor;
 }
 
-// <direct-decltor> ::= <simple-decltor> [ <decltor-suffix> ]
+// <direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
 static std::unique_ptr<CDeclarator> parse_direct_decltor() {
     std::unique_ptr<CDeclarator> decltor = parse_simple_decltor_decl();
     switch (peek_next().tok_kind) {
@@ -1570,9 +1570,9 @@ static std::unique_ptr<CPointerDeclarator> parse_ptr_decltor() {
     return std::make_unique<CPointerDeclarator>(std::move(decltor));
 }
 
-// <decltor> ::= "*" <decltor> | <direct-decltor>
-// decltor = Ident(identifier) | PointerDeclarator(decltor) | ArrayDeclarator(int, decltor)
-//            | FunDeclarator(param_info*, decltor)
+// <declarator> ::= "*" <declarator> | <direct-declarator>
+// declarator = Ident(identifier) | PointerDeclarator(declarator) | ArrayDeclarator(int, declarator)
+//            | FunDeclarator(param_info*, declarator)
 static std::unique_ptr<CDeclarator> parse_decltor() {
     switch (peek_next().tok_kind) {
         case TOK_binop_multiply:
@@ -1582,7 +1582,7 @@ static std::unique_ptr<CDeclarator> parse_decltor() {
     }
 }
 
-// <function-declaration> ::= { <specifier> }+ <decltor> ( <block> | ";")
+// <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor) {
@@ -1599,7 +1599,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
         std::move(decltor.derived_type), std::move(storage_class), std::move(line));
 }
 
-// <variable-declaration> ::= { <specifier> }+ <decltor> [ "=" <initializer> ] ";"
+// <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
 // variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
 static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
     std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor) {
@@ -1614,7 +1614,7 @@ static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
         std::move(decltor.derived_type), std::move(storage_class), std::move(line));
 }
 
-// <member-declaration> ::= { <type-specifier> }+ <decltor> ";"
+// <member-declaration> ::= { <type-specifier> }+ <declarator> ";"
 // member_declaration = MemberDeclaration(identifier, type)
 static std::unique_ptr<CMemberDeclaration> parse_member_decl() {
     Declarator decltor;

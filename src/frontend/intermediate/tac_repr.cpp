@@ -1291,7 +1291,7 @@ static void declaration_instr(CDeclaration* node) {
     }
 }
 
-// instr = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
+// instruction = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val?) | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
@@ -1352,7 +1352,7 @@ static void fun_decl_toplvl(CFunDecl* node) {
     }
 }
 
-// (function) top_level = Function(identifier, bool, identifier*, instr*)
+// (function) top_level = Function(identifier, bool, identifier*, instruction*)
 static void declaration_toplvl(CDeclaration* node) {
     switch (node->type()) {
         case AST_CFunDecl_t:

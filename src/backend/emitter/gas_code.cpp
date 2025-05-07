@@ -803,7 +803,7 @@ static void align_directive_toplvl(TInt alignment) {
     }
 }
 
-// -> if is_glob $ .globl <identifier>
+// -> if is_global $ .globl <identifier>
 static void glob_directive_toplvl(const std::string& name, bool is_glob) {
     if (is_glob) {
         std::string directive = ".globl ";

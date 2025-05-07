@@ -2315,12 +2315,12 @@ static void gen_instr(TacInstruction* node) {
     }
 }
 
-// instr = Mov(asm_type, operand, operand) | MovSx(asm_type, asm_type, operand, operand)
-//             | MovZeroExtend(asm_type, asm_type, operand, operand) | Lea(operand, operand)
-//             | Cvttsd2si(asm_type, operand, operand) | Cvtsi2sd(asm_type, operand, operand)
-//             | Unary(unary_operator, asm_type, operand) | Binary(binary_operator, asm_type, operand,
-//             operand) | Cmp(asm_type, operand, operand) | Idiv(asm_type, operand) | Div(asm_type,
-//             operand) | Cdq(asm_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
+// instruction = Mov(assembly_type, operand, operand) | MovSx(assembly_type, assembly_type, operand, operand)
+//             | MovZeroExtend(assembly_type, assembly_type, operand, operand) | Lea(operand, operand)
+//             | Cvttsd2si(assembly_type, operand, operand) | Cvtsi2sd(assembly_type, operand, operand)
+//             | Unary(unary_operator, assembly_type, operand) | Binary(binary_operator, assembly_type, operand,
+//             operand) | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type,
+//             operand) | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
 //             operand) | Label(identifier) | Push(operand) | Pop(reg) | Call(identifier) | Ret
 static void gen_instr_list(const std::vector<std::unique_ptr<TacInstruction>>& node_list) {
     for (const auto& instr : node_list) {
@@ -2522,7 +2522,7 @@ static std::unique_ptr<AsmStaticConstant> gen_static_const_toplvl(TacStaticConst
     return std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init));
 }
 
-// top_level = Function(identifier, bool, bool, instr*) | StaticVariable(identifier, bool, int, static_init*)
+// top_level = Function(identifier, bool, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 static std::unique_ptr<AsmTopLevel> gen_toplvl(TacTopLevel* node) {
     switch (node->type()) {
