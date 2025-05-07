@@ -17,15 +17,15 @@
 
 hash_t string_to_hash(const std::string& string) { return std::hash<std::string> {}(string); }
 
-intmax_t string_to_intmax(const std::string& s_int, size_t line) {
-    std::vector<char> buf(s_int.begin(), s_int.end());
+intmax_t string_to_intmax(const std::string& str_int, size_t line) {
+    std::vector<char> buf(str_int.begin(), str_int.end());
     buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
     intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
 
     if (end_ptr == &buf[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, s_int.c_str()), line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
     }
 
     return intmax;
@@ -35,15 +35,15 @@ int32_t intmax_to_int32(intmax_t intmax) { return static_cast<int32_t>(intmax); 
 
 int64_t intmax_to_int64(intmax_t intmax) { return static_cast<int64_t>(intmax); }
 
-uintmax_t string_to_uintmax(const std::string& s_uint, size_t line) {
-    std::vector<char> buf(s_uint.begin(), s_uint.end());
+uintmax_t string_to_uintmax(const std::string& str_uint, size_t line) {
+    std::vector<char> buf(str_uint.begin(), str_uint.end());
     buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
     uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
 
     if (end_ptr == &buf[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, s_uint.c_str()), line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
     }
 
     return uintmax;
@@ -53,11 +53,11 @@ uint32_t uintmax_to_uint32(uintmax_t uintmax) { return static_cast<uint32_t>(uin
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) { return static_cast<uint64_t>(uintmax); }
 
-void string_to_literal(const std::string& s_string, std::vector<int8_t>& string_literal) {
-    for (size_t byte = 1; byte < s_string.size() - 1; ++byte) {
-        char c_char = static_cast<char>(s_string[byte]);
+void string_to_literal(const std::string& str_string, std::vector<int8_t>& string_literal) {
+    for (size_t byte = 1; byte < str_string.size() - 1; ++byte) {
+        char c_char = static_cast<char>(str_string[byte]);
         if (c_char == '\\') {
-            c_char = static_cast<char>(s_string[++byte]);
+            c_char = static_cast<char>(str_string[++byte]);
             switch (c_char) {
                 case '\'':
                     string_literal.push_back(39);
@@ -102,10 +102,10 @@ void string_to_literal(const std::string& s_string, std::vector<int8_t>& string_
     }
 }
 
-int32_t string_to_char_ascii(const std::string& s_char) {
-    char c_char = static_cast<char>(s_char[1]);
+int32_t string_to_char_ascii(const std::string& str_char) {
+    char c_char = static_cast<char>(str_char[1]);
     if (c_char == '\\') {
-        c_char = static_cast<char>(s_char[2]);
+        c_char = static_cast<char>(str_char[2]);
         switch (c_char) {
             case '\'':
                 return 39;
@@ -138,8 +138,8 @@ int32_t string_to_char_ascii(const std::string& s_char) {
     }
 }
 
-static intmax_t hex_string_to_intmax(const std::string& s_hex) {
-    std::vector<char> buf(s_hex.begin(), s_hex.end());
+static intmax_t hex_string_to_intmax(const std::string& str_hex) {
+    std::vector<char> buf(str_hex.begin(), str_hex.end());
     buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
@@ -152,14 +152,16 @@ static intmax_t hex_string_to_intmax(const std::string& s_hex) {
     return intmax;
 }
 
-static int8_t hex_string_to_int8(const std::string& s_hex) { return static_cast<int8_t>(hex_string_to_intmax(s_hex)); }
-
-static int32_t hex_string_to_int32(const std::string& s_hex) {
-    return static_cast<int32_t>(hex_string_to_intmax(s_hex));
+static int8_t hex_string_to_int8(const std::string& str_hex) {
+    return static_cast<int8_t>(hex_string_to_intmax(str_hex));
 }
 
-static int64_t hex_string_to_int64(const std::string& s_hex) {
-    return static_cast<int64_t>(hex_string_to_intmax(s_hex));
+static int32_t hex_string_to_int32(const std::string& str_hex) {
+    return static_cast<int32_t>(hex_string_to_intmax(str_hex));
+}
+
+static int64_t hex_string_to_int64(const std::string& str_hex) {
+    return static_cast<int64_t>(hex_string_to_intmax(str_hex));
 }
 
 static std::string string_literal_byte_to_hex(int8_t val) {
@@ -169,33 +171,33 @@ static std::string string_literal_byte_to_hex(int8_t val) {
 }
 
 int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {
-    std::string s_hex = "";
+    std::string str_hex = "";
     for (size_t byte = byte_at + 1; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
-            s_hex += string_literal_byte_to_hex(string_literal[byte]);
+            str_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
-    return hex_string_to_int8(s_hex);
+    return hex_string_to_int8(str_hex);
 }
 
 int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
-    std::string s_hex = "";
+    std::string str_hex = "";
     for (size_t byte = byte_at + 4; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
-            s_hex += string_literal_byte_to_hex(string_literal[byte]);
+            str_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
-    return hex_string_to_int32(s_hex);
+    return hex_string_to_int32(str_hex);
 }
 
 int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
-    std::string s_hex = "";
+    std::string str_hex = "";
     for (size_t byte = byte_at + 8; byte-- > byte_at;) {
         if (byte < string_literal.size()) {
-            s_hex += string_literal_byte_to_hex(string_literal[byte]);
+            str_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
-    return hex_string_to_int64(s_hex);
+    return hex_string_to_int64(str_hex);
 }
 
 std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
@@ -243,15 +245,15 @@ std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
     return string_const;
 }
 
-double string_to_dbl(const std::string& s_double, size_t line) {
-    std::vector<char> buf(s_double.begin(), s_double.end());
+double string_to_dbl(const std::string& str_dbl, size_t line) {
+    std::vector<char> buf(str_dbl.begin(), str_dbl.end());
     buf.push_back('\0');
     char* end_ptr = nullptr;
     errno = 0;
     double float64 = strtod(&buf[0], &end_ptr);
 
     if (end_ptr == &buf[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, s_double.c_str()), line);
+        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl.c_str()), line);
     }
 
     return float64;

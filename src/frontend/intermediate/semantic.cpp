@@ -1439,25 +1439,25 @@ static std::unique_ptr<CSingleInit> check_single_zero_init(Type* elem_type) {
 }
 
 static std::unique_ptr<CCompoundInit> check_arr_zero_init(Array* arr_type) {
-    std::vector<std::unique_ptr<CInitializer>> zero_initializers;
+    std::vector<std::unique_ptr<CInitializer>> zero_inits;
     size_t arr_type_size = static_cast<size_t>(arr_type->size);
-    zero_initializers.reserve(arr_type_size);
+    zero_inits.reserve(arr_type_size);
     for (size_t i = 0; i < arr_type_size; ++i) {
         std::unique_ptr<CInitializer> initializer = check_zero_init(arr_type->elem_type.get());
-        zero_initializers.push_back(std::move(initializer));
+        zero_inits.push_back(std::move(initializer));
     }
-    return std::make_unique<CCompoundInit>(std::move(zero_initializers));
+    return std::make_unique<CCompoundInit>(std::move(zero_inits));
 }
 
 static std::unique_ptr<CCompoundInit> check_struct_zero_init(Structure* struct_type) {
-    std::vector<std::unique_ptr<CInitializer>> zero_initializers;
-    zero_initializers.reserve(frontend->struct_typedef_table[struct_type->tag]->member_names.size());
+    std::vector<std::unique_ptr<CInitializer>> zero_inits;
+    zero_inits.reserve(frontend->struct_typedef_table[struct_type->tag]->member_names.size());
     for (TIdentifier member_name : frontend->struct_typedef_table[struct_type->tag]->member_names) {
         const auto& member = frontend->struct_typedef_table[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = check_zero_init(member->member_type.get());
-        zero_initializers.push_back(std::move(initializer));
+        zero_inits.push_back(std::move(initializer));
     }
-    return std::make_unique<CCompoundInit>(std::move(zero_initializers));
+    return std::make_unique<CCompoundInit>(std::move(zero_inits));
 }
 
 static std::unique_ptr<CInitializer> check_zero_init(Type* init_type) {
@@ -1491,8 +1491,8 @@ static void check_bound_struct_init(CCompoundInit* node, Structure* struct_type)
 
 static void check_arr_init(CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>& init_type) {
     while (node->initializers.size() < static_cast<size_t>(arr_type->size)) {
-        std::unique_ptr<CInitializer> zero_initializer = check_zero_init(arr_type->elem_type.get());
-        node->initializers.push_back(std::move(zero_initializer));
+        std::unique_ptr<CInitializer> zero_init = check_zero_init(arr_type->elem_type.get());
+        node->initializers.push_back(std::move(zero_init));
     }
     node->init_type = init_type;
 }
@@ -1501,8 +1501,8 @@ static void check_struct_init(CCompoundInit* node, Structure* struct_type, std::
     for (size_t i = node->initializers.size(); i < frontend->struct_typedef_table[struct_type->tag]->members.size();
          ++i) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
-        std::unique_ptr<CInitializer> zero_initializer = check_zero_init(member->member_type.get());
-        node->initializers.push_back(std::move(zero_initializer));
+        std::unique_ptr<CInitializer> zero_init = check_zero_init(member->member_type.get());
+        node->initializers.push_back(std::move(zero_init));
     }
     node->init_type = init_type;
 }
@@ -1743,7 +1743,7 @@ static void check_static_ptr_string_init(CString* node, Pointer* static_ptr_type
             GET_SEMANTIC_MSG(MSG_static_ptr_init_string, fmt_type_c_str(static_ptr_type)), node->line);
     }
 
-    TIdentifier string_constant_label;
+    TIdentifier string_const_label;
     {
         TIdentifier string_const;
         {
@@ -1751,11 +1751,11 @@ static void check_static_ptr_string_init(CString* node, Pointer* static_ptr_type
             string_const = make_string_identifier(std::move(value));
         }
         if (frontend->string_const_table.find(string_const) != frontend->string_const_table.end()) {
-            string_constant_label = frontend->string_const_table[string_const];
+            string_const_label = frontend->string_const_table[string_const];
         }
         else {
-            string_constant_label = repr_label_identifier(LBL_Lstring);
-            frontend->string_const_table[string_const] = string_constant_label;
+            string_const_label = repr_label_identifier(LBL_Lstring);
+            frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
@@ -1771,11 +1771,11 @@ static void check_static_ptr_string_init(CString* node, Pointer* static_ptr_type
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
-            frontend->symbol_table[string_constant_label] =
+            frontend->symbol_table[string_const_label] =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
         }
     }
-    push_static_init(std::make_shared<PointerInit>(std::move(string_constant_label)));
+    push_static_init(std::make_shared<PointerInit>(std::move(string_const_label)));
 }
 
 static void check_static_arr_string_init(CString* node, Array* static_arr_type) {
@@ -1899,7 +1899,7 @@ static void check_file_var_decl(CVariableDeclaration* node) {
     }
     is_valid_type(node->var_type.get());
 
-    std::shared_ptr<InitialValue> initial_value;
+    std::shared_ptr<InitialValue> init_value;
     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
 
     if (node->init) {
@@ -1909,11 +1909,11 @@ static void check_file_var_decl(CVariableDeclaration* node) {
                                             fmt_type_c_str(node->var_type.get())),
                 node->line);
         }
-        initial_value = check_initializer(node->init.get(), node->var_type.get());
+        init_value = check_initializer(node->init.get(), node->var_type.get());
     }
     else {
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-            initial_value = std::make_shared<NoInitializer>();
+            init_value = std::make_shared<NoInitializer>();
         }
         else {
             if (node->var_type->type() == AST_Structure_t
@@ -1922,7 +1922,7 @@ static void check_file_var_decl(CVariableDeclaration* node) {
                                                 fmt_type_c_str(node->var_type.get())),
                     node->line);
             }
-            initial_value = std::make_shared<Tentative>();
+            init_value = std::make_shared<Tentative>();
         }
     }
 
@@ -1934,31 +1934,30 @@ static void check_file_var_decl(CVariableDeclaration* node) {
                 node->line);
         }
 
-        StaticAttr* global_var_attrs = static_cast<StaticAttr*>(frontend->symbol_table[node->name]->attrs.get());
+        StaticAttr* glob_var_attrs = static_cast<StaticAttr*>(frontend->symbol_table[node->name]->attrs.get());
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-            is_glob = global_var_attrs->is_glob;
+            is_glob = glob_var_attrs->is_glob;
         }
-        else if (is_glob != global_var_attrs->is_glob) {
+        else if (is_glob != glob_var_attrs->is_glob) {
             RAISE_RUNTIME_ERROR_AT_LINE(
                 GET_SEMANTIC_MSG(MSG_redecl_var_storage, fmt_name_c_str(node->name)), node->line);
         }
 
-        if (global_var_attrs->init->type() == AST_Initial_t) {
-            if (initial_value->type() == AST_Initial_t) {
+        if (glob_var_attrs->init->type() == AST_Initial_t) {
+            if (init_value->type() == AST_Initial_t) {
                 RAISE_RUNTIME_ERROR_AT_LINE(
                     GET_SEMANTIC_MSG(MSG_redecl_var_storage, fmt_name_c_str(node->name)), node->line);
             }
             else {
-                initial_value = global_var_attrs->init;
+                init_value = glob_var_attrs->init;
             }
         }
     }
 
-    std::shared_ptr<Type> global_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> global_var_attrs =
-        std::make_unique<StaticAttr>(std::move(is_glob), std::move(initial_value));
-    frontend->symbol_table[node->name] =
-        std::make_unique<Symbol>(std::move(global_var_type), std::move(global_var_attrs));
+    std::shared_ptr<Type> glob_var_type = node->var_type;
+    std::unique_ptr<IdentifierAttr> glob_var_attrs =
+        std::make_unique<StaticAttr>(std::move(is_glob), std::move(init_value));
+    frontend->symbol_table[node->name] = std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
 }
 
 static void check_extern_block_var_decl(CVariableDeclaration* node) {
@@ -1978,8 +1977,8 @@ static void check_extern_block_var_decl(CVariableDeclaration* node) {
     std::shared_ptr<Type> local_var_type = node->var_type;
     std::unique_ptr<IdentifierAttr> local_var_attrs;
     {
-        std::shared_ptr<InitialValue> initial_value = std::make_shared<NoInitializer>();
-        local_var_attrs = std::make_unique<StaticAttr>(true, std::move(initial_value));
+        std::shared_ptr<InitialValue> init_value = std::make_shared<NoInitializer>();
+        local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
     }
     frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
@@ -1991,16 +1990,16 @@ static void check_static_block_var_decl(CVariableDeclaration* node) {
         RAISE_INTERNAL_ERROR;
     }
 
-    std::shared_ptr<InitialValue> initial_value;
+    std::shared_ptr<InitialValue> init_value;
     if (node->init) {
-        initial_value = check_initializer(node->init.get(), node->var_type.get());
+        init_value = check_initializer(node->init.get(), node->var_type.get());
     }
     else {
-        initial_value = check_no_initializer(node->var_type.get());
+        init_value = check_no_initializer(node->var_type.get());
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false, std::move(initial_value));
+    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
     frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
 }
@@ -2633,8 +2632,8 @@ static void reslv_statement(CStatement* node) {
 
 static void reslv_declaration(CDeclaration* node);
 
-static void reslv_block_items(const std::vector<std::unique_ptr<CBlockItem>>& list_node) {
-    for (const auto& block_item : list_node) {
+static void reslv_block_items(const std::vector<std::unique_ptr<CBlockItem>>& node_list) {
+    for (const auto& block_item : node_list) {
         switch (block_item->type()) {
             case AST_CS_t:
                 reslv_statement(static_cast<CS*>(block_item.get())->statement.get());

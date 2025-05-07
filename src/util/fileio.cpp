@@ -20,11 +20,11 @@ void set_filename(const std::string& filename) { fileio->filename = filename; }
 void open_fread(const std::string& filename) {
     for (size_t i = 0; i < fileio->file_reads.size(); ++i) {
         if (fileio->file_reads[i].fd) {
-            size_t n_open_files = fileio->file_reads.size() - i;
-            if (n_open_files > FOPEN_MAX) {
+            size_t n_fopens = fileio->file_reads.size() - i;
+            if (n_fopens > FOPEN_MAX) {
                 RAISE_INTERNAL_ERROR;
             }
-            else if (n_open_files == FOPEN_MAX) {
+            else if (n_fopens == FOPEN_MAX) {
                 fileio->file_reads[i].len = 0;
                 free(fileio->file_reads[i].buf);
                 fileio->file_reads[i].buf = nullptr;
@@ -80,12 +80,12 @@ bool read_line(std::string& line) {
     return true;
 }
 
-static void write_chunk(const std::string& chunk_buffer) {
-    fwrite(chunk_buffer.c_str(), sizeof(char), chunk_buffer.size(), fileio->fd_write);
+static void write_chunk(const std::string& chunk_buf) {
+    fwrite(chunk_buf.c_str(), sizeof(char), chunk_buf.size(), fileio->fd_write);
 }
 
-static void write_file(std::string&& string_stream, size_t chunk_size) {
-    fileio->write_buf += string_stream;
+static void write_file(std::string&& stream_buf, size_t chunk_size) {
+    fileio->write_buf += stream_buf;
     while (fileio->write_buf.size() >= chunk_size) {
         write_chunk(fileio->write_buf.substr(0, chunk_size));
         fileio->write_buf = fileio->write_buf.substr(chunk_size, fileio->write_buf.size() - chunk_size);

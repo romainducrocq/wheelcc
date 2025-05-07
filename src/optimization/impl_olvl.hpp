@@ -62,12 +62,12 @@ struct DataFlowAnalysisO2 {
 };
 #endif
 
-static void set_instr(std::unique_ptr<AstInstruction>&& instruction, size_t instruction_index) {
-    if (instruction) {
-        GET_INSTR(instruction_index) = std::move(instruction);
+static void set_instr(std::unique_ptr<AstInstruction>&& instr, size_t instr_idx) {
+    if (instr) {
+        GET_INSTR(instr_idx) = std::move(instr);
     }
     else {
-        GET_INSTR(instruction_index).reset();
+        GET_INSTR(instr_idx).reset();
     }
 #if __OPTIM_LEVEL__ == 1
     ctx->is_fixed_point = false;
@@ -78,46 +78,44 @@ static void set_instr(std::unique_ptr<AstInstruction>&& instruction, size_t inst
 
 // Control flow graph
 
-static void cfg_add_edge(
-    std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t successor_id, size_t predecessor_id) {
-    if (std::find(succ_ids.begin(), succ_ids.end(), successor_id) == succ_ids.end()) {
-        succ_ids.push_back(successor_id);
+static void cfg_add_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id) {
+    if (std::find(succ_ids.begin(), succ_ids.end(), succ_id) == succ_ids.end()) {
+        succ_ids.push_back(succ_id);
     }
-    if (std::find(pred_ids.begin(), pred_ids.end(), predecessor_id) == pred_ids.end()) {
-        pred_ids.push_back(predecessor_id);
+    if (std::find(pred_ids.begin(), pred_ids.end(), pred_id) == pred_ids.end()) {
+        pred_ids.push_back(pred_id);
     }
 }
 
-static void cfg_add_succ_edge(size_t block_id, size_t successor_id) {
-    if (successor_id < ctx->cfg->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(successor_id).pred_ids, successor_id, block_id);
+static void cfg_add_succ_edge(size_t block_id, size_t succ_id) {
+    if (succ_id < ctx->cfg->exit_id) {
+        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id);
     }
-    else if (successor_id == ctx->cfg->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, successor_id, block_id);
+    else if (succ_id == ctx->cfg->exit_id) {
+        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void cfg_add_pred_edge(size_t block_id, size_t predecessor_id) {
-    if (predecessor_id < ctx->cfg->exit_id) {
-        cfg_add_edge(
-            GET_CFG_BLOCK(predecessor_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id);
+static void cfg_add_pred_edge(size_t block_id, size_t pred_id) {
+    if (pred_id < ctx->cfg->exit_id) {
+        cfg_add_edge(GET_CFG_BLOCK(pred_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
     }
-    else if (predecessor_id == ctx->cfg->entry_id) {
-        cfg_add_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id);
+    else if (pred_id == ctx->cfg->entry_id) {
+        cfg_add_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void cfg_rm_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t successor_id,
-    size_t predecessor_id, bool is_reachable) {
+static void cfg_rm_edge(
+    std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id, bool is_reachable) {
     if (is_reachable) {
         for (size_t i = succ_ids.size(); i-- > 0;) {
-            if (succ_ids[i] == successor_id) {
+            if (succ_ids[i] == succ_id) {
                 std::swap(succ_ids[i], succ_ids.back());
                 succ_ids.pop_back();
                 break;
@@ -125,7 +123,7 @@ static void cfg_rm_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred
         }
     }
     for (size_t i = pred_ids.size(); i-- > 0;) {
-        if (pred_ids[i] == predecessor_id) {
+        if (pred_ids[i] == pred_id) {
             std::swap(pred_ids[i], pred_ids.back());
             pred_ids.pop_back();
             break;
@@ -133,26 +131,24 @@ static void cfg_rm_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred
     }
 }
 
-static void cfg_rm_succ_edge(size_t block_id, size_t successor_id, bool is_reachable) {
-    if (successor_id < ctx->cfg->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(successor_id).pred_ids, successor_id, block_id,
-            is_reachable);
+static void cfg_rm_succ_edge(size_t block_id, size_t succ_id, bool is_reachable) {
+    if (succ_id < ctx->cfg->exit_id) {
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id, is_reachable);
     }
-    else if (successor_id == ctx->cfg->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, successor_id, block_id, is_reachable);
+    else if (succ_id == ctx->cfg->exit_id) {
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id, is_reachable);
     }
     else {
         RAISE_INTERNAL_ERROR;
     }
 }
 
-static void cfg_rm_pred_edge(size_t block_id, size_t predecessor_id) {
-    if (predecessor_id < ctx->cfg->exit_id) {
-        cfg_rm_edge(
-            GET_CFG_BLOCK(predecessor_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id, true);
+static void cfg_rm_pred_edge(size_t block_id, size_t pred_id) {
+    if (pred_id < ctx->cfg->exit_id) {
+        cfg_rm_edge(GET_CFG_BLOCK(pred_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
     }
-    else if (predecessor_id == ctx->cfg->entry_id) {
-        cfg_rm_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, predecessor_id, true);
+    else if (pred_id == ctx->cfg->entry_id) {
+        cfg_rm_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
     }
     else {
         RAISE_INTERNAL_ERROR;
@@ -160,48 +156,48 @@ static void cfg_rm_pred_edge(size_t block_id, size_t predecessor_id) {
 }
 
 static void cfg_rm_empty_block(size_t block_id, bool is_reachable) {
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
+    for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
         if (is_reachable) {
-            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
-                if (predecessor_id == ctx->cfg->entry_id) {
-                    cfg_add_pred_edge(successor_id, predecessor_id);
+            for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+                if (pred_id == ctx->cfg->entry_id) {
+                    cfg_add_pred_edge(succ_id, pred_id);
                 }
                 else {
-                    cfg_add_succ_edge(predecessor_id, successor_id);
+                    cfg_add_succ_edge(pred_id, succ_id);
                 }
             }
         }
-        cfg_rm_succ_edge(block_id, successor_id, is_reachable);
+        cfg_rm_succ_edge(block_id, succ_id, is_reachable);
     }
     if (is_reachable) {
-        for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
-            cfg_rm_pred_edge(block_id, predecessor_id);
+        for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+            cfg_rm_pred_edge(block_id, pred_id);
         }
     }
     GET_CFG_BLOCK(block_id).instrs_front_idx = ctx->cfg->exit_id;
     GET_CFG_BLOCK(block_id).instrs_back_idx = ctx->cfg->exit_id;
 }
 
-static void cfg_rm_block_instr(size_t instruction_index, size_t block_id) {
-    if (GET_INSTR(instruction_index)) {
-        set_instr(nullptr, instruction_index);
+static void cfg_rm_block_instr(size_t instr_idx, size_t block_id) {
+    if (GET_INSTR(instr_idx)) {
+        set_instr(nullptr, instr_idx);
         GET_CFG_BLOCK(block_id).size--;
         if (GET_CFG_BLOCK(block_id).size == 0) {
             cfg_rm_empty_block(block_id, true);
         }
-        else if (instruction_index == GET_CFG_BLOCK(block_id).instrs_front_idx) {
-            for (; instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instruction_index) {
-                if (GET_INSTR(instruction_index)) {
-                    GET_CFG_BLOCK(block_id).instrs_front_idx = instruction_index;
+        else if (instr_idx == GET_CFG_BLOCK(block_id).instrs_front_idx) {
+            for (; instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
+                if (GET_INSTR(instr_idx)) {
+                    GET_CFG_BLOCK(block_id).instrs_front_idx = instr_idx;
                     break;
                 }
             }
         }
-        else if (instruction_index == GET_CFG_BLOCK(block_id).instrs_back_idx) {
-            instruction_index++;
-            for (; instruction_index-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
-                if (GET_INSTR(instruction_index)) {
-                    GET_CFG_BLOCK(block_id).instrs_back_idx = instruction_index;
+        else if (instr_idx == GET_CFG_BLOCK(block_id).instrs_back_idx) {
+            instr_idx++;
+            for (; instr_idx-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
+                if (GET_INSTR(instr_idx)) {
+                    GET_CFG_BLOCK(block_id).instrs_back_idx = instr_idx;
                     break;
                 }
             }
@@ -219,8 +215,8 @@ static void cfg_init_label_block(AsmLabel* node) {
 }
 #endif
 
-static void cfg_init_block(size_t instruction_index, size_t& instrs_back_idx) {
-    AstInstruction* node = GET_INSTR(instruction_index).get();
+static void cfg_init_block(size_t instr_idx, size_t& instrs_back_idx) {
+    AstInstruction* node = GET_INSTR(instr_idx).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_TacLabel_t:
@@ -230,7 +226,7 @@ static void cfg_init_block(size_t instruction_index, size_t& instrs_back_idx) {
         {
             if (instrs_back_idx != ctx->p_instrs->size()) {
                 ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
-                ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
+                ControlFlowBlock block = {0, instr_idx, 0, {}, {}};
                 ctx->cfg->blocks.emplace_back(std::move(block));
             }
 #if __OPTIM_LEVEL__ == 1
@@ -238,7 +234,7 @@ static void cfg_init_block(size_t instruction_index, size_t& instrs_back_idx) {
 #elif __OPTIM_LEVEL__ == 2
             cfg_init_label_block(static_cast<AsmLabel*>(node));
 #endif
-            instrs_back_idx = instruction_index;
+            instrs_back_idx = instr_idx;
             break;
         }
 #if __OPTIM_LEVEL__ == 1
@@ -252,12 +248,12 @@ static void cfg_init_block(size_t instruction_index, size_t& instrs_back_idx) {
         case AST_AsmRet_t:
 #endif
         {
-            ctx->cfg->blocks.back().instrs_back_idx = instruction_index;
+            ctx->cfg->blocks.back().instrs_back_idx = instr_idx;
             instrs_back_idx = ctx->p_instrs->size();
             break;
         }
         default: {
-            instrs_back_idx = instruction_index;
+            instrs_back_idx = instr_idx;
             break;
         }
     }
@@ -327,13 +323,13 @@ static void init_control_flow_graph() {
     ctx->cfg->identifier_id_map.clear();
     {
         size_t instrs_back_idx = ctx->p_instrs->size();
-        for (size_t instruction_index = 0; instruction_index < ctx->p_instrs->size(); ++instruction_index) {
-            if (GET_INSTR(instruction_index)) {
+        for (size_t instr_idx = 0; instr_idx < ctx->p_instrs->size(); ++instr_idx) {
+            if (GET_INSTR(instr_idx)) {
                 if (instrs_back_idx == ctx->p_instrs->size()) {
-                    ControlFlowBlock block = {0, instruction_index, 0, {}, {}};
+                    ControlFlowBlock block = {0, instr_idx, 0, {}, {}};
                     ctx->cfg->blocks.emplace_back(std::move(block));
                 }
-                cfg_init_block(instruction_index, instrs_back_idx);
+                cfg_init_block(instr_idx, instrs_back_idx);
                 ctx->cfg->blocks.back().size++;
             }
         }
@@ -398,13 +394,13 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
 #define GET_DFA_INSTR(X) GET_INSTR(ctx->dfa_o1->data_idx_map[X])
 #endif
 
-static bool is_transfer_instr(size_t instruction_index
+static bool is_transfer_instr(size_t instr_idx
 #if __OPTIM_LEVEL__ == 1
     ,
-    bool is_dead_store_elimination
+    bool is_store_elim
 #endif
 ) {
-    switch (GET_INSTR(instruction_index)->type()) {
+    switch (GET_INSTR(instr_idx)->type()) {
 #if __OPTIM_LEVEL__ == 1
         case AST_TacSignExtend_t:
         case AST_TacTruncate_t:
@@ -427,7 +423,7 @@ static bool is_transfer_instr(size_t instruction_index
         case AST_TacReturn_t:
         case AST_TacJumpIfZero_t:
         case AST_TacJumpIfNotZero_t:
-            return is_dead_store_elimination;
+            return is_store_elim;
 #elif __OPTIM_LEVEL__ == 2
         case AST_AsmMov_t:
         case AST_AsmMovSx_t:
@@ -452,9 +448,9 @@ static bool is_transfer_instr(size_t instruction_index
 }
 
 #if __OPTIM_LEVEL__ == 1
-static size_t get_dfa_data_idx(size_t instruction_index) {
+static size_t get_dfa_data_idx(size_t instr_idx) {
     for (size_t i = 0; i < ctx->dfa->set_size; ++i) {
-        if (ctx->dfa_o1->data_idx_map[i] == instruction_index) {
+        if (ctx->dfa_o1->data_idx_map[i] == instr_idx) {
             return i;
         }
     }
@@ -478,8 +474,8 @@ static TacInstruction* get_dfa_bak_instr(size_t i) {
     }
 }
 
-static bool set_dfa_bak_instr(size_t instruction_index, size_t& i) {
-    i = get_dfa_data_idx(instruction_index);
+static bool set_dfa_bak_instr(size_t instr_idx, size_t& i) {
+    i = get_dfa_data_idx(instr_idx);
     if (!ctx->cfg->reaching_code[i]) {
         ctx->cfg->reaching_code[i] = true;
         return true;
@@ -491,74 +487,73 @@ static bool set_dfa_bak_instr(size_t instruction_index, size_t& i) {
 #endif
 
 #if __OPTIM_LEVEL__ == 1
-static bool prop_transfer_reach_copies(size_t instruction_index, size_t next_instruction_index);
-static void elim_transfer_live_values(size_t instruction_index, size_t next_instruction_index);
+static bool prop_transfer_reach_copies(size_t instr_idx, size_t next_instr_idx);
+static void elim_transfer_live_values(size_t instr_idx, size_t next_instr_idx);
 #elif __OPTIM_LEVEL__ == 2
-static void infer_transfer_live_regs(size_t instruction_index, size_t next_instruction_index);
+static void infer_transfer_live_regs(size_t instr_idx, size_t next_instr_idx);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
-static size_t dfa_forward_transfer_block(size_t instruction_index, size_t block_id) {
-    for (size_t next_instruction_index = instruction_index + 1;
-         next_instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++next_instruction_index) {
-        if (GET_INSTR(next_instruction_index) && is_transfer_instr(next_instruction_index, false)) {
+static size_t dfa_forward_transfer_block(size_t instr_idx, size_t block_id) {
+    for (size_t next_instr_idx = instr_idx + 1; next_instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx;
+         ++next_instr_idx) {
+        if (GET_INSTR(next_instr_idx) && is_transfer_instr(next_instr_idx, false)) {
             for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(next_instruction_index, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
+                GET_DFA_INSTR_SET_MASK(next_instr_idx, i) = GET_DFA_INSTR_SET_MASK(instr_idx, i);
             }
-            if (!prop_transfer_reach_copies(instruction_index, next_instruction_index)) {
+            if (!prop_transfer_reach_copies(instr_idx, next_instr_idx)) {
                 for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                    GET_DFA_INSTR_SET_MASK(next_instruction_index, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
+                    GET_DFA_INSTR_SET_MASK(next_instr_idx, i) = GET_DFA_INSTR_SET_MASK(instr_idx, i);
                 }
             }
-            instruction_index = next_instruction_index;
+            instr_idx = next_instr_idx;
         }
     }
     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-        GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
+        GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instr_idx, i);
     }
-    if (!prop_transfer_reach_copies(instruction_index, ctx->dfa->incoming_idx)) {
+    if (!prop_transfer_reach_copies(instr_idx, ctx->dfa->incoming_idx)) {
         for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-            GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
+            GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instr_idx, i);
         }
     }
-    return instruction_index;
+    return instr_idx;
 }
 #endif
 
-static size_t dfa_backward_transfer_block(size_t instruction_index, size_t block_id) {
-    if (instruction_index > 0) {
-        for (size_t next_instruction_index = instruction_index;
-             next_instruction_index-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
-            if (GET_INSTR(next_instruction_index)
-                && is_transfer_instr(next_instruction_index
+static size_t dfa_backward_transfer_block(size_t instr_idx, size_t block_id) {
+    if (instr_idx > 0) {
+        for (size_t next_instr_idx = instr_idx; next_instr_idx-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
+            if (GET_INSTR(next_instr_idx)
+                && is_transfer_instr(next_instr_idx
 #if __OPTIM_LEVEL__ == 1
                     ,
                     true
 #endif
                     )) {
                 for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                    GET_DFA_INSTR_SET_MASK(next_instruction_index, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
+                    GET_DFA_INSTR_SET_MASK(next_instr_idx, i) = GET_DFA_INSTR_SET_MASK(instr_idx, i);
                 }
 #if __OPTIM_LEVEL__ == 1
                 elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
                 infer_transfer_live_regs
 #endif
-                    (instruction_index, next_instruction_index);
-                instruction_index = next_instruction_index;
+                    (instr_idx, next_instr_idx);
+                instr_idx = next_instr_idx;
             }
         }
     }
     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-        GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instruction_index, i);
+        GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = GET_DFA_INSTR_SET_MASK(instr_idx, i);
     }
 #if __OPTIM_LEVEL__ == 1
     elim_transfer_live_values
 #elif __OPTIM_LEVEL__ == 2
     infer_transfer_live_regs
 #endif
-        (instruction_index, ctx->dfa->incoming_idx);
-    return instruction_index;
+        (instr_idx, ctx->dfa->incoming_idx);
+    return instr_idx;
 }
 
 static bool dfa_after_meet_block(size_t block_id) {
@@ -580,27 +575,27 @@ static bool dfa_after_meet_block(size_t block_id) {
 
 #if __OPTIM_LEVEL__ == 1
 static bool dfa_forward_meet_block(size_t block_id) {
-    size_t instruction_index = GET_CFG_BLOCK(block_id).instrs_front_idx;
-    for (; instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instruction_index) {
-        if (GET_INSTR(instruction_index) && is_transfer_instr(instruction_index, false)) {
+    size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
+    for (; instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
+        if (GET_INSTR(instr_idx) && is_transfer_instr(instr_idx, false)) {
             goto Lelse;
         }
     }
-    instruction_index = ctx->dfa->incoming_idx;
+    instr_idx = ctx->dfa->incoming_idx;
 Lelse:
     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-        GET_DFA_INSTR_SET_MASK(instruction_index, i) = MASK_TRUE;
+        GET_DFA_INSTR_SET_MASK(instr_idx, i) = MASK_TRUE;
     }
 
-    for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
-        if (predecessor_id < ctx->cfg->exit_id) {
+    for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+        if (pred_id < ctx->cfg->exit_id) {
             for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instruction_index, i) &= GET_DFA_BLOCK_SET_MASK(predecessor_id, i);
+                GET_DFA_INSTR_SET_MASK(instr_idx, i) &= GET_DFA_BLOCK_SET_MASK(pred_id, i);
             }
         }
-        else if (predecessor_id == ctx->cfg->entry_id) {
+        else if (pred_id == ctx->cfg->entry_id) {
             for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instruction_index, i) = MASK_FALSE;
+                GET_DFA_INSTR_SET_MASK(instr_idx, i) = MASK_FALSE;
             }
             break;
         }
@@ -609,10 +604,10 @@ Lelse:
         }
     }
 
-    if (instruction_index < ctx->dfa->incoming_idx) {
-        dfa_forward_transfer_block(instruction_index, block_id);
+    if (instr_idx < ctx->dfa->incoming_idx) {
+        dfa_forward_transfer_block(instr_idx, block_id);
     }
-    else if (instruction_index != ctx->dfa->incoming_idx) {
+    else if (instr_idx != ctx->dfa->incoming_idx) {
         RAISE_INTERNAL_ERROR;
     }
 
@@ -621,10 +616,10 @@ Lelse:
 #endif
 
 static bool dfa_backward_meet_block(size_t block_id) {
-    size_t instruction_index = GET_CFG_BLOCK(block_id).instrs_back_idx + 1;
-    while (instruction_index-- > GET_CFG_BLOCK(block_id).instrs_front_idx) {
-        if (GET_INSTR(instruction_index)
-            && is_transfer_instr(instruction_index
+    size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_back_idx + 1;
+    while (instr_idx-- > GET_CFG_BLOCK(block_id).instrs_front_idx) {
+        if (GET_INSTR(instr_idx)
+            && is_transfer_instr(instr_idx
 #if __OPTIM_LEVEL__ == 1
                 ,
                 true
@@ -633,21 +628,21 @@ static bool dfa_backward_meet_block(size_t block_id) {
             goto Lelse;
         }
     }
-    instruction_index = ctx->dfa->incoming_idx;
+    instr_idx = ctx->dfa->incoming_idx;
 Lelse:
     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-        GET_DFA_INSTR_SET_MASK(instruction_index, i) = MASK_FALSE;
+        GET_DFA_INSTR_SET_MASK(instr_idx, i) = MASK_FALSE;
     }
 
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
-        if (successor_id < ctx->cfg->exit_id) {
+    for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
+        if (succ_id < ctx->cfg->exit_id) {
             for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instruction_index, i) |= GET_DFA_BLOCK_SET_MASK(successor_id, i);
+                GET_DFA_INSTR_SET_MASK(instr_idx, i) |= GET_DFA_BLOCK_SET_MASK(succ_id, i);
             }
         }
-        else if (successor_id == ctx->cfg->exit_id) {
+        else if (succ_id == ctx->cfg->exit_id) {
             for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instruction_index, i) = GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, i);
+                GET_DFA_INSTR_SET_MASK(instr_idx, i) = GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, i);
             }
             break;
         }
@@ -656,10 +651,10 @@ Lelse:
         }
     }
 
-    if (instruction_index < ctx->dfa->incoming_idx) {
-        dfa_backward_transfer_block(instruction_index, block_id);
+    if (instr_idx < ctx->dfa->incoming_idx) {
+        dfa_backward_transfer_block(instr_idx, block_id);
     }
-    else if (instruction_index != ctx->dfa->incoming_idx) {
+    else if (instr_idx != ctx->dfa->incoming_idx) {
         RAISE_INTERNAL_ERROR;
     }
 
@@ -677,23 +672,23 @@ static void dfa_forward_iter_alg() {
 
         bool is_fixed_point = dfa_forward_meet_block(block_id);
         if (!is_fixed_point) {
-            for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
-                if (successor_id < ctx->cfg->exit_id) {
+            for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
+                if (succ_id < ctx->cfg->exit_id) {
                     for (size_t j = i + 1; j < open_data_map_size; ++j) {
-                        if (successor_id == ctx->dfa->open_data_map[j]) {
+                        if (succ_id == ctx->dfa->open_data_map[j]) {
                             goto Lelse;
                         }
                     }
                     if (open_data_map_size < ctx->dfa->open_data_map.size()) {
-                        ctx->dfa->open_data_map[open_data_map_size] = successor_id;
+                        ctx->dfa->open_data_map[open_data_map_size] = succ_id;
                     }
                     else {
-                        ctx->dfa->open_data_map.push_back(successor_id);
+                        ctx->dfa->open_data_map.push_back(succ_id);
                     }
                     open_data_map_size++;
                 Lelse:;
                 }
-                else if (successor_id != ctx->cfg->exit_id) {
+                else if (succ_id != ctx->cfg->exit_id) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
@@ -712,23 +707,23 @@ static void dfa_iter_alg() {
 
         bool is_fixed_point = dfa_backward_meet_block(block_id);
         if (!is_fixed_point) {
-            for (size_t predecessor_id : GET_CFG_BLOCK(block_id).pred_ids) {
-                if (predecessor_id < ctx->cfg->exit_id) {
+            for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+                if (pred_id < ctx->cfg->exit_id) {
                     for (size_t j = i + 1; j < open_data_map_size; ++j) {
-                        if (predecessor_id == ctx->dfa->open_data_map[j]) {
+                        if (pred_id == ctx->dfa->open_data_map[j]) {
                             goto Lelse;
                         }
                     }
                     if (open_data_map_size < ctx->dfa->open_data_map.size()) {
-                        ctx->dfa->open_data_map[open_data_map_size] = predecessor_id;
+                        ctx->dfa->open_data_map[open_data_map_size] = pred_id;
                     }
                     else {
-                        ctx->dfa->open_data_map.push_back(predecessor_id);
+                        ctx->dfa->open_data_map.push_back(pred_id);
                     }
                     open_data_map_size++;
                 Lelse:;
                 }
-                else if (predecessor_id != ctx->cfg->entry_id) {
+                else if (pred_id != ctx->cfg->entry_id) {
                     RAISE_INTERNAL_ERROR;
                 }
             }
@@ -743,15 +738,15 @@ static void dfa_backward_open_block(size_t block_id, size_t& i);
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_forward_succ_open_block(size_t block_id, size_t& i) {
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
-        dfa_forward_open_block(successor_id, i);
+    for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
+        dfa_forward_open_block(succ_id, i);
     }
 }
 #endif
 
 static void dfa_backward_succ_open_block(size_t block_id, size_t& i) {
-    for (size_t successor_id : GET_CFG_BLOCK(block_id).succ_ids) {
-        dfa_backward_open_block(successor_id, i);
+    for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
+        dfa_backward_open_block(succ_id, i);
     }
 }
 
@@ -789,20 +784,20 @@ static void dfa_add_aliased_value(TacValue* node) {
 
 static bool is_same_value(TacValue* node_1, TacValue* node_2);
 
-static bool prop_add_data_idx(TacCopy* node, size_t instruction_index, size_t block_id) {
+static bool prop_add_data_idx(TacCopy* node, size_t instr_idx, size_t block_id) {
     if (node->dst->type() != AST_TacVariable_t) {
         RAISE_INTERNAL_ERROR;
     }
     else if (is_same_value(node->src.get(), node->dst.get())) {
-        cfg_rm_block_instr(instruction_index, block_id);
+        cfg_rm_block_instr(instr_idx, block_id);
         return false;
     }
     else {
         if (ctx->dfa->set_size < ctx->dfa_o1->data_idx_map.size()) {
-            ctx->dfa_o1->data_idx_map[ctx->dfa->set_size] = instruction_index;
+            ctx->dfa_o1->data_idx_map[ctx->dfa->set_size] = instr_idx;
         }
         else {
-            ctx->dfa_o1->data_idx_map.push_back(instruction_index);
+            ctx->dfa_o1->data_idx_map.push_back(instr_idx);
         }
         ctx->dfa->set_size++;
         return true;
@@ -838,9 +833,9 @@ static void infer_add_data_op(AsmOperand* node) {
 
 static bool init_data_flow_analysis(
 #if __OPTIM_LEVEL__ == 1
-    bool is_dead_store_elimination, bool is_addressed_set
+    bool is_store_elim, bool is_addressed_set
 #elif __OPTIM_LEVEL__ == 2
-    TIdentifier function_name
+    TIdentifier fun_name
 #endif
 ) {
     ctx->dfa->set_size = 0;
@@ -852,7 +847,7 @@ static bool init_data_flow_analysis(
     {
         size_t i =
 #if __OPTIM_LEVEL__ == 1
-            is_dead_store_elimination ? 3 : 1
+            is_store_elim ? 3 : 1
 #elif __OPTIM_LEVEL__ == 2
             2
 #endif
@@ -866,10 +861,10 @@ static bool init_data_flow_analysis(
     }
     std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->cfg->blocks.size(), false);
 
-    size_t instructions_mask_sets_size = 0;
+    size_t instrs_mask_sets_size = 0;
 #if __OPTIM_LEVEL__ == 1
-    bool is_copy_propagation = !is_dead_store_elimination;
-    if (is_dead_store_elimination) {
+    bool is_copy_prop = !is_store_elim;
+    if (is_store_elim) {
 #endif
         ctx->cfg->identifier_id_map.clear();
         ctx->dfa->static_idx = ctx->dfa->incoming_idx + 1;
@@ -882,14 +877,14 @@ static bool init_data_flow_analysis(
 #endif
     for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
-            for (size_t instruction_index = GET_CFG_BLOCK(block_id).instrs_front_idx;
-                 instruction_index <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instruction_index) {
-                if (GET_INSTR(instruction_index)) {
-                    AstInstruction* node = GET_INSTR(instruction_index).get();
+            for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
+                 instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
+                if (GET_INSTR(instr_idx)) {
+                    AstInstruction* node = GET_INSTR(instr_idx).get();
                     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
                         case AST_TacReturn_t: {
-                            if (is_copy_propagation) {
+                            if (is_copy_prop) {
                                 goto Lcontinue;
                             }
                             TacReturn* p_node = static_cast<TacReturn*>(node);
@@ -899,7 +894,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacSignExtend_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacSignExtend* p_node = static_cast<TacSignExtend*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -907,7 +902,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacTruncate_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacTruncate* p_node = static_cast<TacTruncate*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -915,7 +910,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacZeroExtend_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacZeroExtend* p_node = static_cast<TacZeroExtend*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -923,7 +918,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacDoubleToInt_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacDoubleToInt* p_node = static_cast<TacDoubleToInt*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -931,7 +926,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacDoubleToUInt_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacDoubleToUInt* p_node = static_cast<TacDoubleToUInt*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -939,7 +934,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacIntToDouble_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacIntToDouble* p_node = static_cast<TacIntToDouble*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -947,7 +942,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacUIntToDouble_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacUIntToDouble* p_node = static_cast<TacUIntToDouble*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -955,7 +950,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacFunCall_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacFunCall* p_node = static_cast<TacFunCall*>(node);
                                 for (const auto& arg : p_node->args) {
                                     elim_add_data_value(arg.get());
@@ -967,7 +962,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacUnary_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacUnary* p_node = static_cast<TacUnary*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -975,7 +970,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacBinary_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacBinary* p_node = static_cast<TacBinary*>(node);
                                 elim_add_data_value(p_node->src1.get());
                                 elim_add_data_value(p_node->src2.get());
@@ -985,8 +980,8 @@ static bool init_data_flow_analysis(
                         }
                         case AST_TacCopy_t: {
                             TacCopy* p_node = static_cast<TacCopy*>(node);
-                            if (is_copy_propagation) {
-                                if (!prop_add_data_idx(p_node, instruction_index, block_id)) {
+                            if (is_copy_prop) {
+                                if (!prop_add_data_idx(p_node, instr_idx, block_id)) {
                                     goto Lcontinue;
                                 }
                             }
@@ -998,7 +993,7 @@ static bool init_data_flow_analysis(
                         }
                         case AST_TacGetAddress_t: {
                             TacGetAddress* p_node = static_cast<TacGetAddress*>(node);
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst.get());
                             }
@@ -1008,7 +1003,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacLoad_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacLoad* p_node = static_cast<TacLoad*>(node);
                                 elim_add_data_value(p_node->src_ptr.get());
                                 elim_add_data_value(p_node->dst.get());
@@ -1016,7 +1011,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacStore_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacStore* p_node = static_cast<TacStore*>(node);
                                 elim_add_data_value(p_node->src.get());
                                 elim_add_data_value(p_node->dst_ptr.get());
@@ -1024,7 +1019,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacAddPtr_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
                                 elim_add_data_value(p_node->src_ptr.get());
                                 elim_add_data_value(p_node->idx.get());
@@ -1033,7 +1028,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacCopyToOffset_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
                                 elim_add_data_name(p_node->dst_name);
                                 elim_add_data_value(p_node->src.get());
@@ -1041,7 +1036,7 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacCopyFromOffset_t: {
-                            if (is_dead_store_elimination) {
+                            if (is_store_elim) {
                                 TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
                                 elim_add_data_name(p_node->src_name);
                                 elim_add_data_value(p_node->dst.get());
@@ -1049,14 +1044,14 @@ static bool init_data_flow_analysis(
                             break;
                         }
                         case AST_TacJumpIfZero_t: {
-                            if (is_copy_propagation) {
+                            if (is_copy_prop) {
                                 goto Lcontinue;
                             }
                             elim_add_data_value(static_cast<TacJumpIfZero*>(node)->condition.get());
                             break;
                         }
                         case AST_TacJumpIfNotZero_t: {
-                            if (is_copy_propagation) {
+                            if (is_copy_prop) {
                                 goto Lcontinue;
                             }
                             elim_add_data_value(static_cast<TacJumpIfNotZero*>(node)->condition.get());
@@ -1133,8 +1128,8 @@ static bool init_data_flow_analysis(
                         default:
                             goto Lcontinue;
                     }
-                    ctx->dfa->instr_idx_map[instruction_index] = instructions_mask_sets_size;
-                    instructions_mask_sets_size++;
+                    ctx->dfa->instr_idx_map[instr_idx] = instrs_mask_sets_size;
+                    instrs_mask_sets_size++;
                 Lcontinue:;
                 }
             }
@@ -1154,35 +1149,35 @@ static bool init_data_flow_analysis(
     ctx->dfa->set_size += REGISTER_MASK_SIZE;
 #endif
 
-    ctx->dfa->instr_idx_map[ctx->dfa->incoming_idx] = instructions_mask_sets_size;
-    instructions_mask_sets_size++;
+    ctx->dfa->instr_idx_map[ctx->dfa->incoming_idx] = instrs_mask_sets_size;
+    instrs_mask_sets_size++;
 #if __OPTIM_LEVEL__ == 1
-    if (is_dead_store_elimination) {
+    if (is_store_elim) {
 #endif
-        ctx->dfa->instr_idx_map[ctx->dfa->static_idx] = instructions_mask_sets_size;
-        instructions_mask_sets_size++;
+        ctx->dfa->instr_idx_map[ctx->dfa->static_idx] = instrs_mask_sets_size;
+        instrs_mask_sets_size++;
 #if __OPTIM_LEVEL__ == 1
-        ctx->dfa->instr_idx_map[ctx->dfa_o1->addressed_idx] = instructions_mask_sets_size;
-        instructions_mask_sets_size++;
+        ctx->dfa->instr_idx_map[ctx->dfa_o1->addressed_idx] = instrs_mask_sets_size;
+        instrs_mask_sets_size++;
     }
 #endif
     ctx->dfa->mask_size = (ctx->dfa->set_size + 63) / 64;
-    instructions_mask_sets_size *= ctx->dfa->mask_size;
+    instrs_mask_sets_size *= ctx->dfa->mask_size;
     size_t blocks_mask_sets_size = ctx->dfa->mask_size * ctx->cfg->blocks.size();
 
     if (ctx->dfa->blocks_mask_sets.size() < blocks_mask_sets_size) {
         ctx->dfa->blocks_mask_sets.resize(blocks_mask_sets_size);
     }
-    if (ctx->dfa->instrs_mask_sets.size() < instructions_mask_sets_size) {
-        ctx->dfa->instrs_mask_sets.resize(instructions_mask_sets_size);
+    if (ctx->dfa->instrs_mask_sets.size() < instrs_mask_sets_size) {
+        ctx->dfa->instrs_mask_sets.resize(instrs_mask_sets_size);
     }
 
 #if __OPTIM_LEVEL__ == 1
-    if (is_copy_propagation) {
+    if (is_copy_prop) {
         size_t i = ctx->cfg->blocks.size();
-        for (size_t successor_id : ctx->cfg->entry_succ_ids) {
-            if (!ctx->cfg->reaching_code[successor_id]) {
-                dfa_forward_open_block(successor_id, i);
+        for (size_t succ_id : ctx->cfg->entry_succ_ids) {
+            if (!ctx->cfg->reaching_code[succ_id]) {
+                dfa_forward_open_block(succ_id, i);
             }
         }
         while (i-- > 0) {
@@ -1226,9 +1221,9 @@ static bool init_data_flow_analysis(
     else {
 #endif
         size_t i = 0;
-        for (size_t successor_id : ctx->cfg->entry_succ_ids) {
-            if (!ctx->cfg->reaching_code[successor_id]) {
-                dfa_backward_open_block(successor_id, i);
+        for (size_t succ_id : ctx->cfg->entry_succ_ids) {
+            if (!ctx->cfg->reaching_code[succ_id]) {
+                dfa_backward_open_block(succ_id, i);
             }
         }
         for (; i < ctx->cfg->blocks.size(); i++) {
@@ -1240,7 +1235,7 @@ static bool init_data_flow_analysis(
         GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, 0) = MASK_FALSE;
 #elif __OPTIM_LEVEL__ == 2
     {
-        FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[function_name]->type_t.get());
+        FunType* fun_type = static_cast<FunType*>(frontend->symbol_table[fun_name]->type_t.get());
         GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, 0) = fun_type->ret_reg_mask;
     }
 #endif

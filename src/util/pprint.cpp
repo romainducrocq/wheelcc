@@ -21,7 +21,7 @@
 
 // Pretty print
 
-static void print_title(const std::string& header) { std::cout << "+\n+\n@@ " << header << " @@"; }
+static void print_title(const std::string& title) { std::cout << "+\n+\n@@ " << title << " @@"; }
 
 void pprint_toks(const std::vector<Token>& tokens) {
     print_title("Tokens");
@@ -1798,12 +1798,12 @@ void pprint_addressed_set() {
 void pprint_string_const_table() {
     print_title("String Constant Table");
     std::cout << "\nDict(" << std::to_string(frontend->string_const_table.size()) << "):";
-    for (const auto& static_constant : frontend->string_const_table) {
-        print_field("[" + identifiers->hash_table[static_constant.first] + "]", "", 2);
-        if (frontend->symbol_table.find(static_constant.second) != frontend->symbol_table.end()
-            && frontend->symbol_table[static_constant.second]->attrs->type() == AST_ConstantAttr_t) {
+    for (const auto& static_const : frontend->string_const_table) {
+        print_field("[" + identifiers->hash_table[static_const.first] + "]", "", 2);
+        if (frontend->symbol_table.find(static_const.second) != frontend->symbol_table.end()
+            && frontend->symbol_table[static_const.second]->attrs->type() == AST_ConstantAttr_t) {
             ConstantAttr* constant_attr =
-                static_cast<ConstantAttr*>(frontend->symbol_table[static_constant.second]->attrs.get());
+                static_cast<ConstantAttr*>(frontend->symbol_table[static_const.second]->attrs.get());
             if (constant_attr->static_init->type() == AST_StringInit_t) {
                 std::cout << "\n    String: \"";
                 for (const TChar& byte :

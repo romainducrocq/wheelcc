@@ -179,51 +179,51 @@ std::string get_name_fmt(TIdentifier name) {
 }
 
 std::string get_struct_name_fmt(TIdentifier name, bool is_union) {
-    std::string type_hr = is_union ? "union " : "struct ";
-    type_hr += get_name_fmt(name);
-    return type_hr;
+    std::string type_fmt = is_union ? "union " : "struct ";
+    type_fmt += get_name_fmt(name);
+    return type_fmt;
 }
 
 static std::string get_fun_fmt(FunType* fun_type) {
-    std::string type_hr = "(";
-    type_hr += get_type_fmt(fun_type->ret_type.get());
-    type_hr += ")(";
+    std::string type_fmt = "(";
+    type_fmt += get_type_fmt(fun_type->ret_type.get());
+    type_fmt += ")(";
     for (const auto& param_type : fun_type->param_types) {
-        type_hr += get_type_fmt(param_type.get());
-        type_hr += ", ";
+        type_fmt += get_type_fmt(param_type.get());
+        type_fmt += ", ";
     }
     if (!fun_type->param_types.empty()) {
-        type_hr.pop_back();
-        type_hr.pop_back();
+        type_fmt.pop_back();
+        type_fmt.pop_back();
     }
-    type_hr += ")";
-    return type_hr;
+    type_fmt += ")";
+    return type_fmt;
 }
 
 static std::string get_ptr_fmt(Pointer* ptr_type) {
-    std::string decl_type_hr = "*";
+    std::string decl_type_fmt = "*";
     while (ptr_type->ref_type->type() == AST_Pointer_t) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
-        decl_type_hr += "*";
+        decl_type_fmt += "*";
     }
-    std::string type_hr = get_type_fmt(ptr_type->ref_type.get());
-    type_hr += decl_type_hr;
-    return type_hr;
+    std::string type_fmt = get_type_fmt(ptr_type->ref_type.get());
+    type_fmt += decl_type_fmt;
+    return type_fmt;
 }
 
 static std::string get_arr_fmt(Array* arr_type) {
-    std::string decl_type_hr = "[";
-    decl_type_hr += std::to_string(arr_type->size);
-    decl_type_hr += "]";
+    std::string decl_type_fmt = "[";
+    decl_type_fmt += std::to_string(arr_type->size);
+    decl_type_fmt += "]";
     while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
-        decl_type_hr += "[";
-        decl_type_hr += std::to_string(arr_type->size);
-        decl_type_hr += "]";
+        decl_type_fmt += "[";
+        decl_type_fmt += std::to_string(arr_type->size);
+        decl_type_fmt += "]";
     }
-    std::string type_hr = get_type_fmt(arr_type->elem_type.get());
-    type_hr += decl_type_hr;
-    return type_hr;
+    std::string type_fmt = get_type_fmt(arr_type->elem_type.get());
+    type_fmt += decl_type_fmt;
+    return type_fmt;
 }
 
 static std::string get_struct_fmt(Structure* struct_type) {

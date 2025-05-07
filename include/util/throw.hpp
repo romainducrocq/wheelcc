@@ -31,9 +31,9 @@ extern std::unique_ptr<ErrorsContext> errors;
 
 size_t handle_error_at_line(size_t total_linenum);
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line);
-[[noreturn]] void raise_base_error(const char* error_message);
-[[noreturn]] void raise_runtime_error(const char* error_message);
-[[noreturn]] void raise_runtime_error_at_line(const char* error_message, size_t linenum);
+[[noreturn]] void raise_base_error(const char* error_msg);
+[[noreturn]] void raise_runtime_error(const char* error_msg);
+[[noreturn]] void raise_runtime_error_at_line(const char* error_msg, size_t linenum);
 #define RAISE_INTERNAL_ERROR raise_internal_error(__func__, __FILE__, __LINE__)
 #define RAISE_FATAL_ERROR(X) X > 0 ? raise_base_error(errors->msg) : RAISE_INTERNAL_ERROR
 #define RAISE_ARGUMENT_ERROR(X) X > 0 ? raise_base_error(errors->msg) : RAISE_INTERNAL_ERROR

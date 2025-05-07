@@ -395,7 +395,7 @@ struct AsmShr : AsmUnaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// instruction = Mov(asm_type, operand, operand)
+// instr = Mov(asm_type, operand, operand)
 //             | MovSx(asm_type, asm_type, operand, operand)
 //             | MovZeroExtend(asm_type, asm_type, operand, operand)
 //             | Lea(operand, operand)
@@ -606,7 +606,7 @@ struct AsmRet : AsmInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// top_level = Function(identifier, bool, bool, instruction*)
+// top_level = Function(identifier, bool, bool, instr*)
 //           | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 struct AsmTopLevel : Ast {

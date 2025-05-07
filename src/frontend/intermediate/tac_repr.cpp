@@ -123,9 +123,7 @@ static std::shared_ptr<TacValue> repr_value(CExp* node) {
     }
 }
 
-static void push_instr(std::unique_ptr<TacInstruction>&& instruction) {
-    ctx->p_instrs->push_back(std::move(instruction));
-}
+static void push_instr(std::unique_ptr<TacInstruction>&& instr) { ctx->p_instrs->push_back(std::move(instr)); }
 
 static std::unique_ptr<TacExpResult> repr_res_instr(CExp* node);
 static std::shared_ptr<TacValue> repr_exp_instr(CExp* node);
@@ -136,7 +134,7 @@ static std::unique_ptr<TacPlainOperand> const_res_instr(CConstant* node) {
 }
 
 static std::unique_ptr<TacPlainOperand> string_res_instr(CString* node) {
-    TIdentifier string_constant_label;
+    TIdentifier string_const_label;
     {
         TIdentifier string_const;
         {
@@ -144,11 +142,11 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(CString* node) {
             string_const = make_string_identifier(std::move(value));
         }
         if (frontend->string_const_table.find(string_const) != frontend->string_const_table.end()) {
-            string_constant_label = frontend->string_const_table[string_const];
+            string_const_label = frontend->string_const_table[string_const];
         }
         else {
-            string_constant_label = repr_label_identifier(LBL_Lstring);
-            frontend->string_const_table[string_const] = string_constant_label;
+            string_const_label = repr_label_identifier(LBL_Lstring);
+            frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
@@ -164,11 +162,11 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(CString* node) {
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
-            frontend->symbol_table[string_constant_label] =
+            frontend->symbol_table[string_const_label] =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
         }
     }
-    std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(std::move(string_constant_label));
+    std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(std::move(string_const_label));
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
@@ -505,19 +503,19 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
         res = repr_res_instr(node->exp_left.get());
     }
     else {
-        uint32_t label_counter_1 = identifiers->label_count;
-        uint32_t variable_counter_1 = identifiers->var_count;
-        uint32_t structure_counter_1 = identifiers->struct_count;
+        uint32_t label_count_1 = identifiers->label_count;
+        uint32_t var_count_1 = identifiers->var_count;
+        uint32_t struct_count_1 = identifiers->struct_count;
 
         src = repr_exp_instr(node->exp_right.get());
 
-        uint32_t label_counter_2 = identifiers->label_count;
-        uint32_t variable_counter_2 = identifiers->var_count;
-        uint32_t structure_counter_2 = identifiers->struct_count;
+        uint32_t label_count_2 = identifiers->label_count;
+        uint32_t var_count_2 = identifiers->var_count;
+        uint32_t struct_count_2 = identifiers->struct_count;
 
-        identifiers->label_count = label_counter_1;
-        identifiers->var_count = variable_counter_1;
-        identifiers->struct_count = structure_counter_1;
+        identifiers->label_count = label_count_1;
+        identifiers->var_count = var_count_1;
+        identifiers->struct_count = struct_count_1;
 
         {
             CExp* exp_left = node->exp_right.get();
@@ -529,15 +527,15 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
                 exp_left = static_cast<CCast*>(exp_left)->exp.get();
             }
 
-            std::vector<std::unique_ptr<TacInstruction>> noeval_instructions;
+            std::vector<std::unique_ptr<TacInstruction>> noeval_instrs;
             std::vector<std::unique_ptr<TacInstruction>>* p_instrs = ctx->p_instrs;
-            ctx->p_instrs = &noeval_instructions;
+            ctx->p_instrs = &noeval_instrs;
             res = repr_res_instr(exp_left);
             ctx->p_instrs = p_instrs;
 
-            identifiers->label_count = label_counter_2;
-            identifiers->var_count = variable_counter_2;
-            identifiers->struct_count = structure_counter_2;
+            identifiers->label_count = label_count_2;
+            identifiers->var_count = var_count_2;
+            identifiers->struct_count = struct_count_2;
 
             if (node->unop && node->unop->type() == AST_CPostfix_t) {
                 std::shared_ptr<TacValue> dst = plain_inner_value(node);
@@ -1293,15 +1291,15 @@ static void declaration_instr(CDeclaration* node) {
     }
 }
 
-// instruction = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
+// instr = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
 //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
 //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val?) | Unary(unary_operator, val, val)
 //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
 //             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
 //             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier) | Label(identifier)
-static void repr_instr_list(const std::vector<std::unique_ptr<CBlockItem>>& list_node) {
-    for (const auto& block_item : list_node) {
+static void repr_instr_list(const std::vector<std::unique_ptr<CBlockItem>>& node_list) {
+    for (const auto& block_item : node_list) {
         switch (block_item->type()) {
             case AST_CS_t:
                 statement_instr(static_cast<CS*>(block_item.get())->statement.get());
@@ -1354,7 +1352,7 @@ static void fun_decl_toplvl(CFunDecl* node) {
     }
 }
 
-// (function) top_level = Function(identifier, bool, identifier*, instruction*)
+// (function) top_level = Function(identifier, bool, identifier*, instr*)
 static void declaration_toplvl(CDeclaration* node) {
     switch (node->type()) {
         case AST_CFunDecl_t:

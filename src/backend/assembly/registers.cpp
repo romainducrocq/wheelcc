@@ -93,10 +93,9 @@ std::shared_ptr<AsmMemory> gen_memory(REGISTER_KIND reg_kind, TLong value) {
     return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
 }
 
-std::shared_ptr<AsmIndexed> gen_indexed(
-    REGISTER_KIND register_kind_base, REGISTER_KIND register_kind_index, TLong scale) {
-    std::unique_ptr<AsmReg> reg_base = gen_reg(register_kind_base);
-    std::unique_ptr<AsmReg> reg_index = gen_reg(register_kind_index);
+std::shared_ptr<AsmIndexed> gen_indexed(REGISTER_KIND reg_kind_base, REGISTER_KIND reg_kind_idx, TLong scale) {
+    std::unique_ptr<AsmReg> reg_base = gen_reg(reg_kind_base);
+    std::unique_ptr<AsmReg> reg_index = gen_reg(reg_kind_idx);
     return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
 }
 
@@ -233,15 +232,15 @@ size_t register_mask_bit(REGISTER_KIND reg_kind) {
     }
 }
 
-bool register_mask_get(TULong register_mask, REGISTER_KIND reg_kind) {
-    return (register_mask & (static_cast<TULong>(1ul) << register_mask_bit(reg_kind))) > 0;
+bool register_mask_get(TULong reg_mask, REGISTER_KIND reg_kind) {
+    return (reg_mask & (static_cast<TULong>(1ul) << register_mask_bit(reg_kind))) > 0;
 }
 
-void register_mask_set(TULong& register_mask, REGISTER_KIND reg_kind, bool value) {
+void register_mask_set(TULong& reg_mask, REGISTER_KIND reg_kind, bool value) {
     if (value) {
-        register_mask |= static_cast<TULong>(1ul) << register_mask_bit(reg_kind);
+        reg_mask |= static_cast<TULong>(1ul) << register_mask_bit(reg_kind);
     }
     else {
-        register_mask &= ~(static_cast<TULong>(1ul) << register_mask_bit(reg_kind));
+        reg_mask &= ~(static_cast<TULong>(1ul) << register_mask_bit(reg_kind));
     }
 }

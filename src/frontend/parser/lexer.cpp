@@ -60,7 +60,7 @@ static std::unique_ptr<LexerContext> ctx;
 
 // Lexer
 
-static void tokenize_include(std::string include_match, size_t tokenize_include);
+static void tokenize_include(std::string include_match, size_t linenum);
 
 #ifdef __WITH_CTRE__
 #define RE_MATCH_TOKEN(X, Y)                                                        \
@@ -193,25 +193,25 @@ static void tokenize_file() {
         ctx->total_linenum++;
 
 #ifdef __WITH_CTRE__
-        const std::string_view re_iterator_view(line);
+        const std::string_view re_iter_sv(line);
 #else
-        boost::sregex_iterator re_iterator_end;
+        boost::sregex_iterator re_iter_end;
 #endif
         for (
 #ifdef __WITH_CTRE__
             size_t i = 0; i < line.size(); i += ctx->re_match_tok.size()
 #else
-            boost::sregex_iterator re_iterator_begin =
+            boost::sregex_iterator re_iter_begin =
                 boost::sregex_iterator(line.begin(), line.end(), *ctx->re_compiled_pattern);
-            re_iterator_begin != re_iterator_end; re_iterator_begin++
+            re_iter_begin != re_iter_end; re_iter_begin++
 #endif
         ) {
 #ifdef __WITH_CTRE__
-            ctx->re_iter_sv_slice = re_iterator_view.substr(i);
+            ctx->re_iter_sv_slice = re_iter_sv.substr(i);
             re_match_current_tok();
 #else
             {
-                boost::smatch re_match = *re_iterator_begin;
+                boost::smatch re_match = *re_iter_begin;
                 for (size_t i = TOKEN_KIND_SIZE; i-- > 0;) {
                     if (re_match[ctx->re_capture_groups[i]].matched) {
                         ctx->re_match_tok_kind = static_cast<TOKEN_KIND>(i);
@@ -283,11 +283,11 @@ static void tokenize_include(std::string filename, size_t linenum) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
         filename.pop_back();
-        hash_t filename_include = string_to_hash(filename);
-        if (ctx->includename_set.find(filename_include) != ctx->includename_set.end()) {
+        hash_t includename = string_to_hash(filename);
+        if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
             return;
         }
-        ctx->includename_set.insert(filename_include);
+        ctx->includename_set.insert(includename);
         if (!find_include(ctx->stdlibdirs, filename)) {
             if (!find_include(*ctx->p_includedirs, filename)) {
                 RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
@@ -297,27 +297,27 @@ static void tokenize_include(std::string filename, size_t linenum) {
     else {
         filename = filename.substr(filename.find('"') + 1);
         filename.pop_back();
-        hash_t filename_include = string_to_hash(filename);
-        if (ctx->includename_set.find(filename_include) != ctx->includename_set.end()) {
+        hash_t includename = string_to_hash(filename);
+        if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
             return;
         }
-        ctx->includename_set.insert(filename_include);
+        ctx->includename_set.insert(includename);
         if (!find_include(*ctx->p_includedirs, filename)) {
             RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
         }
     }
 
-    std::string include_filename = errors->fopen_lines.back().filename;
+    std::string fopen_name = errors->fopen_lines.back().filename;
     open_fread(filename);
     {
-        FileOpenLine file_open_line = {1, ctx->total_linenum + 1, std::move(filename)};
-        errors->fopen_lines.emplace_back(std::move(file_open_line));
+        FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(filename)};
+        errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     tokenize_file();
     close_fread(linenum);
     {
-        FileOpenLine file_open_line = {linenum + 1, ctx->total_linenum + 1, std::move(include_filename)};
-        errors->fopen_lines.emplace_back(std::move(file_open_line));
+        FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
+        errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
 }
 
@@ -338,8 +338,8 @@ static void strip_filename_ext(std::string& filename) { filename = filename.subs
 std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs) {
     open_fread(filename);
     {
-        FileOpenLine file_open_line = {1, 1, filename};
-        errors->fopen_lines.emplace_back(std::move(file_open_line));
+        FileOpenLine fopen_line = {1, 1, filename};
+        errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
 
     std::vector<Token> tokens;

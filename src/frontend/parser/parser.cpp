@@ -45,11 +45,11 @@ static std::unique_ptr<ParserContext> ctx;
 
 // Parser
 
-static void expect_next(const Token& next_token_is, TOKEN_KIND expected_token) {
-    if (next_token_is.tok_kind != expected_token) {
+static void expect_next(const Token& next_tok, TOKEN_KIND expect_tok) {
+    if (next_tok.tok_kind != expect_tok) {
         RAISE_RUNTIME_ERROR_AT_LINE(
-            GET_PARSER_MSG(MSG_unexpected_next_tok, next_token_is.tok.c_str(), fmt_tok_kind_c_str(expected_token)),
-            next_token_is.line);
+            GET_PARSER_MSG(MSG_unexpected_next_tok, next_tok.tok.c_str(), fmt_tok_kind_c_str(expect_tok)),
+            next_tok.line);
     }
 }
 
@@ -1201,7 +1201,7 @@ static std::unique_ptr<CBlock> parse_block() {
 static std::shared_ptr<Type> parse_type_specifier() {
     size_t i = 0;
     size_t line = peek_next().line;
-    std::vector<TOKEN_KIND> type_token_kinds;
+    std::vector<TOKEN_KIND> type_tok_kinds;
     while (true) {
         switch (peek_next_i(i).tok_kind) {
             case TOK_identifier:
@@ -1214,11 +1214,11 @@ static std::shared_ptr<Type> parse_type_specifier() {
             case TOK_key_unsigned:
             case TOK_key_signed:
             case TOK_key_void:
-                type_token_kinds.push_back(pop_next_i(i).tok_kind);
+                type_tok_kinds.push_back(pop_next_i(i).tok_kind);
                 break;
             case TOK_key_struct:
             case TOK_key_union: {
-                type_token_kinds.push_back(pop_next_i(i).tok_kind);
+                type_tok_kinds.push_back(pop_next_i(i).tok_kind);
                 expect_next(peek_next_i(i), TOK_identifier);
                 break;
             }
@@ -1242,9 +1242,9 @@ static std::shared_ptr<Type> parse_type_specifier() {
         }
     }
 Lbreak:
-    switch (type_token_kinds.size()) {
+    switch (type_tok_kinds.size()) {
         case 1: {
-            switch (type_token_kinds[0]) {
+            switch (type_tok_kinds[0]) {
                 case TOK_key_char:
                     return std::make_shared<Char>();
                 case TOK_key_int:
@@ -1273,54 +1273,47 @@ Lbreak:
             break;
         }
         case 2: {
-            if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_unsigned)
-                != type_token_kinds.end()) {
-                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int)
-                    != type_token_kinds.end()) {
+            if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_unsigned) != type_tok_kinds.end()) {
+                if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end()) {
                     return std::make_shared<UInt>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
-                         != type_token_kinds.end()) {
+                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
+                         != type_tok_kinds.end()) {
                     return std::make_shared<ULong>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_char)
-                         != type_token_kinds.end()) {
+                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_char)
+                         != type_tok_kinds.end()) {
                     return std::make_shared<UChar>();
                 }
             }
-            else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_signed)
-                     != type_token_kinds.end()) {
-                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int)
-                    != type_token_kinds.end()) {
+            else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_signed) != type_tok_kinds.end()) {
+                if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end()) {
                     return std::make_shared<Int>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
-                         != type_token_kinds.end()) {
+                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
+                         != type_tok_kinds.end()) {
                     return std::make_shared<Long>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_char)
-                         != type_token_kinds.end()) {
+                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_char)
+                         != type_tok_kinds.end()) {
                     return std::make_shared<SChar>();
                 }
             }
-            else if ((std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int)
-                         != type_token_kinds.end())
-                     && (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
-                         != type_token_kinds.end())) {
+            else if ((std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end())
+                     && (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
+                         != type_tok_kinds.end())) {
                 return std::make_shared<Long>();
             }
             break;
         }
         case 3: {
-            if ((std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_int) != type_token_kinds.end())
-                && (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_long)
-                    != type_token_kinds.end())) {
-                if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_unsigned)
-                    != type_token_kinds.end()) {
+            if ((std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end())
+                && (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long) != type_tok_kinds.end())) {
+                if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_unsigned) != type_tok_kinds.end()) {
                     return std::make_shared<ULong>();
                 }
-                else if (std::find(type_token_kinds.begin(), type_token_kinds.end(), TOK_key_signed)
-                         != type_token_kinds.end()) {
+                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_signed)
+                         != type_tok_kinds.end()) {
                     return std::make_shared<Long>();
                 }
             }
@@ -1329,17 +1322,17 @@ Lbreak:
         default:
             break;
     }
-    std::string type_token_kinds_string = "(";
-    for (TOKEN_KIND type_token_kind : type_token_kinds) {
-        type_token_kinds_string += fmt_tok_kind_c_str(type_token_kind);
-        type_token_kinds_string += ", ";
+    std::string type_tok_kinds_s = "(";
+    for (TOKEN_KIND type_tok_kind : type_tok_kinds) {
+        type_tok_kinds_s += fmt_tok_kind_c_str(type_tok_kind);
+        type_tok_kinds_s += ", ";
     }
-    if (!type_token_kinds.empty()) {
-        type_token_kinds_string.pop_back();
-        type_token_kinds_string.pop_back();
+    if (!type_tok_kinds.empty()) {
+        type_tok_kinds_s.pop_back();
+        type_tok_kinds_s.pop_back();
     }
-    type_token_kinds_string += ")";
-    RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier_list, type_token_kinds_string.c_str()), line);
+    type_tok_kinds_s += ")";
+    RAISE_RUNTIME_ERROR_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier_list, type_tok_kinds_s.c_str()), line);
 }
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
@@ -1424,13 +1417,13 @@ static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_ty
     params.reserve(node->param_list.size());
     param_types.reserve(node->param_list.size());
     for (const auto& param : node->param_list) {
-        Declarator param_declarator;
-        proc_decltor(param->decltor.get(), param->param_type, param_declarator);
-        if (param_declarator.derived_type->type() == AST_FunType_t) {
+        Declarator param_decltor;
+        proc_decltor(param->decltor.get(), param->param_type, param_decltor);
+        if (param_decltor.derived_type->type() == AST_FunType_t) {
             RAISE_INTERNAL_ERROR;
         }
-        params.push_back(std::move(param_declarator.name));
-        param_types.push_back(std::move(param_declarator.derived_type));
+        params.push_back(std::move(param_decltor.name));
+        param_types.push_back(std::move(param_decltor.derived_type));
     }
     TIdentifier name = static_cast<CIdent*>(node->decltor.get())->name;
     std::shared_ptr<Type> derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
@@ -1693,8 +1686,8 @@ static std::unique_ptr<CStorageClass> parse_decltor_decl(Declarator& decltor) {
         default:
             storage_class = parse_storage_class();
     }
-    std::unique_ptr<CDeclarator> declarator_1 = parse_decltor();
-    proc_decltor(declarator_1.get(), std::move(type_specifier), decltor);
+    std::unique_ptr<CDeclarator> decltor_1 = parse_decltor();
+    proc_decltor(decltor_1.get(), std::move(type_specifier), decltor);
     return storage_class;
 }
 

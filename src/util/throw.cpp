@@ -62,25 +62,25 @@ size_t handle_error_at_line(size_t total_linenum) {
     throw std::runtime_error(msg);
 }
 
-[[noreturn]] void raise_base_error(const char* error_message) {
+[[noreturn]] void raise_base_error(const char* error_msg) {
     std::string msg = "\033[0;31merror:\033[0m ";
-    msg += std::string(error_message);
+    msg += std::string(error_msg);
     throw std::runtime_error(msg);
 }
 
-[[noreturn]] void raise_runtime_error(const char* error_message) {
+[[noreturn]] void raise_runtime_error(const char* error_msg) {
     free_fileio();
     const std::string& filename = get_filename();
     std::string msg = "\033[1m";
     msg += filename;
     msg += ":\033[0m\n\033[0;31merror:\033[0m ";
-    msg += std::string(error_message);
+    msg += std::string(error_msg);
     throw std::runtime_error(msg);
 }
 
-[[noreturn]] void raise_runtime_error_at_line(const char* error_message, size_t linenum) {
+[[noreturn]] void raise_runtime_error_at_line(const char* error_msg, size_t linenum) {
     if (linenum == 0) {
-        raise_runtime_error(error_message);
+        raise_runtime_error(error_msg);
     }
     free_fileio();
     const std::string& filename = get_filename();
@@ -90,7 +90,7 @@ size_t handle_error_at_line(size_t total_linenum) {
         char* buf = nullptr;
         FILE* fd = fopen(filename.c_str(), "rb");
         if (!fd) {
-            raise_runtime_error(error_message);
+            raise_runtime_error(error_msg);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&buf, &len, fd) == -1) {
@@ -98,7 +98,7 @@ size_t handle_error_at_line(size_t total_linenum) {
                 fclose(fd);
                 buf = nullptr;
                 fd = nullptr;
-                raise_runtime_error(error_message);
+                raise_runtime_error(error_msg);
             }
         }
         line = buf;
@@ -115,7 +115,7 @@ size_t handle_error_at_line(size_t total_linenum) {
     msg += ":";
     msg += std::to_string(linenum);
     msg += ":\033[0m\n\033[0;31merror:\033[0m ";
-    msg += std::string(error_message);
+    msg += std::string(error_msg);
     msg += "\nat line ";
     msg += std::to_string(linenum);
     msg += ": \033[1m";
