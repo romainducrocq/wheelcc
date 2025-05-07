@@ -476,7 +476,7 @@ const char* get_util_msg(MESSAGE_UTIL msg) {
 const char* get_lexer_msg(MESSAGE_LEXER msg) {
     switch (msg) {
         case MSG_invalid_tok:
-            RETURN_ERRNO "found invalid tok " EM_VARG;
+            RETURN_ERRNO "found invalid token " EM_VARG;
         case MSG_failed_include:
             RETURN_ERRNO "cannot find " EM_VARG " header file in \033[1m‘include’\033[0m directive search";
         default:
@@ -487,7 +487,7 @@ const char* get_lexer_msg(MESSAGE_LEXER msg) {
 const char* get_parser_msg(MESSAGE_PARSER msg) {
     switch (msg) {
         case MSG_unexpected_next_tok:
-            RETURN_ERRNO "found tok " EM_VARG ", but expected " EM_VARG " next";
+            RETURN_ERRNO "found token " EM_VARG ", but expected " EM_VARG " next";
         case MSG_reached_eof:
             RETURN_ERRNO "reached end of file, but expected declaration or statement next";
         case MSG_overflow_long_const:
@@ -499,11 +499,11 @@ const char* get_parser_msg(MESSAGE_PARSER msg) {
         case MSG_case_value_not_int_const:
             RETURN_ERRNO "illegal \033[1m‘case’\033[0m value " EM_VARG ", requires a constant integer";
         case MSG_expect_unop:
-            RETURN_ERRNO "found tok " EM_VARG
+            RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘~’\033[0m, \033[1m‘-’\033[0m or \033[1m‘!’\033[0m next";
         case MSG_expect_binop:
             RETURN_ERRNO
-            "found tok " EM_VARG
+            "found token " EM_VARG
             ", but expected \033[1m‘+’\033[0m, \033[1m‘+=’\033[0m, \033[1m‘++’\033[0m, \033[1m‘-’\033[0m, "
             "\033[1m‘-=’\033[0m, \033[1m‘--’\033[0m, \033[1m‘*’\033[0m, \033[1m‘*=’\033[0m, \033[1m‘/’\033[0m, "
             "\033[1m‘/=’\033[0m, \033[1m‘%’\033[0m, \033[1m‘%=’\033[0m, \033[1m‘&’\033[0m, \033[1m‘&=’\033[0m, "
@@ -512,19 +512,19 @@ const char* get_parser_msg(MESSAGE_PARSER msg) {
             "\033[1m‘==’\033[0m, \033[1m‘!=’\033[0m, \033[1m‘<’\033[0m, \033[1m‘<=’\033[0m, \033[1m‘>’\033[0m or "
             "\033[1m‘>=’\033[0m next";
         case MSG_expect_abstract_decltor:
-            RETURN_ERRNO "found tok " EM_VARG
+            RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘*’\033[0m, \033[1m‘(’\033[0m or \033[1m‘[’\033[0m next";
         case MSG_expect_ptr_unary_factor:
-            RETURN_ERRNO "found tok " EM_VARG ", but expected \033[1m‘*’\033[0m or \033[1m‘&’\033[0m next";
+            RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘*’\033[0m or \033[1m‘&’\033[0m next";
         case MSG_expect_primary_exp_factor:
-            RETURN_ERRNO "found tok " EM_VARG
+            RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘const int’\033[0m, \033[1m‘const long’\033[0m, \033[1m‘const "
                          "char’\033[0m, \033[1m‘const double’\033[0m, \033[1m‘const unsigned int’\033[0m, "
                          "\033[1m‘const unsigned long’\033[0m, \033[1m‘identifier’\033[0m, "
                          "\033[1m‘identifier(’\033[0m, \033[1m‘string literal’\033[0m or \033[1m‘(’\033[0m next";
         case MSG_expect_exp:
             RETURN_ERRNO
-            "found tok " EM_VARG
+            "found token " EM_VARG
             ", but expected \033[1m‘+’\033[0m, \033[1m‘-’\033[0m, \033[1m‘*’\033[0m, \033[1m‘/’\033[0m, "
             "\033[1m‘%’\033[0m, \033[1m‘&’\033[0m, \033[1m‘|’\033[0m, \033[1m‘^’\033[0m, \033[1m‘<<’\033[0m, "
             "\033[1m‘>>’\033[0m, \033[1m‘<’\033[0m, \033[1m‘<=’\033[0m, \033[1m‘>’\033[0m, \033[1m‘>=’\033[0m, "
@@ -535,7 +535,7 @@ const char* get_parser_msg(MESSAGE_PARSER msg) {
         case MSG_for_init_decl_as_fun:
             RETURN_ERRNO "function " EM_VARG " declared in \033[1m‘for’\033[0m loop initial declaration";
         case MSG_expect_specifier:
-            RETURN_ERRNO "found tok " EM_VARG
+            RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘identifier’\033[0m, \033[1m‘)’\033[0m, \033[1m‘char’\033[0m, "
                          "\033[1m‘int’\033[0m, \033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘void’\033[0m, \033[1m‘struct’\033[0m, \033[1m‘union’\033[0m, "
@@ -544,15 +544,15 @@ const char* get_parser_msg(MESSAGE_PARSER msg) {
         case MSG_expect_specifier_list:
             RETURN_ERRNO "found tokens " EM_VARG ", but expected valid list of unique type specifiers next";
         case MSG_expect_storage_class:
-            RETURN_ERRNO "found tok " EM_VARG ", but expected \033[1m‘static’\033[0m or \033[1m‘extern’\033[0m next";
+            RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘static’\033[0m or \033[1m‘extern’\033[0m next";
         case MSG_empty_compound_init:
             RETURN_ERRNO "empty compound initializer requires at least one initializer";
         case MSG_derived_fun_decl:
             RETURN_ERRNO "cannot apply further type derivation to function declaration";
         case MSG_expect_simple_decltor:
-            RETURN_ERRNO "found tok " EM_VARG ", but expected \033[1m‘identifier’\033[0m or \033[1m‘(’\033[0m next";
+            RETURN_ERRNO "found token " EM_VARG ", but expected \033[1m‘identifier’\033[0m or \033[1m‘(’\033[0m next";
         case MSG_expect_param_list:
-            RETURN_ERRNO "found tok " EM_VARG
+            RETURN_ERRNO "found token " EM_VARG
                          ", but expected \033[1m‘void’\033[0m, \033[1m‘char’\033[0m, \033[1m‘int’\033[0m, "
                          "\033[1m‘long’\033[0m, \033[1m‘double’\033[0m, \033[1m‘unsigned’\033[0m, "
                          "\033[1m‘signed’\033[0m, \033[1m‘struct’\033[0m or \033[1m‘union’\033[0m next";
