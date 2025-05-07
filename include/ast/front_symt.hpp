@@ -205,7 +205,7 @@ struct PointerInit : StaticInit {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// init_value = Tentative
+// initial_value = Tentative
 //               | Initial(static_init*)
 //               | NoInitializer
 struct InitialValue : Ast {
@@ -231,7 +231,7 @@ struct NoInitializer : InitialValue {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // identifier_attrs = FunAttr(bool, bool)
-//                  | StaticAttr(init_value, bool)
+//                  | StaticAttr(initial_value, bool)
 //                  | ConstantAttr(static_init)
 //                  | LocalAttr
 struct IdentifierAttr : Ast {

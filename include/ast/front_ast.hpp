@@ -145,8 +145,8 @@ struct CGreaterOrEqual : CBinaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// abstract_decltor = AbstractPointer(abstract_decltor)
-//                     | AbstractArray(int, abstract_decltor)
+// abstract_declarator = AbstractPointer(abstract_declarator)
+//                     | AbstractArray(int, abstract_declarator)
 //                     | AbstractBase
 struct CAbstractDeclarator : Ast {
     AST_T type() override;
@@ -175,7 +175,7 @@ struct CAbstractBase : CAbstractDeclarator {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// param_info = Param(type, decltor)
+// param_info = Param(type, declarator)
 struct CDeclarator;
 struct CParam : Ast {
     AST_T type() override;
@@ -188,10 +188,10 @@ struct CParam : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// decltor = Ident(identifier)
-//            | PointerDeclarator(decltor)
-//            | ArrayDeclarator(int, decltor)
-//            | FunDeclarator(param_info*, decltor)
+// declarator = Ident(identifier)
+//            | PointerDeclarator(declarator)
+//            | ArrayDeclarator(int, declarator)
+//            | FunDeclarator(param_info*, declarator)
 struct CDeclarator : Ast {
     AST_T type() override;
 };

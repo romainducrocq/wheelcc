@@ -183,7 +183,7 @@ struct TacSubObject : TacExpResult {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// instr = Return(val?)
+// instruction = Return(val?)
 //             | SignExtend(val, val)
 //             | Truncate(val, val)
 //             | ZeroExtend(val, val)
@@ -418,7 +418,7 @@ struct TacLabel : TacInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// top_level = Function(identifier, bool, identifier*, instr*)
+// top_level = Function(identifier, bool, identifier*, instruction*)
 //           | StaticVariable(identifier, bool, type, static_init*)
 //           | StaticConstant(identifier, type, static_init)
 struct TacTopLevel : Ast {

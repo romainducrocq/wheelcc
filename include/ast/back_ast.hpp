@@ -395,18 +395,18 @@ struct AsmShr : AsmUnaryOp {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// instr = Mov(asm_type, operand, operand)
-//             | MovSx(asm_type, asm_type, operand, operand)
-//             | MovZeroExtend(asm_type, asm_type, operand, operand)
+// instruction = Mov(assembly_type, operand, operand)
+//             | MovSx(assembly_type, assembly_type, operand, operand)
+//             | MovZeroExtend(assembly_type, assembly_type, operand, operand)
 //             | Lea(operand, operand)
-//             | Cvttsd2si(asm_type, operand, operand)
-//             | Cvtsi2sd(asm_type, operand, operand)
-//             | Unary(unary_operator, asm_type, operand)
-//             | Binary(binary_operator, asm_type, operand, operand)
-//             | Cmp(asm_type, operand, operand)
-//             | Idiv(asm_type, operand)
-//             | Div(asm_type, operand)
-//             | Cdq(asm_type)
+//             | Cvttsd2si(assembly_type, operand, operand)
+//             | Cvtsi2sd(assembly_type, operand, operand)
+//             | Unary(unary_operator, assembly_type, operand)
+//             | Binary(binary_operator, assembly_type, operand, operand)
+//             | Cmp(assembly_type, operand, operand)
+//             | Idiv(assembly_type, operand)
+//             | Div(assembly_type, operand)
+//             | Cdq(assembly_type)
 //             | Jmp(identifier)
 //             | JmpCC(cond_code, identifier)
 //             | SetCC(cond_code, operand)
@@ -606,7 +606,7 @@ struct AsmRet : AsmInstruction {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// top_level = Function(identifier, bool, bool, instr*)
+// top_level = Function(identifier, bool, bool, instruction*)
 //           | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
 struct AsmTopLevel : Ast {
