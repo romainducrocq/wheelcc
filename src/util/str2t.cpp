@@ -15,7 +15,7 @@
 
 // String to type
 
-hash_t string_to_hash(const std::string& string) { return std::hash<std::string> {}(string); }
+hash_t string_to_hash(const std::string& str) { return std::hash<std::string> {}(str); }
 
 intmax_t string_to_intmax(const std::string& str_int, size_t line) {
     std::vector<char> buf(str_int.begin(), str_int.end());

@@ -26,13 +26,13 @@ static void print_title(const std::string& title) { std::cout << "+\n+\n@@ " << 
 void pprint_toks(const std::vector<Token>& tokens) {
     print_title("Tokens");
     std::cout << "\nList[" << std::to_string(tokens.size()) << "]:";
-    for (const auto& tok : tokens) {
+    for (const auto& token : tokens) {
         std::cout << "\n  ";
-        if (tok.tok.compare(get_tok_kind_fmt(tok.tok_kind)) == 0) {
-            std::cout << tok.tok;
+        if (token.tok.compare(get_tok_kind_fmt(token.tok_kind)) == 0) {
+            std::cout << token.tok;
             continue;
         }
-        std::cout << get_tok_kind_fmt(tok.tok_kind) << "(" << tok.tok << ")";
+        std::cout << get_tok_kind_fmt(token.tok_kind) << "(" << token.tok << ")";
     }
     std::cout << std::endl;
 }
