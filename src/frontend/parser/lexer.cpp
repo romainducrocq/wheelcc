@@ -13,25 +13,25 @@
 #include "frontend/parser/lexer.hpp"
 
 struct LexerContext {
-    LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
+    LexerContext(std::vector<std::string>* p_includedirs, std::vector<Token>* p_toks);
 
     TOKEN_KIND re_match_tok_kind;
     std::string re_match_tok;
     std::string_view re_iter_sv_slice;
-    std::vector<Token>* p_tokens;
-    std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;
     std::unordered_set<hash_t> includename_set;
+    std::vector<std::string>* p_includedirs;
+    std::vector<Token>* p_toks;
     size_t total_linenum;
 };
 
-LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
-    p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+LexerContext::LexerContext(std::vector<std::string>* p_includedirs, std::vector<Token>* p_toks) :
+    stdlibdirs({
 #ifdef __linux__
-                                                          "/usr/include/", "/usr/local/include/"
+        "/usr/include/", "/usr/local/include/"
 #endif
-                                                      }),
-    total_linenum(0) {
+    }),
+    p_includedirs(p_includedirs), p_toks(p_toks), total_linenum(0) {
 }
 
 static std::unique_ptr<LexerContext> ctx;
@@ -195,7 +195,7 @@ static void tokenize_file() {
             }
 
             Token token = {ctx->re_match_tok_kind, ctx->re_match_tok, ctx->total_linenum};
-            ctx->p_tokens->emplace_back(std::move(token));
+            ctx->p_toks->emplace_back(std::move(token));
         }
     }
 }
@@ -265,7 +265,7 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
     }
 
     std::vector<Token> tokens;
-    ctx = std::make_unique<LexerContext>(&tokens, &includedirs);
+    ctx = std::make_unique<LexerContext>(&includedirs, &tokens);
     tokenize_file();
     ctx.reset();
 

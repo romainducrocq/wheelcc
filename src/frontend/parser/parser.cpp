@@ -31,13 +31,13 @@ struct Declarator {
 struct ParserContext {
     ParserContext(std::vector<Token>* p_toks);
 
-    std::vector<Token>* p_toks;
+    size_t pop_idx;
     Token* next_tok;
     Token* peek_tok;
-    size_t pop_idx;
+    std::vector<Token>* p_toks;
 };
 
-ParserContext::ParserContext(std::vector<Token>* p_toks) : p_toks(p_toks), pop_idx(0) {}
+ParserContext::ParserContext(std::vector<Token>* p_toks) : pop_idx(0), p_toks(p_toks) {}
 
 static std::unique_ptr<ParserContext> ctx;
 
