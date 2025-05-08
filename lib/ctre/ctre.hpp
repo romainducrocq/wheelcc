@@ -241,6 +241,8 @@ Software.
 #include <cstdint>
 #endif
 
+#define CTLL_FIXED_STRING static constexpr ctll::fixed_string
+
 namespace ctll {
 
 struct length_value_t {
