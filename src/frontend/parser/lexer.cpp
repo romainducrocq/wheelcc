@@ -1,5 +1,7 @@
+#include "ctre/ctre.hpp"
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -10,47 +12,25 @@
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
-#ifdef __GNUC__
-#if __cplusplus > 201703L
-#define __WITH_CTRE__
-#endif
-#endif
-
-#ifdef __WITH_CTRE__
-#include "ctre/ctre.hpp"
-#include <string_view>
-#else
-#include "boost/regex.hpp"
-#endif
-
-#ifndef __WITH_CTRE__
-#define TOKEN_KIND_SIZE TOK_error + 1
-#endif
-
 struct LexerContext {
-    LexerContext(std::vector<Token>* p_toks, std::vector<std::string>* p_includedirs);
+    LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs);
 
     TOKEN_KIND re_match_tok_kind;
     std::string re_match_tok;
-#ifdef __WITH_CTRE__
     std::string_view re_iter_sv_slice;
-#else
-    std::string re_capture_groups[TOKEN_KIND_SIZE];
-    std::unique_ptr<const boost::regex> re_compiled_pattern;
-#endif
-    std::vector<Token>* p_toks;
+    std::vector<Token>* p_tokens;
     std::vector<std::string>* p_includedirs;
     std::vector<std::string> stdlibdirs;
     std::unordered_set<hash_t> includename_set;
     size_t total_linenum;
 };
 
-LexerContext::LexerContext(std::vector<Token>* p_toks, std::vector<std::string>* p_includedirs) :
-    p_toks(p_toks), p_includedirs(p_includedirs), stdlibdirs({
-#ifdef __GNUC__
-                                                      "/usr/include/", "/usr/local/include/"
+LexerContext::LexerContext(std::vector<Token>* p_tokens, std::vector<std::string>* p_includedirs) :
+    p_tokens(p_tokens), p_includedirs(p_includedirs), stdlibdirs({
+#ifdef __linux__
+                                                          "/usr/include/", "/usr/local/include/"
 #endif
-                                                  }),
+                                                      }),
     total_linenum(0) {
 }
 
@@ -62,36 +42,18 @@ static std::unique_ptr<LexerContext> ctx;
 
 static void tokenize_include(std::string include_match, size_t linenum);
 
-#ifdef __WITH_CTRE__
-#define RE_MATCH_TOKEN(X, Y)                                                        \
-    {                                                                               \
-        ctre::regex_results re_match = ctre::starts_with<X>(ctx->re_iter_sv_slice); \
-        if (re_match.size()) {                                                      \
-            ctx->re_match_tok_kind = Y;                                             \
-            ctx->re_match_tok = std::string(re_match.get<0>());                     \
-            return;                                                                 \
-        }                                                                           \
+#define RE_MATCH_TOKEN(X, Y)                                                                 \
+    {                                                                                        \
+        CTLL_FIXED_STRING re_pattern = {X};                                                  \
+        ctre::regex_results re_match = ctre::starts_with<re_pattern>(ctx->re_iter_sv_slice); \
+        if (re_match.size()) {                                                               \
+            ctx->re_match_tok_kind = Y;                                                      \
+            ctx->re_match_tok = std::string(re_match.get<0>());                              \
+            return;                                                                          \
+        }                                                                                    \
     }
-#else
-#define RE_MATCH_TOKEN(X, Y)                           \
-    {                                                  \
-        size_t i = static_cast<size_t>(Y);             \
-        ctx->re_capture_groups[i] = std::to_string(i); \
-        re_pattern += "(?<";                           \
-        re_pattern += ctx->re_capture_groups[i];       \
-        re_pattern += ">";                             \
-        re_pattern += X;                               \
-        re_pattern += ")|";                            \
-    }
-#endif
 
-static void
-#ifdef __WITH_CTRE__
-    re_match_current_tok()
-#else
-    re_build_tok_pattern(std::string& re_pattern)
-#endif
-{
+static void re_match_current() {
     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOK_skip)
 
     RE_MATCH_TOKEN(R"(<<=)", TOK_assign_shiftleft)
@@ -192,36 +154,10 @@ static void tokenize_file() {
     for (size_t linenum = 1; read_line(line); ++linenum) {
         ctx->total_linenum++;
 
-#ifdef __WITH_CTRE__
         const std::string_view re_iter_sv(line);
-#else
-        boost::sregex_iterator re_iter_end;
-#endif
-        for (
-#ifdef __WITH_CTRE__
-            size_t i = 0; i < line.size(); i += ctx->re_match_tok.size()
-#else
-            boost::sregex_iterator re_iter_begin =
-                boost::sregex_iterator(line.begin(), line.end(), *ctx->re_compiled_pattern);
-            re_iter_begin != re_iter_end; re_iter_begin++
-#endif
-        ) {
-#ifdef __WITH_CTRE__
+        for (size_t i = 0; i < line.size(); i += ctx->re_match_tok.size()) {
             ctx->re_iter_sv_slice = re_iter_sv.substr(i);
-            re_match_current_tok();
-#else
-            {
-                boost::smatch re_match = *re_iter_begin;
-                for (size_t i = TOKEN_KIND_SIZE; i-- > 0;) {
-                    if (re_match[ctx->re_capture_groups[i]].matched) {
-                        ctx->re_match_tok_kind = static_cast<TOKEN_KIND>(i);
-                        ctx->re_match_tok = re_match.get_last_closed_paren();
-                        break;
-                    }
-                }
-            }
-#endif
-
+            re_match_current();
             if (is_comment) {
                 if (ctx->re_match_tok_kind == TOK_comment_end) {
                     is_comment = false;
@@ -240,13 +176,9 @@ static void tokenize_file() {
                         goto Lcontinue;
                     }
                     case TOK_include_preproc: {
-#ifdef __WITH_CTRE__
                         i += ctx->re_match_tok.size();
-#endif
                         tokenize_include(ctx->re_match_tok, linenum);
-#ifdef __WITH_CTRE__
                         ctx->re_match_tok.clear();
-#endif
                         goto Lcontinue;
                     }
                     case TOK_comment_line:
@@ -262,8 +194,8 @@ static void tokenize_file() {
             Lpass:;
             }
 
-            Token tok = {ctx->re_match_tok_kind, ctx->re_match_tok, ctx->total_linenum};
-            ctx->p_toks->emplace_back(std::move(tok));
+            Token token = {ctx->re_match_tok_kind, ctx->re_match_tok, ctx->total_linenum};
+            ctx->p_tokens->emplace_back(std::move(token));
         }
     }
 }
@@ -321,16 +253,6 @@ static void tokenize_include(std::string filename, size_t linenum) {
     }
 }
 
-static void tokenize_src() {
-#ifndef __WITH_CTRE__
-    std::string re_pattern("");
-    re_build_tok_pattern(re_pattern);
-    re_pattern.pop_back();
-    ctx->re_compiled_pattern = std::make_unique<const boost::regex>(std::move(re_pattern));
-#endif
-    tokenize_file();
-}
-
 static void strip_filename_ext(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,7 +266,7 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
 
     std::vector<Token> tokens;
     ctx = std::make_unique<LexerContext>(&tokens, &includedirs);
-    tokenize_src();
+    tokenize_file();
     ctx.reset();
 
     close_fread(0);
