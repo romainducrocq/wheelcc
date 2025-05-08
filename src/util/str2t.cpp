@@ -145,9 +145,7 @@ static intmax_t hex_string_to_intmax(const std::string& str_hex) {
     errno = 0;
     intmax_t intmax = strtoimax(&buf[0], &end_ptr, 16);
 
-    if (end_ptr == &buf[0]) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(end_ptr == &buf[0]);
 
     return intmax;
 }

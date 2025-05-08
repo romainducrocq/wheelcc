@@ -21,10 +21,8 @@ void open_fread(const std::string& filename) {
     for (size_t i = 0; i < fileio->file_reads.size(); ++i) {
         if (fileio->file_reads[i].fd) {
             size_t n_fopens = fileio->file_reads.size() - i;
-            if (n_fopens > FOPEN_MAX) {
-                RAISE_INTERNAL_ERROR;
-            }
-            else if (n_fopens == FOPEN_MAX) {
+            ABORT_IF(n_fopens > FOPEN_MAX);
+            if (n_fopens == FOPEN_MAX) {
                 fileio->file_reads[i].len = 0;
                 free(fileio->file_reads[i].buf);
                 fileio->file_reads[i].buf = nullptr;
@@ -113,7 +111,7 @@ void close_fread(size_t linenum) {
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&fileio->file_reads.back().buf, &fileio->file_reads.back().len, fileio->file_reads.back().fd)
                 == -1) {
-                RAISE_INTERNAL_ERROR;
+                RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()));
             }
         }
     }
