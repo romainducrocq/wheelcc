@@ -8,14 +8,14 @@
 
 // Abstract syntax tree
 
-using TIdentifier = size_t;
-using TChar = int8_t;
-using TInt = int32_t;
-using TLong = int64_t;
-using TUChar = uint8_t;
-using TUInt = uint32_t;
-using TULong = uint64_t;
-using TDouble = double;
+typedef size_t TIdentifier;
+typedef int8_t TChar;
+typedef int32_t TInt;
+typedef int64_t TLong;
+typedef uint8_t TUChar;
+typedef uint32_t TUInt;
+typedef uint64_t TULong;
+typedef double TDouble;
 
 enum AST_T {
     // Frontend symbol table

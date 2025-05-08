@@ -9,7 +9,7 @@
 
 // String to type
 
-using hash_t = size_t;
+typedef size_t hash_t;
 
 hash_t string_to_hash(const std::string& str);
 intmax_t string_to_intmax(const std::string& str_int, size_t line);

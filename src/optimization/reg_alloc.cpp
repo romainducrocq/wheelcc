@@ -16,8 +16,7 @@
 
 #include "optimization/reg_alloc.hpp"
 
-#define __MASK_TYPE__
-using mask_t = TULong;
+typedef TULong mask_t;
 
 struct ControlFlowGraph;
 struct DataFlowAnalysis;

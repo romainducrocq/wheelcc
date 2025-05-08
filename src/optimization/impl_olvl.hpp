@@ -7,16 +7,12 @@
 #define GET_INSTR(X) (*ctx->p_instrs)[X]
 #define GET_CFG_BLOCK(X) ctx->cfg->blocks[X]
 
-#ifndef __MASK_TYPE__
-using mask_t = TULong;
-#endif
-using AstInstruction =
 #if __OPTIM_LEVEL__ == 1
-    TacInstruction
+typedef TULong mask_t;
+typedef TacInstruction AstInstruction;
 #elif __OPTIM_LEVEL__ == 2
-    AsmInstruction
+typedef AsmInstruction AstInstruction;
 #endif
-    ;
 
 struct ControlFlowBlock {
     size_t size;
@@ -845,13 +841,12 @@ static bool init_data_flow_analysis(
         ctx->dfa->open_data_map.resize(ctx->cfg->blocks.size());
     }
     {
-        size_t i =
+        size_t i;
 #if __OPTIM_LEVEL__ == 1
-            is_store_elim ? 3 : 1
+        i = is_store_elim ? 3 : 1;
 #elif __OPTIM_LEVEL__ == 2
-            2
+        i = 2;
 #endif
-            ;
         if (ctx->dfa->instr_idx_map.size() < ctx->p_instrs->size() + i) {
             ctx->dfa->instr_idx_map.resize(ctx->p_instrs->size() + i);
         }
