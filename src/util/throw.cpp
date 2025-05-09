@@ -1,5 +1,6 @@
 #include <array>
 #include <cstdio>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <stdio.h>
@@ -8,7 +9,7 @@
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
-ErrorsContext::ErrorsContext(FileIoContext* p_fileo) : p_fileo(p_fileo) {}
+ErrorsContext::ErrorsContext(FileIoContext* p_fileio) : p_fileio(p_fileio) {}
 
 std::unique_ptr<ErrorsContext> errors;
 
@@ -16,8 +17,10 @@ std::unique_ptr<ErrorsContext> errors;
 
 // Throw
 
-static void free_fileio() {
-    for (auto& file_read : errors->p_fileo->file_reads) {
+typedef ErrorsContext* Ctx;
+
+static void free_fileio(FileIoContext* ctx) {
+    for (auto& file_read : ctx->file_reads) {
         if (file_read.buf != nullptr) {
             free(file_read.buf);
             file_read.buf = nullptr;
@@ -27,72 +30,61 @@ static void free_fileio() {
             file_read.fd = nullptr;
         }
     }
-    if (errors->p_fileo->fd_write != nullptr) {
-        fclose(errors->p_fileo->fd_write);
-        errors->p_fileo->fd_write = nullptr;
+    if (ctx->fd_write != nullptr) {
+        fclose(ctx->fd_write);
+        ctx->fd_write = nullptr;
     }
 }
 
-static const std::string& get_filename() {
-    if (!errors->p_fileo->file_reads.empty()) {
-        return errors->p_fileo->file_reads.back().filename;
+static const std::string& get_filename(FileIoContext* ctx) {
+    if (!ctx->file_reads.empty()) {
+        return ctx->file_reads.back().filename;
     }
     else {
-        return errors->p_fileo->filename;
+        return ctx->filename;
     }
-}
-
-size_t handle_error_at_line(size_t total_linenum) {
-    for (size_t i = 0; i < errors->fopen_lines.size() - 1; ++i) {
-        if (total_linenum < errors->fopen_lines[i + 1].total_linenum) {
-            set_filename(errors->fopen_lines[i].filename);
-            return total_linenum - errors->fopen_lines[i].total_linenum + errors->fopen_lines[i].linenum;
-        }
-    }
-    set_filename(errors->fopen_lines.back().filename);
-    return total_linenum - errors->fopen_lines.back().total_linenum + errors->fopen_lines.back().linenum;
 }
 
 [[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
-    free_fileio();
-    std::string msg = "\033[1m";
-    msg += std::string(file);
-    msg += ":";
-    msg += std::to_string(line);
-    msg += ":\033[0m\n\033[0;31minternal error:\033[0m ";
-    msg += std::string(func);
-    throw std::runtime_error(msg);
+    std::string err_what = "\033[1m";
+    err_what += std::string(file);
+    err_what += ":";
+    err_what += std::to_string(line);
+    err_what += ":\033[0m\n\033[0;31minternal error:\033[0m ";
+    err_what += std::string(func);
+    std::cerr << err_what << std::endl;
+    std::terminate();
 }
 
-[[noreturn]] void raise_base_error(const char* error_msg) {
-    std::string msg = "\033[0;31merror:\033[0m ";
-    msg += std::string(error_msg);
-    throw std::runtime_error(msg);
+[[noreturn]] void raise_base_error(Ctx ctx) {
+    std::string err_what = "\033[0;31merror:\033[0m ";
+    err_what += std::string(ctx->msg);
+    throw std::runtime_error(err_what);
 }
 
-[[noreturn]] void raise_runtime_error(const char* error_msg) {
-    free_fileio();
-    const std::string& filename = get_filename();
-    std::string msg = "\033[1m";
-    msg += filename;
-    msg += ":\033[0m\n\033[0;31merror:\033[0m ";
-    msg += std::string(error_msg);
-    throw std::runtime_error(msg);
+[[noreturn]] void raise_runtime_error(Ctx ctx) {
+    free_fileio(ctx->p_fileio);
+    const std::string& filename = get_filename(ctx->p_fileio);
+    std::string err_what = "\033[1m";
+    err_what += filename;
+    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
+    err_what += std::string(ctx->msg);
+    throw std::runtime_error(err_what);
 }
 
-[[noreturn]] void raise_runtime_error_at_line(const char* error_msg, size_t linenum) {
+[[noreturn]] void raise_runtime_error_at_line(Ctx ctx, size_t linenum) {
     if (linenum == 0) {
-        raise_runtime_error(error_msg);
+        raise_runtime_error(ctx);
     }
-    free_fileio();
-    const std::string& filename = get_filename();
+    free_fileio(ctx->p_fileio);
+    const std::string& filename = get_filename(ctx->p_fileio);
     std::string line;
     {
         size_t len = 0;
         char* buf = nullptr;
         FILE* fd = fopen(filename.c_str(), "rb");
         if (!fd) {
-            raise_runtime_error(error_msg);
+            raise_runtime_error(ctx);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&buf, &len, fd) == -1) {
@@ -100,7 +92,7 @@ size_t handle_error_at_line(size_t total_linenum) {
                 fclose(fd);
                 buf = nullptr;
                 fd = nullptr;
-                raise_runtime_error(error_msg);
+                raise_runtime_error(ctx);
             }
         }
         line = buf;
@@ -112,16 +104,27 @@ size_t handle_error_at_line(size_t total_linenum) {
             line.pop_back();
         }
     }
-    std::string msg = "\033[1m";
-    msg += filename;
-    msg += ":";
-    msg += std::to_string(linenum);
-    msg += ":\033[0m\n\033[0;31merror:\033[0m ";
-    msg += std::string(error_msg);
-    msg += "\nat line ";
-    msg += std::to_string(linenum);
-    msg += ": \033[1m";
-    msg += line;
-    msg += "\033[0m";
-    throw std::runtime_error(msg);
+    std::string err_what = "\033[1m";
+    err_what += filename;
+    err_what += ":";
+    err_what += std::to_string(linenum);
+    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
+    err_what += std::string(ctx->msg);
+    err_what += "\nat line ";
+    err_what += std::to_string(linenum);
+    err_what += ": \033[1m";
+    err_what += line;
+    err_what += "\033[0m";
+    throw std::runtime_error(err_what);
+}
+
+size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
+    for (size_t i = 0; i < ctx->fopen_lines.size() - 1; ++i) {
+        if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
+            set_filename(ctx->fopen_lines[i].filename);
+            return total_linenum - ctx->fopen_lines[i].total_linenum + ctx->fopen_lines[i].linenum;
+        }
+    }
+    set_filename(ctx->fopen_lines.back().filename);
+    return total_linenum - ctx->fopen_lines.back().total_linenum + ctx->fopen_lines.back().linenum;
 }
