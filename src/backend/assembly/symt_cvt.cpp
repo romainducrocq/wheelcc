@@ -163,12 +163,8 @@ static void cvt_toplvl(AsmTopLevel* node) {
 
 static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-        if (node->is_def) {
-            RAISE_INTERNAL_ERROR;
-        }
-        else {
-            fun_type->param_reg_mask = REGISTER_MASK_FALSE;
-        }
+        ABORT_IF(node->is_def);
+        fun_type->param_reg_mask = REGISTER_MASK_FALSE;
     }
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;

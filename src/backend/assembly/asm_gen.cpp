@@ -707,9 +707,7 @@ static void ret_struct_instr(TacReturn* node) {
             TLong offset = 0l;
             while (size > 0l) {
                 std::shared_ptr<AsmOperand> src = gen_op(node->val.get());
-                if (src->type() != AST_AsmPseudoMem_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
+                ABORT_IF(src->type() != AST_AsmPseudoMem_t);
                 static_cast<AsmPseudoMem*>(src.get())->offset = offset;
                 std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, offset);
                 std::shared_ptr<AssemblyType> asm_type_src;
@@ -1940,9 +1938,7 @@ static void const_idx_add_ptr_instr(TacAddPtr* node) {
         TLong idx;
         {
             CConst* constant = static_cast<TacConstant*>(node->idx.get())->constant.get();
-            if (constant->type() != AST_CConstLong_t) {
-                RAISE_INTERNAL_ERROR;
-            }
+            ABORT_IF(constant->type() != AST_CConstLong_t);
             idx = static_cast<CConstLong*>(constant)->value;
         }
         std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, idx * node->scale);
@@ -2573,8 +2569,6 @@ std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_as
     ctx.reset();
 
     tac_ast.reset();
-    if (!asm_ast) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(!asm_ast);
     return asm_ast;
 }

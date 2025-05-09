@@ -509,9 +509,7 @@ static void push_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>
 
 static void pop_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_regs) {
     for (size_t i = callee_saved_regs.size(); i-- > 0;) {
-        if (callee_saved_regs[i]->type() != AST_AsmRegister_t) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(callee_saved_regs[i]->type() != AST_AsmRegister_t);
         REGISTER_KIND reg_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_regs[i].get())->reg.get());
         std::unique_ptr<AsmReg> reg;
         switch (reg_kind) {

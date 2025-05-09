@@ -682,10 +682,8 @@ static void pop_instr(AsmPop* node) {
 static void call_instr(AsmCall* node) {
     std::string instr = "call ";
     instr += emit_identifier(node->name);
-    if (backend->symbol_table[node->name]->type() != AST_BackendFun_t) {
-        RAISE_INTERNAL_ERROR;
-    }
-    else if (!static_cast<BackendFun*>(backend->symbol_table[node->name].get())->is_def) {
+    ABORT_IF(backend->symbol_table[node->name]->type() != AST_BackendFun_t);
+    if (!static_cast<BackendFun*>(backend->symbol_table[node->name].get())->is_def) {
         instr += "@PLT";
     }
     emit(std::move(instr), 2);
