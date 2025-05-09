@@ -42,7 +42,7 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 #define GET_ERROR_MSG(X, ...) snprintf(errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
 #define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
 #define THROW_INIT(X) X > 0 ? raise_init_error(errors.get()) : THROW_ABORT
-#define THROW_IO(X) X > 0 ? raise_rtime_error(errors.get()) : THROW_ABORT
+#define THROW_BASE(X) X > 0 ? raise_rtime_error(errors.get()) : THROW_ABORT
 #define THROW_AT(X, Y) X > 0 ? raise_rtime_error_at_line(errors.get(), Y) : THROW_ABORT
 #define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(errors.get(), Y))
 #ifdef __NDEBUG__
