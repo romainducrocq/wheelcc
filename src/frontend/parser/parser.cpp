@@ -1419,9 +1419,7 @@ static void proc_fun_decltor(CFunDeclarator* node, std::shared_ptr<Type> base_ty
     for (const auto& param : node->param_list) {
         Declarator param_decltor;
         proc_decltor(param->decltor.get(), param->param_type, param_decltor);
-        if (param_decltor.derived_type->type() == AST_FunType_t) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(param_decltor.derived_type->type() == AST_FunType_t);
         params.push_back(std::move(param_decltor.name));
         param_types.push_back(std::move(param_decltor.derived_type));
     }
@@ -1734,14 +1732,10 @@ static std::unique_ptr<CProgram> parse_program() {
 std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens) {
     ctx = std::make_unique<ParserContext>(&tokens);
     std::unique_ptr<CProgram> c_ast = parse_program();
-    if (ctx->pop_idx != tokens.size()) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(ctx->pop_idx != tokens.size());
     ctx.reset();
 
     std::vector<Token>().swap(tokens);
-    if (!c_ast) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(!c_ast);
     return c_ast;
 }
