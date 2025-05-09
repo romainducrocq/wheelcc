@@ -168,7 +168,7 @@ static void tokenize_file() {
                 switch (ctx->re_match_tok_kind) {
                     case TOK_error:
                     case TOK_comment_end:
-                        RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
+                        THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
                     case TOK_skip:
                         goto Lcontinue;
                     case TOK_comment_start: {
@@ -222,7 +222,7 @@ static void tokenize_include(std::string filename, size_t linenum) {
         ctx->includename_set.insert(includename);
         if (!find_include(ctx->stdlibdirs, filename)) {
             if (!find_include(*ctx->p_includedirs, filename)) {
-                RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
             }
         }
     }
@@ -235,7 +235,7 @@ static void tokenize_include(std::string filename, size_t linenum) {
         }
         ctx->includename_set.insert(includename);
         if (!find_include(*ctx->p_includedirs, filename)) {
-            RAISE_RUNTIME_ERROR_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+            THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
         }
     }
 

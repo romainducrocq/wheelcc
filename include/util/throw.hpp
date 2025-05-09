@@ -34,24 +34,23 @@ extern std::unique_ptr<ErrorsContext> errors;
 #define INIT_ERRORS_CTX errors = std::make_unique<ErrorsContext>(fileio.get())
 #define FREE_ERRORS_CTX errors.reset()
 
-[[noreturn]] void raise_internal_error(const char* func, const char* file, int line);
-[[noreturn]] void raise_base_error(ErrorsContext* ctx);
-[[noreturn]] void raise_runtime_error(ErrorsContext* ctx);
-[[noreturn]] void raise_runtime_error_at_line(ErrorsContext* ctx, size_t linenum);
+[[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
+[[noreturn]] void raise_init_error(ErrorsContext* ctx);
+[[noreturn]] void raise_rtime_error(ErrorsContext* ctx);
+[[noreturn]] void raise_rtime_error_at_line(ErrorsContext* ctx, size_t linenum);
 size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 #define GET_ERROR_MSG(X, ...) snprintf(errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
-#define RAISE_INTERNAL_ERROR raise_internal_error(__func__, __FILE__, __LINE__)
-#define RAISE_FATAL_ERROR(X) X > 0 ? raise_base_error(errors.get()) : RAISE_INTERNAL_ERROR
-#define RAISE_ARGUMENT_ERROR(X) X > 0 ? raise_base_error(errors.get()) : RAISE_INTERNAL_ERROR
-#define RAISE_RUNTIME_ERROR(X) X > 0 ? raise_runtime_error(errors.get()) : RAISE_INTERNAL_ERROR
-#define RAISE_RUNTIME_ERROR_AT(X, Y) X > 0 ? raise_runtime_error_at_line(errors.get(), Y) : RAISE_INTERNAL_ERROR
-#define RAISE_RUNTIME_ERROR_AT_LINE(X, Y) RAISE_RUNTIME_ERROR_AT(X, handle_error_at_line(errors.get(), Y))
+#define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
+#define THROW_INIT(X) X > 0 ? raise_init_error(errors.get()) : THROW_ABORT
+#define THROW_IO(X) X > 0 ? raise_rtime_error(errors.get()) : THROW_ABORT
+#define THROW_AT(X, Y) X > 0 ? raise_rtime_error_at_line(errors.get(), Y) : THROW_ABORT
+#define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(errors.get(), Y))
 #ifdef __NDEBUG__
-#define ABORT_IF(X)
+#define THROW_ABORT_IF(X)
 #else
-#define ABORT_IF(X)           \
-    if (X) {                  \
-        RAISE_INTERNAL_ERROR; \
+#define THROW_ABORT_IF(X) \
+    if (X) {              \
+        THROW_ABORT;      \
     }
 #endif
 

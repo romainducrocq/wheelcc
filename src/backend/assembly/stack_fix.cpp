@@ -79,7 +79,7 @@ static void alloc_offset_pseudo(AssemblyType* asm_type) {
             align_offset_pseudo(8l, 8);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -89,7 +89,7 @@ static void alloc_offset_pseudo_mem(AssemblyType* asm_type) {
         align_offset_pseudo(p_asm_type->size, p_asm_type->alignment);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -507,7 +507,7 @@ static void push_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>
 
 static void pop_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_regs) {
     for (size_t i = callee_saved_regs.size(); i-- > 0;) {
-        ABORT_IF(callee_saved_regs[i]->type() != AST_AsmRegister_t);
+        THROW_ABORT_IF(callee_saved_regs[i]->type() != AST_AsmRegister_t);
         REGISTER_KIND reg_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_regs[i].get())->reg.get());
         std::unique_ptr<AsmReg> reg;
         switch (reg_kind) {
@@ -532,7 +532,7 @@ static void pop_callee_saved_regs(const std::vector<std::shared_ptr<AsmOperand>>
                 break;
             }
             default:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
         }
         push_fix_instr(std::make_unique<AsmPop>(std::move(reg)));
     }
@@ -1032,7 +1032,7 @@ static void fix_toplvl(AsmTopLevel* node) {
         case AST_AsmStaticVariable_t:
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 

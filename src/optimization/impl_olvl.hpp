@@ -91,7 +91,7 @@ static void cfg_add_succ_edge(size_t block_id, size_t succ_id) {
         cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -103,7 +103,7 @@ static void cfg_add_pred_edge(size_t block_id, size_t pred_id) {
         cfg_add_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -135,7 +135,7 @@ static void cfg_rm_succ_edge(size_t block_id, size_t succ_id, bool is_reachable)
         cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id, is_reachable);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -147,7 +147,7 @@ static void cfg_rm_pred_edge(size_t block_id, size_t pred_id) {
         cfg_rm_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -450,7 +450,7 @@ static size_t get_dfa_data_idx(size_t instr_idx) {
             return i;
         }
     }
-    RAISE_INTERNAL_ERROR;
+    THROW_ABORT;
 }
 
 static TacInstruction* get_dfa_bak_instr(size_t i) {
@@ -459,14 +459,14 @@ static TacInstruction* get_dfa_bak_instr(size_t i) {
             return ctx->dfa_o1->bak_instrs[i].get();
         }
         else {
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         }
     }
     else if (GET_DFA_INSTR(i)) {
         return GET_DFA_INSTR(i).get();
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -596,7 +596,7 @@ Lelse:
             break;
         }
         else {
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         }
     }
 
@@ -604,7 +604,7 @@ Lelse:
         dfa_forward_transfer_block(instr_idx, block_id);
     }
     else {
-        ABORT_IF(instr_idx != ctx->dfa->incoming_idx);
+        THROW_ABORT_IF(instr_idx != ctx->dfa->incoming_idx);
     }
 
     return dfa_after_meet_block(block_id);
@@ -643,7 +643,7 @@ Lelse:
             break;
         }
         else {
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         }
     }
 
@@ -651,7 +651,7 @@ Lelse:
         dfa_backward_transfer_block(instr_idx, block_id);
     }
     else {
-        ABORT_IF(instr_idx != ctx->dfa->incoming_idx);
+        THROW_ABORT_IF(instr_idx != ctx->dfa->incoming_idx);
     }
 
     return dfa_after_meet_block(block_id);
@@ -685,7 +685,7 @@ static void dfa_forward_iter_alg() {
                 Lelse:;
                 }
                 else {
-                    ABORT_IF(succ_id != ctx->cfg->exit_id);
+                    THROW_ABORT_IF(succ_id != ctx->cfg->exit_id);
                 }
             }
         }
@@ -720,7 +720,7 @@ static void dfa_iter_alg() {
                 Lelse:;
                 }
                 else {
-                    ABORT_IF(pred_id != ctx->cfg->entry_id);
+                    THROW_ABORT_IF(pred_id != ctx->cfg->entry_id);
                 }
             }
         }
@@ -781,7 +781,7 @@ static void dfa_add_aliased_value(TacValue* node) {
 static bool is_same_value(TacValue* node_1, TacValue* node_2);
 
 static bool prop_add_data_idx(TacCopy* node, size_t instr_idx, size_t block_id) {
-    ABORT_IF(node->dst->type() != AST_TacVariable_t);
+    THROW_ABORT_IF(node->dst->type() != AST_TacVariable_t);
     if (is_same_value(node->src.get(), node->dst.get())) {
         cfg_rm_block_instr(instr_idx, block_id);
         return false;

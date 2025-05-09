@@ -35,7 +35,7 @@ static TInt get_scalar_alignment(Type* type) {
         case AST_Pointer_t:
             return 8;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -119,7 +119,7 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name) {
         case AST_Structure_t:
             return struct_asm_type(static_cast<Structure*>(frontend->symbol_table[name]->type_t.get()));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -147,7 +147,7 @@ static void cvt_static_const_toplvl(AsmStaticConstant* node) {
             string_static_const(static_cast<Array*>(frontend->symbol_table[node->name]->type_t.get()));
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -156,13 +156,13 @@ static void cvt_toplvl(AsmTopLevel* node) {
         cvt_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
 static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-        ABORT_IF(node->is_def);
+        THROW_ABORT_IF(node->is_def);
         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
     }
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {

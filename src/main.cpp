@@ -247,37 +247,37 @@ static void arg_parse() {
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_debug_arg));
+        THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
     }
     else if (arg_parse_uint8(arg, ctx->debug_code)) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_debug_arg, arg.c_str()));
+        THROW_INIT(GET_ARG_MSG(MSG_invalid_debug_arg, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_1_arg));
+        THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_1_arg));
     }
     else if (arg_parse_uint8(arg, ctx->optim_1_mask) || ctx->optim_1_mask > 15) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_1_arg, arg.c_str()));
+        THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_1_arg, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_optim_2_arg));
+        THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_2_arg));
     }
     else if (arg_parse_uint8(arg, ctx->optim_2_code) || ctx->optim_2_code > 2) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG(MSG_invalid_optim_2_arg, arg.c_str()));
+        THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_2_arg, arg.c_str()));
     }
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_input_files_arg));
+        THROW_INIT(GET_ARG_MSG_0(MSG_no_input_files_arg));
     }
     ctx->filename = arg;
 
     shift_args(arg);
     if (arg.empty()) {
-        RAISE_ARGUMENT_ERROR(GET_ARG_MSG_0(MSG_no_include_dir_arg));
+        THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
         std::string includedir = arg;
@@ -310,23 +310,23 @@ int main(int argc, char** argv) {
         INIT_ERRORS_CTX;
 
 #ifdef _WIN32
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
 #elif defined(__APPLE__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_os, "MacOS"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "MacOS"));
 #elif !defined(__linux__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
 #elif defined(__arm__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
 #elif defined(__i386__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_arch, "x86"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "x86"));
 #elif !defined(__x86_64__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
 #elif defined(__clang__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_compiler, "clang"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "clang"));
 #elif !defined(__GNUC__)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
 #elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
-        RAISE_FATAL_ERROR(GET_FATAL_MSG(MSG_unsupported_gcc_ver, GCC_VERSION));
+        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_gcc_ver, GCC_VERSION));
 #endif
 
         arg_parse();

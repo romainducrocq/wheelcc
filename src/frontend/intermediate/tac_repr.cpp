@@ -36,7 +36,7 @@ static std::unique_ptr<TacUnaryOp> repr_unop(CUnaryOp* node) {
         case AST_CNot_t:
             return std::make_unique<TacNot>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -80,7 +80,7 @@ static std::unique_ptr<TacBinaryOp> repr_binop(CBinaryOp* node) {
         case AST_CGreaterOrEqual_t:
             return std::make_unique<TacGreaterOrEqual>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -119,7 +119,7 @@ static std::shared_ptr<TacValue> repr_value(CExp* node) {
         case AST_CVar_t:
             return var_value(static_cast<CVar*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -203,7 +203,7 @@ static TInt get_scalar_size(Type* type) {
         case AST_Pointer_t:
             return 8;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -550,7 +550,7 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
                         sub_obj_postfix_exp_instr(static_cast<TacSubObject*>(res.get()), dst);
                         break;
                     default:
-                        RAISE_INTERNAL_ERROR;
+                        THROW_ABORT;
                 }
                 res_postfix = std::make_unique<TacPlainOperand>(std::move(dst));
             }
@@ -569,7 +569,7 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     if (node->unop && node->unop->type() == AST_CPostfix_t) {
         return res_postfix;
@@ -693,7 +693,7 @@ static std::unique_ptr<TacExpResult> addrof_res_instr(CAddrOf* node) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     return res;
 }
@@ -738,7 +738,7 @@ static std::unique_ptr<TacPlainOperand> sizeoft_res_instr(CSizeOfT* node) {
 }
 
 static std::unique_ptr<TacSubObject> plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset) {
-    ABORT_IF(res->val->type() != AST_TacVariable_t);
+    THROW_ABORT_IF(res->val->type() != AST_TacVariable_t);
     TIdentifier base_name = static_cast<TacVariable*>(res->val.get())->name;
     TLong offset = member_offset;
     return std::make_unique<TacSubObject>(std::move(base_name), std::move(offset));
@@ -765,7 +765,7 @@ static void sub_obj_dot_res_instr(TacSubObject* res, TLong member_offset) {
 }
 
 static std::unique_ptr<TacExpResult> dot_res_instr(CDot* node) {
-    ABORT_IF(node->structure->exp_type->type() != AST_Structure_t);
+    THROW_ABORT_IF(node->structure->exp_type->type() != AST_Structure_t);
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
     TLong member_offset = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->offset;
     std::unique_ptr<TacExpResult> res = repr_res_instr(node->structure.get());
@@ -781,15 +781,15 @@ static std::unique_ptr<TacExpResult> dot_res_instr(CDot* node) {
             sub_obj_dot_res_instr(static_cast<TacSubObject*>(res.get()), member_offset);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     return res;
 }
 
 static std::unique_ptr<TacDereferencedPointer> arrow_res_instr(CArrow* node) {
-    ABORT_IF(node->pointer->exp_type->type() != AST_Pointer_t);
+    THROW_ABORT_IF(node->pointer->exp_type->type() != AST_Pointer_t);
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
-    ABORT_IF(ptr_type->ref_type->type() != AST_Structure_t);
+    THROW_ABORT_IF(ptr_type->ref_type->type() != AST_Structure_t);
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     TLong member_offset = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->offset;
     std::shared_ptr<TacValue> val = repr_exp_instr(node->pointer.get());
@@ -842,7 +842,7 @@ static std::unique_ptr<TacExpResult> repr_res_instr(CExp* node) {
         case AST_CArrow_t:
             return arrow_res_instr(static_cast<CArrow*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -877,7 +877,7 @@ static std::shared_ptr<TacValue> repr_exp_instr(CExp* node) {
         case AST_TacSubObject_t:
             return sub_obj_exp_instr(static_cast<TacSubObject*>(res.get()), node);
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -986,7 +986,7 @@ static void for_init_statement_instr(CForInit* node) {
             for_init_exp_instr(static_cast<CInitExp*>(node));
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1106,7 +1106,7 @@ static void statement_instr(CStatement* node) {
         case AST_CNull_t:
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1230,7 +1230,7 @@ static void aggr_compound_init_instr(CCompoundInit* node, Type* init_type, TIden
             struct_compound_init_instr(node, static_cast<Structure*>(init_type), symbol, size);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1243,7 +1243,7 @@ static void compound_init_instr(CInitializer* node, Type* init_type, TIdentifier
             aggr_compound_init_instr(static_cast<CCompoundInit*>(node), init_type, symbol, size);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1260,7 +1260,7 @@ static void var_decl_instr(CVariableDeclaration* node) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1279,7 +1279,7 @@ static void declaration_instr(CDeclaration* node) {
             var_declaration_instr(static_cast<CVarDecl*>(node));
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1300,7 +1300,7 @@ static void repr_instr_list(const std::vector<std::unique_ptr<CBlockItem>>& node
                 declaration_instr(static_cast<CD*>(block_item.get())->declaration.get());
                 break;
             default:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
         }
     }
 }
@@ -1310,7 +1310,7 @@ static void repr_block(CBlock* node) {
         repr_instr_list(static_cast<CB*>(node)->block_items);
     }
     else {
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
 }
 
@@ -1353,7 +1353,7 @@ static void declaration_toplvl(CDeclaration* node) {
         case AST_CStructDecl_t:
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1390,7 +1390,7 @@ static void repr_static_var_toplvl(Symbol* node, TIdentifier symbol) {
             static_inits = initial_static_toplvl(static_cast<Initial*>(static_attr->init.get()));
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 
     push_toplvl(std::make_unique<TacStaticVariable>(
@@ -1459,6 +1459,6 @@ std::unique_ptr<TacProgram> represent_three_address_code(std::unique_ptr<CProgra
     ctx.reset();
 
     c_ast.reset();
-    ABORT_IF(!tac_ast);
+    THROW_ABORT_IF(!tac_ast);
     return tac_ast;
 }

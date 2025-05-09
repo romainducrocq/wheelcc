@@ -174,7 +174,7 @@ static void infer_transfer_updated_op(AsmOperand* node, size_t next_instr_idx) {
             break;
         }
         case AST_AsmIndexed_t:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         default:
             break;
     }
@@ -281,7 +281,7 @@ static void infer_transfer_live_regs(size_t instr_idx, size_t next_instr_idx) {
             infer_transfer_used_call(static_cast<AsmCall*>(node), next_instr_idx);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -335,7 +335,7 @@ static void infer_rm_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
             return;
         }
     }
-    RAISE_INTERNAL_ERROR;
+    THROW_ABORT;
 }
 
 static void infer_rm_unpruned_pseudo_name(TIdentifier name) {
@@ -346,7 +346,7 @@ static void infer_rm_unpruned_pseudo_name(TIdentifier name) {
             return;
         }
     }
-    RAISE_INTERNAL_ERROR;
+    THROW_ABORT;
 }
 
 static void infer_init_used_name_edges(TIdentifier name) {
@@ -471,7 +471,7 @@ static void infer_init_updated_name_edges(TIdentifier name, size_t instr_idx) {
                 break;
             }
             case AST_AsmIndexed_t:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
             default: {
                 is_mov = false;
                 break;
@@ -738,16 +738,16 @@ static void alloc_prune_infer_reg(InferenceRegister* infer, size_t pruned_idx) {
 
 static void alloc_unprune_infer_reg(InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->reg_kind == REG_Sp) {
-        ABORT_IF(std::find(ctx->p_infer_graph->unpruned_pseudo_names.begin(),
-                     ctx->p_infer_graph->unpruned_pseudo_names.end(), pruned_name)
-                 != ctx->p_infer_graph->unpruned_pseudo_names.end());
+        THROW_ABORT_IF(std::find(ctx->p_infer_graph->unpruned_pseudo_names.begin(),
+                           ctx->p_infer_graph->unpruned_pseudo_names.end(), pruned_name)
+                       != ctx->p_infer_graph->unpruned_pseudo_names.end());
         ctx->p_infer_graph->unpruned_pseudo_names.push_back(pruned_name);
     }
     else {
         size_t pruned_mask_bit = register_mask_bit(infer->reg_kind);
-        ABORT_IF(std::find(ctx->p_infer_graph->unpruned_hard_mask_bits.begin(),
-                     ctx->p_infer_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
-                 != ctx->p_infer_graph->unpruned_hard_mask_bits.end());
+        THROW_ABORT_IF(std::find(ctx->p_infer_graph->unpruned_hard_mask_bits.begin(),
+                           ctx->p_infer_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
+                       != ctx->p_infer_graph->unpruned_hard_mask_bits.end());
         ctx->p_infer_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
@@ -805,7 +805,7 @@ static InferenceRegister* alloc_prune_infer_graph(TIdentifier& pruned_name) {
             }
             infer = nullptr;
         }
-        ABORT_IF(!infer);
+        THROW_ABORT_IF(!infer);
         double min_spill_metric = static_cast<double>(infer->spill_cost) / infer->degree;
         for (; i < ctx->p_infer_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
@@ -924,7 +924,7 @@ static REGISTER_KIND get_op_reg_kind(AsmOperand* node) {
         case AST_AsmMemory_t:
             return REG_Sp;
         case AST_AsmIndexed_t:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         default:
             return REG_Sp;
     }
@@ -1191,7 +1191,7 @@ static TInt get_type_size(Type* type) {
         case AST_Pointer_t:
             return 8;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1744,7 +1744,7 @@ static void alloc_toplvl(AsmTopLevel* node) {
         case AST_AsmStaticVariable_t:
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 

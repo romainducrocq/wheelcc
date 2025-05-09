@@ -99,7 +99,7 @@ static std::string reg_rsp_sse(AsmReg* node) {
         case AST_AsmXMM15_t:
             return "xmm15";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -286,7 +286,7 @@ static std::string emit_cond_code(AsmCondCode* node) {
         case AST_AsmP_t:
             return "p";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -307,7 +307,7 @@ static TInt type_align_bytes(AssemblyType* node) {
         case AST_ByteArray_t:
             return static_cast<ByteArray*>(node)->alignment;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -327,7 +327,7 @@ static std::string emit_type_suffix(AssemblyType* node, bool is_packed) {
         case AST_BackendDouble_t:
             return is_packed ? "pd" : "sd";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -355,7 +355,7 @@ static std::string reg_op(AsmRegister* node, TInt byte) {
             operand += emit_reg_8b(node->reg.get());
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     return operand;
 }
@@ -412,7 +412,7 @@ static std::string emit_op(AsmOperand* node, TInt byte) {
         case AST_AsmIndexed_t:
             return indexed_op(static_cast<AsmIndexed*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -428,7 +428,7 @@ static std::string emit_unop(AsmUnaryOp* node) {
         case AST_AsmShr_t:
             return "shr";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -466,7 +466,7 @@ static std::string emit_binop(AsmBinaryOp* node, bool is_dbl) {
         case AST_AsmBitShrArithmetic_t:
             return "sar";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -634,7 +634,7 @@ static void cdq_instr(AsmCdq* node) {
             emit("cqo", 2);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -682,7 +682,7 @@ static void pop_instr(AsmPop* node) {
 static void call_instr(AsmCall* node) {
     std::string instr = "call ";
     instr += emit_identifier(node->name);
-    ABORT_IF(backend->symbol_table[node->name]->type() != AST_BackendFun_t);
+    THROW_ABORT_IF(backend->symbol_table[node->name]->type() != AST_BackendFun_t);
     if (!static_cast<BackendFun*>(backend->symbol_table[node->name].get())->is_def) {
         instr += "@PLT";
     }
@@ -782,7 +782,7 @@ static void emit_instr(AsmInstruction* node) {
             ret_instr();
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -900,7 +900,7 @@ static void static_init_toplvl(StaticInit* node) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     emit(std::move(directive), 2);
 }
@@ -968,7 +968,7 @@ static void emit_toplvl(AsmTopLevel* node) {
             emit_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 

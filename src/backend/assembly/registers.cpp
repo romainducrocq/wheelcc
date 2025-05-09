@@ -79,7 +79,7 @@ static std::unique_ptr<AsmReg> gen_reg(REGISTER_KIND reg_kind) {
         case REG_Xmm15:
             return std::make_unique<AsmXMM15>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -160,9 +160,9 @@ REGISTER_KIND register_mask_kind(AsmReg* node) {
         case AST_AsmR11_t:
         case AST_AsmXMM14_t:
         case AST_AsmXMM15_t:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -226,9 +226,9 @@ size_t register_mask_bit(REGISTER_KIND reg_kind) {
         case REG_Bp:
         case REG_Xmm14:
         case REG_Xmm15:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 

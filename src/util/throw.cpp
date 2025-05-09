@@ -45,7 +45,7 @@ static const std::string& get_filename(FileIoContext* ctx) {
     }
 }
 
-[[noreturn]] void raise_internal_error(const char* func, const char* file, int line) {
+[[noreturn]] void raise_sigabrt(const char* func, const char* file, int line) {
     std::string err_what = "\033[1m";
     err_what += std::string(file);
     err_what += ":";
@@ -56,13 +56,13 @@ static const std::string& get_filename(FileIoContext* ctx) {
     std::terminate();
 }
 
-[[noreturn]] void raise_base_error(Ctx ctx) {
+[[noreturn]] void raise_init_error(Ctx ctx) {
     std::string err_what = "\033[0;31merror:\033[0m ";
     err_what += std::string(ctx->msg);
     throw std::runtime_error(err_what);
 }
 
-[[noreturn]] void raise_runtime_error(Ctx ctx) {
+[[noreturn]] void raise_rtime_error(Ctx ctx) {
     free_fileio(ctx->p_fileio);
     const std::string& filename = get_filename(ctx->p_fileio);
     std::string err_what = "\033[1m";
@@ -72,9 +72,9 @@ static const std::string& get_filename(FileIoContext* ctx) {
     throw std::runtime_error(err_what);
 }
 
-[[noreturn]] void raise_runtime_error_at_line(Ctx ctx, size_t linenum) {
+[[noreturn]] void raise_rtime_error_at_line(Ctx ctx, size_t linenum) {
     if (linenum == 0) {
-        raise_runtime_error(ctx);
+        raise_rtime_error(ctx);
     }
     free_fileio(ctx->p_fileio);
     const std::string& filename = get_filename(ctx->p_fileio);
@@ -84,7 +84,7 @@ static const std::string& get_filename(FileIoContext* ctx) {
         char* buf = nullptr;
         FILE* fd = fopen(filename.c_str(), "rb");
         if (!fd) {
-            raise_runtime_error(ctx);
+            raise_rtime_error(ctx);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&buf, &len, fd) == -1) {
@@ -92,7 +92,7 @@ static const std::string& get_filename(FileIoContext* ctx) {
                 fclose(fd);
                 buf = nullptr;
                 fd = nullptr;
-                raise_runtime_error(ctx);
+                raise_rtime_error(ctx);
             }
         }
         line = buf;

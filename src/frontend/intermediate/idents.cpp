@@ -91,7 +91,7 @@ TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     return make_label_identifier(std::move(name));
 }
@@ -116,7 +116,7 @@ TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     name += identifiers->hash_table[target];
     return make_string_identifier(std::move(name));
@@ -189,7 +189,7 @@ TIdentifier repr_var_identifier(CExp* node) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     return make_var_identifier(std::move(name));
 }

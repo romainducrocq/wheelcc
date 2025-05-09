@@ -1776,7 +1776,7 @@ static void print_ast(Ast* node, size_t t) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1851,7 +1851,7 @@ void pprint_string_const_table() {
                 continue;
             }
         }
-        RAISE_INTERNAL_ERROR;
+        THROW_ABORT;
     }
     std::cout << std::endl;
 }

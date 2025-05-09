@@ -25,7 +25,7 @@ intmax_t string_to_intmax(const std::string& str_int, size_t line) {
     intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
 
     if (end_ptr == &buf[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
+        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
     }
 
     return intmax;
@@ -43,7 +43,7 @@ uintmax_t string_to_uintmax(const std::string& str_uint, size_t line) {
     uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
 
     if (end_ptr == &buf[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
+        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
     }
 
     return uintmax;
@@ -93,7 +93,7 @@ void string_to_literal(const std::string& str_string, std::vector<int8_t>& strin
                     string_literal.push_back(11);
                     break;
                 default:
-                    RAISE_INTERNAL_ERROR;
+                    THROW_ABORT;
             }
         }
         else {
@@ -130,7 +130,7 @@ int32_t string_to_char_ascii(const std::string& str_char) {
             case 'v':
                 return 11;
             default:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
         }
     }
     else {
@@ -145,7 +145,7 @@ static intmax_t hex_string_to_intmax(const std::string& str_hex) {
     errno = 0;
     intmax_t intmax = strtoimax(&buf[0], &end_ptr, 16);
 
-    ABORT_IF(end_ptr == &buf[0]);
+    THROW_ABORT_IF(end_ptr == &buf[0]);
 
     return intmax;
 }
@@ -251,7 +251,7 @@ double string_to_dbl(const std::string& str_dbl, size_t line) {
     double float64 = strtod(&buf[0], &end_ptr);
 
     if (end_ptr == &buf[0]) {
-        RAISE_RUNTIME_ERROR_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl.c_str()), line);
+        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl.c_str()), line);
     }
 
     return float64;

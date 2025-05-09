@@ -123,7 +123,7 @@ static TIdentifier repr_asm_label(ASM_LABEL_KIND asm_label_kind) {
             break;
         }
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
     return make_label_identifier(std::move(name));
 }
@@ -169,7 +169,7 @@ static std::shared_ptr<AsmOperand> const_op(TacConstant* node) {
         case AST_CConstULong_t:
             return ulong_imm_op(static_cast<CConstULong*>(node->constant.get()));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -202,7 +202,7 @@ static std::shared_ptr<AsmOperand> gen_op(TacValue* node) {
         case AST_TacVariable_t:
             return var_op(static_cast<TacVariable*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -222,7 +222,7 @@ static std::unique_ptr<AsmCondCode> gen_signed_cond_code(TacBinaryOp* node) {
         case AST_TacGreaterOrEqual_t:
             return std::make_unique<AsmGE>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -242,7 +242,7 @@ static std::unique_ptr<AsmCondCode> gen_unsigned_cond_code(TacBinaryOp* node) {
         case AST_TacGreaterOrEqual_t:
             return std::make_unique<AsmAE>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -254,7 +254,7 @@ static std::unique_ptr<AsmUnaryOp> gen_unop(TacUnaryOp* node) {
         case AST_TacNegate_t:
             return std::make_unique<AsmNeg>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -283,7 +283,7 @@ static std::unique_ptr<AsmBinaryOp> gen_binop(TacBinaryOp* node) {
         case AST_TacBitShrArithmetic_t:
             return std::make_unique<AsmBitShrArithmetic>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -318,7 +318,7 @@ static bool is_value_signed(TacValue* node) {
         case AST_TacVariable_t:
             return is_var_signed(static_cast<TacVariable*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -350,7 +350,7 @@ static bool is_value_1b(TacValue* node) {
         case AST_TacVariable_t:
             return is_var_1b(static_cast<TacVariable*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -381,7 +381,7 @@ static bool is_value_4b(TacValue* node) {
         case AST_TacVariable_t:
             return is_var_4b(static_cast<TacVariable*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -396,7 +396,7 @@ static bool is_value_dbl(TacValue* node) {
         case AST_TacVariable_t:
             return is_var_dbl(static_cast<TacVariable*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -411,7 +411,7 @@ static bool is_value_struct(TacValue* node) {
         case AST_TacConstant_t:
             return false;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -429,7 +429,7 @@ static std::shared_ptr<AssemblyType> const_asm_type(TacConstant* node) {
         case AST_CConstULong_t:
             return std::make_shared<QuadWord>();
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -442,7 +442,7 @@ static std::shared_ptr<AssemblyType> gen_asm_type(TacValue* node) {
         case AST_TacVariable_t:
             return var_asm_type(static_cast<TacVariable*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -707,7 +707,7 @@ static void ret_struct_instr(TacReturn* node) {
             TLong offset = 0l;
             while (size > 0l) {
                 std::shared_ptr<AsmOperand> src = gen_op(node->val.get());
-                ABORT_IF(src->type() != AST_AsmPseudoMem_t);
+                THROW_ABORT_IF(src->type() != AST_AsmPseudoMem_t);
                 static_cast<AsmPseudoMem*>(src.get())->offset = offset;
                 std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, offset);
                 std::shared_ptr<AssemblyType> asm_type_src;
@@ -742,7 +742,7 @@ static void ret_struct_instr(TacReturn* node) {
                 ret_8b_instr(name, 0l, nullptr, REG_Xmm0);
                 break;
             default:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
         }
         if (ctx->struct_8b_cls_map[struct_type->tag].size() == 2) {
             bool sse_size = !reg_size;
@@ -756,7 +756,7 @@ static void ret_struct_instr(TacReturn* node) {
                     break;
                 }
                 default:
-                    RAISE_INTERNAL_ERROR;
+                    THROW_ABORT;
             }
             ret_2_reg_mask(ctx->p_fun_type, reg_size, sse_size);
         }
@@ -1380,7 +1380,7 @@ static void call_instr(TacFunCall* node) {
                         ret_8b_call_instr(name, 0l, nullptr, REG_Xmm0);
                         break;
                     default:
-                        RAISE_INTERNAL_ERROR;
+                        THROW_ABORT;
                 }
                 if (ctx->struct_8b_cls_map[struct_type->tag].size() == 2) {
                     bool sse_size = !reg_size;
@@ -1394,7 +1394,7 @@ static void call_instr(TacFunCall* node) {
                             break;
                         }
                         default:
-                            RAISE_INTERNAL_ERROR;
+                            THROW_ABORT;
                     }
                     ret_2_reg_mask(fun_type, reg_size, sse_size);
                 }
@@ -1518,7 +1518,7 @@ static void unary_instr(TacUnary* node) {
             unop_conditional_instr(node);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1739,7 +1739,7 @@ static void binary_instr(TacBinary* node) {
             binop_conditional_instr(node);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -1938,7 +1938,7 @@ static void const_idx_add_ptr_instr(TacAddPtr* node) {
         TLong idx;
         {
             CConst* constant = static_cast<TacConstant*>(node->idx.get())->constant.get();
-            ABORT_IF(constant->type() != AST_CConstLong_t);
+            THROW_ABORT_IF(constant->type() != AST_CConstLong_t);
             idx = static_cast<CConstLong*>(constant)->value;
         }
         std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, idx * node->scale);
@@ -2021,7 +2021,7 @@ static void add_ptr_instr(TacAddPtr* node) {
             var_idx_add_ptr_instr(node);
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -2307,7 +2307,7 @@ static void gen_instr(TacInstruction* node) {
             label_instr(static_cast<TacLabel*>(node));
             break;
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -2529,7 +2529,7 @@ static std::unique_ptr<AsmTopLevel> gen_toplvl(TacTopLevel* node) {
         case AST_TacStaticConstant_t:
             return gen_static_const_toplvl(static_cast<TacStaticConstant*>(node));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -2569,6 +2569,6 @@ std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_as
     ctx.reset();
 
     tac_ast.reset();
-    ABORT_IF(!asm_ast);
+    THROW_ABORT_IF(!asm_ast);
     return asm_ast;
 }

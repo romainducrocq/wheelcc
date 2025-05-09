@@ -170,7 +170,7 @@ std::string get_tok_kind_fmt(TOKEN_KIND tok_kind) {
         case TOK_dbl_const:
             return "const double";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -259,7 +259,7 @@ std::string get_type_fmt(Type* type) {
         case AST_Structure_t:
             return get_struct_fmt(static_cast<Structure*>(type));
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -280,7 +280,7 @@ std::string get_const_fmt(CConst* node) {
         case AST_CConstUChar_t:
             return "unsigned char";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -291,7 +291,7 @@ std::string get_storage_class_fmt(CStorageClass* node) {
         case AST_CExtern_t:
             return "extern";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -304,7 +304,7 @@ std::string get_unop_fmt(CUnaryOp* node) {
         case AST_CNot_t:
             return "!";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -349,7 +349,7 @@ std::string get_binop_fmt(CBinaryOp* node) {
         case AST_CGreaterOrEqual_t:
             return ">=";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -366,7 +366,7 @@ std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
                     case AST_CSubtract_t:
                         return "prefix --";
                     default:
-                        RAISE_INTERNAL_ERROR;
+                        THROW_ABORT;
                 }
             }
             case AST_CPostfix_t: {
@@ -376,11 +376,11 @@ std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
                     case AST_CSubtract_t:
                         return "postfix --";
                     default:
-                        RAISE_INTERNAL_ERROR;
+                        THROW_ABORT;
                 }
             }
             default:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
         }
     }
     else {
@@ -408,7 +408,7 @@ std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
             case AST_CBitShrArithmetic_t:
                 return ">>=";
             default:
-                RAISE_INTERNAL_ERROR;
+                THROW_ABORT;
         }
     }
 }
@@ -429,7 +429,7 @@ const char* get_fatal_msg(MESSAGE_FATAL msg) {
         case MSG_unsupported_gcc_ver:
             RET_ERRNO "\033[1m‘gcc’\033[0m %i.%i.%i is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -452,7 +452,7 @@ const char* get_arg_msg(MESSAGE_ARG msg) {
         case MSG_no_include_dir_arg:
             RET_ERRNO "no include directories passed in fifth argument";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -469,7 +469,7 @@ const char* get_util_msg(MESSAGE_UTIL msg) {
         case MSG_failed_strtod:
             RET_ERRNO "cannot interpret string " EM_VARG " to a floating point value";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -480,7 +480,7 @@ const char* get_lexer_msg(MESSAGE_LEXER msg) {
         case MSG_failed_include:
             RET_ERRNO "cannot find " EM_VARG " header file in \033[1m‘include’\033[0m directive search";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -561,7 +561,7 @@ const char* get_parser_msg(MESSAGE_PARSER msg) {
         case MSG_member_decl_as_fun:
             RET_ERRNO "data structure type declared with member " EM_VARG " as a function";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
 
@@ -725,6 +725,6 @@ const char* get_semantic_msg(MESSAGE_SEMANTIC msg) {
         case MSG_redecl_fun_in_scope:
             RET_ERRNO "function " EM_VARG " already declared in this scope";
         default:
-            RAISE_INTERNAL_ERROR;
+            THROW_ABORT;
     }
 }
