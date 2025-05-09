@@ -8,6 +8,8 @@
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
+ErrorsContext::ErrorsContext(FileIoContext* p_fileo) : p_fileo(p_fileo) {}
+
 std::unique_ptr<ErrorsContext> errors;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +17,7 @@ std::unique_ptr<ErrorsContext> errors;
 // Throw
 
 static void free_fileio() {
-    for (auto& file_read : fileio->file_reads) {
+    for (auto& file_read : errors->p_fileo->file_reads) {
         if (file_read.buf != nullptr) {
             free(file_read.buf);
             file_read.buf = nullptr;
@@ -25,18 +27,18 @@ static void free_fileio() {
             file_read.fd = nullptr;
         }
     }
-    if (fileio->fd_write != nullptr) {
-        fclose(fileio->fd_write);
-        fileio->fd_write = nullptr;
+    if (errors->p_fileo->fd_write != nullptr) {
+        fclose(errors->p_fileo->fd_write);
+        errors->p_fileo->fd_write = nullptr;
     }
 }
 
 static const std::string& get_filename() {
-    if (!fileio->file_reads.empty()) {
-        return fileio->file_reads.back().filename;
+    if (!errors->p_fileo->file_reads.empty()) {
+        return errors->p_fileo->file_reads.back().filename;
     }
     else {
-        return fileio->filename;
+        return errors->p_fileo->filename;
     }
 }
 

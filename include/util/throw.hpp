@@ -8,6 +8,8 @@
 
 #include "util/str2t.hpp"
 
+struct FileIoContext;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Throw
@@ -19,14 +21,17 @@ struct FileOpenLine {
 };
 
 struct ErrorsContext {
+    ErrorsContext(FileIoContext* p_fileo);
+
     char msg[1024];
     size_t linebuf;
+    FileIoContext* p_fileo;
     std::unordered_map<hash_t, size_t> linebuf_map;
     std::vector<FileOpenLine> fopen_lines;
 };
 
 extern std::unique_ptr<ErrorsContext> errors;
-#define INIT_ERRORS_CTX errors = std::make_unique<ErrorsContext>()
+#define INIT_ERRORS_CTX errors = std::make_unique<ErrorsContext>(fileio.get())
 #define FREE_ERRORS_CTX errors.reset()
 
 size_t handle_error_at_line(size_t total_linenum);
