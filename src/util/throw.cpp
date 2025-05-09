@@ -4,6 +4,7 @@
 #include <memory>
 #include <stdexcept>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 #include "util/fileio.hpp"
@@ -53,7 +54,7 @@ static const std::string& get_filename(FileIoContext* ctx) {
     err_what += ":\033[0m\n\033[0;31minternal error:\033[0m ";
     err_what += std::string(func);
     std::cerr << err_what << std::endl;
-    std::terminate();
+    abort();
 }
 
 [[noreturn]] void raise_init_error(Ctx ctx) {
