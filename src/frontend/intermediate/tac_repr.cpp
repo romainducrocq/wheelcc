@@ -738,9 +738,7 @@ static std::unique_ptr<TacPlainOperand> sizeoft_res_instr(CSizeOfT* node) {
 }
 
 static std::unique_ptr<TacSubObject> plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset) {
-    if (res->val->type() != AST_TacVariable_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(res->val->type() != AST_TacVariable_t);
     TIdentifier base_name = static_cast<TacVariable*>(res->val.get())->name;
     TLong offset = member_offset;
     return std::make_unique<TacSubObject>(std::move(base_name), std::move(offset));
@@ -767,9 +765,7 @@ static void sub_obj_dot_res_instr(TacSubObject* res, TLong member_offset) {
 }
 
 static std::unique_ptr<TacExpResult> dot_res_instr(CDot* node) {
-    if (node->structure->exp_type->type() != AST_Structure_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(node->structure->exp_type->type() != AST_Structure_t);
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
     TLong member_offset = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->offset;
     std::unique_ptr<TacExpResult> res = repr_res_instr(node->structure.get());
@@ -791,13 +787,9 @@ static std::unique_ptr<TacExpResult> dot_res_instr(CDot* node) {
 }
 
 static std::unique_ptr<TacDereferencedPointer> arrow_res_instr(CArrow* node) {
-    if (node->pointer->exp_type->type() != AST_Pointer_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(node->pointer->exp_type->type() != AST_Pointer_t);
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
-    if (ptr_type->ref_type->type() != AST_Structure_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(ptr_type->ref_type->type() != AST_Structure_t);
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
     TLong member_offset = frontend->struct_typedef_table[struct_type->tag]->members[node->member]->offset;
     std::shared_ptr<TacValue> val = repr_exp_instr(node->pointer.get());
@@ -1468,8 +1460,6 @@ std::unique_ptr<TacProgram> represent_three_address_code(std::unique_ptr<CProgra
     ctx.reset();
 
     c_ast.reset();
-    if (!tac_ast) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(!tac_ast);
     return tac_ast;
 }

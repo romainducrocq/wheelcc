@@ -273,9 +273,7 @@ static TLong get_arr_scale(Array* arr_type) {
 }
 
 static TLong get_struct_scale(Structure* struct_type) {
-    if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end());
     return frontend->struct_typedef_table[struct_type->tag]->size;
 }
 
@@ -295,9 +293,7 @@ static TInt get_type_alignment(Type* type);
 static TInt get_arr_alignment(Array* arr_type) { return get_type_alignment(arr_type->elem_type.get()); }
 
 static TInt get_struct_alignment(Structure* struct_type) {
-    if (frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end()) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(frontend->struct_typedef_table.find(struct_type->tag) == frontend->struct_typedef_table.end());
     return frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
 
@@ -542,16 +538,12 @@ static TULong get_const_ptr_value(CConstant* node) {
 }
 
 static size_t get_compound_line(CInitializer* node) {
-    if (node->type() != AST_CCompoundInit_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(node->type() != AST_CCompoundInit_t);
     do {
         node = static_cast<CCompoundInit*>(node)->initializers[0].get();
     }
     while (node->type() == AST_CCompoundInit_t);
-    if (node->type() != AST_CSingleInit_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(node->type() != AST_CSingleInit_t);
     return static_cast<CSingleInit*>(node)->exp->line;
 }
 
@@ -990,9 +982,7 @@ static void check_assign_exp(CAssignment* node) {
         node->exp_type = node->exp_left->exp_type;
     }
     else {
-        if (node->exp_right->type() != AST_CBinary_t) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(node->exp_right->type() != AST_CBinary_t);
         CExp* exp_left = static_cast<CBinary*>(node->exp_right.get())->exp_left.get();
         if (exp_left->type() == AST_CCast_t) {
             exp_left = static_cast<CCast*>(exp_left)->exp.get();
@@ -1287,9 +1277,7 @@ static void check_switch_statement(CSwitch* node) {
         case AST_Int_t: {
             std::vector<TInt> values(node->cases.size());
             for (size_t i = 0; i < values.size(); ++i) {
-                if (node->cases[i]->type() != AST_CConstant_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
+                ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
                 CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
                 values[i] = get_const_int_value(esac);
                 for (size_t j = 0; j < i; ++j) {
@@ -1307,9 +1295,7 @@ static void check_switch_statement(CSwitch* node) {
         case AST_Long_t: {
             std::vector<TLong> values(node->cases.size());
             for (size_t i = 0; i < values.size(); ++i) {
-                if (node->cases[i]->type() != AST_CConstant_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
+                ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
                 CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
                 values[i] = get_const_long_value(esac);
                 for (size_t j = 0; j < i; ++j) {
@@ -1327,9 +1313,7 @@ static void check_switch_statement(CSwitch* node) {
         case AST_UInt_t: {
             std::vector<TUInt> values(node->cases.size());
             for (size_t i = 0; i < values.size(); ++i) {
-                if (node->cases[i]->type() != AST_CConstant_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
+                ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
                 CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
                 values[i] = get_const_uint_value(esac);
                 for (size_t j = 0; j < i; ++j) {
@@ -1347,9 +1331,7 @@ static void check_switch_statement(CSwitch* node) {
         case AST_ULong_t: {
             std::vector<TULong> values(node->cases.size());
             for (size_t i = 0; i < values.size(); ++i) {
-                if (node->cases[i]->type() != AST_CConstant_t) {
-                    RAISE_INTERNAL_ERROR;
-                }
+                ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
                 CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
                 values[i] = get_const_ulong_value(esac);
                 for (size_t j = 0; j < i; ++j) {
@@ -1564,9 +1546,7 @@ static void check_fun_params_decl(CFunctionDeclaration* node) {
 }
 
 static void check_fun_decl(CFunctionDeclaration* node) {
-    if (node->fun_type->type() == AST_Void_t) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(node->fun_type->type() == AST_Void_t);
 
     bool is_def = ctx->fun_def_set.find(node->name) != ctx->fun_def_set.end();
     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
@@ -1985,10 +1965,8 @@ static void check_extern_block_var_decl(CVariableDeclaration* node) {
 }
 
 static void check_static_block_var_decl(CVariableDeclaration* node) {
-    if (node->var_type->type() == AST_Structure_t
-        && !is_struct_complete(static_cast<Structure*>(node->var_type.get()))) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(node->var_type->type() == AST_Structure_t
+             && !is_struct_complete(static_cast<Structure*>(node->var_type.get())));
 
     std::shared_ptr<InitialValue> init_value;
     if (node->init) {
@@ -2053,9 +2031,7 @@ static void check_struct_members_decl(CStructDeclaration* node) {
                     node->members[i]->line);
             }
         }
-        if (node->members[i].get()->member_type->type() == AST_FunType_t) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(node->members[i].get()->member_type->type() == AST_FunType_t);
         errors->linebuf = node->members[i]->line;
         reslv_struct_type(node->members[i].get()->member_type.get());
         if (!is_type_complete(node->members[i].get()->member_type.get())) {
