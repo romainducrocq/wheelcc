@@ -1572,11 +1572,11 @@ static std::unique_ptr<CPointerDeclarator> parse_ptr_decltor() {
 // declarator = Ident(identifier) | PointerDeclarator(declarator) | ArrayDeclarator(int, declarator)
 //            | FunDeclarator(param_info*, declarator)
 static std::unique_ptr<CDeclarator> parse_decltor() {
-    switch (peek_next().tok_kind) {
-        case TOK_binop_multiply:
-            return parse_ptr_decltor();
-        default:
-            return parse_direct_decltor();
+    if (peek_next().tok_kind == TOK_binop_multiply) {
+        return parse_ptr_decltor();
+    }
+    else {
+        return parse_direct_decltor();
     }
 }
 

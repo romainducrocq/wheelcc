@@ -152,12 +152,11 @@ static void cvt_static_const_toplvl(AsmStaticConstant* node) {
 }
 
 static void cvt_toplvl(AsmTopLevel* node) {
-    switch (node->type()) {
-        case AST_AsmStaticConstant_t:
-            cvt_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (node->type() == AST_AsmStaticConstant_t) {
+        cvt_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
     }
 }
 

@@ -84,14 +84,12 @@ static void alloc_offset_pseudo(AssemblyType* asm_type) {
 }
 
 static void alloc_offset_pseudo_mem(AssemblyType* asm_type) {
-    switch (asm_type->type()) {
-        case AST_ByteArray_t: {
-            ByteArray* p_asm_type = static_cast<ByteArray*>(asm_type);
-            align_offset_pseudo(p_asm_type->size, p_asm_type->alignment);
-            break;
-        }
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (asm_type->type() == AST_ByteArray_t) {
+        ByteArray* p_asm_type = static_cast<ByteArray*>(asm_type);
+        align_offset_pseudo(p_asm_type->size, p_asm_type->alignment);
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
     }
 }
 

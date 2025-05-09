@@ -517,13 +517,12 @@ static std::shared_ptr<CConst> fold_unary_dbl_const(TacUnaryOp* node, CConstDoub
 }
 
 static std::shared_ptr<CConst> fold_unary_uchar_const(TacUnaryOp* node, CConstUChar* constant) {
-    switch (node->type()) {
-        case AST_TacNot_t: {
-            TInt value = !constant->value ? 1 : 0;
-            return std::make_shared<CConstInt>(std::move(value));
-        }
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (node->type() == AST_TacNot_t) {
+        TInt value = !constant->value ? 1 : 0;
+        return std::make_shared<CConstInt>(std::move(value));
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
     }
 }
 

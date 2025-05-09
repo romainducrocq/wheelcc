@@ -2013,7 +2013,7 @@ static void check_block_var_decl(CVariableDeclaration* node) {
                 check_static_block_var_decl(node);
                 break;
             default:
-                break;
+                break; // TODO
         }
     }
     else {
@@ -2624,12 +2624,11 @@ static void reslv_block_items(const std::vector<std::unique_ptr<CBlockItem>>& no
 }
 
 static void reslv_block(CBlock* node) {
-    switch (node->type()) {
-        case AST_CB_t:
-            reslv_block_items(static_cast<CB*>(node)->block_items);
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (node->type() == AST_CB_t) {
+        reslv_block_items(static_cast<CB*>(node)->block_items);
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
     }
 }
 

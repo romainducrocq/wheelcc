@@ -1306,12 +1306,11 @@ static void repr_instr_list(const std::vector<std::unique_ptr<CBlockItem>>& node
 }
 
 static void repr_block(CBlock* node) {
-    switch (node->type()) {
-        case AST_CB_t:
-            repr_instr_list(static_cast<CB*>(node)->block_items);
-            break;
-        default:
-            RAISE_INTERNAL_ERROR;
+    if (node->type() == AST_CB_t) {
+        repr_instr_list(static_cast<CB*>(node)->block_items);
+    }
+    else {
+        RAISE_INTERNAL_ERROR;
     }
 }
 
@@ -1410,6 +1409,7 @@ static void repr_static_const_toplvl(Symbol* node, TIdentifier symbol) {
         std::make_unique<TacStaticConstant>(std::move(name), std::move(static_init_type), std::move(static_init)));
 }
 
+// TODO
 // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
 // (static constant) top_level = StaticConstant(identifier, type, static_init)
 static void symbol_toplvl(Symbol* node, TIdentifier symbol) {
