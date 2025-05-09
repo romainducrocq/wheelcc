@@ -2013,7 +2013,7 @@ static void check_block_var_decl(CVariableDeclaration* node) {
                 check_static_block_var_decl(node);
                 break;
             default:
-                break; // TODO
+                RAISE_INTERNAL_ERROR;
         }
     }
     else {

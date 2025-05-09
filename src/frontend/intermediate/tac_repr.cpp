@@ -1409,7 +1409,6 @@ static void repr_static_const_toplvl(Symbol* node, TIdentifier symbol) {
         std::make_unique<TacStaticConstant>(std::move(name), std::move(static_init_type), std::move(static_init)));
 }
 
-// TODO
 // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
 // (static constant) top_level = StaticConstant(identifier, type, static_init)
 static void symbol_toplvl(Symbol* node, TIdentifier symbol) {
