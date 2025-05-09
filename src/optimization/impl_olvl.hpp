@@ -603,8 +603,8 @@ Lelse:
     if (instr_idx < ctx->dfa->incoming_idx) {
         dfa_forward_transfer_block(instr_idx, block_id);
     }
-    else if (instr_idx != ctx->dfa->incoming_idx) {
-        RAISE_INTERNAL_ERROR;
+    else {
+        ABORT_IF(instr_idx != ctx->dfa->incoming_idx);
     }
 
     return dfa_after_meet_block(block_id);
@@ -650,8 +650,8 @@ Lelse:
     if (instr_idx < ctx->dfa->incoming_idx) {
         dfa_backward_transfer_block(instr_idx, block_id);
     }
-    else if (instr_idx != ctx->dfa->incoming_idx) {
-        RAISE_INTERNAL_ERROR;
+    else {
+        ABORT_IF(instr_idx != ctx->dfa->incoming_idx);
     }
 
     return dfa_after_meet_block(block_id);
@@ -684,8 +684,8 @@ static void dfa_forward_iter_alg() {
                     open_data_map_size++;
                 Lelse:;
                 }
-                else if (succ_id != ctx->cfg->exit_id) {
-                    RAISE_INTERNAL_ERROR;
+                else {
+                    ABORT_IF(succ_id != ctx->cfg->exit_id);
                 }
             }
         }
@@ -719,8 +719,8 @@ static void dfa_iter_alg() {
                     open_data_map_size++;
                 Lelse:;
                 }
-                else if (pred_id != ctx->cfg->entry_id) {
-                    RAISE_INTERNAL_ERROR;
+                else {
+                    ABORT_IF(pred_id != ctx->cfg->entry_id);
                 }
             }
         }
@@ -781,10 +781,8 @@ static void dfa_add_aliased_value(TacValue* node) {
 static bool is_same_value(TacValue* node_1, TacValue* node_2);
 
 static bool prop_add_data_idx(TacCopy* node, size_t instr_idx, size_t block_id) {
-    if (node->dst->type() != AST_TacVariable_t) {
-        RAISE_INTERNAL_ERROR;
-    }
-    else if (is_same_value(node->src.get(), node->dst.get())) {
+    ABORT_IF(node->dst->type() != AST_TacVariable_t);
+    if (is_same_value(node->src.get(), node->dst.get())) {
         cfg_rm_block_instr(instr_idx, block_id);
         return false;
     }

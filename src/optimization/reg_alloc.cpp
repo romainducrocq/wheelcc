@@ -738,20 +738,16 @@ static void alloc_prune_infer_reg(InferenceRegister* infer, size_t pruned_idx) {
 
 static void alloc_unprune_infer_reg(InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->reg_kind == REG_Sp) {
-        if (std::find(ctx->p_infer_graph->unpruned_pseudo_names.begin(),
-                ctx->p_infer_graph->unpruned_pseudo_names.end(), pruned_name)
-            != ctx->p_infer_graph->unpruned_pseudo_names.end()) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(std::find(ctx->p_infer_graph->unpruned_pseudo_names.begin(),
+                     ctx->p_infer_graph->unpruned_pseudo_names.end(), pruned_name)
+                 != ctx->p_infer_graph->unpruned_pseudo_names.end());
         ctx->p_infer_graph->unpruned_pseudo_names.push_back(pruned_name);
     }
     else {
         size_t pruned_mask_bit = register_mask_bit(infer->reg_kind);
-        if (std::find(ctx->p_infer_graph->unpruned_hard_mask_bits.begin(),
-                ctx->p_infer_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
-            != ctx->p_infer_graph->unpruned_hard_mask_bits.end()) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(std::find(ctx->p_infer_graph->unpruned_hard_mask_bits.begin(),
+                     ctx->p_infer_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
+                 != ctx->p_infer_graph->unpruned_hard_mask_bits.end());
         ctx->p_infer_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
@@ -809,9 +805,7 @@ static InferenceRegister* alloc_prune_infer_graph(TIdentifier& pruned_name) {
             }
             infer = nullptr;
         }
-        if (!infer) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(!infer);
         double min_spill_metric = static_cast<double>(infer->spill_cost) / infer->degree;
         for (; i < ctx->p_infer_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
