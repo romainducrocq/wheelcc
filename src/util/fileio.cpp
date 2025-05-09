@@ -46,9 +46,7 @@ void open_fread(const std::string& filename) {
 }
 
 void open_fwrite(const std::string& filename) {
-    if (!fileio->file_reads.empty()) {
-        RAISE_INTERNAL_ERROR;
-    }
+    ABORT_IF(!fileio->file_reads.empty());
 
     fileio->fd_write = nullptr;
     fileio->fd_write = fopen(filename.c_str(), "wb");
@@ -101,9 +99,7 @@ void close_fread(size_t linenum) {
     fileio->file_reads.pop_back();
 
     if (!fileio->file_reads.empty() && !fileio->file_reads.back().fd) {
-        if (fileio->file_reads.back().buf || fileio->file_reads.back().len != 0) {
-            RAISE_INTERNAL_ERROR;
-        }
+        ABORT_IF(fileio->file_reads.back().buf || fileio->file_reads.back().len != 0);
         fileio->file_reads.back().fd = fopen(fileio->file_reads.back().filename.c_str(), "rb");
         if (!fileio->file_reads.back().fd) {
             RAISE_RUNTIME_ERROR(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()));
