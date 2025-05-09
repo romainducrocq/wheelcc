@@ -381,8 +381,7 @@ static void fold_dbl_to_unsigned_instr(TacDoubleToUInt* node, size_t instr_idx) 
     }
 }
 
-static std::shared_ptr<TacConstant> fold_signed_to_dbl_const(TacVariable* node, CConst* constant) {
-    ABORT_IF(frontend->symbol_table[node->name]->type_t->type() != AST_Double_t);
+static std::shared_ptr<TacConstant> fold_signed_to_dbl_const(CConst* constant) {
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
         case AST_CConstChar_t: {
@@ -408,16 +407,17 @@ static std::shared_ptr<TacConstant> fold_signed_to_dbl_const(TacVariable* node, 
 
 static void fold_signed_to_dbl_instr(TacIntToDouble* node, size_t instr_idx) {
     if (node->src->type() == AST_TacConstant_t) {
-        ABORT_IF(node->dst->type() != AST_TacVariable_t);
-        std::shared_ptr<TacValue> src = fold_signed_to_dbl_const(
-            static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
+        ABORT_IF(node->dst->type() != AST_TacVariable_t
+                 || frontend->symbol_table[static_cast<TacVariable*>(node->dst.get())->name]->type_t->type()
+                        != AST_Double_t);
+        std::shared_ptr<TacValue> src =
+            fold_signed_to_dbl_const(static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
         set_instr(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instr_idx);
     }
 }
 
-static std::shared_ptr<TacConstant> fold_unsigned_to_dbl_const(TacVariable* node, CConst* constant) {
-    ABORT_IF(frontend->symbol_table[node->name]->type_t->type() != AST_Double_t);
+static std::shared_ptr<TacConstant> fold_unsigned_to_dbl_const(CConst* constant) {
     std::shared_ptr<CConst> fold_constant;
     switch (constant->type()) {
         case AST_CConstUChar_t: {
@@ -443,9 +443,11 @@ static std::shared_ptr<TacConstant> fold_unsigned_to_dbl_const(TacVariable* node
 
 static void fold_unsigned_to_dbl_instr(TacUIntToDouble* node, size_t instr_idx) {
     if (node->src->type() == AST_TacConstant_t) {
-        ABORT_IF(node->dst->type() != AST_TacVariable_t);
-        std::shared_ptr<TacValue> src = fold_unsigned_to_dbl_const(
-            static_cast<TacVariable*>(node->dst.get()), static_cast<TacConstant*>(node->src.get())->constant.get());
+        ABORT_IF(node->dst->type() != AST_TacVariable_t
+                 || frontend->symbol_table[static_cast<TacVariable*>(node->dst.get())->name]->type_t->type()
+                        != AST_Double_t);
+        std::shared_ptr<TacValue> src =
+            fold_unsigned_to_dbl_const(static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
         set_instr(std::make_unique<TacCopy>(std::move(src), std::move(dst)), instr_idx);
     }
@@ -1303,8 +1305,7 @@ static void unreach_jump_block(size_t block_id, size_t next_block_id) {
 }
 
 static void unreach_label_instr(size_t block_id) {
-    TacInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instrs_front_idx).get();
-    ABORT_IF(node->type() != AST_TacLabel_t);
+    ABORT_IF(GET_INSTR(GET_CFG_BLOCK(block_id).instrs_front_idx)->type() != AST_TacLabel_t);
     cfg_rm_block_instr(GET_CFG_BLOCK(block_id).instrs_front_idx, block_id);
 }
 
