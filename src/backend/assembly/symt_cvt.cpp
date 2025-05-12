@@ -42,7 +42,7 @@ static TInt get_scalar_alignment(Type* type) {
     }
 }
 
-static TInt get_arr_alignment(FrontEndContext* _frontend, Array* arr_type, TLong& size) {
+static TInt get_arr_alignment(FrontEndContext* ctx, Array* arr_type, TLong& size) {
     size = arr_type->size;
     while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
@@ -50,10 +50,10 @@ static TInt get_arr_alignment(FrontEndContext* _frontend, Array* arr_type, TLong
     }
     TInt alignment;
     {
-        alignment = gen_type_alignment(_frontend, arr_type->elem_type.get());
+        alignment = gen_type_alignment(ctx, arr_type->elem_type.get());
         if (arr_type->elem_type->type() == AST_Structure_t) {
             Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
-            size *= _frontend->struct_typedef_table[struct_type->tag]->size;
+            size *= ctx->struct_typedef_table[struct_type->tag]->size;
         }
         else {
             size *= alignment;
@@ -65,36 +65,35 @@ static TInt get_arr_alignment(FrontEndContext* _frontend, Array* arr_type, TLong
     return alignment;
 }
 
-static TInt get_struct_alignment(FrontEndContext* _frontend, Structure* struct_type) {
-    return _frontend->struct_typedef_table[struct_type->tag]->alignment;
+static TInt get_struct_alignment(FrontEndContext* ctx, Structure* struct_type) {
+    return ctx->struct_typedef_table[struct_type->tag]->alignment;
 }
 
-// TODO rename _frontend to frontend after removing global frontend
-TInt gen_type_alignment(FrontEndContext* _frontend, Type* type) {
+TInt gen_type_alignment(FrontEndContext* ctx, Type* type) {
     switch (type->type()) {
         case AST_Array_t: {
             TLong size;
-            return get_arr_alignment(_frontend, static_cast<Array*>(type), size);
+            return get_arr_alignment(ctx, static_cast<Array*>(type), size);
         }
         case AST_Structure_t:
-            return get_struct_alignment(_frontend, static_cast<Structure*>(type));
+            return get_struct_alignment(ctx, static_cast<Structure*>(type));
         default:
             return get_scalar_alignment(type);
     }
 }
 
-static std::shared_ptr<ByteArray> arr_asm_type(FrontEndContext* _frontend, Array* arr_type) {
+static std::shared_ptr<ByteArray> arr_asm_type(FrontEndContext* ctx, Array* arr_type) {
     TLong size;
-    TInt alignment = get_arr_alignment(_frontend, arr_type, size);
+    TInt alignment = get_arr_alignment(ctx, arr_type, size);
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
-static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* _frontend, Structure* struct_type) {
+static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* ctx, Structure* struct_type) {
     TLong size;
     TInt alignment;
-    if (_frontend->struct_typedef_table.find(struct_type->tag) != _frontend->struct_typedef_table.end()) {
-        size = _frontend->struct_typedef_table[struct_type->tag]->size;
-        alignment = _frontend->struct_typedef_table[struct_type->tag]->alignment;
+    if (ctx->struct_typedef_table.find(struct_type->tag) != ctx->struct_typedef_table.end()) {
+        size = ctx->struct_typedef_table[struct_type->tag]->size;
+        alignment = ctx->struct_typedef_table[struct_type->tag]->alignment;
     }
     else {
         size = -1l;
@@ -103,8 +102,8 @@ static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* _frontend, St
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
-std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* _frontend, TIdentifier name) {
-    switch (_frontend->symbol_table[name]->type_t->type()) {
+std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name) {
+    switch (ctx->symbol_table[name]->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t:
@@ -119,9 +118,9 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* _frontend, T
         case AST_Double_t:
             return std::make_shared<BackendDouble>();
         case AST_Array_t:
-            return arr_asm_type(_frontend, static_cast<Array*>(_frontend->symbol_table[name]->type_t.get()));
+            return arr_asm_type(ctx, static_cast<Array*>(ctx->symbol_table[name]->type_t.get()));
         case AST_Structure_t:
-            return struct_asm_type(_frontend, static_cast<Structure*>(_frontend->symbol_table[name]->type_t.get()));
+            return struct_asm_type(ctx, static_cast<Structure*>(ctx->symbol_table[name]->type_t.get()));
         default:
             THROW_ABORT;
     }
