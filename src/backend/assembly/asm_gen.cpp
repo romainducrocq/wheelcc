@@ -432,14 +432,16 @@ static std::shared_ptr<AssemblyType> const_asm_type(TacConstant* node) {
     }
 }
 
-static std::shared_ptr<AssemblyType> var_asm_type(TacVariable* node) { return cvt_backend_asm_type(node->name); }
+static std::shared_ptr<AssemblyType> var_asm_type(Ctx ctx, TacVariable* node) {
+    return cvt_backend_asm_type(ctx->frontend, node->name);
+}
 
-static std::shared_ptr<AssemblyType> gen_asm_type(TacValue* node) {
+static std::shared_ptr<AssemblyType> gen_asm_type(Ctx ctx, TacValue* node) {
     switch (node->type()) {
         case AST_TacConstant_t:
             return const_asm_type(static_cast<TacConstant*>(node));
         case AST_TacVariable_t:
-            return var_asm_type(static_cast<TacVariable*>(node));
+            return var_asm_type(ctx, static_cast<TacVariable*>(node));
         default:
             THROW_ABORT;
     }
@@ -520,7 +522,7 @@ static std::vector<STRUCT_8B_CLS> struct_2_reg_8b_clss(Ctx ctx, Structure* struc
             size *= ctx->frontend->struct_typedef_table[static_cast<Structure*>(member_type)->tag]->size;
         }
         else {
-            size *= gen_type_alignment(member_type);
+            size *= gen_type_alignment(ctx->frontend, member_type);
         }
         if (size > 8l) {
             if (member_type->type() == AST_Structure_t) {
@@ -632,7 +634,7 @@ static void push_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) { ctx->
 static void ret_int_instr(Ctx ctx, TacReturn* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->val.get());
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> asm_type_val = gen_asm_type(node->val.get());
+    std::shared_ptr<AssemblyType> asm_type_val = gen_asm_type(ctx, node->val.get());
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_val), std::move(src), std::move(dst)));
     ret_1_reg_mask(ctx->p_fun_type, true);
 }
@@ -789,8 +791,8 @@ static void ret_instr(Ctx ctx, TacReturn* node) {
 static void sign_extend_instr(Ctx ctx, TacSignExtend* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
-    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
     push_instr(ctx,
         std::make_unique<AsmMovSx>(std::move(asm_type_src), std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
@@ -839,8 +841,8 @@ static void truncate_instr(Ctx ctx, TacTruncate* node) {
 static void zero_extend_instr(Ctx ctx, TacZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
-    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
     push_instr(ctx, std::make_unique<AsmMovZeroExtend>(
                         std::move(asm_type_src), std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
@@ -862,7 +864,7 @@ static void dbl_to_char_instr(Ctx ctx, TacDoubleToInt* node) {
 static void dbl_to_long_instr(Ctx ctx, TacDoubleToInt* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->dst.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->dst.get());
     push_instr(ctx, std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
@@ -966,7 +968,7 @@ static void char_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
 static void long_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
     push_instr(ctx, std::make_unique<AsmCvtsi2sd>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
@@ -1088,13 +1090,13 @@ static void dealloc_stack_instr(Ctx ctx, TLong byte) {
 static void reg_arg_call_instr(Ctx ctx, TacValue* node, REGISTER_KIND arg_reg) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node);
     std::shared_ptr<AsmOperand> dst = gen_register(arg_reg);
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node);
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node);
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
 static void stack_arg_call_instr(Ctx ctx, TacValue* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node);
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node);
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node);
     if (src->type() == AST_AsmRegister_t || src->type() == AST_AsmImm_t || asm_type_src->type() == AST_QuadWord_t
         || asm_type_src->type() == AST_BackendDouble_t) {
         push_instr(ctx, std::make_unique<AsmPush>(std::move(src)));
@@ -1281,7 +1283,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
 static void ret_call_instr(Ctx ctx, TacValue* node, REGISTER_KIND arg_reg) {
     std::shared_ptr<AsmOperand> src = gen_register(arg_reg);
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node);
-    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node);
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node);
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
@@ -1425,7 +1427,7 @@ static void zero_xmm_reg_instr(Ctx ctx) {
 
 static void unop_int_arithmetic_instr(Ctx ctx, TacUnary* node) {
     std::shared_ptr<AsmOperand> src_dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
     {
         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
         push_instr(ctx, std::make_unique<AsmMov>(asm_type_src, std::move(src), src_dst));
@@ -1465,11 +1467,11 @@ static void unop_int_conditional_instr(Ctx ctx, TacUnary* node) {
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(ctx, node->dst.get());
     {
         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-        std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+        std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_src), imm_zero, std::move(src)));
     }
     {
-        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
@@ -1531,7 +1533,7 @@ static void unary_instr(Ctx ctx, TacUnary* node) {
 
 static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
     std::shared_ptr<AsmOperand> src1_dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         push_instr(ctx, std::make_unique<AsmMov>(asm_type_src1, std::move(src1), src1_dst));
@@ -1546,7 +1548,7 @@ static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
 
 static void signed_divide_instr(Ctx ctx, TacBinary* node) {
     std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         push_instr(ctx, std::make_unique<AsmMov>(asm_type_src1, std::move(src1), src1_dst));
@@ -1564,7 +1566,7 @@ static void signed_divide_instr(Ctx ctx, TacBinary* node) {
 
 static void unsigned_divide_instr(Ctx ctx, TacBinary* node) {
     std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
-    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         push_instr(ctx, std::make_unique<AsmMov>(asm_type_src1, std::move(src1), src1_dst));
@@ -1597,7 +1599,7 @@ static void binop_divide_instr(Ctx ctx, TacBinary* node) {
 }
 
 static void signed_remainder_instr(Ctx ctx, TacBinary* node) {
-    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
@@ -1617,7 +1619,7 @@ static void signed_remainder_instr(Ctx ctx, TacBinary* node) {
 
 static void unsigned_remainder_instr(Ctx ctx, TacBinary* node) {
     std::shared_ptr<AsmOperand> dst_src = gen_register(REG_Dx);
-    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+    std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
@@ -1651,12 +1653,12 @@ static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-        std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+        std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_src1), std::move(src2), std::move(src1)));
     }
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), cmp_dst));
     }
     {
@@ -1677,7 +1679,7 @@ static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-        std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(node->src1.get());
+        std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_src1), std::move(src2), std::move(src1)));
     }
     {
@@ -1782,7 +1784,7 @@ static void copy_struct_instr(Ctx ctx, TacCopy* node) {
 static void copy_scalar_instr(Ctx ctx, TacCopy* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
@@ -1860,7 +1862,7 @@ static void load_scalar_instr(Ctx ctx, TacLoad* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, 0l);
         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
@@ -1920,7 +1922,7 @@ static void store_scalar_instr(Ctx ctx, TacStore* node) {
     {
         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
         std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, 0l);
-        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->src.get());
+        std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->src.get());
         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
     }
 }
@@ -2073,7 +2075,7 @@ static void cp_to_offset_scalar_instr(Ctx ctx, TacCopyToOffset* node) {
         TLong to_offset = node->offset;
         dst = std::make_shared<AsmPseudoMem>(std::move(dst_name), std::move(to_offset));
     }
-    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(node->src.get());
+    std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
@@ -2127,7 +2129,7 @@ static void cp_from_offset_scalar_instr(Ctx ctx, TacCopyFromOffset* node) {
         src = std::make_shared<AsmPseudoMem>(std::move(src_name), std::move(from_offset));
     }
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(node->dst.get());
+    std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
@@ -2149,7 +2151,7 @@ static void jmp_eq_0_int_instr(Ctx ctx, TacJumpIfZero* node) {
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
         std::shared_ptr<AsmOperand> condition = gen_op(ctx, node->condition.get());
-        std::shared_ptr<AssemblyType> asm_type_cond = gen_asm_type(node->condition.get());
+        std::shared_ptr<AssemblyType> asm_type_cond = gen_asm_type(ctx, node->condition.get());
         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_cond), std::move(imm_zero), std::move(condition)));
     }
     {
@@ -2193,7 +2195,7 @@ static void jmp_ne_0_int_instr(Ctx ctx, TacJumpIfNotZero* node) {
     {
         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
         std::shared_ptr<AsmOperand> condition = gen_op(ctx, node->condition.get());
-        std::shared_ptr<AssemblyType> asm_type_cond = gen_asm_type(node->condition.get());
+        std::shared_ptr<AssemblyType> asm_type_cond = gen_asm_type(ctx, node->condition.get());
         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_cond), std::move(imm_zero), std::move(condition)));
     }
     {
@@ -2340,7 +2342,7 @@ static void reg_fun_param_instr(Ctx ctx, TIdentifier name, REGISTER_KIND arg_reg
         TIdentifier dst_name = name;
         dst = std::make_shared<AsmPseudo>(std::move(dst_name));
     }
-    std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(name);
+    std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(ctx->frontend, name);
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
@@ -2351,7 +2353,7 @@ static void stack_fun_param_instr(Ctx ctx, TIdentifier name, TLong stack_bytes) 
         TIdentifier dst_name = name;
         dst = std::make_shared<AsmPseudo>(std::move(dst_name));
     }
-    std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(name);
+    std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(ctx->frontend, name);
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
 }
 
@@ -2499,10 +2501,10 @@ static std::unique_ptr<AsmFunction> gen_fun_toplvl(Ctx ctx, TacFunction* node) {
         std::move(name), std::move(is_glob), std::move(is_ret_memory), std::move(body));
 }
 
-static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(TacStaticVariable* node) {
+static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(Ctx ctx, TacStaticVariable* node) {
     TIdentifier name = node->name;
     bool is_glob = node->is_glob;
-    TInt alignment = gen_type_alignment(node->static_init_type.get());
+    TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type.get());
     std::vector<std::shared_ptr<StaticInit>> static_inits(node->static_inits.begin(), node->static_inits.end());
     return std::make_unique<AsmStaticVariable>(
         std::move(name), std::move(alignment), std::move(is_glob), std::move(static_inits));
@@ -2520,9 +2522,9 @@ static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier
         ctx, std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init)));
 }
 
-static std::unique_ptr<AsmStaticConstant> gen_static_const_toplvl(TacStaticConstant* node) {
+static std::unique_ptr<AsmStaticConstant> gen_static_const_toplvl(Ctx ctx, TacStaticConstant* node) {
     TIdentifier name = node->name;
-    TInt alignment = gen_type_alignment(node->static_init_type.get());
+    TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type.get());
     std::shared_ptr<StaticInit> static_init = node->static_init;
     return std::make_unique<AsmStaticConstant>(std::move(name), std::move(alignment), std::move(static_init));
 }
@@ -2534,9 +2536,9 @@ static std::unique_ptr<AsmTopLevel> gen_toplvl(Ctx ctx, TacTopLevel* node) {
         case AST_TacFunction_t:
             return gen_fun_toplvl(ctx, static_cast<TacFunction*>(node));
         case AST_TacStaticVariable_t:
-            return gen_static_var_toplvl(static_cast<TacStaticVariable*>(node));
+            return gen_static_var_toplvl(ctx, static_cast<TacStaticVariable*>(node));
         case AST_TacStaticConstant_t:
-            return gen_static_const_toplvl(static_cast<TacStaticConstant*>(node));
+            return gen_static_const_toplvl(ctx, static_cast<TacStaticConstant*>(node));
         default:
             THROW_ABORT;
     }

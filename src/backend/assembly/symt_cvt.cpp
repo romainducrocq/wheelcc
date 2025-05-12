@@ -11,14 +11,17 @@
 #include "backend/assembly/symt_cvt.hpp"
 
 struct SymtCvtContext {
+    BackEndContext* backend;
+    FrontEndContext* frontend;
+    // Symbol table conversion
     TIdentifier symbol;
 };
-
-static std::unique_ptr<SymtCvtContext> ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Symbol table conversion
+
+typedef SymtCvtContext* Ctx;
 
 static TInt get_scalar_alignment(Type* type) {
     switch (type->type()) {
@@ -39,7 +42,7 @@ static TInt get_scalar_alignment(Type* type) {
     }
 }
 
-static TInt get_arr_alignment(Array* arr_type, TLong& size) {
+static TInt get_arr_alignment(FrontEndContext* _frontend, Array* arr_type, TLong& size) {
     size = arr_type->size;
     while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
@@ -47,10 +50,10 @@ static TInt get_arr_alignment(Array* arr_type, TLong& size) {
     }
     TInt alignment;
     {
-        alignment = gen_type_alignment(arr_type->elem_type.get());
+        alignment = gen_type_alignment(_frontend, arr_type->elem_type.get());
         if (arr_type->elem_type->type() == AST_Structure_t) {
             Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
-            size *= frontend->struct_typedef_table[struct_type->tag]->size;
+            size *= _frontend->struct_typedef_table[struct_type->tag]->size;
         }
         else {
             size *= alignment;
@@ -62,35 +65,36 @@ static TInt get_arr_alignment(Array* arr_type, TLong& size) {
     return alignment;
 }
 
-static TInt get_struct_alignment(Structure* struct_type) {
-    return frontend->struct_typedef_table[struct_type->tag]->alignment;
+static TInt get_struct_alignment(FrontEndContext* _frontend, Structure* struct_type) {
+    return _frontend->struct_typedef_table[struct_type->tag]->alignment;
 }
 
-TInt gen_type_alignment(Type* type) {
+// TODO rename _frontend to frontend after removing global frontend
+TInt gen_type_alignment(FrontEndContext* _frontend, Type* type) {
     switch (type->type()) {
         case AST_Array_t: {
             TLong size;
-            return get_arr_alignment(static_cast<Array*>(type), size);
+            return get_arr_alignment(_frontend, static_cast<Array*>(type), size);
         }
         case AST_Structure_t:
-            return get_struct_alignment(static_cast<Structure*>(type));
+            return get_struct_alignment(_frontend, static_cast<Structure*>(type));
         default:
             return get_scalar_alignment(type);
     }
 }
 
-static std::shared_ptr<ByteArray> arr_asm_type(Array* arr_type) {
+static std::shared_ptr<ByteArray> arr_asm_type(FrontEndContext* _frontend, Array* arr_type) {
     TLong size;
-    TInt alignment = get_arr_alignment(arr_type, size);
+    TInt alignment = get_arr_alignment(_frontend, arr_type, size);
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
-static std::shared_ptr<ByteArray> struct_asm_type(Structure* struct_type) {
+static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* _frontend, Structure* struct_type) {
     TLong size;
     TInt alignment;
-    if (frontend->struct_typedef_table.find(struct_type->tag) != frontend->struct_typedef_table.end()) {
-        size = frontend->struct_typedef_table[struct_type->tag]->size;
-        alignment = frontend->struct_typedef_table[struct_type->tag]->alignment;
+    if (_frontend->struct_typedef_table.find(struct_type->tag) != _frontend->struct_typedef_table.end()) {
+        size = _frontend->struct_typedef_table[struct_type->tag]->size;
+        alignment = _frontend->struct_typedef_table[struct_type->tag]->alignment;
     }
     else {
         size = -1l;
@@ -99,8 +103,8 @@ static std::shared_ptr<ByteArray> struct_asm_type(Structure* struct_type) {
     return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
 }
 
-std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name) {
-    switch (frontend->symbol_table[name]->type_t->type()) {
+std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* _frontend, TIdentifier name) {
+    switch (_frontend->symbol_table[name]->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t:
@@ -115,52 +119,52 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(TIdentifier name) {
         case AST_Double_t:
             return std::make_shared<BackendDouble>();
         case AST_Array_t:
-            return arr_asm_type(static_cast<Array*>(frontend->symbol_table[name]->type_t.get()));
+            return arr_asm_type(_frontend, static_cast<Array*>(_frontend->symbol_table[name]->type_t.get()));
         case AST_Structure_t:
-            return struct_asm_type(static_cast<Structure*>(frontend->symbol_table[name]->type_t.get()));
+            return struct_asm_type(_frontend, static_cast<Structure*>(_frontend->symbol_table[name]->type_t.get()));
         default:
             THROW_ABORT;
     }
 }
 
-static void cvt_backend_symbol(std::unique_ptr<BackendSymbol>&& node) {
-    backend->symbol_table[ctx->symbol] = std::move(node);
+static void cvt_backend_symbol(Ctx ctx, std::unique_ptr<BackendSymbol>&& node) {
+    ctx->backend->symbol_table[ctx->symbol] = std::move(node);
 }
 
-static void dbl_static_const() {
+static void dbl_static_const(Ctx ctx) {
     std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
-    cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(asm_type)));
+    cvt_backend_symbol(ctx, std::make_unique<BackendObj>(true, true, std::move(asm_type)));
 }
 
-static void string_static_const(Array* arr_type) {
-    std::shared_ptr<AssemblyType> asm_type = arr_asm_type(arr_type);
-    cvt_backend_symbol(std::make_unique<BackendObj>(true, true, std::move(asm_type)));
+static void string_static_const(Ctx ctx, Array* arr_type) {
+    std::shared_ptr<AssemblyType> asm_type = arr_asm_type(ctx->frontend, arr_type);
+    cvt_backend_symbol(ctx, std::make_unique<BackendObj>(true, true, std::move(asm_type)));
 }
 
-static void cvt_static_const_toplvl(AsmStaticConstant* node) {
+static void cvt_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
     ctx->symbol = node->name;
     switch (node->static_init->type()) {
         case AST_DoubleInit_t:
-            dbl_static_const();
+            dbl_static_const(ctx);
             break;
         case AST_StringInit_t:
-            string_static_const(static_cast<Array*>(frontend->symbol_table[node->name]->type_t.get()));
+            string_static_const(ctx, static_cast<Array*>(ctx->frontend->symbol_table[node->name]->type_t.get()));
             break;
         default:
             THROW_ABORT;
     }
 }
 
-static void cvt_toplvl(AsmTopLevel* node) {
+static void cvt_toplvl(Ctx ctx, AsmTopLevel* node) {
     if (node->type() == AST_AsmStaticConstant_t) {
-        cvt_static_const_toplvl(static_cast<AsmStaticConstant*>(node));
+        cvt_static_const_toplvl(ctx, static_cast<AsmStaticConstant*>(node));
     }
     else {
         THROW_ABORT;
     }
 }
 
-static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
+static void cvt_fun_type(Ctx ctx, FunAttr* node, FunType* fun_type) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
         THROW_ABORT_IF(node->is_def);
         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
@@ -169,39 +173,42 @@ static void cvt_fun_type(FunAttr* node, FunType* fun_type) {
         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
     }
     bool is_def = node->is_def;
-    cvt_backend_symbol(std::make_unique<BackendFun>(std::move(is_def)));
+    cvt_backend_symbol(ctx, std::make_unique<BackendFun>(std::move(is_def)));
 }
 
-static void cvt_obj_type(IdentifierAttr* node) {
+static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
     if (node->type() != AST_ConstantAttr_t) {
-        std::shared_ptr<AssemblyType> asm_type = cvt_backend_asm_type(ctx->symbol);
+        std::shared_ptr<AssemblyType> asm_type = cvt_backend_asm_type(ctx->frontend, ctx->symbol);
         bool is_static = node->type() == AST_StaticAttr_t;
-        cvt_backend_symbol(std::make_unique<BackendObj>(std::move(is_static), false, std::move(asm_type)));
+        cvt_backend_symbol(ctx, std::make_unique<BackendObj>(std::move(is_static), false, std::move(asm_type)));
     }
 }
 
-static void cvt_program(AsmProgram* node) {
-    backend->symbol_table.reserve(frontend->symbol_table.size());
-    for (const auto& symbol : frontend->symbol_table) {
+static void cvt_program(Ctx ctx, AsmProgram* node) {
+    ctx->backend->symbol_table.reserve(ctx->frontend->symbol_table.size());
+    for (const auto& symbol : ctx->frontend->symbol_table) {
         ctx->symbol = symbol.first;
         if (symbol.second->type_t->type() == AST_FunType_t) {
-            cvt_fun_type(
-                static_cast<FunAttr*>(symbol.second->attrs.get()), static_cast<FunType*>(symbol.second->type_t.get()));
+            cvt_fun_type(ctx, static_cast<FunAttr*>(symbol.second->attrs.get()),
+                static_cast<FunType*>(symbol.second->type_t.get()));
         }
         else {
-            cvt_obj_type(symbol.second->attrs.get());
+            cvt_obj_type(ctx, symbol.second->attrs.get());
         }
     }
 
     for (const auto& top_level : node->static_const_toplvls) {
-        cvt_toplvl(top_level.get());
+        cvt_toplvl(ctx, top_level.get());
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void convert_symbol_table(AsmProgram* node) {
-    ctx = std::make_unique<SymtCvtContext>();
-    cvt_program(node);
-    ctx.reset();
+    SymtCvtContext ctx;
+    {
+        ctx.backend = backend.get();
+        ctx.frontend = frontend.get();
+    }
+    cvt_program(&ctx, node);
 }
