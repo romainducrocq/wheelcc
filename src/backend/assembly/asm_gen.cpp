@@ -34,8 +34,9 @@ enum ASM_LABEL_KIND {
 };
 
 struct AsmGenContext {
-    FunType* p_fun_type;
     FrontEndContext* frontend;
+    // Assembly generation
+    FunType* p_fun_type;
     std::array<REGISTER_KIND, 6> arg_regs;
     std::array<REGISTER_KIND, 8> sse_arg_regs;
     std::unordered_map<TIdentifier, TIdentifier> dbl_const_table;
