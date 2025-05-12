@@ -481,7 +481,7 @@ static void emit(std::string&& line, size_t t) {
         emit(std::move(indent_line), 0);
     }
     else {
-        write_line(std::move(line));
+        write_line(fileio.get(), std::move(line));
     }
 }
 
@@ -987,8 +987,8 @@ static void emit_program(AsmProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void emit_gas_code(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename) {
-    open_fwrite(filename);
+    open_fwrite(fileio.get(), filename);
     emit_program(asm_ast.get());
     asm_ast.reset();
-    close_fwrite();
+    close_fwrite(fileio.get());
 }

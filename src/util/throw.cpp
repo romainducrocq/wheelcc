@@ -122,10 +122,10 @@ static void raise_base_error(Ctx ctx) {
 size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
     for (size_t i = 0; i < ctx->fopen_lines.size() - 1; ++i) {
         if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
-            set_filename(ctx->fopen_lines[i].filename);
+            set_filename(ctx->p_fileio, ctx->fopen_lines[i].filename);
             return total_linenum - ctx->fopen_lines[i].total_linenum + ctx->fopen_lines[i].linenum;
         }
     }
-    set_filename(ctx->fopen_lines.back().filename);
+    set_filename(ctx->p_fileio, ctx->fopen_lines.back().filename);
     return total_linenum - ctx->fopen_lines.back().total_linenum + ctx->fopen_lines.back().linenum;
 }

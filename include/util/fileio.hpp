@@ -28,13 +28,13 @@ extern std::unique_ptr<FileIoContext> fileio;
 #define INIT_FILEIO_CTX fileio = std::make_unique<FileIoContext>()
 #define FREE_FILEIO_CTX fileio.reset()
 
-void set_filename(const std::string& filename);
-void open_fread(const std::string& filename);
-void open_fwrite(const std::string& filename);
 bool find_file(const std::string& filename);
-bool read_line(std::string& line);
-void write_line(std::string&& line);
-void close_fread(size_t linenum);
-void close_fwrite();
+void set_filename(FileIoContext* ctx, const std::string& filename);
+void open_fread(FileIoContext* ctx, const std::string& filename);
+void open_fwrite(FileIoContext* ctx, const std::string& filename);
+bool read_line(FileIoContext* ctx, std::string& line);
+void write_line(FileIoContext* ctx, std::string&& line);
+void close_fread(FileIoContext* ctx, size_t linenum);
+void close_fwrite(FileIoContext* ctx);
 
 #endif

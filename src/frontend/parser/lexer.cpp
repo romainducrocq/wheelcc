@@ -151,7 +151,7 @@ static void re_match_current() {
 static void tokenize_file() {
     std::string line;
     bool is_comment = false;
-    for (size_t linenum = 1; read_line(line); ++linenum) {
+    for (size_t linenum = 1; read_line(fileio.get(), line); ++linenum) {
         ctx->total_linenum++;
 
         const std::string_view re_iter_sv(line);
@@ -240,13 +240,13 @@ static void tokenize_include(std::string filename, size_t linenum) {
     }
 
     std::string fopen_name = errors->fopen_lines.back().filename;
-    open_fread(filename);
+    open_fread(fileio.get(), filename);
     {
         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(filename)};
         errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     tokenize_file();
-    close_fread(linenum);
+    close_fread(fileio.get(), linenum);
     {
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
         errors->fopen_lines.emplace_back(std::move(fopen_line));
@@ -258,7 +258,7 @@ static void strip_filename_ext(std::string& filename) { filename = filename.subs
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs) {
-    open_fread(filename);
+    open_fread(fileio.get(), filename);
     {
         FileOpenLine fopen_line = {1, 1, filename};
         errors->fopen_lines.emplace_back(std::move(fopen_line));
@@ -269,10 +269,10 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
     tokenize_file();
     ctx.reset();
 
-    close_fread(0);
+    close_fread(fileio.get(), 0);
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
-    set_filename(filename);
+    set_filename(fileio.get(), filename);
     strip_filename_ext(filename);
     return tokens;
 }
