@@ -95,7 +95,7 @@ static std::shared_ptr<TacVariable> var_value(CVar* node) {
 }
 
 static std::shared_ptr<TacVariable> exp_inner_value(CExp* node, std::shared_ptr<Type>&& inner_type) {
-    TIdentifier inner_name = repr_var_identifier(node);
+    TIdentifier inner_name = repr_var_identifier(identifiers.get(), node);
     std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
     frontend->symbol_table[inner_name] = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
     return std::make_shared<TacVariable>(std::move(inner_name));
@@ -145,7 +145,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(CString* node) {
             string_const_label = frontend->string_const_table[string_const];
         }
         else {
-            string_const_label = repr_label_identifier(LBL_Lstring);
+            string_const_label = repr_label_identifier(identifiers.get(), LBL_Lstring);
             frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
@@ -380,8 +380,8 @@ static std::unique_ptr<TacPlainOperand> binary_subtract_res_instr(CBinary* node)
 }
 
 static std::unique_ptr<TacPlainOperand> binary_and_res_instr(CBinary* node) {
-    TIdentifier target_false = repr_label_identifier(LBL_Land_false);
-    TIdentifier target_true = repr_label_identifier(LBL_Land_true);
+    TIdentifier target_false = repr_label_identifier(identifiers.get(), LBL_Land_false);
+    TIdentifier target_true = repr_label_identifier(identifiers.get(), LBL_Land_true);
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = repr_exp_instr(node->exp_left.get());
@@ -408,8 +408,8 @@ static std::unique_ptr<TacPlainOperand> binary_and_res_instr(CBinary* node) {
 }
 
 static std::unique_ptr<TacPlainOperand> binary_or_res_instr(CBinary* node) {
-    TIdentifier target_true = repr_label_identifier(LBL_Lor_true);
-    TIdentifier target_false = repr_label_identifier(LBL_Lor_false);
+    TIdentifier target_true = repr_label_identifier(identifiers.get(), LBL_Lor_true);
+    TIdentifier target_false = repr_label_identifier(identifiers.get(), LBL_Lor_false);
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition_left = repr_exp_instr(node->exp_left.get());
@@ -580,8 +580,8 @@ static std::unique_ptr<TacExpResult> assign_res_instr(CAssignment* node) {
 }
 
 static std::unique_ptr<TacPlainOperand> conditional_complete_res_instr(CConditional* node) {
-    TIdentifier target_else = repr_label_identifier(LBL_Lternary_else);
-    TIdentifier target_false = repr_label_identifier(LBL_Lternary_false);
+    TIdentifier target_else = repr_label_identifier(identifiers.get(), LBL_Lternary_else);
+    TIdentifier target_false = repr_label_identifier(identifiers.get(), LBL_Lternary_false);
     std::shared_ptr<TacValue> dst = plain_inner_value(node);
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
@@ -602,8 +602,8 @@ static std::unique_ptr<TacPlainOperand> conditional_complete_res_instr(CConditio
 }
 
 static std::unique_ptr<TacPlainOperand> conditional_void_res_instr(CConditional* node) {
-    TIdentifier target_else = repr_label_identifier(LBL_Lternary_else);
-    TIdentifier target_false = repr_label_identifier(LBL_Lternary_false);
+    TIdentifier target_else = repr_label_identifier(identifiers.get(), LBL_Lternary_else);
+    TIdentifier target_false = repr_label_identifier(identifiers.get(), LBL_Lternary_false);
     std::shared_ptr<TacValue> dst;
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
@@ -897,7 +897,7 @@ static void ret_statement_instr(CReturn* node) {
 static void exp_statement_instr(CExpression* node) { repr_res_instr(node->exp.get()); }
 
 static void if_only_statement_instr(CIf* node) {
-    TIdentifier target_false = repr_label_identifier(LBL_Lif_false);
+    TIdentifier target_false = repr_label_identifier(identifiers.get(), LBL_Lif_false);
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
         push_instr(std::make_unique<TacJumpIfZero>(target_false, std::move(condition)));
@@ -907,8 +907,8 @@ static void if_only_statement_instr(CIf* node) {
 }
 
 static void if_else_statement_instr(CIf* node) {
-    TIdentifier target_else = repr_label_identifier(LBL_Lif_else);
-    TIdentifier target_false = repr_label_identifier(LBL_Lif_false);
+    TIdentifier target_else = repr_label_identifier(identifiers.get(), LBL_Lif_else);
+    TIdentifier target_false = repr_label_identifier(identifiers.get(), LBL_Lif_false);
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
         push_instr(std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
@@ -943,8 +943,8 @@ static void label_statement_instr(CLabel* node) {
 static void statement_compound_instr(CCompound* node) { repr_block(node->block.get()); }
 
 static void while_statement_instr(CWhile* node) {
-    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
-    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
+    TIdentifier target_break = repr_loop_identifier(identifiers.get(), LBL_Lbreak, node->target);
+    TIdentifier target_continue = repr_loop_identifier(identifiers.get(), LBL_Lcontinue, node->target);
     push_instr(std::make_unique<TacLabel>(target_continue));
     {
         std::shared_ptr<TacValue> condition = repr_exp_instr(node->condition.get());
@@ -956,9 +956,9 @@ static void while_statement_instr(CWhile* node) {
 }
 
 static void do_while_statement_instr(CDoWhile* node) {
-    TIdentifier target_do_while_start = repr_label_identifier(LBL_Ldo_while_start);
-    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
-    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
+    TIdentifier target_do_while_start = repr_label_identifier(identifiers.get(), LBL_Ldo_while_start);
+    TIdentifier target_break = repr_loop_identifier(identifiers.get(), LBL_Lbreak, node->target);
+    TIdentifier target_continue = repr_loop_identifier(identifiers.get(), LBL_Lcontinue, node->target);
     push_instr(std::make_unique<TacLabel>(target_do_while_start));
     statement_instr(node->body.get());
     push_instr(std::make_unique<TacLabel>(std::move(target_continue)));
@@ -991,9 +991,9 @@ static void for_init_statement_instr(CForInit* node) {
 }
 
 static void for_statement_instr(CFor* node) {
-    TIdentifier target_for_start = repr_label_identifier(LBL_Lfor_start);
-    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
-    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
+    TIdentifier target_for_start = repr_label_identifier(identifiers.get(), LBL_Lfor_start);
+    TIdentifier target_break = repr_loop_identifier(identifiers.get(), LBL_Lbreak, node->target);
+    TIdentifier target_continue = repr_loop_identifier(identifiers.get(), LBL_Lcontinue, node->target);
     for_init_statement_instr(node->init.get());
     push_instr(std::make_unique<TacLabel>(target_for_start));
     if (node->condition) {
@@ -1010,11 +1010,11 @@ static void for_statement_instr(CFor* node) {
 }
 
 static void switch_statement_instr(CSwitch* node) {
-    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
+    TIdentifier target_break = repr_loop_identifier(identifiers.get(), LBL_Lbreak, node->target);
     {
         std::shared_ptr<TacValue> match = repr_exp_instr(node->match.get());
         for (size_t i = 0; i < node->cases.size(); ++i) {
-            TIdentifier target_case = repr_case_identifier(node->target, true, i);
+            TIdentifier target_case = repr_case_identifier(identifiers.get(), node->target, true, i);
             std::shared_ptr<TacValue> case_match;
             {
                 std::shared_ptr<TacValue> esac = repr_exp_instr(node->cases[i].get());
@@ -1026,7 +1026,7 @@ static void switch_statement_instr(CSwitch* node) {
         }
     }
     if (node->is_default) {
-        TIdentifier target_default = repr_loop_identifier(LBL_Ldefault, node->target);
+        TIdentifier target_default = repr_loop_identifier(identifiers.get(), LBL_Ldefault, node->target);
         push_instr(std::make_unique<TacJump>(std::move(target_default)));
         statement_instr(node->body.get());
     }
@@ -1038,24 +1038,24 @@ static void switch_statement_instr(CSwitch* node) {
 }
 
 static void case_statement_instr(CCase* node) {
-    TIdentifier target_case = repr_loop_identifier(LBL_Lcase, node->target);
+    TIdentifier target_case = repr_loop_identifier(identifiers.get(), LBL_Lcase, node->target);
     push_instr(std::make_unique<TacLabel>(std::move(target_case)));
     statement_instr(node->jump_to.get());
 }
 
 static void default_statement_instr(CDefault* node) {
-    TIdentifier target_default = repr_loop_identifier(LBL_Ldefault, node->target);
+    TIdentifier target_default = repr_loop_identifier(identifiers.get(), LBL_Ldefault, node->target);
     push_instr(std::make_unique<TacLabel>(std::move(target_default)));
     statement_instr(node->jump_to.get());
 }
 
 static void break_statement_instr(CBreak* node) {
-    TIdentifier target_break = repr_loop_identifier(LBL_Lbreak, node->target);
+    TIdentifier target_break = repr_loop_identifier(identifiers.get(), LBL_Lbreak, node->target);
     push_instr(std::make_unique<TacJump>(std::move(target_break)));
 }
 
 static void continue_statement_instr(CContinue* node) {
-    TIdentifier target_continue = repr_loop_identifier(LBL_Lcontinue, node->target);
+    TIdentifier target_continue = repr_loop_identifier(identifiers.get(), LBL_Lcontinue, node->target);
     push_instr(std::make_unique<TacJump>(std::move(target_continue)));
 }
 

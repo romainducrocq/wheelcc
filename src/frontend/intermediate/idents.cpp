@@ -12,22 +12,24 @@
 
 // Identifiers
 
-TIdentifier rslv_label_identifier(TIdentifier label) {
+typedef IdentifierContext* Ctx;
+
+TIdentifier rslv_label_identifier(Ctx ctx, TIdentifier label) {
     std::string name = identifiers->hash_table[label];
-    return make_label_identifier(identifiers.get(), std::move(name));
+    return make_label_identifier(ctx, std::move(name));
 }
 
-TIdentifier rslv_var_identifier(TIdentifier variable) {
+TIdentifier rslv_var_identifier(Ctx ctx, TIdentifier variable) {
     std::string name = identifiers->hash_table[variable];
-    return make_var_identifier(identifiers.get(), std::move(name));
+    return make_var_identifier(ctx, std::move(name));
 }
 
-TIdentifier rslv_struct_tag(TIdentifier structure) {
+TIdentifier rslv_struct_tag(Ctx ctx, TIdentifier structure) {
     std::string name = identifiers->hash_table[structure];
-    return make_struct_identifier(identifiers.get(), std::move(name));
+    return make_struct_identifier(ctx, std::move(name));
 }
 
-TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
+TIdentifier repr_label_identifier(Ctx ctx, LABEL_KIND label_kind) {
     std::string name;
     switch (label_kind) {
         case LBL_Land_false: {
@@ -93,10 +95,10 @@ TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
         default:
             THROW_ABORT;
     }
-    return make_label_identifier(identifiers.get(), std::move(name));
+    return make_label_identifier(ctx, std::move(name));
 }
 
-TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
+TIdentifier repr_loop_identifier(Ctx ctx, LABEL_KIND label_kind, TIdentifier target) {
     std::string name;
     switch (label_kind) {
         case LBL_Lbreak: {
@@ -119,17 +121,17 @@ TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
             THROW_ABORT;
     }
     name += identifiers->hash_table[target];
-    return make_string_identifier(identifiers.get(), std::move(name));
+    return make_string_identifier(ctx, std::move(name));
 }
 
-TIdentifier repr_case_identifier(TIdentifier target, bool is_label, size_t i) {
+TIdentifier repr_case_identifier(Ctx ctx, TIdentifier target, bool is_label, size_t i) {
     std::string name = is_label ? "case_" : "";
     name += std::to_string(i);
     name += identifiers->hash_table[target];
-    return make_string_identifier(identifiers.get(), std::move(name));
+    return make_string_identifier(ctx, std::move(name));
 }
 
-TIdentifier repr_var_identifier(CExp* node) {
+TIdentifier repr_var_identifier(Ctx ctx, CExp* node) {
     std::string name;
     switch (node->type()) {
         case AST_CConstant_t: {
@@ -191,5 +193,5 @@ TIdentifier repr_var_identifier(CExp* node) {
         default:
             THROW_ABORT;
     }
-    return make_var_identifier(identifiers.get(), std::move(name));
+    return make_var_identifier(ctx, std::move(name));
 }

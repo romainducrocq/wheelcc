@@ -1711,7 +1711,7 @@ static void check_static_ptr_string_init(CString* node, Pointer* static_ptr_type
             string_const_label = frontend->string_const_table[string_const];
         }
         else {
-            string_const_label = repr_label_identifier(LBL_Lstring);
+            string_const_label = repr_label_identifier(identifiers.get(), LBL_Lstring);
             frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
@@ -2080,26 +2080,26 @@ static void annotate_goto_label(CLabel* node) {
 }
 
 static void annotate_while_loop(CWhile* node) {
-    node->target = repr_label_identifier(LBL_Lwhile);
+    node->target = repr_label_identifier(identifiers.get(), LBL_Lwhile);
     ctx->break_loop_labels.push_back(node->target);
     ctx->continue_loop_labels.push_back(node->target);
 }
 
 static void annotate_do_while_loop(CDoWhile* node) {
-    node->target = repr_label_identifier(LBL_Ldo_while);
+    node->target = repr_label_identifier(identifiers.get(), LBL_Ldo_while);
     ctx->break_loop_labels.push_back(node->target);
     ctx->continue_loop_labels.push_back(node->target);
 }
 
 static void annotate_for_loop(CFor* node) {
-    node->target = repr_label_identifier(LBL_Lfor);
+    node->target = repr_label_identifier(identifiers.get(), LBL_Lfor);
     ctx->break_loop_labels.push_back(node->target);
     ctx->continue_loop_labels.push_back(node->target);
 }
 
 static void annotate_switch_lookup(CSwitch* node) {
     node->is_default = false;
-    node->target = repr_label_identifier(LBL_Lswitch);
+    node->target = repr_label_identifier(identifiers.get(), LBL_Lswitch);
     ctx->break_loop_labels.push_back(node->target);
 }
 
@@ -2107,7 +2107,8 @@ static void annotate_case_jump(CCase* node) {
     if (!ctx->p_switch_statement) {
         THROW_AT_LINE(GET_SEMANTIC_MSG_0(MSG_case_out_of_switch), node->value->line);
     }
-    node->target = repr_case_identifier(ctx->p_switch_statement->target, false, ctx->p_switch_statement->cases.size());
+    node->target = repr_case_identifier(
+        identifiers.get(), ctx->p_switch_statement->target, false, ctx->p_switch_statement->cases.size());
 }
 
 static void annotate_default_jump(CDefault* node) {
@@ -2439,7 +2440,7 @@ static void reslv_goto_statement(CGoto* node) {
         errors->linebuf_map[node->target] = node->line;
     }
     else {
-        ctx->goto_map[node->target] = rslv_label_identifier(node->target);
+        ctx->goto_map[node->target] = rslv_label_identifier(identifiers.get(), node->target);
         node->target = ctx->goto_map[node->target];
         errors->linebuf_map[node->target] = node->line;
     }
@@ -2451,7 +2452,7 @@ static void reslv_label_statement(CLabel* node) {
         node->target = ctx->goto_map[node->target];
     }
     else {
-        ctx->goto_map[node->target] = rslv_label_identifier(node->target);
+        ctx->goto_map[node->target] = rslv_label_identifier(identifiers.get(), node->target);
         node->target = ctx->goto_map[node->target];
     }
     reslv_statement(node->jump_to.get());
@@ -2667,7 +2668,7 @@ static void reslv_fun_params_decl(CFunctionDeclaration* node) {
         if (ctx->scoped_identifier_maps.back().find(param) != ctx->scoped_identifier_maps.back().end()) {
             THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, fmt_name_c_str(param)), node->line);
         }
-        ctx->scoped_identifier_maps.back()[param] = rslv_var_identifier(param);
+        ctx->scoped_identifier_maps.back()[param] = rslv_var_identifier(identifiers.get(), param);
         param = ctx->scoped_identifier_maps.back()[param];
     }
     check_fun_params_decl(node);
@@ -2730,7 +2731,7 @@ static void reslv_block_var_decl(CVariableDeclaration* node) {
         return;
     }
 
-    ctx->scoped_identifier_maps.back()[node->name] = rslv_var_identifier(node->name);
+    ctx->scoped_identifier_maps.back()[node->name] = rslv_var_identifier(identifiers.get(), node->name);
     node->name = ctx->scoped_identifier_maps.back()[node->name];
     check_block_var_decl(node);
 
@@ -2762,7 +2763,7 @@ static void reslv_struct_declaration(CStructDeclaration* node) {
         }
     }
     else {
-        ctx->scoped_struct_maps.back()[node->tag] = {rslv_struct_tag(node->tag), node->is_union};
+        ctx->scoped_struct_maps.back()[node->tag] = {rslv_struct_tag(identifiers.get(), node->tag), node->is_union};
         node->tag = ctx->scoped_struct_maps.back()[node->tag].tag;
         if (node->is_union) {
             ctx->union_def_set.insert(node->tag);
