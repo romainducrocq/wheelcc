@@ -4,3 +4,10 @@
 [x] src/backend/assembly/symt_cvt.cpp
 [x] src/backend/assembly/regs.hpp
 [x] src/backend/assembly/registers.cpp
+
+[ ] src/frontend/intermediate/semantic.cpp
+[x] src/frontend/intermediate/messages.hpp
+[x] src/frontend/intermediate/tac_repr.cpp
+[x] src/frontend/intermediate/labels.hpp
+[x] src/frontend/intermediate/idents.cpp
+
