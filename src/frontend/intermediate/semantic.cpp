@@ -1635,7 +1635,7 @@ static void check_static_const_init(CConstant* node, Type* static_init_type) {
                 push_zero_static_init(8l);
             }
             else {
-                TIdentifier dbl_const = make_string_identifier(std::to_string(binary));
+                TIdentifier dbl_const = make_string_identifier(identifiers.get(), std::to_string(binary));
                 push_static_init(std::make_shared<DoubleInit>(std::move(dbl_const)));
             }
             break;
@@ -1705,7 +1705,7 @@ static void check_static_ptr_string_init(CString* node, Pointer* static_ptr_type
         TIdentifier string_const;
         {
             std::string value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(std::move(value));
+            string_const = make_string_identifier(identifiers.get(), std::move(value));
         }
         if (frontend->string_const_table.find(string_const) != frontend->string_const_table.end()) {
             string_const_label = frontend->string_const_table[string_const];
@@ -1743,7 +1743,7 @@ static void check_static_arr_string_init(CString* node, Array* static_arr_type) 
         TIdentifier string_const;
         {
             std::string value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(std::move(value));
+            string_const = make_string_identifier(identifiers.get(), std::move(value));
         }
         std::shared_ptr<CStringLiteral> literal = node->literal;
         push_static_init(

@@ -35,6 +35,7 @@ enum ASM_LABEL_KIND {
 
 struct AsmGenContext {
     FrontEndContext* frontend;
+    IdentifierContext* identifiers;
     // Assembly generation
     FunType* p_fun_type;
     std::array<REGISTER_KIND, 6> arg_regs;
@@ -45,11 +46,11 @@ struct AsmGenContext {
     std::vector<std::unique_ptr<AsmTopLevel>>* p_static_consts;
 };
 
-typedef AsmGenContext* Ctx;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Assembly generation
+
+typedef AsmGenContext* Ctx;
 
 static std::shared_ptr<AsmImm> char_imm_op(CConstChar* node) {
     TULong value = static_cast<TULong>(node->value);
@@ -91,7 +92,7 @@ static std::shared_ptr<AsmImm> ulong_imm_op(CConstULong* node) {
     return std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), false);
 }
 
-static TIdentifier repr_asm_label(ASM_LABEL_KIND asm_label_kind) {
+static TIdentifier repr_asm_label(Ctx ctx, ASM_LABEL_KIND asm_label_kind) {
     std::string name;
     switch (asm_label_kind) {
         case LBL_Lcomisd_nan: {
@@ -121,7 +122,7 @@ static TIdentifier repr_asm_label(ASM_LABEL_KIND asm_label_kind) {
         default:
             THROW_ABORT;
     }
-    return make_label_identifier(std::move(name));
+    return make_label_identifier(ctx->identifiers, std::move(name));
 }
 
 static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte);
@@ -129,12 +130,12 @@ static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier
 static std::shared_ptr<AsmData> dbl_static_const_op(Ctx ctx, TULong binary, TInt byte) {
     TIdentifier dbl_const_label;
     {
-        TIdentifier dbl_const = make_string_identifier(std::to_string(binary));
+        TIdentifier dbl_const = make_string_identifier(ctx->identifiers, std::to_string(binary));
         if (ctx->dbl_const_table.find(dbl_const) != ctx->dbl_const_table.end()) {
             dbl_const_label = ctx->dbl_const_table[dbl_const];
         }
         else {
-            dbl_const_label = repr_asm_label(LBL_Ldouble);
+            dbl_const_label = repr_asm_label(ctx, LBL_Ldouble);
             ctx->dbl_const_table[dbl_const] = dbl_const_label;
             dbl_static_const_toplvl(ctx, dbl_const_label, dbl_const, byte);
         }
@@ -903,8 +904,8 @@ static void dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node) {
 }
 
 static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
-    TIdentifier target_out_of_range = repr_asm_label(LBL_Lsd2si_out_of_range);
-    TIdentifier target_after = repr_asm_label(LBL_Lsd2si_after);
+    TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsd2si_out_of_range);
+    TIdentifier target_after = repr_asm_label(ctx, LBL_Lsd2si_after);
     std::shared_ptr<AsmOperand> upper_bound_sd = dbl_static_const_op(ctx, 4890909195324358656ul, 8);
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
@@ -1009,8 +1010,8 @@ static void uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
 }
 
 static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
-    TIdentifier target_out_of_range = repr_asm_label(LBL_Lsi2sd_out_of_range);
-    TIdentifier target_after = repr_asm_label(LBL_Lsi2sd_after);
+    TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsi2sd_out_of_range);
+    TIdentifier target_after = repr_asm_label(ctx, LBL_Lsi2sd_after);
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
     std::shared_ptr<AsmOperand> dst_out_of_range_si = gen_register(REG_Ax);
@@ -1478,7 +1479,7 @@ static void unop_int_conditional_instr(Ctx ctx, TacUnary* node) {
 }
 
 static void unop_dbl_conditional_instr(Ctx ctx, TacUnary* node) {
-    TIdentifier target_nan = repr_asm_label(LBL_Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(ctx, node->dst.get());
     zero_xmm_reg_instr(ctx);
     {
@@ -1671,7 +1672,7 @@ static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
 }
 
 static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
-    TIdentifier target_nan = repr_asm_label(LBL_Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     std::shared_ptr<AsmOperand> cmp_dst = gen_op(ctx, node->dst.get());
     {
         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
@@ -1691,7 +1692,7 @@ static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
     {
         std::unique_ptr<AsmCondCode> cond_code = gen_unsigned_cond_code(node->binop.get());
         if (cond_code->type() == AST_AsmNE_t) {
-            TIdentifier target_nan_ne = repr_asm_label(LBL_Lcomisd_nan);
+            TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
             push_instr(ctx, std::make_unique<AsmSetCC>(std::move(cond_code), cmp_dst));
             push_instr(ctx, std::make_unique<AsmJmp>(target_nan_ne));
             push_instr(ctx, std::make_unique<AsmLabel>(std::move(target_nan)));
@@ -2159,7 +2160,7 @@ static void jmp_eq_0_int_instr(Ctx ctx, TacJumpIfZero* node) {
 }
 
 static void jmp_eq_0_dbl_instr(Ctx ctx, TacJumpIfZero* node) {
-    TIdentifier target_nan = repr_asm_label(LBL_Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     zero_xmm_reg_instr(ctx);
     {
         std::shared_ptr<AsmOperand> condition = gen_op(ctx, node->condition.get());
@@ -2204,8 +2205,8 @@ static void jmp_ne_0_int_instr(Ctx ctx, TacJumpIfNotZero* node) {
 
 static void jmp_ne_0_dbl_instr(Ctx ctx, TacJumpIfNotZero* node) {
     TIdentifier target = node->target;
-    TIdentifier target_nan = repr_asm_label(LBL_Lcomisd_nan);
-    TIdentifier target_nan_ne = repr_asm_label(LBL_Lcomisd_nan);
+    TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
+    TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
     zero_xmm_reg_instr(ctx);
     {
         std::shared_ptr<AsmOperand> condition = gen_op(ctx, node->condition.get());
@@ -2575,6 +2576,7 @@ std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_as
     AsmGenContext ctx;
     {
         ctx.frontend = frontend.get();
+        ctx.identifiers = identifiers.get();
 
         ctx.arg_regs[0] = REG_Di;
         ctx.arg_regs[1] = REG_Si;

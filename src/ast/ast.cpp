@@ -38,35 +38,39 @@ CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Identifiers
+
 IdentifierContext::IdentifierContext() : label_count(0), var_count(0), struct_count(0) {}
 
 std::unique_ptr<IdentifierContext> identifiers;
 
+typedef IdentifierContext* Ctx;
+
 TIdentifier string_to_hash(const std::string& string);
 
-TIdentifier make_string_identifier(std::string&& value) {
+TIdentifier make_string_identifier(Ctx ctx, std::string&& value) {
     TIdentifier identifier = string_to_hash(value);
-    identifiers->hash_table[identifier] = std::move(value);
+    ctx->hash_table[identifier] = std::move(value);
     return identifier;
 }
 
-TIdentifier make_label_identifier(std::string&& name) {
+TIdentifier make_label_identifier(Ctx ctx, std::string&& name) {
     name += UID_SEPARATOR;
-    name += std::to_string(identifiers->label_count);
-    identifiers->label_count++;
-    return make_string_identifier(std::move(name));
+    name += std::to_string(ctx->label_count);
+    ctx->label_count++;
+    return make_string_identifier(ctx, std::move(name));
 }
 
-TIdentifier make_var_identifier(std::string&& name) {
+TIdentifier make_var_identifier(Ctx ctx, std::string&& name) {
     name += UID_SEPARATOR;
-    name += std::to_string(identifiers->var_count);
-    identifiers->var_count++;
-    return make_string_identifier(std::move(name));
+    name += std::to_string(ctx->var_count);
+    ctx->var_count++;
+    return make_string_identifier(ctx, std::move(name));
 }
 
-TIdentifier make_struct_identifier(std::string&& name) {
+TIdentifier make_struct_identifier(Ctx ctx, std::string&& name) {
     name += UID_SEPARATOR;
-    name += std::to_string(identifiers->struct_count);
-    identifiers->struct_count++;
-    return make_string_identifier(std::move(name));
+    name += std::to_string(ctx->struct_count);
+    ctx->struct_count++;
+    return make_string_identifier(ctx, std::move(name));
 }

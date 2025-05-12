@@ -139,7 +139,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(CString* node) {
         TIdentifier string_const;
         {
             std::string value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(std::move(value));
+            string_const = make_string_identifier(identifiers.get(), std::move(value));
         }
         if (frontend->string_const_table.find(string_const) != frontend->string_const_table.end()) {
             string_const_label = frontend->string_const_table[string_const];

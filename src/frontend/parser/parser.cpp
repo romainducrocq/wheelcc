@@ -105,7 +105,9 @@ static const Token& peek_next_i(size_t i) {
 }
 
 // <identifier> ::= ? An identifier token ?
-static TIdentifier parse_identifier(size_t i) { return make_string_identifier(std::move(pop_next_i(i).tok)); }
+static TIdentifier parse_identifier(size_t i) {
+    return make_string_identifier(identifiers.get(), std::move(pop_next_i(i).tok));
+}
 
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?

@@ -116,10 +116,10 @@ extern std::unique_ptr<IdentifierContext> identifiers;
 #define INIT_IDENTIFIER_CTX identifiers = std::make_unique<IdentifierContext>()
 #define FREE_IDENTIFIER_CTX identifiers.reset()
 
-TIdentifier make_string_identifier(std::string&& value);
-TIdentifier make_label_identifier(std::string&& name);
-TIdentifier make_var_identifier(std::string&& name);
-TIdentifier make_struct_identifier(std::string&& name);
+TIdentifier make_string_identifier(IdentifierContext* ctx, std::string&& value);
+TIdentifier make_label_identifier(IdentifierContext* ctx, std::string&& name);
+TIdentifier make_var_identifier(IdentifierContext* ctx, std::string&& name);
+TIdentifier make_struct_identifier(IdentifierContext* ctx, std::string&& name);
 #define UID_SEPARATOR "."
 
 #endif

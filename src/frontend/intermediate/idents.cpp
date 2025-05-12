@@ -14,17 +14,17 @@
 
 TIdentifier rslv_label_identifier(TIdentifier label) {
     std::string name = identifiers->hash_table[label];
-    return make_label_identifier(std::move(name));
+    return make_label_identifier(identifiers.get(), std::move(name));
 }
 
 TIdentifier rslv_var_identifier(TIdentifier variable) {
     std::string name = identifiers->hash_table[variable];
-    return make_var_identifier(std::move(name));
+    return make_var_identifier(identifiers.get(), std::move(name));
 }
 
 TIdentifier rslv_struct_tag(TIdentifier structure) {
     std::string name = identifiers->hash_table[structure];
-    return make_struct_identifier(std::move(name));
+    return make_struct_identifier(identifiers.get(), std::move(name));
 }
 
 TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
@@ -93,7 +93,7 @@ TIdentifier repr_label_identifier(LABEL_KIND label_kind) {
         default:
             THROW_ABORT;
     }
-    return make_label_identifier(std::move(name));
+    return make_label_identifier(identifiers.get(), std::move(name));
 }
 
 TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
@@ -119,14 +119,14 @@ TIdentifier repr_loop_identifier(LABEL_KIND label_kind, TIdentifier target) {
             THROW_ABORT;
     }
     name += identifiers->hash_table[target];
-    return make_string_identifier(std::move(name));
+    return make_string_identifier(identifiers.get(), std::move(name));
 }
 
 TIdentifier repr_case_identifier(TIdentifier target, bool is_label, size_t i) {
     std::string name = is_label ? "case_" : "";
     name += std::to_string(i);
     name += identifiers->hash_table[target];
-    return make_string_identifier(std::move(name));
+    return make_string_identifier(identifiers.get(), std::move(name));
 }
 
 TIdentifier repr_var_identifier(CExp* node) {
@@ -191,5 +191,5 @@ TIdentifier repr_var_identifier(CExp* node) {
         default:
             THROW_ABORT;
     }
-    return make_var_identifier(std::move(name));
+    return make_var_identifier(identifiers.get(), std::move(name));
 }
