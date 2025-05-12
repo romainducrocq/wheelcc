@@ -37,7 +37,7 @@ void open_fread(const std::string& filename) {
     fileio->file_reads.back().fd = nullptr;
     fileio->file_reads.back().fd = fopen(filename.c_str(), "rb");
     if (!fileio->file_reads.back().fd || filename.size() >= PATH_MAX) {
-        THROW_BASE(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()));
+        THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()), 0);
     }
 
     fileio->file_reads.back().len = 0;
@@ -51,7 +51,7 @@ void open_fwrite(const std::string& filename) {
     fileio->fd_write = nullptr;
     fileio->fd_write = fopen(filename.c_str(), "wb");
     if (!fileio->fd_write || filename.size() >= PATH_MAX) {
-        THROW_BASE(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()));
+        THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
     }
 
     fileio->write_buf.reserve(4096);
@@ -102,12 +102,12 @@ void close_fread(size_t linenum) {
         THROW_ABORT_IF(fileio->file_reads.back().buf || fileio->file_reads.back().len != 0);
         fileio->file_reads.back().fd = fopen(fileio->file_reads.back().filename.c_str(), "rb");
         if (!fileio->file_reads.back().fd) {
-            THROW_BASE(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()));
+            THROW_AT(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()), 0);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&fileio->file_reads.back().buf, &fileio->file_reads.back().len, fileio->file_reads.back().fd)
                 == -1) {
-                THROW_BASE(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()));
+                THROW_AT(GET_UTIL_MSG(MSG_failed_fread, fileio->file_reads.back().filename.c_str()), 0);
             }
         }
     }

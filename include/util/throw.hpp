@@ -36,14 +36,12 @@ extern std::unique_ptr<ErrorsContext> errors;
 
 [[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
 [[noreturn]] void raise_init_error(ErrorsContext* ctx);
-[[noreturn]] void raise_rtime_error(ErrorsContext* ctx);
-[[noreturn]] void raise_rtime_error_at_line(ErrorsContext* ctx, size_t linenum);
+[[noreturn]] void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
 size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 #define GET_ERROR_MSG(X, ...) snprintf(errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
 #define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
 #define THROW_INIT(X) X > 0 ? raise_init_error(errors.get()) : THROW_ABORT
-#define THROW_BASE(X) X > 0 ? raise_rtime_error(errors.get()) : THROW_ABORT
-#define THROW_AT(X, Y) X > 0 ? raise_rtime_error_at_line(errors.get(), Y) : THROW_ABORT
+#define THROW_AT(X, Y) X > 0 ? raise_error_at_line(errors.get(), Y) : THROW_ABORT
 #define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(errors.get(), Y))
 #ifdef __NDEBUG__
 #define THROW_ABORT_IF(X)
