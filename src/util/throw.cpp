@@ -15,32 +15,6 @@
 
 typedef ErrorsContext* Ctx;
 
-static void free_fileio(FileIoContext* ctx) {
-    for (auto& file_read : ctx->file_reads) {
-        if (file_read.buf != nullptr) {
-            free(file_read.buf);
-            file_read.buf = nullptr;
-        }
-        if (file_read.fd != nullptr) {
-            fclose(file_read.fd);
-            file_read.fd = nullptr;
-        }
-    }
-    if (ctx->fd_write != nullptr) {
-        fclose(ctx->fd_write);
-        ctx->fd_write = nullptr;
-    }
-}
-
-static const std::string& get_filename(FileIoContext* ctx) {
-    if (!ctx->file_reads.empty()) {
-        return ctx->file_reads.back().filename;
-    }
-    else {
-        return ctx->filename;
-    }
-}
-
 static void raise_base_error(Ctx ctx) {
     free_fileio(ctx->fileio);
     const std::string& filename = get_filename(ctx->fileio);

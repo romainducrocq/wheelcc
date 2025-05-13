@@ -19,6 +19,15 @@ bool find_file(const std::string& filename) {
     return tinydir_file_open(&file, filename.c_str()) != -1 && !file.is_dir;
 }
 
+const std::string& get_filename(Ctx ctx) {
+    if (!ctx->file_reads.empty()) {
+        return ctx->file_reads.back().filename;
+    }
+    else {
+        return ctx->filename;
+    }
+}
+
 void set_filename(Ctx ctx, const std::string& filename) { ctx->filename = filename; }
 
 void open_fread(Ctx ctx, const std::string& filename) {
@@ -117,4 +126,21 @@ void close_fwrite(Ctx ctx) {
 
     fclose(ctx->fd_write);
     ctx->fd_write = nullptr;
+}
+
+void free_fileio(Ctx ctx) {
+    for (auto& file_read : ctx->file_reads) {
+        if (file_read.buf != nullptr) {
+            free(file_read.buf);
+            file_read.buf = nullptr;
+        }
+        if (file_read.fd != nullptr) {
+            fclose(file_read.fd);
+            file_read.fd = nullptr;
+        }
+    }
+    if (ctx->fd_write != nullptr) {
+        fclose(ctx->fd_write);
+        ctx->fd_write = nullptr;
+    }
 }
