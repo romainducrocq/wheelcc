@@ -7,6 +7,7 @@
 
 struct AsmBinary;
 struct AsmProgram;
+struct BackEndContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +19,6 @@ struct AsmProgram;
 // Instruction fix up
 
 std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte);
-void fix_stack(AsmProgram* node);
+void fix_stack(AsmProgram* node, BackEndContext* backend);
 
 #endif

@@ -190,20 +190,20 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    INIT_BACKEND_CTX;
+    BackEndContext backend;
 #ifndef __NDEBUG__
-    pprint_p_backend(backend.get());
+    pprint_p_backend(&backend);
 #endif
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
-    convert_symbol_table(asm_ast.get(), &frontend);
+    convert_symbol_table(asm_ast.get(), &backend, &frontend);
     if (ctx->optim_2_code > 0) {
         verbose("OK", true);
         verbose("-- Level 2 optimization ... ", false);
-        allocate_registers(asm_ast.get(), &frontend, ctx->optim_2_code);
+        allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
     }
-    fix_stack(asm_ast.get());
+    fix_stack(asm_ast.get(), &backend);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 251) {
@@ -219,7 +219,7 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 
     verbose("-- Code emission ... ", false);
     ctx->filename += ".s";
-    emit_gas_code(std::move(asm_ast), std::move(ctx->filename), fileio, &identifiers);
+    emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 250) {
@@ -227,8 +227,6 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
         return;
     }
 #endif
-
-    FREE_BACKEND_CTX;
 }
 
 static void shift_args(std::string& arg) {

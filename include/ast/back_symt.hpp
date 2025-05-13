@@ -85,8 +85,4 @@ struct BackEndContext {
     std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> symbol_table;
 };
 
-extern std::unique_ptr<BackEndContext> backend;
-#define INIT_BACKEND_CTX backend = std::make_unique<BackEndContext>()
-#define FREE_BACKEND_CTX backend.reset()
-
 #endif

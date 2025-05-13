@@ -23,7 +23,3 @@ BackendObj::BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyTy
     is_static(is_static), is_const(is_const), asm_type(std::move(asm_type)) {}
 
 BackendFun::BackendFun(bool is_def) : is_def(is_def) {}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::unique_ptr<BackEndContext> backend;

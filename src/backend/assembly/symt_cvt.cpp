@@ -203,10 +203,10 @@ static void cvt_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void convert_symbol_table(AsmProgram* node, FrontEndContext* frontend) {
+void convert_symbol_table(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend) {
     SymtCvtContext ctx;
     {
-        ctx.backend = backend.get();
+        ctx.backend = backend;
         ctx.frontend = frontend;
     }
     cvt_program(&ctx, node);

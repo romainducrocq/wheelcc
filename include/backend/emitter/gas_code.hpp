@@ -5,6 +5,7 @@
 #include <string>
 
 struct AsmProgram;
+struct BackEndContext;
 struct FileIoContext;
 struct IdentifierContext;
 
@@ -12,7 +13,7 @@ struct IdentifierContext;
 
 // Gnu assembler code emission
 
-void emit_gas_code(
-    std::unique_ptr<AsmProgram> asm_ast, std::string&& filename, FileIoContext* fileio, IdentifierContext* identifiers);
+void emit_gas_code(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename, BackEndContext* backend,
+    FileIoContext* fileio, IdentifierContext* identifiers);
 
 #endif

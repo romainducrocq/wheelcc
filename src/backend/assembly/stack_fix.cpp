@@ -1041,10 +1041,10 @@ static void fix_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void fix_stack(AsmProgram* node) {
+void fix_stack(AsmProgram* node, BackEndContext* backend) {
     StackFixContext ctx;
     {
-        ctx.backend = backend.get();
+        ctx.backend = backend;
         ctx.stack_bytes = 0l;
     }
     fix_program(&ctx, node);
