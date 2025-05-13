@@ -37,6 +37,8 @@
 struct MainContext {
     MainContext();
 
+    ErrorsContext* errors;
+    // Main
     bool is_verbose;
     uint8_t debug_code;
     uint8_t optim_1_mask;
@@ -291,6 +293,7 @@ static void arg_parse() {
     std::vector<std::string>().swap(ctx->args);
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
@@ -313,6 +316,7 @@ int main(int argc, char** argv) {
             errors->errors = errors.get();
             errors->fileio = fileio.get();
             fileio->errors = errors.get();
+            ctx->errors = errors.get();
         }
 
 #ifdef _WIN32

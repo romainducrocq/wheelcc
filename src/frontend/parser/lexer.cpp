@@ -12,9 +12,6 @@
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
-// TODO remove
-#define THROW_AT_ctx(X, Y) X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT
-
 struct LexerContext {
     ErrorsContext* errors;
     FileIoContext* fileio;
@@ -163,7 +160,7 @@ static void tokenize_file(Ctx ctx) {
                 switch (ctx->re_match_tok_kind) {
                     case TOK_error:
                     case TOK_comment_end:
-                        THROW_AT_ctx(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
+                        THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
                     case TOK_skip:
                         goto Lcontinue;
                     case TOK_comment_start: {
@@ -217,7 +214,7 @@ static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
         ctx->includename_set.insert(includename);
         if (!find_include(ctx->stdlibdirs, filename)) {
             if (!find_include(*ctx->p_includedirs, filename)) {
-                THROW_AT_ctx(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
             }
         }
     }
@@ -230,7 +227,7 @@ static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
         }
         ctx->includename_set.insert(includename);
         if (!find_include(*ctx->p_includedirs, filename)) {
-            THROW_AT_ctx(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+            THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
         }
     }
 
