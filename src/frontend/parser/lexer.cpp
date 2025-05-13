@@ -12,9 +12,13 @@
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
-struct LexerContext {
-    LexerContext(std::vector<std::string>* p_includedirs, std::vector<Token>* p_toks);
+// TODO remove
+#define THROW_AT_ctx(X, Y) X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT
 
+struct LexerContext {
+    ErrorsContext* errors;
+    FileIoContext* fileio;
+    // Lexer
     TOKEN_KIND re_match_tok_kind;
     std::string re_match_tok;
     std::string_view re_iter_sv_slice;
@@ -25,22 +29,13 @@ struct LexerContext {
     size_t total_linenum;
 };
 
-LexerContext::LexerContext(std::vector<std::string>* p_includedirs, std::vector<Token>* p_toks) :
-    stdlibdirs({
-#ifdef __linux__
-        "/usr/include/", "/usr/local/include/"
-#endif
-    }),
-    p_includedirs(p_includedirs), p_toks(p_toks), total_linenum(0) {
-}
-
-static std::unique_ptr<LexerContext> ctx;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Lexer
 
-static void tokenize_include(std::string include_match, size_t linenum);
+typedef LexerContext* Ctx;
+
+static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
 #define RE_MATCH_TOKEN(X, Y)                                                                 \
     {                                                                                        \
@@ -53,7 +48,7 @@ static void tokenize_include(std::string include_match, size_t linenum);
         }                                                                                    \
     }
 
-static void re_match_current() {
+static void re_match_current(Ctx ctx) {
     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOK_skip)
 
     RE_MATCH_TOKEN(R"(<<=)", TOK_assign_shiftleft)
@@ -148,16 +143,16 @@ static void re_match_current() {
     RE_MATCH_TOKEN(R"(.)", TOK_error)
 }
 
-static void tokenize_file() {
+static void tokenize_file(Ctx ctx) {
     std::string line;
     bool is_comment = false;
-    for (size_t linenum = 1; read_line(fileio.get(), line); ++linenum) {
+    for (size_t linenum = 1; read_line(ctx->fileio, line); ++linenum) {
         ctx->total_linenum++;
 
         const std::string_view re_iter_sv(line);
         for (size_t i = 0; i < line.size(); i += ctx->re_match_tok.size()) {
             ctx->re_iter_sv_slice = re_iter_sv.substr(i);
-            re_match_current();
+            re_match_current(ctx);
             if (is_comment) {
                 if (ctx->re_match_tok_kind == TOK_comment_end) {
                     is_comment = false;
@@ -168,7 +163,7 @@ static void tokenize_file() {
                 switch (ctx->re_match_tok_kind) {
                     case TOK_error:
                     case TOK_comment_end:
-                        THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
+                        THROW_AT_ctx(GET_LEXER_MSG(MSG_invalid_tok, ctx->re_match_tok.c_str()), linenum);
                     case TOK_skip:
                         goto Lcontinue;
                     case TOK_comment_start: {
@@ -177,7 +172,7 @@ static void tokenize_file() {
                     }
                     case TOK_include_preproc: {
                         i += ctx->re_match_tok.size();
-                        tokenize_include(ctx->re_match_tok, linenum);
+                        tokenize_include(ctx, ctx->re_match_tok, linenum);
                         ctx->re_match_tok.clear();
                         goto Lcontinue;
                     }
@@ -211,7 +206,7 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
     return false;
 }
 
-static void tokenize_include(std::string filename, size_t linenum) {
+static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
         filename.pop_back();
@@ -222,7 +217,7 @@ static void tokenize_include(std::string filename, size_t linenum) {
         ctx->includename_set.insert(includename);
         if (!find_include(ctx->stdlibdirs, filename)) {
             if (!find_include(*ctx->p_includedirs, filename)) {
-                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+                THROW_AT_ctx(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
             }
         }
     }
@@ -235,21 +230,21 @@ static void tokenize_include(std::string filename, size_t linenum) {
         }
         ctx->includename_set.insert(includename);
         if (!find_include(*ctx->p_includedirs, filename)) {
-            THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+            THROW_AT_ctx(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
         }
     }
 
-    std::string fopen_name = errors->fopen_lines.back().filename;
-    open_fread(fileio.get(), filename);
+    std::string fopen_name = ctx->errors->fopen_lines.back().filename;
+    open_fread(ctx->fileio, filename);
     {
         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(filename)};
-        errors->fopen_lines.emplace_back(std::move(fopen_line));
+        ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
-    tokenize_file();
-    close_fread(fileio.get(), linenum);
+    tokenize_file(ctx);
+    close_fread(ctx->fileio, linenum);
     {
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
-        errors->fopen_lines.emplace_back(std::move(fopen_line));
+        ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
 }
 
@@ -258,21 +253,30 @@ static void strip_filename_ext(std::string& filename) { filename = filename.subs
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs) {
-    open_fread(fileio.get(), filename);
+    std::vector<Token> tokens;
+    LexerContext ctx;
+    {
+        ctx.errors = errors.get();
+        ctx.fileio = fileio.get();
+#ifdef __linux__
+        ctx.stdlibdirs.push_back("/usr/include/");
+        ctx.stdlibdirs.push_back("/usr/local/include/");
+#endif
+        ctx.p_includedirs = &includedirs;
+        ctx.p_toks = &tokens;
+        ctx.total_linenum = 0;
+    }
+    open_fread(ctx.fileio, filename);
     {
         FileOpenLine fopen_line = {1, 1, filename};
-        errors->fopen_lines.emplace_back(std::move(fopen_line));
+        ctx.errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
+    tokenize_file(&ctx);
 
-    std::vector<Token> tokens;
-    ctx = std::make_unique<LexerContext>(&includedirs, &tokens);
-    tokenize_file();
-    ctx.reset();
-
-    close_fread(fileio.get(), 0);
+    close_fread(ctx.fileio, 0);
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
-    set_filename(fileio.get(), filename);
+    set_filename(ctx.fileio, filename);
     strip_filename_ext(filename);
     return tokens;
 }
