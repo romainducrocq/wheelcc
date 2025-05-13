@@ -16,6 +16,7 @@ struct CConst;
 struct CUnaryOp;
 struct CBinaryOp;
 struct CStorageClass;
+struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,18 +52,18 @@ enum MESSAGE_UTIL {
 };
 
 std::string get_tok_kind_fmt(TOKEN_KIND tok_kind);
-std::string get_name_fmt(TIdentifier name);
-std::string get_struct_name_fmt(TIdentifier name, bool is_union);
-std::string get_type_fmt(Type* type);
+std::string get_name_fmt(IdentifierContext* ctx, TIdentifier name);
+std::string get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union);
+std::string get_type_fmt(IdentifierContext* ctx, Type* type);
 std::string get_const_fmt(CConst* node);
 std::string get_storage_class_fmt(CStorageClass* node);
 std::string get_unop_fmt(CUnaryOp* node);
 std::string get_binop_fmt(CBinaryOp* node);
 std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
 #define fmt_tok_kind_c_str(X) get_tok_kind_fmt(X).c_str()
-#define fmt_name_c_str(X) get_name_fmt(X).c_str()
-#define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(X, Y).c_str()
-#define fmt_type_c_str(X) get_type_fmt(X).c_str()
+#define fmt_name_c_str(X) get_name_fmt(ctx->identifiers, X).c_str()
+#define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(ctx->identifiers, X, Y).c_str()
+#define fmt_type_c_str(X) get_type_fmt(ctx->identifiers, X).c_str()
 #define fmt_const_c_str(X) get_const_fmt(X).c_str()
 #define fmt_storage_class_c_str(X) get_storage_class_fmt(X).c_str()
 #define fmt_unop_c_str(X) get_unop_fmt(X).c_str()
