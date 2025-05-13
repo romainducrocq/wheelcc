@@ -10,8 +10,6 @@
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
-ErrorsContext::ErrorsContext(FileIoContext* p_fileio) : p_fileio(p_fileio) {}
-
 std::unique_ptr<ErrorsContext> errors;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +45,8 @@ static const std::string& get_filename(FileIoContext* ctx) {
 }
 
 static void raise_base_error(Ctx ctx) {
-    free_fileio(ctx->p_fileio);
-    const std::string& filename = get_filename(ctx->p_fileio);
+    free_fileio(ctx->fileio);
+    const std::string& filename = get_filename(ctx->fileio);
     std::string err_what = "\033[1m";
     err_what += filename;
     err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
@@ -77,8 +75,8 @@ static void raise_base_error(Ctx ctx) {
     if (linenum == 0) {
         raise_base_error(ctx);
     }
-    free_fileio(ctx->p_fileio);
-    const std::string& filename = get_filename(ctx->p_fileio);
+    free_fileio(ctx->fileio);
+    const std::string& filename = get_filename(ctx->fileio);
     std::string line;
     {
         size_t len = 0;
@@ -122,10 +120,10 @@ static void raise_base_error(Ctx ctx) {
 size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
     for (size_t i = 0; i < ctx->fopen_lines.size() - 1; ++i) {
         if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
-            set_filename(ctx->p_fileio, ctx->fopen_lines[i].filename);
+            set_filename(ctx->fileio, ctx->fopen_lines[i].filename);
             return total_linenum - ctx->fopen_lines[i].total_linenum + ctx->fopen_lines[i].linenum;
         }
     }
-    set_filename(ctx->p_fileio, ctx->fopen_lines.back().filename);
+    set_filename(ctx->fileio, ctx->fopen_lines.back().filename);
     return total_linenum - ctx->fopen_lines.back().total_linenum + ctx->fopen_lines.back().linenum;
 }
