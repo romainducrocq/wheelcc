@@ -140,6 +140,9 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
         identifiers.var_count = 0u;
         identifiers.struct_count = 0u;
     }
+#ifndef __NDEBUG__
+    pprint_p_identifiers(&identifiers);
+#endif
 
     verbose("-- Parsing ... ", false);
     std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
@@ -152,6 +155,9 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     INIT_FRONTEND_CTX;
+#ifndef __NDEBUG__
+    pprint_p_frontend(frontend.get());
+#endif
 
     verbose("-- Semantic analysis ... ", false);
     analyze_semantic(c_ast.get(), errors, &identifiers);
@@ -185,6 +191,9 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     INIT_BACKEND_CTX;
+#ifndef __NDEBUG__
+    pprint_p_backend(backend.get());
+#endif
 
     verbose("-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &identifiers);
