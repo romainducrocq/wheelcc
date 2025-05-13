@@ -13,6 +13,7 @@ typedef TacInstruction AstInstruction;
 typedef OptimTacContext* Ctx;
 #elif __OPTIM_LEVEL__ == 2
 typedef AsmInstruction AstInstruction;
+typedef RegAllocContext* Ctx;
 #endif
 
 struct ControlFlowBlock {
@@ -271,11 +272,11 @@ static void cfg_init_jmp_ne_0_edges(Ctx ctx, TacJumpIfNotZero* node, size_t bloc
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 #elif __OPTIM_LEVEL__ == 2
-static void cfg_init_jmp_edges(AsmJmp* node, size_t block_id) {
+static void cfg_init_jmp_edges(Ctx ctx, AsmJmp* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
 }
 
-static void cfg_init_jmp_cc_edges(AsmJmpCC* node, size_t block_id) {
+static void cfg_init_jmp_cc_edges(Ctx ctx, AsmJmpCC* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
@@ -303,10 +304,10 @@ static void cfg_init_edges(Ctx ctx, size_t block_id) {
             break;
 #elif __OPTIM_LEVEL__ == 2
         case AST_AsmJmp_t:
-            cfg_init_jmp_edges(static_cast<AsmJmp*>(node), block_id);
+            cfg_init_jmp_edges(ctx, static_cast<AsmJmp*>(node), block_id);
             break;
         case AST_AsmJmpCC_t:
-            cfg_init_jmp_cc_edges(static_cast<AsmJmpCC*>(node), block_id);
+            cfg_init_jmp_cc_edges(ctx, static_cast<AsmJmpCC*>(node), block_id);
             break;
 #endif
         default:
@@ -487,7 +488,7 @@ static bool set_dfa_bak_instr(Ctx ctx, size_t instr_idx, size_t& i) {
 static bool prop_transfer_reach_copies(Ctx ctx, size_t instr_idx, size_t next_instr_idx);
 static void elim_transfer_live_values(Ctx ctx, size_t instr_idx, size_t next_instr_idx);
 #elif __OPTIM_LEVEL__ == 2
-static void infer_transfer_live_regs(size_t instr_idx, size_t next_instr_idx);
+static void infer_transfer_live_regs(Ctx ctx, size_t instr_idx, size_t next_instr_idx);
 #endif
 
 #if __OPTIM_LEVEL__ == 1
@@ -812,16 +813,16 @@ static void elim_add_data_value(Ctx ctx, TacValue* node) {
     }
 }
 #elif __OPTIM_LEVEL__ == 2
-static void infer_add_data_name(TIdentifier name) {
+static void infer_add_data_name(Ctx ctx, TIdentifier name) {
     if (!is_aliased_name(ctx, name) && ctx->cfg->identifier_id_map.find(name) == ctx->cfg->identifier_id_map.end()) {
         ctx->cfg->identifier_id_map[name] = REGISTER_MASK_SIZE + ctx->dfa->set_size;
         ctx->dfa->set_size++;
     }
 }
 
-static void infer_add_data_op(AsmOperand* node) {
+static void infer_add_data_op(Ctx ctx, AsmOperand* node) {
     if (node->type() == AST_AsmPseudo_t) {
-        infer_add_data_name(static_cast<AsmPseudo*>(node)->name);
+        infer_add_data_name(ctx, static_cast<AsmPseudo*>(node)->name);
     }
 }
 #endif
@@ -1054,66 +1055,66 @@ static bool init_data_flow_analysis(Ctx ctx,
 #elif __OPTIM_LEVEL__ == 2
                         case AST_AsmMov_t: {
                             AsmMov* p_node = static_cast<AsmMov*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmMovSx_t: {
                             AsmMovSx* p_node = static_cast<AsmMovSx*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmMovZeroExtend_t: {
                             AsmMovZeroExtend* p_node = static_cast<AsmMovZeroExtend*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmLea_t: {
                             AsmLea* p_node = static_cast<AsmLea*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmCvttsd2si_t: {
                             AsmCvttsd2si* p_node = static_cast<AsmCvttsd2si*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmCvtsi2sd_t: {
                             AsmCvtsi2sd* p_node = static_cast<AsmCvtsi2sd*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmUnary_t:
-                            infer_add_data_op(static_cast<AsmUnary*>(node)->dst.get());
+                            infer_add_data_op(ctx, static_cast<AsmUnary*>(node)->dst.get());
                             break;
                         case AST_AsmBinary_t: {
                             AsmBinary* p_node = static_cast<AsmBinary*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmCmp_t: {
                             AsmCmp* p_node = static_cast<AsmCmp*>(node);
-                            infer_add_data_op(p_node->src.get());
-                            infer_add_data_op(p_node->dst.get());
+                            infer_add_data_op(ctx, p_node->src.get());
+                            infer_add_data_op(ctx, p_node->dst.get());
                             break;
                         }
                         case AST_AsmIdiv_t:
-                            infer_add_data_op(static_cast<AsmIdiv*>(node)->src.get());
+                            infer_add_data_op(ctx, static_cast<AsmIdiv*>(node)->src.get());
                             break;
                         case AST_AsmDiv_t:
-                            infer_add_data_op(static_cast<AsmDiv*>(node)->src.get());
+                            infer_add_data_op(ctx, static_cast<AsmDiv*>(node)->src.get());
                             break;
                         case AST_AsmSetCC_t:
-                            infer_add_data_op(static_cast<AsmSetCC*>(node)->dst.get());
+                            infer_add_data_op(ctx, static_cast<AsmSetCC*>(node)->dst.get());
                             break;
                         case AST_AsmPush_t:
-                            infer_add_data_op(static_cast<AsmPush*>(node)->src.get());
+                            infer_add_data_op(ctx, static_cast<AsmPush*>(node)->src.get());
                             break;
                         case AST_AsmCdq_t:
                         case AST_AsmCall_t:

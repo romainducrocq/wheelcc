@@ -2691,12 +2691,13 @@ void optimize_three_address_code(TacProgram* node, uint8_t optim_1_mask) {
         ctx.enabled_optims[UNREACHABLE_CODE_ELIMINATION] = (optim_1_mask & (static_cast<uint8_t>(1u) << 2)) > 0;
         ctx.enabled_optims[DEAD_STORE_ELIMINATION] = (optim_1_mask & (static_cast<uint8_t>(1u) << 3)) > 0;
         ctx.enabled_optims[CONTROL_FLOW_GRAPH] = (optim_1_mask & ~(static_cast<uint8_t>(1u) << 0)) > 0;
-    }
-    if (ctx.enabled_optims[CONTROL_FLOW_GRAPH]) {
-        ctx.cfg = std::make_unique<ControlFlowGraph>();
-        if (ctx.enabled_optims[COPY_PROPAGATION] || ctx.enabled_optims[DEAD_STORE_ELIMINATION]) {
-            ctx.dfa = std::make_unique<DataFlowAnalysis>();
-            ctx.dfa_o1 = std::make_unique<DataFlowAnalysisO1>();
+
+        if (ctx.enabled_optims[CONTROL_FLOW_GRAPH]) {
+            ctx.cfg = std::make_unique<ControlFlowGraph>();
+            if (ctx.enabled_optims[COPY_PROPAGATION] || ctx.enabled_optims[DEAD_STORE_ELIMINATION]) {
+                ctx.dfa = std::make_unique<DataFlowAnalysis>();
+                ctx.dfa_o1 = std::make_unique<DataFlowAnalysisO1>();
+            }
         }
     }
     optim_program(&ctx, node);
