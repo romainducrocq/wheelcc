@@ -2,6 +2,7 @@
 #define _FRONT_INTERMEDIATE_SEMANTIC_H
 
 struct CProgram;
+struct ErrorsContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -13,6 +14,6 @@ struct CProgram;
 // Loop labeling
 // Identifier resolution
 
-void analyze_semantic(CProgram* node);
+void analyze_semantic(CProgram* node, ErrorsContext* errors);
 
 #endif

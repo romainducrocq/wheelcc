@@ -115,7 +115,7 @@ static void debug_asm_code() {
 }
 #endif
 
-static void compile(FileIoContext* fileio) {
+static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     if (ctx->debug_code > 0
 #ifdef __NDEBUG__
         && ctx->debug_code <= 127
@@ -125,7 +125,7 @@ static void compile(FileIoContext* fileio) {
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), fileio);
+    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
@@ -137,7 +137,7 @@ static void compile(FileIoContext* fileio) {
     INIT_IDENTIFIER_CTX;
 
     verbose("-- Parsing ... ", false);
-    std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens));
+    std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
@@ -149,7 +149,7 @@ static void compile(FileIoContext* fileio) {
     INIT_FRONTEND_CTX;
 
     verbose("-- Semantic analysis ... ", false);
-    analyze_semantic(c_ast.get());
+    analyze_semantic(c_ast.get(), errors);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 253) {
@@ -160,8 +160,6 @@ static void compile(FileIoContext* fileio) {
         return;
     }
 #endif
-
-    FREE_ERRORS_CTX;
 
     verbose("-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast));
@@ -306,13 +304,13 @@ int main(int argc, char** argv) {
             }
         }
 
-        INIT_ERRORS_CTX;
+        ErrorsContext errors;
         FileIoContext fileio;
         {
-            errors->errors = errors.get();
-            errors->fileio = &fileio;
-            fileio.errors = errors.get();
-            ctx->errors = errors.get();
+            errors.errors = &errors;
+            errors.fileio = &fileio;
+            fileio.errors = &errors;
+            ctx->errors = &errors;
         }
 
 #ifdef _WIN32
@@ -337,7 +335,7 @@ int main(int argc, char** argv) {
 
         arg_parse();
 
-        compile(&fileio);
+        compile(&errors, &fileio);
 
         ctx.reset();
     }

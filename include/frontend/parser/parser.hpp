@@ -7,11 +7,12 @@
 #include "frontend/parser/lexer.hpp"
 
 struct CProgram;
+struct ErrorsContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Parser
 
-std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens);
+std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors);
 
 #endif

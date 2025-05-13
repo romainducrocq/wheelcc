@@ -1720,10 +1720,10 @@ static std::unique_ptr<CProgram> parse_program(Ctx ctx) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens) {
+std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors) {
     ParserContext ctx;
     {
-        ctx.errors = errors.get();
+        ctx.errors = errors;
         ctx.identifiers = identifiers.get();
         ctx.pop_idx = 0;
         ctx.p_toks = &tokens;

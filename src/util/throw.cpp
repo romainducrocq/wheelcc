@@ -1,7 +1,6 @@
 #include <array>
 #include <cstdio>
 #include <iostream>
-#include <memory>
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,8 +8,6 @@
 
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
-
-std::unique_ptr<ErrorsContext> errors;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

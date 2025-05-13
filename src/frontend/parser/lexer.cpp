@@ -249,11 +249,12 @@ static void strip_filename_ext(std::string& filename) { filename = filename.subs
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, FileIoContext* fileio) {
+std::vector<Token> lex_c_code(
+    std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors, FileIoContext* fileio) {
     std::vector<Token> tokens;
     LexerContext ctx;
     {
-        ctx.errors = errors.get();
+        ctx.errors = errors;
         ctx.fileio = fileio;
 #ifdef __linux__
         ctx.stdlibdirs.push_back("/usr/include/");

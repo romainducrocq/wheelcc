@@ -1,7 +1,6 @@
 #ifndef _UTIL_THROW_H
 #define _UTIL_THROW_H
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -29,10 +28,6 @@ struct ErrorsContext {
     std::unordered_map<hash_t, size_t> linebuf_map;
     std::vector<FileOpenLine> fopen_lines;
 };
-
-extern std::unique_ptr<ErrorsContext> errors;
-#define INIT_ERRORS_CTX errors = std::make_unique<ErrorsContext>()
-#define FREE_ERRORS_CTX errors.reset()
 
 [[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
 [[noreturn]] void raise_init_error(ErrorsContext* ctx);
