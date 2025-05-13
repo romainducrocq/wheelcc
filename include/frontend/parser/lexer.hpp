@@ -6,6 +6,8 @@
 
 #include "parser/tokens.hpp" // frontend
 
+struct FileIoContext;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Lexer
@@ -16,6 +18,6 @@ struct Token {
     size_t line;
 };
 
-std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs);
+std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, FileIoContext* fileio);
 
 #endif

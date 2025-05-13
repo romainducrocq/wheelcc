@@ -1,6 +1,5 @@
 #include "tinydir/tinydir.h"
 #include <limits.h>
-#include <memory>
 #include <stdio.h>
 #include <string>
 
@@ -8,8 +7,6 @@
 #include "util/throw.hpp"
 
 #include "frontend/parser/errors.hpp"
-
-std::unique_ptr<FileIoContext> fileio;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

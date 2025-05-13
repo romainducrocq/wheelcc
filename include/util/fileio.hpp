@@ -1,7 +1,6 @@
 #ifndef _UTIL_FILEIO_H
 #define _UTIL_FILEIO_H
 
-#include <memory>
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -27,10 +26,6 @@ struct FileIoContext {
     std::string filename;
     std::vector<FileRead> file_reads;
 };
-
-extern std::unique_ptr<FileIoContext> fileio;
-#define INIT_FILEIO_CTX fileio = std::make_unique<FileIoContext>()
-#define FREE_FILEIO_CTX fileio.reset()
 
 bool find_file(const std::string& filename);
 void set_filename(FileIoContext* ctx, const std::string& filename);

@@ -115,7 +115,7 @@ static void debug_asm_code() {
 }
 #endif
 
-static void compile() {
+static void compile(FileIoContext* fileio) {
     if (ctx->debug_code > 0
 #ifdef __NDEBUG__
         && ctx->debug_code <= 127
@@ -125,7 +125,7 @@ static void compile() {
     }
 
     verbose("-- Lexing ... ", false);
-    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs));
+    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), fileio);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
@@ -209,7 +209,7 @@ static void compile() {
 
     verbose("-- Code emission ... ", false);
     ctx->filename += ".s";
-    emit_gas_code(std::move(asm_ast), std::move(ctx->filename));
+    emit_gas_code(std::move(asm_ast), std::move(ctx->filename), fileio);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 250) {
@@ -221,8 +221,6 @@ static void compile() {
     FREE_BACKEND_CTX;
 
     FREE_IDENTIFIER_CTX;
-
-    FREE_FILEIO_CTX;
 }
 
 static void shift_args(std::string& arg) {
@@ -308,14 +306,12 @@ int main(int argc, char** argv) {
             }
         }
 
-        INIT_FILEIO_CTX;
-
         INIT_ERRORS_CTX;
-
+        FileIoContext fileio;
         {
             errors->errors = errors.get();
-            errors->fileio = fileio.get();
-            fileio->errors = errors.get();
+            errors->fileio = &fileio;
+            fileio.errors = errors.get();
             ctx->errors = errors.get();
         }
 
@@ -341,7 +337,7 @@ int main(int argc, char** argv) {
 
         arg_parse();
 
-        compile();
+        compile(&fileio);
 
         ctx.reset();
     }
