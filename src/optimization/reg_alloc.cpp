@@ -1,3 +1,4 @@
+#if 0
 #include <algorithm>
 #include <array>
 #include <inttypes.h>
@@ -1833,3 +1834,8 @@ void allocate_registers(AsmProgram* node, uint8_t optim_2_code) {
     alloc_program(node);
     ctx.reset();
 }
+#endif
+#include <inttypes.h>
+struct AsmProgram;
+#include "optimization/reg_alloc.hpp"
+void allocate_registers(AsmProgram*, uint8_t) {}
