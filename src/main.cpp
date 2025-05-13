@@ -35,8 +35,6 @@
 #include "optimization/reg_alloc.hpp"
 
 struct MainContext {
-    MainContext();
-
     ErrorsContext* errors;
     // Main
     bool is_verbose;
@@ -45,18 +43,17 @@ struct MainContext {
     uint8_t optim_2_code;
     std::string filename;
     std::vector<std::string> includedirs;
+    // TODO rm
     std::vector<std::string> args;
 };
-
-MainContext::MainContext() : is_verbose(false) {}
-
-static std::unique_ptr<MainContext> ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Main
 
-static void verbose(std::string&& out, bool end) {
+typedef MainContext* Ctx;
+
+static void verbose(Ctx ctx, std::string&& out, bool end) {
     if (ctx->is_verbose) {
         std::cout << out;
         if (end) {
@@ -66,56 +63,77 @@ static void verbose(std::string&& out, bool end) {
 }
 
 #ifndef __NDEBUG__
-static void debug_toks(const std::vector<Token>& tokens) {
+static void debug_toks(Ctx ctx, const std::vector<Token>& tokens) {
     if (ctx->is_verbose) {
         pprint_toks(tokens);
     }
 }
 
-static void debug_ast(Ast* node, std::string&& name) {
+static void debug_ast(Ctx ctx, Ast* node, std::string&& name) {
     if (ctx->is_verbose) {
         pprint_ast(node, name);
     }
 }
 
-static void debug_addressed_set() {
+static void debug_addressed_set(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_addressed_set();
     }
 }
 
-static void debug_string_const_table() {
+static void debug_string_const_table(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_string_const_table();
     }
 }
 
-static void debug_struct_typedef_table() {
+static void debug_struct_typedef_table(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_struct_typedef_table();
     }
 }
 
-static void debug_symbol_table() {
+static void debug_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_symbol_table();
     }
 }
 
-static void debug_backend_symbol_table() {
+static void debug_backend_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_backend_symbol_table();
     }
 }
 
-static void debug_asm_code() {
+static void debug_asm_code(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_asm_code();
     }
 }
 #endif
 
-static void compile(ErrorsContext* errors, FileIoContext* fileio) {
+static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
+
+#ifdef _WIN32
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
+#elif defined(__APPLE__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "MacOS"));
+#elif !defined(__linux__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
+#elif defined(__arm__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
+#elif defined(__i386__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "x86"));
+#elif !defined(__x86_64__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
+#elif defined(__clang__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "clang"));
+#elif !defined(__GNUC__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
+#elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_gcc_ver, GCC_VERSION));
+#endif
+
     if (ctx->debug_code > 0
 #ifdef __NDEBUG__
         && ctx->debug_code <= 127
@@ -124,12 +142,12 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
         ctx->is_verbose = true;
     }
 
-    verbose("-- Lexing ... ", false);
+    verbose(ctx, "-- Lexing ... ", false);
     std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio);
-    verbose("OK", true);
+    verbose(ctx, "OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
-        debug_toks(tokens);
+        debug_toks(ctx, tokens);
         return;
     }
 #endif
@@ -144,12 +162,12 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     pprint_p_identifiers(&identifiers);
 #endif
 
-    verbose("-- Parsing ... ", false);
+    verbose(ctx, "-- Parsing ... ", false);
     std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
-    verbose("OK", true);
+    verbose(ctx, "OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
-        debug_ast(c_ast.get(), "C AST");
+        debug_ast(ctx, c_ast.get(), "C AST");
         return;
     }
 #endif
@@ -159,33 +177,33 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     pprint_p_frontend(&frontend);
 #endif
 
-    verbose("-- Semantic analysis ... ", false);
+    verbose(ctx, "-- Semantic analysis ... ", false);
     analyze_semantic(c_ast.get(), errors, &frontend, &identifiers);
-    verbose("OK", true);
+    verbose(ctx, "OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 253) {
-        debug_ast(c_ast.get(), "C AST");
-        debug_string_const_table();
-        debug_struct_typedef_table();
-        debug_symbol_table();
+        debug_ast(ctx, c_ast.get(), "C AST");
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
         return;
     }
 #endif
 
-    verbose("-- TAC representation ... ", false);
+    verbose(ctx, "-- TAC representation ... ", false);
     std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
     if (ctx->optim_1_mask > 0) {
-        verbose("OK", true);
-        verbose("-- Level 1 optimization ... ", false);
+        verbose(ctx, "OK", true);
+        verbose(ctx, "-- Level 1 optimization ... ", false);
         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
     }
-    verbose("OK", true);
+    verbose(ctx, "OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 252) {
-        debug_ast(tac_ast.get(), "TAC AST");
-        debug_string_const_table();
-        debug_struct_typedef_table();
-        debug_symbol_table();
+        debug_ast(ctx, tac_ast.get(), "TAC AST");
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
         return;
     }
 #endif
@@ -195,41 +213,41 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     pprint_p_backend(&backend);
 #endif
 
-    verbose("-- Assembly generation ... ", false);
+    verbose(ctx, "-- Assembly generation ... ", false);
     std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
     convert_symbol_table(asm_ast.get(), &backend, &frontend);
     if (ctx->optim_2_code > 0) {
-        verbose("OK", true);
-        verbose("-- Level 2 optimization ... ", false);
+        verbose(ctx, "OK", true);
+        verbose(ctx, "-- Level 2 optimization ... ", false);
         allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
     }
     fix_stack(asm_ast.get(), &backend);
-    verbose("OK", true);
+    verbose(ctx, "OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 251) {
-        debug_ast(asm_ast.get(), "ASM AST");
-        debug_addressed_set();
-        debug_string_const_table();
-        debug_struct_typedef_table();
-        debug_symbol_table();
-        debug_backend_symbol_table();
+        debug_ast(ctx, asm_ast.get(), "ASM AST");
+        debug_addressed_set(ctx);
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
+        debug_backend_symbol_table(ctx);
         return;
     }
 #endif
 
-    verbose("-- Code emission ... ", false);
+    verbose(ctx, "-- Code emission ... ", false);
     ctx->filename += ".s";
     emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
-    verbose("OK", true);
+    verbose(ctx, "OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 250) {
-        debug_asm_code();
+        debug_asm_code(ctx);
         return;
     }
 #endif
 }
 
-static void shift_args(std::string& arg) {
+static void shift_args(Ctx ctx, std::string& arg) {
     if (!ctx->args.empty()) {
         arg = std::move(ctx->args.back());
         ctx->args.pop_back();
@@ -247,11 +265,18 @@ static bool arg_parse_uint8(std::string& arg, uint8_t& code) {
     return end_ptr == &buf[0];
 }
 
-static void arg_parse() {
-    std::string arg;
-    shift_args(arg);
+static void arg_parse(Ctx ctx, int argc, char** argv) {
+    size_t i = static_cast<size_t>(argc);
+    ctx->args.reserve(i);
+    for (; i-- > 0;) {
+        std::string arg = argv[i];
+        ctx->args.emplace_back(std::move(arg));
+    }
 
-    shift_args(arg);
+    std::string arg;
+    shift_args(ctx, arg);
+
+    shift_args(ctx, arg);
     if (arg.empty()) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
     }
@@ -259,7 +284,7 @@ static void arg_parse() {
         THROW_INIT(GET_ARG_MSG(MSG_invalid_debug_arg, arg.c_str()));
     }
 
-    shift_args(arg);
+    shift_args(ctx, arg);
     if (arg.empty()) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_1_arg));
     }
@@ -267,7 +292,7 @@ static void arg_parse() {
         THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_1_arg, arg.c_str()));
     }
 
-    shift_args(arg);
+    shift_args(ctx, arg);
     if (arg.empty()) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_2_arg));
     }
@@ -275,20 +300,20 @@ static void arg_parse() {
         THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_2_arg, arg.c_str()));
     }
 
-    shift_args(arg);
+    shift_args(ctx, arg);
     if (arg.empty()) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_input_files_arg));
     }
     ctx->filename = arg;
 
-    shift_args(arg);
+    shift_args(ctx, arg);
     if (arg.empty()) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
         std::string includedir = arg;
         ctx->includedirs.emplace_back(std::move(includedir));
-        shift_args(arg);
+        shift_args(ctx, arg);
     }
     while (!arg.empty());
 
@@ -302,51 +327,21 @@ static void arg_parse() {
 int main(int argc, char** argv) {
     ErrorsContext errors;
     FileIoContext fileio;
+    MainContext ctx;
     {
         errors.errors = &errors;
         errors.fileio = &fileio;
 
         fileio.errors = &errors;
         fileio.fd_write = nullptr;
+
+        ctx.errors = &errors;
+        ctx.is_verbose = false;
     }
 
     try {
-        ctx = std::make_unique<MainContext>();
-        {
-            size_t i = static_cast<size_t>(argc);
-            ctx->args.reserve(i);
-            for (; i-- > 0;) {
-                std::string arg = argv[i];
-                ctx->args.emplace_back(std::move(arg));
-            }
-            ctx->errors = &errors;
-        }
-
-#ifdef _WIN32
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
-#elif defined(__APPLE__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "MacOS"));
-#elif !defined(__linux__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
-#elif defined(__arm__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
-#elif defined(__i386__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "x86"));
-#elif !defined(__x86_64__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
-#elif defined(__clang__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "clang"));
-#elif !defined(__GNUC__)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
-#elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
-        THROW_INIT(GET_FATAL_MSG(MSG_unsupported_gcc_ver, GCC_VERSION));
-#endif
-
-        arg_parse();
-
-        compile(&errors, &fileio);
-
-        ctx.reset();
+        arg_parse(&ctx, argc, argv);
+        compile(&ctx, &errors, &fileio);
     }
     catch (const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;
