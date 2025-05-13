@@ -2574,11 +2574,11 @@ static std::unique_ptr<AsmProgram> gen_program(Ctx ctx, TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast) {
+std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast, IdentifierContext* identifiers) {
     AsmGenContext ctx;
     {
         ctx.frontend = frontend.get();
-        ctx.identifiers = identifiers.get();
+        ctx.identifiers = identifiers;
 
         ctx.arg_regs[0] = REG_Di;
         ctx.arg_regs[1] = REG_Si;

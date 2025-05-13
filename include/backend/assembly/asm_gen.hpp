@@ -5,11 +5,12 @@
 
 struct TacProgram;
 struct AsmProgram;
+struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Assembly generation
 
-std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast);
+std::unique_ptr<AsmProgram> generate_assembly(std::unique_ptr<TacProgram> tac_ast, IdentifierContext* identifiers);
 
 #endif

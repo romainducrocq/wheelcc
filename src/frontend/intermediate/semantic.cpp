@@ -2825,7 +2825,7 @@ static void reslv_declaration(Ctx ctx, CDeclaration* node) {
     }
 }
 
-static void resolve_identifiers(Ctx ctx, CProgram* node) {
+static void resolve_program(Ctx ctx, CProgram* node) {
     enter_scope(ctx);
     for (const auto& declaration : node->declarations) {
         reslv_declaration(ctx, declaration.get());
@@ -2834,12 +2834,12 @@ static void resolve_identifiers(Ctx ctx, CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void analyze_semantic(CProgram* node, ErrorsContext* errors) {
+void analyze_semantic(CProgram* node, ErrorsContext* errors, IdentifierContext* identifiers) {
     SemanticContext ctx;
     {
         ctx.errors = errors;
         ctx.frontend = frontend.get();
-        ctx.identifiers = identifiers.get();
+        ctx.identifiers = identifiers;
     }
-    resolve_identifiers(&ctx, node);
+    resolve_program(&ctx, node);
 }

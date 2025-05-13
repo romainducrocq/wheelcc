@@ -40,10 +40,6 @@ CStringLiteral::CStringLiteral(std::vector<TChar> value) : value(std::move(value
 
 // Identifiers
 
-IdentifierContext::IdentifierContext() : label_count(0), var_count(0), struct_count(0) {}
-
-std::unique_ptr<IdentifierContext> identifiers;
-
 typedef IdentifierContext* Ctx;
 
 TIdentifier string_to_hash(const std::string& string);

@@ -999,12 +999,13 @@ static void emit_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void emit_gas_code(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename, FileIoContext* fileio) {
+void emit_gas_code(std::unique_ptr<AsmProgram> asm_ast, std::string&& filename, FileIoContext* fileio,
+    IdentifierContext* identifiers) {
     GasCodeContext ctx;
     {
         ctx.backend = backend.get();
         ctx.fileio = fileio;
-        ctx.identifiers = identifiers.get();
+        ctx.identifiers = identifiers;
     }
     open_fwrite(ctx.fileio, filename);
     emit_program(&ctx, asm_ast.get());

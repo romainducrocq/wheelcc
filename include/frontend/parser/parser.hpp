@@ -8,11 +8,13 @@
 
 struct CProgram;
 struct ErrorsContext;
+struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Parser
 
-std::unique_ptr<CProgram> parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors);
+std::unique_ptr<CProgram> parse_tokens(
+    std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers);
 
 #endif

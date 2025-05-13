@@ -5,11 +5,13 @@
 
 struct CProgram;
 struct TacProgram;
+struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Three address code representation
 
-std::unique_ptr<TacProgram> represent_three_address_code(std::unique_ptr<CProgram> c_ast);
+std::unique_ptr<TacProgram> represent_three_address_code(
+    std::unique_ptr<CProgram> c_ast, IdentifierContext* identifiers);
 
 #endif

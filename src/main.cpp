@@ -134,10 +134,15 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    INIT_IDENTIFIER_CTX;
+    IdentifierContext identifiers;
+    {
+        identifiers.label_count = 0u;
+        identifiers.var_count = 0u;
+        identifiers.struct_count = 0u;
+    }
 
     verbose("-- Parsing ... ", false);
-    std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors);
+    std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
@@ -149,7 +154,7 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     INIT_FRONTEND_CTX;
 
     verbose("-- Semantic analysis ... ", false);
-    analyze_semantic(c_ast.get(), errors);
+    analyze_semantic(c_ast.get(), errors, &identifiers);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 253) {
@@ -162,7 +167,7 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose("-- TAC representation ... ", false);
-    std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast));
+    std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast), &identifiers);
     if (ctx->optim_1_mask > 0) {
         verbose("OK", true);
         verbose("-- Level 1 optimization ... ", false);
@@ -182,7 +187,7 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     INIT_BACKEND_CTX;
 
     verbose("-- Assembly generation ... ", false);
-    std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast));
+    std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &identifiers);
     convert_symbol_table(asm_ast.get());
     if (ctx->optim_2_code > 0) {
         verbose("OK", true);
@@ -207,7 +212,7 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 
     verbose("-- Code emission ... ", false);
     ctx->filename += ".s";
-    emit_gas_code(std::move(asm_ast), std::move(ctx->filename), fileio);
+    emit_gas_code(std::move(asm_ast), std::move(ctx->filename), fileio, &identifiers);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 250) {
@@ -217,8 +222,6 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     FREE_BACKEND_CTX;
-
-    FREE_IDENTIFIER_CTX;
 }
 
 static void shift_args(std::string& arg) {

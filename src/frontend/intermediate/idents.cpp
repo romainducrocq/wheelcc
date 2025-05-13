@@ -15,17 +15,17 @@
 typedef IdentifierContext* Ctx;
 
 TIdentifier rslv_label_identifier(Ctx ctx, TIdentifier label) {
-    std::string name = identifiers->hash_table[label];
+    std::string name = ctx->hash_table[label];
     return make_label_identifier(ctx, std::move(name));
 }
 
 TIdentifier rslv_var_identifier(Ctx ctx, TIdentifier variable) {
-    std::string name = identifiers->hash_table[variable];
+    std::string name = ctx->hash_table[variable];
     return make_var_identifier(ctx, std::move(name));
 }
 
 TIdentifier rslv_struct_tag(Ctx ctx, TIdentifier structure) {
-    std::string name = identifiers->hash_table[structure];
+    std::string name = ctx->hash_table[structure];
     return make_struct_identifier(ctx, std::move(name));
 }
 
@@ -120,14 +120,14 @@ TIdentifier repr_loop_identifier(Ctx ctx, LABEL_KIND label_kind, TIdentifier tar
         default:
             THROW_ABORT;
     }
-    name += identifiers->hash_table[target];
+    name += ctx->hash_table[target];
     return make_string_identifier(ctx, std::move(name));
 }
 
 TIdentifier repr_case_identifier(Ctx ctx, TIdentifier target, bool is_label, size_t i) {
     std::string name = is_label ? "case_" : "";
     name += std::to_string(i);
-    name += identifiers->hash_table[target];
+    name += ctx->hash_table[target];
     return make_string_identifier(ctx, std::move(name));
 }
 
