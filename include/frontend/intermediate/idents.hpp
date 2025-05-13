@@ -1,13 +1,12 @@
 #ifndef _FRONT_INTERMEDIATE_IDENTS_H
 #define _FRONT_INTERMEDIATE_IDENTS_H
 
-#include <string>
-
 #include "ast_t.hpp" // ast
 
 #include "intermediate/labels.hpp" // frontend
 
 struct CExp;
+struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
