@@ -293,6 +293,14 @@ static void arg_parse() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
+    ErrorsContext errors;
+    std::unique_ptr<FileIoContext> fileio = std::make_unique<FileIoContext>();
+    {
+        errors.errors = &errors;
+        errors.fileio = fileio.get();
+        fileio->errors = &errors;
+    }
+
     try {
         ctx = std::make_unique<MainContext>();
         {
@@ -302,14 +310,6 @@ int main(int argc, char** argv) {
                 std::string arg = argv[i];
                 ctx->args.emplace_back(std::move(arg));
             }
-        }
-
-        ErrorsContext errors;
-        FileIoContext fileio;
-        {
-            errors.errors = &errors;
-            errors.fileio = &fileio;
-            fileio.errors = &errors;
             ctx->errors = &errors;
         }
 
@@ -335,7 +335,7 @@ int main(int argc, char** argv) {
 
         arg_parse();
 
-        compile(&errors, &fileio);
+        compile(&errors, fileio.get());
 
         ctx.reset();
     }
