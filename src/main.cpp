@@ -289,16 +289,17 @@ static void arg_parse() {
     std::vector<std::string>().swap(ctx->args);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
     ErrorsContext errors;
-    std::unique_ptr<FileIoContext> fileio = std::make_unique<FileIoContext>();
+    FileIoContext fileio;
     {
         errors.errors = &errors;
-        errors.fileio = fileio.get();
-        fileio->errors = &errors;
+        errors.fileio = &fileio;
+
+        fileio.errors = &errors;
+        fileio.fd_write = nullptr;
     }
 
     try {
@@ -335,7 +336,7 @@ int main(int argc, char** argv) {
 
         arg_parse();
 
-        compile(&errors, fileio.get());
+        compile(&errors, &fileio);
 
         ctx.reset();
     }
