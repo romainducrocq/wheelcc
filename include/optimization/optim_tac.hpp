@@ -4,6 +4,7 @@
 #include <inttypes.h>
 
 struct TacProgram;
+struct FrontEndContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -16,6 +17,6 @@ struct TacProgram;
 // Copy propagation
 // Dead store elimination
 
-void optimize_three_address_code(TacProgram* node, uint8_t optim_1_mask);
+void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, uint8_t optim_1_mask);
 
 #endif

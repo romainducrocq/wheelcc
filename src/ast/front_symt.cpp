@@ -98,7 +98,3 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members) :
     alignment(alignment),
     size(size), member_names(std::move(member_names)), members(std::move(members)) {}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::unique_ptr<FrontEndContext> frontend;

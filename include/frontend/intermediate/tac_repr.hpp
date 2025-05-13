@@ -5,6 +5,7 @@
 
 struct CProgram;
 struct TacProgram;
+struct FrontEndContext;
 struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,6 +13,6 @@ struct IdentifierContext;
 // Three address code representation
 
 std::unique_ptr<TacProgram> represent_three_address_code(
-    std::unique_ptr<CProgram> c_ast, IdentifierContext* identifiers);
+    std::unique_ptr<CProgram> c_ast, FrontEndContext* frontend, IdentifierContext* identifiers);
 
 #endif

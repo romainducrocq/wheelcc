@@ -321,13 +321,9 @@ struct FrontEndContext {
     std::unordered_set<TIdentifier> addressed_set;
 };
 
-extern std::unique_ptr<FrontEndContext> frontend;
-#define INIT_FRONTEND_CTX frontend = std::make_unique<FrontEndContext>()
-#define FREE_FRONTEND_CTX frontend.reset()
-
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
-    frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names[Y]]
+    ctx->frontend->struct_typedef_table[X]->members[ctx->frontend->struct_typedef_table[X]->member_names[Y]]
 #define GET_STRUCT_TYPEDEF_BACK(X) \
-    frontend->struct_typedef_table[X]->members[frontend->struct_typedef_table[X]->member_names.back()]
+    ctx->frontend->struct_typedef_table[X]->members[ctx->frontend->struct_typedef_table[X]->member_names.back()]
 
 #endif

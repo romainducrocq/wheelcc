@@ -16,6 +16,6 @@ struct FrontEndContext;
 
 TInt gen_type_alignment(FrontEndContext* ctx, Type* type);
 std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name);
-void convert_symbol_table(AsmProgram* node);
+void convert_symbol_table(AsmProgram* node, FrontEndContext* frontend);
 
 #endif

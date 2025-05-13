@@ -2680,10 +2680,10 @@ static void optim_program(Ctx ctx, TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void optimize_three_address_code(TacProgram* node, uint8_t optim_1_mask) {
+void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, uint8_t optim_1_mask) {
     OptimTacContext ctx;
     {
-        ctx.frontend = frontend.get();
+        ctx.frontend = frontend;
         ctx.is_fixed_point = true;
 
         ctx.enabled_optims[CONSTANT_FOLDING] = (optim_1_mask & (static_cast<uint8_t>(1u) << 0)) > 0;

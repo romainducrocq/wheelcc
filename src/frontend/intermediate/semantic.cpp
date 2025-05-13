@@ -2834,11 +2834,12 @@ static void resolve_program(Ctx ctx, CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void analyze_semantic(CProgram* node, ErrorsContext* errors, IdentifierContext* identifiers) {
+void analyze_semantic(
+    CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers) {
     SemanticContext ctx;
     {
         ctx.errors = errors;
-        ctx.frontend = frontend.get();
+        ctx.frontend = frontend;
         ctx.identifiers = identifiers;
     }
     resolve_program(&ctx, node);

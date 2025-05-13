@@ -1465,10 +1465,10 @@ static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<TacProgram> represent_three_address_code(
-    std::unique_ptr<CProgram> c_ast, IdentifierContext* identifiers) {
+    std::unique_ptr<CProgram> c_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
     TacReprContext ctx;
     {
-        ctx.frontend = frontend.get();
+        ctx.frontend = frontend;
         ctx.identifiers = identifiers;
     }
     std::unique_ptr<TacProgram> tac_ast = repr_program(&ctx, c_ast.get());

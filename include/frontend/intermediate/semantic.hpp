@@ -3,6 +3,7 @@
 
 struct CProgram;
 struct ErrorsContext;
+struct FrontEndContext;
 struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,6 +16,6 @@ struct IdentifierContext;
 // Loop labeling
 // Identifier resolution
 
-void analyze_semantic(CProgram* node, ErrorsContext* errors, IdentifierContext* identifiers);
+void analyze_semantic(CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers);
 
 #endif

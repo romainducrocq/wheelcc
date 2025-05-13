@@ -154,13 +154,13 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    INIT_FRONTEND_CTX;
+    FrontEndContext frontend;
 #ifndef __NDEBUG__
-    pprint_p_frontend(frontend.get());
+    pprint_p_frontend(&frontend);
 #endif
 
     verbose("-- Semantic analysis ... ", false);
-    analyze_semantic(c_ast.get(), errors, &identifiers);
+    analyze_semantic(c_ast.get(), errors, &frontend, &identifiers);
     verbose("OK", true);
 #ifndef __NDEBUG__
     if (ctx->debug_code == 253) {
@@ -173,11 +173,11 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose("-- TAC representation ... ", false);
-    std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast), &identifiers);
+    std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
     if (ctx->optim_1_mask > 0) {
         verbose("OK", true);
         verbose("-- Level 1 optimization ... ", false);
-        optimize_three_address_code(tac_ast.get(), ctx->optim_1_mask);
+        optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
     }
     verbose("OK", true);
 #ifndef __NDEBUG__
@@ -196,12 +196,12 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose("-- Assembly generation ... ", false);
-    std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &identifiers);
-    convert_symbol_table(asm_ast.get());
+    std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
+    convert_symbol_table(asm_ast.get(), &frontend);
     if (ctx->optim_2_code > 0) {
         verbose("OK", true);
         verbose("-- Level 2 optimization ... ", false);
-        allocate_registers(asm_ast.get(), ctx->optim_2_code);
+        allocate_registers(asm_ast.get(), &frontend, ctx->optim_2_code);
     }
     fix_stack(asm_ast.get());
     verbose("OK", true);
@@ -216,8 +216,6 @@ static void compile(ErrorsContext* errors, FileIoContext* fileio) {
         return;
     }
 #endif
-
-    FREE_FRONTEND_CTX;
 
     verbose("-- Code emission ... ", false);
     ctx->filename += ".s";

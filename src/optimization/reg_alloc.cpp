@@ -1752,11 +1752,11 @@ static void alloc_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void allocate_registers(AsmProgram* node, uint8_t optim_2_code) {
+void allocate_registers(AsmProgram* node, FrontEndContext* frontend, uint8_t optim_2_code) {
     RegAllocContext ctx;
     {
         ctx.backend = backend.get();
-        ctx.frontend = frontend.get();
+        ctx.frontend = frontend;
         ctx.is_with_coal = optim_2_code > 1u;
 
         ctx.hard_regs[0].reg_kind = REG_Ax;
