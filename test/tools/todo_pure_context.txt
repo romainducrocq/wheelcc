@@ -11,3 +11,8 @@
 [x] src/frontend/intermediate/labels.hpp
 [x] src/frontend/intermediate/idents.cpp
 
+[x] src/frontend/parser/tokens.hpp
+[x] src/frontend/parser/messages.hpp
+[x] src/frontend/parser/errors.cpp
+[ ] src/frontend/parser/lexer.cpp
+[x] src/frontend/parser/parser.cpp
