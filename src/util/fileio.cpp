@@ -15,6 +15,9 @@ std::unique_ptr<FileIoContext> fileio;
 
 // File io
 
+// TODO remove
+#define THROW_AT_ctx(X, Y) X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT
+
 typedef FileIoContext* Ctx;
 
 bool find_file(const std::string& filename) {
@@ -44,7 +47,7 @@ void open_fread(Ctx ctx, const std::string& filename) {
     ctx->file_reads.back().fd = nullptr;
     ctx->file_reads.back().fd = fopen(filename.c_str(), "rb");
     if (!ctx->file_reads.back().fd || filename.size() >= PATH_MAX) {
-        THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()), 0);
+        THROW_AT_ctx(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()), 0);
     }
 
     ctx->file_reads.back().len = 0;
@@ -58,7 +61,7 @@ void open_fwrite(Ctx ctx, const std::string& filename) {
     ctx->fd_write = nullptr;
     ctx->fd_write = fopen(filename.c_str(), "wb");
     if (!ctx->fd_write || filename.size() >= PATH_MAX) {
-        THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
+        THROW_AT_ctx(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
     }
 
     ctx->write_buf.reserve(4096);
@@ -104,11 +107,11 @@ void close_fread(Ctx ctx, size_t linenum) {
         THROW_ABORT_IF(ctx->file_reads.back().buf || ctx->file_reads.back().len != 0);
         ctx->file_reads.back().fd = fopen(ctx->file_reads.back().filename.c_str(), "rb");
         if (!ctx->file_reads.back().fd) {
-            THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
+            THROW_AT_ctx(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
-                THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
+                THROW_AT_ctx(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
             }
         }
     }

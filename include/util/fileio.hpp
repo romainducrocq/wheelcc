@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+struct ErrorsContext;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // File io
@@ -18,6 +20,8 @@ struct FileRead {
 };
 
 struct FileIoContext {
+    ErrorsContext* errors;
+    // File io
     FILE* fd_write;
     std::string write_buf;
     std::string filename;

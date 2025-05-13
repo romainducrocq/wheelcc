@@ -15,6 +15,10 @@
 
 // String to type
 
+// TODO remove
+#define THROW_AT_ctx(X, Y) X > 0 ? raise_error_at_line(errors.get(), Y) : THROW_ABORT
+#define THROW_AT_LINE_ctx(X, Y) THROW_AT_ctx(X, handle_error_at_line(errors.get(), Y))
+
 hash_t string_to_hash(const std::string& str) { return std::hash<std::string> {}(str); }
 
 intmax_t string_to_intmax(const std::string& str_int, size_t line) {
@@ -25,7 +29,7 @@ intmax_t string_to_intmax(const std::string& str_int, size_t line) {
     intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
 
     if (end_ptr == &buf[0]) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
+        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
     }
 
     return intmax;
@@ -43,7 +47,7 @@ uintmax_t string_to_uintmax(const std::string& str_uint, size_t line) {
     uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
 
     if (end_ptr == &buf[0]) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
+        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
     }
 
     return uintmax;
@@ -251,7 +255,7 @@ double string_to_dbl(const std::string& str_dbl, size_t line) {
     double float64 = strtod(&buf[0], &end_ptr);
 
     if (end_ptr == &buf[0]) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl.c_str()), line);
+        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtod, str_dbl.c_str()), line);
     }
 
     return float64;

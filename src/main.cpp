@@ -309,7 +309,10 @@ int main(int argc, char** argv) {
 
         INIT_ERRORS_CTX;
 
-        { errors->fileio = fileio.get(); }
+        {
+            errors->fileio = fileio.get();
+            fileio->errors = errors.get();
+        }
 
 #ifdef _WIN32
         THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
