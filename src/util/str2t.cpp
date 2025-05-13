@@ -16,42 +16,13 @@
 // String to type
 
 // TODO remove
-#define THROW_AT_ctx(X, Y) X > 0 ? raise_error_at_line(errors.get(), Y) : THROW_ABORT
-#define THROW_AT_LINE_ctx(X, Y) THROW_AT_ctx(X, handle_error_at_line(errors.get(), Y))
+#define THROW_AT_LINE_ctx(X, Y) THROW_AT(X, handle_error_at_line(ctx->errors, Y))
 
 hash_t string_to_hash(const std::string& str) { return std::hash<std::string> {}(str); }
-
-intmax_t string_to_intmax(const std::string& str_int, size_t line) {
-    std::vector<char> buf(str_int.begin(), str_int.end());
-    buf.push_back('\0');
-    char* end_ptr = nullptr;
-    errno = 0;
-    intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
-
-    if (end_ptr == &buf[0]) {
-        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
-    }
-
-    return intmax;
-}
 
 int32_t intmax_to_int32(intmax_t intmax) { return static_cast<int32_t>(intmax); }
 
 int64_t intmax_to_int64(intmax_t intmax) { return static_cast<int64_t>(intmax); }
-
-uintmax_t string_to_uintmax(const std::string& str_uint, size_t line) {
-    std::vector<char> buf(str_uint.begin(), str_uint.end());
-    buf.push_back('\0');
-    char* end_ptr = nullptr;
-    errno = 0;
-    uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
-
-    if (end_ptr == &buf[0]) {
-        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
-    }
-
-    return uintmax;
-}
 
 uint32_t uintmax_to_uint32(uintmax_t uintmax) { return static_cast<uint32_t>(uintmax); }
 
@@ -247,7 +218,41 @@ std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
     return string_const;
 }
 
-double string_to_dbl(const std::string& str_dbl, size_t line) {
+uint64_t dbl_to_binary(double decimal) {
+    uint64_t binary;
+    std::memcpy(&binary, &decimal, sizeof(uint64_t));
+    return binary;
+}
+
+intmax_t string_to_intmax(ErrorsContext* ctx, const std::string& str_int, size_t line) {
+    std::vector<char> buf(str_int.begin(), str_int.end());
+    buf.push_back('\0');
+    char* end_ptr = nullptr;
+    errno = 0;
+    intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
+
+    if (end_ptr == &buf[0]) {
+        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
+    }
+
+    return intmax;
+}
+
+uintmax_t string_to_uintmax(ErrorsContext* ctx, const std::string& str_uint, size_t line) {
+    std::vector<char> buf(str_uint.begin(), str_uint.end());
+    buf.push_back('\0');
+    char* end_ptr = nullptr;
+    errno = 0;
+    uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
+
+    if (end_ptr == &buf[0]) {
+        THROW_AT_LINE_ctx(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
+    }
+
+    return uintmax;
+}
+
+double string_to_dbl(ErrorsContext* ctx, const std::string& str_dbl, size_t line) {
     std::vector<char> buf(str_dbl.begin(), str_dbl.end());
     buf.push_back('\0');
     char* end_ptr = nullptr;
@@ -259,10 +264,4 @@ double string_to_dbl(const std::string& str_dbl, size_t line) {
     }
 
     return float64;
-}
-
-uint64_t dbl_to_binary(double decimal) {
-    uint64_t binary;
-    std::memcpy(&binary, &decimal, sizeof(uint64_t));
-    return binary;
 }

@@ -145,7 +145,7 @@ static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
 
 // <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_dbl_const(Ctx ctx) {
-    TDouble value = string_to_dbl(ctx->next_tok->tok, ctx->next_tok->line);
+    TDouble value = string_to_dbl(ctx->errors, ctx->next_tok->tok, ctx->next_tok->line);
     return std::make_shared<CConstDouble>(std::move(value));
 }
 
@@ -176,7 +176,7 @@ static std::shared_ptr<CConst> parse_const(Ctx ctx) {
             break;
     }
 
-    intmax_t value = string_to_intmax(ctx->next_tok->tok, ctx->next_tok->line);
+    intmax_t value = string_to_intmax(ctx->errors, ctx->next_tok->tok, ctx->next_tok->line);
     if (value > 9223372036854775807ll) {
         THROW_AT_LINE_ctx(GET_PARSER_MSG(MSG_overflow_long_const, ctx->next_tok->tok.c_str()), ctx->next_tok->line);
     }
@@ -194,7 +194,7 @@ static std::shared_ptr<CConst> parse_unsigned_const(Ctx ctx) {
     }
     ctx->next_tok->tok.pop_back();
 
-    uintmax_t value = string_to_uintmax(ctx->next_tok->tok, ctx->next_tok->line);
+    uintmax_t value = string_to_uintmax(ctx->errors, ctx->next_tok->tok, ctx->next_tok->line);
     if (value > 18446744073709551615ull) {
         THROW_AT_LINE_ctx(GET_PARSER_MSG(MSG_overflow_ulong_const, ctx->next_tok->tok.c_str()), ctx->next_tok->line);
     }

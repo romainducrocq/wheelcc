@@ -310,6 +310,7 @@ int main(int argc, char** argv) {
         INIT_ERRORS_CTX;
 
         {
+            errors->errors = errors.get();
             errors->fileio = fileio.get();
             fileio->errors = errors.get();
         }

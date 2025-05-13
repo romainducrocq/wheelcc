@@ -21,6 +21,7 @@ struct FileOpenLine {
 };
 
 struct ErrorsContext {
+    ErrorsContext* errors;
     FileIoContext* fileio;
     // Throw
     char msg[1024];
