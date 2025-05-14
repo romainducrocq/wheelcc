@@ -36,6 +36,11 @@
 
 struct MainContext {
     ErrorsContext* errors;
+#ifndef __NDEBUG__
+    BackEndContext* backend;
+    FrontEndContext* frontend;
+    IdentifierContext* identifiers;
+#endif
     // Main
     bool is_verbose;
     uint8_t debug_code;
@@ -51,9 +56,9 @@ struct MainContext {
 
 typedef MainContext* Ctx;
 
-static void verbose(Ctx ctx, const char* buf) {
+static void verbose(Ctx ctx, const char* msg) {
     if (ctx->is_verbose) {
-        printf("%s", buf);
+        printf("%s", msg);
     }
 }
 
@@ -64,39 +69,39 @@ static void debug_toks(Ctx ctx, const std::vector<Token>& tokens) {
     }
 }
 
-static void debug_ast(Ctx ctx, Ast* node, std::string&& name) {
+static void debug_ast(Ctx ctx, Ast* node, const char* name) {
     if (ctx->is_verbose) {
-        pprint_ast(node, name);
+        pprint_ast(ctx->identifiers, node, name);
     }
 }
 
 static void debug_addressed_set(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_addressed_set();
+        pprint_addressed_set(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_string_const_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_string_const_table();
+        pprint_string_const_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_struct_typedef_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_struct_typedef_table();
+        pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_symbol_table();
+        pprint_symbol_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_backend_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_backend_symbol_table();
+        pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
     }
 }
 #endif
@@ -148,7 +153,7 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         identifiers.struct_count = 0u;
     }
 #ifndef __NDEBUG__
-    pprint_p_identifiers(&identifiers);
+    ctx->identifiers = &identifiers;
 #endif
 
     verbose(ctx, "-- Parsing ... ");
@@ -163,7 +168,7 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
     FrontEndContext frontend;
 #ifndef __NDEBUG__
-    pprint_p_frontend(&frontend);
+    ctx->frontend = &frontend;
 #endif
 
     verbose(ctx, "-- Semantic analysis ... ");
@@ -198,7 +203,7 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
     BackEndContext backend;
 #ifndef __NDEBUG__
-    pprint_p_backend(&backend);
+    ctx->backend = &backend;
 #endif
 
     verbose(ctx, "-- Assembly generation ... ");
@@ -296,6 +301,7 @@ int main(int, char** argv) {
     }
     catch (const std::runtime_error& err) {
         if (ctx.is_verbose) {
+            printf("\n");
             fflush(stdout);
         }
         fprintf(stderr, "%s\n", err.what());
