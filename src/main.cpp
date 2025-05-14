@@ -2,9 +2,9 @@
 #include "util/pprint.hpp"
 #endif
 #include <inttypes.h>
-#include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <stdio.h>
 #include <string>
 #include <vector>
 
@@ -51,12 +51,9 @@ struct MainContext {
 
 typedef MainContext* Ctx;
 
-static void verbose(Ctx ctx, std::string&& out, bool end) {
+static void verbose(Ctx ctx, const char* buf) {
     if (ctx->is_verbose) {
-        std::cout << out;
-        if (end) {
-            std::cout << std::endl;
-        }
+        printf("%s", buf);
     }
 }
 
@@ -134,9 +131,9 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         ctx->is_verbose = true;
     }
 
-    verbose(ctx, "-- Lexing ... ", false);
+    verbose(ctx, "-- Lexing ... ");
     std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio);
-    verbose(ctx, "OK", true);
+    verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
         debug_toks(ctx, tokens);
@@ -154,9 +151,9 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     pprint_p_identifiers(&identifiers);
 #endif
 
-    verbose(ctx, "-- Parsing ... ", false);
+    verbose(ctx, "-- Parsing ... ");
     std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
-    verbose(ctx, "OK", true);
+    verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
         debug_ast(ctx, c_ast.get(), "C AST");
@@ -169,9 +166,9 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     pprint_p_frontend(&frontend);
 #endif
 
-    verbose(ctx, "-- Semantic analysis ... ", false);
+    verbose(ctx, "-- Semantic analysis ... ");
     analyze_semantic(c_ast.get(), errors, &frontend, &identifiers);
-    verbose(ctx, "OK", true);
+    verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 253) {
         debug_ast(ctx, c_ast.get(), "C AST");
@@ -182,14 +179,13 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    verbose(ctx, "-- TAC representation ... ", false);
+    verbose(ctx, "-- TAC representation ... ");
     std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
     if (ctx->optim_1_mask > 0) {
-        verbose(ctx, "OK", true);
-        verbose(ctx, "-- Level 1 optimization ... ", false);
+        verbose(ctx, "OK\n-- Level 1 optimization ... ");
         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
     }
-    verbose(ctx, "OK", true);
+    verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 252) {
         debug_ast(ctx, tac_ast.get(), "TAC AST");
@@ -205,16 +201,15 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     pprint_p_backend(&backend);
 #endif
 
-    verbose(ctx, "-- Assembly generation ... ", false);
+    verbose(ctx, "-- Assembly generation ... ");
     std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
     convert_symbol_table(asm_ast.get(), &backend, &frontend);
     if (ctx->optim_2_code > 0) {
-        verbose(ctx, "OK", true);
-        verbose(ctx, "-- Level 2 optimization ... ", false);
+        verbose(ctx, "OK\n-- Level 2 optimization ... ");
         allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
     }
     fix_stack(asm_ast.get(), &backend);
-    verbose(ctx, "OK", true);
+    verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 251) {
         debug_ast(ctx, asm_ast.get(), "ASM AST");
@@ -227,10 +222,10 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    verbose(ctx, "-- Code emission ... ", false);
+    verbose(ctx, "-- Code emission ... ");
     ctx->filename += ".s";
     emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
-    verbose(ctx, "OK", true);
+    verbose(ctx, "OK\n");
 }
 
 static bool arg_parse_uint8(const char* arg, uint8_t& value) {
@@ -300,7 +295,10 @@ int main(int, char** argv) {
         compile(&ctx, &errors, &fileio);
     }
     catch (const std::runtime_error& err) {
-        std::cerr << err.what() << std::endl;
+        if (ctx.is_verbose) {
+            fflush(stdout);
+        }
+        fprintf(stderr, "%s\n", err.what());
         return 1;
     }
 
