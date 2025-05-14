@@ -347,7 +347,7 @@ static std::string emit_type_suffix(AssemblyType* node, bool is_packed) {
 static std::string imm_op(AsmImm* node) {
     std::string operand = "$";
     if (node->is_neg) {
-        operand += emit_long(static_cast<TLong>(node->value));
+        operand += emit_long((TLong)node->value);
     }
     else {
         operand += emit_ulong(node->value);

@@ -53,20 +53,20 @@ struct AsmGenContext {
 typedef AsmGenContext* Ctx;
 
 static std::shared_ptr<AsmImm> char_imm_op(CConstChar* node) {
-    TULong value = static_cast<TULong>(node->value);
+    TULong value = (TULong)node->value;
     bool is_neg = node->value < 0;
     return std::make_shared<AsmImm>(std::move(value), true, false, std::move(is_neg));
 }
 
 static std::shared_ptr<AsmImm> int_imm_op(CConstInt* node) {
-    TULong value = static_cast<TULong>(node->value);
+    TULong value = (TULong)node->value;
     bool is_byte = node->value <= 127 && node->value >= -128;
     bool is_neg = node->value < 0;
     return std::make_shared<AsmImm>(std::move(value), std::move(is_byte), false, std::move(is_neg));
 }
 
 static std::shared_ptr<AsmImm> long_imm_op(CConstLong* node) {
-    TULong value = static_cast<TULong>(node->value);
+    TULong value = (TULong)node->value;
     bool is_byte = node->value <= 127l && node->value >= -128l;
     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
     bool is_neg = node->value < 0l;
@@ -74,12 +74,12 @@ static std::shared_ptr<AsmImm> long_imm_op(CConstLong* node) {
 }
 
 static std::shared_ptr<AsmImm> uchar_imm(CConstUChar* node) {
-    TULong value = static_cast<TULong>(node->value);
+    TULong value = (TULong)node->value;
     return std::make_shared<AsmImm>(std::move(value), true, false, false);
 }
 
 static std::shared_ptr<AsmImm> uint_imm_op(CConstUInt* node) {
-    TULong value = static_cast<TULong>(node->value);
+    TULong value = (TULong)node->value;
     bool is_byte = node->value <= 255u;
     bool is_quad = node->value > 2147483647u;
     return std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), false);
@@ -1077,7 +1077,7 @@ static void dealloc_stack_instr(Ctx ctx, TLong byte) {
     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
-        TULong value = static_cast<TULong>(byte);
+        TULong value = (TULong)byte;
         bool is_byte = byte <= 127l && byte >= -128l;
         bool is_quad = byte > 2147483647l || byte < -2147483648l;
         bool is_neg = byte < 0l;
@@ -1990,7 +1990,7 @@ static void aggr_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     {
         std::shared_ptr<AsmOperand> src;
         {
-            TULong value = static_cast<TULong>(node->scale);
+            TULong value = (TULong)node->scale;
             bool is_byte = node->scale <= 127l && node->scale >= -128l;
             bool is_quad = node->scale > 2147483647l || node->scale < -2147483648l;
             bool is_neg = node->scale < 0l;

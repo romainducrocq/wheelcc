@@ -220,13 +220,13 @@ static TLong parse_arr_size(Ctx ctx) {
     expect_next(ctx, pop_next(ctx), TOK_close_bracket);
     switch (constant->type()) {
         case AST_CConstInt_t:
-            return static_cast<TLong>(static_cast<CConstInt*>(constant.get())->value);
+            return (TLong)(static_cast<CConstInt*>(constant.get())->value);
         case AST_CConstLong_t:
             return static_cast<CConstLong*>(constant.get())->value;
         case AST_CConstUInt_t:
-            return static_cast<TLong>(static_cast<CConstUInt*>(constant.get())->value);
+            return (TLong)(static_cast<CConstUInt*>(constant.get())->value);
         case AST_CConstULong_t:
-            return static_cast<TLong>(static_cast<CConstULong*>(constant.get())->value);
+            return (TLong)(static_cast<CConstULong*>(constant.get())->value);
         default:
             THROW_ABORT;
     }

@@ -356,7 +356,7 @@ static bool mask_get(TULong mask, size_t bit) {
     if (bit > 63) {
         bit %= 64;
     }
-    return (mask & (static_cast<TULong>(1ul) << bit)) > 0;
+    return (mask & (((TULong)1ul) << bit)) > 0;
 }
 
 static void mask_set(TULong& mask, size_t bit, bool value) {
@@ -364,10 +364,10 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
         bit %= 64;
     }
     if (value) {
-        mask |= static_cast<TULong>(1ul) << bit;
+        mask |= ((TULong)1ul) << bit;
     }
     else {
-        mask &= ~(static_cast<TULong>(1ul) << bit);
+        mask &= ~(((TULong)1ul) << bit);
     }
 }
 

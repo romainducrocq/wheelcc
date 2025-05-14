@@ -17,19 +17,19 @@
 
 hash_t string_to_hash(const std::string& str) { return std::hash<std::string> {}(str); }
 
-int32_t intmax_to_int32(intmax_t intmax) { return static_cast<int32_t>(intmax); }
+int32_t intmax_to_int32(intmax_t intmax) { return (int32_t)intmax; }
 
-int64_t intmax_to_int64(intmax_t intmax) { return static_cast<int64_t>(intmax); }
+int64_t intmax_to_int64(intmax_t intmax) { return (int64_t)intmax; }
 
-uint32_t uintmax_to_uint32(uintmax_t uintmax) { return static_cast<uint32_t>(uintmax); }
+uint32_t uintmax_to_uint32(uintmax_t uintmax) { return (uint32_t)uintmax; }
 
-uint64_t uintmax_to_uint64(uintmax_t uintmax) { return static_cast<uint64_t>(uintmax); }
+uint64_t uintmax_to_uint64(uintmax_t uintmax) { return (uint64_t)uintmax; }
 
 void string_to_literal(const std::string& str_string, std::vector<int8_t>& string_literal) {
     for (size_t byte = 1; byte < str_string.size() - 1; ++byte) {
-        char c_char = static_cast<char>(str_string[byte]);
+        char c_char = (char)str_string[byte];
         if (c_char == '\\') {
-            c_char = static_cast<char>(str_string[++byte]);
+            c_char = (char)str_string[++byte];
             switch (c_char) {
                 case '\'':
                     string_literal.push_back(39);
@@ -69,15 +69,15 @@ void string_to_literal(const std::string& str_string, std::vector<int8_t>& strin
             }
         }
         else {
-            string_literal.push_back(static_cast<int8_t>(c_char));
+            string_literal.push_back((int8_t)c_char);
         }
     }
 }
 
 int32_t string_to_char_ascii(const std::string& str_char) {
-    char c_char = static_cast<char>(str_char[1]);
+    char c_char = (char)str_char[1];
     if (c_char == '\\') {
-        c_char = static_cast<char>(str_char[2]);
+        c_char = (char)str_char[2];
         switch (c_char) {
             case '\'':
                 return 39;
@@ -106,7 +106,7 @@ int32_t string_to_char_ascii(const std::string& str_char) {
         }
     }
     else {
-        return static_cast<int32_t>(c_char);
+        return (int32_t)c_char;
     }
 }
 
@@ -122,17 +122,11 @@ static intmax_t hex_string_to_intmax(const std::string& str_hex) {
     return intmax;
 }
 
-static int8_t hex_string_to_int8(const std::string& str_hex) {
-    return static_cast<int8_t>(hex_string_to_intmax(str_hex));
-}
+static int8_t hex_string_to_int8(const std::string& str_hex) { return (int8_t)hex_string_to_intmax(str_hex); }
 
-static int32_t hex_string_to_int32(const std::string& str_hex) {
-    return static_cast<int32_t>(hex_string_to_intmax(str_hex));
-}
+static int32_t hex_string_to_int32(const std::string& str_hex) { return (int32_t)hex_string_to_intmax(str_hex); }
 
-static int64_t hex_string_to_int64(const std::string& str_hex) {
-    return static_cast<int64_t>(hex_string_to_intmax(str_hex));
-}
+static int64_t hex_string_to_int64(const std::string& str_hex) { return (int64_t)hex_string_to_intmax(str_hex); }
 
 static std::string string_literal_byte_to_hex(int8_t val) {
     std::stringstream ss;
@@ -208,7 +202,7 @@ std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
                 string_const += "\\013";
                 break;
             default:
-                string_const += static_cast<char>(byte);
+                string_const += (char)byte;
                 break;
         }
     }

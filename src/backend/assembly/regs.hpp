@@ -42,6 +42,6 @@ enum REGISTER_KIND {
 
 #define REGISTER_MASK_SIZE 26
 #define REGISTER_MASK_FALSE 0ul
-#define NULL_REGISTER_MASK static_cast<uint8_t>(1u) << REGISTER_MASK_SIZE
+#define NULL_REGISTER_MASK ((uint8_t)1u) << REGISTER_MASK_SIZE
 
 #endif

@@ -468,7 +468,7 @@ std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte) {
     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
     std::shared_ptr<AsmOperand> src;
     {
-        TULong value = static_cast<TULong>(byte);
+        TULong value = (TULong)byte;
         bool is_byte = byte <= 127l && byte >= -128l;
         bool is_quad = byte > 2147483647l || byte < -2147483648l;
         bool is_neg = byte < 0l;
@@ -1015,7 +1015,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
         pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
     }
     {
-        TLong callee_saved_size = static_cast<TLong>(backend_fun->callee_saved_regs.size());
+        TLong callee_saved_size = (TLong)backend_fun->callee_saved_regs.size();
         fix_alloc_stack_bytes(ctx, callee_saved_size);
     }
     ctx->p_fix_instrs = nullptr;

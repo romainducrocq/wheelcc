@@ -152,7 +152,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node)
             ctx->frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
-                TLong size = static_cast<TLong>(node->literal->value.size()) + 1l;
+                TLong size = ((TLong)node->literal->value.size()) + 1l;
                 std::shared_ptr<Type> elem_type = std::make_shared<Char>();
                 constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
             }
@@ -726,7 +726,7 @@ static std::unique_ptr<TacDereferencedPointer> subscript_res_instr(Ctx ctx, CSub
 static std::unique_ptr<TacPlainOperand> sizeof_res_instr(Ctx ctx, CSizeOf* node) {
     std::shared_ptr<CConst> constant;
     {
-        TULong value = static_cast<TULong>(get_type_scale(ctx, node->exp->exp_type.get()));
+        TULong value = (TULong)get_type_scale(ctx, node->exp->exp_type.get());
         constant = std::make_shared<CConstULong>(std::move(value));
     }
     std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
@@ -736,7 +736,7 @@ static std::unique_ptr<TacPlainOperand> sizeof_res_instr(Ctx ctx, CSizeOf* node)
 static std::unique_ptr<TacPlainOperand> sizeoft_res_instr(Ctx ctx, CSizeOfT* node) {
     std::shared_ptr<CConst> constant;
     {
-        TULong value = static_cast<TULong>(get_type_scale(ctx, node->target_type.get()));
+        TULong value = (TULong)get_type_scale(ctx, node->target_type.get());
         constant = std::make_shared<CConstULong>(std::move(value));
     }
     std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
@@ -1121,13 +1121,12 @@ static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TI
 static void string_single_init_instr(Ctx ctx, CString* node, Array* arr_type, TIdentifier symbol, TLong size) {
     size_t byte_at = 0;
 
-    size_t bytes_size = static_cast<size_t>(arr_type->size);
-    size_t bytes_copy =
-        arr_type->size > static_cast<TLong>(node->literal->value.size()) ? node->literal->value.size() : bytes_size;
+    size_t bytes_size = (size_t)arr_type->size;
+    size_t bytes_copy = arr_type->size > (TLong)node->literal->value.size() ? node->literal->value.size() : bytes_size;
 
     while (byte_at < bytes_copy) {
         TIdentifier dst_name = symbol;
-        TLong offset = size + static_cast<TLong>(byte_at);
+        TLong offset = size + ((TLong)byte_at);
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;
@@ -1156,7 +1155,7 @@ static void string_single_init_instr(Ctx ctx, CString* node, Array* arr_type, TI
 
     while (byte_at < bytes_size) {
         TIdentifier dst_name = symbol;
-        TLong offset = size + static_cast<TLong>(byte_at);
+        TLong offset = size + ((TLong)byte_at);
         std::shared_ptr<TacValue> src;
         {
             std::shared_ptr<CConst> constant;

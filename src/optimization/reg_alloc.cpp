@@ -800,12 +800,12 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
             infer = nullptr;
         }
         THROW_ABORT_IF(!infer);
-        double min_spill_metric = static_cast<double>(infer->spill_cost) / infer->degree;
+        double min_spill_metric = ((double)infer->spill_cost) / infer->degree;
         for (; i < ctx->p_infer_graph->unpruned_pseudo_names.size(); ++i) {
             TIdentifier spill_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
             InferenceRegister& spill_infer = ctx->p_infer_graph->pseudo_reg_map[spill_name];
             if (spill_infer.degree > 0) {
-                double spill_metric = static_cast<double>(spill_infer.spill_cost) / spill_infer.degree;
+                double spill_metric = ((double)spill_infer.spill_cost) / spill_infer.degree;
                 if (spill_metric < min_spill_metric) {
                     pruned_idx = i;
                     pruned_name = spill_name;

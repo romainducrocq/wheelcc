@@ -233,14 +233,14 @@ size_t register_mask_bit(REGISTER_KIND reg_kind) {
 }
 
 bool register_mask_get(TULong reg_mask, REGISTER_KIND reg_kind) {
-    return (reg_mask & (static_cast<TULong>(1ul) << register_mask_bit(reg_kind))) > 0;
+    return (reg_mask & (((TULong)1ul) << register_mask_bit(reg_kind))) > 0;
 }
 
 void register_mask_set(TULong& reg_mask, REGISTER_KIND reg_kind, bool value) {
     if (value) {
-        reg_mask |= static_cast<TULong>(1ul) << register_mask_bit(reg_kind);
+        reg_mask |= ((TULong)1ul) << register_mask_bit(reg_kind);
     }
     else {
-        reg_mask &= ~(static_cast<TULong>(1ul) << register_mask_bit(reg_kind));
+        reg_mask &= ~(((TULong)1ul) << register_mask_bit(reg_kind));
     }
 }
