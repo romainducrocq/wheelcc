@@ -25,14 +25,8 @@ static void raise_base_error(Ctx ctx) {
 }
 
 [[noreturn]] void raise_sigabrt(const char* func, const char* file, int line) {
-    std::string err_what = "\033[1m";
-    err_what += std::string(file);
-    err_what += ":";
-    err_what += std::to_string(line);
-    err_what += ":\033[0m\n\033[0;31minternal error:\033[0m ";
-    err_what += std::string(func);
     fflush(stdout);
-    fprintf(stderr, "%s\n", err_what.c_str());
+    fprintf(stderr, "\033[1m%s:%i:\033[0m\n\033[0;31minternal error:\033[0m %s\n", file, line, func);
     abort();
 }
 
