@@ -113,7 +113,6 @@ Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
     --validate  print  semantic  stage and exit
     --tacky     print  interm    stage and exit
     --codegen   print  assembly  stage and exit
-    --codeemit  print  emission  stage and exit
 
 [Optimize...]:
     (Level 0):
