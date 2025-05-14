@@ -1,6 +1,5 @@
 #include <array>
 #include <cstdio>
-#include <iostream>
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,7 +31,8 @@ static void raise_base_error(Ctx ctx) {
     err_what += std::to_string(line);
     err_what += ":\033[0m\n\033[0;31minternal error:\033[0m ";
     err_what += std::string(func);
-    std::cerr << err_what << std::endl;
+    fflush(stdout);
+    fprintf(stderr, "%s\n", err_what.c_str());
     abort();
 }
 
