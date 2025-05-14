@@ -73,7 +73,7 @@ static std::string emit_ulong(TULong value) { return std::to_string(value); }
 // Reg(XMM13) -> $ %xmm13
 // Reg(XMM14) -> $ %xmm14
 // Reg(XMM15) -> $ %xmm15
-static std::string reg_rsp_sse(AsmReg* node) {
+static const char* reg_rsp_sse(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmSp_t:
             return "rsp";
@@ -130,7 +130,7 @@ static std::string reg_rsp_sse(AsmReg* node) {
 // Reg(R13) -> $ %r13b
 // Reg(R14) -> $ %r14b
 // Reg(R15) -> $ %r15b
-static std::string emit_reg_1b(AsmReg* node) {
+static const char* emit_reg_1b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
             return "al";
@@ -179,7 +179,7 @@ static std::string emit_reg_1b(AsmReg* node) {
 // Reg(R13) -> $ %r13d
 // Reg(R14) -> $ %r14d
 // Reg(R15) -> $ %r15d
-static std::string emit_reg_4b(AsmReg* node) {
+static const char* emit_reg_4b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
             return "eax";
@@ -228,7 +228,7 @@ static std::string emit_reg_4b(AsmReg* node) {
 // Reg(R13) -> $ %r13
 // Reg(R14) -> $ %r14
 // Reg(R15) -> $ %r15
-static std::string emit_reg_8b(AsmReg* node) {
+static const char* emit_reg_8b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
             return "rax";
@@ -274,7 +274,7 @@ static std::string emit_reg_8b(AsmReg* node) {
 // A  -> $ a
 // AE -> $ ae
 // P  -> $ p
-static std::string emit_cond_code(AsmCondCode* node) {
+static const char* emit_cond_code(AsmCondCode* node) {
     switch (node->type()) {
         case AST_AsmE_t:
             return "e";
@@ -329,7 +329,7 @@ static TInt type_align_bytes(AssemblyType* node) {
 // QuadWord         -> $ q
 // Double if packed -> $ pd
 //             else -> $ sd
-static std::string emit_type_suffix(AssemblyType* node, bool is_packed) {
+static const char* emit_type_suffix(AssemblyType* node, bool is_packed) {
     switch (node->type()) {
         case AST_Byte_t:
             return "b";
@@ -432,7 +432,7 @@ static std::string emit_op(Ctx ctx, AsmOperand* node, TInt byte) {
 // Neg -> $ neg
 // Not -> $ not
 // Shr -> $ shr
-static std::string emit_unop(AsmUnaryOp* node) {
+static const char* emit_unop(AsmUnaryOp* node) {
     switch (node->type()) {
         case AST_AsmNeg_t:
             return "neg";
@@ -456,7 +456,7 @@ static std::string emit_unop(AsmUnaryOp* node) {
 // BitShiftLeft     -> $ shl
 // BitShiftRight    -> $ shr
 // BitShrArithmetic -> $ sar
-static std::string emit_binop(AsmBinaryOp* node, bool is_dbl) {
+static const char* emit_binop(AsmBinaryOp* node, bool is_dbl) {
     switch (node->type()) {
         case AST_AsmAdd_t:
             return "add";
