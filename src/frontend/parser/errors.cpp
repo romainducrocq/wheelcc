@@ -13,7 +13,7 @@
 
 // Errors
 
-std::string get_tok_kind_fmt(TOKEN_KIND tok_kind) {
+const char* get_tok_kind_fmt(TOKEN_KIND tok_kind) {
     switch (tok_kind) {
         case TOK_assign_shiftleft:
             return "<<=";
@@ -174,6 +174,156 @@ std::string get_tok_kind_fmt(TOKEN_KIND tok_kind) {
     }
 }
 
+const char* get_const_fmt(CConst* node) {
+    switch (node->type()) {
+        case AST_CConstInt_t:
+            return "int";
+        case AST_CConstLong_t:
+            return "long";
+        case AST_CConstUInt_t:
+            return "unsigned int";
+        case AST_CConstULong_t:
+            return "unsigned long";
+        case AST_CConstDouble_t:
+            return "double";
+        case AST_CConstChar_t:
+            return "char";
+        case AST_CConstUChar_t:
+            return "unsigned char";
+        default:
+            THROW_ABORT;
+    }
+}
+
+const char* get_storage_class_fmt(CStorageClass* node) {
+    switch (node->type()) {
+        case AST_CStatic_t:
+            return "static";
+        case AST_CExtern_t:
+            return "extern";
+        default:
+            THROW_ABORT;
+    }
+}
+
+const char* get_unop_fmt(CUnaryOp* node) {
+    switch (node->type()) {
+        case AST_CComplement_t:
+            return "~";
+        case AST_CNegate_t:
+            return "-";
+        case AST_CNot_t:
+            return "!";
+        default:
+            THROW_ABORT;
+    }
+}
+
+const char* get_binop_fmt(CBinaryOp* node) {
+    switch (node->type()) {
+        case AST_CAdd_t:
+            return "+";
+        case AST_CSubtract_t:
+            return "-";
+        case AST_CMultiply_t:
+            return "*";
+        case AST_CDivide_t:
+            return "/";
+        case AST_CRemainder_t:
+            return "%";
+        case AST_CBitAnd_t:
+            return "&";
+        case AST_CBitOr_t:
+            return "|";
+        case AST_CBitXor_t:
+            return "^";
+        case AST_CBitShiftLeft_t:
+            return "<<";
+        case AST_CBitShiftRight_t:
+            return ">>";
+        case AST_CBitShrArithmetic_t:
+            return ">>";
+        case AST_CAnd_t:
+            return "&&";
+        case AST_COr_t:
+            return "||";
+        case AST_CEqual_t:
+            return "==";
+        case AST_CNotEqual_t:
+            return "!=";
+        case AST_CLessThan_t:
+            return "<";
+        case AST_CLessOrEqual_t:
+            return "<=";
+        case AST_CGreaterThan_t:
+            return ">";
+        case AST_CGreaterOrEqual_t:
+            return ">=";
+        default:
+            THROW_ABORT;
+    }
+}
+
+const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
+    if (!node) {
+        return "=";
+    }
+    else if (unop) {
+        switch (unop->type()) {
+            case AST_CPrefix_t: {
+                switch (node->type()) {
+                    case AST_CAdd_t:
+                        return "prefix ++";
+                    case AST_CSubtract_t:
+                        return "prefix --";
+                    default:
+                        THROW_ABORT;
+                }
+            }
+            case AST_CPostfix_t: {
+                switch (node->type()) {
+                    case AST_CAdd_t:
+                        return "postfix ++";
+                    case AST_CSubtract_t:
+                        return "postfix --";
+                    default:
+                        THROW_ABORT;
+                }
+            }
+            default:
+                THROW_ABORT;
+        }
+    }
+    else {
+        switch (node->type()) {
+            case AST_CAdd_t:
+                return "+=";
+            case AST_CSubtract_t:
+                return "-=";
+            case AST_CMultiply_t:
+                return "*=";
+            case AST_CDivide_t:
+                return "/=";
+            case AST_CRemainder_t:
+                return "%=";
+            case AST_CBitAnd_t:
+                return "&=";
+            case AST_CBitOr_t:
+                return "|=";
+            case AST_CBitXor_t:
+                return "^=";
+            case AST_CBitShiftLeft_t:
+                return "<<=";
+            case AST_CBitShiftRight_t:
+                return ">>=";
+            case AST_CBitShrArithmetic_t:
+                return ">>=";
+            default:
+                THROW_ABORT;
+        }
+    }
+}
+
 std::string get_name_fmt(IdentifierContext* ctx, TIdentifier name) {
     return ctx->hash_table[name].substr(0, ctx->hash_table[name].find(UID_SEPARATOR[0]));
 }
@@ -260,156 +410,6 @@ std::string get_type_fmt(IdentifierContext* ctx, Type* type) {
             return get_struct_fmt(ctx, static_cast<Structure*>(type));
         default:
             THROW_ABORT;
-    }
-}
-
-std::string get_const_fmt(CConst* node) {
-    switch (node->type()) {
-        case AST_CConstInt_t:
-            return "int";
-        case AST_CConstLong_t:
-            return "long";
-        case AST_CConstUInt_t:
-            return "unsigned int";
-        case AST_CConstULong_t:
-            return "unsigned long";
-        case AST_CConstDouble_t:
-            return "double";
-        case AST_CConstChar_t:
-            return "char";
-        case AST_CConstUChar_t:
-            return "unsigned char";
-        default:
-            THROW_ABORT;
-    }
-}
-
-std::string get_storage_class_fmt(CStorageClass* node) {
-    switch (node->type()) {
-        case AST_CStatic_t:
-            return "static";
-        case AST_CExtern_t:
-            return "extern";
-        default:
-            THROW_ABORT;
-    }
-}
-
-std::string get_unop_fmt(CUnaryOp* node) {
-    switch (node->type()) {
-        case AST_CComplement_t:
-            return "~";
-        case AST_CNegate_t:
-            return "-";
-        case AST_CNot_t:
-            return "!";
-        default:
-            THROW_ABORT;
-    }
-}
-
-std::string get_binop_fmt(CBinaryOp* node) {
-    switch (node->type()) {
-        case AST_CAdd_t:
-            return "+";
-        case AST_CSubtract_t:
-            return "-";
-        case AST_CMultiply_t:
-            return "*";
-        case AST_CDivide_t:
-            return "/";
-        case AST_CRemainder_t:
-            return "%";
-        case AST_CBitAnd_t:
-            return "&";
-        case AST_CBitOr_t:
-            return "|";
-        case AST_CBitXor_t:
-            return "^";
-        case AST_CBitShiftLeft_t:
-            return "<<";
-        case AST_CBitShiftRight_t:
-            return ">>";
-        case AST_CBitShrArithmetic_t:
-            return ">>";
-        case AST_CAnd_t:
-            return "&&";
-        case AST_COr_t:
-            return "||";
-        case AST_CEqual_t:
-            return "==";
-        case AST_CNotEqual_t:
-            return "!=";
-        case AST_CLessThan_t:
-            return "<";
-        case AST_CLessOrEqual_t:
-            return "<=";
-        case AST_CGreaterThan_t:
-            return ">";
-        case AST_CGreaterOrEqual_t:
-            return ">=";
-        default:
-            THROW_ABORT;
-    }
-}
-
-std::string get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
-    if (!node) {
-        return "=";
-    }
-    else if (unop) {
-        switch (unop->type()) {
-            case AST_CPrefix_t: {
-                switch (node->type()) {
-                    case AST_CAdd_t:
-                        return "prefix ++";
-                    case AST_CSubtract_t:
-                        return "prefix --";
-                    default:
-                        THROW_ABORT;
-                }
-            }
-            case AST_CPostfix_t: {
-                switch (node->type()) {
-                    case AST_CAdd_t:
-                        return "postfix ++";
-                    case AST_CSubtract_t:
-                        return "postfix --";
-                    default:
-                        THROW_ABORT;
-                }
-            }
-            default:
-                THROW_ABORT;
-        }
-    }
-    else {
-        switch (node->type()) {
-            case AST_CAdd_t:
-                return "+=";
-            case AST_CSubtract_t:
-                return "-=";
-            case AST_CMultiply_t:
-                return "*=";
-            case AST_CDivide_t:
-                return "/=";
-            case AST_CRemainder_t:
-                return "%=";
-            case AST_CBitAnd_t:
-                return "&=";
-            case AST_CBitOr_t:
-                return "|=";
-            case AST_CBitXor_t:
-                return "^=";
-            case AST_CBitShiftLeft_t:
-                return "<<=";
-            case AST_CBitShiftRight_t:
-                return ">>=";
-            case AST_CBitShrArithmetic_t:
-                return ">>=";
-            default:
-                THROW_ABORT;
-        }
     }
 }
 

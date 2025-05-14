@@ -46,8 +46,8 @@ typedef ParserContext* Ctx;
 
 static void expect_next(Ctx ctx, const Token& next_tok, TOKEN_KIND expect_tok) {
     if (next_tok.tok_kind != expect_tok) {
-        THROW_AT_LINE(GET_PARSER_MSG(MSG_unexpected_next_tok, next_tok.tok.c_str(), fmt_tok_kind_c_str(expect_tok)),
-            next_tok.line);
+        THROW_AT_LINE(
+            GET_PARSER_MSG(MSG_unexpected_next_tok, next_tok.tok.c_str(), get_tok_kind_fmt(expect_tok)), next_tok.line);
     }
 }
 
@@ -1317,7 +1317,7 @@ Lbreak:
     }
     std::string type_tok_kinds_s = "(";
     for (TOKEN_KIND type_tok_kind : type_tok_kinds) {
-        type_tok_kinds_s += fmt_tok_kind_c_str(type_tok_kind);
+        type_tok_kinds_s += get_tok_kind_fmt(type_tok_kind);
         type_tok_kinds_s += ", ";
     }
     if (!type_tok_kinds.empty()) {
@@ -1610,7 +1610,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl(Ctx ctx) {
         std::unique_ptr<CStorageClass> storage_class = parse_decltor_decl(ctx, decltor);
         if (storage_class) {
             THROW_AT_LINE(GET_PARSER_MSG(MSG_member_decl_not_auto, ctx->identifiers->hash_table[decltor.name].c_str(),
-                              fmt_storage_class_c_str(storage_class.get())),
+                              get_storage_class_fmt(storage_class.get())),
                 ctx->next_tok->line);
         }
     }

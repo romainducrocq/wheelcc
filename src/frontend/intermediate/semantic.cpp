@@ -643,14 +643,14 @@ static std::unique_ptr<CCast> cast_assign(Ctx ctx, std::unique_ptr<CExp> node, s
 
 static void check_unary_complement_exp(Ctx ctx, CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, fmt_unop_c_str(node->unop.get()),
+        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                           fmt_type_c_str(node->exp->exp_type.get())),
             node->line);
     }
 
     switch (node->exp->exp_type->type()) {
         case AST_Double_t:
-            THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, fmt_unop_c_str(node->unop.get()),
+            THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                               fmt_type_c_str(node->exp->exp_type.get())),
                 node->line);
         case AST_Char_t:
@@ -668,7 +668,7 @@ static void check_unary_complement_exp(Ctx ctx, CUnary* node) {
 
 static void check_unary_neg_exp(Ctx ctx, CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
-        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, fmt_unop_c_str(node->unop.get()),
+        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                           fmt_type_c_str(node->exp->exp_type.get())),
             node->line);
     }
@@ -689,7 +689,7 @@ static void check_unary_neg_exp(Ctx ctx, CUnary* node) {
 
 static void check_unary_not_exp(Ctx ctx, CUnary* node) {
     if (!is_type_scalar(node->exp->exp_type.get())) {
-        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, fmt_unop_c_str(node->unop.get()),
+        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                           fmt_type_c_str(node->exp->exp_type.get())),
             node->line);
     }
@@ -739,7 +739,7 @@ static void check_binary_add_exp(Ctx ctx, CBinary* node) {
     }
     else {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -777,14 +777,14 @@ static void check_binary_subtract_exp(Ctx ctx, CBinary* node) {
         }
         else {
             THROW_AT_LINE(
-                GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+                GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                     fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
                 node->line);
         }
     }
     else {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -801,7 +801,7 @@ static void check_binary_subtract_exp(Ctx ctx, CBinary* node) {
 static void check_multiply_divide_exp(Ctx ctx, CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -819,7 +819,7 @@ static void check_multiply_divide_exp(Ctx ctx, CBinary* node) {
 static void check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -833,7 +833,7 @@ static void check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     }
     node->exp_type = std::move(common_type);
     if (node->exp_type->type() == AST_Double_t) {
-        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_binary_op, fmt_binop_c_str(node->binop.get()),
+        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop.get()),
                           fmt_type_c_str(node->exp_type.get())),
             node->line);
     }
@@ -842,7 +842,7 @@ static void check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
 static void check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_int(node->exp_right->exp_type.get())) {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -856,7 +856,7 @@ static void check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     }
     node->exp_type = node->exp_left->exp_type;
     if (node->exp_type->type() == AST_Double_t) {
-        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_binary_op, fmt_binop_c_str(node->binop.get()),
+        THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop.get()),
                           fmt_type_c_str(node->exp_type.get())),
             node->line);
     }
@@ -872,7 +872,7 @@ static void check_bitshift_right_exp(Ctx ctx, CBinary* node) {
 static void check_binary_logical_exp(Ctx ctx, CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -891,7 +891,7 @@ static void check_binary_equality_exp(Ctx ctx, CBinary* node) {
     }
     else {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -914,7 +914,7 @@ static void check_binary_relational_exp(Ctx ctx, CBinary* node) {
                 || (node->exp_right->type() == AST_CConstant_t
                     && is_const_null_ptr(static_cast<CConstant*>(node->exp_right.get())))))) {
         THROW_AT_LINE(
-            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, fmt_binop_c_str(node->binop.get()),
+            GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
                 fmt_type_c_str(node->exp_left->exp_type.get()), fmt_type_c_str(node->exp_right->exp_type.get())),
             node->line);
     }
@@ -979,7 +979,7 @@ static void check_assign_exp(Ctx ctx, CAssignment* node) {
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
             THROW_AT_LINE(
-                GET_SEMANTIC_MSG(MSG_assign_to_rvalue, fmt_assign_c_str(nullptr, node->unop.get())), node->line);
+                GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(nullptr, node->unop.get())), node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             node->exp_right = cast_assign(ctx, std::move(node->exp_right), node->exp_left->exp_type);
@@ -995,7 +995,7 @@ static void check_assign_exp(Ctx ctx, CAssignment* node) {
         if (!is_exp_lvalue(exp_left)) {
             THROW_AT_LINE(
                 GET_SEMANTIC_MSG(MSG_assign_to_rvalue,
-                    fmt_assign_c_str(static_cast<CBinary*>(node->exp_right.get())->binop.get(), node->unop.get())),
+                    get_assign_fmt(static_cast<CBinary*>(node->exp_right.get())->binop.get(), node->unop.get())),
                 node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
@@ -1681,7 +1681,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 case AST_CConstDouble_t:
                 case AST_CConstUChar_t:
                     THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_static_ptr_init_not_int, fmt_type_c_str(static_init_type),
-                                      fmt_const_c_str(node->constant.get())),
+                                      get_const_fmt(node->constant.get())),
                         node->line);
                 default:
                     break;
@@ -2396,7 +2396,7 @@ static void reslv_statement(Ctx ctx, CStatement* node);
 static void reslv_for_init_decl(Ctx ctx, CInitDecl* node) {
     if (node->init->storage_class) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_for_init_decl_not_auto, fmt_name_c_str(node->init->name),
-                          fmt_storage_class_c_str(node->init->storage_class.get())),
+                          get_storage_class_fmt(node->init->storage_class.get())),
             node->init->line);
     }
     reslv_block_var_decl(ctx, node->init.get());
