@@ -27,7 +27,6 @@ function usage () {
     echo "    --validate  print  semantic  stage and exit"
     echo "    --tacky     print  interm    stage and exit"
     echo "    --codegen   print  assembly  stage and exit"
-    echo "    --codeemit  print  emission  stage and exit"
     echo ""
     echo "[Optimize...]:"
     echo "    (Level 0):"
@@ -150,9 +149,6 @@ function parse_debug_arg () {
             ;;
         "--codegen")
             DEBUG_ENUM=251
-            ;;
-        "--codeemit")
-            DEBUG_ENUM=250
             ;;
         *)
             return 1
@@ -473,9 +469,6 @@ function compile () {
         ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS}
         if [ ${?} -ne 0 ]; then
             raise_error "compilation failed"
-        fi
-        if [ ${DEBUG_ENUM} -eq 250 ]; then
-            cat ${FILE}.${EXT_OUT}
         fi
     done
     return 0

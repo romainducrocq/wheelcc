@@ -1890,11 +1890,6 @@ void pprint_backend_symbol_table(void) {
     std::cout << std::endl;
 }
 
-void pprint_asm_code(void) {
-    print_title("ASM Code");
-    std::cout << std::endl;
-}
-
 void pprint_p_backend(BackEndContext* ctx) { _backend = ctx; }
 
 void pprint_p_frontend(FrontEndContext* ctx) { _frontend = ctx; }

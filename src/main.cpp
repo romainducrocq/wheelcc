@@ -43,8 +43,6 @@ struct MainContext {
     uint8_t optim_2_code;
     std::string filename;
     std::vector<std::string> includedirs;
-    // TODO rm
-    std::vector<std::string> args;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,12 +100,6 @@ static void debug_symbol_table(Ctx ctx) {
 static void debug_backend_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
         pprint_backend_symbol_table();
-    }
-}
-
-static void debug_asm_code(Ctx ctx) {
-    if (ctx->is_verbose) {
-        pprint_asm_code();
     }
 }
 #endif
@@ -239,92 +231,56 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     ctx->filename += ".s";
     emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
     verbose(ctx, "OK", true);
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 250) {
-        debug_asm_code(ctx);
-        return;
-    }
-#endif
 }
 
-static void shift_args(Ctx ctx, std::string& arg) {
-    if (!ctx->args.empty()) {
-        arg = std::move(ctx->args.back());
-        ctx->args.pop_back();
-        return;
-    }
-    arg = "";
-}
-
-static bool arg_parse_uint8(std::string& arg, uint8_t& code) {
-    std::vector<char> buf(arg.begin(), arg.end());
-    buf.push_back('\0');
+static bool arg_parse_uint8(const char* arg, uint8_t& value) {
     char* end_ptr = nullptr;
     errno = 0;
-    code = static_cast<uint8_t>(strtol(&buf[0], &end_ptr, 10));
-    return end_ptr == &buf[0];
+    value = static_cast<uint8_t>(strtol(&arg[0], &end_ptr, 10));
+    return end_ptr == &arg[0];
 }
 
-static void arg_parse(Ctx ctx, int argc, char** argv) {
-    size_t i = static_cast<size_t>(argc);
-    ctx->args.reserve(i);
-    for (; i-- > 0;) {
-        std::string arg = argv[i];
-        ctx->args.emplace_back(std::move(arg));
-    }
+static void arg_parse(Ctx ctx, char** argv) {
+    size_t i = 0;
 
-    std::string arg;
-    shift_args(ctx, arg);
-
-    shift_args(ctx, arg);
-    if (arg.empty()) {
+    if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
     }
-    else if (arg_parse_uint8(arg, ctx->debug_code)) {
-        THROW_INIT(GET_ARG_MSG(MSG_invalid_debug_arg, arg.c_str()));
+    else if (arg_parse_uint8(argv[i], ctx->debug_code)) {
+        THROW_INIT(GET_ARG_MSG(MSG_invalid_debug_arg, argv[i]));
     }
 
-    shift_args(ctx, arg);
-    if (arg.empty()) {
+    if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_1_arg));
     }
-    else if (arg_parse_uint8(arg, ctx->optim_1_mask) || ctx->optim_1_mask > 15) {
-        THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_1_arg, arg.c_str()));
+    else if (arg_parse_uint8(argv[i], ctx->optim_1_mask) || ctx->optim_1_mask > 15) {
+        THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_1_arg, argv[i]));
     }
 
-    shift_args(ctx, arg);
-    if (arg.empty()) {
+    if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_2_arg));
     }
-    else if (arg_parse_uint8(arg, ctx->optim_2_code) || ctx->optim_2_code > 2) {
-        THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_2_arg, arg.c_str()));
+    else if (arg_parse_uint8(argv[i], ctx->optim_2_code) || ctx->optim_2_code > 2) {
+        THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_2_arg, argv[i]));
     }
 
-    shift_args(ctx, arg);
-    if (arg.empty()) {
+    if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_input_files_arg));
     }
-    ctx->filename = arg;
+    ctx->filename = std::string(argv[i]);
 
-    shift_args(ctx, arg);
-    if (arg.empty()) {
+    if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
-        std::string includedir = arg;
-        ctx->includedirs.emplace_back(std::move(includedir));
-        shift_args(ctx, arg);
+        ctx->includedirs.emplace_back(std::string(argv[i]));
     }
-    while (!arg.empty());
-
-    arg = "";
-    ctx->args.clear();
-    std::vector<std::string>().swap(ctx->args);
+    while (argv[++i]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char** argv) {
+int main(int, char** argv) {
     ErrorsContext errors;
     FileIoContext fileio;
     MainContext ctx;
@@ -340,7 +296,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-        arg_parse(&ctx, argc, argv);
+        arg_parse(&ctx, argv);
         compile(&ctx, &errors, &fileio);
     }
     catch (const std::runtime_error& err) {
