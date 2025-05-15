@@ -24,36 +24,43 @@ struct GasCodeContext {
 
 typedef GasCodeContext* Ctx;
 
+static void emit(Ctx ctx, const char* code) { write_buffer(ctx->fileio, code); }
+
 // identifier -> $ identifier
-static const std::string& emit_identifier(Ctx ctx, TIdentifier identifier) {
-    return ctx->identifiers->hash_table[identifier];
+static void emit_identifier(Ctx ctx, TIdentifier identifier) {
+    const std::string& value = ctx->identifiers->hash_table[identifier];
+    emit(ctx, value.c_str());
 }
 
 // string -> $ string
-static const std::string& emit_string(Ctx ctx, TIdentifier string_const) {
-    return ctx->identifiers->hash_table[string_const];
+static void emit_string(Ctx ctx, TIdentifier string_const) {
+    const std::string& value = ctx->identifiers->hash_table[string_const];
+    emit(ctx, value.c_str());
 }
 
 // char -> $ char
-static std::string emit_char(TChar value) { return std::to_string(value); }
+static void emit_char(Ctx ctx, TChar value) { emit(ctx, std::to_string(value).c_str()); }
 
 // int -> $ int
-static std::string emit_int(TInt value) { return std::to_string(value); }
+static void emit_int(Ctx ctx, TInt value) { emit(ctx, std::to_string(value).c_str()); }
 
 // long -> $ long
-static std::string emit_long(TLong value) { return std::to_string(value); }
+static void emit_long(Ctx ctx, TLong value) { emit(ctx, std::to_string(value).c_str()); }
 
 // double -> $ double
-static std::string emit_dbl(Ctx ctx, TIdentifier dbl_const) { return ctx->identifiers->hash_table[dbl_const]; }
+static void emit_dbl(Ctx ctx, TIdentifier dbl_const) {
+    const std::string& value = ctx->identifiers->hash_table[dbl_const];
+    emit(ctx, value.c_str());
+}
 
 // uchar -> $ uchar
-static std::string emit_uchar(TUChar value) { return std::to_string(value); }
+static void emit_uchar(Ctx ctx, TUChar value) { emit(ctx, std::to_string(value).c_str()); }
 
 // uint -> $ uint
-static std::string emit_uint(TUInt value) { return std::to_string(value); }
+static void emit_uint(Ctx ctx, TUInt value) { emit(ctx, std::to_string(value).c_str()); }
 
 // ulong -> $ ulong
-static std::string emit_ulong(TULong value) { return std::to_string(value); }
+static void emit_ulong(Ctx ctx, TULong value) { emit(ctx, std::to_string(value).c_str()); }
 
 // Reg(SP)    -> $ %rsp
 // Reg(BP)    -> $ %rbp
@@ -73,7 +80,7 @@ static std::string emit_ulong(TULong value) { return std::to_string(value); }
 // Reg(XMM13) -> $ %xmm13
 // Reg(XMM14) -> $ %xmm14
 // Reg(XMM15) -> $ %xmm15
-static const char* reg_rsp_sse(AsmReg* node) {
+static const char* get_reg_rsp_sse(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmSp_t:
             return "rsp";
@@ -130,7 +137,7 @@ static const char* reg_rsp_sse(AsmReg* node) {
 // Reg(R13) -> $ %r13b
 // Reg(R14) -> $ %r14b
 // Reg(R15) -> $ %r15b
-static const char* emit_reg_1b(AsmReg* node) {
+static const char* get_reg_1b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
             return "al";
@@ -161,7 +168,7 @@ static const char* emit_reg_1b(AsmReg* node) {
         case AST_AsmR15_t:
             return "r15b";
         default:
-            return reg_rsp_sse(node);
+            return get_reg_rsp_sse(node);
     }
 }
 
@@ -179,7 +186,7 @@ static const char* emit_reg_1b(AsmReg* node) {
 // Reg(R13) -> $ %r13d
 // Reg(R14) -> $ %r14d
 // Reg(R15) -> $ %r15d
-static const char* emit_reg_4b(AsmReg* node) {
+static const char* get_reg_4b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
             return "eax";
@@ -210,7 +217,7 @@ static const char* emit_reg_4b(AsmReg* node) {
         case AST_AsmR15_t:
             return "r15d";
         default:
-            return reg_rsp_sse(node);
+            return get_reg_rsp_sse(node);
     }
 }
 
@@ -228,7 +235,7 @@ static const char* emit_reg_4b(AsmReg* node) {
 // Reg(R13) -> $ %r13
 // Reg(R14) -> $ %r14
 // Reg(R15) -> $ %r15
-static const char* emit_reg_8b(AsmReg* node) {
+static const char* get_reg_8b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
             return "rax";
@@ -259,7 +266,7 @@ static const char* emit_reg_8b(AsmReg* node) {
         case AST_AsmR15_t:
             return "r15";
         default:
-            return reg_rsp_sse(node);
+            return get_reg_rsp_sse(node);
     }
 }
 
@@ -274,7 +281,7 @@ static const char* emit_reg_8b(AsmReg* node) {
 // A  -> $ a
 // AE -> $ ae
 // P  -> $ p
-static const char* emit_cond_code(AsmCondCode* node) {
+static const char* get_cond_code(AsmCondCode* node) {
     switch (node->type()) {
         case AST_AsmE_t:
             return "e";
@@ -329,7 +336,7 @@ static TInt type_align_bytes(AssemblyType* node) {
 // QuadWord         -> $ q
 // Double if packed -> $ pd
 //             else -> $ sd
-static const char* emit_type_suffix(AssemblyType* node, bool is_packed) {
+static const char* get_type_suffix(AssemblyType* node, bool is_packed) {
     switch (node->type()) {
         case AST_Byte_t:
             return "b";
@@ -344,67 +351,64 @@ static const char* emit_type_suffix(AssemblyType* node, bool is_packed) {
     }
 }
 
-static std::string imm_op(AsmImm* node) {
-    std::string operand = "$";
+static void imm_op(Ctx ctx, AsmImm* node) {
+    emit(ctx, "$");
     if (node->is_neg) {
-        operand += emit_long((TLong)node->value);
+        emit_long(ctx, (TLong)node->value);
     }
     else {
-        operand += emit_ulong(node->value);
+        emit_ulong(ctx, node->value);
     }
-    return operand;
 }
 
-static std::string reg_op(AsmRegister* node, TInt byte) {
-    std::string operand = "%";
+static void reg_op(Ctx ctx, AsmRegister* node, TInt byte) {
+    emit(ctx, "%");
     switch (byte) {
         case 1:
-            operand += emit_reg_1b(node->reg.get());
+            emit(ctx, get_reg_1b(node->reg.get()));
             break;
         case 4:
-            operand += emit_reg_4b(node->reg.get());
+            emit(ctx, get_reg_4b(node->reg.get()));
             break;
         case 8:
-            operand += emit_reg_8b(node->reg.get());
+            emit(ctx, get_reg_8b(node->reg.get()));
             break;
         default:
             THROW_ABORT;
     }
-    return operand;
 }
 
-static std::string memory_op(AsmMemory* node) {
-    std::string operand = node->value != 0l ? emit_long(node->value) : "";
-    operand += "(%";
-    operand += emit_reg_8b(node->reg.get());
-    operand += ")";
-    return operand;
-}
-
-static std::string data_op(Ctx ctx, AsmData* node) {
-    std::string operand = ctx->backend->symbol_table.find(node->name) != ctx->backend->symbol_table.end()
-                                  && ctx->backend->symbol_table[node->name]->type() == AST_BackendObj_t
-                                  && static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get())->is_const ?
-                              ".L" :
-                              "";
-    operand += emit_identifier(ctx, node->name);
-    if (node->offset != 0l) {
-        operand += "+";
-        operand += emit_long(node->offset);
+static void memory_op(Ctx ctx, AsmMemory* node) {
+    if (node->value != 0l) {
+        emit_long(ctx, node->value);
     }
-    operand += "(%rip)";
-    return operand;
+    emit(ctx, "(%");
+    emit(ctx, get_reg_8b(node->reg.get()));
+    emit(ctx, ")");
 }
 
-static std::string indexed_op(AsmIndexed* node) {
-    std::string operand = "(%";
-    operand += emit_reg_8b(node->reg_base.get());
-    operand += ", %";
-    operand += emit_reg_8b(node->reg_index.get());
-    operand += ", ";
-    operand += emit_long(node->scale);
-    operand += ")";
-    return operand;
+static void data_op(Ctx ctx, AsmData* node) {
+    if (ctx->backend->symbol_table.find(node->name) != ctx->backend->symbol_table.end()
+        && ctx->backend->symbol_table[node->name]->type() == AST_BackendObj_t
+        && static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get())->is_const) {
+        emit(ctx, ".L");
+    }
+    emit_identifier(ctx, node->name);
+    if (node->offset != 0l) {
+        emit(ctx, "+");
+        emit_long(ctx, node->offset);
+    }
+    emit(ctx, "(%rip)");
+}
+
+static void indexed_op(Ctx ctx, AsmIndexed* node) {
+    emit(ctx, "(%");
+    emit(ctx, get_reg_8b(node->reg_base.get()));
+    emit(ctx, ", %");
+    emit(ctx, get_reg_8b(node->reg_index.get()));
+    emit(ctx, ", ");
+    emit_long(ctx, node->scale);
+    emit(ctx, ")");
 }
 
 // Imm(int)                 -> $ $<int>
@@ -412,18 +416,23 @@ static std::string indexed_op(AsmIndexed* node) {
 // Memory(int, reg)         -> $ <int>(<reg>)
 // Data(identifier, int)    -> $ <identifier>+<int>(%rip)
 // Indexed(reg1, reg2, int) -> $ (<reg1>, <reg2>, <int>)
-static std::string emit_op(Ctx ctx, AsmOperand* node, TInt byte) {
+static void emit_op(Ctx ctx, AsmOperand* node, TInt byte) {
     switch (node->type()) {
         case AST_AsmImm_t:
-            return imm_op(static_cast<AsmImm*>(node));
+            imm_op(ctx, static_cast<AsmImm*>(node));
+            break;
         case AST_AsmRegister_t:
-            return reg_op(static_cast<AsmRegister*>(node), byte);
+            reg_op(ctx, static_cast<AsmRegister*>(node), byte);
+            break;
         case AST_AsmMemory_t:
-            return memory_op(static_cast<AsmMemory*>(node));
+            memory_op(ctx, static_cast<AsmMemory*>(node));
+            break;
         case AST_AsmData_t:
-            return data_op(ctx, static_cast<AsmData*>(node));
+            data_op(ctx, static_cast<AsmData*>(node));
+            break;
         case AST_AsmIndexed_t:
-            return indexed_op(static_cast<AsmIndexed*>(node));
+            indexed_op(ctx, static_cast<AsmIndexed*>(node));
+            break;
         default:
             THROW_ABORT;
     }
@@ -432,7 +441,7 @@ static std::string emit_op(Ctx ctx, AsmOperand* node, TInt byte) {
 // Neg -> $ neg
 // Not -> $ not
 // Shr -> $ shr
-static const char* emit_unop(AsmUnaryOp* node) {
+static const char* get_unop(AsmUnaryOp* node) {
     switch (node->type()) {
         case AST_AsmNeg_t:
             return "neg";
@@ -456,7 +465,7 @@ static const char* emit_unop(AsmUnaryOp* node) {
 // BitShiftLeft     -> $ shl
 // BitShiftRight    -> $ shr
 // BitShrArithmetic -> $ sar
-static const char* emit_binop(AsmBinaryOp* node, bool is_dbl) {
+static const char* get_binop(AsmBinaryOp* node, bool is_dbl) {
     switch (node->type()) {
         case AST_AsmAdd_t:
             return "add";
@@ -483,168 +492,160 @@ static const char* emit_binop(AsmBinaryOp* node, bool is_dbl) {
     }
 }
 
-static void emit(Ctx ctx, std::string&& line, size_t t) {
-    if (t > 0) {
-        std::string indent_line = "    ";
-        while (t > 1) {
-            indent_line += "    ";
-            t--;
-        }
-        indent_line += line;
-        emit(ctx, std::move(indent_line), 0);
-    }
-    else {
-        write_line(ctx->fileio, std::move(line));
-    }
-}
-
 static void mov_instr(Ctx ctx, AsmMov* node) {
-    std::string instr = "mov";
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    emit(ctx, "        mov");
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
-        instr += ", ";
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
+        emit(ctx, ", ");
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void mov_sx_instr(Ctx ctx, AsmMovSx* node) {
-    std::string instr = "movs";
-    instr += emit_type_suffix(node->asm_type_src.get(), false);
-    instr += emit_type_suffix(node->asm_type_dst.get(), false);
-    instr += " ";
+    emit(ctx, "        movs");
+    emit(ctx, get_type_suffix(node->asm_type_src.get(), false));
+    emit(ctx, get_type_suffix(node->asm_type_dst.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type_src.get());
-        instr += emit_op(ctx, node->src.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
     }
-    instr += ", ";
+    emit(ctx, ", ");
     {
         TInt byte = type_align_bytes(node->asm_type_dst.get());
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void zero_extend_instr(Ctx ctx, AsmMovZeroExtend* node) {
-    std::string instr = "movzb";
-    instr += emit_type_suffix(node->asm_type_dst.get(), false);
-    instr += " ";
-    instr += emit_op(ctx, node->src.get(), 1);
-    instr += ", ";
+    emit(ctx, "        movzb");
+    emit(ctx, get_type_suffix(node->asm_type_dst.get(), false));
+    emit(ctx, " ");
+    emit_op(ctx, node->src.get(), 1);
+    emit(ctx, ", ");
     {
         TInt byte = type_align_bytes(node->asm_type_dst.get());
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void lea_instr(Ctx ctx, AsmLea* node) {
-    std::string instr = "leaq ";
-    instr += emit_op(ctx, node->src.get(), 8);
-    instr += ", ";
-    instr += emit_op(ctx, node->dst.get(), 8);
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "        leaq ");
+    emit_op(ctx, node->src.get(), 8);
+    emit(ctx, ", ");
+    emit_op(ctx, node->dst.get(), 8);
+    emit(ctx, "\n");
 }
 
 static void cvttsd2si_instr(Ctx ctx, AsmCvttsd2si* node) {
-    std::string instr = "cvttsd2si";
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    emit(ctx, "        cvttsd2si");
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
-        instr += ", ";
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
+        emit(ctx, ", ");
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void cvtsi2sd_instr(Ctx ctx, AsmCvtsi2sd* node) {
-    std::string instr = "cvtsi2sd";
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    emit(ctx, "        cvtsi2sd");
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
-        instr += ", ";
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
+        emit(ctx, ", ");
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void unary_instr(Ctx ctx, AsmUnary* node) {
-    std::string instr = emit_unop(node->unop.get());
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    emit(ctx, "        ");
+    emit(ctx, get_unop(node->unop.get()));
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void binary_instr(Ctx ctx, AsmBinary* node) {
-    bool is_dbl = node->asm_type->type() == AST_BackendDouble_t;
-    std::string instr = emit_binop(node->binop.get(), is_dbl);
+    emit(ctx, "        ");
     {
+        bool is_dbl = node->asm_type->type() == AST_BackendDouble_t;
+        emit(ctx, get_binop(node->binop.get(), is_dbl));
         bool is_packed = node->binop->type() == AST_AsmBitXor_t && is_dbl;
-        instr += emit_type_suffix(node->asm_type.get(), is_packed);
+        emit(ctx, get_type_suffix(node->asm_type.get(), is_packed));
     }
-    instr += " ";
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
-        instr += ", ";
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
+        emit(ctx, ", ");
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void cmp_instr(Ctx ctx, AsmCmp* node) {
-    std::string instr = node->asm_type->type() == AST_BackendDouble_t ? "comi" : "cmp";
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    if (node->asm_type->type() == AST_BackendDouble_t) {
+        emit(ctx, "        comi");
+    }
+    else {
+        emit(ctx, "        cmp");
+    }
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
-        instr += ", ";
-        instr += emit_op(ctx, node->dst.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
+        emit(ctx, ", ");
+        emit_op(ctx, node->dst.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void idiv_instr(Ctx ctx, AsmIdiv* node) {
-    std::string instr = "idiv";
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    emit(ctx, "        idiv");
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void div_instr(Ctx ctx, AsmDiv* node) {
-    std::string instr = "div";
-    instr += emit_type_suffix(node->asm_type.get(), false);
-    instr += " ";
+    emit(ctx, "        div");
+    emit(ctx, get_type_suffix(node->asm_type.get(), false));
+    emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        instr += emit_op(ctx, node->src.get(), byte);
+        emit_op(ctx, node->src.get(), byte);
     }
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "\n");
 }
 
 static void cdq_instr(Ctx ctx, AsmCdq* node) {
     switch (node->asm_type->type()) {
         case AST_LongWord_t:
-            emit(ctx, "cdq", 2);
+            emit(ctx, "        cdq\n");
             break;
         case AST_QuadWord_t:
-            emit(ctx, "cqo", 2);
+            emit(ctx, "        cqo\n");
             break;
         default:
             THROW_ABORT;
@@ -652,60 +653,61 @@ static void cdq_instr(Ctx ctx, AsmCdq* node) {
 }
 
 static void jmp_instr(Ctx ctx, AsmJmp* node) {
-    std::string instr = "jmp .L";
-    instr += emit_identifier(ctx, node->target);
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "        jmp .L");
+    emit_identifier(ctx, node->target);
+    emit(ctx, "\n");
 }
 
 static void jmp_cc_instr(Ctx ctx, AsmJmpCC* node) {
-    std::string instr = "j";
-    instr += emit_cond_code(node->cond_code.get());
-    instr += " .L";
-    instr += emit_identifier(ctx, node->target);
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "        j");
+    emit(ctx, get_cond_code(node->cond_code.get()));
+    emit(ctx, " .L");
+    emit_identifier(ctx, node->target);
+    emit(ctx, "\n");
 }
 
 static void set_cc_instr(Ctx ctx, AsmSetCC* node) {
-    std::string instr = "set";
-    instr += emit_cond_code(node->cond_code.get());
-    instr += " ";
-    instr += emit_op(ctx, node->dst.get(), 1);
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "        set");
+    emit(ctx, get_cond_code(node->cond_code.get()));
+    emit(ctx, " ");
+    emit_op(ctx, node->dst.get(), 1);
+    emit(ctx, "\n");
 }
 
 static void label_instr(Ctx ctx, AsmLabel* node) {
-    std::string instr = ".L";
-    instr += emit_identifier(ctx, node->name);
-    instr += ":";
-    emit(ctx, std::move(instr), 1);
+    emit(ctx, "    .L");
+    emit_identifier(ctx, node->name);
+    emit(ctx, ":\n");
 }
 
 static void push_instr(Ctx ctx, AsmPush* node) {
-    std::string instr = "pushq ";
-    instr += emit_op(ctx, node->src.get(), 8);
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "        pushq ");
+    emit_op(ctx, node->src.get(), 8);
+    emit(ctx, "\n");
 }
 
 static void pop_instr(Ctx ctx, AsmPop* node) {
-    std::string instr = "popq %";
-    instr += emit_reg_8b(node->reg.get());
-    emit(ctx, std::move(instr), 2);
+    emit(ctx, "        popq %");
+    emit(ctx, get_reg_8b(node->reg.get()));
+    emit(ctx, "\n");
 }
 
 static void call_instr(Ctx ctx, AsmCall* node) {
-    std::string instr = "call ";
-    instr += emit_identifier(ctx, node->name);
+    emit(ctx, "        call ");
+    emit_identifier(ctx, node->name);
     THROW_ABORT_IF(ctx->backend->symbol_table[node->name]->type() != AST_BackendFun_t);
     if (!static_cast<BackendFun*>(ctx->backend->symbol_table[node->name].get())->is_def) {
-        instr += "@PLT";
+        emit(ctx, "@PLT\n");
     }
-    emit(ctx, std::move(instr), 2);
+    else {
+        emit(ctx, "\n");
+    }
 }
 
 static void ret_instr(Ctx ctx) {
-    emit(ctx, "movq %rbp, %rsp", 1);
-    emit(ctx, "popq %rbp", 1);
-    emit(ctx, "ret", 1);
+    emit(ctx, "    movq %rbp, %rsp\n"
+              "    popq %rbp\n"
+              "    ret\n");
 }
 
 // Mov(t, src, dst)                      -> $ mov<t> <src>, <dst>
@@ -805,21 +807,12 @@ static void emit_instr_list(Ctx ctx, const std::vector<std::unique_ptr<AsmInstru
     }
 }
 
-// $ .balign <alignment>
-static void align_directive_toplvl(Ctx ctx, TInt alignment) {
-    if (alignment > 1) {
-        std::string directive = ".balign ";
-        directive += emit_int(alignment);
-        emit(ctx, std::move(directive), 1);
-    }
-}
-
 // -> if is_global $ .globl <identifier>
-static void glob_directive_toplvl(Ctx ctx, const std::string& name, bool is_glob) {
+static void glob_directive_toplvl(Ctx ctx, TIdentifier name, bool is_glob) {
     if (is_glob) {
-        std::string directive = ".globl ";
-        directive += name;
-        emit(ctx, std::move(directive), 1);
+        emit(ctx, "    .globl ");
+        emit_identifier(ctx, name);
+        emit(ctx, "\n");
     }
 }
 
@@ -830,17 +823,33 @@ static void glob_directive_toplvl(Ctx ctx, const std::string& name, bool is_glob
 //                                                        $     movq %rsp, %rbp
 //                                                        $     <instructions>
 static void emit_fun_toplvl(Ctx ctx, AsmFunction* node) {
-    const std::string& name = emit_identifier(ctx, node->name);
-    glob_directive_toplvl(ctx, name, node->is_glob);
-    emit(ctx, ".text", 1);
-    {
-        std::string directive = name;
-        directive += ":";
-        emit(ctx, std::move(directive), 0);
-    }
-    emit(ctx, "pushq %rbp", 1);
-    emit(ctx, "movq %rsp, %rbp", 1);
+    glob_directive_toplvl(ctx, node->name, node->is_glob);
+    emit(ctx, "    .text\n");
+    emit_identifier(ctx, node->name);
+    emit(ctx, ":\n"
+              "    pushq %rbp\n"
+              "    movq %rsp, %rbp\n");
     emit_instr_list(ctx, node->instructions);
+}
+
+// -> if zero initialized $ .bss
+// ->                else $ .data
+static void static_section_toplvl(Ctx ctx, const std::vector<std::shared_ptr<StaticInit>>& node_list) {
+    if (node_list.size() == 1 && node_list[0]->type() == AST_ZeroInit_t) {
+        emit(ctx, "    .bss\n");
+    }
+    else {
+        emit(ctx, "    .data\n");
+    }
+}
+
+// $ .balign <alignment>
+static void align_directive_toplvl(Ctx ctx, TInt alignment) {
+    if (alignment > 1) {
+        emit(ctx, "    .balign ");
+        emit_int(ctx, alignment);
+        emit(ctx, "\n");
+    }
 }
 
 // CharInit(i)                         -> .byte <i>
@@ -854,78 +863,64 @@ static void emit_fun_toplvl(Ctx ctx, AsmFunction* node) {
 //                                else -> .ascii "<s>"
 // PointerInit(label)                  -> .quad .L<label>
 static void static_init_toplvl(Ctx ctx, StaticInit* node) {
-    std::string directive;
     switch (node->type()) {
-        case AST_CharInit_t: {
-            directive = ".byte ";
-            directive += emit_char(static_cast<CharInit*>(node)->value);
+        case AST_CharInit_t:
+            emit(ctx, "        .byte ");
+            emit_char(ctx, static_cast<CharInit*>(node)->value);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_IntInit_t: {
-            directive = ".long ";
-            directive += emit_int(static_cast<IntInit*>(node)->value);
+        case AST_IntInit_t:
+            emit(ctx, "        .long ");
+            emit_int(ctx, static_cast<IntInit*>(node)->value);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_LongInit_t: {
-            directive = ".quad ";
-            directive += emit_long(static_cast<LongInit*>(node)->value);
+        case AST_LongInit_t:
+            emit(ctx, "        .quad ");
+            emit_long(ctx, static_cast<LongInit*>(node)->value);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_DoubleInit_t: {
-            directive = ".quad ";
-            directive += emit_dbl(ctx, static_cast<DoubleInit*>(node)->dbl_const);
+        case AST_DoubleInit_t:
+            emit(ctx, "        .quad ");
+            emit_dbl(ctx, static_cast<DoubleInit*>(node)->dbl_const);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_UCharInit_t: {
-            directive = ".byte ";
-            directive += emit_uchar(static_cast<UCharInit*>(node)->value);
+        case AST_UCharInit_t:
+            emit(ctx, "        .byte ");
+            emit_uchar(ctx, static_cast<UCharInit*>(node)->value);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_UIntInit_t: {
-            directive = ".long ";
-            directive += emit_uint(static_cast<UIntInit*>(node)->value);
+        case AST_UIntInit_t:
+            emit(ctx, "        .long ");
+            emit_uint(ctx, static_cast<UIntInit*>(node)->value);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_ULongInit_t: {
-            directive = ".quad ";
-            directive += emit_ulong(static_cast<ULongInit*>(node)->value);
+        case AST_ULongInit_t:
+            emit(ctx, "        .quad ");
+            emit_ulong(ctx, static_cast<ULongInit*>(node)->value);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_ZeroInit_t: {
-            directive = ".zero ";
-            directive += emit_long(static_cast<ZeroInit*>(node)->byte);
+        case AST_ZeroInit_t:
+            emit(ctx, "        .zero ");
+            emit_long(ctx, static_cast<ZeroInit*>(node)->byte);
+            emit(ctx, "\n");
             break;
-        }
-        case AST_StringInit_t: {
-            directive = ".asci";
+        case AST_StringInit_t:
+            emit(ctx, "        .asci");
             {
                 StringInit* p_node = static_cast<StringInit*>(node);
-                directive += p_node->is_null_term ? "z" : "i";
-                directive += " \"";
-                directive += emit_string(ctx, p_node->string_const);
+                emit(ctx, p_node->is_null_term ? "z" : "i");
+                emit(ctx, " \"");
+                emit_string(ctx, p_node->string_const);
             }
-            directive += "\"";
+            emit(ctx, "\"\n");
             break;
-        }
-        case AST_PointerInit_t: {
-            directive = ".quad .L";
-            directive += emit_identifier(ctx, static_cast<PointerInit*>(node)->name);
+        case AST_PointerInit_t:
+            emit(ctx, "        .quad .L");
+            emit_identifier(ctx, static_cast<PointerInit*>(node)->name);
+            emit(ctx, "\n");
             break;
-        }
         default:
             THROW_ABORT;
-    }
-    emit(ctx, std::move(directive), 2);
-}
-
-// -> if zero initialized $ .bss
-// ->                else $ .data
-static void static_section_toplvl(Ctx ctx, const std::vector<std::shared_ptr<StaticInit>>& node_list) {
-    if (node_list.size() == 1 && node_list[0]->type() == AST_ZeroInit_t) {
-        emit(ctx, ".bss", 1);
-    }
-    else {
-        emit(ctx, ".data", 1);
     }
 }
 
@@ -935,15 +930,11 @@ static void static_section_toplvl(Ctx ctx, const std::vector<std::shared_ptr<Sta
 //                                     -> $ <name>:
 //                                     -> $     <init_list>
 static void emit_static_var_toplvl(Ctx ctx, AsmStaticVariable* node) {
-    const std::string& name = emit_identifier(ctx, node->name);
-    glob_directive_toplvl(ctx, name, node->is_glob);
+    glob_directive_toplvl(ctx, node->name, node->is_glob);
     static_section_toplvl(ctx, node->static_inits);
     align_directive_toplvl(ctx, node->alignment);
-    {
-        std::string directive = name;
-        directive += ":";
-        emit(ctx, std::move(directive), 0);
-    }
+    emit_identifier(ctx, node->name);
+    emit(ctx, ":\n");
     for (const auto& static_init : node->static_inits) {
         static_init_toplvl(ctx, static_init.get());
     }
@@ -954,14 +945,11 @@ static void emit_static_var_toplvl(Ctx ctx, AsmStaticVariable* node) {
 //                                      $ .L<name>:
 //                                      $     <init>
 static void emit_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
-    emit(ctx, ".section .rodata", 1);
+    emit(ctx, "    .section .rodata\n");
     align_directive_toplvl(ctx, node->alignment);
-    {
-        std::string directive = ".L";
-        directive += emit_identifier(ctx, node->name);
-        directive += ":";
-        emit(ctx, std::move(directive), 0);
-    }
+    emit(ctx, ".L");
+    emit_identifier(ctx, node->name);
+    emit(ctx, ":\n");
     static_init_toplvl(ctx, node->static_init.get());
 }
 
@@ -969,7 +957,7 @@ static void emit_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
 // StaticVariable(name, global, align, init*)          -> $ <static-variable-top-level-directives>
 // StaticConstant(name, align, init)                   -> $ <static-constant-top-level-directives>
 static void emit_toplvl(Ctx ctx, AsmTopLevel* node) {
-    emit(ctx, "", 0);
+    emit(ctx, "\n");
     switch (node->type()) {
         case AST_AsmFunction_t:
             emit_fun_toplvl(ctx, static_cast<AsmFunction*>(node));
@@ -994,7 +982,7 @@ static void emit_program(Ctx ctx, AsmProgram* node) {
     for (const auto& top_level : node->top_levels) {
         emit_toplvl(ctx, top_level.get());
     }
-    emit(ctx, ".section .note.GNU-stack,\"\",@progbits", 2);
+    emit(ctx, "        .section .note.GNU-stack,\"\",@progbits\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

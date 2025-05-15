@@ -84,21 +84,17 @@ bool read_line(Ctx ctx, std::string& line) {
     return true;
 }
 
-static void write_chunk(Ctx ctx, const std::string& chunk_buf) {
-    fwrite(chunk_buf.c_str(), sizeof(char), chunk_buf.size(), ctx->fd_write);
+static void write_chunk(Ctx ctx, const std::string& buf) {
+    fwrite(buf.c_str(), sizeof(char), buf.size(), ctx->fd_write);
 }
 
-static void write_file(Ctx ctx, std::string&& stream_buf, size_t chunk_size) {
-    ctx->write_buf += stream_buf;
+void write_buffer(Ctx ctx, const char* buf) {
+    size_t chunk_size = 4096;
+    ctx->write_buf += std::string(buf);
     while (ctx->write_buf.size() >= chunk_size) {
         write_chunk(ctx, ctx->write_buf.substr(0, chunk_size));
         ctx->write_buf = ctx->write_buf.substr(chunk_size, ctx->write_buf.size() - chunk_size);
     }
-}
-
-void write_line(Ctx ctx, std::string&& line) {
-    line += "\n";
-    write_file(ctx, std::move(line), 4096);
 }
 
 void close_fread(Ctx ctx, size_t linenum) {
