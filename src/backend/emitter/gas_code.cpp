@@ -83,41 +83,41 @@ static void emit_ulong(Ctx ctx, TULong value) { emit(ctx, std::to_string(value).
 static const char* get_reg_rsp_sse(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmSp_t:
-            return "rsp";
+            return "%rsp";
         case AST_AsmBp_t:
-            return "rbp";
+            return "%rbp";
         case AST_AsmXMM0_t:
-            return "xmm0";
+            return "%xmm0";
         case AST_AsmXMM1_t:
-            return "xmm1";
+            return "%xmm1";
         case AST_AsmXMM2_t:
-            return "xmm2";
+            return "%xmm2";
         case AST_AsmXMM3_t:
-            return "xmm3";
+            return "%xmm3";
         case AST_AsmXMM4_t:
-            return "xmm4";
+            return "%xmm4";
         case AST_AsmXMM5_t:
-            return "xmm5";
+            return "%xmm5";
         case AST_AsmXMM6_t:
-            return "xmm6";
+            return "%xmm6";
         case AST_AsmXMM7_t:
-            return "xmm7";
+            return "%xmm7";
         case AST_AsmXMM8_t:
-            return "xmm8";
+            return "%xmm8";
         case AST_AsmXMM9_t:
-            return "xmm9";
+            return "%xmm9";
         case AST_AsmXMM10_t:
-            return "xmm10";
+            return "%xmm10";
         case AST_AsmXMM11_t:
-            return "xmm11";
+            return "%xmm11";
         case AST_AsmXMM12_t:
-            return "xmm12";
+            return "%xmm12";
         case AST_AsmXMM13_t:
-            return "xmm13";
+            return "%xmm13";
         case AST_AsmXMM14_t:
-            return "xmm14";
+            return "%xmm14";
         case AST_AsmXMM15_t:
-            return "xmm15";
+            return "%xmm15";
         default:
             THROW_ABORT;
     }
@@ -140,33 +140,33 @@ static const char* get_reg_rsp_sse(AsmReg* node) {
 static const char* get_reg_1b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
-            return "al";
+            return "%al";
         case AST_AsmBx_t:
-            return "bl";
+            return "%bl";
         case AST_AsmDx_t:
-            return "dl";
+            return "%dl";
         case AST_AsmCx_t:
-            return "cl";
+            return "%cl";
         case AST_AsmDi_t:
-            return "dil";
+            return "%dil";
         case AST_AsmSi_t:
-            return "sil";
+            return "%sil";
         case AST_AsmR8_t:
-            return "r8b";
+            return "%r8b";
         case AST_AsmR9_t:
-            return "r9b";
+            return "%r9b";
         case AST_AsmR10_t:
-            return "r10b";
+            return "%r10b";
         case AST_AsmR11_t:
-            return "r11b";
+            return "%r11b";
         case AST_AsmR12_t:
-            return "r12b";
+            return "%r12b";
         case AST_AsmR13_t:
-            return "r13b";
+            return "%r13b";
         case AST_AsmR14_t:
-            return "r14b";
+            return "%r14b";
         case AST_AsmR15_t:
-            return "r15b";
+            return "%r15b";
         default:
             return get_reg_rsp_sse(node);
     }
@@ -189,33 +189,33 @@ static const char* get_reg_1b(AsmReg* node) {
 static const char* get_reg_4b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
-            return "eax";
+            return "%eax";
         case AST_AsmBx_t:
-            return "ebx";
+            return "%ebx";
         case AST_AsmDx_t:
-            return "edx";
+            return "%edx";
         case AST_AsmCx_t:
-            return "ecx";
+            return "%ecx";
         case AST_AsmDi_t:
-            return "edi";
+            return "%edi";
         case AST_AsmSi_t:
-            return "esi";
+            return "%esi";
         case AST_AsmR8_t:
-            return "r8d";
+            return "%r8d";
         case AST_AsmR9_t:
-            return "r9d";
+            return "%r9d";
         case AST_AsmR10_t:
-            return "r10d";
+            return "%r10d";
         case AST_AsmR11_t:
-            return "r11d";
+            return "%r11d";
         case AST_AsmR12_t:
-            return "r12d";
+            return "%r12d";
         case AST_AsmR13_t:
-            return "r13d";
+            return "%r13d";
         case AST_AsmR14_t:
-            return "r14d";
+            return "%r14d";
         case AST_AsmR15_t:
-            return "r15d";
+            return "%r15d";
         default:
             return get_reg_rsp_sse(node);
     }
@@ -238,33 +238,33 @@ static const char* get_reg_4b(AsmReg* node) {
 static const char* get_reg_8b(AsmReg* node) {
     switch (node->type()) {
         case AST_AsmAx_t:
-            return "rax";
+            return "%rax";
         case AST_AsmBx_t:
-            return "rbx";
+            return "%rbx";
         case AST_AsmDx_t:
-            return "rdx";
+            return "%rdx";
         case AST_AsmCx_t:
-            return "rcx";
+            return "%rcx";
         case AST_AsmDi_t:
-            return "rdi";
+            return "%rdi";
         case AST_AsmSi_t:
-            return "rsi";
+            return "%rsi";
         case AST_AsmR8_t:
-            return "r8";
+            return "%r8";
         case AST_AsmR9_t:
-            return "r9";
+            return "%r9";
         case AST_AsmR10_t:
-            return "r10";
+            return "%r10";
         case AST_AsmR11_t:
-            return "r11";
+            return "%r11";
         case AST_AsmR12_t:
-            return "r12";
+            return "%r12";
         case AST_AsmR13_t:
-            return "r13";
+            return "%r13";
         case AST_AsmR14_t:
-            return "r14";
+            return "%r14";
         case AST_AsmR15_t:
-            return "r15";
+            return "%r15";
         default:
             return get_reg_rsp_sse(node);
     }
@@ -362,7 +362,6 @@ static void imm_op(Ctx ctx, AsmImm* node) {
 }
 
 static void reg_op(Ctx ctx, AsmRegister* node, TInt byte) {
-    emit(ctx, "%");
     switch (byte) {
         case 1:
             emit(ctx, get_reg_1b(node->reg.get()));
@@ -382,7 +381,7 @@ static void memory_op(Ctx ctx, AsmMemory* node) {
     if (node->value != 0l) {
         emit_long(ctx, node->value);
     }
-    emit(ctx, "(%");
+    emit(ctx, "(");
     emit(ctx, get_reg_8b(node->reg.get()));
     emit(ctx, ")");
 }
@@ -402,9 +401,9 @@ static void data_op(Ctx ctx, AsmData* node) {
 }
 
 static void indexed_op(Ctx ctx, AsmIndexed* node) {
-    emit(ctx, "(%");
+    emit(ctx, "(");
     emit(ctx, get_reg_8b(node->reg_base.get()));
-    emit(ctx, ", %");
+    emit(ctx, ", ");
     emit(ctx, get_reg_8b(node->reg_index.get()));
     emit(ctx, ", ");
     emit_long(ctx, node->scale);
@@ -690,7 +689,7 @@ static void push_instr(Ctx ctx, AsmPush* node) {
 }
 
 static void pop_instr(Ctx ctx, AsmPop* node) {
-    emit(ctx, TAB TAB "popq %");
+    emit(ctx, TAB TAB "popq ");
     emit(ctx, get_reg_8b(node->reg.get()));
     emit(ctx, LF);
 }
