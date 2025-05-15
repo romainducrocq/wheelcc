@@ -14,6 +14,8 @@
 
 typedef FileIoContext* Ctx;
 
+#define WRITE_BUF_SIZE 4096
+
 bool find_file(const std::string& filename) {
     tinydir_file file = {};
     return tinydir_file_open(&file, filename.c_str()) != -1 && !file.is_dir;
@@ -67,7 +69,7 @@ void open_fwrite(Ctx ctx, const std::string& filename) {
         THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
     }
 
-    ctx->write_buf.reserve(4096);
+    ctx->write_buf.reserve(WRITE_BUF_SIZE);
     ctx->write_buf = "";
 }
 
@@ -89,11 +91,10 @@ static void write_chunk(Ctx ctx, const std::string& buf) {
 }
 
 void write_buffer(Ctx ctx, const char* buf) {
-    size_t chunk_size = 4096;
     ctx->write_buf += std::string(buf);
-    while (ctx->write_buf.size() >= chunk_size) {
-        write_chunk(ctx, ctx->write_buf.substr(0, chunk_size));
-        ctx->write_buf = ctx->write_buf.substr(chunk_size, ctx->write_buf.size() - chunk_size);
+    while (ctx->write_buf.size() >= WRITE_BUF_SIZE) {
+        write_chunk(ctx, ctx->write_buf.substr(0, WRITE_BUF_SIZE));
+        ctx->write_buf = ctx->write_buf.substr(WRITE_BUF_SIZE, ctx->write_buf.size() - WRITE_BUF_SIZE);
     }
 }
 

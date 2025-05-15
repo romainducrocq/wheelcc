@@ -24,6 +24,9 @@ struct GasCodeContext {
 
 typedef GasCodeContext* Ctx;
 
+#define LF "\n"
+#define TAB "    "
+
 static void emit(Ctx ctx, const char* code) { write_buffer(ctx->fileio, code); }
 
 // identifier -> $ identifier
@@ -490,9 +493,6 @@ static const char* get_binop(AsmBinaryOp* node, bool is_dbl) {
             THROW_ABORT;
     }
 }
-
-#define LF "\n"
-#define TAB "    "
 
 static void mov_instr(Ctx ctx, AsmMov* node) {
     emit(ctx, TAB TAB "mov");
