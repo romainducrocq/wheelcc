@@ -236,8 +236,8 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 static bool arg_parse_uint8(const char* arg, uint8_t& value) {
     char* end_ptr = nullptr;
     errno = 0;
-    value = (uint8_t)strtol(&arg[0], &end_ptr, 10);
-    return end_ptr == &arg[0];
+    value = (uint8_t)strtol(arg, &end_ptr, 10);
+    return end_ptr == arg;
 }
 
 static void arg_parse(Ctx ctx, char** argv) {

@@ -110,23 +110,19 @@ int32_t string_to_char_ascii(const std::string& str_char) {
     }
 }
 
-static intmax_t hex_string_to_intmax(const std::string& str_hex) {
-    std::vector<char> buf(str_hex.begin(), str_hex.end());
-    buf.push_back('\0');
+static intmax_t hex_string_to_intmax(const char* str_hex) {
     char* end_ptr = nullptr;
     errno = 0;
-    intmax_t intmax = strtoimax(&buf[0], &end_ptr, 16);
-
-    THROW_ABORT_IF(end_ptr == &buf[0]);
-
+    intmax_t intmax = strtoimax(str_hex, &end_ptr, 16);
+    THROW_ABORT_IF(end_ptr == str_hex);
     return intmax;
 }
 
-static int8_t hex_string_to_int8(const std::string& str_hex) { return (int8_t)hex_string_to_intmax(str_hex); }
+static int8_t hex_string_to_int8(const char* str_hex) { return (int8_t)hex_string_to_intmax(str_hex); }
 
-static int32_t hex_string_to_int32(const std::string& str_hex) { return (int32_t)hex_string_to_intmax(str_hex); }
+static int32_t hex_string_to_int32(const char* str_hex) { return (int32_t)hex_string_to_intmax(str_hex); }
 
-static int64_t hex_string_to_int64(const std::string& str_hex) { return (int64_t)hex_string_to_intmax(str_hex); }
+static int64_t hex_string_to_int64(const char* str_hex) { return (int64_t)hex_string_to_intmax(str_hex); }
 
 static std::string string_literal_byte_to_hex(int8_t val) {
     std::stringstream ss;
@@ -141,7 +137,7 @@ int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t by
             str_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
-    return hex_string_to_int8(str_hex);
+    return hex_string_to_int8(str_hex.c_str());
 }
 
 int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
@@ -151,7 +147,7 @@ int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t 
             str_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
-    return hex_string_to_int32(str_hex);
+    return hex_string_to_int32(str_hex.c_str());
 }
 
 int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
@@ -161,7 +157,7 @@ int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t 
             str_hex += string_literal_byte_to_hex(string_literal[byte]);
         }
     }
-    return hex_string_to_int64(str_hex);
+    return hex_string_to_int64(str_hex.c_str());
 }
 
 std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
@@ -215,44 +211,32 @@ uint64_t dbl_to_binary(double decimal) {
     return binary;
 }
 
-intmax_t string_to_intmax(ErrorsContext* ctx, const std::string& str_int, size_t line) {
-    std::vector<char> buf(str_int.begin(), str_int.end());
-    buf.push_back('\0');
+intmax_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line) {
     char* end_ptr = nullptr;
     errno = 0;
-    intmax_t intmax = strtoimax(&buf[0], &end_ptr, 10);
-
-    if (end_ptr == &buf[0]) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int.c_str()), line);
+    intmax_t intmax = strtoimax(str_int, &end_ptr, 10);
+    if (end_ptr == str_int) {
+        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int), line);
     }
-
     return intmax;
 }
 
-uintmax_t string_to_uintmax(ErrorsContext* ctx, const std::string& str_uint, size_t line) {
-    std::vector<char> buf(str_uint.begin(), str_uint.end());
-    buf.push_back('\0');
+uintmax_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line) {
     char* end_ptr = nullptr;
     errno = 0;
-    uintmax_t uintmax = strtoumax(&buf[0], &end_ptr, 10);
-
-    if (end_ptr == &buf[0]) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint.c_str()), line);
+    uintmax_t uintmax = strtoumax(str_uint, &end_ptr, 10);
+    if (end_ptr == str_uint) {
+        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint), line);
     }
-
     return uintmax;
 }
 
-double string_to_dbl(ErrorsContext* ctx, const std::string& str_dbl, size_t line) {
-    std::vector<char> buf(str_dbl.begin(), str_dbl.end());
-    buf.push_back('\0');
+double string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line) {
     char* end_ptr = nullptr;
     errno = 0;
-    double float64 = strtod(&buf[0], &end_ptr);
-
-    if (end_ptr == &buf[0]) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl.c_str()), line);
+    double float64 = strtod(str_dbl, &end_ptr);
+    if (end_ptr == str_dbl) {
+        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl), line);
     }
-
     return float64;
 }

@@ -25,8 +25,8 @@ int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t 
 int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at);
 std::string string_literal_to_const(const std::vector<int8_t>& string_literal);
 uint64_t dbl_to_binary(double decimal);
-intmax_t string_to_intmax(ErrorsContext* ctx, const std::string& str_int, size_t line);
-uintmax_t string_to_uintmax(ErrorsContext* ctx, const std::string& str_uint, size_t line);
-double string_to_dbl(ErrorsContext* ctx, const std::string& str_dbl, size_t line);
+intmax_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line);
+uintmax_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line);
+double string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line);
 
 #endif
