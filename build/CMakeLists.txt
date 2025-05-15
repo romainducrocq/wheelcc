@@ -5,7 +5,7 @@ project("${PACKAGE_NAME}")
 
 set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wextra -Wpedantic")
 if(__NDEBUG__)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -D__NDEBUG__")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -pedantic-errors -D__NDEBUG__")
 endif(__NDEBUG__)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
