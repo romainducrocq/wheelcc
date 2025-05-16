@@ -58,7 +58,7 @@ Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Li
 $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
 $ cd wheelcc/bin/
 ```
-- Configure the repo and install the build/runtime dependencies: `gcc g++ make cmake`  
+- Configure the repo and install the (only) build+runtime dependency: `gcc` >= 8.1.0  
 ```
 $ ./configure.sh
 ```
@@ -173,7 +173,7 @@ wheelcc: error: compilation failed
 
 ### Test
 
-- cd to the test directory, get the testtime dependencies: `diffutils valgrind`  
+- cd to the test directory, get the testtime dependencies: `make cmake diffutils valgrind`  
 ```
 $ cd test/
 $ ./get-dependencies.sh
@@ -232,7 +232,7 @@ There is no built-in linker, the compiler outputs assembly that is then linked w
 
 ### Dependencies
 
-wheelcc aims to be self-contained and as less bloated as possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, gcc/g++ (>= 8.1.0) and cmake, which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
+wheelcc aims to be self-contained and as less bloated as possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash and gcc (>= 8.1.0), which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
 
 ### Limitations
 
