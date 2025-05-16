@@ -5,6 +5,8 @@ function apt_install () {
     sudo apt-get update
     sudo apt-get -y upgrade
     for PKG in $(echo "\
+        make      \
+        cmake     \
         diffutils \
         valgrind  \
     "); do
@@ -19,6 +21,8 @@ function dnf_install () {
     i=0
     sudo dnf -y upgrade
     for PKG in $(echo "\
+        make.x86_64      \
+        cmake.x86_64     \
         diffutils.x86_64 \
         valgrind.x86_64  \
     "); do
@@ -33,6 +37,8 @@ function pacman_install () {
     i=0
     sudo pacman -Syu
     for PKG in $(echo "\
+        make      \
+        cmake     \
         diffutils \
         valgrind  \
     "); do
@@ -52,6 +58,8 @@ function no_install () {
 function get_install () {
     i=0
     for PKG in $(echo "\
+        make      \
+        cmake     \
         diffutils \
         valgrind  \
     "); do
@@ -75,12 +83,24 @@ function get_install () {
 INSTALL_Y=""
 INSTALL_MSG=""
 
-INSTALL_DIFFUTILS=0
-INSTALL_VALGRIND=1
+INSTALL_MAKE=0
+INSTALL_CMAKE=1
+INSTALL_DIFFUTILS=2
+INSTALL_VALGRIND=3
 
 INSTALL_PKGS=(
-    0 0
+    0 0 0 0
 )
+
+make --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_PKGS[${INSTALL_MAKE}]=1
+fi
+
+cmake --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_PKGS[${INSTALL_CMAKE}]=1
+fi
 
 diff --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
