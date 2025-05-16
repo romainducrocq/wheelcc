@@ -8,34 +8,6 @@ if [ ${?} -ne 0 ]; then
     exit 1
 fi
 
-function failed_install () {
-    echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘${1}’\033[0m"
-}
-
-function apt_install_gcc () {
-    sudo apt-get update
-    if [ ${?} -ne 0 ]; then failed_install "gcc"; return 1; fi
-    sudo apt-get -y install gcc g++
-    if [ ${?} -ne 0 ]; then failed_install "gcc"; return 1; fi
-    return 0
-}
-
-function dnf_install_gcc () {
-    sudo dnf check-update
-    if [ ${?} -ne 0 ]; then failed_install "gcc"; return 1; fi
-    sudo dnf -y install gcc.x86_64 gcc-c++.x86_64
-    if [ ${?} -ne 0 ]; then failed_install "gcc"; return 1; fi
-    return 0
-}
-
-function pacman_install_gcc () {
-    sudo pacman -Syy
-    if [ ${?} -ne 0 ]; then failed_install "gcc"; return 1; fi
-    yes | sudo pacman -S gcc
-    if [ ${?} -ne 0 ]; then failed_install "gcc"; return 1; fi
-    return 0
-}
-
 INSTALL_GCC=0
 gcc --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
@@ -64,17 +36,17 @@ if [ "${INSTALL_Y}" = "y" ]; then
         "Debian GNU/Linux") ;&
         "Linux Mint") ;&
         "Ubuntu")
-            apt_install_gcc
+            sudo apt-get update && sudo apt-get -y install gcc g++
             INSTALL_GCC=${?}
             ;;
         "openSUSE Leap") ;&
         "Rocky Linux")
-            dnf_install_gcc
+            sudo dnf check-update && sudo dnf -y install gcc.x86_64 gcc-c++.x86_64
             INSTALL_GCC=${?}
             ;;
         "Arch Linux") ;&
         "EndeavourOS")
-            pacman_install_gcc
+            sudo pacman -Syy && yes | sudo pacman -S gcc
             INSTALL_GCC=${?}
             ;;
         # Not tested yet
@@ -93,10 +65,14 @@ if [ "${INSTALL_Y}" = "y" ]; then
         # "Manjaro") ;&
         *)
             echo -e "\033[1;34mwarning:\033[0m this distribution was not tested yet, use at your own risk!"
+            INSTALL_Y="n"
     esac
 fi
 
 if [ ${INSTALL_GCC} -ne 0 ]; then
+    if [ "${INSTALL_Y}" = "y" ]; then
+        echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘gcc’\033[0m"
+    fi
     echo -e "\033[1;34mwarning:\033[0m install \033[1m‘gcc’\033[0m >= 8.1.0 before building"
 fi
 
