@@ -25,9 +25,8 @@ Next development milestones planned for this year:
 - [x] Add IR optimizations
 - [x] Add a register allocator
 - [ ] Clean up the codebase
-- [ ] Migrate the compiler to C
 - [ ] Support MacOS
-- [ ] Start an experimental stdlib
+- [ ] Migrate the compiler to C
 
 ## Migrating to C
 
@@ -58,7 +57,7 @@ Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Li
 $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
 $ cd wheelcc/bin/
 ```
-- Configure the repo and install the (only) build+runtime dependency: `gcc` >= 8.1.0  
+- Configure the repo and install the build+runtime dependencies: `gcc` >= 8.1.0  
 ```
 $ ./configure.sh
 ```
@@ -220,15 +219,11 @@ wheelcc also has comprehensive compile error handling, and outputs error message
 
 ### Optimization
 
-wheelcc can perform multiple compiler performance optimizations for smaller and faster assembly outputs. The level 1 `-O1` command-line option enables all IR optimizations: constant folding, unreachable code elimination, copy propagation and dead store elimination. The level 2 `-O2` (TBD) command-line option enables backend register allocation with coalescing (but it does not enable level 1 optimizations). The `-O3` option enables all optimizations (level 1 and 2) and the `-O0` option disables them all. By default, only `-O2` is enabled.
+wheelcc can perform multiple compiler performance optimizations for smaller and faster assembly outputs. The level 1 `-O1` command-line option enables all IR optimizations: constant folding, unreachable code elimination, copy propagation and dead store elimination. The level 2 `-O2` command-line option enables backend register allocation with coalescing (but it does not enable level 1 optimizations). The `-O3` option enables all optimizations (level 1 and 2) and the `-O0` option disables them all. By default, only `-O2` is enabled.
 
 ### Linker
 
 There is no built-in linker, the compiler outputs assembly that is then linked with gcc/ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.  
-
-### Standard library
-
-(TBD, an experimental standard library is planned in the future, with at least support for the compiler tests.)
 
 ### Dependencies
 
