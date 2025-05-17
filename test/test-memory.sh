@@ -103,10 +103,15 @@ function test_all () {
 
 DISTRO="$(cat /etc/os-release | grep -P "^NAME=" | cut -d"\"" -f2)"
 case ${DISTRO} in
-    "Arch Linux") ;&
-    "EndeavourOS") ;&
-    "Manjaro")
+    "Arch Linux")
         export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
+        ;;
+    "EndeavourOS")
+        export DEBUGINFOD_URLS="https://debuginfod.artixlinux.org"
+        ;;
+    # Not tested yet
+    # "Manjaro")
+    *)
 esac
 
 PASS=0
