@@ -19,6 +19,7 @@ perf.data
 
 /bin/wheelcc
 /bin/package_name.txt
+/bin/crt.o
 /test/tests/
 /test/test_results/
 /test/tmp/
