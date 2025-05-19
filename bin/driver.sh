@@ -2,7 +2,7 @@
 
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
 PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
-CC="gcc -pedantic-errors -std=c17"
+LD_LIB_64="/lib64/ld-linux-x86-64.so.2"
 
 ARGC=${#}
 ARGV=(${@})
@@ -94,6 +94,9 @@ function clean_exit () {
             fi
         fi
     done
+    if [ -f "${PACKAGE_DIR}/crt.o" ]; then
+        rm ${PACKAGE_DIR}/crt.o
+    fi
     exit ${EXIT_CODE}
 }
 
@@ -309,7 +312,6 @@ function parse_file_2_arg () {
         raise_error "$(em "${FILE}"): file format not recognized"
     else
        FILES="${FILES} ${FILE%.*}"
-       IS_FILE_2=1
     fi
     return 0
 }
@@ -447,8 +449,8 @@ function add_linklibs () {
 function preprocess () {
     if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
-            verbose "Preprocess -> ${FILE}.i"
-            ${CC} -E -P ${FILE}.c -o ${FILE}.i
+            verbose "Preprocess (gcc) -> ${FILE}.i"
+            gcc -E -P ${FILE}.c -o ${FILE}.i
             if [ ${?} -ne 0 ]; then
                 raise_error "preprocessing failed"
             fi
@@ -460,12 +462,12 @@ function preprocess () {
 
 function compile () {
     for FILE in ${FILES}; do
-        verbose "Compile    -> ${FILE}.${EXT_OUT}"
         SOURCE_DIR="$(dirname ${FILE})/"
         echo "${INCLUDE_DIRS}" | grep -q ${SOURCE_DIR}
         if [ ${?} -eq 0 ]; then
             SOURCE_DIR=""
         fi
+        verbose "Compile (${PACKAGE_NAME}) -> ${FILE}.${EXT_OUT}"
         ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS}
         if [ ${?} -ne 0 ]; then
             raise_error "compilation failed"
@@ -474,31 +476,49 @@ function compile () {
     return 0
 }
 
+function assemble () {
+    for FILE in ${FILES}; do
+        verbose "Assemble (as) -> ${FILE}.o"
+        as --64 ${FILE}.s -o ${FILE}.o
+        if [ ${?} -ne 0 ]; then
+            raise_error "assembling failed"
+        fi
+    done
+}
+
 function link () {
     if [ ${DEBUG_ENUM} -le 127 ]; then
         case ${LINK_ENUM} in
             0)
-                FILES_OUT="${FILES}.${EXT_OUT}"
-                if [ ${IS_FILE_2} -eq 1 ]; then
-                    FILES_OUT="$(echo "${FILES_OUT}" |\
-                        sed "s/ /.${EXT_OUT} /g")"
+                assemble
+                if [ ! -f "${LD_LIB_64}" ]; then
+                    LD_LIB_64=""
                 fi
-                ${CC} ${FILES_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
-                if [ ${?} -ne 0 ]; then
-                    raise_error "linking failed"
+                if [ ! -z "${LD_LIB_64}" ]; then
+                    verbose "Assemble (as) -> ${PACKAGE_DIR}/crt.o"
+                    as --64 ${PACKAGE_DIR}/crt.s -o ${PACKAGE_DIR}/crt.o
+                    if [ ${?} -ne 0 ]; then
+                        raise_error "assembling failed"
+                    fi
+                    verbose "Link (ld) -> ${NAME_OUT}"
+                    ld --build-id -m elf_x86_64 --hash-style=gnu -dynamic-linker ${LD_LIB_64} -pie -lc ${PACKAGE_DIR}/crt.o \
+                        ${FILES// /.o }.o ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
+                    if [ ${?} -ne 0 ]; then
+                        LD_LIB_64=""
+                    fi
                 fi
-                verbose "Link       -> ${NAME_OUT}"
+                if [ -z "${LD_LIB_64}" ]; then
+                    verbose "Link (gcc) -> ${NAME_OUT}"
+                    gcc ${FILES// /.o }.o ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
+                    if [ ${?} -ne 0 ]; then
+                        raise_error "linking failed"
+                    fi
+                fi
                 ;;
             1)
                 ;;
             2)
-                for FILE in ${FILES}; do
-                    ${CC} -c ${FILE}.${EXT_OUT} ${LINK_DIRS} ${LINK_LIBS} -o ${FILE}.o
-                    if [ ${?} -ne 0 ]; then
-                        raise_error "assembling failed"
-                    fi
-                    verbose "Assemble   -> ${FILE}.o"
-                done
+                assemble
                 ;;
             *)
                 raise_error "linking failed"
@@ -509,7 +529,6 @@ function link () {
 
 IS_VERBOSE=0
 IS_PREPROC=0
-IS_FILE_2=0
 
 DEBUG_ENUM=0
 LINK_ENUM=0
