@@ -17,7 +17,7 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with gcc/ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with as and ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
 
 ## 2025 Roadmap
 
@@ -57,7 +57,7 @@ Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Li
 $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
 $ cd wheelcc/bin/
 ```
-- Configure the repo and install the build+runtime dependencies: `gcc` >= 8.1.0  
+- Configure the repo and install the build+runtime dependencies: `binutils`, `gcc` >= 8.1.0  
 ```
 $ ./configure.sh
 ```
@@ -223,11 +223,11 @@ wheelcc can perform multiple compiler performance optimizations for smaller and 
 
 ### Linker
 
-There is no built-in linker, the compiler outputs assembly that is then linked with gcc/ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.  
+There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.  
 
 ### Dependencies
 
-wheelcc aims to be self-contained and as less bloated as possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash and gcc (>= 8.1.0), which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
+wheelcc aims to be self-contained and as less bloated as possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0), which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
 
 ### Limitations
 
