@@ -17,7 +17,7 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then linked with as and ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then assembled and linked with as and ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
 
 ## 2025 Roadmap
 
