@@ -463,7 +463,7 @@ function preprocess () {
 function compile () {
     for FILE in ${FILES}; do
         SOURCE_DIR="$(dirname ${FILE})/"
-        echo "${INCLUDE_DIRS}" | grep -q ${SOURCE_DIR}
+        echo "${INCLUDE_DIRS}" | grep -q "${SOURCE_DIR} "
         if [ ${?} -eq 0 ]; then
             SOURCE_DIR=""
         fi
