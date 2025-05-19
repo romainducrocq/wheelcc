@@ -8,25 +8,36 @@ if [ ${?} -ne 0 ]; then
     exit 1
 fi
 
-INSTALL_GCC=0
+INSTALL_CC=0
+
+as --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_CC=1
+fi
+
+ld --help > /dev/null 2>&1
+if [ ${?} -ne 0 ]; then
+    INSTALL_CC=1
+fi
+
 gcc --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
-    INSTALL_GCC=1
+    INSTALL_CC=1
 else
     GCC_MAJOR_VERSION=$(gcc -dumpversion | cut -d"." -f1)
     if [ ${GCC_MAJOR_VERSION} -lt 8 ]; then
-        INSTALL_GCC=1
+        INSTALL_CC=1
     elif [ ${GCC_MAJOR_VERSION} -eq 8 ]; then
         GCC_MINOR_VERSION=$(gcc -dumpfullversion | cut -d"." -f2)
         if [ ${GCC_MINOR_VERSION} -eq 0 ]; then
-            INSTALL_GCC=1
+            INSTALL_CC=1
         fi
     fi
 fi
 
 INSTALL_Y="n"
-if [ ${INSTALL_GCC} -ne 0 ]; then
-    echo -e -n "install missing dependency \033[1m‘gcc’\033[0m >= 8.1.0? [y/n]: "
+if [ ${INSTALL_CC} -ne 0 ]; then
+    echo -e -n "install missing dependencies \033[1m‘binutils’\033[0m, \033[1m‘gcc’\033[0m >= 8.1.0? [y/n]: "
     read -p "" INSTALL_Y
 fi
 
@@ -36,18 +47,18 @@ if [ "${INSTALL_Y}" = "y" ]; then
         "Debian GNU/Linux") ;&
         "Linux Mint") ;&
         "Ubuntu")
-            sudo apt-get update && sudo apt-get -y install gcc g++
-            INSTALL_GCC=${?}
+            sudo apt-get update && sudo apt-get -y install binutils gcc g++
+            INSTALL_CC=${?}
             ;;
         "openSUSE Leap") ;&
         "Rocky Linux")
-            sudo dnf check-update && sudo dnf -y install gcc.x86_64 gcc-c++.x86_64
-            INSTALL_GCC=${?}
+            sudo dnf check-update && sudo dnf -y install binutils.x86_64 gcc.x86_64 gcc-c++.x86_64
+            INSTALL_CC=${?}
             ;;
         "Arch Linux") ;&
         "EndeavourOS")
-            sudo pacman -Syy && yes | sudo pacman -S gcc
-            INSTALL_GCC=${?}
+            sudo pacman -Syy && yes | sudo pacman -S binutils gcc
+            INSTALL_CC=${?}
             ;;
         # Not tested yet
         # "elementary OS") ;&
@@ -69,11 +80,11 @@ if [ "${INSTALL_Y}" = "y" ]; then
     esac
 fi
 
-if [ ${INSTALL_GCC} -ne 0 ]; then
+if [ ${INSTALL_CC} -ne 0 ]; then
     if [ "${INSTALL_Y}" = "y" ]; then
-        echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘gcc’\033[0m"
+        echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘binutils’\033[0m, \033[1m‘gcc’\033[0m"
     fi
-    echo -e "\033[1;34mwarning:\033[0m install \033[1m‘gcc’\033[0m >= 8.1.0 before building"
+    echo -e "\033[1;34mwarning:\033[0m install \033[1m‘binutils’\033[0m, \033[1m‘gcc’\033[0m >= 8.1.0 before building"
 fi
 
 echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
