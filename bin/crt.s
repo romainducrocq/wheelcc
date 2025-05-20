@@ -9,5 +9,5 @@ _start:
     call main
     movl %eax, %edi
     xorl %eax, %eax
-    call exit
+    call exit@PLT
         .section .note.GNU-stack,"",@progbits
