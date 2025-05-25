@@ -730,7 +730,7 @@ static void binary_dbl_to_addr(Ctx ctx, AsmBinary* node) {
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Xmm15);
     std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
     node->dst = dst;
-    push_fix_instr(ctx, std::make_unique<AsmMov>(asm_type, src, dst));
+    // TODO // push_fix_instr(ctx, std::make_unique<AsmMov>(asm_type, src, dst));
     swap_fix_instr_back(ctx);
     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(dst), std::move(src)));
 }
@@ -758,7 +758,7 @@ static void binary_imul_to_addr(Ctx ctx, AsmBinary* node) {
     std::shared_ptr<AsmOperand> dst = gen_register(REG_R11);
     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
     node->dst = dst;
-    push_fix_instr(ctx, std::make_unique<AsmMov>(asm_type, src, dst));
+    // TODO // push_fix_instr(ctx, std::make_unique<AsmMov>(asm_type, src, dst));
     swap_fix_instr_back(ctx);
     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(dst), std::move(src)));
 }
@@ -915,8 +915,8 @@ static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
         std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmSub>();
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(8ul, true, false, false);
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
-        ctx->p_fix_instrs->back() =
-            std::make_unique<AsmBinary>(std::move(binop), asm_type_src, std::move(src), std::move(dst));
+        // TODO // ctx->p_fix_instrs->back() = std::make_unique<AsmBinary>(std::move(binop), asm_type_src,
+        // std::move(src), std::move(dst));
     }
     {
         std::shared_ptr<AsmOperand> dst = gen_memory(REG_Sp, 0l);
