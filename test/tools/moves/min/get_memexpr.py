@@ -24,7 +24,7 @@ id_set = set({})
 for filename in filenames:
     with open(filename) as file:
         for line in file:
-            for x in finditer(r"std::unordered_map<[\w<>:]+> ", line.rstrip()):
+            for x in finditer(r"std::shared_ptr<[_a-zA-Z]\w*\b> ", line.rstrip()):
                 print(x.group())
                 #id_set.add(x.group())
 

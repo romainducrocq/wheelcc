@@ -57,7 +57,7 @@ struct BackendSymbol : Ast {
 struct BackendObj : BackendSymbol {
     AST_T type() override;
     BackendObj() = default;
-    BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyType> asm_type);
+    BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyType>&& asm_type);
 
     bool is_static;
     bool is_const;

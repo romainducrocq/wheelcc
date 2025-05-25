@@ -55,10 +55,10 @@ FunType::FunType(std::vector<std::shared_ptr<Type>>@@ param_types, std::shared_p
     , param_types(std::move(param_types))
     , ret_type(std::move(ret_type)) {}
 
-Pointer::Pointer(std::shared_ptr<Type> ref_type)
+Pointer::Pointer(std::shared_ptr<Type>@@ ref_type)
     : ref_type(std::move(ref_type)) {}
 
-Array::Array(TLong size, std::shared_ptr<Type> elem_type)
+Array::Array(TLong size, std::shared_ptr<Type>@@ elem_type)
     : size(size)
     , elem_type(std::move(elem_type)) {}
 
@@ -90,7 +90,7 @@ DoubleInit::DoubleInit(TIdentifier dbl_const)
 ZeroInit::ZeroInit(TLong byte)
     : byte(byte) {}
 
-StringInit::StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral> literal)
+StringInit::StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral>@@ literal)
     : string_const(string_const)
     , is_null_term(is_null_term)
     , literal(std::move(literal)) {}
@@ -105,18 +105,18 @@ FunAttr::FunAttr(bool is_def, bool is_glob)
     : is_def(is_def)
     , is_glob(is_glob) {}
 
-StaticAttr::StaticAttr(bool is_glob, std::shared_ptr<InitialValue> init)
+StaticAttr::StaticAttr(bool is_glob, std::shared_ptr<InitialValue>@@ init)
     : is_glob(is_glob)
     , init(std::move(init)) {}
 
-ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init)
+ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit>@@ static_init)
     : static_init(std::move(static_init)) {}
 
 Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr>@@ attrs)
     : type_t(std::move(type_t))
     , attrs(std::move(attrs)) {}
 
-StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type)
+StructMember::StructMember(TLong offset, std::shared_ptr<Type>@@ member_type)
     : offset(offset)
     , member_type(std::move(member_type)) {}
 

@@ -19,7 +19,7 @@ AST_T BackendFun::type() { return AST_BackendFun_t; }
 
 ByteArray::ByteArray(TLong size, TInt alignment) : size(size), alignment(alignment) {}
 
-BackendObj::BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyType> asm_type) :
+BackendObj::BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyType>&& asm_type) :
     is_static(is_static), is_const(is_const), asm_type(std::move(asm_type)) {}
 
 BackendFun::BackendFun(bool is_def) : is_def(is_def) {}

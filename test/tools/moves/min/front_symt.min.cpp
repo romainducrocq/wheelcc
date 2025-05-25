@@ -1,6 +1,6 @@
-FunType(std::vector<std::shared_ptr<Type>>@@ param_types, std::shared_ptr<Type> ret_type)+
-Pointer(std::shared_ptr<Type> ref_type)+
-Array(TLong size, std::shared_ptr<Type> elem_type)+
+FunType(std::vector<std::shared_ptr<Type>@@>@@ param_types, std::shared_ptr<Type>@@ ret_type)+
+Pointer(std::shared_ptr<Type>@@ ref_type)+
+Array(TLong size, std::shared_ptr<Type>@@ elem_type)+
 Structure(TIdentifier tag, bool is_union)+
 IntInit(TInt value)+
 LongInit(TLong value)+
@@ -10,12 +10,12 @@ CharInit(TChar value)+
 UCharInit(TUChar value)+
 DoubleInit(TIdentifier dbl_const)+
 ZeroInit(TLong byte)+
-StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral> literal)+
+StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral>@@ literal)+
 PointerInit(TIdentifier name)+
-Initial(std::vector<std::shared_ptr<StaticInit>>@@ static_inits)+
+Initial(std::vector<std::shared_ptr<StaticInit>@@>@@ static_inits)+
 FunAttr(bool is_def, bool is_glob)+
-StaticAttr(bool is_glob, std::shared_ptr<InitialValue> init)+
-ConstantAttr(std::shared_ptr<StaticInit> static_init)+
-Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr>@@ attrs)+
-StructMember(TLong offset, std::shared_ptr<Type> member_type)+
+StaticAttr(bool is_glob, std::shared_ptr<InitialValue>@@ init)+
+ConstantAttr(std::shared_ptr<StaticInit>@@ static_init)+
+Symbol(std::shared_ptr<Type>@@ type_t, std::unique_ptr<IdentifierAttr>@@ attrs)+
+StructMember(TLong offset, std::shared_ptr<Type>@@ member_type)+
 StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier>@@ member_names, std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>@@ members)+

@@ -71,7 +71,7 @@ struct Void : Type {
 struct FunType : Type {
     AST_T type() override;
     FunType() = default;
-    FunType(std::vector<std::shared_ptr<Type>>&& param_types, std::shared_ptr<Type> ret_type);
+    FunType(std::vector<std::shared_ptr<Type>>&& param_types, std::shared_ptr<Type>&& ret_type);
 
     TULong param_reg_mask;
     TULong ret_reg_mask;
@@ -82,7 +82,7 @@ struct FunType : Type {
 struct Pointer : Type {
     AST_T type() override;
     Pointer() = default;
-    Pointer(std::shared_ptr<Type> ref_type);
+    Pointer(std::shared_ptr<Type>&& ref_type);
 
     std::shared_ptr<Type> ref_type;
 };
@@ -90,7 +90,7 @@ struct Pointer : Type {
 struct Array : Type {
     AST_T type() override;
     Array() = default;
-    Array(TLong size, std::shared_ptr<Type> elem_type);
+    Array(TLong size, std::shared_ptr<Type>&& elem_type);
 
     TLong size;
     std::shared_ptr<Type> elem_type;
@@ -188,7 +188,7 @@ struct ZeroInit : StaticInit {
 struct StringInit : StaticInit {
     AST_T type() override;
     StringInit() = default;
-    StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral> literal);
+    StringInit(TIdentifier string_const, bool is_null_term, std::shared_ptr<CStringLiteral>&& literal);
 
     TIdentifier string_const;
     bool is_null_term;
@@ -250,7 +250,7 @@ struct FunAttr : IdentifierAttr {
 struct StaticAttr : IdentifierAttr {
     AST_T type() override;
     StaticAttr() = default;
-    StaticAttr(bool is_glob, std::shared_ptr<InitialValue> init);
+    StaticAttr(bool is_glob, std::shared_ptr<InitialValue>&& init);
 
     bool is_glob;
     std::shared_ptr<InitialValue> init;
@@ -259,7 +259,7 @@ struct StaticAttr : IdentifierAttr {
 struct ConstantAttr : IdentifierAttr {
     AST_T type() override;
     ConstantAttr() = default;
-    ConstantAttr(std::shared_ptr<StaticInit> static_init);
+    ConstantAttr(std::shared_ptr<StaticInit>&& static_init);
 
     std::shared_ptr<StaticInit> static_init;
 };
@@ -274,7 +274,7 @@ struct LocalAttr : IdentifierAttr {
 struct Symbol : Ast {
     AST_T type() override;
     Symbol() = default;
-    Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr>&& attrs);
+    Symbol(std::shared_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&& attrs);
 
     std::shared_ptr<Type> type_t;
     std::unique_ptr<IdentifierAttr> attrs;
@@ -286,7 +286,7 @@ struct Symbol : Ast {
 struct StructMember : Ast {
     AST_T type() override;
     StructMember() = default;
-    StructMember(TLong offset, std::shared_ptr<Type> member_type);
+    StructMember(TLong offset, std::shared_ptr<Type>&& member_type);
 
     TLong offset;
     std::shared_ptr<Type> member_type;
