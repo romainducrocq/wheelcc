@@ -103,11 +103,11 @@ TacUIntToDouble::TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<
 TacFunCall::TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args, std::shared_ptr<TacValue> dst) :
     name(name), args(std::move(args)), dst(std::move(dst)) {}
 
-TacUnary::TacUnary(std::unique_ptr<TacUnaryOp> unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst) :
+TacUnary::TacUnary(std::unique_ptr<TacUnaryOp>&& unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst) :
     unop(std::move(unop)), src(std::move(src)), dst(std::move(dst)) {}
 
-TacBinary::TacBinary(std::unique_ptr<TacBinaryOp> binop, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2,
-    std::shared_ptr<TacValue> dst) :
+TacBinary::TacBinary(std::unique_ptr<TacBinaryOp>&& binop, std::shared_ptr<TacValue> src1,
+    std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst) :
     binop(std::move(binop)),
     src1(std::move(src1)), src2(std::move(src2)), dst(std::move(dst)) {}
 
