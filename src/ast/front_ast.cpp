@@ -108,7 +108,7 @@ CAbstractPointer::CAbstractPointer(std::unique_ptr<CAbstractDeclarator>&& abstra
 CAbstractArray::CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator>&& abstract_decltor) :
     size(size), abstract_decltor(std::move(abstract_decltor)) {}
 
-CParam::CParam(std::unique_ptr<CDeclarator>&& decltor, std::shared_ptr<Type> param_type) :
+CParam::CParam(std::unique_ptr<CDeclarator>&& decltor, std::shared_ptr<Type>&& param_type) :
     decltor(std::move(decltor)), param_type(std::move(param_type)) {}
 
 CIdent::CIdent(TIdentifier name) : name(name) {}
@@ -119,19 +119,19 @@ CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator>&& de
     size(size), decltor(std::move(decltor)) {}
 
 CFunDeclarator::CFunDeclarator(
-    std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator>&& decltor) :
+    std::vector<std::unique_ptr<CParam>>&& param_list, std::unique_ptr<CDeclarator>&& decltor) :
     param_list(std::move(param_list)),
     decltor(std::move(decltor)) {}
 
 CExp::CExp(size_t line) : line(line) {}
 
-CConstant::CConstant(std::shared_ptr<CConst> constant, size_t line) : CExp(line), constant(std::move(constant)) {}
+CConstant::CConstant(std::shared_ptr<CConst>&& constant, size_t line) : CExp(line), constant(std::move(constant)) {}
 
-CString::CString(std::shared_ptr<CStringLiteral> literal, size_t line) : CExp(line), literal(std::move(literal)) {}
+CString::CString(std::shared_ptr<CStringLiteral>&& literal, size_t line) : CExp(line), literal(std::move(literal)) {}
 
 CVar::CVar(TIdentifier name, size_t line) : CExp(line), name(name) {}
 
-CCast::CCast(std::unique_ptr<CExp>&& exp, std::shared_ptr<Type> target_type, size_t line) :
+CCast::CCast(std::unique_ptr<CExp>&& exp, std::shared_ptr<Type>&& target_type, size_t line) :
     CExp(line), exp(std::move(exp)), target_type(std::move(target_type)) {}
 
 CUnary::CUnary(std::unique_ptr<CUnaryOp>&& unop, std::unique_ptr<CExp>&& exp, size_t line) :
@@ -164,7 +164,8 @@ CSubscript::CSubscript(std::unique_ptr<CExp>&& primary_exp, std::unique_ptr<CExp
 
 CSizeOf::CSizeOf(std::unique_ptr<CExp>&& exp, size_t line) : CExp(line), exp(std::move(exp)) {}
 
-CSizeOfT::CSizeOfT(std::shared_ptr<Type> target_type, size_t line) : CExp(line), target_type(std::move(target_type)) {}
+CSizeOfT::CSizeOfT(std::shared_ptr<Type>&& target_type, size_t line) :
+    CExp(line), target_type(std::move(target_type)) {}
 
 CDot::CDot(TIdentifier member, std::unique_ptr<CExp>&& structure, size_t line) :
     CExp(line), member(member), structure(std::move(structure)) {}
@@ -224,7 +225,7 @@ CSingleInit::CSingleInit(std::unique_ptr<CExp>&& exp) : exp(std::move(exp)) {}
 CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>>&& initializers) :
     initializers(std::move(initializers)) {}
 
-CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type, size_t line) :
+CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type>&& member_type, size_t line) :
     member_name(member_name), member_type(std::move(member_type)), line(line) {}
 
 CStructDeclaration::CStructDeclaration(
@@ -232,15 +233,15 @@ CStructDeclaration::CStructDeclaration(
     tag(tag),
     is_union(is_union), members(std::move(members)), line(line) {}
 
-CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params,
-    std::unique_ptr<CBlock>&& body, std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass>&& storage_class,
+CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier>&& params,
+    std::unique_ptr<CBlock>&& body, std::shared_ptr<Type>&& fun_type, std::unique_ptr<CStorageClass>&& storage_class,
     size_t line) :
     name(name),
     params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
     storage_class(std::move(storage_class)), line(line) {}
 
 CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer>&& init,
-    std::shared_ptr<Type> var_type, std::unique_ptr<CStorageClass>&& storage_class, size_t line) :
+    std::shared_ptr<Type>&& var_type, std::unique_ptr<CStorageClass>&& storage_class, size_t line) :
     name(name),
     init(std::move(init)), var_type(std::move(var_type)), storage_class(std::move(storage_class)), line(line) {}
 

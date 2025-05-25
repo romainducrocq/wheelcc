@@ -180,7 +180,7 @@ struct CDeclarator;
 struct CParam : Ast {
     AST_T type() override;
     CParam() = default;
-    CParam(std::unique_ptr<CDeclarator>&& decltor, std::shared_ptr<Type> param_type);
+    CParam(std::unique_ptr<CDeclarator>&& decltor, std::shared_ptr<Type>&& param_type);
 
     std::unique_ptr<CDeclarator> decltor;
     std::shared_ptr<Type> param_type;
@@ -224,7 +224,7 @@ struct CArrayDeclarator : CDeclarator {
 struct CFunDeclarator : CDeclarator {
     AST_T type() override;
     CFunDeclarator() = default;
-    CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator>&& decltor);
+    CFunDeclarator(std::vector<std::unique_ptr<CParam>>&& param_list, std::unique_ptr<CDeclarator>&& decltor);
 
     std::vector<std::unique_ptr<CParam>> param_list;
     std::unique_ptr<CDeclarator> decltor;
@@ -260,7 +260,7 @@ struct CExp : Ast {
 struct CConstant : CExp {
     AST_T type() override;
     CConstant() = default;
-    CConstant(std::shared_ptr<CConst> constant, size_t line);
+    CConstant(std::shared_ptr<CConst>&& constant, size_t line);
 
     std::shared_ptr<CConst> constant;
     /*
@@ -271,7 +271,7 @@ struct CConstant : CExp {
 struct CString : CExp {
     AST_T type() override;
     CString() = default;
-    CString(std::shared_ptr<CStringLiteral> literal, size_t line);
+    CString(std::shared_ptr<CStringLiteral>&& literal, size_t line);
 
     std::shared_ptr<CStringLiteral> literal;
     /*
@@ -293,7 +293,7 @@ struct CVar : CExp {
 struct CCast : CExp {
     AST_T type() override;
     CCast() = default;
-    CCast(std::unique_ptr<CExp>&& exp, std::shared_ptr<Type> target_type, size_t line);
+    CCast(std::unique_ptr<CExp>&& exp, std::shared_ptr<Type>&& target_type, size_t line);
 
     std::unique_ptr<CExp> exp;
     std::shared_ptr<Type> target_type;
@@ -418,7 +418,7 @@ struct CSizeOf : CExp {
 struct CSizeOfT : CExp {
     AST_T type() override;
     CSizeOfT() = default;
-    CSizeOfT(std::shared_ptr<Type> target_type, size_t line);
+    CSizeOfT(std::shared_ptr<Type>&& target_type, size_t line);
 
     std::shared_ptr<Type> target_type;
     /*
@@ -737,7 +737,7 @@ struct CCompoundInit : CInitializer {
 struct CMemberDeclaration : Ast {
     AST_T type() override;
     CMemberDeclaration() = default;
-    CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type, size_t line);
+    CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type>&& member_type, size_t line);
 
     TIdentifier member_name;
     std::shared_ptr<Type> member_type;
@@ -765,8 +765,8 @@ struct CStructDeclaration : Ast {
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
-    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params, std::unique_ptr<CBlock>&& body,
-        std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass>&& storage_class, size_t line);
+    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier>&& params, std::unique_ptr<CBlock>&& body,
+        std::shared_ptr<Type>&& fun_type, std::unique_ptr<CStorageClass>&& storage_class, size_t line);
 
     TIdentifier name;
     std::vector<TIdentifier> params;
@@ -784,7 +784,7 @@ struct CFunctionDeclaration : Ast {
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
-    CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer>&& init, std::shared_ptr<Type> var_type,
+    CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer>&& init, std::shared_ptr<Type>&& var_type,
         std::unique_ptr<CStorageClass>&& storage_class, size_t line);
 
     TIdentifier name;

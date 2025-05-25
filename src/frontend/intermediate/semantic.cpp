@@ -612,7 +612,8 @@ static void check_cast_exp(Ctx ctx, CCast* node) {
 
 static std::unique_ptr<CCast> cast_exp(Ctx ctx, std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
     size_t line = node->line;
-    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), exp_type, std::move(line));
+    std::shared_ptr<Type> exp_type_cp = exp_type;
+    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), std::move(exp_type_cp), std::move(line));
     check_cast_exp(ctx, exp.get());
     return exp;
 }
