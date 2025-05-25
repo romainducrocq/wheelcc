@@ -308,27 +308,27 @@ static std::unique_ptr<CBinaryOp> parse_binop(Ctx ctx) {
 }
 
 static void proc_abstract_decltor(
-    CAbstractDeclarator* node, std::shared_ptr<Type> base_type, AbstractDeclarator& abstract_decltor);
+    CAbstractDeclarator* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor);
 
 static void proc_ptr_abstract_decltor(
-    CAbstractPointer* node, std::shared_ptr<Type> base_type, AbstractDeclarator& abstract_decltor) {
+    CAbstractPointer* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
     std::shared_ptr<Type> derived_type = std::make_shared<Pointer>(std::move(base_type));
     proc_abstract_decltor(node->abstract_decltor.get(), std::move(derived_type), abstract_decltor);
 }
 
 static void proc_arr_abstract_decltor(
-    CAbstractArray* node, std::shared_ptr<Type> base_type, AbstractDeclarator& abstract_decltor) {
+    CAbstractArray* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
     TLong size = node->size;
     std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
     proc_abstract_decltor(node->abstract_decltor.get(), std::move(derived_type), abstract_decltor);
 }
 
-static void proc_base_abstract_decltor(std::shared_ptr<Type> base_type, AbstractDeclarator& abstract_decltor) {
+static void proc_base_abstract_decltor(std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
     abstract_decltor.derived_type = std::move(base_type);
 }
 
 static void proc_abstract_decltor(
-    CAbstractDeclarator* node, std::shared_ptr<Type> base_type, AbstractDeclarator& abstract_decltor) {
+    CAbstractDeclarator* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
     switch (node->type()) {
         case AST_CAbstractPointer_t:
             proc_ptr_abstract_decltor(static_cast<CAbstractPointer*>(node), std::move(base_type), abstract_decltor);
@@ -1381,25 +1381,26 @@ static std::unique_ptr<CInitializer> parse_initializer(Ctx ctx) {
 }
 
 static std::unique_ptr<CDeclarator> parse_decltor(Ctx ctx);
-static void proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& decltor);
+static void proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor);
 
-static void proc_ident_decltor(CIdent* node, std::shared_ptr<Type> base_type, Declarator& decltor) {
+static void proc_ident_decltor(CIdent* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     decltor.name = std::move(node->name);
     decltor.derived_type = std::move(base_type);
 }
 
-static void proc_ptr_decltor(Ctx ctx, CPointerDeclarator* node, std::shared_ptr<Type> base_type, Declarator& decltor) {
+static void proc_ptr_decltor(
+    Ctx ctx, CPointerDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     std::shared_ptr<Type> derived_type = std::make_shared<Pointer>(std::move(base_type));
     proc_decltor(ctx, node->decltor.get(), std::move(derived_type), decltor);
 }
 
-static void proc_arr_decltor(Ctx ctx, CArrayDeclarator* node, std::shared_ptr<Type> base_type, Declarator& decltor) {
+static void proc_arr_decltor(Ctx ctx, CArrayDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     TLong size = node->size;
     std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
     proc_decltor(ctx, node->decltor.get(), std::move(derived_type), decltor);
 }
 
-static void proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type> base_type, Declarator& decltor) {
+static void proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     if (node->decltor->type() != AST_CIdent_t) {
         THROW_AT_LINE(GET_PARSER_MSG_0(MSG_derived_fun_decl), ctx->next_tok->line);
     }
@@ -1410,7 +1411,8 @@ static void proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type
     param_types.reserve(node->param_list.size());
     for (const auto& param : node->param_list) {
         Declarator param_decltor;
-        proc_decltor(ctx, param->decltor.get(), param->param_type, param_decltor);
+        std::shared_ptr<Type> param_type = param->param_type;
+        proc_decltor(ctx, param->decltor.get(), std::move(param_type), param_decltor);
         THROW_ABORT_IF(param_decltor.derived_type->type() == AST_FunType_t);
         params.push_back(std::move(param_decltor.name));
         param_types.push_back(std::move(param_decltor.derived_type));
@@ -1422,7 +1424,7 @@ static void proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type
     decltor.params = std::move(params);
 }
 
-static void proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type> base_type, Declarator& decltor) {
+static void proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     switch (node->type()) {
         case AST_CIdent_t:
             proc_ident_decltor(static_cast<CIdent*>(node), std::move(base_type), decltor);
