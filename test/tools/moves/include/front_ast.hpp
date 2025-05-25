@@ -155,7 +155,7 @@ struct CAbstractDeclarator : Ast {
 struct CAbstractPointer : CAbstractDeclarator {
     AST_T type() override;
     CAbstractPointer() = default;
-    CAbstractPointer(std::unique_ptr<CAbstractDeclarator> abstract_decltor);
+    CAbstractPointer(std::unique_ptr<CAbstractDeclarator>@@ abstract_decltor);
 
     std::unique_ptr<CAbstractDeclarator> abstract_decltor;
 };
@@ -163,7 +163,7 @@ struct CAbstractPointer : CAbstractDeclarator {
 struct CAbstractArray : CAbstractDeclarator {
     AST_T type() override;
     CAbstractArray() = default;
-    CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator> abstract_decltor);
+    CAbstractArray(TLong size, std::unique_ptr<CAbstractDeclarator>@@ abstract_decltor);
 
     TLong size;
     std::unique_ptr<CAbstractDeclarator> abstract_decltor;
@@ -180,7 +180,7 @@ struct CDeclarator;
 struct CParam : Ast {
     AST_T type() override;
     CParam() = default;
-    CParam(std::unique_ptr<CDeclarator> decltor, std::shared_ptr<Type> param_type);
+    CParam(std::unique_ptr<CDeclarator>@@ decltor, std::shared_ptr<Type> param_type);
 
     std::unique_ptr<CDeclarator> decltor;
     std::shared_ptr<Type> param_type;
@@ -207,7 +207,7 @@ struct CIdent : CDeclarator {
 struct CPointerDeclarator : CDeclarator {
     AST_T type() override;
     CPointerDeclarator() = default;
-    CPointerDeclarator(std::unique_ptr<CDeclarator> decltor);
+    CPointerDeclarator(std::unique_ptr<CDeclarator>@@ decltor);
 
     std::unique_ptr<CDeclarator> decltor;
 };
@@ -215,7 +215,7 @@ struct CPointerDeclarator : CDeclarator {
 struct CArrayDeclarator : CDeclarator {
     AST_T type() override;
     CArrayDeclarator() = default;
-    CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator> decltor);
+    CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator>@@ decltor);
 
     TLong size;
     std::unique_ptr<CDeclarator> decltor;
@@ -224,7 +224,7 @@ struct CArrayDeclarator : CDeclarator {
 struct CFunDeclarator : CDeclarator {
     AST_T type() override;
     CFunDeclarator() = default;
-    CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator> decltor);
+    CFunDeclarator(std::vector<std::unique_ptr<CParam>> param_list, std::unique_ptr<CDeclarator>@@ decltor);
 
     std::vector<std::unique_ptr<CParam>> param_list;
     std::unique_ptr<CDeclarator> decltor;
@@ -293,7 +293,7 @@ struct CVar : CExp {
 struct CCast : CExp {
     AST_T type() override;
     CCast() = default;
-    CCast(std::unique_ptr<CExp> exp, std::shared_ptr<Type> target_type, size_t line);
+    CCast(std::unique_ptr<CExp>@@ exp, std::shared_ptr<Type> target_type, size_t line);
 
     std::unique_ptr<CExp> exp;
     std::shared_ptr<Type> target_type;
@@ -305,7 +305,7 @@ struct CCast : CExp {
 struct CUnary : CExp {
     AST_T type() override;
     CUnary() = default;
-    CUnary(std::unique_ptr<CUnaryOp> unop, std::unique_ptr<CExp> exp, size_t line);
+    CUnary(std::unique_ptr<CUnaryOp>@@ unop, std::unique_ptr<CExp>@@ exp, size_t line);
 
     std::unique_ptr<CUnaryOp> unop;
     std::unique_ptr<CExp> exp;
@@ -317,7 +317,7 @@ struct CUnary : CExp {
 struct CBinary : CExp {
     AST_T type() override;
     CBinary() = default;
-    CBinary(std::unique_ptr<CBinaryOp> binop, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
+    CBinary(std::unique_ptr<CBinaryOp>@@ binop, std::unique_ptr<CExp>@@ exp_left, std::unique_ptr<CExp>@@ exp_right, size_t line);
 
     std::unique_ptr<CBinaryOp> binop;
     std::unique_ptr<CExp> exp_left;
@@ -330,7 +330,7 @@ struct CBinary : CExp {
 struct CAssignment : CExp {
     AST_T type() override;
     CAssignment() = default;
-    CAssignment(std::unique_ptr<CUnaryOp> unop, std::unique_ptr<CExp> exp_left, std::unique_ptr<CExp> exp_right, size_t line);
+    CAssignment(std::unique_ptr<CUnaryOp>@@ unop, std::unique_ptr<CExp>@@ exp_left, std::unique_ptr<CExp>@@ exp_right, size_t line);
 
     // Optional
     std::unique_ptr<CUnaryOp> unop;
@@ -345,7 +345,7 @@ struct CAssignment : CExp {
 struct CConditional : CExp {
     AST_T type() override;
     CConditional() = default;
-    CConditional(std::unique_ptr<CExp> condition, std::unique_ptr<CExp> exp_middle, std::unique_ptr<CExp> exp_right, size_t line);
+    CConditional(std::unique_ptr<CExp>@@ condition, std::unique_ptr<CExp>@@ exp_middle, std::unique_ptr<CExp>@@ exp_right, size_t line);
 
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CExp> exp_middle;
@@ -370,7 +370,7 @@ struct CFunctionCall : CExp {
 struct CDereference : CExp {
     AST_T type() override;
     CDereference() = default;
-    CDereference(std::unique_ptr<CExp> exp, size_t line);
+    CDereference(std::unique_ptr<CExp>@@ exp, size_t line);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -381,7 +381,7 @@ struct CDereference : CExp {
 struct CAddrOf : CExp {
     AST_T type() override;
     CAddrOf() = default;
-    CAddrOf(std::unique_ptr<CExp> exp, size_t line);
+    CAddrOf(std::unique_ptr<CExp>@@ exp, size_t line);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -392,7 +392,7 @@ struct CAddrOf : CExp {
 struct CSubscript : CExp {
     AST_T type() override;
     CSubscript() = default;
-    CSubscript(std::unique_ptr<CExp> primary_exp, std::unique_ptr<CExp> subscript_exp, size_t line);
+    CSubscript(std::unique_ptr<CExp>@@ primary_exp, std::unique_ptr<CExp>@@ subscript_exp, size_t line);
 
     std::unique_ptr<CExp> primary_exp;
     std::unique_ptr<CExp> subscript_exp;
@@ -404,7 +404,7 @@ struct CSubscript : CExp {
 struct CSizeOf : CExp {
     AST_T type() override;
     CSizeOf() = default;
-    CSizeOf(std::unique_ptr<CExp> exp, size_t line);
+    CSizeOf(std::unique_ptr<CExp>@@ exp, size_t line);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -426,7 +426,7 @@ struct CSizeOfT : CExp {
 struct CDot : CExp {
     AST_T type() override;
     CDot() = default;
-    CDot(TIdentifier member, std::unique_ptr<CExp> structure, size_t line);
+    CDot(TIdentifier member, std::unique_ptr<CExp>@@ structure, size_t line);
 
     TIdentifier member;
     std::unique_ptr<CExp> structure;
@@ -438,7 +438,7 @@ struct CDot : CExp {
 struct CArrow : CExp {
     AST_T type() override;
     CArrow() = default;
-    CArrow(TIdentifier member, std::unique_ptr<CExp> pointer, size_t line);
+    CArrow(TIdentifier member, std::unique_ptr<CExp>@@ pointer, size_t line);
 
     TIdentifier member;
     std::unique_ptr<CExp> pointer;
@@ -470,7 +470,7 @@ struct CStatement : Ast {
 struct CReturn : CStatement {
     AST_T type() override;
     CReturn() = default;
-    CReturn(std::unique_ptr<CExp> exp, size_t line);
+    CReturn(std::unique_ptr<CExp>@@ exp, size_t line);
 
     // Optional
     std::unique_ptr<CExp> exp;
@@ -480,7 +480,7 @@ struct CReturn : CStatement {
 struct CExpression : CStatement {
     AST_T type() override;
     CExpression() = default;
-    CExpression(std::unique_ptr<CExp> exp);
+    CExpression(std::unique_ptr<CExp>@@ exp);
 
     std::unique_ptr<CExp> exp;
 };
@@ -488,7 +488,7 @@ struct CExpression : CStatement {
 struct CIf : CStatement {
     AST_T type() override;
     CIf() = default;
-    CIf(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> then, std::unique_ptr<CStatement> else_fi);
+    CIf(std::unique_ptr<CExp>@@ condition, std::unique_ptr<CStatement>@@ then, std::unique_ptr<CStatement>@@ else_fi);
 
     std::unique_ptr<CExp> condition;
     std::unique_ptr<CStatement> then;
@@ -508,7 +508,7 @@ struct CGoto : CStatement {
 struct CLabel : CStatement {
     AST_T type() override;
     CLabel() = default;
-    CLabel(TIdentifier target, std::unique_ptr<CStatement> jump_to, size_t line);
+    CLabel(TIdentifier target, std::unique_ptr<CStatement>@@ jump_to, size_t line);
 
     TIdentifier target;
     std::unique_ptr<CStatement> jump_to;
@@ -519,7 +519,7 @@ struct CBlock;
 struct CCompound : CStatement {
     AST_T type() override;
     CCompound() = default;
-    CCompound(std::unique_ptr<CBlock> block);
+    CCompound(std::unique_ptr<CBlock>@@ block);
 
     std::unique_ptr<CBlock> block;
 };
@@ -527,7 +527,7 @@ struct CCompound : CStatement {
 struct CWhile : CStatement {
     AST_T type() override;
     CWhile() = default;
-    CWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body);
+    CWhile(std::unique_ptr<CExp>@@ condition, std::unique_ptr<CStatement>@@ body);
 
     TIdentifier target;
     std::unique_ptr<CExp> condition;
@@ -537,7 +537,7 @@ struct CWhile : CStatement {
 struct CDoWhile : CStatement {
     AST_T type() override;
     CDoWhile() = default;
-    CDoWhile(std::unique_ptr<CExp> condition, std::unique_ptr<CStatement> body);
+    CDoWhile(std::unique_ptr<CExp>@@ condition, std::unique_ptr<CStatement>@@ body);
 
     TIdentifier target;
     std::unique_ptr<CExp> condition;
@@ -548,7 +548,7 @@ struct CForInit;
 struct CFor : CStatement {
     AST_T type() override;
     CFor() = default;
-    CFor(std::unique_ptr<CForInit> init, std::unique_ptr<CExp> condition, std::unique_ptr<CExp> post, std::unique_ptr<CStatement> body);
+    CFor(std::unique_ptr<CForInit>@@ init, std::unique_ptr<CExp>@@ condition, std::unique_ptr<CExp>@@ post, std::unique_ptr<CStatement>@@ body);
 
     TIdentifier target;
     std::unique_ptr<CForInit> init;
@@ -560,7 +560,7 @@ struct CFor : CStatement {
 struct CSwitch : CStatement {
     AST_T type() override;
     CSwitch() = default;
-    CSwitch(std::unique_ptr<CExp> match, std::unique_ptr<CStatement> body);
+    CSwitch(std::unique_ptr<CExp>@@ match, std::unique_ptr<CStatement>@@ body);
 
     TIdentifier target;
     bool is_default;
@@ -572,7 +572,7 @@ struct CSwitch : CStatement {
 struct CCase : CStatement {
     AST_T type() override;
     CCase() = default;
-    CCase(std::unique_ptr<CExp> value, std::unique_ptr<CStatement> jump_to);
+    CCase(std::unique_ptr<CExp>@@ value, std::unique_ptr<CStatement>@@ jump_to);
 
     TIdentifier target;
     std::unique_ptr<CExp> value;
@@ -582,7 +582,7 @@ struct CCase : CStatement {
 struct CDefault : CStatement {
     AST_T type() override;
     CDefault() = default;
-    CDefault(std::unique_ptr<CStatement> jump_to, size_t line);
+    CDefault(std::unique_ptr<CStatement>@@ jump_to, size_t line);
 
     TIdentifier target;
     std::unique_ptr<CStatement> jump_to;
@@ -623,7 +623,7 @@ struct CVariableDeclaration;
 struct CInitDecl : CForInit {
     AST_T type() override;
     CInitDecl() = default;
-    CInitDecl(std::unique_ptr<CVariableDeclaration> init);
+    CInitDecl(std::unique_ptr<CVariableDeclaration>@@ init);
 
     std::unique_ptr<CVariableDeclaration> init;
 };
@@ -631,7 +631,7 @@ struct CInitDecl : CForInit {
 struct CInitExp : CForInit {
     AST_T type() override;
     CInitExp() = default;
-    CInitExp(std::unique_ptr<CExp> init);
+    CInitExp(std::unique_ptr<CExp>@@ init);
 
     // Optional
     std::unique_ptr<CExp> init;
@@ -664,7 +664,7 @@ struct CBlockItem : Ast {
 struct CS : CBlockItem {
     AST_T type() override;
     CS() = default;
-    CS(std::unique_ptr<CStatement> statement);
+    CS(std::unique_ptr<CStatement>@@ statement);
 
     std::unique_ptr<CStatement> statement;
 };
@@ -673,7 +673,7 @@ struct CDeclaration;
 struct CD : CBlockItem {
     AST_T type() override;
     CD() = default;
-    CD(std::unique_ptr<CDeclaration> declaration);
+    CD(std::unique_ptr<CDeclaration>@@ declaration);
 
     std::unique_ptr<CDeclaration> declaration;
 };
@@ -708,7 +708,7 @@ struct CInitializer : Ast {
 struct CSingleInit : CInitializer {
     AST_T type() override;
     CSingleInit() = default;
-    CSingleInit(std::unique_ptr<CExp> exp);
+    CSingleInit(std::unique_ptr<CExp>@@ exp);
 
     std::unique_ptr<CExp> exp;
     /*
@@ -760,7 +760,7 @@ struct CStructDeclaration : Ast {
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
     CFunctionDeclaration() = default;
-    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params, std::unique_ptr<CBlock> body, std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass> storage_class, size_t line);
+    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier> params, std::unique_ptr<CBlock>@@ body, std::shared_ptr<Type> fun_type, std::unique_ptr<CStorageClass>@@ storage_class, size_t line);
 
     TIdentifier name;
     std::vector<TIdentifier> params;
@@ -778,7 +778,7 @@ struct CFunctionDeclaration : Ast {
 struct CVariableDeclaration : Ast {
     AST_T type() override;
     CVariableDeclaration() = default;
-    CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer> init, std::shared_ptr<Type> var_type, std::unique_ptr<CStorageClass> storage_class, size_t line);
+    CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer>@@ init, std::shared_ptr<Type> var_type, std::unique_ptr<CStorageClass>@@ storage_class, size_t line);
 
     TIdentifier name;
     // Optional
@@ -800,7 +800,7 @@ struct CDeclaration : Ast {
 struct CFunDecl : CDeclaration {
     AST_T type() override;
     CFunDecl() = default;
-    CFunDecl(std::unique_ptr<CFunctionDeclaration> fun_decl);
+    CFunDecl(std::unique_ptr<CFunctionDeclaration>@@ fun_decl);
 
     std::unique_ptr<CFunctionDeclaration> fun_decl;
 };
@@ -808,7 +808,7 @@ struct CFunDecl : CDeclaration {
 struct CVarDecl : CDeclaration {
     AST_T type() override;
     CVarDecl() = default;
-    CVarDecl(std::unique_ptr<CVariableDeclaration> var_decl);
+    CVarDecl(std::unique_ptr<CVariableDeclaration>@@ var_decl);
 
     std::unique_ptr<CVariableDeclaration> var_decl;
 };
@@ -816,7 +816,7 @@ struct CVarDecl : CDeclaration {
 struct CStructDecl : CDeclaration {
     AST_T type() override;
     CStructDecl() = default;
-    CStructDecl(std::unique_ptr<CStructDeclaration> struct_decl);
+    CStructDecl(std::unique_ptr<CStructDeclaration>@@ struct_decl);
 
     std::unique_ptr<CStructDeclaration> struct_decl;
 };

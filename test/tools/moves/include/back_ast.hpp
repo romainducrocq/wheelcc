@@ -266,7 +266,7 @@ struct AsmImm : AsmOperand {
 struct AsmRegister : AsmOperand {
     AST_T type() override;
     AsmRegister() = default;
-    AsmRegister(std::unique_ptr<AsmReg> reg);
+    AsmRegister(std::unique_ptr<AsmReg>@@ reg);
 
     std::unique_ptr<AsmReg> reg;
 };
@@ -282,7 +282,7 @@ struct AsmPseudo : AsmOperand {
 struct AsmMemory : AsmOperand {
     AST_T type() override;
     AsmMemory() = default;
-    AsmMemory(TLong value, std::unique_ptr<AsmReg> reg);
+    AsmMemory(TLong value, std::unique_ptr<AsmReg>@@ reg);
 
     TLong value;
     std::unique_ptr<AsmReg> reg;
@@ -309,7 +309,7 @@ struct AsmPseudoMem : AsmOperand {
 struct AsmIndexed : AsmOperand {
     AST_T type() override;
     AsmIndexed() = default;
-    AsmIndexed(TLong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index);
+    AsmIndexed(TLong scale, std::unique_ptr<AsmReg>@@ reg_base, std::unique_ptr<AsmReg>@@ reg_index);
 
     TLong scale;
     std::unique_ptr<AsmReg> reg_base;
@@ -483,7 +483,7 @@ struct AsmCvtsi2sd : AsmInstruction {
 struct AsmUnary : AsmInstruction {
     AST_T type() override;
     AsmUnary() = default;
-    AsmUnary(std::unique_ptr<AsmUnaryOp> unop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> dst);
+    AsmUnary(std::unique_ptr<AsmUnaryOp>@@ unop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> dst);
 
     std::unique_ptr<AsmUnaryOp> unop;
     std::shared_ptr<AssemblyType> asm_type;
@@ -493,7 +493,7 @@ struct AsmUnary : AsmInstruction {
 struct AsmBinary : AsmInstruction {
     AST_T type() override;
     AsmBinary() = default;
-    AsmBinary(std::unique_ptr<AsmBinaryOp> binop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
+    AsmBinary(std::unique_ptr<AsmBinaryOp>@@ binop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst);
 
     std::unique_ptr<AsmBinaryOp> binop;
     std::shared_ptr<AssemblyType> asm_type;
@@ -548,7 +548,7 @@ struct AsmJmp : AsmInstruction {
 struct AsmJmpCC : AsmInstruction {
     AST_T type() override;
     AsmJmpCC() = default;
-    AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode> cond_code);
+    AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode>@@ cond_code);
 
     TIdentifier target;
     std::unique_ptr<AsmCondCode> cond_code;
@@ -557,7 +557,7 @@ struct AsmJmpCC : AsmInstruction {
 struct AsmSetCC : AsmInstruction {
     AST_T type() override;
     AsmSetCC() = default;
-    AsmSetCC(std::unique_ptr<AsmCondCode> cond_code, std::shared_ptr<AsmOperand> dst);
+    AsmSetCC(std::unique_ptr<AsmCondCode>@@ cond_code, std::shared_ptr<AsmOperand> dst);
 
     std::unique_ptr<AsmCondCode> cond_code;
     std::shared_ptr<AsmOperand> dst;
@@ -582,7 +582,7 @@ struct AsmPush : AsmInstruction {
 struct AsmPop : AsmInstruction {
     AST_T type() override;
     AsmPop() = default;
-    AsmPop(std::unique_ptr<AsmReg> reg);
+    AsmPop(std::unique_ptr<AsmReg>@@ reg);
 
     std::unique_ptr<AsmReg> reg;
 };

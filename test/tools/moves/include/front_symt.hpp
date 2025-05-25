@@ -274,7 +274,7 @@ struct LocalAttr : IdentifierAttr {
 struct Symbol : Ast {
     AST_T type() override;
     Symbol() = default;
-    Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs);
+    Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr>@@ attrs);
 
     std::shared_ptr<Type> type_t;
     std::unique_ptr<IdentifierAttr> attrs;

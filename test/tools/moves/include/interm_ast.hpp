@@ -295,7 +295,7 @@ struct TacFunCall : TacInstruction {
 struct TacUnary : TacInstruction {
     AST_T type() override;
     TacUnary() = default;
-    TacUnary(std::unique_ptr<TacUnaryOp> unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacUnary(std::unique_ptr<TacUnaryOp>@@ unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
 
     std::unique_ptr<TacUnaryOp> unop;
     std::shared_ptr<TacValue> src;
@@ -305,7 +305,7 @@ struct TacUnary : TacInstruction {
 struct TacBinary : TacInstruction {
     AST_T type() override;
     TacBinary() = default;
-    TacBinary(std::unique_ptr<TacBinaryOp> binop, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst);
+    TacBinary(std::unique_ptr<TacBinaryOp>@@ binop, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2, std::shared_ptr<TacValue> dst);
 
     std::unique_ptr<TacBinaryOp> binop;
     std::shared_ptr<TacValue> src1;
