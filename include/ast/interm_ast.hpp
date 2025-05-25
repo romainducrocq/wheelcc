@@ -134,7 +134,7 @@ struct TacValue : Ast {
 struct TacConstant : TacValue {
     AST_T type() override;
     TacConstant() = default;
-    TacConstant(std::shared_ptr<CConst> constant);
+    TacConstant(std::shared_ptr<CConst>&& constant);
 
     std::shared_ptr<CConst> constant;
 };
@@ -159,7 +159,7 @@ struct TacExpResult : Ast {
 struct TacPlainOperand : TacExpResult {
     AST_T type() override;
     TacPlainOperand() = default;
-    TacPlainOperand(std::shared_ptr<TacValue> val);
+    TacPlainOperand(std::shared_ptr<TacValue>&& val);
 
     std::shared_ptr<TacValue> val;
 };
@@ -167,7 +167,7 @@ struct TacPlainOperand : TacExpResult {
 struct TacDereferencedPointer : TacExpResult {
     AST_T type() override;
     TacDereferencedPointer() = default;
-    TacDereferencedPointer(std::shared_ptr<TacValue> val);
+    TacDereferencedPointer(std::shared_ptr<TacValue>&& val);
 
     std::shared_ptr<TacValue> val;
 };
@@ -212,7 +212,7 @@ struct TacInstruction : Ast {
 struct TacReturn : TacInstruction {
     AST_T type() override;
     TacReturn() = default;
-    TacReturn(std::shared_ptr<TacValue> val);
+    TacReturn(std::shared_ptr<TacValue>&& val);
 
     // Optional
     std::shared_ptr<TacValue> val;
@@ -221,7 +221,7 @@ struct TacReturn : TacInstruction {
 struct TacSignExtend : TacInstruction {
     AST_T type() override;
     TacSignExtend() = default;
-    TacSignExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacSignExtend(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -230,7 +230,7 @@ struct TacSignExtend : TacInstruction {
 struct TacTruncate : TacInstruction {
     AST_T type() override;
     TacTruncate() = default;
-    TacTruncate(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacTruncate(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -239,7 +239,7 @@ struct TacTruncate : TacInstruction {
 struct TacZeroExtend : TacInstruction {
     AST_T type() override;
     TacZeroExtend() = default;
-    TacZeroExtend(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacZeroExtend(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -248,7 +248,7 @@ struct TacZeroExtend : TacInstruction {
 struct TacDoubleToInt : TacInstruction {
     AST_T type() override;
     TacDoubleToInt() = default;
-    TacDoubleToInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacDoubleToInt(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -257,7 +257,7 @@ struct TacDoubleToInt : TacInstruction {
 struct TacDoubleToUInt : TacInstruction {
     AST_T type() override;
     TacDoubleToUInt() = default;
-    TacDoubleToUInt(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacDoubleToUInt(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -266,7 +266,7 @@ struct TacDoubleToUInt : TacInstruction {
 struct TacIntToDouble : TacInstruction {
     AST_T type() override;
     TacIntToDouble() = default;
-    TacIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -275,7 +275,7 @@ struct TacIntToDouble : TacInstruction {
 struct TacUIntToDouble : TacInstruction {
     AST_T type() override;
     TacUIntToDouble() = default;
-    TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacUIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -284,7 +284,7 @@ struct TacUIntToDouble : TacInstruction {
 struct TacFunCall : TacInstruction {
     AST_T type() override;
     TacFunCall() = default;
-    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>>&& args, std::shared_ptr<TacValue> dst);
+    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>>&& args, std::shared_ptr<TacValue>&& dst);
 
     TIdentifier name;
     std::vector<std::shared_ptr<TacValue>> args;
@@ -295,7 +295,7 @@ struct TacFunCall : TacInstruction {
 struct TacUnary : TacInstruction {
     AST_T type() override;
     TacUnary() = default;
-    TacUnary(std::unique_ptr<TacUnaryOp>&& unop, std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacUnary(std::unique_ptr<TacUnaryOp>&& unop, std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::unique_ptr<TacUnaryOp> unop;
     std::shared_ptr<TacValue> src;
@@ -305,8 +305,8 @@ struct TacUnary : TacInstruction {
 struct TacBinary : TacInstruction {
     AST_T type() override;
     TacBinary() = default;
-    TacBinary(std::unique_ptr<TacBinaryOp>&& binop, std::shared_ptr<TacValue> src1, std::shared_ptr<TacValue> src2,
-        std::shared_ptr<TacValue> dst);
+    TacBinary(std::unique_ptr<TacBinaryOp>&& binop, std::shared_ptr<TacValue>&& src1, std::shared_ptr<TacValue>&& src2,
+        std::shared_ptr<TacValue>&& dst);
 
     std::unique_ptr<TacBinaryOp> binop;
     std::shared_ptr<TacValue> src1;
@@ -317,7 +317,7 @@ struct TacBinary : TacInstruction {
 struct TacCopy : TacInstruction {
     AST_T type() override;
     TacCopy() = default;
-    TacCopy(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacCopy(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -326,7 +326,7 @@ struct TacCopy : TacInstruction {
 struct TacGetAddress : TacInstruction {
     AST_T type() override;
     TacGetAddress() = default;
-    TacGetAddress(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst);
+    TacGetAddress(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst;
@@ -335,7 +335,7 @@ struct TacGetAddress : TacInstruction {
 struct TacLoad : TacInstruction {
     AST_T type() override;
     TacLoad() = default;
-    TacLoad(std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> dst);
+    TacLoad(std::shared_ptr<TacValue>&& src_ptr, std::shared_ptr<TacValue>&& dst);
 
     std::shared_ptr<TacValue> src_ptr;
     std::shared_ptr<TacValue> dst;
@@ -344,7 +344,7 @@ struct TacLoad : TacInstruction {
 struct TacStore : TacInstruction {
     AST_T type() override;
     TacStore() = default;
-    TacStore(std::shared_ptr<TacValue> src, std::shared_ptr<TacValue> dst_ptr);
+    TacStore(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst_ptr);
 
     std::shared_ptr<TacValue> src;
     std::shared_ptr<TacValue> dst_ptr;
@@ -353,8 +353,8 @@ struct TacStore : TacInstruction {
 struct TacAddPtr : TacInstruction {
     AST_T type() override;
     TacAddPtr() = default;
-    TacAddPtr(
-        TLong scale, std::shared_ptr<TacValue> src_ptr, std::shared_ptr<TacValue> idx, std::shared_ptr<TacValue> dst);
+    TacAddPtr(TLong scale, std::shared_ptr<TacValue>&& src_ptr, std::shared_ptr<TacValue>&& idx,
+        std::shared_ptr<TacValue>&& dst);
 
     TLong scale;
     std::shared_ptr<TacValue> src_ptr;
@@ -365,7 +365,7 @@ struct TacAddPtr : TacInstruction {
 struct TacCopyToOffset : TacInstruction {
     AST_T type() override;
     TacCopyToOffset() = default;
-    TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue> src);
+    TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue>&& src);
 
     TIdentifier dst_name;
     TLong offset;
@@ -375,7 +375,7 @@ struct TacCopyToOffset : TacInstruction {
 struct TacCopyFromOffset : TacInstruction {
     AST_T type() override;
     TacCopyFromOffset() = default;
-    TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue> dst);
+    TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue>&& dst);
 
     TIdentifier src_name;
     TLong offset;
@@ -393,7 +393,7 @@ struct TacJump : TacInstruction {
 struct TacJumpIfZero : TacInstruction {
     AST_T type() override;
     TacJumpIfZero() = default;
-    TacJumpIfZero(TIdentifier target, std::shared_ptr<TacValue> condition);
+    TacJumpIfZero(TIdentifier target, std::shared_ptr<TacValue>&& condition);
 
     TIdentifier target;
     std::shared_ptr<TacValue> condition;
@@ -402,7 +402,7 @@ struct TacJumpIfZero : TacInstruction {
 struct TacJumpIfNotZero : TacInstruction {
     AST_T type() override;
     TacJumpIfNotZero() = default;
-    TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue> condition);
+    TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue>&& condition);
 
     TIdentifier target;
     std::shared_ptr<TacValue> condition;
@@ -440,7 +440,7 @@ struct TacFunction : TacTopLevel {
 struct TacStaticVariable : TacTopLevel {
     AST_T type() override;
     TacStaticVariable() = default;
-    TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type,
+    TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type>&& static_init_type,
         std::vector<std::shared_ptr<StaticInit>>&& static_inits);
 
     TIdentifier name;
@@ -453,7 +453,7 @@ struct TacStaticConstant : TacTopLevel {
     AST_T type() override;
     TacStaticConstant() = default;
     TacStaticConstant(
-        TIdentifier name, std::shared_ptr<Type> static_init_type, std::shared_ptr<StaticInit> static_init);
+        TIdentifier name, std::shared_ptr<Type>&& static_init_type, std::shared_ptr<StaticInit>&& static_init);
 
     TIdentifier name;
     std::shared_ptr<Type> static_init_type;
