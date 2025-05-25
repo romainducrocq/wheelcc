@@ -481,7 +481,7 @@ static std::unique_ptr<CExp> parse_inner_exp_factor(Ctx ctx) {
     return inner_exp;
 }
 
-static std::unique_ptr<CSubscript> parse_subscript_factor(Ctx ctx, std::unique_ptr<CExp> primary_exp) {
+static std::unique_ptr<CSubscript> parse_subscript_factor(Ctx ctx, std::unique_ptr<CExp>&& primary_exp) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     std::unique_ptr<CExp> subscript_exp = parse_exp(ctx, 0);
@@ -489,7 +489,7 @@ static std::unique_ptr<CSubscript> parse_subscript_factor(Ctx ctx, std::unique_p
     return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), std::move(line));
 }
 
-static std::unique_ptr<CDot> parse_dot_factor(Ctx ctx, std::unique_ptr<CExp> structure) {
+static std::unique_ptr<CDot> parse_dot_factor(Ctx ctx, std::unique_ptr<CExp>&& structure) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     expect_next(ctx, peek_next(ctx), TOK_identifier);
@@ -497,7 +497,7 @@ static std::unique_ptr<CDot> parse_dot_factor(Ctx ctx, std::unique_ptr<CExp> str
     return std::make_unique<CDot>(std::move(member), std::move(structure), std::move(line));
 }
 
-static std::unique_ptr<CArrow> parse_arrow_factor(Ctx ctx, std::unique_ptr<CExp> pointer) {
+static std::unique_ptr<CArrow> parse_arrow_factor(Ctx ctx, std::unique_ptr<CExp>&& pointer) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     expect_next(ctx, peek_next(ctx), TOK_identifier);
@@ -505,7 +505,7 @@ static std::unique_ptr<CArrow> parse_arrow_factor(Ctx ctx, std::unique_ptr<CExp>
     return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
 }
 
-static std::unique_ptr<CAssignment> parse_postfix_incr_factor(Ctx ctx, std::unique_ptr<CExp> exp_left) {
+static std::unique_ptr<CAssignment> parse_postfix_incr_factor(Ctx ctx, std::unique_ptr<CExp>&& exp_left) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CUnaryOp> unop = std::make_unique<CPostfix>();
     std::unique_ptr<CExp> exp_left_1;
@@ -1524,19 +1524,19 @@ static std::vector<std::unique_ptr<CParam>> parse_param_list(Ctx ctx) {
 }
 
 // (fun) <declarator-suffix> ::= <param-list>
-static std::unique_ptr<CFunDeclarator> parse_fun_decltor_suffix(Ctx ctx, std::unique_ptr<CDeclarator> decltor) {
+static std::unique_ptr<CFunDeclarator> parse_fun_decltor_suffix(Ctx ctx, std::unique_ptr<CDeclarator>&& decltor) {
     std::vector<std::unique_ptr<CParam>> param_list = parse_param_list(ctx);
     return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(decltor));
 }
 
 // (array) <declarator-suffix> ::= { "[" <const> "]" }+
-static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(Ctx ctx, std::unique_ptr<CDeclarator> decltor) {
+static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(Ctx ctx, std::unique_ptr<CDeclarator>&& decltor) {
     do {
         TLong size = parse_arr_size(ctx);
         decltor = std::make_unique<CArrayDeclarator>(std::move(size), std::move(decltor));
     }
     while (peek_next(ctx).tok_kind == TOK_open_bracket);
-    return decltor;
+    return std::move(decltor);
 }
 
 // <direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
