@@ -112,7 +112,7 @@ StaticAttr::StaticAttr(bool is_glob, std::shared_ptr<InitialValue> init)
 ConstantAttr::ConstantAttr(std::shared_ptr<StaticInit> static_init)
     : static_init(std::move(static_init)) {}
 
-Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr> attrs)
+Symbol::Symbol(std::shared_ptr<Type> type_t, std::unique_ptr<IdentifierAttr>@@ attrs)
     : type_t(std::move(type_t))
     , attrs(std::move(attrs)) {}
 

@@ -111,13 +111,13 @@ AsmImm::AsmImm(TULong value, bool is_byte, bool is_quad, bool is_neg)
     , is_quad(is_quad)
     , is_neg(is_neg) {}
 
-AsmRegister::AsmRegister(std::unique_ptr<AsmReg> reg)
+AsmRegister::AsmRegister(std::unique_ptr<AsmReg>@@ reg)
     : reg(std::move(reg)) {}
 
 AsmPseudo::AsmPseudo(TIdentifier name)
     : name(name) {}
 
-AsmMemory::AsmMemory(TLong value, std::unique_ptr<AsmReg> reg)
+AsmMemory::AsmMemory(TLong value, std::unique_ptr<AsmReg>@@ reg)
     : value(value)
     , reg(std::move(reg)) {}
 
@@ -129,7 +129,7 @@ AsmPseudoMem::AsmPseudoMem(TIdentifier name, TLong offset)
     : name(name)
     , offset(offset) {}
 
-AsmIndexed::AsmIndexed(TLong scale, std::unique_ptr<AsmReg> reg_base, std::unique_ptr<AsmReg> reg_index)
+AsmIndexed::AsmIndexed(TLong scale, std::unique_ptr<AsmReg>@@ reg_base, std::unique_ptr<AsmReg>@@ reg_index)
     : scale(scale)
     , reg_base(std::move(reg_base))
     , reg_index(std::move(reg_index)) {}
@@ -165,12 +165,12 @@ AsmCvtsi2sd::AsmCvtsi2sd(std::shared_ptr<AssemblyType> asm_type, std::shared_ptr
     , src(std::move(src))
     , dst(std::move(dst)) {}
 
-AsmUnary::AsmUnary(std::unique_ptr<AsmUnaryOp> unop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> dst)
+AsmUnary::AsmUnary(std::unique_ptr<AsmUnaryOp>@@ unop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> dst)
     : unop(std::move(unop))
     , asm_type(std::move(asm_type))
     , dst(std::move(dst)) {}
 
-AsmBinary::AsmBinary(std::unique_ptr<AsmBinaryOp> binop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
+AsmBinary::AsmBinary(std::unique_ptr<AsmBinaryOp>@@ binop, std::shared_ptr<AssemblyType> asm_type, std::shared_ptr<AsmOperand> src, std::shared_ptr<AsmOperand> dst)
     : binop(std::move(binop))
     , asm_type(std::move(asm_type))
     , src(std::move(src))
@@ -195,11 +195,11 @@ AsmCdq::AsmCdq(std::shared_ptr<AssemblyType> asm_type)
 AsmJmp::AsmJmp(TIdentifier target)
     : target(target) {}
 
-AsmJmpCC::AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode> cond_code)
+AsmJmpCC::AsmJmpCC(TIdentifier target, std::unique_ptr<AsmCondCode>@@ cond_code)
     : target(target)
     , cond_code(std::move(cond_code)) {}
 
-AsmSetCC::AsmSetCC(std::unique_ptr<AsmCondCode> cond_code, std::shared_ptr<AsmOperand> dst)
+AsmSetCC::AsmSetCC(std::unique_ptr<AsmCondCode>@@ cond_code, std::shared_ptr<AsmOperand> dst)
     : cond_code(std::move(cond_code))
     , dst(std::move(dst)) {}
 
@@ -209,7 +209,7 @@ AsmLabel::AsmLabel(TIdentifier name)
 AsmPush::AsmPush(std::shared_ptr<AsmOperand> src)
     : src(std::move(src)) {}
 
-AsmPop::AsmPop(std::unique_ptr<AsmReg> reg)
+AsmPop::AsmPop(std::unique_ptr<AsmReg>@@ reg)
     : reg(std::move(reg)) {}
 
 AsmCall::AsmCall(TIdentifier name)
