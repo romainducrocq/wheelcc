@@ -13,6 +13,6 @@ struct IdentifierContext;
 // Assembly generation
 
 std::unique_ptr<AsmProgram> generate_assembly(
-    std::unique_ptr<TacProgram> tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers);
+    std::unique_ptr<TacProgram>&& tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers);
 
 #endif

@@ -610,7 +610,7 @@ static void check_cast_exp(Ctx ctx, CCast* node) {
     node->exp_type = node->target_type;
 }
 
-static std::unique_ptr<CCast> cast_exp(Ctx ctx, std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
+static std::unique_ptr<CCast> cast_exp(Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
     size_t line = node->line;
     std::shared_ptr<Type> exp_type_cp = exp_type;
     std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), std::move(exp_type_cp), std::move(line));
@@ -618,7 +618,7 @@ static std::unique_ptr<CCast> cast_exp(Ctx ctx, std::unique_ptr<CExp> node, std:
     return exp;
 }
 
-static std::unique_ptr<CCast> cast_assign(Ctx ctx, std::unique_ptr<CExp> node, std::shared_ptr<Type>& exp_type) {
+static std::unique_ptr<CCast> cast_assign(Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
     if (is_type_arithmetic(node->exp_type.get()) && is_type_arithmetic(exp_type.get())) {
         return cast_exp(ctx, std::move(node), exp_type);
     }
