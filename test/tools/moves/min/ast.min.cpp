@@ -6,4 +6,4 @@ CConstULong(TULong value)+
 CConstDouble(TDouble value)+
 CConstChar(TChar value)+
 CConstUChar(TUChar value)+
-CStringLiteral(std::vector<TChar> value)+
+CStringLiteral(std::vector<TChar>@@ value)+

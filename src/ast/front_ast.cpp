@@ -152,7 +152,7 @@ CConditional::CConditional(std::unique_ptr<CExp>&& condition, std::unique_ptr<CE
     CExp(line),
     condition(std::move(condition)), exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
 
-CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args, size_t line) :
+CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>>&& args, size_t line) :
     CExp(line), name(name), args(std::move(args)) {}
 
 CDereference::CDereference(std::unique_ptr<CExp>&& exp, size_t line) : CExp(line), exp(std::move(exp)) {}
@@ -213,7 +213,7 @@ CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration>&& init) : init(std::m
 
 CInitExp::CInitExp(std::unique_ptr<CExp>&& init) : init(std::move(init)) {}
 
-CB::CB(std::vector<std::unique_ptr<CBlockItem>> block_items) : block_items(std::move(block_items)) {}
+CB::CB(std::vector<std::unique_ptr<CBlockItem>>&& block_items) : block_items(std::move(block_items)) {}
 
 CS::CS(std::unique_ptr<CStatement>&& statement) : statement(std::move(statement)) {}
 
@@ -221,14 +221,14 @@ CD::CD(std::unique_ptr<CDeclaration>&& declaration) : declaration(std::move(decl
 
 CSingleInit::CSingleInit(std::unique_ptr<CExp>&& exp) : exp(std::move(exp)) {}
 
-CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers) :
+CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>>&& initializers) :
     initializers(std::move(initializers)) {}
 
 CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type> member_type, size_t line) :
     member_name(member_name), member_type(std::move(member_type)), line(line) {}
 
 CStructDeclaration::CStructDeclaration(
-    TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>> members, size_t line) :
+    TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>>&& members, size_t line) :
     tag(tag),
     is_union(is_union), members(std::move(members)), line(line) {}
 
@@ -250,4 +250,4 @@ CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration>&& var_decl) : var_decl(
 
 CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration>&& struct_decl) : struct_decl(std::move(struct_decl)) {}
 
-CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations) : declarations(std::move(declarations)) {}
+CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>>&& declarations) : declarations(std::move(declarations)) {}

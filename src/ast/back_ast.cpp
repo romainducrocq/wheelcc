@@ -189,19 +189,19 @@ AsmPop::AsmPop(std::unique_ptr<AsmReg>&& reg) : reg(std::move(reg)) {}
 AsmCall::AsmCall(TIdentifier name) : name(name) {}
 
 AsmFunction::AsmFunction(
-    TIdentifier name, bool is_glob, bool is_ret_memory, std::vector<std::unique_ptr<AsmInstruction>> instructions) :
+    TIdentifier name, bool is_glob, bool is_ret_memory, std::vector<std::unique_ptr<AsmInstruction>>&& instructions) :
     name(name),
     is_glob(is_glob), is_ret_memory(is_ret_memory), instructions(std::move(instructions)) {}
 
 AsmStaticVariable::AsmStaticVariable(
-    TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>> static_inits) :
+    TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>>&& static_inits) :
     name(name),
     alignment(alignment), is_glob(is_glob), static_inits(std::move(static_inits)) {}
 
 AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> static_init) :
     name(name), alignment(alignment), static_init(std::move(static_init)) {}
 
-AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls,
-    std::vector<std::unique_ptr<AsmTopLevel>> top_levels) :
+AsmProgram::AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>>&& static_const_toplvls,
+    std::vector<std::unique_ptr<AsmTopLevel>>&& top_levels) :
     static_const_toplvls(std::move(static_const_toplvls)),
     top_levels(std::move(top_levels)) {}

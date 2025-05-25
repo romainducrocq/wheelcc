@@ -49,7 +49,7 @@ AST_T Symbol::type() { return AST_Symbol_t; }
 AST_T StructMember::type() { return AST_StructMember_t; }
 AST_T StructTypedef::type() { return AST_StructTypedef_t; }
 
-FunType::FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type)
+FunType::FunType(std::vector<std::shared_ptr<Type>>@@ param_types, std::shared_ptr<Type> ret_type)
     : param_reg_mask(NULL_REGISTER_MASK)
     , ret_reg_mask(NULL_REGISTER_MASK)
     , param_types(std::move(param_types))
@@ -98,7 +98,7 @@ StringInit::StringInit(TIdentifier string_const, bool is_null_term, std::shared_
 PointerInit::PointerInit(TIdentifier name)
     : name(name) {}
 
-Initial::Initial(std::vector<std::shared_ptr<StaticInit>> static_inits)
+Initial::Initial(std::vector<std::shared_ptr<StaticInit>>@@ static_inits)
     : static_inits(std::move(static_inits)) {}
 
 FunAttr::FunAttr(bool is_def, bool is_glob)
@@ -120,7 +120,7 @@ StructMember::StructMember(TLong offset, std::shared_ptr<Type> member_type)
     : offset(offset)
     , member_type(std::move(member_type)) {}
 
-StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names, std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members)
+StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier>@@ member_names, std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>@@ members)
     : alignment(alignment)
     , size(size)
     , member_names(std::move(member_names))

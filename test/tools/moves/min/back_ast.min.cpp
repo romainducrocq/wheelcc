@@ -24,7 +24,7 @@ AsmLabel(TIdentifier name)+
 AsmPush(std::shared_ptr<AsmOperand> src)+
 AsmPop(std::unique_ptr<AsmReg>@@ reg)+
 AsmCall(TIdentifier name)+
-AsmFunction(TIdentifier name, bool is_glob, bool is_ret_memory, std::vector<std::unique_ptr<AsmInstruction>> instructions)+
-AsmStaticVariable(TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>> static_inits)+
+AsmFunction(TIdentifier name, bool is_glob, bool is_ret_memory, std::vector<std::unique_ptr<AsmInstruction>>@@ instructions)+
+AsmStaticVariable(TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>>@@ static_inits)+
 AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit> static_init)+
-AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls, std::vector<std::unique_ptr<AsmTopLevel>> top_levels)+
+AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>>@@ static_const_toplvls, std::vector<std::unique_ptr<AsmTopLevel>>@@ top_levels)+

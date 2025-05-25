@@ -114,7 +114,7 @@ TacUIntToDouble::TacUIntToDouble(std::shared_ptr<TacValue> src, std::shared_ptr<
     : src(std::move(src))
     , dst(std::move(dst)) {}
 
-TacFunCall::TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args, std::shared_ptr<TacValue> dst)
+TacFunCall::TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>>@@ args, std::shared_ptr<TacValue> dst)
     : name(name)
     , args(std::move(args))
     , dst(std::move(dst)) {}
@@ -176,13 +176,13 @@ TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue>
 TacLabel::TacLabel(TIdentifier name)
     : name(name) {}
 
-TacFunction::TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier> params, std::vector<std::unique_ptr<TacInstruction>> body)
+TacFunction::TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier>@@ params, std::vector<std::unique_ptr<TacInstruction>>@@ body)
     : name(name)
     , is_glob(is_glob)
     , params(std::move(params))
     , body(std::move(body)) {}
 
-TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type, std::vector<std::shared_ptr<StaticInit>> static_inits)
+TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type, std::vector<std::shared_ptr<StaticInit>>@@ static_inits)
     : name(name)
     , is_glob(is_glob)
     , static_init_type(std::move(static_init_type))
@@ -193,7 +193,7 @@ TacStaticConstant::TacStaticConstant(TIdentifier name, std::shared_ptr<Type> sta
     , static_init_type(std::move(static_init_type))
     , static_init(std::move(static_init)) {}
 
-TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_const_toplvls, std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls, std::vector<std::unique_ptr<TacTopLevel>> fun_toplvls)
+TacProgram::TacProgram(std::vector<std::unique_ptr<TacTopLevel>>@@ static_const_toplvls, std::vector<std::unique_ptr<TacTopLevel>>@@ static_var_toplvls, std::vector<std::unique_ptr<TacTopLevel>>@@ fun_toplvls)
     : static_const_toplvls(std::move(static_const_toplvls))
     , static_var_toplvls(std::move(static_var_toplvls))
     , fun_toplvls(std::move(fun_toplvls)) {}

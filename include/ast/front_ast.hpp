@@ -361,7 +361,7 @@ struct CConditional : CExp {
 struct CFunctionCall : CExp {
     AST_T type() override;
     CFunctionCall() = default;
-    CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>> args, size_t line);
+    CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>>&& args, size_t line);
 
     TIdentifier name;
     std::vector<std::unique_ptr<CExp>> args;
@@ -652,7 +652,7 @@ struct CBlockItem;
 struct CB : CBlock {
     AST_T type() override;
     CB() = default;
-    CB(std::vector<std::unique_ptr<CBlockItem>> block_items);
+    CB(std::vector<std::unique_ptr<CBlockItem>>&& block_items);
 
     std::vector<std::unique_ptr<CBlockItem>> block_items;
 };
@@ -723,7 +723,7 @@ struct CSingleInit : CInitializer {
 struct CCompoundInit : CInitializer {
     AST_T type() override;
     CCompoundInit() = default;
-    CCompoundInit(std::vector<std::unique_ptr<CInitializer>> initializers);
+    CCompoundInit(std::vector<std::unique_ptr<CInitializer>>&& initializers);
 
     std::vector<std::unique_ptr<CInitializer>> initializers;
     /*
@@ -751,7 +751,7 @@ struct CStructDeclaration : Ast {
     AST_T type() override;
     CStructDeclaration() = default;
     CStructDeclaration(
-        TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>> members, size_t line);
+        TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>>&& members, size_t line);
 
     TIdentifier tag;
     bool is_union;
@@ -834,7 +834,7 @@ struct CStructDecl : CDeclaration {
 struct CProgram : Ast {
     AST_T type() override;
     CProgram() = default;
-    CProgram(std::vector<std::unique_ptr<CDeclaration>> declarations);
+    CProgram(std::vector<std::unique_ptr<CDeclaration>>&& declarations);
 
     std::vector<std::unique_ptr<CDeclaration>> declarations;
 };

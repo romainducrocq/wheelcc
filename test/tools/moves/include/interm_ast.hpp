@@ -284,7 +284,7 @@ struct TacUIntToDouble : TacInstruction {
 struct TacFunCall : TacInstruction {
     AST_T type() override;
     TacFunCall() = default;
-    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>> args, std::shared_ptr<TacValue> dst);
+    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>>@@ args, std::shared_ptr<TacValue> dst);
 
     TIdentifier name;
     std::vector<std::shared_ptr<TacValue>> args;
@@ -426,7 +426,7 @@ struct TacTopLevel : Ast {
 struct TacFunction : TacTopLevel {
     AST_T type() override;
     TacFunction() = default;
-    TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier> params, std::vector<std::unique_ptr<TacInstruction>> body);
+    TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier>@@ params, std::vector<std::unique_ptr<TacInstruction>>@@ body);
 
     TIdentifier name;
     bool is_glob;
@@ -437,7 +437,7 @@ struct TacFunction : TacTopLevel {
 struct TacStaticVariable : TacTopLevel {
     AST_T type() override;
     TacStaticVariable() = default;
-    TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type, std::vector<std::shared_ptr<StaticInit>> static_inits);
+    TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type> static_init_type, std::vector<std::shared_ptr<StaticInit>>@@ static_inits);
 
     TIdentifier name;
     bool is_glob;
@@ -461,7 +461,7 @@ struct TacStaticConstant : TacTopLevel {
 struct TacProgram : Ast {
     AST_T type() override;
     TacProgram() = default;
-    TacProgram(std::vector<std::unique_ptr<TacTopLevel>> static_const_toplvls, std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls, std::vector<std::unique_ptr<TacTopLevel>> fun_toplvls);
+    TacProgram(std::vector<std::unique_ptr<TacTopLevel>>@@ static_const_toplvls, std::vector<std::unique_ptr<TacTopLevel>>@@ static_var_toplvls, std::vector<std::unique_ptr<TacTopLevel>>@@ fun_toplvls);
 
     std::vector<std::unique_ptr<TacTopLevel>> static_const_toplvls;
     std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls;

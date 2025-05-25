@@ -1,0 +1,15 @@
+std::vector<std::shared_ptr<StaticInit>> 
+std::vector<std::shared_ptr<TacValue>> 
+std::vector<std::shared_ptr<Type>> 
+std::vector<std::unique_ptr<AsmInstruction>> 
+std::vector<std::unique_ptr<AsmTopLevel>> 
+std::vector<std::unique_ptr<CBlockItem>> 
+std::vector<std::unique_ptr<CDeclaration>> 
+std::vector<std::unique_ptr<CExp>> 
+std::vector<std::unique_ptr<CInitializer>> 
+std::vector<std::unique_ptr<CMemberDeclaration>> 
+std::vector<std::unique_ptr<CParam>> 
+std::vector<std::unique_ptr<TacInstruction>> 
+std::vector<std::unique_ptr<TacTopLevel>> 
+std::vector<TChar> 
+std::vector<TIdentifier> 

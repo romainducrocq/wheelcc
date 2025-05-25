@@ -71,7 +71,7 @@ struct Void : Type {
 struct FunType : Type {
     AST_T type() override;
     FunType() = default;
-    FunType(std::vector<std::shared_ptr<Type>> param_types, std::shared_ptr<Type> ret_type);
+    FunType(std::vector<std::shared_ptr<Type>>@@ param_types, std::shared_ptr<Type> ret_type);
 
     TULong param_reg_mask;
     TULong ret_reg_mask;
@@ -219,7 +219,7 @@ struct Tentative : InitialValue {
 struct Initial : InitialValue {
     AST_T type() override;
     Initial() = default;
-    Initial(std::vector<std::shared_ptr<StaticInit>> static_inits);
+    Initial(std::vector<std::shared_ptr<StaticInit>>@@ static_inits);
 
     std::vector<std::shared_ptr<StaticInit>> static_inits;
 };
@@ -298,7 +298,7 @@ struct StructMember : Ast {
 struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef() = default;
-    StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier> member_names, std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members);
+    StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier>@@ member_names, std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>@@ members);
 
     TInt alignment;
     TLong size;

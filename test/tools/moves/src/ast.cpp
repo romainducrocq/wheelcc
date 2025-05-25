@@ -40,7 +40,7 @@ CConstChar::CConstChar(TChar value)
 CConstUChar::CConstUChar(TUChar value)
     : value(value) {}
 
-CStringLiteral::CStringLiteral(std::vector<TChar> value)
+CStringLiteral::CStringLiteral(std::vector<TChar>@@ value)
     : value(std::move(value)) {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

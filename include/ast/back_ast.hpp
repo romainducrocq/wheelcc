@@ -617,8 +617,8 @@ struct AsmTopLevel : Ast {
 struct AsmFunction : AsmTopLevel {
     AST_T type() override;
     AsmFunction() = default;
-    AsmFunction(
-        TIdentifier name, bool is_glob, bool is_ret_memory, std::vector<std::unique_ptr<AsmInstruction>> instructions);
+    AsmFunction(TIdentifier name, bool is_glob, bool is_ret_memory,
+        std::vector<std::unique_ptr<AsmInstruction>>&& instructions);
 
     TIdentifier name;
     bool is_glob;
@@ -630,7 +630,7 @@ struct AsmStaticVariable : AsmTopLevel {
     AST_T type() override;
     AsmStaticVariable() = default;
     AsmStaticVariable(
-        TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>> static_inits);
+        TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>>&& static_inits);
 
     TIdentifier name;
     TInt alignment;
@@ -654,8 +654,8 @@ struct AsmStaticConstant : AsmTopLevel {
 struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram() = default;
-    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls,
-        std::vector<std::unique_ptr<AsmTopLevel>> top_levels);
+    AsmProgram(std::vector<std::unique_ptr<AsmTopLevel>>&& static_const_toplvls,
+        std::vector<std::unique_ptr<AsmTopLevel>>&& top_levels);
 
     std::vector<std::unique_ptr<AsmTopLevel>> static_const_toplvls;
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;

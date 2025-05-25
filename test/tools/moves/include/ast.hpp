@@ -90,7 +90,7 @@ struct CConstUChar : CConst {
 struct CStringLiteral : Ast {
     AST_T type() override;
     CStringLiteral() = default;
-    CStringLiteral(std::vector<TChar> value);
+    CStringLiteral(std::vector<TChar>@@ value);
 
     std::vector<TChar> value;
 };
