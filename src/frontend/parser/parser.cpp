@@ -726,7 +726,7 @@ static std::unique_ptr<CExp> parse_cast_exp_factor(Ctx ctx) {
     return parse_unary_exp_factor(ctx);
 }
 
-static std::unique_ptr<CAssignment> parse_assign_exp(Ctx ctx, std::unique_ptr<CExp> exp_left, int32_t precedence) {
+static std::unique_ptr<CAssignment> parse_assign_exp(Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     std::unique_ptr<CUnaryOp> unop;
@@ -735,7 +735,7 @@ static std::unique_ptr<CAssignment> parse_assign_exp(Ctx ctx, std::unique_ptr<CE
 }
 
 static std::unique_ptr<CAssignment> parse_assign_compound_exp(
-    Ctx ctx, std::unique_ptr<CExp> exp_left, int32_t precedence) {
+    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CUnaryOp> unop;
     std::unique_ptr<CExp> exp_left_1;
@@ -749,14 +749,14 @@ static std::unique_ptr<CAssignment> parse_assign_compound_exp(
         std::move(unop), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
 }
 
-static std::unique_ptr<CBinary> parse_binary_exp(Ctx ctx, std::unique_ptr<CExp> exp_left, int32_t precedence) {
+static std::unique_ptr<CBinary> parse_binary_exp(Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CBinaryOp> binop = parse_binop(ctx);
     std::unique_ptr<CExp> exp_right = parse_exp(ctx, precedence + 1);
     return std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), std::move(line));
 }
 
-static std::unique_ptr<CConditional> parse_ternary_exp(Ctx ctx, std::unique_ptr<CExp> exp_left, int32_t precedence) {
+static std::unique_ptr<CConditional> parse_ternary_exp(Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     std::unique_ptr<CExp> exp_middle = parse_exp(ctx, 0);
@@ -1094,7 +1094,7 @@ static std::unique_ptr<CStatement> parse_statement(Ctx ctx) {
 
 static std::unique_ptr<CStorageClass> parse_decltor_decl(Ctx ctx, Declarator& decltor);
 static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
-    Ctx ctx, std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor);
+    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor);
 
 static std::unique_ptr<CInitDecl> parse_for_init_decl(Ctx ctx) {
     Declarator decltor;
@@ -1575,7 +1575,7 @@ static std::unique_ptr<CDeclarator> parse_decltor(Ctx ctx) {
 // <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
-    Ctx ctx, std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor) {
+    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
     size_t line = ctx->next_tok->line;
     std::unique_ptr<CBlock> body;
     if (peek_next(ctx).tok_kind == TOK_semicolon) {
@@ -1592,7 +1592,7 @@ static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
 // variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
 static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
-    Ctx ctx, std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor) {
+    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
     size_t line = ctx->next_tok->line;
     std::unique_ptr<CInitializer> init;
     if (peek_next(ctx).tok_kind == TOK_assign) {
@@ -1648,14 +1648,14 @@ static std::unique_ptr<CStructDeclaration> parse_struct_decl(Ctx ctx) {
 }
 
 static std::unique_ptr<CFunDecl> parse_fun_decl(
-    Ctx ctx, std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor) {
+    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
     std::unique_ptr<CFunctionDeclaration> fun_decl =
         parse_fun_declaration(ctx, std::move(storage_class), std::move(decltor));
     return std::make_unique<CFunDecl>(std::move(fun_decl));
 }
 
 static std::unique_ptr<CVarDecl> parse_var_decl(
-    Ctx ctx, std::unique_ptr<CStorageClass> storage_class, Declarator&& decltor) {
+    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
     std::unique_ptr<CVariableDeclaration> var_decl =
         parse_var_declaration(ctx, std::move(storage_class), std::move(decltor));
     return std::make_unique<CVarDecl>(std::move(var_decl));
