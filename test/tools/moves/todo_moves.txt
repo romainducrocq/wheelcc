@@ -1,0 +1,24 @@
+[ ] src/frontend/parser/errors.cpp
+[ ] src/frontend/parser/lexer.cpp
+[x] src/frontend/parser/parser.cpp
+[ ] src/frontend/intermediate/semantic.cpp
+[ ] src/frontend/intermediate/tac_repr.cpp
+[ ] src/frontend/intermediate/idents.cpp
+[ ] src/ast/ast.cpp
+[ ] src/ast/back_symt.cpp
+[ ] src/ast/front_symt.cpp
+[ ] src/ast/back_ast.cpp
+[ ] src/ast/front_ast.cpp
+[ ] src/ast/interm_ast.cpp
+[ ] src/main.cpp
+[ ] src/optimization/optim_tac.cpp
+[ ] src/optimization/reg_alloc.cpp
+[ ] src/backend/emitter/gas_code.cpp
+[ ] src/backend/assembly/stack_fix.cpp
+[ ] src/backend/assembly/asm_gen.cpp
+[ ] src/backend/assembly/symt_cvt.cpp
+[ ] src/backend/assembly/registers.cpp
+[ ] src/util/throw.cpp
+[ ] src/util/pprint.cpp
+[ ] src/util/str2t.cpp
+[ ] src/util/fileio.cpp

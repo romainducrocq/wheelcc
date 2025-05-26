@@ -125,37 +125,37 @@ static std::shared_ptr<CStringLiteral> parse_string_literal(Ctx ctx) {
 // <int> ::= ? An int constant token ?
 static std::shared_ptr<CConstInt> parse_int_const(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
-    return std::make_shared<CConstInt>(std::move(value));
+    return std::make_shared<CConstInt>(value);
 }
 
 // <char> ::= ? A char token ?
 static std::shared_ptr<CConstInt> parse_char_const(Ctx ctx) {
     TInt value = string_to_char_ascii(ctx->next_tok->tok);
-    return std::make_shared<CConstInt>(std::move(value));
+    return std::make_shared<CConstInt>(value);
 }
 
 // <long> ::= ? An int or long constant token ?
 static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
     TLong value = intmax_to_int64(intmax);
-    return std::make_shared<CConstLong>(std::move(value));
+    return std::make_shared<CConstLong>(value);
 }
 
 // <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_dbl_const(Ctx ctx) {
     TDouble value = string_to_dbl(ctx->errors, ctx->next_tok->tok.c_str(), ctx->next_tok->line);
-    return std::make_shared<CConstDouble>(std::move(value));
+    return std::make_shared<CConstDouble>(value);
 }
 
 // <unsigned int> ::= ? An unsigned int constant token ?
 static std::shared_ptr<CConstUInt> parse_uint_const(uintmax_t uintmax) {
     TUInt value = uintmax_to_uint32(uintmax);
-    return std::make_shared<CConstUInt>(std::move(value));
+    return std::make_shared<CConstUInt>(value);
 }
 
 // <unsigned long> ::= ? An unsigned int or unsigned long constant token ?
 static std::shared_ptr<CConstULong> parse_ulong_const(uintmax_t uintmax) {
     TULong value = uintmax_to_uint64(uintmax);
-    return std::make_shared<CConstULong>(std::move(value));
+    return std::make_shared<CConstULong>(value);
 }
 
 // <const> ::= <int> | <long> | <double> | <char>
@@ -178,9 +178,9 @@ static std::shared_ptr<CConst> parse_const(Ctx ctx) {
         THROW_AT_LINE(GET_PARSER_MSG(MSG_overflow_long_const, ctx->next_tok->tok.c_str()), ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_int_const && value <= 2147483647l) {
-        return parse_int_const(std::move(value));
+        return parse_int_const(value);
     }
-    return parse_long_const(std::move(value));
+    return parse_long_const(value);
 }
 
 // <const> ::= <unsigned int> | <unsigned long>
@@ -196,9 +196,9 @@ static std::shared_ptr<CConst> parse_unsigned_const(Ctx ctx) {
         THROW_AT_LINE(GET_PARSER_MSG(MSG_overflow_ulong_const, ctx->next_tok->tok.c_str()), ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_uint_const && value <= 4294967295ul) {
-        return parse_uint_const(std::move(value));
+        return parse_uint_const(value);
     }
-    return parse_ulong_const(std::move(value));
+    return parse_ulong_const(value);
 }
 
 static TLong parse_arr_size(Ctx ctx) {
@@ -319,7 +319,7 @@ static void proc_ptr_abstract_decltor(
 static void proc_arr_abstract_decltor(
     CAbstractArray* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
     TLong size = node->size;
-    std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
+    std::shared_ptr<Type> derived_type = std::make_shared<Array>(size, std::move(base_type));
     proc_abstract_decltor(node->abstract_decltor.get(), std::move(derived_type), abstract_decltor);
 }
 
@@ -351,7 +351,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_arr_abstract_decltor(Ctx ctx) 
     std::unique_ptr<CAbstractDeclarator> abstract_decltor = std::make_unique<CAbstractBase>();
     do {
         TLong size = parse_arr_size(ctx);
-        abstract_decltor = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_decltor));
+        abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(abstract_decltor));
     }
     while (peek_next(ctx).tok_kind == TOK_open_bracket);
     return abstract_decltor;
@@ -364,7 +364,7 @@ static std::unique_ptr<CAbstractDeclarator> parse_direct_abstract_decltor(Ctx ct
     expect_next(ctx, pop_next(ctx), TOK_close_paren);
     while (peek_next(ctx).tok_kind == TOK_open_bracket) {
         TLong size = parse_arr_size(ctx);
-        abstract_decltor = std::make_unique<CAbstractArray>(std::move(size), std::move(abstract_decltor));
+        abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(abstract_decltor));
     }
     return abstract_decltor;
 }
@@ -440,26 +440,26 @@ static std::vector<std::unique_ptr<CExp>> parse_arg_list(Ctx ctx) {
 static std::unique_ptr<CConstant> parse_const_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     std::shared_ptr<CConst> constant = parse_const(ctx);
-    return std::make_unique<CConstant>(std::move(constant), std::move(line));
+    return std::make_unique<CConstant>(std::move(constant), line);
 }
 
 static std::unique_ptr<CConstant> parse_unsigned_const_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     std::shared_ptr<CConst> constant = parse_unsigned_const(ctx);
-    return std::make_unique<CConstant>(std::move(constant), std::move(line));
+    return std::make_unique<CConstant>(std::move(constant), line);
 }
 
 static std::unique_ptr<CString> parse_string_literal_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     std::shared_ptr<CStringLiteral> literal = parse_string_literal(ctx);
-    return std::make_unique<CString>(std::move(literal), std::move(line));
+    return std::make_unique<CString>(std::move(literal), line);
 }
 
 static std::unique_ptr<CVar> parse_var_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     TIdentifier name = parse_identifier(ctx, 0);
-    return std::make_unique<CVar>(std::move(name), std::move(line));
+    return std::make_unique<CVar>(name, line);
 }
 
 static std::unique_ptr<CFunctionCall> parse_call_factor(Ctx ctx) {
@@ -471,7 +471,7 @@ static std::unique_ptr<CFunctionCall> parse_call_factor(Ctx ctx) {
         args = parse_arg_list(ctx);
     }
     expect_next(ctx, pop_next(ctx), TOK_close_paren);
-    return std::make_unique<CFunctionCall>(std::move(name), std::move(args), std::move(line));
+    return std::make_unique<CFunctionCall>(name, std::move(args), line);
 }
 
 static std::unique_ptr<CExp> parse_inner_exp_factor(Ctx ctx) {
@@ -486,7 +486,7 @@ static std::unique_ptr<CSubscript> parse_subscript_factor(Ctx ctx, std::unique_p
     pop_next(ctx);
     std::unique_ptr<CExp> subscript_exp = parse_exp(ctx, 0);
     expect_next(ctx, pop_next(ctx), TOK_close_bracket);
-    return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), std::move(line));
+    return std::make_unique<CSubscript>(std::move(primary_exp), std::move(subscript_exp), line);
 }
 
 static std::unique_ptr<CDot> parse_dot_factor(Ctx ctx, std::unique_ptr<CExp>&& structure) {
@@ -494,7 +494,7 @@ static std::unique_ptr<CDot> parse_dot_factor(Ctx ctx, std::unique_ptr<CExp>&& s
     pop_next(ctx);
     expect_next(ctx, peek_next(ctx), TOK_identifier);
     TIdentifier member = parse_identifier(ctx, 0);
-    return std::make_unique<CDot>(std::move(member), std::move(structure), std::move(line));
+    return std::make_unique<CDot>(member, std::move(structure), line);
 }
 
 static std::unique_ptr<CArrow> parse_arrow_factor(Ctx ctx, std::unique_ptr<CExp>&& pointer) {
@@ -502,7 +502,7 @@ static std::unique_ptr<CArrow> parse_arrow_factor(Ctx ctx, std::unique_ptr<CExp>
     pop_next(ctx);
     expect_next(ctx, peek_next(ctx), TOK_identifier);
     TIdentifier member = parse_identifier(ctx, 0);
-    return std::make_unique<CArrow>(std::move(member), std::move(pointer), std::move(line));
+    return std::make_unique<CArrow>(member, std::move(pointer), line);
 }
 
 static std::unique_ptr<CAssignment> parse_postfix_incr_factor(Ctx ctx, std::unique_ptr<CExp>&& exp_left) {
@@ -519,15 +519,14 @@ static std::unique_ptr<CAssignment> parse_postfix_incr_factor(Ctx ctx, std::uniq
         }
         exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(
-        std::move(unop), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left_1), std::move(exp_right_1), line);
 }
 
 static std::unique_ptr<CUnary> parse_unary_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CUnaryOp> unop = parse_unop(ctx);
     std::unique_ptr<CExp> exp = parse_cast_exp_factor(ctx);
-    return std::make_unique<CUnary>(std::move(unop), std::move(exp), std::move(line));
+    return std::make_unique<CUnary>(std::move(unop), std::move(exp), line);
 }
 
 static std::unique_ptr<CAssignment> parse_incr_unary_factor(Ctx ctx) {
@@ -545,20 +544,19 @@ static std::unique_ptr<CAssignment> parse_incr_unary_factor(Ctx ctx) {
         }
         exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(
-        std::move(unop), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left_1), std::move(exp_right_1), line);
 }
 
 static std::unique_ptr<CDereference> parse_deref_factor(Ctx ctx) {
     size_t line = ctx->next_tok->line;
     std::unique_ptr<CExp> exp = parse_cast_exp_factor(ctx);
-    return std::make_unique<CDereference>(std::move(exp), std::move(line));
+    return std::make_unique<CDereference>(std::move(exp), line);
 }
 
 static std::unique_ptr<CAddrOf> parse_addrof_factor(Ctx ctx) {
     size_t line = ctx->next_tok->line;
     std::unique_ptr<CExp> exp = parse_cast_exp_factor(ctx);
-    return std::make_unique<CAddrOf>(std::move(exp), std::move(line));
+    return std::make_unique<CAddrOf>(std::move(exp), line);
 }
 
 static std::unique_ptr<CExp> parse_ptr_unary_factor(Ctx ctx) {
@@ -577,13 +575,13 @@ static std::unique_ptr<CSizeOfT> parse_sizeoft_factor(Ctx ctx) {
     pop_next(ctx);
     std::shared_ptr<Type> target_type = parse_type_name(ctx);
     expect_next(ctx, pop_next(ctx), TOK_close_paren);
-    return std::make_unique<CSizeOfT>(std::move(target_type), std::move(line));
+    return std::make_unique<CSizeOfT>(std::move(target_type), line);
 }
 
 static std::unique_ptr<CSizeOf> parse_sizeof_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CExp> exp = parse_unary_exp_factor(ctx);
-    return std::make_unique<CSizeOf>(std::move(exp), std::move(line));
+    return std::make_unique<CSizeOf>(std::move(exp), line);
 }
 
 static std::unique_ptr<CExp> parse_sizeof_unary_factor(Ctx ctx) {
@@ -613,7 +611,7 @@ static std::unique_ptr<CCast> parse_cast_factor(Ctx ctx) {
     std::shared_ptr<Type> target_type = parse_type_name(ctx);
     expect_next(ctx, pop_next(ctx), TOK_close_paren);
     std::unique_ptr<CExp> exp = parse_cast_exp_factor(ctx);
-    return std::make_unique<CCast>(std::move(exp), std::move(target_type), std::move(line));
+    return std::make_unique<CCast>(std::move(exp), std::move(target_type), line);
 }
 
 // <primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ | <identifier> "(" [ <argument-list> ] ")"
@@ -731,7 +729,7 @@ static std::unique_ptr<CAssignment> parse_assign_exp(Ctx ctx, std::unique_ptr<CE
     pop_next(ctx);
     std::unique_ptr<CUnaryOp> unop;
     std::unique_ptr<CExp> exp_right = parse_exp(ctx, precedence);
-    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left), std::move(exp_right), std::move(line));
+    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left), std::move(exp_right), line);
 }
 
 static std::unique_ptr<CAssignment> parse_assign_compound_exp(
@@ -745,15 +743,14 @@ static std::unique_ptr<CAssignment> parse_assign_compound_exp(
         std::unique_ptr<CExp> exp_right = parse_exp(ctx, precedence);
         exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(
-        std::move(unop), std::move(exp_left_1), std::move(exp_right_1), std::move(line));
+    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left_1), std::move(exp_right_1), line);
 }
 
 static std::unique_ptr<CBinary> parse_binary_exp(Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CBinaryOp> binop = parse_binop(ctx);
     std::unique_ptr<CExp> exp_right = parse_exp(ctx, precedence + 1);
-    return std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), std::move(line));
+    return std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
 }
 
 static std::unique_ptr<CConditional> parse_ternary_exp(Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
@@ -762,8 +759,7 @@ static std::unique_ptr<CConditional> parse_ternary_exp(Ctx ctx, std::unique_ptr<
     std::unique_ptr<CExp> exp_middle = parse_exp(ctx, 0);
     expect_next(ctx, pop_next(ctx), TOK_ternary_else);
     std::unique_ptr<CExp> exp_right = parse_exp(ctx, precedence);
-    return std::make_unique<CConditional>(
-        std::move(exp_left), std::move(exp_middle), std::move(exp_right), std::move(line));
+    return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right), line);
 }
 
 static int32_t get_tok_precedence(TOKEN_KIND tok_kind) {
@@ -887,7 +883,7 @@ static std::unique_ptr<CReturn> parse_ret_statement(Ctx ctx) {
         exp = parse_exp(ctx, 0);
     }
     expect_next(ctx, pop_next(ctx), TOK_semicolon);
-    return std::make_unique<CReturn>(std::move(exp), std::move(line));
+    return std::make_unique<CReturn>(std::move(exp), line);
 }
 
 static std::unique_ptr<CExpression> parse_exp_statement(Ctx ctx) {
@@ -918,7 +914,7 @@ static std::unique_ptr<CGoto> parse_goto_statement(Ctx ctx) {
     expect_next(ctx, peek_next(ctx), TOK_identifier);
     TIdentifier target = parse_identifier(ctx, 0);
     expect_next(ctx, pop_next(ctx), TOK_semicolon);
-    return std::make_unique<CGoto>(std::move(target), std::move(line));
+    return std::make_unique<CGoto>(target, line);
 }
 
 static std::unique_ptr<CLabel> parse_label_statement(Ctx ctx) {
@@ -927,7 +923,7 @@ static std::unique_ptr<CLabel> parse_label_statement(Ctx ctx) {
     pop_next(ctx);
     peek_next(ctx);
     std::unique_ptr<CStatement> jump_to = parse_statement(ctx);
-    return std::make_unique<CLabel>(std::move(target), std::move(jump_to), std::move(line));
+    return std::make_unique<CLabel>(target, std::move(jump_to), line);
 }
 
 static std::unique_ptr<CCompound> parse_compound_statement(Ctx ctx) {
@@ -1006,7 +1002,7 @@ static std::unique_ptr<CCase> parse_case_statement(Ctx ctx) {
                 THROW_AT_LINE(
                     GET_PARSER_MSG(MSG_case_value_not_int_const, ctx->peek_tok->tok.c_str()), ctx->peek_tok->line);
         }
-        value = std::make_unique<CConstant>(std::move(constant), std::move(line));
+        value = std::make_unique<CConstant>(std::move(constant), line);
     }
     expect_next(ctx, pop_next(ctx), TOK_ternary_else);
     peek_next(ctx);
@@ -1020,21 +1016,21 @@ static std::unique_ptr<CDefault> parse_default_statement(Ctx ctx) {
     expect_next(ctx, pop_next(ctx), TOK_ternary_else);
     peek_next(ctx);
     std::unique_ptr<CStatement> jump_to = parse_statement(ctx);
-    return std::make_unique<CDefault>(std::move(jump_to), std::move(line));
+    return std::make_unique<CDefault>(std::move(jump_to), line);
 }
 
 static std::unique_ptr<CBreak> parse_break_statement(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     expect_next(ctx, pop_next(ctx), TOK_semicolon);
-    return std::make_unique<CBreak>(std::move(line));
+    return std::make_unique<CBreak>(line);
 }
 
 static std::unique_ptr<CContinue> parse_continue_statement(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     pop_next(ctx);
     expect_next(ctx, pop_next(ctx), TOK_semicolon);
-    return std::make_unique<CContinue>(std::move(line));
+    return std::make_unique<CContinue>(line);
 }
 
 static std::unique_ptr<CNull> parse_null_statement(Ctx ctx) {
@@ -1254,11 +1250,11 @@ Lbreak:
                     return std::make_shared<Void>();
                 case TOK_key_struct: {
                     TIdentifier tag = parse_identifier(ctx, i);
-                    return std::make_shared<Structure>(std::move(tag), false);
+                    return std::make_shared<Structure>(tag, false);
                 }
                 case TOK_key_union: {
                     TIdentifier tag = parse_identifier(ctx, i);
-                    return std::make_shared<Structure>(std::move(tag), true);
+                    return std::make_shared<Structure>(tag, true);
                 }
                 default:
                     break;
@@ -1384,7 +1380,7 @@ static std::unique_ptr<CDeclarator> parse_decltor(Ctx ctx);
 static void proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor);
 
 static void proc_ident_decltor(CIdent* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
-    decltor.name = std::move(node->name);
+    decltor.name = node->name;
     decltor.derived_type = std::move(base_type);
 }
 
@@ -1396,7 +1392,7 @@ static void proc_ptr_decltor(
 
 static void proc_arr_decltor(Ctx ctx, CArrayDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     TLong size = node->size;
-    std::shared_ptr<Type> derived_type = std::make_shared<Array>(std::move(size), std::move(base_type));
+    std::shared_ptr<Type> derived_type = std::make_shared<Array>(size, std::move(base_type));
     proc_decltor(ctx, node->decltor.get(), std::move(derived_type), decltor);
 }
 
@@ -1414,12 +1410,12 @@ static void proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type
         std::shared_ptr<Type> param_type = param->param_type;
         proc_decltor(ctx, param->decltor.get(), std::move(param_type), param_decltor);
         THROW_ABORT_IF(param_decltor.derived_type->type() == AST_FunType_t);
-        params.push_back(std::move(param_decltor.name));
+        params.push_back(param_decltor.name);
         param_types.push_back(std::move(param_decltor.derived_type));
     }
     TIdentifier name = static_cast<CIdent*>(node->decltor.get())->name;
     std::shared_ptr<Type> derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
-    decltor.name = std::move(name);
+    decltor.name = name;
     decltor.derived_type = std::move(derived_type);
     decltor.params = std::move(params);
 }
@@ -1445,7 +1441,7 @@ static void proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& bas
 
 static std::unique_ptr<CIdent> parse_ident_decltor(Ctx ctx) {
     TIdentifier name = parse_identifier(ctx, 0);
-    return std::make_unique<CIdent>(std::move(name));
+    return std::make_unique<CIdent>(name);
 }
 
 static std::unique_ptr<CDeclarator> parse_simple_decltor(Ctx ctx) {
@@ -1533,7 +1529,7 @@ static std::unique_ptr<CFunDeclarator> parse_fun_decltor_suffix(Ctx ctx, std::un
 static std::unique_ptr<CDeclarator> parse_arr_decltor_suffix(Ctx ctx, std::unique_ptr<CDeclarator>&& decltor) {
     do {
         TLong size = parse_arr_size(ctx);
-        decltor = std::make_unique<CArrayDeclarator>(std::move(size), std::move(decltor));
+        decltor = std::make_unique<CArrayDeclarator>(size, std::move(decltor));
     }
     while (peek_next(ctx).tok_kind == TOK_open_bracket);
     return std::move(decltor);
@@ -1585,8 +1581,8 @@ static std::unique_ptr<CFunctionDeclaration> parse_fun_declaration(
         expect_next(ctx, peek_next(ctx), TOK_open_brace);
         body = parse_block(ctx);
     }
-    return std::make_unique<CFunctionDeclaration>(std::move(decltor.name), std::move(decltor.params), std::move(body),
-        std::move(decltor.derived_type), std::move(storage_class), std::move(line));
+    return std::make_unique<CFunctionDeclaration>(decltor.name, std::move(decltor.params), std::move(body),
+        std::move(decltor.derived_type), std::move(storage_class), line);
 }
 
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
@@ -1600,8 +1596,8 @@ static std::unique_ptr<CVariableDeclaration> parse_var_declaration(
         init = parse_initializer(ctx);
     }
     expect_next(ctx, pop_next(ctx), TOK_semicolon);
-    return std::make_unique<CVariableDeclaration>(std::move(decltor.name), std::move(init),
-        std::move(decltor.derived_type), std::move(storage_class), std::move(line));
+    return std::make_unique<CVariableDeclaration>(
+        decltor.name, std::move(init), std::move(decltor.derived_type), std::move(storage_class), line);
 }
 
 // <member-declaration> ::= { <type-specifier> }+ <declarator> ";"
@@ -1622,8 +1618,7 @@ static std::unique_ptr<CMemberDeclaration> parse_member_decl(Ctx ctx) {
     }
     size_t line = ctx->next_tok->line;
     expect_next(ctx, pop_next(ctx), TOK_semicolon);
-    return std::make_unique<CMemberDeclaration>(
-        std::move(decltor.name), std::move(decltor.derived_type), std::move(line));
+    return std::make_unique<CMemberDeclaration>(decltor.name, std::move(decltor.derived_type), line);
 }
 
 // <struct-declaration> ::= ("struct" | "union") <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
@@ -1644,7 +1639,7 @@ static std::unique_ptr<CStructDeclaration> parse_struct_decl(Ctx ctx) {
         pop_next(ctx);
     }
     expect_next(ctx, *ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CStructDeclaration>(std::move(tag), is_union, std::move(members), std::move(line));
+    return std::make_unique<CStructDeclaration>(tag, is_union, std::move(members), line);
 }
 
 static std::unique_ptr<CFunDecl> parse_fun_decl(
