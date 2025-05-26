@@ -2,7 +2,7 @@
 [x] src/frontend/parser/lexer.cpp
 [x] src/frontend/parser/parser.cpp
 [x] src/frontend/intermediate/semantic.cpp
-[ ] src/frontend/intermediate/tac_repr.cpp
+[x] src/frontend/intermediate/tac_repr.cpp
 [x] src/frontend/intermediate/idents.cpp
 [x] src/ast/ast.cpp
 [x] src/ast/back_symt.cpp
@@ -14,7 +14,7 @@
 [ ] src/optimization/optim_tac.cpp
 [ ] src/optimization/reg_alloc.cpp
 [ ] src/backend/emitter/gas_code.cpp
-[ ] src/backend/assembly/stack_fix.cpp
+[x] src/backend/assembly/stack_fix.cpp
 [ ] src/backend/assembly/asm_gen.cpp
 [ ] src/backend/assembly/symt_cvt.cpp
 [ ] src/backend/assembly/registers.cpp

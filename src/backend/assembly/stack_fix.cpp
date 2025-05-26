@@ -32,23 +32,23 @@ typedef StackFixContext* Ctx;
 
 static std::shared_ptr<AsmData> pseudo_data(AsmPseudo* node) {
     TIdentifier name = node->name;
-    return std::make_shared<AsmData>(std::move(name), 0l);
+    return std::make_shared<AsmData>(name, 0l);
 }
 
 static std::shared_ptr<AsmData> pseudo_mem_data(AsmPseudoMem* node) {
     TIdentifier name = node->name;
     TLong offset = node->offset;
-    return std::make_shared<AsmData>(std::move(name), std::move(offset));
+    return std::make_shared<AsmData>(name, offset);
 }
 
 static std::shared_ptr<AsmMemory> pseudo_memory(Ctx ctx, AsmPseudo* node) {
     TLong value = -1l * ctx->pseudo_stack_map[node->name];
-    return gen_memory(REG_Bp, std::move(value));
+    return gen_memory(REG_Bp, value);
 }
 
 static std::shared_ptr<AsmMemory> pseudo_mem_memory(Ctx ctx, AsmPseudoMem* node) {
     TLong value = -1l * (ctx->pseudo_stack_map[node->name] - node->offset);
-    return gen_memory(REG_Bp, std::move(value));
+    return gen_memory(REG_Bp, value);
 }
 
 static void align_offset_stack_bytes(Ctx ctx, TInt alignment) {
@@ -472,7 +472,7 @@ std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte) {
         bool is_byte = byte <= 127l && byte >= -128l;
         bool is_quad = byte > 2147483647l || byte < -2147483648l;
         bool is_neg = byte < 0l;
-        src = std::make_shared<AsmImm>(std::move(value), std::move(is_byte), std::move(is_quad), std::move(is_neg));
+        src = std::make_shared<AsmImm>(value, is_byte, is_quad, is_neg);
     }
     std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
     return std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type), std::move(src), std::move(dst));
