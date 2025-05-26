@@ -1418,7 +1418,7 @@ static std::shared_ptr<AsmOperand> coal_op_reg(Ctx ctx, TIdentifier name, size_t
             set_p_infer_graph(ctx, ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t);
             name = ctx->dfa_o2->data_name_map[coalesced_idx - REGISTER_MASK_SIZE];
             ctx->p_infer_graph->pseudo_reg_map[name].spill_cost++;
-            return std::make_shared<AsmPseudo>(std::move(name));
+            return std::make_shared<AsmPseudo>(name);
         }
     }
     else {

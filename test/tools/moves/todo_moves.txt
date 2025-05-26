@@ -12,8 +12,8 @@
 [x] src/ast/interm_ast.cpp
 [x] src/main.cpp
 [ ] src/optimization/optim_tac.cpp
-[ ] src/optimization/reg_alloc.cpp
-[ ] src/backend/emitter/gas_code.cpp
+[x] src/optimization/reg_alloc.cpp
+[x] src/backend/emitter/gas_code.cpp
 [x] src/backend/assembly/stack_fix.cpp
 [x] src/backend/assembly/asm_gen.cpp
 [x] src/backend/assembly/symt_cvt.cpp
