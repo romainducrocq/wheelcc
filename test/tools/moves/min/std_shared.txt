@@ -1,8 +1,0 @@
-std::shared_ptr<AsmOperand> 
-std::shared_ptr<AssemblyType> 
-std::shared_ptr<CConst> 
-std::shared_ptr<CStringLiteral> 
-std::shared_ptr<InitialValue> 
-std::shared_ptr<StaticInit> 
-std::shared_ptr<TacValue> 
-std::shared_ptr<Type> 

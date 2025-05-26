@@ -1,6 +1,0 @@
-[x] ast.cpp
-[ ] back_ast.cpp
-[x] back_symt.cpp
-[x] front_ast.cpp
-[x] front_symt.cpp
-[ ] interm_ast.cpp
