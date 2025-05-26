@@ -11,7 +11,7 @@
 [x] src/ast/front_ast.cpp
 [x] src/ast/interm_ast.cpp
 [x] src/main.cpp
-[ ] src/optimization/optim_tac.cpp
+[x] src/optimization/optim_tac.cpp
 [x] src/optimization/reg_alloc.cpp
 [x] src/backend/emitter/gas_code.cpp
 [x] src/backend/assembly/stack_fix.cpp
