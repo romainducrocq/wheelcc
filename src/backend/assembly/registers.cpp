@@ -90,13 +90,13 @@ std::shared_ptr<AsmRegister> gen_register(REGISTER_KIND reg_kind) {
 
 std::shared_ptr<AsmMemory> gen_memory(REGISTER_KIND reg_kind, TLong value) {
     std::unique_ptr<AsmReg> reg = gen_reg(reg_kind);
-    return std::make_shared<AsmMemory>(std::move(value), std::move(reg));
+    return std::make_shared<AsmMemory>(value, std::move(reg));
 }
 
 std::shared_ptr<AsmIndexed> gen_indexed(REGISTER_KIND reg_kind_base, REGISTER_KIND reg_kind_idx, TLong scale) {
     std::unique_ptr<AsmReg> reg_base = gen_reg(reg_kind_base);
     std::unique_ptr<AsmReg> reg_index = gen_reg(reg_kind_idx);
-    return std::make_shared<AsmIndexed>(std::move(scale), std::move(reg_base), std::move(reg_index));
+    return std::make_shared<AsmIndexed>(scale, std::move(reg_base), std::move(reg_index));
 }
 
 REGISTER_KIND register_mask_kind(AsmReg* node) {
