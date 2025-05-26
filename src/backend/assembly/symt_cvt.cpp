@@ -85,7 +85,7 @@ TInt gen_type_alignment(FrontEndContext* ctx, Type* type) {
 static std::shared_ptr<ByteArray> arr_asm_type(FrontEndContext* ctx, Array* arr_type) {
     TLong size;
     TInt alignment = get_arr_alignment(ctx, arr_type, size);
-    return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
+    return std::make_shared<ByteArray>(size, alignment);
 }
 
 static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* ctx, Structure* struct_type) {
@@ -99,7 +99,7 @@ static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* ctx, Structur
         size = -1l;
         alignment = -1;
     }
-    return std::make_shared<ByteArray>(std::move(size), std::move(alignment));
+    return std::make_shared<ByteArray>(size, alignment);
 }
 
 std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name) {
@@ -172,14 +172,14 @@ static void cvt_fun_type(Ctx ctx, FunAttr* node, FunType* fun_type) {
         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
     }
     bool is_def = node->is_def;
-    cvt_backend_symbol(ctx, std::make_unique<BackendFun>(std::move(is_def)));
+    cvt_backend_symbol(ctx, std::make_unique<BackendFun>(is_def));
 }
 
 static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
     if (node->type() != AST_ConstantAttr_t) {
         std::shared_ptr<AssemblyType> asm_type = cvt_backend_asm_type(ctx->frontend, ctx->symbol);
         bool is_static = node->type() == AST_StaticAttr_t;
-        cvt_backend_symbol(ctx, std::make_unique<BackendObj>(std::move(is_static), false, std::move(asm_type)));
+        cvt_backend_symbol(ctx, std::make_unique<BackendObj>(is_static, false, std::move(asm_type)));
     }
 }
 

@@ -16,7 +16,7 @@
 [ ] src/backend/emitter/gas_code.cpp
 [x] src/backend/assembly/stack_fix.cpp
 [ ] src/backend/assembly/asm_gen.cpp
-[ ] src/backend/assembly/symt_cvt.cpp
+[x] src/backend/assembly/symt_cvt.cpp
 [x] src/backend/assembly/registers.cpp
 [x] src/util/throw.cpp
 [x] src/util/pprint.cpp
