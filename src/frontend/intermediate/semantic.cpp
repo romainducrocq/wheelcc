@@ -585,7 +585,7 @@ static void check_const_exp(CConstant* node) {
 static void check_string_exp(CString* node) {
     TLong size = ((TLong)node->literal->value.size()) + 1l;
     std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-    node->exp_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
+    node->exp_type = std::make_shared<Array>(size, std::move(elem_type));
 }
 
 static void check_var_exp(Ctx ctx, CVar* node) {
@@ -613,7 +613,7 @@ static void check_cast_exp(Ctx ctx, CCast* node) {
 static std::unique_ptr<CCast> cast_exp(Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
     size_t line = node->line;
     std::shared_ptr<Type> exp_type_cp = exp_type;
-    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), std::move(exp_type_cp), std::move(line));
+    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), std::move(exp_type_cp), line);
     check_cast_exp(ctx, exp.get());
     return exp;
 }
@@ -1179,7 +1179,7 @@ static std::unique_ptr<CAddrOf> check_arr_typed_exp(std::unique_ptr<CExp>&& node
         node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
     }
     size_t line = node->line;
-    std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node), std::move(line));
+    std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node), line);
     addrof->exp_type = addrof->exp->exp_type;
     return addrof;
 }
@@ -1567,7 +1567,7 @@ static void check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     }
 
     std::shared_ptr<Type> fun_type = node->fun_type;
-    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(std::move(is_def), std::move(is_glob));
+    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
     ctx->frontend->symbol_table[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
 }
 
@@ -1575,12 +1575,12 @@ static void push_static_init(Ctx ctx, std::shared_ptr<StaticInit>&& static_init)
     ctx->p_static_inits->push_back(std::move(static_init));
 }
 
-static void push_zero_static_init(Ctx ctx, TLong&& byte) {
+static void push_zero_static_init(Ctx ctx, TLong byte) {
     if (!ctx->p_static_inits->empty() && ctx->p_static_inits->back()->type() == AST_ZeroInit_t) {
         static_cast<ZeroInit*>(ctx->p_static_inits->back().get())->byte += byte;
     }
     else {
-        push_static_init(ctx, std::make_shared<ZeroInit>(std::move(byte)));
+        push_static_init(ctx, std::make_shared<ZeroInit>(byte));
     }
 }
 
@@ -1588,7 +1588,7 @@ static void check_static_init(Ctx ctx, CInitializer* node, Type* static_init_typ
 
 static void check_static_no_init(Ctx ctx, Type* static_init_type, TLong size) {
     TLong byte = static_init_type == nullptr ? size : get_type_scale(ctx, static_init_type) * size;
-    push_zero_static_init(ctx, std::move(byte));
+    push_zero_static_init(ctx, byte);
 }
 
 static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_type) {
@@ -1610,7 +1610,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 push_zero_static_init(ctx, 1l);
             }
             else {
-                push_static_init(ctx, std::make_shared<CharInit>(std::move(value)));
+                push_static_init(ctx, std::make_shared<CharInit>(value));
             }
             break;
         }
@@ -1620,7 +1620,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 push_zero_static_init(ctx, 4l);
             }
             else {
-                push_static_init(ctx, std::make_shared<IntInit>(std::move(value)));
+                push_static_init(ctx, std::make_shared<IntInit>(value));
             }
             break;
         }
@@ -1630,7 +1630,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 push_zero_static_init(ctx, 8l);
             }
             else {
-                push_static_init(ctx, std::make_shared<LongInit>(std::move(value)));
+                push_static_init(ctx, std::make_shared<LongInit>(value));
             }
             break;
         }
@@ -1642,7 +1642,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
             }
             else {
                 TIdentifier dbl_const = make_string_identifier(ctx->identifiers, std::to_string(binary));
-                push_static_init(ctx, std::make_shared<DoubleInit>(std::move(dbl_const)));
+                push_static_init(ctx, std::make_shared<DoubleInit>(dbl_const));
             }
             break;
         }
@@ -1652,7 +1652,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 push_zero_static_init(ctx, 1l);
             }
             else {
-                push_static_init(ctx, std::make_shared<UCharInit>(std::move(value)));
+                push_static_init(ctx, std::make_shared<UCharInit>(value));
             }
             break;
         }
@@ -1662,7 +1662,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 push_zero_static_init(ctx, 4l);
             }
             else {
-                push_static_init(ctx, std::make_shared<UIntInit>(std::move(value)));
+                push_static_init(ctx, std::make_shared<UIntInit>(value));
             }
             break;
         }
@@ -1672,7 +1672,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
                 push_zero_static_init(ctx, 8l);
             }
             else {
-                push_static_init(ctx, std::make_shared<ULongInit>(std::move(value)));
+                push_static_init(ctx, std::make_shared<ULongInit>(value));
             }
             break;
         }
@@ -1723,14 +1723,14 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static
             {
                 TLong size = ((TLong)node->literal->value.size()) + 1l;
                 std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-                constant_type = std::make_shared<Array>(std::move(size), std::move(elem_type));
+                constant_type = std::make_shared<Array>(size, std::move(elem_type));
             }
             std::unique_ptr<IdentifierAttr> constant_attrs;
             {
                 std::shared_ptr<StaticInit> static_init;
                 {
                     std::shared_ptr<CStringLiteral> literal = node->literal;
-                    static_init = std::make_shared<StringInit>(std::move(string_const), true, std::move(literal));
+                    static_init = std::make_shared<StringInit>(string_const, true, std::move(literal));
                 }
                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
             }
@@ -1738,7 +1738,7 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
         }
     }
-    push_static_init(ctx, std::make_shared<PointerInit>(std::move(string_const_label)));
+    push_static_init(ctx, std::make_shared<PointerInit>(string_const_label));
 }
 
 static void check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
@@ -1752,11 +1752,10 @@ static void check_static_arr_string_init(Ctx ctx, CString* node, Array* static_a
             string_const = make_string_identifier(ctx->identifiers, std::move(value));
         }
         std::shared_ptr<CStringLiteral> literal = node->literal;
-        push_static_init(
-            ctx, std::make_shared<StringInit>(std::move(string_const), std::move(is_null_term), std::move(literal)));
+        push_static_init(ctx, std::make_shared<StringInit>(string_const, is_null_term, std::move(literal)));
     }
     if (byte > 0l) {
-        push_zero_static_init(ctx, std::move(byte));
+        push_zero_static_init(ctx, byte);
     }
 }
 
@@ -1915,8 +1914,7 @@ static void check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
 
     std::shared_ptr<Type> glob_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> glob_var_attrs =
-        std::make_unique<StaticAttr>(std::move(is_glob), std::move(init_value));
+    std::unique_ptr<IdentifierAttr> glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
 }
@@ -2059,7 +2057,7 @@ static void check_struct_decl(Ctx ctx, CStructDeclaration* node) {
                 size += member_size;
             }
             std::shared_ptr<Type> member_type = member->member_type;
-            members[member_names.back()] = std::make_unique<StructMember>(std::move(offset), std::move(member_type));
+            members[member_names.back()] = std::make_unique<StructMember>(offset, std::move(member_type));
         }
         if (alignment < member_alignment) {
             alignment = member_alignment;
@@ -2071,8 +2069,8 @@ static void check_struct_decl(Ctx ctx, CStructDeclaration* node) {
             size += alignment - offset;
         }
     }
-    ctx->frontend->struct_typedef_table[node->tag] = std::make_unique<StructTypedef>(
-        std::move(alignment), std::move(size), std::move(member_names), std::move(members));
+    ctx->frontend->struct_typedef_table[node->tag] =
+        std::make_unique<StructTypedef>(alignment, size, std::move(member_names), std::move(members));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
