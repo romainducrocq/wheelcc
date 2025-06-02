@@ -949,22 +949,16 @@ static void emit_static_var_toplvl(Ctx ctx, AsmStaticVariable* node) {
 //                                      $ .L<name>:
 //                                      $     <init>
 static void emit_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
-#ifndef __APPLE__
-    emit(ctx, TAB ".section .rodata" LF);
-#endif
+#ifdef __APPLE__
     switch (node->static_init->type()) {
         case AST_DoubleInit_t:
             switch (node->alignment) {
                 case 8:
-#ifdef __APPLE__
                     emit(ctx, TAB ".literal8" LF);
-#endif
                     emit(ctx, TAB ".balign 8" LF);
                     break;
                 case 16:
-#ifdef __APPLE__
                     emit(ctx, TAB ".literal16" LF);
-#endif
                     emit(ctx, TAB ".balign 16" LF);
                     break;
                 default:
@@ -972,15 +966,15 @@ static void emit_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
             }
             break;
         case AST_StringInit_t:
-#ifdef __APPLE__
             emit(ctx, TAB ".cstring" LF);
-#else
-            align_directive_toplvl(ctx, node->alignment);
-#endif
             break;
         default:
             THROW_ABORT;
     }
+#else
+    emit(ctx, TAB ".section .rodata" LF);
+    align_directive_toplvl(ctx, node->alignment);
+#endif
     emit(ctx, LBL);
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF);
