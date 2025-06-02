@@ -110,14 +110,24 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
 #ifdef _WIN32
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
-#elif defined(__APPLE__)
-    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "MacOS"));
-#elif !defined(__linux__)
-    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
-#elif defined(__arm__)
-    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
 #elif defined(__i386__)
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "x86"));
+#elif defined(__APPLE__)
+
+#if !defined(__arm__) || !defined(__x86_64__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
+#elif defined(__GNUC__) && !defined(__clang__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "gcc"));
+#elif !defined(__clang__)
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
+#elif __clang_major__ < 5
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_cc_ver, CLANG_VERSION));
+#endif
+
+#elif defined(__linux__)
+
+#ifdef __arm__
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
 #elif !defined(__x86_64__)
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "unknown"));
 #elif defined(__clang__)
@@ -125,7 +135,11 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #elif !defined(__GNUC__)
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "unknown"));
 #elif __GNUC__ < 8 || (__GNUC__ == 8 && __GNUC_MINOR__ == 0)
-    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_gcc_ver, GCC_VERSION));
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_cc_ver, GCC_VERSION));
+#endif
+
+#else
+    THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
 #endif
 
     if (ctx->debug_code > 0

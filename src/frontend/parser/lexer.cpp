@@ -256,7 +256,7 @@ std::vector<Token> lex_c_code(
     {
         ctx.errors = errors;
         ctx.fileio = fileio;
-#ifdef __linux__
+#ifndef __APPLE__
         ctx.stdlibdirs.push_back("/usr/include/");
         ctx.stdlibdirs.push_back("/usr/local/include/");
 #endif

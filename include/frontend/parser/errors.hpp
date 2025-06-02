@@ -27,7 +27,7 @@ enum MESSAGE_FATAL {
     MSG_unsupported_os,
     MSG_unsupported_arch,
     MSG_unsupported_compiler,
-    MSG_unsupported_gcc_ver
+    MSG_unsupported_cc_ver
 };
 
 enum MESSAGE_ARG {
@@ -80,5 +80,6 @@ const char* get_semantic_msg(MESSAGE_SEMANTIC msg);
 #define GET_PARSER_MSG_0(X) GET_ERROR_MSG(get_parser_msg(X), (int)X)
 #define GET_SEMANTIC_MSG_0(X) GET_ERROR_MSG(get_semantic_msg(X), (int)X)
 #define GCC_VERSION __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
+#define CLANG_VERSION __clang_major__, __clang_minor__, __clang_patchlevel__
 
 #endif

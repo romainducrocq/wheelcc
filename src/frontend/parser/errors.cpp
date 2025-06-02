@@ -421,13 +421,26 @@ std::string get_type_fmt(IdentifierContext* ctx, Type* type) {
 const char* get_fatal_msg(MESSAGE_FATAL msg) {
     switch (msg) {
         case MSG_unsupported_os:
-            RET_ERRNO EM_VARG " operating system is not supported, requires \033[1m‘GNU/Linux’\033[0m (x86_64)";
+            RET_ERRNO EM_VARG " operating system is not supported, requires \033[1m‘GNU/Linux’\033[0m (x86_64) or "
+                              "\033[1m‘MacOS’\033[0m";
         case MSG_unsupported_arch:
+#ifdef __APPLE__
+            RET_ERRNO EM_VARG " architecture is not supported, requires \033[1m‘x86_64’\033[0m or \033[1m‘arm’\033[0m";
+#else
             RET_ERRNO EM_VARG " architecture is not supported, requires \033[1m‘x86_64’\033[0m";
+#endif
         case MSG_unsupported_compiler:
+#ifdef __APPLE__
+            RET_ERRNO EM_VARG " compiler is not supported, requires \033[1m‘clang’\033[0m >= 5.0.0";
+#else
             RET_ERRNO EM_VARG " compiler is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
-        case MSG_unsupported_gcc_ver:
+#endif
+        case MSG_unsupported_cc_ver:
+#ifdef __APPLE__
+            RET_ERRNO "\033[1m‘clang’\033[0m %i.%i.%i is not supported, requires \033[1m‘clang’\033[0m >= 5.0.0";
+#else
             RET_ERRNO "\033[1m‘gcc’\033[0m %i.%i.%i is not supported, requires \033[1m‘gcc’\033[0m >= 8.1.0";
+#endif
         default:
             THROW_ABORT;
     }
