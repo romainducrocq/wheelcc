@@ -822,7 +822,11 @@ static void glob_directive_toplvl(Ctx ctx, TIdentifier name, bool is_glob) {
 //                                                        $     <instructions>
 static void emit_fun_toplvl(Ctx ctx, AsmFunction* node) {
     glob_directive_toplvl(ctx, node->name, node->is_glob);
+#ifdef __APPLE__
+    emit(ctx, TAB ".text" LF "_");
+#else
     emit(ctx, TAB ".text" LF);
+#endif
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF TAB "pushq %rbp" LF TAB "movq %rsp, %rbp" LF);
     emit_instr_list(ctx, node->instructions);
@@ -978,7 +982,9 @@ static void emit_program(Ctx ctx, AsmProgram* node) {
     for (const auto& top_level : node->top_levels) {
         emit_toplvl(ctx, top_level.get());
     }
+#ifndef __APPLE__
     emit(ctx, TAB TAB ".section .note.GNU-stack,\"\",@progbits" LF);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
