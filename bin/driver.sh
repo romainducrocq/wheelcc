@@ -2,7 +2,12 @@
 
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
 PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
+CC="g++"
 LD_LIB_64="/lib64/ld-linux-x86-64.so.2"
+if [[ "$(uname -s)" = "Darwin"* ]]; then
+    CC="clang++"
+    LD_LIB_64=""
+fi
 
 ARGC=${#}
 ARGV=(${@})
@@ -47,7 +52,7 @@ function usage () {
     echo "    -O3                           alias    for -O1 -O2"
     echo ""
     echo "[Preprocess]:"
-    echo "    -E  enable macro expansion with gcc"
+    echo "    -E  enable macro expansion with ${CC}"
     echo ""
     echo "[Link]:"
     echo "    -s  compile, but do not assemble and link"
@@ -456,8 +461,8 @@ function add_linklibs () {
 function preprocess () {
     if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
-            verbose "Preprocess (gcc) -> ${FILE}.i"
-            gcc -E -P ${FILE}.c -o ${FILE}.i
+            verbose "Preprocess (${CC}) -> ${FILE}.i"
+            ${CC} -E -P ${FILE}.c -o ${FILE}.i
             if [ ${?} -ne 0 ]; then
                 raise_error "preprocessing failed"
             fi
@@ -515,8 +520,8 @@ function link () {
                     fi
                 fi
                 if [ -z "${LD_LIB_64}" ]; then
-                    verbose "Link (gcc) -> ${NAME_OUT}"
-                    gcc ${FILES// /.o }.o ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
+                    verbose "Link (${CC}) -> ${NAME_OUT}"
+                    ${CC} ${FILES// /.o }.o ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
                     if [ ${?} -ne 0 ]; then
                         raise_error "linking failed"
                     fi
