@@ -949,41 +949,44 @@ static void emit_static_var_toplvl(Ctx ctx, AsmStaticVariable* node) {
 //                                      $ .L<name>:
 //                                      $     <init>
 static void emit_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
-#ifdef __APPLE__
-    bool is_dbl16 = false;
+#ifndef __APPLE__
+    emit(ctx, TAB ".section .rodata" LF);
+#endif
     switch (node->static_init->type()) {
         case AST_DoubleInit_t:
             switch (node->alignment) {
                 case 8:
+#ifdef __APPLE__
                     emit(ctx, TAB ".literal8" LF);
+#endif
                     emit(ctx, TAB ".balign 8" LF);
                     break;
-                case 16: {
+                case 16:
+#ifdef __APPLE__
                     emit(ctx, TAB ".literal16" LF);
+#endif
                     emit(ctx, TAB ".balign 16" LF);
-                    is_dbl16 = true;
                     break;
-                }
                 default:
                     THROW_ABORT;
             }
             break;
         case AST_StringInit_t:
+#ifdef __APPLE__
             emit(ctx, TAB ".cstring" LF);
+#else
+            align_directive_toplvl(ctx, node->alignment);
+#endif
             break;
         default:
             THROW_ABORT;
     }
-#else
-    emit(ctx, TAB ".section .rodata" LF);
-    align_directive_toplvl(ctx, node->alignment);
-#endif
     emit(ctx, LBL);
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF);
     static_init_toplvl(ctx, node->static_init.get());
 #ifdef __APPLE__
-    if (is_dbl16) {
+    if (node->static_init->type() == AST_DoubleInit_t && node->alignment == 16) {
         emit(ctx, TAB TAB ".quad 0" LF);
     }
 #endif
