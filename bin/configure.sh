@@ -10,6 +10,26 @@ fi
 
 INSTALL_CC=0
 
+# Check for MacOS first, as it supports only bash <= 3.2
+if [[ "$(uname -s)" = "Darwin"* ]]; then
+    clang --help > /dev/null 2>&1
+    if [ ${?} -ne 0 ]; then
+        INSTALL_CC=1
+    else
+        CLANG_MAJOR_VERSION=$(clang -dumpversion | cut -d"." -f1)
+        if [ ${CLANG_MAJOR_VERSION} -lt 5 ]; then
+            INSTALL_CC=1
+        fi
+    fi
+
+    if [ ${INSTALL_CC} -ne 0 ]; then
+        echo -e "\033[1;34mwarning:\033[0m install \033[1m‘clang’\033[0m >= 5.0.0 before building"
+    fi
+
+    echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
+    exit 0
+fi
+
 as --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
     INSTALL_CC=1
