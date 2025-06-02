@@ -37,7 +37,7 @@ static void emit(Ctx ctx, const char* code) { write_buffer(ctx->fileio, code); }
 // identifier -> $ identifier
 static void emit_identifier(Ctx ctx, TIdentifier identifier) {
 #ifdef __APPLE__
-    emit("_");
+    emit(ctx, "_");
 #endif
     const std::string& value = ctx->identifiers->hash_table[identifier];
     emit(ctx, value.c_str());
