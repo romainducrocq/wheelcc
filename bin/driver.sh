@@ -2,11 +2,11 @@
 
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
 PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
-CC="g++"
+CC="gcc"
 AS_FLAGS="--64"
 LD_LIB_64="/lib64/ld-linux-x86-64.so.2"
 if [[ "$(uname -s)" = "Darwin"* ]]; then
-    CC="clang++ -arch x86_64"
+    CC="clang -arch x86_64"
     AS_FLAGS="-arch x86_64"
     LD_LIB_64=""
 fi
