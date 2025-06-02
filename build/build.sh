@@ -3,7 +3,7 @@
 PACKAGE_NAME="$(cat ../bin/package_name.txt)"
 CC="g++"
 if [[ "$(uname -s)" = "Darwin"* ]]; then
-    CC="clang"
+    CC="clang++"
 fi
 
 ./build_preset.sh

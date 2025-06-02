@@ -12,6 +12,9 @@ if [ ! ${INSTALL_Y} = "y" ]; then
     exit 0
 fi
 
+if [ ! -d "${INSTALL_DIR}" ]; then
+    sudo mkdir -p ${INSTALL_DIR}/
+fi
 sudo find ${INSTALL_DIR}/ -maxdepth 1 -name "${PACKAGE_NAME}" -type l -delete
 if [ ${?} -ne 0 ]; then
     echo -e "\033[0;31merror:\033[0m installation failed" 1>&2

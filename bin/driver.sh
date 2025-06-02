@@ -177,7 +177,12 @@ function parse_optimize_arg () {
         "--eliminate-dead-stores")
             OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 3))
             ;;
-        "--optimize") ;&
+        "--optimize")
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 0))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 1))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 2))
+            OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 3))
+            ;;
         "-O1")
             OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 0))
             OPTIM_L1_MASK=$((OPTIM_L1_MASK | 1 << 1))
@@ -190,7 +195,9 @@ function parse_optimize_arg () {
         "--no-coalescing")
             OPTIM_L2_ENUM=1
             ;;
-        "--allocate-register") ;&
+        "--allocate-register")
+            OPTIM_L2_ENUM=2
+            ;;
         "-O2")
             OPTIM_L2_ENUM=2
             ;;
