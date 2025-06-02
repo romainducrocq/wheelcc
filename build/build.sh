@@ -1,9 +1,9 @@
 #!/bin/bash
 
 PACKAGE_NAME="$(cat ../bin/package_name.txt)"
-CC="g++"
+CXX="g++"
 if [[ "$(uname -s)" = "Darwin"* ]]; then
-    CC="clang++"
+    CXX="clang++"
 fi
 
 ./build_preset.sh
@@ -55,7 +55,7 @@ SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/pprint.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/str2t.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/throw.cpp"
 
-${CC} ${SOURCE_FILES} ${CXX_FLAGS} ${INCLUDE_DIRS} ${PROJECT_NAME}
+${CXX} ${SOURCE_FILES} ${CXX_FLAGS} ${INCLUDE_DIRS} ${PROJECT_NAME}
 if [ ${?} -ne 0 ]; then exit 1; fi
 
 exit 0
