@@ -26,11 +26,19 @@ typedef GasCodeContext* Ctx;
 
 #define LF "\n"
 #define TAB "    "
+#ifdef __APPLE__
+#define LBL "L"
+#else
+#define LBL ".L"
+#endif
 
 static void emit(Ctx ctx, const char* code) { write_buffer(ctx->fileio, code); }
 
 // identifier -> $ identifier
 static void emit_identifier(Ctx ctx, TIdentifier identifier) {
+#ifdef __APPLE__
+    emit("_");
+#endif
     const std::string& value = ctx->identifiers->hash_table[identifier];
     emit(ctx, value.c_str());
 }
@@ -393,7 +401,7 @@ static void data_op(Ctx ctx, AsmData* node) {
     if (ctx->backend->symbol_table.find(node->name) != ctx->backend->symbol_table.end()
         && ctx->backend->symbol_table[node->name]->type() == AST_BackendObj_t
         && static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get())->is_const) {
-        emit(ctx, ".L");
+        emit(ctx, LBL);
     }
     emit_identifier(ctx, node->name);
     if (node->offset != 0l) {
@@ -655,7 +663,7 @@ static void cdq_instr(Ctx ctx, AsmCdq* node) {
 }
 
 static void jmp_instr(Ctx ctx, AsmJmp* node) {
-    emit(ctx, TAB TAB "jmp .L");
+    emit(ctx, TAB TAB "jmp " LBL);
     emit_identifier(ctx, node->target);
     emit(ctx, LF);
 }
@@ -663,7 +671,7 @@ static void jmp_instr(Ctx ctx, AsmJmp* node) {
 static void jmp_cc_instr(Ctx ctx, AsmJmpCC* node) {
     emit(ctx, TAB TAB "j");
     emit(ctx, get_cond_code(node->cond_code.get()));
-    emit(ctx, " .L");
+    emit(ctx, " " LBL);
     emit_identifier(ctx, node->target);
     emit(ctx, LF);
 }
@@ -677,7 +685,7 @@ static void set_cc_instr(Ctx ctx, AsmSetCC* node) {
 }
 
 static void label_instr(Ctx ctx, AsmLabel* node) {
-    emit(ctx, TAB ".L");
+    emit(ctx, TAB LBL);
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF);
 }
@@ -697,13 +705,13 @@ static void pop_instr(Ctx ctx, AsmPop* node) {
 static void call_instr(Ctx ctx, AsmCall* node) {
     emit(ctx, TAB TAB "call ");
     emit_identifier(ctx, node->name);
+#ifndef __APPLE__
     THROW_ABORT_IF(ctx->backend->symbol_table[node->name]->type() != AST_BackendFun_t);
     if (!static_cast<BackendFun*>(ctx->backend->symbol_table[node->name].get())->is_def) {
-        emit(ctx, "@PLT" LF);
+        emit(ctx, "@PLT");
     }
-    else {
-        emit(ctx, LF);
-    }
+#endif
+    emit(ctx, LF);
 }
 
 static void ret_instr(Ctx ctx) { emit(ctx, TAB "movq %rbp, %rsp" LF TAB "popq %rbp" LF TAB "ret" LF); }
@@ -822,11 +830,7 @@ static void glob_directive_toplvl(Ctx ctx, TIdentifier name, bool is_glob) {
 //                                                        $     <instructions>
 static void emit_fun_toplvl(Ctx ctx, AsmFunction* node) {
     glob_directive_toplvl(ctx, node->name, node->is_glob);
-#ifdef __APPLE__
-    emit(ctx, TAB ".text" LF "_");
-#else
     emit(ctx, TAB ".text" LF);
-#endif
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF TAB "pushq %rbp" LF TAB "movq %rsp, %rbp" LF);
     emit_instr_list(ctx, node->instructions);
@@ -915,7 +919,7 @@ static void static_init_toplvl(Ctx ctx, StaticInit* node) {
             emit(ctx, "\"" LF);
             break;
         case AST_PointerInit_t:
-            emit(ctx, TAB TAB ".quad .L");
+            emit(ctx, TAB TAB ".quad " LBL);
             emit_identifier(ctx, static_cast<PointerInit*>(node)->name);
             emit(ctx, LF);
             break;
@@ -947,7 +951,7 @@ static void emit_static_var_toplvl(Ctx ctx, AsmStaticVariable* node) {
 static void emit_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
     emit(ctx, TAB ".section .rodata" LF);
     align_directive_toplvl(ctx, node->alignment);
-    emit(ctx, ".L");
+    emit(ctx, LBL);
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF);
     static_init_toplvl(ctx, node->static_init.get());
