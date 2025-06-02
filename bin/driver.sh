@@ -3,9 +3,11 @@
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
 PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
 CC="g++"
+AS_FLAGS="--64"
 LD_LIB_64="/lib64/ld-linux-x86-64.so.2"
 if [[ "$(uname -s)" = "Darwin"* ]]; then
-    CC="clang++"
+    CC="clang++ -arch x86_64"
+    AS_FLAGS="-arch x86_64"
     LD_LIB_64=""
 fi
 
@@ -491,7 +493,7 @@ function compile () {
 function assemble () {
     for FILE in ${FILES}; do
         verbose "Assemble (as) -> ${FILE}.o"
-        as --64 ${FILE}.s -o ${FILE}.o
+        as ${AS_FLAGS} ${FILE}.s -o ${FILE}.o
         if [ ${?} -ne 0 ]; then
             raise_error "assembling failed"
         fi
@@ -508,7 +510,7 @@ function link () {
                 fi
                 if [ ! -z "${LD_LIB_64}" ]; then
                     verbose "Assemble (as) -> ${PACKAGE_DIR}/crt.o"
-                    as --64 ${PACKAGE_DIR}/crt.s -o ${PACKAGE_DIR}/crt.o
+                    as ${AS_FLAGS} ${PACKAGE_DIR}/crt.s -o ${PACKAGE_DIR}/crt.o
                     if [ ${?} -ne 0 ]; then
                         raise_error "assembling failed"
                     fi
