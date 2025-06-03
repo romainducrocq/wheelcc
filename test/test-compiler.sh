@@ -1,19 +1,31 @@
 #!/bin/bash
 
 PACKAGE_NAME="$(cat ../bin/package_name.txt)"
-CC="gcc -pedantic-errors -std=c17"
+CC="gcc"
+DIST="linux"
+if [[ "$(uname -s)" = "Darwin"* ]]; then
+    CC="clang -arch x86_64"
+    DIST="osx"
 
-GCC_MAJOR_VERSION=$(gcc -dumpversion | cut -d"." -f1)
-if [ ${GCC_MAJOR_VERSION} -lt 8 ]; then
-    echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m requires \033[1m‘gcc’\033[0m >= 8.1.0" 1>&2
-    exit 1
-elif [ ${GCC_MAJOR_VERSION} -eq 8 ]; then
-    GCC_MINOR_VERSION=$(gcc -dumpfullversion | cut -d"." -f2)
-    if [ ${GCC_MINOR_VERSION} -eq 0 ]; then
-        echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m requires \033[1m‘gcc’\033[0m >= 8.1.0" 1>&2
+    CLANG_MAJOR_VERSION=$(clang -dumpversion | cut -d"." -f1)
+    if [ ${CLANG_MAJOR_VERSION} -lt 5 ]; then
+        echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m requires \033[clang\033[0m >= 5.0.0" 1>&2
         exit 1
     fi
+else
+    GCC_MAJOR_VERSION=$(gcc -dumpversion | cut -d"." -f1)
+    if [ ${GCC_MAJOR_VERSION} -lt 8 ]; then
+        echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m requires \033[1m‘gcc’\033[0m >= 8.1.0" 1>&2
+        exit 1
+    elif [ ${GCC_MAJOR_VERSION} -eq 8 ]; then
+        GCC_MINOR_VERSION=$(gcc -dumpfullversion | cut -d"." -f2)
+        if [ ${GCC_MINOR_VERSION} -eq 0 ]; then
+            echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m requires \033[1m‘gcc’\033[0m >= 8.1.0" 1>&2
+            exit 1
+        fi
+    fi
 fi
+CC="${CC} -pedantic-errors -std=c17"
 
 LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
@@ -157,7 +169,7 @@ function check_single () {
 }
 
 function check_data () {
-    ${CC} -c ${FILE}_linux.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
+    ${CC} -c ${FILE}_${DIST}.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
     ${CC} -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
     ${CC} ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
     STDOUT_GCC=$(${FILE})
@@ -170,7 +182,7 @@ function check_data () {
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
-        ${CC} ${FILE}.o ${FILE}_linux.s ${LIBS} -o ${FILE} > /dev/null 2>&1
+        ${CC} ${FILE}.o ${FILE}_${DIST}.s ${LIBS} -o ${FILE} > /dev/null 2>&1
         RETURN_THIS=${?}
     fi
 
@@ -256,7 +268,7 @@ function check_test () {
         LIBS=" -"$(echo "${FILE}" | cut -d "+" -f2- | tr "+" "-" | tr "_" " ")
     fi
 
-    if [ -f "${FILE}_linux.s" ]; then
+    if [ -f "${FILE}_${DIST}.s" ]; then
         check_data
         return
     fi
