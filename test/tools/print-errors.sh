@@ -6,7 +6,11 @@ TEST_DIR="${PWD}/../tests/compiler"
 
 function print_errors () {
     for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid | sort --uniq); do
-        cat <(${PACKAGE_NAME} -s ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
+        if [ ! -z "${MATCH_PATTERN}" ]; then
+            cat <(${PACKAGE_NAME} -s ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
+        else
+            cat <(${PACKAGE_NAME} -s ${FILE} 2>&1)
+        fi
         if [ -f ${FILE%.*}.s ]; then
             rm ${FILE%.*}.s
         fi
@@ -22,6 +26,10 @@ if [ "${1}" = "--what" ]; then
 elif [ "${1}" = "--line" ]; then
     MATCH_PATTERN="^at line [0-9]+:"
     ARG=${2}
+fi
+
+if [[ "$(uname -s)" = "Darwin"* ]]; then
+    MATCH_PATTERN=""
 fi
 
 if [ ! -z "${ARG}" ]; then
