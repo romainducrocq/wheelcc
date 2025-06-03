@@ -23,6 +23,11 @@ for SRC in ${TEST_SRCS[@]}; do
     cp -rv ${TEST_SUITE}/tests/chapter_${i}/* ${TEST_DIR_MACOS}/${SRC}/
 done
 
+# Add newline for POSIX compliance
+for i in $(find ${TEST_DIR_MACOS}/ -type f); do
+    echo "" >> ${i}
+done
+
 # Merge multiple helpers into one
 cat ${TEST_DIR_MACOS}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR_MACOS}/${TEST_SRCS[19]}/helper_libs/track_arg_registers_lib.c
 cat ${TEST_DIR_MACOS}/${TEST_SRCS[19]}/helper_libs/util.c >> ${TEST_DIR_MACOS}/${TEST_SRCS[19]}/helper_libs/track_dbl_arg_registers_lib.c
@@ -161,10 +166,10 @@ cat ${TEST_DIR_MACOS}/${TEST_SRCS[19]}/helper_libs/wrapper_osx.s >> ${TEST_DIR}/
 
 # Cleanup assembly tests
 for i in $(find ${TEST_DIR}/ -name "*_osx.s" -type f); do
+# TODO
 #     sed -i '/\.ident/d' ${i}
 #     sed -i '/\.file/d' ${i}
-# TODO
-    :
+    echo "" >> ${i}
 done
 
 # Cleanup macos
