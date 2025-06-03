@@ -1,2 +1,0 @@
-[ ] debug bitwise
-[ ] validate test-preprocessor, test-compiler, test-errors
