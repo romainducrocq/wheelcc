@@ -166,9 +166,7 @@ cat ${TEST_DIR_MACOS}/${TEST_SRCS[19]}/helper_libs/wrapper_osx.s >> ${TEST_DIR}/
 
 # Cleanup assembly tests
 for i in $(find ${TEST_DIR}/ -name "*_osx.s" -type f); do
-# TODO
-#     sed -i '/\.ident/d' ${i}
-#     sed -i '/\.file/d' ${i}
+    sed -i '' '/\.build_version/d' ${i}
     echo "" >> ${i}
 done
 
