@@ -954,4 +954,6 @@ check_alignment:
     movl    $0, %eax
     popq    %rbp
     retq
+
     .section        ".note.GNU-stack","",@progbits
+

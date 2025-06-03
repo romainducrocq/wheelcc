@@ -174,3 +174,4 @@ struct bytesize24 {
 
 extern struct bytesize24 globvar_24;
 struct bytesize24 fun24(void);
+

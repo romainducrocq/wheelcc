@@ -44,6 +44,11 @@ rm -rv $(find ${TEST_DIR} -name "*.md" -type f)
 # Remove unused assembly files
 rm -rv $(find ${TEST_DIR} -name "*.s" -type f | grep --invert-match linux)
 
+# Add newline for POSIX compliance
+for i in $(find ${TEST_DIR}/ -type f); do
+    echo "" >> ${i}
+done
+
 # Add libs and client dependencies
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/function_calls/standard_library_call.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/function_calls/standard_library_call__+lm.c
 mv -v ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan.c ${TEST_DIR}/${TEST_SRCS[12]}/valid/extra_credit/nan__+lm.c
@@ -198,6 +203,7 @@ for i in $(find ${TEST_DIR}/ -name "*_linux.s" -type f); do
     sed -i '/\.file/d' ${i}
     sed -i '/\.note\.GNU-stack/d' ${i}
     echo "    .section        \".note.GNU-stack\",\"\",@progbits" >> ${i}
+    echo "" >> ${i}
 done
 
 # Cleanup helpers

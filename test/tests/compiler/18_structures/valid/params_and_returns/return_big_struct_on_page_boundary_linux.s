@@ -4,4 +4,6 @@
     .globl on_page_boundary
 on_page_boundary:
     .zero 18
+
     .section        ".note.GNU-stack","",@progbits
+

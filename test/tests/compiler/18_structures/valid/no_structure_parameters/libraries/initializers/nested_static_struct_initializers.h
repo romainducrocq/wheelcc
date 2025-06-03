@@ -42,3 +42,4 @@ int test_partially_initialized(void);
 int test_fully_intialized(void);
 int test_implicit_conversions(void);
 int test_array_of_structs(void);
+

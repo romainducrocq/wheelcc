@@ -21,3 +21,4 @@ double_isnan:
 .LFE0:
 	.size	double_isnan, .-double_isnan
     .section        ".note.GNU-stack","",@progbits
+

@@ -73,4 +73,6 @@ overlap_with_pointer:
 	# space for return value overlaps w/ space pointed to by argument, so exit with error code
 	movl	$3, %edi
 	call	exit
+
     .section        ".note.GNU-stack","",@progbits
+

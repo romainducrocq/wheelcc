@@ -49,3 +49,4 @@ int update_expected_a(void) {
 int times_two(int x) {
     return x * 2;
 }
+

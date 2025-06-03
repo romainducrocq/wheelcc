@@ -10,3 +10,4 @@ int main(void) {
 
     return sum == 5 && counter == 10;
 }
+

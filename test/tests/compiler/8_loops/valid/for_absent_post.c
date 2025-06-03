@@ -5,3 +5,4 @@ int main(void) {
     }
     return a % 5 || a > 0;
 }
+

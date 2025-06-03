@@ -8,3 +8,4 @@ int main(void) {
                 ans = ans + i;
     return ans;
 }
+

@@ -30,4 +30,6 @@ callee:
     xorpd %xmm14, %xmm14
     xorpd %xmm15, %xmm15
     retq
+
     .section        ".note.GNU-stack","",@progbits
+

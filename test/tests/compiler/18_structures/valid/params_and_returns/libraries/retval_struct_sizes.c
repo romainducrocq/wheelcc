@@ -74,3 +74,4 @@ struct bytesize23 fun23(void) {
 struct bytesize24 fun24(void) {
     return globvar_24;
 }
+

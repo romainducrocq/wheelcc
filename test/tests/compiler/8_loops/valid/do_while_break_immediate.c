@@ -5,3 +5,4 @@ int main(void) {
     while ((a = 1));
     return a;
 }
+

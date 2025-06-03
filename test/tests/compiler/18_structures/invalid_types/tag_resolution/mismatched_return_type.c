@@ -14,3 +14,4 @@ struct s return_struct(void) {
   // so it's incompatible w/ function's return type
   return result;
 }
+

@@ -6,3 +6,4 @@ double fun(double x) {
         return ret + x; // return 4.0
     }
 }
+

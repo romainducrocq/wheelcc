@@ -10,3 +10,4 @@ int main(void) {
 
     return k == 101 && i == 0 && j == 0;
 }
+

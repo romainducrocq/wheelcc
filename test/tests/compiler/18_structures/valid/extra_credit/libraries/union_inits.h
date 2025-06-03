@@ -35,3 +35,4 @@ int validate_simple(union simple *ptr);
 int validate_simple_converted(union simple *ptr);
 int validate_nested(union nested *ptr);
 int validate_nested_partial(union nested *ptr);
+

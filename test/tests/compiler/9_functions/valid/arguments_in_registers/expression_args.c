@@ -10,3 +10,4 @@ int main(void) {
     int sum = sub(1 + 2, 1);
     return sum;
 }
+

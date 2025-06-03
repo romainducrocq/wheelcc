@@ -13,3 +13,4 @@ union u return_union(void){
     // return it; invalid b/c it's the wrong "union u" type
     return result;
 }
+

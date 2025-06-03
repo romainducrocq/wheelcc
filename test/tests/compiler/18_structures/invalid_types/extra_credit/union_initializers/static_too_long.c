@@ -12,3 +12,4 @@ union u x = {1, 2};  // invalid - multiple initializers
 int main(void) {
     return 0;
 }
+

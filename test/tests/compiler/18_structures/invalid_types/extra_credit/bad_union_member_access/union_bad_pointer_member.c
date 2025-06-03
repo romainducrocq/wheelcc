@@ -15,3 +15,4 @@ int main(void) {
   ptr->m = 10; // "union a" has no member "m"
   return 0;
 }
+

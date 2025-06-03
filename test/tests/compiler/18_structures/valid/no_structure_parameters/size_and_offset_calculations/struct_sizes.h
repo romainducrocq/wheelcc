@@ -57,3 +57,4 @@ struct contains_struct_array {
     // 3 bytes padding so next member is 4 byte-aligned
     struct eight_bytes struct_array[3];  // bytes 4-27
 };                                       // 28 bytes total
+

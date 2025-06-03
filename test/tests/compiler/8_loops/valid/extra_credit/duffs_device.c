@@ -18,3 +18,4 @@ int main(void) {
     }
     return (count == 0 && iterations == 0);
 }
+

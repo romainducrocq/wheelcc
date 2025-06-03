@@ -19,3 +19,4 @@ int update_x(void) {
     x = 4;
     return 0;
 }
+

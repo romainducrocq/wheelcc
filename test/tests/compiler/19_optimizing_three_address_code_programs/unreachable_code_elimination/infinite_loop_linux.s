@@ -18,3 +18,4 @@ exit_wrapper:
 .LFE0:
 	.size	exit_wrapper, .-exit_wrapper
     .section        ".note.GNU-stack","",@progbits
+

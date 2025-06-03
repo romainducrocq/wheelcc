@@ -8,3 +8,4 @@ int main(void) {
   struct s *ptr2 = 0;
   return ptr1 == ptr2;
 }
+

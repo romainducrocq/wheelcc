@@ -4,3 +4,4 @@ int main(void) {
     int b = 2;
     return a = b = 4;
 }
+

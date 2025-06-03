@@ -19,3 +19,4 @@ double get_max(double a, double b, double c, double d,
         fmax(i, fmax(j, k)));
     return max;
 }
+

@@ -197,3 +197,4 @@ int fun3(struct bytesize14 a, struct bytesize15 b, struct bytesize16 c,
          struct bytesize2 d, unsigned char *a_expected,
          unsigned char *b_expected, unsigned char *c_expected,
          unsigned char *d_expected);
+

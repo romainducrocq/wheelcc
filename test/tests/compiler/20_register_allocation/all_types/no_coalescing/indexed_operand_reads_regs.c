@@ -39,3 +39,4 @@ int main(void) {
     check_one_long(*other_ptr2, 3);
     return 0;
 }
+

@@ -62,3 +62,4 @@ int test3(void) {
     check_one_int(*ptr, 10);
     return 0;
 }
+

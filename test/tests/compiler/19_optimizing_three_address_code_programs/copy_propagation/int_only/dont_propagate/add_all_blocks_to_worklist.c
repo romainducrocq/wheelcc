@@ -29,3 +29,4 @@ int main(void) {
     // rewrite this as 'return 0'.
     return global;
 }
+

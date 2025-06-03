@@ -67,3 +67,4 @@ struct s *get_internal_struct(void) {
 // define struct that is visible in other translation unit
 // (although its members aren't accessible)
 struct s incomplete_var = {3, 4.0, "global struct"};
+

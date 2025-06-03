@@ -7,3 +7,4 @@ int main(void) {
     };
     return arr[2];
 }
+

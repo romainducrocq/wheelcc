@@ -225,3 +225,4 @@ int fun3(struct bytesize14 a, struct bytesize15 b, struct bytesize16 c,
 
     return 1; // success
 }
+

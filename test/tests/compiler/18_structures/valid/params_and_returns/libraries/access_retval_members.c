@@ -18,3 +18,4 @@ struct outer return_nested_struct(void) {
 
     return ret;
 }
+

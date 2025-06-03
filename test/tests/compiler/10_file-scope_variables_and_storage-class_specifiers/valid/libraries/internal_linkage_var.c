@@ -30,3 +30,4 @@ static int x = 5;
 
 // yet another tentative definition of x
 static int x;
+

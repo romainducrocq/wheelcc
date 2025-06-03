@@ -8,3 +8,4 @@ struct s x;
 int main(void) {
     return x.(y);
 }
+

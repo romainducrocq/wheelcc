@@ -11,3 +11,4 @@ int target(int arg) {
     int *optimized_away = &arg; // dead store; will get optimized away
     return arg + 10;
 }
+

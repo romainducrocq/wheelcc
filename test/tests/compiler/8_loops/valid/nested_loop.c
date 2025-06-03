@@ -12,3 +12,4 @@ int main(void) {
     return acc == 100 && x == 0;
 
 }
+

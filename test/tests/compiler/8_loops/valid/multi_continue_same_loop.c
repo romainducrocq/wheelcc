@@ -13,3 +13,4 @@ int main(void) {
     } while (z != 50);
     return z == 50 && x == 0 && y == 10;
 }
+

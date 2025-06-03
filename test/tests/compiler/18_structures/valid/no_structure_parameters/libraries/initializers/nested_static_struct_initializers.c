@@ -172,3 +172,4 @@ int test_array_of_structs(void) {
 
     return 1;  // success
 }
+

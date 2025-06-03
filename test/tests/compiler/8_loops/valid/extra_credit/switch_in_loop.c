@@ -21,3 +21,4 @@ int main(void) {
 
     return ctr == 10 && acc == 31;
 }
+

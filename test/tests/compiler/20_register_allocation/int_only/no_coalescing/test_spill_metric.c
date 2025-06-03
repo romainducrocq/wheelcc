@@ -30,3 +30,4 @@ int target(void) {
     check_one_int(f * 2, 10);
     return 0;
 }
+

@@ -17,3 +17,4 @@ int main(void) {
     double d = -0.0;  // add normal constant -0. to list of top-level constants
     return (-x > d); // add 16-byte-aligned constant -0. to negate x
 }
+
