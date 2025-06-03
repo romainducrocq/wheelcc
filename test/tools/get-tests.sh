@@ -34,7 +34,7 @@ i=0
 for SRC in ${TEST_SRCS[@]}; do
     i=$((i+1))
     mkdir -p ${TEST_DIR}/${SRC}/
-    rm -rv $${TEST_DIR}/${SRC}/*
+    rm -rv ${TEST_DIR}/${SRC}/*
     cp -rv ${TEST_SUITE}/tests/chapter_${i}/* ${TEST_DIR}/${SRC}/
 done
 
