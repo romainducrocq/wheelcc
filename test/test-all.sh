@@ -2,7 +2,7 @@
 
 RESULTS_DIR="${PWD}/test_results/"
 mkdir -p ${RESULTS_DIR}
-RESULTS_DIR="${RESULTS_DIR}$(find ${RESULTS_DIR} -type d | wc -l)"
+RESULTS_DIR="$(echo "${RESULTS_DIR}$(find ${RESULTS_DIR} -type d | wc -l)" | tr -d ' ')"
 if [ -d "${RESULTS_DIR}" ]; then rm -r "${RESULTS_DIR}"; fi
 mkdir ${RESULTS_DIR}
 
