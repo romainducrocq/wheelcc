@@ -602,7 +602,16 @@ static void binary_instr(Ctx ctx, AsmBinary* node) {
     emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type.get());
-        emit_op(ctx, node->src.get(), byte);
+        switch (node->binop->type()) {
+            case AST_AsmBitShiftLeft_t:
+            case AST_AsmBitShiftRight_t:
+            case AST_AsmBitShrArithmetic_t:
+                emit_op(ctx, node->src.get(), 1);
+                break;
+            default:
+                emit_op(ctx, node->src.get(), byte);
+                break;
+        }
         emit(ctx, ", ");
         emit_op(ctx, node->dst.get(), byte);
     }
