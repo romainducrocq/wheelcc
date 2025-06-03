@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ "$(uname -s)" = "Darwin"* ]]; then
+    ./build.sh
+    exit ${?}
+fi
+
 ./build_preset.sh
 if [ ${?} -ne 0 ]; then exit 1; fi
 

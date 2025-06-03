@@ -12,6 +12,11 @@ for i in $(seq 1 20); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
 done
 
+if [[ "$(uname -s)" = "Darwin"* ]]; then
+    echo "${0} not supported on MacOS (missing valgrind)"
+    exit 0
+fi
+
 function file () {
     FILE=${1%.*}
     if [ -f "${FILE}" ]; then rm ${FILE}; fi
