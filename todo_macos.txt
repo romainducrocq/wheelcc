@@ -1,10 +1,2 @@
 [ ] debug bitwise
-[ ] in all scripts that dont need macos: early exit:
-    - cmake_build: revert to build
-    - test/build: revert to build
-    - get-dependencies: exit immediately
-    - test-memory: exit immediately
-    - test-all: skip test-memory
-[ ] get-tests for macos assembly
 [ ] validate test-preprocessor, test-compiler, test-errors
-[ ] maybe, figure out how to use ld + crt ?
