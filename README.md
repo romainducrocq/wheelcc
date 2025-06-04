@@ -229,13 +229,13 @@ wheelcc can perform multiple compiler performance optimizations for smaller and 
 
 > **TL;DR** No built-in linker. The compiled assembly is assembled and linked with system tools.
 
-There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc/clang (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.
+There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output assembly follows the System-V ABI, which allows to link other libraries pre-compiled with gcc/clang (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.
 
 ### Dependencies
 
 > **TL;DR** No dependencies are required other than the system tools already installed.
 
-wheelcc aims to be self-contained and avoid bloat. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
+wheelcc aims to be self-contained and avoid bloat when possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
 
 ### Limitations
 
