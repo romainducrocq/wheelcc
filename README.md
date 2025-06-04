@@ -21,10 +21,10 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 ## Migrating to C (work in progress)
 
-wheelcc was implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
+wheelcc is implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up a lot to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
 - [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
 - [ ] Replace C++ regex in lexing with a C alternative (regexp9), or write a hand-rolled lexer
-- [ ] Replace C++ strings and std collections with C alternatives (stb_sd and sds)
+- [ ] Replace C++ strings and std collections with C alternatives (sds and stb_sd)
 - [ ] Replace throwing exceptions in user error handling with progragating error codes
 - [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
 - [ ] Replace smart pointers with manual memory management for runtime polymorphism
