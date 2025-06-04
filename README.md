@@ -206,10 +206,14 @@ $ ./test-all.sh
 
 ### Preprocessor
 
+> **TL;DR** Supports `include` headers and comments. No built-in support for macros.
+
 A minimal built-in preprocessor supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out.  
 The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc/clang.
 
 ### Compiler
+
+> **TL;DR** Compiles C source files to x86-64 AT&T assembly, then outputs a native executable.
 
 wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux or MacOS assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features).
 The `-s` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
@@ -217,17 +221,25 @@ wheelcc also has comprehensive compile error handling, and outputs error message
 
 ### Optimization
 
-wheelcc can perform multiple compiler performance optimizations for smaller and faster assembly outputs. The level 1 `-O1` command-line option enables all IR optimizations: constant folding, unreachable code elimination, copy propagation and dead store elimination. The level 2 `-O2` command-line option enables backend register allocation with coalescing (but it does not enable level 1 optimizations). The `-O3` option enables all optimizations (level 1 and 2) and the `-O0` option disables them all. By default, only `-O2` is enabled.
+> **TL;DR** Multiple IR and backend optimizations can be enabled at compiletime. 
+
+wheelcc can perform multiple compiler performance optimizations for smaller and faster assembly outputs. The level 1 `-O1` command-line option enables all IR optimizations: constant folding, unreachable code elimination, copy propagation and dead store elimination. The level 2 `-O2` command-line option enables backend register allocation with coalescing (but it does not enable level 1 optimizations). The `-O3` option enables all optimizations (level 1 and 2) and the `-O0` option disables them all. By default, only `-O2` is enabled (`-O1` is disabled).
 
 ### Linker
+
+> **TL;DR** No built-in linker. The compiled assembly is assembled and linked with system tools.
 
 There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc/clang (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.
 
 ### Dependencies
 
-wheelcc aims to be self-contained and avoid bloat. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS .
+> **TL;DR** No dependencies are required other than the system tools already installed.
+
+wheelcc aims to be self-contained and avoid bloat. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
 
 ### Limitations
+
+> **TL;DR** This is a work in progress, is not intended to be used as a production C compiler.
 
 The compiler supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
