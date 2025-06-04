@@ -19,18 +19,15 @@ A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Li
 
 The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
 
-## Migrating to C
+## Migrating to C (work in progress)
 
-(Starting soon) A C compiler should be written in C, right? wheelcc was implemented from the start with the goal to switch to plain C at some point. C++ was used for development for its very handy std that made prototyping and large-scale refactoring much easier. The use of C++ features has been kept to a minimum and restricted to a small subset of the language, and almost all the code sticks already close to C-style. Now that the compiler has grown to a decent size and a stable architecture, it is finally time to migrate to C! The migration is done on branch `cpp2c/develop` until complete.
-
-### Progress
-
-- [x] `all` Remove easely removable C++ features (classes, templates, overloads, namespaces, ...)
-- [ ] `lexer` Replace C++ regex library with a C alternative (either POSIX regex or regexp9)
-- [ ] (POC done) `error handler` Replace exception throwing with error code propagation
-- [ ] (POC done) `algebraic datatypes` Replace single inheritance data structures with tagged unions
-- [ ] (POC done) `polymorphism` Replace smart pointers with manual memory management and reference count
-- [ ] (POC done) `std containers` Replace collections and strings with C alternatives (stb_sd and sds)
+wheelcc was implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
+- [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
+- [ ] Replace C++ regex in lexing with a C alternative (regexp9), or write a hand-rolled lexer
+- [ ] Replace C++ strings and std collections with C alternatives (stb_sd and sds)
+- [ ] Replace throwing exceptions in user error handling with progragating error codes
+- [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
+- [ ] Replace smart pointers with manual memory management for runtime polymorphism
 
 ## Usage
 
