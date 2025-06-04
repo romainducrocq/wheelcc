@@ -13,20 +13,11 @@
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
 <!---->
-A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Linux platforms. 
+A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Linux and MacOS.
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, which is then assembled with as and linked with ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
-
-## 2025 Roadmap
-
-Next development milestones planned for this year:  
-- [x] Add IR optimizations
-- [x] Add a register allocator
-- [ ] Clean up the codebase
-- [ ] Support MacOS
-- [ ] Migrate the compiler to C
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux or MacOS, which is then assembled with as and linked with ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
 
 ## Migrating to C
 
@@ -46,9 +37,14 @@ Next development milestones planned for this year:
 ### Distros
 
 The tip of `master` branch has passed all tests and validation for these GNU/Linux distributions (x86-64):  
-Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Linux 9.5|Arch Linux|EndeavourOS Linux
-:---:|:---:|:---:|:---:|:---:|:---:|:---:
-:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:
+Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Linux 9.5|Arch Linux|EndeavourOS Linux|
+:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
+
+and MacOS:  
+Apple M3 macOS 15.2 24C101 arm64|
+:---:|
+:heavy_check_mark:|
 
 ### Install
 
@@ -57,12 +53,15 @@ Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Li
 $ git clone --depth 1 --branch master https://github.com/romainducrocq/wheelcc.git
 $ cd wheelcc/bin/
 ```
-- Configure the repo and install the build+runtime dependencies: `binutils`, `gcc` >= 8.1.0  
+- Configure the repo and install the build+runtime dependencies
+    > - GNU/Linux: `binutils`, `gcc` >= 8.1.0
+    > - MacOS: `clang` >= 5.0.0
 ```
 $ ./configure.sh
 ```
 - Build the compiler in Release mode  
-    > requires `$ gcc -dumpfullversion` >= 8.1.0
+    > - GNU/Linux: requires `$ gcc -dumpfullversion` >= 8.1.0
+    > - MacOS: requires `$ clang -dumpversion` >= 5.0.0
 ```
 $ ./make.sh
 ```
@@ -70,7 +69,6 @@ $ ./make.sh
     > or, do not install system-wide and use `bin/driver.sh` directly instead  
 ```
 $ ./install.sh
-$ . ~/.bashrc
 ```
 
 ### Use
@@ -132,7 +130,7 @@ Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
     -O3                           alias    for -O1 -O2
 
 [Preprocess]:
-    -E  enable macro expansion with gcc
+    -E  enable macro expansion with gcc/clang
 
 [Link]:
     -s  compile, but do not assemble and link
@@ -172,14 +170,17 @@ wheelcc: error: compilation failed
 
 ### Test
 
-- cd to the test directory, get the testtime dependencies: `make cmake diffutils valgrind`  
+- cd to the test directory, get the testtime dependencies
+    > - GNU/Linux: `make cmake diffutils valgrind`
+    > - MacOS: none
 ```
 $ cd test/
-$ ./get-dependencies.sh
+$ ./get-dependencies.sh # GNU/Linux only
 ```
 
 - Test the compiler  
-    > requires `$ gcc -dumpfullversion` >= 8.1.0
+    > - GNU/Linux: requires `$ gcc -dumpfullversion` >= 8.1.0
+    > - MacOS: requires `$ clang -dumpversion` >= 5.0.0
 ```
 $ ./test-compiler.sh [-O0 | -O1 | -O2 | -O3]
 ```
@@ -194,9 +195,9 @@ $ ./test-preprocessor.sh
 $ ./test-errors.sh
 ```
 
-- Test memory leaks  
+- Test memory leaks  (not supported on MacOS)
 ```
-$ ./test-memory.sh [-O0 | -O1 | -O2 | -O3]
+$ ./test-memory.sh [-O0 | -O1 | -O2 | -O3] # GNU/Linux only
 ```
 
 - Run all tests  
@@ -209,11 +210,11 @@ $ ./test-all.sh
 ### Preprocessor
 
 A minimal built-in preprocessor supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out.  
-The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc.
+The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc/clang.
 
 ### Compiler
 
-wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features).
+wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux or MacOS assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features).
 The `-s` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file and with the same name without the extension, or with the name set with the `-o` command-line option.  
 wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line and explanation for the compile error to stderr.
 
@@ -223,11 +224,11 @@ wheelcc can perform multiple compiler performance optimizations for smaller and 
 
 ### Linker
 
-There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.  
+There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output follows the System-V ABI, which allows to link other libraries pre-compiled with gcc/clang (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link the C standard library method APIs which declarations are supported by the current implementation of wheelcc.
 
 ### Dependencies
 
-wheelcc aims to be self-contained and as less bloated as possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0), which makes the compiler easy to build and use on any x86-64 GNU/Linux platform.
+wheelcc aims to be self-contained and avoid bloat. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS .
 
 ### Limitations
 
