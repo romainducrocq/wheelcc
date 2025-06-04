@@ -23,8 +23,8 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 wheelcc is implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up a lot to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
 - [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
-- [ ] Replace C++ regex in lexing with a C alternative (regexp9), or write a hand-rolled lexer
-- [ ] Replace C++ strings and std collections with C alternatives (sds and stb_ds)
+- [ ] Replace C++ regex in lexing with a C alternative ([regexp9](https://github.com/tylov/regexp9)), or write a hand-rolled lexer
+- [ ] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
 - [ ] Replace throwing exceptions in user error handling with progragating error codes
 - [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
 - [ ] Replace smart pointers with manual memory management for runtime polymorphism
@@ -239,7 +239,7 @@ wheelcc aims to be self-contained and avoid bloat when possible. It only depends
 
 ### Limitations
 
-> **TL;DR** This is a work in progress, is not intended to be used as a production C compiler.
+> **TL;DR** This is a work in progress, it is not intended to be used as a production compiler.
 
 The compiler supports a large subset of the C17 language, but many features of the language are still not implemented. These include, but are not limited to: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
