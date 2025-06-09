@@ -34,76 +34,43 @@ typedef LexerContext* Ctx;
 
 static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
-#define CASE_W \
-    CASE_DIGIT \
-    CASE_LETTER
+#define LEX_WORD \
+    LEX_DIGIT:   \
+    case LEX_LETTER
 
-#define CASE_DIGIT \
-    case "0":      \
-    case "1":      \
-    case "2":      \
-    case "3":      \
-    case "4":      \
-    case "5":      \
-    case "6":      \
-    case "7":      \
-    case "8":      \
-    case "9":
+#define LEX_DIGIT '0' : case '1' : case '2' : case '3' : case '4' : case '5' : case '6' : case '7' : case '8' : case '9'
 
-#define CASE_LETTER \
-    case "_":       \
-    case "a":       \
-    case "b":       \
-    case "c":       \
-    case "d":       \
-    case "e":       \
-    case "f":       \
-    case "g":       \
-    case "h":       \
-    case "i":       \
-    case "j":       \
-    case "k":       \
-    case "l":       \
-    case "m":       \
-    case "n":       \
-    case "o":       \
-    case "p":       \
-    case "q":       \
-    case "r":       \
-    case "s":       \
-    case "t":       \
-    case "u":       \
-    case "v":       \
-    case "w":       \
-    case "x":       \
-    case "y":       \
-    case "z":       \
-    case "A":       \
-    case "B":       \
-    case "C":       \
-    case "D":       \
-    case "E":       \
-    case "F":       \
-    case "G":       \
-    case "H":       \
-    case "I":       \
-    case "J":       \
-    case "K":       \
-    case "L":       \
-    case "M":       \
-    case "N":       \
-    case "O":       \
-    case "P":       \
-    case "Q":       \
-    case "R":       \
-    case "S":       \
-    case "T":       \
-    case "U":       \
-    case "V":       \
-    case "W":       \
-    case "X":       \
-    case "Y":       \
-    case "Z":
+#define LEX_LETTER                                                                                                    \
+    '_' : case 'a' : case 'b' : case 'c' : case 'd' : case 'e' : case 'f' : case 'g' : case 'h' : case 'i' : case 'j' \
+        : case 'k' : case 'l' : case 'm' : case 'n' : case 'o' : case 'p' : case 'q' : case 'r' : case 's' : case 't' \
+        : case 'u' : case 'v' : case 'w' : case 'x' : case 'y' : case 'z' : case 'A' : case 'B' : case 'C' : case 'D' \
+        : case 'E' : case 'F' : case 'G' : case 'H' : case 'I' : case 'J' : case 'K' : case 'L' : case 'M' : case 'N' \
+        : case 'O' : case 'P' : case 'Q' : case 'R' : case 'S' : case 'T' : case 'U' : case 'V' : case 'W' : case 'X' \
+        : case 'Y' : case 'Z'
+
+static bool is_boundary(char c) {
+    switch (c) {
+        case LEX_WORD:
+            return false;
+        default:
+            return true;
+    }
+}
+
+static TOKEN_KIND match_const(Ctx ctx) { return TOK_error; }
+
+static TOKEN_KIND match_identifier(Ctx ctx) { return TOK_error; }
+
+static TOKEN_KIND match_token(Ctx ctx) {
+    switch (42) {
+        case LEX_DIGIT:
+            return match_const(ctx);
+        case LEX_LETTER:
+            return match_identifier(ctx);
+        default:
+            return TOK_error;
+    }
+}
 
 #define RE_MATCH_TOKEN(X, Y)                                                                 \
     {                                                                                        \
