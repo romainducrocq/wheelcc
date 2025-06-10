@@ -32,9 +32,16 @@ typedef LexerContext* Ctx;
 
 // static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
-#define LEX_WORD \
-    LEX_DIGIT:   \
-    case LEX_LETTER
+static char get_next(Ctx ctx) {
+    size_t i = ctx->match_tok_at + ctx->match_tok_size;
+    if (i < ctx->line_size) {
+        ctx->match_tok_size++;
+        return ctx->line[i];
+    }
+    else {
+        return 0;
+    }
+}
 
 #define LEX_DIGIT '0' : case '1' : case '2' : case '3' : case '4' : case '5' : case '6' : case '7' : case '8' : case '9'
 
@@ -46,21 +53,91 @@ typedef LexerContext* Ctx;
         : case 'O' : case 'P' : case 'Q' : case 'R' : case 'S' : case 'T' : case 'U' : case 'V' : case 'W' : case 'X' \
         : case 'Y' : case 'Z'
 
-static bool is_boundary(char c) {
-    switch (c) {
-        case LEX_WORD:
-            return false;
-        default:
+#define LEX_WORD \
+    LEX_DIGIT:   \
+    case LEX_LETTER
+
+//     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOK_skip)
+
+//     RE_MATCH_TOKEN(R"(\()", TOK_open_paren)
+//     RE_MATCH_TOKEN(R"(\))", TOK_close_paren)
+//     RE_MATCH_TOKEN(R"(\{)", TOK_open_brace)
+//     RE_MATCH_TOKEN(R"(\})", TOK_close_brace)
+//     RE_MATCH_TOKEN(R"(;)", TOK_semicolon)
+
+//     RE_MATCH_TOKEN(R"(int\b)", TOK_key_int)
+//     RE_MATCH_TOKEN(R"(void\b)", TOK_key_void)
+//     RE_MATCH_TOKEN(R"(return\b)", TOK_key_return)
+
+//     RE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOK_identifier)
+//     RE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOK_int_const)
+
+//     RE_MATCH_TOKEN(R"(.)", TOK_error)
+
+static bool match_digit(Ctx ctx) {
+    switch (get_next(ctx)) {
+        case LEX_DIGIT:
             return true;
+        case 0:
+            return false;
+        default: {
+            ctx->match_tok_size--;
+            return false;
+        }
     }
 }
 
-static TOKEN_KIND match_const(Ctx ctx) { return TOK_error; }
+static bool match_word(Ctx ctx) {
+    switch (get_next(ctx)) {
+        case LEX_WORD:
+            return true;
+        case 0:
+            return false;
+        default: {
+            ctx->match_tok_size--;
+            return false;
+        }
+    }
+}
 
-static TOKEN_KIND match_identifier(Ctx ctx) { return TOK_error; }
+static TOKEN_KIND match_const(Ctx ctx) {
+    while (match_digit(ctx)) {
+    }
+
+    // TODO
+
+    return TOK_error;
+}
+
+static TOKEN_KIND match_identifier(Ctx ctx) {
+    while (match_word(ctx)) {
+    }
+
+    // TODO
+
+    return TOK_identifier;
+}
 
 static TOKEN_KIND match_token(Ctx ctx) {
-    switch (ctx->line[ctx->match_tok_at]) {
+    ctx->match_tok_size = 0;
+    switch (get_next(ctx)) {
+        case ' ':
+        case '\n':
+        case '\r':
+        case '\t':
+        case '\f':
+        case '\v':
+            return TOK_skip;
+        case '(':
+            return TOK_open_paren;
+        case ')':
+            return TOK_close_paren;
+        case '{':
+            return TOK_open_brace;
+        case '}':
+            return TOK_close_brace;
+        case ';':
+            return TOK_semicolon;
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
@@ -168,7 +245,8 @@ static TOKEN_KIND match_token(Ctx ctx) {
 //     RE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOK_long_const)
 //     RE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOK_uint_const)
 //     RE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))", TOK_ulong_const)
-//     RE_MATCH_TOKEN(R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))", TOK_dbl_const)
+//     RE_MATCH_TOKEN(R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))",
+//     TOK_dbl_const)
 
 //     RE_MATCH_TOKEN(R"(#\s*include\s*[<"][^>"]+\.h[>"])", TOK_include_preproc)
 //     RE_MATCH_TOKEN(R"(#\s*[_acdefgilmnoprstuwx]+\b)", TOK_strip_preproc)
@@ -180,13 +258,11 @@ static void tokenize_file(Ctx ctx) {
     std::string line;
     bool is_comment = false;
     for (size_t linenum = 1; read_line(ctx->fileio, line); ++linenum) {
-        ctx->match_tok_at = 0;
-        ctx->match_tok_size = 0;
         ctx->line_size = line.size();
         ctx->line = line.c_str();
         ctx->total_linenum++;
 
-        for (size_t i = 0; i < line.size(); i += ctx->match_tok_size) {
+        for (ctx->match_tok_at = 0; ctx->match_tok_at < line.size(); ctx->match_tok_at += ctx->match_tok_size) {
             TOKEN_KIND match_tok_kind = match_token(ctx);
             std::string match_tok = ""; // TODO
             if (is_comment) {
