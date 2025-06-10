@@ -35,7 +35,6 @@ typedef LexerContext* Ctx;
 static char get_next(Ctx ctx) {
     size_t i = ctx->match_tok_at + ctx->match_tok_size;
     if (i < ctx->line_size) {
-        ctx->match_tok_size++;
         return ctx->line[i];
     }
     else {
@@ -74,29 +73,35 @@ static char get_next(Ctx ctx) {
 
 //     RE_MATCH_TOKEN(R"(.)", TOK_error)
 
+static bool match_next(Ctx ctx, char next) {
+    if (next == get_next(ctx)) {
+        ctx->match_tok_size++;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 static bool match_digit(Ctx ctx) {
     switch (get_next(ctx)) {
-        case LEX_DIGIT:
+        case LEX_DIGIT: {
+            ctx->match_tok_size++;
             return true;
-        case 0:
-            return false;
-        default: {
-            ctx->match_tok_size--;
-            return false;
         }
+        default:
+            return false;
     }
 }
 
 static bool match_word(Ctx ctx) {
     switch (get_next(ctx)) {
-        case LEX_WORD:
+        case LEX_WORD: {
+            ctx->match_tok_size++;
             return true;
-        case 0:
-            return false;
-        default: {
-            ctx->match_tok_size--;
-            return false;
         }
+        default:
+            return false;
     }
 }
 
@@ -119,8 +124,8 @@ static TOKEN_KIND match_identifier(Ctx ctx) {
 }
 
 static TOKEN_KIND match_token(Ctx ctx) {
-    ctx->match_tok_size = 0;
-    switch (get_next(ctx)) {
+    ctx->match_tok_size = 1;
+    switch (ctx->line[ctx->match_tok_at]) {
         case ' ':
         case '\n':
         case '\r':
@@ -144,6 +149,22 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return match_identifier(ctx);
         default:
             return TOK_error;
+    }
+}
+
+static TOKEN_KIND match_keyword(hash_t key) {
+    // TODO have a map from hash -> token
+    if (key == string_to_hash("int")) {
+        return TOK_key_int;
+    }
+    else if (key == string_to_hash("return")) {
+        return TOK_key_return;
+    }
+    else if (key == string_to_hash("void")) {
+        return TOK_key_void;
+    }
+    else {
+        return TOK_identifier;
     }
 }
 
@@ -292,6 +313,10 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_comment_line:
                     case TOK_strip_preproc:
                         goto Lbreak;
+                    case TOK_identifier: {
+                        match_tok_kind = match_keyword(string_to_hash(match_tok));
+                        goto Lpass;
+                    }
                     default:
                         goto Lpass;
                 }
