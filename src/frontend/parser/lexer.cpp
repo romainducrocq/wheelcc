@@ -194,6 +194,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return TOK_open_brace;
         case '}':
             return TOK_close_brace;
+        case '[':
+            return TOK_open_bracket;
+        case ']':
+            return TOK_close_bracket;
         case ';':
             return TOK_semicolon;
         case '~':
