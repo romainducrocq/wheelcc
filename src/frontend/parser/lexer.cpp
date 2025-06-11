@@ -142,6 +142,14 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_unop_neg;
             }
         }
+        case '+':
+            return TOK_binop_add;
+        case '*':
+            return TOK_binop_multiply;
+        case '/':
+            return TOK_binop_divide;
+        case '%':
+            return TOK_binop_remainder;
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
