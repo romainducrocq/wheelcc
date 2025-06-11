@@ -490,7 +490,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
     }
 }
 
-// static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
+static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
 static void tokenize_file(Ctx ctx) {
     bool is_comment = false;
@@ -519,10 +519,13 @@ static void tokenize_file(Ctx ctx) {
                         goto Lcontinue;
                     }
                     case TOK_include_preproc: {
-                        // TODO
-                        //  i += ctx->re_match_tok.size();
-                        //  tokenize_include(ctx, ctx->re_match_tok, linenum);
-                        //  ctx->re_match_tok.clear();
+                        size_t match_at = ctx->match_at;
+                        size_t match_size = ctx->match_size;
+                        std::string line = ctx->line;
+                        tokenize_include(ctx, match_tok, linenum);
+                        ctx->match_at = match_at;
+                        ctx->match_size = match_size;
+                        ctx->line = line;
                         goto Lcontinue;
                     }
                     case TOK_comment_line:
@@ -551,58 +554,58 @@ static void tokenize_file(Ctx ctx) {
     }
 }
 
-// static bool find_include(std::vector<std::string>& dirnames, std::string& filename) {
-//     for (std::string dirname : dirnames) {
-//         dirname += filename;
-//         if (find_file(dirname)) {
-//             filename = std::move(dirname);
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+static bool find_include(std::vector<std::string>& dirnames, std::string& filename) {
+    for (std::string dirname : dirnames) {
+        dirname += filename;
+        if (find_file(dirname)) {
+            filename = std::move(dirname);
+            return true;
+        }
+    }
+    return false;
+}
 
-// static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
-//     if (filename.back() == '>') {
-//         filename = filename.substr(filename.find('<') + 1);
-//         filename.pop_back();
-//         hash_t includename = string_to_hash(filename);
-//         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
-//             return;
-//         }
-//         ctx->includename_set.insert(includename);
-//         if (!find_include(ctx->stdlibdirs, filename)) {
-//             if (!find_include(*ctx->p_includedirs, filename)) {
-//                 THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
-//             }
-//         }
-//     }
-//     else {
-//         filename = filename.substr(filename.find('"') + 1);
-//         filename.pop_back();
-//         hash_t includename = string_to_hash(filename);
-//         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
-//             return;
-//         }
-//         ctx->includename_set.insert(includename);
-//         if (!find_include(*ctx->p_includedirs, filename)) {
-//             THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
-//         }
-//     }
+static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
+    if (filename.back() == '>') {
+        filename = filename.substr(filename.find('<') + 1);
+        filename.pop_back();
+        hash_t includename = string_to_hash(filename);
+        if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
+            return;
+        }
+        ctx->includename_set.insert(includename);
+        if (!find_include(ctx->stdlibdirs, filename)) {
+            if (!find_include(*ctx->p_includedirs, filename)) {
+                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+            }
+        }
+    }
+    else {
+        filename = filename.substr(filename.find('"') + 1);
+        filename.pop_back();
+        hash_t includename = string_to_hash(filename);
+        if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
+            return;
+        }
+        ctx->includename_set.insert(includename);
+        if (!find_include(*ctx->p_includedirs, filename)) {
+            THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+        }
+    }
 
-//     std::string fopen_name = ctx->errors->fopen_lines.back().filename;
-//     open_fread(ctx->fileio, filename);
-//     {
-//         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(filename)};
-//         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
-//     }
-//     tokenize_file(ctx);
-//     close_fread(ctx->fileio, linenum);
-//     {
-//         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
-//         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
-//     }
-// }
+    std::string fopen_name = ctx->errors->fopen_lines.back().filename;
+    open_fread(ctx->fileio, filename);
+    {
+        FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(filename)};
+        ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
+    }
+    tokenize_file(ctx);
+    close_fread(ctx->fileio, linenum);
+    {
+        FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
+        ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
+    }
+}
 
 static void strip_filename_ext(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
 
