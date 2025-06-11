@@ -88,33 +88,69 @@ static bool match_word(Ctx ctx) {
     }
 }
 
-static TOKEN_KIND match_int_const(Ctx ctx) {
-    if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
-        if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
-            return TOK_ulong_const;
-        }
-        else {
-            return TOK_long_const;
-        }
-    }
-    else if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
-        if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
-            return TOK_ulong_const;
-        }
-        else {
-            return TOK_uint_const;
-        }
-    }
-    else {
-        return TOK_int_const;
-    }
-}
+// (
+//     ([0-9]*\.[0-9]+|[0-9]+\.?)
+//     [Ee][+\-]?[0-9]+|
+//     [0-9]*\.[0-9]+|[0-9]+\.
+// )(?![\w.])
+//     TOK_dbl_const)
+
+// In other words, a floating-point constant is either a
+// significand followed by an exponent, or a
+// fractional constant.
+//
+// fractional constant
+// 1.5
+// .72
+// 1.
+//
+// scientific notation
+// 1. A significand, which may be an integer or fractional constant
+// 2. An uppercase or lowercase E.
+// 3. An exponent, which is an integer with an optional leading + or - sign.
+// 100E10
+// .05e-2
+// 5.E+3
 
 static TOKEN_KIND match_const(Ctx ctx) {
     while (match_digit(ctx)) {
     }
 
-    TOKEN_KIND match_tok_kind = match_int_const(ctx);
+    TOKEN_KIND match_tok_kind;
+    switch (get_next(ctx)) {
+        case 'l':
+        case 'L': {
+            ctx->match_tok_size++;
+            if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
+                match_tok_kind = TOK_ulong_const;
+            }
+            else {
+                match_tok_kind = TOK_long_const;
+            }
+            break;
+        }
+        case 'u':
+        case 'U': {
+            ctx->match_tok_size++;
+            if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
+                match_tok_kind = TOK_ulong_const;
+            }
+            else {
+                match_tok_kind = TOK_uint_const;
+            }
+            break;
+        }
+        case 'e':
+        case 'E': {
+            ctx->match_tok_size++;
+            match_tok_kind = TOK_dbl_const;
+            break;
+        }
+        default:
+            match_tok_kind = TOK_int_const;
+            break;
+    }
+
     switch (get_next(ctx)) {
         case LEX_WORD:
         case '.':
