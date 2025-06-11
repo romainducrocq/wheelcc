@@ -73,9 +73,9 @@ void open_fwrite(Ctx ctx, const std::string& filename) {
     ctx->write_buf = "";
 }
 
-bool read_line(Ctx ctx, std::string& line) {
+bool read_line(Ctx ctx, char*& line) {
     if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
-        line = "";
+        line = nullptr;
         ctx->file_reads.back().len = 0;
         free(ctx->file_reads.back().buf);
         ctx->file_reads.back().buf = nullptr;

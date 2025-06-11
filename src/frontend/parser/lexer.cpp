@@ -494,7 +494,9 @@ static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum)
 
 static void tokenize_file(Ctx ctx) {
     bool is_comment = false;
-    for (size_t linenum = 1; read_line(ctx->fileio, ctx->line); ++linenum) {
+    char* line = nullptr;
+    for (size_t linenum = 1; read_line(ctx->fileio, line); ++linenum) {
+        ctx->line = std::string(line);
         ctx->total_linenum++;
 
         for (ctx->match_at = 0; ctx->match_at < ctx->line.size(); ctx->match_at += ctx->match_size) {
@@ -521,11 +523,10 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_include_preproc: {
                         size_t match_at = ctx->match_at;
                         size_t match_size = ctx->match_size;
-                        std::string line = ctx->line;
                         tokenize_include(ctx, match_tok, linenum);
                         ctx->match_at = match_at;
                         ctx->match_size = match_size;
-                        ctx->line = line;
+                        ctx->line = std::string(line);
                         goto Lcontinue;
                     }
                     case TOK_comment_line:
