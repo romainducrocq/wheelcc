@@ -30,8 +30,6 @@ struct LexerContext {
 
 typedef LexerContext* Ctx;
 
-// static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
-
 static char get_next(Ctx ctx) {
     size_t i = ctx->match_tok_at + ctx->match_tok_size;
     if (i < ctx->line.size()) {
@@ -88,75 +86,86 @@ static bool match_word(Ctx ctx) {
     }
 }
 
-// (
-//     ([0-9]*\.[0-9]+|[0-9]+\.?)
-//     [Ee][+\-]?[0-9]+|
-//     [0-9]*\.[0-9]+|[0-9]+\.
-// )(?![\w.])
-//     TOK_dbl_const)
-
-// In other words, a floating-point constant is either a
-// significand followed by an exponent, or a
-// fractional constant.
-//
-// fractional constant
-// 1.5
-// .72
-// 1.
-//
-// scientific notation
-// 1. A significand, which may be an integer or fractional constant
-// 2. An uppercase or lowercase E.
-// 3. An exponent, which is an integer with an optional leading + or - sign.
-// 100E10
-// .05e-2
-// 5.E+3
-
-static TOKEN_KIND match_const(Ctx ctx) {
-    while (match_digit(ctx)) {
-    }
-
-    TOKEN_KIND match_tok_kind;
-    switch (get_next(ctx)) {
-        case 'l':
-        case 'L': {
-            ctx->match_tok_size++;
-            if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
-                match_tok_kind = TOK_ulong_const;
-            }
-            else {
-                match_tok_kind = TOK_long_const;
-            }
-            break;
-        }
-        case 'u':
-        case 'U': {
-            ctx->match_tok_size++;
-            if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
-                match_tok_kind = TOK_ulong_const;
-            }
-            else {
-                match_tok_kind = TOK_uint_const;
-            }
-            break;
-        }
-        case 'e':
-        case 'E': {
-            ctx->match_tok_size++;
-            match_tok_kind = TOK_dbl_const;
-            break;
-        }
-        default:
-            match_tok_kind = TOK_int_const;
-            break;
-    }
-
+static TOKEN_KIND match_const_end(Ctx ctx, TOKEN_KIND tok_kind) {
     switch (get_next(ctx)) {
         case LEX_WORD:
         case '.':
             return TOK_error;
         default:
-            return match_tok_kind;
+            return tok_kind;
+    }
+}
+
+static TOKEN_KIND match_dbl_exponent(Ctx ctx) {
+    switch (get_next(ctx)) {
+        case '+':
+        case '-': {
+            ctx->match_tok_size++;
+            break;
+        }
+        default:
+            break;
+    }
+
+    if (!match_digit(ctx)) {
+        return TOK_error;
+    }
+    while (match_digit(ctx)) {
+    }
+    return match_const_end(ctx, TOK_dbl_const);
+}
+
+static TOKEN_KIND match_dbl_fraction(Ctx ctx) {
+    while (match_digit(ctx)) {
+    }
+
+    switch (get_next(ctx)) {
+        case 'e':
+        case 'E': {
+            ctx->match_tok_size++;
+            return match_dbl_exponent(ctx);
+        }
+        default:
+            return match_const_end(ctx, TOK_dbl_const);
+    }
+}
+
+static TOKEN_KIND match_const(Ctx ctx) {
+    while (match_digit(ctx)) {
+    }
+
+    switch (get_next(ctx)) {
+        case 'l':
+        case 'L': {
+            ctx->match_tok_size++;
+            if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
+                return match_const_end(ctx, TOK_ulong_const);
+            }
+            else {
+                return match_const_end(ctx, TOK_long_const);
+            }
+        }
+        case 'u':
+        case 'U': {
+            ctx->match_tok_size++;
+            if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
+                return match_const_end(ctx, TOK_ulong_const);
+            }
+            else {
+                return match_const_end(ctx, TOK_uint_const);
+            }
+        }
+        case 'e':
+        case 'E': {
+            ctx->match_tok_size++;
+            return match_dbl_exponent(ctx);
+        }
+        case '.': {
+            ctx->match_tok_size++;
+            return match_dbl_fraction(ctx);
+        }
+        default:
+            return match_const_end(ctx, TOK_int_const);
     }
 }
 
@@ -319,6 +328,14 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_binop_xor;
             }
         }
+        case '.': {
+            switch (get_next(ctx)) {
+                case LEX_DIGIT:
+                    return match_dbl_fraction(ctx);
+                default:
+                    return TOK_error;
+            }
+        }
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
@@ -434,6 +451,8 @@ static TOKEN_KIND match_token(Ctx ctx) {
 
 //     RE_MATCH_TOKEN(R"(.)", TOK_error)
 // }
+
+// static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
 static void tokenize_file(Ctx ctx) {
     bool is_comment = false;
