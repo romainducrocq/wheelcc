@@ -56,22 +56,11 @@ static char get_next(Ctx ctx) {
     LEX_DIGIT:   \
     case LEX_LETTER
 
-//     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOK_skip)
+//     RE_MATCH_TOKEN(R"(--)", TOK_unop_decr)
 
-//     RE_MATCH_TOKEN(R"(\()", TOK_open_paren)
-//     RE_MATCH_TOKEN(R"(\))", TOK_close_paren)
-//     RE_MATCH_TOKEN(R"(\{)", TOK_open_brace)
-//     RE_MATCH_TOKEN(R"(\})", TOK_close_brace)
-//     RE_MATCH_TOKEN(R"(;)", TOK_semicolon)
 
-//     RE_MATCH_TOKEN(R"(int\b)", TOK_key_int)
-//     RE_MATCH_TOKEN(R"(void\b)", TOK_key_void)
-//     RE_MATCH_TOKEN(R"(return\b)", TOK_key_return)
-
-//     RE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOK_identifier)
-//     RE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOK_int_const)
-
-//     RE_MATCH_TOKEN(R"(.)", TOK_error)
+//     RE_MATCH_TOKEN(R"(~)", TOK_unop_complement)
+//     RE_MATCH_TOKEN(R"(-)", TOK_unop_neg)
 
 static bool match_next(Ctx ctx, char next) {
     if (next == get_next(ctx)) {
@@ -143,6 +132,16 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return TOK_close_brace;
         case ';':
             return TOK_semicolon;
+        case '~':
+            return TOK_unop_complement;
+        case '-': {
+            if (match_next(ctx, '-')) {
+                return TOK_unop_decr;
+            }
+            else {
+                return TOK_unop_neg;
+            }
+        }
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
@@ -266,7 +265,8 @@ static void tokenize_file(Ctx ctx) {
 
         for (ctx->match_tok_at = 0; ctx->match_tok_at < ctx->line.size(); ctx->match_tok_at += ctx->match_tok_size) {
             TOKEN_KIND match_tok_kind = match_token(ctx);
-            std::string match_tok = ctx->line.substr(ctx->match_tok_at, ctx->match_tok_size);
+            std::string match_tok = ctx->match_tok_size == 1 ? std::string({ctx->line[ctx->match_tok_at]}) :
+                                                               ctx->line.substr(ctx->match_tok_at, ctx->match_tok_size);
             if (is_comment) {
                 if (match_tok_kind == TOK_comment_end) {
                     is_comment = false;
