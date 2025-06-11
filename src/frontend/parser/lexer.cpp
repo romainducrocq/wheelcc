@@ -198,6 +198,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_binop_gt;
             }
         }
+        case '?':
+            return TOK_ternary_if;
+        case ':':
+            return TOK_ternary_else;
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
@@ -441,9 +445,30 @@ std::vector<Token> lex_c_code(
         ctx.stdlibdirs.push_back("/usr/include/");
         ctx.stdlibdirs.push_back("/usr/local/include/");
 #endif
+        ctx.keyword_map[string_to_hash("char")] = TOK_key_char;
         ctx.keyword_map[string_to_hash("int")] = TOK_key_int;
-        ctx.keyword_map[string_to_hash("return")] = TOK_key_return;
+        ctx.keyword_map[string_to_hash("long")] = TOK_key_long;
+        ctx.keyword_map[string_to_hash("double")] = TOK_key_double;
+        ctx.keyword_map[string_to_hash("signed")] = TOK_key_signed;
+        ctx.keyword_map[string_to_hash("unsigned")] = TOK_key_unsigned;
         ctx.keyword_map[string_to_hash("void")] = TOK_key_void;
+        ctx.keyword_map[string_to_hash("struct")] = TOK_key_struct;
+        ctx.keyword_map[string_to_hash("union")] = TOK_key_union;
+        ctx.keyword_map[string_to_hash("sizeof")] = TOK_key_sizeof;
+        ctx.keyword_map[string_to_hash("return")] = TOK_key_return;
+        ctx.keyword_map[string_to_hash("if")] = TOK_key_if;
+        ctx.keyword_map[string_to_hash("else")] = TOK_key_else;
+        ctx.keyword_map[string_to_hash("goto")] = TOK_key_goto;
+        ctx.keyword_map[string_to_hash("do")] = TOK_key_do;
+        ctx.keyword_map[string_to_hash("while")] = TOK_key_while;
+        ctx.keyword_map[string_to_hash("for")] = TOK_key_for;
+        ctx.keyword_map[string_to_hash("switch")] = TOK_key_switch;
+        ctx.keyword_map[string_to_hash("case")] = TOK_key_case;
+        ctx.keyword_map[string_to_hash("default")] = TOK_key_default;
+        ctx.keyword_map[string_to_hash("break")] = TOK_key_break;
+        ctx.keyword_map[string_to_hash("continue")] = TOK_key_continue;
+        ctx.keyword_map[string_to_hash("static")] = TOK_key_static;
+        ctx.keyword_map[string_to_hash("extern")] = TOK_key_extern;
 
         ctx.p_includedirs = &includedirs;
         ctx.p_toks = &tokens;
