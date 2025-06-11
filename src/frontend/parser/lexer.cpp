@@ -15,9 +15,9 @@ struct LexerContext {
     // Lexer
     size_t match_tok_at;
     size_t match_tok_size;
-    size_t line_size;
-    const char* line;
+    std::string line;
     std::vector<std::string> stdlibdirs;
+    std::unordered_map<hash_t, TOKEN_KIND> keyword_map;
     std::unordered_set<hash_t> includename_set;
     std::vector<std::string>* p_includedirs;
     std::vector<Token>* p_toks;
@@ -34,7 +34,7 @@ typedef LexerContext* Ctx;
 
 static char get_next(Ctx ctx) {
     size_t i = ctx->match_tok_at + ctx->match_tok_size;
-    if (i < ctx->line_size) {
+    if (i < ctx->line.size()) {
         return ctx->line[i];
     }
     else {
@@ -109,17 +109,17 @@ static TOKEN_KIND match_const(Ctx ctx) {
     while (match_digit(ctx)) {
     }
 
-    // TODO
-
-    return TOK_error;
+    switch (get_next(ctx)) {
+        case LEX_WORD:
+            return TOK_error;
+        default:
+            return TOK_int_const;
+    }
 }
 
 static TOKEN_KIND match_identifier(Ctx ctx) {
     while (match_word(ctx)) {
     }
-
-    // TODO
-
     return TOK_identifier;
 }
 
@@ -149,22 +149,6 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return match_identifier(ctx);
         default:
             return TOK_error;
-    }
-}
-
-static TOKEN_KIND match_keyword(hash_t key) {
-    // TODO have a map from hash -> token
-    if (key == string_to_hash("int")) {
-        return TOK_key_int;
-    }
-    else if (key == string_to_hash("return")) {
-        return TOK_key_return;
-    }
-    else if (key == string_to_hash("void")) {
-        return TOK_key_void;
-    }
-    else {
-        return TOK_identifier;
     }
 }
 
@@ -276,16 +260,13 @@ static TOKEN_KIND match_keyword(hash_t key) {
 // }
 
 static void tokenize_file(Ctx ctx) {
-    std::string line;
     bool is_comment = false;
-    for (size_t linenum = 1; read_line(ctx->fileio, line); ++linenum) {
-        ctx->line_size = line.size();
-        ctx->line = line.c_str();
+    for (size_t linenum = 1; read_line(ctx->fileio, ctx->line); ++linenum) {
         ctx->total_linenum++;
 
-        for (ctx->match_tok_at = 0; ctx->match_tok_at < line.size(); ctx->match_tok_at += ctx->match_tok_size) {
+        for (ctx->match_tok_at = 0; ctx->match_tok_at < ctx->line.size(); ctx->match_tok_at += ctx->match_tok_size) {
             TOKEN_KIND match_tok_kind = match_token(ctx);
-            std::string match_tok = ""; // TODO
+            std::string match_tok = ctx->line.substr(ctx->match_tok_at, ctx->match_tok_size);
             if (is_comment) {
                 if (match_tok_kind == TOK_comment_end) {
                     is_comment = false;
@@ -314,7 +295,10 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_strip_preproc:
                         goto Lbreak;
                     case TOK_identifier: {
-                        match_tok_kind = match_keyword(string_to_hash(match_tok));
+                        hash_t match_tok_key = string_to_hash(match_tok);
+                        if (ctx->keyword_map.find(match_tok_key) != ctx->keyword_map.end()) {
+                            match_tok_kind = ctx->keyword_map[match_tok_key];
+                        }
                         goto Lpass;
                     }
                     default:
@@ -401,6 +385,10 @@ std::vector<Token> lex_c_code(
         ctx.stdlibdirs.push_back("/usr/include/");
         ctx.stdlibdirs.push_back("/usr/local/include/");
 #endif
+        ctx.keyword_map[string_to_hash("int")] = TOK_key_int;
+        ctx.keyword_map[string_to_hash("return")] = TOK_key_return;
+        ctx.keyword_map[string_to_hash("void")] = TOK_key_void;
+
         ctx.p_includedirs = &includedirs;
         ctx.p_toks = &tokens;
         ctx.total_linenum = 0;
