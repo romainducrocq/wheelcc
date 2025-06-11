@@ -117,6 +117,7 @@ static TOKEN_KIND match_const(Ctx ctx) {
     TOKEN_KIND match_tok_kind = match_int_const(ctx);
     switch (get_next(ctx)) {
         case LEX_WORD:
+        case '.':
             return TOK_error;
         default:
             return match_tok_kind;
