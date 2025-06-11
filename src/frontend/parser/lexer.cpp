@@ -56,12 +56,6 @@ static char get_next(Ctx ctx) {
     LEX_DIGIT:   \
     case LEX_LETTER
 
-//     RE_MATCH_TOKEN(R"(--)", TOK_unop_decr)
-
-
-//     RE_MATCH_TOKEN(R"(~)", TOK_unop_complement)
-//     RE_MATCH_TOKEN(R"(-)", TOK_unop_neg)
-
 static bool match_next(Ctx ctx, char next) {
     if (next == get_next(ctx)) {
         ctx->match_tok_size++;
@@ -97,7 +91,6 @@ static bool match_word(Ctx ctx) {
 static TOKEN_KIND match_const(Ctx ctx) {
     while (match_digit(ctx)) {
     }
-
     switch (get_next(ctx)) {
         case LEX_WORD:
             return TOK_error;
@@ -134,12 +127,18 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return TOK_semicolon;
         case '~':
             return TOK_unop_complement;
-        case '-': {
-            if (match_next(ctx, '-')) {
-                return TOK_unop_decr;
+        case '?':
+            return TOK_ternary_if;
+        case ':':
+            return TOK_ternary_else;
+        case ',':
+            return TOK_comma_separator;
+        case '=': {
+            if (match_next(ctx, '=')) {
+                return TOK_binop_eq;
             }
             else {
-                return TOK_unop_neg;
+                return TOK_assign;
             }
         }
         case '!': {
@@ -150,17 +149,58 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_unop_not;
             }
         }
-        case '+':
-            return TOK_binop_add;
-        case '*':
-            return TOK_binop_multiply;
-        case '/':
-            return TOK_binop_divide;
-        case '%':
-            return TOK_binop_remainder;
+        case '-': {
+            if (match_next(ctx, '-')) {
+                return TOK_unop_decr;
+            }
+            else if (match_next(ctx, '=')) {
+                return TOK_assign_subtract;
+            }
+            else {
+                return TOK_unop_neg;
+            }
+        }
+        case '+': {
+            if (match_next(ctx, '+')) {
+                return TOK_unop_incr;
+            }
+            else if (match_next(ctx, '=')) {
+                return TOK_assign_add;
+            }
+            else {
+                return TOK_binop_add;
+            }
+        }
+        case '*': {
+            if (match_next(ctx, '=')) {
+                return TOK_assign_multiply;
+            }
+            else {
+                return TOK_binop_multiply;
+            }
+        }
+        case '/': {
+            if (match_next(ctx, '=')) {
+                return TOK_assign_divide;
+            }
+            else {
+                return TOK_binop_divide;
+            }
+        }
+        case '%': {
+            if (match_next(ctx, '=')) {
+                return TOK_assign_remainder;
+            }
+            else {
+                return TOK_binop_remainder;
+            }
+        }
         case '&': {
             if (match_next(ctx, '&')) {
                 return TOK_binop_and;
+            }
+            else if (match_next(ctx, '=')) {
+                return TOK_assign_bitand;
             }
             else {
                 return TOK_binop_bitand;
@@ -170,23 +210,21 @@ static TOKEN_KIND match_token(Ctx ctx) {
             if (match_next(ctx, '|')) {
                 return TOK_binop_or;
             }
+            else if (match_next(ctx, '=')) {
+                return TOK_assign_bitor;
+            }
             else {
                 return TOK_binop_bitor;
             }
         }
-        case '^':
-            return TOK_binop_xor;
-        case '=': {
-            if (match_next(ctx, '=')) {
-                return TOK_binop_eq;
-            }
-            else {
-                return TOK_assign;
-            }
-        }
         case '<': {
             if (match_next(ctx, '<')) {
-                return TOK_binop_shiftleft;
+                if (match_next(ctx, '=')) {
+                    return TOK_assign_shiftleft;
+                }
+                else {
+                    return TOK_binop_shiftleft;
+                }
             }
             else if (match_next(ctx, '=')) {
                 return TOK_binop_le;
@@ -197,7 +235,12 @@ static TOKEN_KIND match_token(Ctx ctx) {
         }
         case '>': {
             if (match_next(ctx, '>')) {
-                return TOK_binop_shiftright;
+                if (match_next(ctx, '=')) {
+                    return TOK_assign_shiftright;
+                }
+                else {
+                    return TOK_binop_shiftright;
+                }
             }
             else if (match_next(ctx, '=')) {
                 return TOK_binop_ge;
@@ -206,12 +249,14 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_binop_gt;
             }
         }
-        case '?':
-            return TOK_ternary_if;
-        case ':':
-            return TOK_ternary_else;
-        case ',':
-            return TOK_comma_separator;
+        case '^': {
+            if (match_next(ctx, '=')) {
+                return TOK_assign_xor;
+            }
+            else {
+                return TOK_binop_xor;
+            }
+        }
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
