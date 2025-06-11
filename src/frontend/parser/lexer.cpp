@@ -163,7 +163,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_binop_and;
             }
             else {
-                return TOK_error;
+                return TOK_binop_bitand;
             }
         }
         case '|': {
@@ -171,9 +171,11 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_binop_or;
             }
             else {
-                return TOK_error;
+                return TOK_binop_bitor;
             }
         }
+        case '^':
+            return TOK_binop_xor;
         case '=': {
             if (match_next(ctx, '=')) {
                 return TOK_binop_eq;
@@ -183,7 +185,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '<': {
-            if (match_next(ctx, '=')) {
+            if (match_next(ctx, '<')) {
+                return TOK_binop_shiftleft;
+            }
+            else if (match_next(ctx, '=')) {
                 return TOK_binop_le;
             }
             else {
@@ -191,7 +196,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '>': {
-            if (match_next(ctx, '=')) {
+            if (match_next(ctx, '>')) {
+                return TOK_binop_shiftright;
+            }
+            else if (match_next(ctx, '=')) {
                 return TOK_binop_ge;
             }
             else {
