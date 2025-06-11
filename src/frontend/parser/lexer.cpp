@@ -86,6 +86,14 @@ static bool match_word(Ctx ctx) {
     }
 }
 
+static TOKEN_KIND match_preproc(Ctx /*ctx*/) {
+    // TODO
+    // #\s*include\s*[<"][^>"]+\.h[>"], TOK_include_preproc
+    // #\s*[_acdefgilmnoprstuwx]+\b, TOK_strip_preproc
+
+    return TOK_strip_preproc;
+}
+
 static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
     // TODO when switch on get_next, also return error when 0 ?
     switch (get_next(ctx)) {
@@ -310,7 +318,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '*': {
-            if (match_next(ctx, '=')) {
+            if (match_next(ctx, '/')) {
+                return TOK_comment_end;
+            }
+            else if (match_next(ctx, '=')) {
                 return TOK_assign_multiply;
             }
             else {
@@ -318,7 +329,13 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '/': {
-            if (match_next(ctx, '=')) {
+            if (match_next(ctx, '/')) {
+                return TOK_comment_line;
+            }
+            else if (match_next(ctx, '*')) {
+                return TOK_comment_start;
+            }
+            else if (match_next(ctx, '=')) {
                 return TOK_assign_divide;
             }
             else {
@@ -403,6 +420,8 @@ static TOKEN_KIND match_token(Ctx ctx) {
                     return TOK_structop_member;
             }
         }
+        case '#':
+            return match_preproc(ctx);
         case '\'':
             return match_char_const(ctx, false);
         case '"':
@@ -415,113 +434,6 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return TOK_error;
     }
 }
-
-// #define RE_MATCH_TOKEN(X, Y)                                                                 \
-//     {                                                                                        \
-//         CTLL_FIXED_STRING re_pattern = {X};                                                  \
-//         ctre::regex_results re_match = ctre::starts_with<re_pattern>(ctx->re_iter_sv_slice); \
-//         if (re_match.size()) {                                                               \
-//             ctx->re_match_tok_kind = Y;                                                      \
-//             ctx->re_match_tok = std::string(re_match.get<0>());                              \
-//             return;                                                                          \
-//         }                                                                                    \
-//     }
-
-// static void re_match_current(Ctx ctx) {
-//     RE_MATCH_TOKEN(R"([ \n\r\t\f\v])", TOK_skip)
-
-//     RE_MATCH_TOKEN(R"(<<=)", TOK_assign_shiftleft)
-//     RE_MATCH_TOKEN(R"(>>=)", TOK_assign_shiftright)
-
-//     RE_MATCH_TOKEN(R"(\+\+)", TOK_unop_incr)
-//     RE_MATCH_TOKEN(R"(--)", TOK_unop_decr)
-//     RE_MATCH_TOKEN(R"(<<)", TOK_binop_shiftleft)
-//     RE_MATCH_TOKEN(R"(>>)", TOK_binop_shiftright)
-//     RE_MATCH_TOKEN(R"(&&)", TOK_binop_and)
-//     RE_MATCH_TOKEN(R"(\|\|)", TOK_binop_or)
-//     RE_MATCH_TOKEN(R"(==)", TOK_binop_eq)
-//     RE_MATCH_TOKEN(R"(!=)", TOK_binop_ne)
-//     RE_MATCH_TOKEN(R"(<=)", TOK_binop_le)
-//     RE_MATCH_TOKEN(R"(>=)", TOK_binop_ge)
-//     RE_MATCH_TOKEN(R"(\+=)", TOK_assign_add)
-//     RE_MATCH_TOKEN(R"(-=)", TOK_assign_subtract)
-//     RE_MATCH_TOKEN(R"(\*=)", TOK_assign_multiply)
-//     RE_MATCH_TOKEN(R"(/=)", TOK_assign_divide)
-//     RE_MATCH_TOKEN(R"(%=)", TOK_assign_remainder)
-//     RE_MATCH_TOKEN(R"(&=)", TOK_assign_bitand)
-//     RE_MATCH_TOKEN(R"(\|=)", TOK_assign_bitor)
-//     RE_MATCH_TOKEN(R"(\^=)", TOK_assign_xor)
-//     RE_MATCH_TOKEN(R"(->)", TOK_structop_ptr)
-
-//     RE_MATCH_TOKEN(R"(//)", TOK_comment_line)
-//     RE_MATCH_TOKEN(R"(/\*)", TOK_comment_start)
-//     RE_MATCH_TOKEN(R"(\*/)", TOK_comment_end)
-
-//     RE_MATCH_TOKEN(R"(\()", TOK_open_paren)
-//     RE_MATCH_TOKEN(R"(\))", TOK_close_paren)
-//     RE_MATCH_TOKEN(R"(\{)", TOK_open_brace)
-//     RE_MATCH_TOKEN(R"(\})", TOK_close_brace)
-//     RE_MATCH_TOKEN(R"(\[)", TOK_open_bracket)
-//     RE_MATCH_TOKEN(R"(\])", TOK_close_bracket)
-//     RE_MATCH_TOKEN(R"(;)", TOK_semicolon)
-//     RE_MATCH_TOKEN(R"(~)", TOK_unop_complement)
-//     RE_MATCH_TOKEN(R"(-)", TOK_unop_neg)
-//     RE_MATCH_TOKEN(R"(!)", TOK_unop_not)
-//     RE_MATCH_TOKEN(R"(\+)", TOK_binop_add)
-//     RE_MATCH_TOKEN(R"(\*)", TOK_binop_multiply)
-//     RE_MATCH_TOKEN(R"(/)", TOK_binop_divide)
-//     RE_MATCH_TOKEN(R"(%)", TOK_binop_remainder)
-//     RE_MATCH_TOKEN(R"(&)", TOK_binop_bitand)
-//     RE_MATCH_TOKEN(R"(\|)", TOK_binop_bitor)
-//     RE_MATCH_TOKEN(R"(\^)", TOK_binop_xor)
-//     RE_MATCH_TOKEN(R"(<)", TOK_binop_lt)
-//     RE_MATCH_TOKEN(R"(>)", TOK_binop_gt)
-//     RE_MATCH_TOKEN(R"(=)", TOK_assign)
-//     RE_MATCH_TOKEN(R"(\?)", TOK_ternary_if)
-//     RE_MATCH_TOKEN(R"(:)", TOK_ternary_else)
-//     RE_MATCH_TOKEN(R"(,)", TOK_comma_separator)
-//     RE_MATCH_TOKEN(R"(\.(?![0-9]+))", TOK_structop_member)
-
-//     RE_MATCH_TOKEN(R"(char\b)", TOK_key_char)
-//     RE_MATCH_TOKEN(R"(int\b)", TOK_key_int)
-//     RE_MATCH_TOKEN(R"(long\b)", TOK_key_long)
-//     RE_MATCH_TOKEN(R"(double\b)", TOK_key_double)
-//     RE_MATCH_TOKEN(R"(signed\b)", TOK_key_signed)
-//     RE_MATCH_TOKEN(R"(unsigned\b)", TOK_key_unsigned)
-//     RE_MATCH_TOKEN(R"(void\b)", TOK_key_void)
-//     RE_MATCH_TOKEN(R"(struct\b)", TOK_key_struct)
-//     RE_MATCH_TOKEN(R"(union\b)", TOK_key_union)
-//     RE_MATCH_TOKEN(R"(sizeof\b)", TOK_key_sizeof)
-//     RE_MATCH_TOKEN(R"(return\b)", TOK_key_return)
-//     RE_MATCH_TOKEN(R"(if\b)", TOK_key_if)
-//     RE_MATCH_TOKEN(R"(else\b)", TOK_key_else)
-//     RE_MATCH_TOKEN(R"(goto\b)", TOK_key_goto)
-//     RE_MATCH_TOKEN(R"(do\b)", TOK_key_do)
-//     RE_MATCH_TOKEN(R"(while\b)", TOK_key_while)
-//     RE_MATCH_TOKEN(R"(for\b)", TOK_key_for)
-//     RE_MATCH_TOKEN(R"(switch\b)", TOK_key_switch)
-//     RE_MATCH_TOKEN(R"(case\b)", TOK_key_case)
-//     RE_MATCH_TOKEN(R"(default\b)", TOK_key_default)
-//     RE_MATCH_TOKEN(R"(break\b)", TOK_key_break)
-//     RE_MATCH_TOKEN(R"(continue\b)", TOK_key_continue)
-//     RE_MATCH_TOKEN(R"(static\b)", TOK_key_static)
-//     RE_MATCH_TOKEN(R"(extern\b)", TOK_key_extern)
-
-//     RE_MATCH_TOKEN(R"([a-zA-Z_]\w*\b)", TOK_identifier)
-//     RE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOK_string_literal)
-//     RE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOK_char_const)
-//     RE_MATCH_TOKEN(R"([0-9]+(?![\w.]))", TOK_int_const)
-//     RE_MATCH_TOKEN(R"([0-9]+[lL](?![\w.]))", TOK_long_const)
-//     RE_MATCH_TOKEN(R"([0-9]+[uU](?![\w.]))", TOK_uint_const)
-//     RE_MATCH_TOKEN(R"([0-9]+([lL][uU]|[uU][lL])(?![\w.]))", TOK_ulong_const)
-//     RE_MATCH_TOKEN(R"((([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)(?![\w.]))",
-//     TOK_dbl_const)
-
-//     RE_MATCH_TOKEN(R"(#\s*include\s*[<"][^>"]+\.h[>"])", TOK_include_preproc)
-//     RE_MATCH_TOKEN(R"(#\s*[_acdefgilmnoprstuwx]+\b)", TOK_strip_preproc)
-
-//     RE_MATCH_TOKEN(R"(.)", TOK_error)
-// }
 
 // static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
