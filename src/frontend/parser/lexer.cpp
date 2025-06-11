@@ -86,10 +86,73 @@ static bool match_word(Ctx ctx) {
     }
 }
 
+//     RE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOK_string_literal)
+//     RE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOK_char_const)
+
+static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
+    // TODO when switch on get_next, also return error when 0 ?
+    switch (get_next(ctx)) {
+        case '\'': {
+            if (!is_str) {
+                return TOK_error;
+            }
+            break;
+        }
+        case '"': {
+            if (is_str) {
+                ctx->match_size++;
+                return TOK_string_literal;
+            }
+            break;
+        }
+        case '\n':
+            return TOK_error;
+        case '\\': {
+            ctx->match_size++;
+            switch (get_next(ctx)) {
+                case '\'':
+                case '"':
+                case '\\':
+                case '?':
+                case 'a':
+                case 'b':
+                case 'f':
+                case 'n':
+                case 'r':
+                case 't':
+                case 'v':
+                    break;
+                default:
+                    return TOK_error;
+            }
+        }
+        default:
+            break;
+    }
+    ctx->match_size++;
+
+    if (is_str || match_next(ctx, '\'')) {
+        return TOK_char_const;
+    }
+    else {
+        return TOK_error;
+    }
+}
+
+static TOKEN_KIND match_string_literal(Ctx ctx) {
+    TOKEN_KIND tok_kind;
+    do {
+        tok_kind = match_char_const(ctx, true);
+    }
+    while (tok_kind == TOK_char_const);
+    return tok_kind;
+}
+
 static TOKEN_KIND match_const_end(Ctx ctx, TOKEN_KIND tok_kind) {
     switch (get_next(ctx)) {
         case LEX_WORD:
         case '.':
+            // TODO when TOK_error, need to incr match_size for error msg ?
             return TOK_error;
         default:
             return tok_kind;
@@ -340,6 +403,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
                     return TOK_error;
             }
         }
+        case '\'':
+            return match_char_const(ctx, false);
+        case '"':
+            return match_string_literal(ctx);
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
