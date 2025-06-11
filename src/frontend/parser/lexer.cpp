@@ -86,9 +86,6 @@ static bool match_word(Ctx ctx) {
     }
 }
 
-//     RE_MATCH_TOKEN(R"("([^"\\\n]|\\['"\\?abfnrtv])*")", TOK_string_literal)
-//     RE_MATCH_TOKEN(R"('([^'\\\n]|\\['"?\\abfnrtv])')", TOK_char_const)
-
 static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
     // TODO when switch on get_next, also return error when 0 ?
     switch (get_next(ctx)) {
@@ -288,7 +285,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '-': {
-            if (match_next(ctx, '-')) {
+            if (match_next(ctx, '>')) {
+                return TOK_structop_ptr;
+            }
+            else if (match_next(ctx, '-')) {
                 return TOK_unop_decr;
             }
             else if (match_next(ctx, '=')) {
@@ -400,7 +400,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 case LEX_DIGIT:
                     return match_dbl_fraction(ctx);
                 default:
-                    return TOK_error;
+                    return TOK_structop_member;
             }
         }
         case '\'':
