@@ -202,6 +202,8 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return TOK_ternary_if;
         case ':':
             return TOK_ternary_else;
+        case ',':
+            return TOK_comma_separator;
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
