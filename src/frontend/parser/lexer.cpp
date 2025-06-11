@@ -17,7 +17,6 @@ struct LexerContext {
     size_t match_size;
     std::string line;
     std::vector<std::string> stdlibdirs;
-    std::unordered_map<hash_t, TOKEN_KIND> keyword_map;
     std::unordered_set<hash_t> includename_set;
     std::vector<std::string>* p_includedirs;
     std::vector<Token>* p_toks;
@@ -130,6 +129,7 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
             return TOK_error;
     }
 
+    // TODO
     if (match_nexts(ctx, "include", 7)) {
         while (match_space(ctx)) {
         }
@@ -304,52 +304,149 @@ static TOKEN_KIND match_const(Ctx ctx) {
 }
 
 static TOKEN_KIND match_identifier(Ctx ctx) {
-    // switch (ctx->line[ctx->match_at]) {
-    //     case 'b': {
-    //         if (match_next(ctx, 'r') && match_next('e') && match_next('a') && match_next('k') && !match_word()) {
-    //             return TOK_key_break;
-    //         }
-    //         break;
-    //     }
-    //     case 'c': {
-    //         break;
-    //     }
-    //     case 'd': {
-    //         break;
-    //     }
-    //     case 'e': {
-    //         break;
-    //     }
-    //     case 'f': {
-    //         break;
-    //     }
-    //     case 'g': {
-    //         break;
-    //     }
-    //     case 'i': {
-    //         break;
-    //     }
-    //     case 'l': {
-    //         break;
-    //     }
-    //     case 'r': {
-    //         break;
-    //     }
-    //     case 's': {
-    //         break;
-    //     }
-    //     case 'u': {
-    //         break;
-    //     }
-    //     case 'v': {
-    //         break;
-    //     }
-    //     case 'w': {
-    //         break;
-    //     }
-    //     default:
-    //         break;
-    // }
+    switch (ctx->line[ctx->match_at]) {
+        case 'b': {
+            if (match_nexts(ctx, "reak", 4) && !match_word(ctx)) {
+                return TOK_key_break;
+            }
+            break;
+        }
+        case 'c': {
+            if (match_next(ctx, 'a')) {
+                if (match_nexts(ctx, "se", 2) && !match_word(ctx)) {
+                    return TOK_key_case;
+                }
+            }
+            else if (match_next(ctx, 'h')) {
+                if (match_nexts(ctx, "ar", 2) && !match_word(ctx)) {
+                    return TOK_key_char;
+                }
+            }
+            else if (match_nexts(ctx, "ontinue", 7) && !match_word(ctx)) {
+                return TOK_key_continue;
+            }
+            break;
+        }
+        case 'd': {
+            if (match_next(ctx, 'o')) {
+                if (match_next(ctx, 'u')) {
+                    if (match_nexts(ctx, "ble", 3) && !match_word(ctx)) {
+                        return TOK_key_double;
+                    }
+                }
+                else if (!match_word(ctx)) {
+                    return TOK_key_do;
+                }
+            }
+            else if (match_nexts(ctx, "efault", 6) && !match_word(ctx)) {
+                return TOK_key_default;
+            }
+            break;
+        }
+        case 'e': {
+            if (match_next(ctx, 'l')) {
+                if (match_nexts(ctx, "se", 2) && !match_word(ctx)) {
+                    return TOK_key_else;
+                }
+            }
+            else if (match_nexts(ctx, "xtern", 5) && !match_word(ctx)) {
+                return TOK_key_extern;
+            }
+            break;
+        }
+        case 'f': {
+            if (match_nexts(ctx, "or", 2) && !match_word(ctx)) {
+                return TOK_key_for;
+            }
+            break;
+        }
+        case 'g': {
+            if (match_nexts(ctx, "oto", 3) && !match_word(ctx)) {
+                return TOK_key_goto;
+            }
+            break;
+        }
+        case 'i': {
+            if (match_next(ctx, 'f')) {
+                if (!match_word(ctx)) {
+                    return TOK_key_if;
+                }
+            }
+            else if (match_nexts(ctx, "nt", 2) && !match_word(ctx)) {
+                return TOK_key_int;
+            }
+            break;
+        }
+        case 'l': {
+            if (match_nexts(ctx, "ong", 3) && !match_word(ctx)) {
+                return TOK_key_long;
+            }
+            break;
+        }
+        case 'r': {
+            if (match_nexts(ctx, "eturn", 5) && !match_word(ctx)) {
+                return TOK_key_return;
+            }
+            break;
+        }
+        case 's': {
+            if (match_next(ctx, 'i')) {
+                if (match_next(ctx, 'g')) {
+                    if (match_nexts(ctx, "ned", 3) && !match_word(ctx)) {
+                        return TOK_key_signed;
+                    }
+                }
+                else if (match_next(ctx, 'z')) {
+                    if (match_nexts(ctx, "eof", 3) && !match_word(ctx)) {
+                        return TOK_key_sizeof;
+                    }
+                }
+            }
+            else if (match_next(ctx, 't')) {
+                if (match_next(ctx, 'a')) {
+                    if (match_nexts(ctx, "tic", 3) && !match_word(ctx)) {
+                        return TOK_key_static;
+                    }
+                }
+                else if (match_next(ctx, 'r')) {
+                    if (match_nexts(ctx, "uct", 3) && !match_word(ctx)) {
+                        return TOK_key_struct;
+                    }
+                }
+            }
+            else if (match_nexts(ctx, "witch", 5) && !match_word(ctx)) {
+                return TOK_key_switch;
+            }
+            break;
+        }
+        case 'u': {
+            if (match_next(ctx, 'n')) {
+                if (match_next(ctx, 'i')) {
+                    if (match_nexts(ctx, "on", 2) && !match_word(ctx)) {
+                        return TOK_key_union;
+                    }
+                }
+                else if (match_nexts(ctx, "signed", 6) && !match_word(ctx)) {
+                    return TOK_key_unsigned;
+                }
+            }
+            break;
+        }
+        case 'v': {
+            if (match_nexts(ctx, "oid", 3) && !match_word(ctx)) {
+                return TOK_key_void;
+            }
+            break;
+        }
+        case 'w': {
+            if (match_nexts(ctx, "hile", 4) && !match_word(ctx)) {
+                return TOK_key_while;
+            }
+            break;
+        }
+        default:
+            break;
+    }
 
     while (match_word(ctx)) {
     }
@@ -556,6 +653,7 @@ static void tokenize_file(Ctx ctx) {
 
         for (ctx->match_at = 0; ctx->match_at < ctx->line.size(); ctx->match_at += ctx->match_size) {
             TOKEN_KIND match_kind = match_token(ctx);
+            // TODO
             std::string match_tok = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
                                                            ctx->line.substr(ctx->match_at, ctx->match_size);
             if (is_comment) {
@@ -588,10 +686,8 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_strip_preproc:
                         goto Lbreak;
                     case TOK_identifier: {
-                        hash_t identifier = string_to_hash(match_tok);
-                        if (ctx->keyword_map.find(identifier) != ctx->keyword_map.end()) {
-                            match_kind = ctx->keyword_map[identifier];
-                        }
+                        // hash_t identifier = string_to_hash(match_tok);
+                        // TODO
                         goto Lpass;
                     }
                     default:
@@ -622,6 +718,7 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
 }
 
 static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
+    // TODO
     if (filename.back() == '>') {
         filename = filename.substr(filename.find('<') + 1);
         filename.pop_back();
@@ -678,31 +775,6 @@ std::vector<Token> lex_c_code(
         ctx.stdlibdirs.push_back("/usr/include/");
         ctx.stdlibdirs.push_back("/usr/local/include/");
 #endif
-        ctx.keyword_map[string_to_hash("char")] = TOK_key_char;
-        ctx.keyword_map[string_to_hash("int")] = TOK_key_int;
-        ctx.keyword_map[string_to_hash("long")] = TOK_key_long;
-        ctx.keyword_map[string_to_hash("double")] = TOK_key_double;
-        ctx.keyword_map[string_to_hash("signed")] = TOK_key_signed;
-        ctx.keyword_map[string_to_hash("unsigned")] = TOK_key_unsigned;
-        ctx.keyword_map[string_to_hash("void")] = TOK_key_void;
-        ctx.keyword_map[string_to_hash("struct")] = TOK_key_struct;
-        ctx.keyword_map[string_to_hash("union")] = TOK_key_union;
-        ctx.keyword_map[string_to_hash("sizeof")] = TOK_key_sizeof;
-        ctx.keyword_map[string_to_hash("return")] = TOK_key_return;
-        ctx.keyword_map[string_to_hash("if")] = TOK_key_if;
-        ctx.keyword_map[string_to_hash("else")] = TOK_key_else;
-        ctx.keyword_map[string_to_hash("goto")] = TOK_key_goto;
-        ctx.keyword_map[string_to_hash("do")] = TOK_key_do;
-        ctx.keyword_map[string_to_hash("while")] = TOK_key_while;
-        ctx.keyword_map[string_to_hash("for")] = TOK_key_for;
-        ctx.keyword_map[string_to_hash("switch")] = TOK_key_switch;
-        ctx.keyword_map[string_to_hash("case")] = TOK_key_case;
-        ctx.keyword_map[string_to_hash("default")] = TOK_key_default;
-        ctx.keyword_map[string_to_hash("break")] = TOK_key_break;
-        ctx.keyword_map[string_to_hash("continue")] = TOK_key_continue;
-        ctx.keyword_map[string_to_hash("static")] = TOK_key_static;
-        ctx.keyword_map[string_to_hash("extern")] = TOK_key_extern;
-
         ctx.p_includedirs = &includedirs;
         ctx.p_toks = &tokens;
         ctx.total_linenum = 0;
