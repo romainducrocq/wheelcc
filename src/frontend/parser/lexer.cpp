@@ -88,31 +88,33 @@ static bool match_word(Ctx ctx) {
     }
 }
 
-static TOKEN_KIND match_const(Ctx ctx) {
-    while (match_digit(ctx)) {
-    }
-
-    TOKEN_KIND match_tok_kind;
+static TOKEN_KIND match_int_const(Ctx ctx) {
     if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
         if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
-            match_tok_kind = TOK_ulong_const;
+            return TOK_ulong_const;
         }
         else {
-            match_tok_kind = TOK_long_const;
+            return TOK_long_const;
         }
     }
     else if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
         if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
-            match_tok_kind = TOK_ulong_const;
+            return TOK_ulong_const;
         }
         else {
-            match_tok_kind = TOK_uint_const;
+            return TOK_uint_const;
         }
     }
     else {
-        match_tok_kind = TOK_int_const;
+        return TOK_int_const;
+    }
+}
+
+static TOKEN_KIND match_const(Ctx ctx) {
+    while (match_digit(ctx)) {
     }
 
+    TOKEN_KIND match_tok_kind = match_int_const(ctx);
     switch (get_next(ctx)) {
         case LEX_WORD:
             return TOK_error;
