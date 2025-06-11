@@ -295,9 +295,9 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_strip_preproc:
                         goto Lbreak;
                     case TOK_identifier: {
-                        hash_t match_tok_key = string_to_hash(match_tok);
-                        if (ctx->keyword_map.find(match_tok_key) != ctx->keyword_map.end()) {
-                            match_tok_kind = ctx->keyword_map[match_tok_key];
+                        hash_t identifier = string_to_hash(match_tok);
+                        if (ctx->keyword_map.find(identifier) != ctx->keyword_map.end()) {
+                            match_tok_kind = ctx->keyword_map[identifier];
                         }
                         goto Lpass;
                     }
