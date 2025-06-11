@@ -40,6 +40,8 @@ static char get_next(Ctx ctx) {
     }
 }
 
+#define LEX_SPACE ' ' : case '\n' : case '\r' : case '\t'
+
 #define LEX_DIGIT '0' : case '1' : case '2' : case '3' : case '4' : case '5' : case '6' : case '7' : case '8' : case '9'
 
 #define LEX_LETTER                                                                                                    \
@@ -61,6 +63,28 @@ static bool match_next(Ctx ctx, char next) {
     }
     else {
         return false;
+    }
+}
+
+static bool match_invert(Ctx ctx, char next) {
+    char invert = get_next(ctx);
+    if (invert != 0 && next != invert) {
+        ctx->match_size++;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+static bool match_space(Ctx ctx) {
+    switch (get_next(ctx)) {
+        case LEX_SPACE: {
+            ctx->match_size++;
+            return true;
+        }
+        default:
+            return false;
     }
 }
 
@@ -86,12 +110,46 @@ static bool match_word(Ctx ctx) {
     }
 }
 
-static TOKEN_KIND match_preproc(Ctx /*ctx*/) {
-    // TODO
-    // #\s*include\s*[<"][^>"]+\.h[>"], TOK_include_preproc
-    // #\s*[_acdefgilmnoprstuwx]+\b, TOK_strip_preproc
+static TOKEN_KIND match_preproc(Ctx ctx) {
+    while (match_space(ctx)) {
+    }
 
-    return TOK_strip_preproc;
+    switch (get_next(ctx)) {
+        case LEX_LETTER:
+            break;
+        default:
+            return TOK_error;
+    }
+
+    if (match_next(ctx, 'i') && match_next(ctx, 'n') && match_next(ctx, 'c') && match_next(ctx, 'l')
+        && match_next(ctx, 'u') && match_next(ctx, 'd') && match_next(ctx, 'e')) {
+        while (match_space(ctx)) {
+        }
+
+        if (match_next(ctx, '"')) {
+            while (match_invert(ctx, '"')) {
+            }
+            if (get_next(ctx) == '"') {
+                ctx->match_size++;
+                return TOK_include_preproc;
+            }
+        }
+        else if (match_next(ctx, '<')) {
+            while (match_invert(ctx, '>')) {
+            }
+            if (get_next(ctx) == '>') {
+                ctx->match_size++;
+                return TOK_include_preproc;
+            }
+        }
+        return TOK_error;
+    }
+    else {
+        while (match_word(ctx)) {
+        }
+
+        return TOK_strip_preproc;
+    }
 }
 
 static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
@@ -247,13 +305,6 @@ static TOKEN_KIND match_identifier(Ctx ctx) {
 static TOKEN_KIND match_token(Ctx ctx) {
     ctx->match_size = 1;
     switch (ctx->line[ctx->match_at]) {
-        case ' ':
-        case '\n':
-        case '\r':
-        case '\t':
-        case '\f':
-        case '\v':
-            return TOK_skip;
         case '(':
             return TOK_open_paren;
         case ')':
@@ -430,6 +481,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return match_const(ctx);
         case LEX_LETTER:
             return match_identifier(ctx);
+        case LEX_SPACE:
+        case '\f':
+        case '\v':
+            return TOK_skip;
         default:
             return TOK_error;
     }
