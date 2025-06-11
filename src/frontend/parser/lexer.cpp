@@ -179,7 +179,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_binop_eq;
             }
             else {
-                return TOK_error;
+                return TOK_assign;
             }
         }
         case '<': {
