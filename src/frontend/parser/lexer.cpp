@@ -13,8 +13,8 @@ struct LexerContext {
     ErrorsContext* errors;
     FileIoContext* fileio;
     // Lexer
-    size_t match_tok_at;
-    size_t match_tok_size;
+    size_t match_at;
+    size_t match_size;
     std::string line;
     std::vector<std::string> stdlibdirs;
     std::unordered_map<hash_t, TOKEN_KIND> keyword_map;
@@ -31,7 +31,7 @@ struct LexerContext {
 typedef LexerContext* Ctx;
 
 static char get_next(Ctx ctx) {
-    size_t i = ctx->match_tok_at + ctx->match_tok_size;
+    size_t i = ctx->match_at + ctx->match_size;
     if (i < ctx->line.size()) {
         return ctx->line[i];
     }
@@ -56,7 +56,7 @@ static char get_next(Ctx ctx) {
 
 static bool match_next(Ctx ctx, char next) {
     if (next == get_next(ctx)) {
-        ctx->match_tok_size++;
+        ctx->match_size++;
         return true;
     }
     else {
@@ -67,7 +67,7 @@ static bool match_next(Ctx ctx, char next) {
 static bool match_digit(Ctx ctx) {
     switch (get_next(ctx)) {
         case LEX_DIGIT: {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             return true;
         }
         default:
@@ -78,7 +78,7 @@ static bool match_digit(Ctx ctx) {
 static bool match_word(Ctx ctx) {
     switch (get_next(ctx)) {
         case LEX_WORD: {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             return true;
         }
         default:
@@ -100,7 +100,7 @@ static TOKEN_KIND match_dbl_exponent(Ctx ctx) {
     switch (get_next(ctx)) {
         case '+':
         case '-': {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             break;
         }
         default:
@@ -122,7 +122,7 @@ static TOKEN_KIND match_dbl_fraction(Ctx ctx) {
     switch (get_next(ctx)) {
         case 'e':
         case 'E': {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             return match_dbl_exponent(ctx);
         }
         default:
@@ -137,7 +137,7 @@ static TOKEN_KIND match_const(Ctx ctx) {
     switch (get_next(ctx)) {
         case 'l':
         case 'L': {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
                 return match_const_end(ctx, TOK_ulong_const);
             }
@@ -147,7 +147,7 @@ static TOKEN_KIND match_const(Ctx ctx) {
         }
         case 'u':
         case 'U': {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
                 return match_const_end(ctx, TOK_ulong_const);
             }
@@ -157,11 +157,11 @@ static TOKEN_KIND match_const(Ctx ctx) {
         }
         case 'e':
         case 'E': {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             return match_dbl_exponent(ctx);
         }
         case '.': {
-            ctx->match_tok_size++;
+            ctx->match_size++;
             return match_dbl_fraction(ctx);
         }
         default:
@@ -177,8 +177,8 @@ static TOKEN_KIND match_identifier(Ctx ctx) {
 }
 
 static TOKEN_KIND match_token(Ctx ctx) {
-    ctx->match_tok_size = 1;
-    switch (ctx->line[ctx->match_tok_at]) {
+    ctx->match_size = 1;
+    switch (ctx->line[ctx->match_at]) {
         case ' ':
         case '\n':
         case '\r':
@@ -459,18 +459,18 @@ static void tokenize_file(Ctx ctx) {
     for (size_t linenum = 1; read_line(ctx->fileio, ctx->line); ++linenum) {
         ctx->total_linenum++;
 
-        for (ctx->match_tok_at = 0; ctx->match_tok_at < ctx->line.size(); ctx->match_tok_at += ctx->match_tok_size) {
-            TOKEN_KIND match_tok_kind = match_token(ctx);
-            std::string match_tok = ctx->match_tok_size == 1 ? std::string({ctx->line[ctx->match_tok_at]}) :
-                                                               ctx->line.substr(ctx->match_tok_at, ctx->match_tok_size);
+        for (ctx->match_at = 0; ctx->match_at < ctx->line.size(); ctx->match_at += ctx->match_size) {
+            TOKEN_KIND match_kind = match_token(ctx);
+            std::string match_tok = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
+                                                           ctx->line.substr(ctx->match_at, ctx->match_size);
             if (is_comment) {
-                if (match_tok_kind == TOK_comment_end) {
+                if (match_kind == TOK_comment_end) {
                     is_comment = false;
                 }
                 continue;
             }
             else {
-                switch (match_tok_kind) {
+                switch (match_kind) {
                     case TOK_error:
                     case TOK_comment_end:
                         THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match_tok.c_str()), linenum);
@@ -493,7 +493,7 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_identifier: {
                         hash_t identifier = string_to_hash(match_tok);
                         if (ctx->keyword_map.find(identifier) != ctx->keyword_map.end()) {
-                            match_tok_kind = ctx->keyword_map[identifier];
+                            match_kind = ctx->keyword_map[identifier];
                         }
                         goto Lpass;
                     }
@@ -507,7 +507,7 @@ static void tokenize_file(Ctx ctx) {
             Lpass:;
             }
 
-            Token token = {match_tok_kind, match_tok, ctx->total_linenum};
+            Token token = {match_kind, match_tok, ctx->total_linenum};
             ctx->p_toks->emplace_back(std::move(token));
         }
     }
