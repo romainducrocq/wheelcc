@@ -66,6 +66,15 @@ static bool match_next(Ctx ctx, char next) {
     }
 }
 
+static bool match_nexts(Ctx ctx, const char* nexts, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        if (!match_next(ctx, nexts[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool match_invert(Ctx ctx, char next) {
     char invert = get_next(ctx);
     if (invert != 0 && next != invert) {
@@ -121,8 +130,7 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
             return TOK_error;
     }
 
-    if (match_next(ctx, 'i') && match_next(ctx, 'n') && match_next(ctx, 'c') && match_next(ctx, 'l')
-        && match_next(ctx, 'u') && match_next(ctx, 'd') && match_next(ctx, 'e')) {
+    if (match_nexts(ctx, "include", 7)) {
         while (match_space(ctx)) {
         }
 
@@ -296,6 +304,53 @@ static TOKEN_KIND match_const(Ctx ctx) {
 }
 
 static TOKEN_KIND match_identifier(Ctx ctx) {
+    // switch (ctx->line[ctx->match_at]) {
+    //     case 'b': {
+    //         if (match_next(ctx, 'r') && match_next('e') && match_next('a') && match_next('k') && !match_word()) {
+    //             return TOK_key_break;
+    //         }
+    //         break;
+    //     }
+    //     case 'c': {
+    //         break;
+    //     }
+    //     case 'd': {
+    //         break;
+    //     }
+    //     case 'e': {
+    //         break;
+    //     }
+    //     case 'f': {
+    //         break;
+    //     }
+    //     case 'g': {
+    //         break;
+    //     }
+    //     case 'i': {
+    //         break;
+    //     }
+    //     case 'l': {
+    //         break;
+    //     }
+    //     case 'r': {
+    //         break;
+    //     }
+    //     case 's': {
+    //         break;
+    //     }
+    //     case 'u': {
+    //         break;
+    //     }
+    //     case 'v': {
+    //         break;
+    //     }
+    //     case 'w': {
+    //         break;
+    //     }
+    //     default:
+    //         break;
+    // }
+
     while (match_word(ctx)) {
     }
 
