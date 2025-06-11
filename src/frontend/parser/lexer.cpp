@@ -142,6 +142,14 @@ static TOKEN_KIND match_token(Ctx ctx) {
                 return TOK_unop_neg;
             }
         }
+        case '!': {
+            if (match_next(ctx, '=')) {
+                return TOK_binop_ne;
+            }
+            else {
+                return TOK_unop_not;
+            }
+        }
         case '+':
             return TOK_binop_add;
         case '*':
@@ -150,6 +158,46 @@ static TOKEN_KIND match_token(Ctx ctx) {
             return TOK_binop_divide;
         case '%':
             return TOK_binop_remainder;
+        case '&': {
+            if (match_next(ctx, '&')) {
+                return TOK_binop_and;
+            }
+            else {
+                return TOK_error;
+            }
+        }
+        case '|': {
+            if (match_next(ctx, '|')) {
+                return TOK_binop_or;
+            }
+            else {
+                return TOK_error;
+            }
+        }
+        case '=': {
+            if (match_next(ctx, '=')) {
+                return TOK_binop_eq;
+            }
+            else {
+                return TOK_error;
+            }
+        }
+        case '<': {
+            if (match_next(ctx, '=')) {
+                return TOK_binop_le;
+            }
+            else {
+                return TOK_binop_lt;
+            }
+        }
+        case '>': {
+            if (match_next(ctx, '=')) {
+                return TOK_binop_ge;
+            }
+            else {
+                return TOK_binop_gt;
+            }
+        }
         case LEX_DIGIT:
             return match_const(ctx);
         case LEX_LETTER:
