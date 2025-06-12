@@ -29,7 +29,7 @@ struct LexerContext {
 
 typedef LexerContext* Ctx;
 
-static char get_next(Ctx ctx) {
+static char get_char(Ctx ctx) {
     size_t i = ctx->match_at + ctx->match_size;
     if (i < ctx->line.size()) {
         return ctx->line[i];
@@ -55,8 +55,8 @@ static char get_next(Ctx ctx) {
     LEX_DIGIT:   \
     case LEX_LETTER
 
-static bool match_next(Ctx ctx, char next) {
-    if (next == get_next(ctx)) {
+static bool match_char(Ctx ctx, char c) {
+    if (c == get_char(ctx)) {
         ctx->match_size++;
         return true;
     }
@@ -65,18 +65,18 @@ static bool match_next(Ctx ctx, char next) {
     }
 }
 
-static bool match_nexts(Ctx ctx, const char* nexts, size_t n) {
+static bool match_chars(Ctx ctx, const char* cs, size_t n) {
     for (size_t i = 0; i < n; ++i) {
-        if (!match_next(ctx, nexts[i])) {
+        if (!match_char(ctx, cs[i])) {
             return false;
         }
     }
     return true;
 }
 
-static bool match_invert(Ctx ctx, char next) {
-    char invert = get_next(ctx);
-    if (invert != 0 && next != invert) {
+static bool match_invert(Ctx ctx, char c) {
+    char inv = get_char(ctx);
+    if (inv != 0 && c != inv) {
         ctx->match_size++;
         return true;
     }
@@ -86,7 +86,7 @@ static bool match_invert(Ctx ctx, char next) {
 }
 
 static bool match_space(Ctx ctx) {
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case LEX_SPACE: {
             ctx->match_size++;
             return true;
@@ -97,7 +97,7 @@ static bool match_space(Ctx ctx) {
 }
 
 static bool match_digit(Ctx ctx) {
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case LEX_DIGIT: {
             ctx->match_size++;
             return true;
@@ -108,7 +108,7 @@ static bool match_digit(Ctx ctx) {
 }
 
 static bool match_word(Ctx ctx) {
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case LEX_WORD: {
             ctx->match_size++;
             return true;
@@ -122,7 +122,7 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
     while (match_space(ctx)) {
     }
 
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case LEX_LETTER:
             break;
         default:
@@ -130,22 +130,22 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
     }
 
     // TODO
-    if (match_nexts(ctx, "include", 7)) {
+    if (match_chars(ctx, "include", 7)) {
         while (match_space(ctx)) {
         }
 
-        if (match_next(ctx, '"')) {
+        if (match_char(ctx, '"')) {
             while (match_invert(ctx, '"')) {
             }
-            if (get_next(ctx) == '"') {
+            if (get_char(ctx) == '"') {
                 ctx->match_size++;
                 return TOK_include_preproc;
             }
         }
-        else if (match_next(ctx, '<')) {
+        else if (match_char(ctx, '<')) {
             while (match_invert(ctx, '>')) {
             }
-            if (get_next(ctx) == '>') {
+            if (get_char(ctx) == '>') {
                 ctx->match_size++;
                 return TOK_include_preproc;
             }
@@ -161,8 +161,8 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
 }
 
 static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
-    // TODO when switch on get_next, also return error when 0 ?
-    switch (get_next(ctx)) {
+    // TODO when switch on get_char, also return error when 0 ?
+    switch (get_char(ctx)) {
         case '\'': {
             if (!is_str) {
                 return TOK_error;
@@ -180,7 +180,7 @@ static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
             return TOK_error;
         case '\\': {
             ctx->match_size++;
-            switch (get_next(ctx)) {
+            switch (get_char(ctx)) {
                 case '\'':
                 case '"':
                 case '\\':
@@ -202,7 +202,7 @@ static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
     }
     ctx->match_size++;
 
-    if (is_str || match_next(ctx, '\'')) {
+    if (is_str || match_char(ctx, '\'')) {
         return TOK_char_const;
     }
     else {
@@ -220,7 +220,7 @@ static TOKEN_KIND match_string_literal(Ctx ctx) {
 }
 
 static TOKEN_KIND match_const_end(Ctx ctx, TOKEN_KIND tok_kind) {
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case LEX_WORD:
         case '.':
             // TODO when TOK_error, need to incr match_size for error msg ?
@@ -231,7 +231,7 @@ static TOKEN_KIND match_const_end(Ctx ctx, TOKEN_KIND tok_kind) {
 }
 
 static TOKEN_KIND match_dbl_exponent(Ctx ctx) {
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case '+':
         case '-': {
             ctx->match_size++;
@@ -253,7 +253,7 @@ static TOKEN_KIND match_dbl_fraction(Ctx ctx) {
     while (match_digit(ctx)) {
     }
 
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case 'e':
         case 'E': {
             ctx->match_size++;
@@ -268,11 +268,11 @@ static TOKEN_KIND match_const(Ctx ctx) {
     while (match_digit(ctx)) {
     }
 
-    switch (get_next(ctx)) {
+    switch (get_char(ctx)) {
         case 'l':
         case 'L': {
             ctx->match_size++;
-            if (match_next(ctx, 'u') || match_next(ctx, 'U')) {
+            if (match_char(ctx, 'u') || match_char(ctx, 'U')) {
                 return match_const_end(ctx, TOK_ulong_const);
             }
             else {
@@ -282,7 +282,7 @@ static TOKEN_KIND match_const(Ctx ctx) {
         case 'u':
         case 'U': {
             ctx->match_size++;
-            if (match_next(ctx, 'l') || match_next(ctx, 'L')) {
+            if (match_char(ctx, 'l') || match_char(ctx, 'L')) {
                 return match_const_end(ctx, TOK_ulong_const);
             }
             else {
@@ -306,31 +306,31 @@ static TOKEN_KIND match_const(Ctx ctx) {
 static TOKEN_KIND match_identifier(Ctx ctx) {
     switch (ctx->line[ctx->match_at]) {
         case 'b': {
-            if (match_nexts(ctx, "reak", 4) && !match_word(ctx)) {
+            if (match_chars(ctx, "reak", 4) && !match_word(ctx)) {
                 return TOK_key_break;
             }
             break;
         }
         case 'c': {
-            if (match_next(ctx, 'a')) {
-                if (match_nexts(ctx, "se", 2) && !match_word(ctx)) {
+            if (match_char(ctx, 'a')) {
+                if (match_chars(ctx, "se", 2) && !match_word(ctx)) {
                     return TOK_key_case;
                 }
             }
-            else if (match_next(ctx, 'h')) {
-                if (match_nexts(ctx, "ar", 2) && !match_word(ctx)) {
+            else if (match_char(ctx, 'h')) {
+                if (match_chars(ctx, "ar", 2) && !match_word(ctx)) {
                     return TOK_key_char;
                 }
             }
-            else if (match_nexts(ctx, "ontinue", 7) && !match_word(ctx)) {
+            else if (match_chars(ctx, "ontinue", 7) && !match_word(ctx)) {
                 return TOK_key_continue;
             }
             break;
         }
         case 'd': {
-            if (match_next(ctx, 'o')) {
-                if (match_next(ctx, 'u')) {
-                    if (match_nexts(ctx, "ble", 3) && !match_word(ctx)) {
+            if (match_char(ctx, 'o')) {
+                if (match_char(ctx, 'u')) {
+                    if (match_chars(ctx, "ble", 3) && !match_word(ctx)) {
                         return TOK_key_double;
                     }
                 }
@@ -338,108 +338,108 @@ static TOKEN_KIND match_identifier(Ctx ctx) {
                     return TOK_key_do;
                 }
             }
-            else if (match_nexts(ctx, "efault", 6) && !match_word(ctx)) {
+            else if (match_chars(ctx, "efault", 6) && !match_word(ctx)) {
                 return TOK_key_default;
             }
             break;
         }
         case 'e': {
-            if (match_next(ctx, 'l')) {
-                if (match_nexts(ctx, "se", 2) && !match_word(ctx)) {
+            if (match_char(ctx, 'l')) {
+                if (match_chars(ctx, "se", 2) && !match_word(ctx)) {
                     return TOK_key_else;
                 }
             }
-            else if (match_nexts(ctx, "xtern", 5) && !match_word(ctx)) {
+            else if (match_chars(ctx, "xtern", 5) && !match_word(ctx)) {
                 return TOK_key_extern;
             }
             break;
         }
         case 'f': {
-            if (match_nexts(ctx, "or", 2) && !match_word(ctx)) {
+            if (match_chars(ctx, "or", 2) && !match_word(ctx)) {
                 return TOK_key_for;
             }
             break;
         }
         case 'g': {
-            if (match_nexts(ctx, "oto", 3) && !match_word(ctx)) {
+            if (match_chars(ctx, "oto", 3) && !match_word(ctx)) {
                 return TOK_key_goto;
             }
             break;
         }
         case 'i': {
-            if (match_next(ctx, 'f')) {
+            if (match_char(ctx, 'f')) {
                 if (!match_word(ctx)) {
                     return TOK_key_if;
                 }
             }
-            else if (match_nexts(ctx, "nt", 2) && !match_word(ctx)) {
+            else if (match_chars(ctx, "nt", 2) && !match_word(ctx)) {
                 return TOK_key_int;
             }
             break;
         }
         case 'l': {
-            if (match_nexts(ctx, "ong", 3) && !match_word(ctx)) {
+            if (match_chars(ctx, "ong", 3) && !match_word(ctx)) {
                 return TOK_key_long;
             }
             break;
         }
         case 'r': {
-            if (match_nexts(ctx, "eturn", 5) && !match_word(ctx)) {
+            if (match_chars(ctx, "eturn", 5) && !match_word(ctx)) {
                 return TOK_key_return;
             }
             break;
         }
         case 's': {
-            if (match_next(ctx, 'i')) {
-                if (match_next(ctx, 'g')) {
-                    if (match_nexts(ctx, "ned", 3) && !match_word(ctx)) {
+            if (match_char(ctx, 'i')) {
+                if (match_char(ctx, 'g')) {
+                    if (match_chars(ctx, "ned", 3) && !match_word(ctx)) {
                         return TOK_key_signed;
                     }
                 }
-                else if (match_next(ctx, 'z')) {
-                    if (match_nexts(ctx, "eof", 3) && !match_word(ctx)) {
+                else if (match_char(ctx, 'z')) {
+                    if (match_chars(ctx, "eof", 3) && !match_word(ctx)) {
                         return TOK_key_sizeof;
                     }
                 }
             }
-            else if (match_next(ctx, 't')) {
-                if (match_next(ctx, 'a')) {
-                    if (match_nexts(ctx, "tic", 3) && !match_word(ctx)) {
+            else if (match_char(ctx, 't')) {
+                if (match_char(ctx, 'a')) {
+                    if (match_chars(ctx, "tic", 3) && !match_word(ctx)) {
                         return TOK_key_static;
                     }
                 }
-                else if (match_next(ctx, 'r')) {
-                    if (match_nexts(ctx, "uct", 3) && !match_word(ctx)) {
+                else if (match_char(ctx, 'r')) {
+                    if (match_chars(ctx, "uct", 3) && !match_word(ctx)) {
                         return TOK_key_struct;
                     }
                 }
             }
-            else if (match_nexts(ctx, "witch", 5) && !match_word(ctx)) {
+            else if (match_chars(ctx, "witch", 5) && !match_word(ctx)) {
                 return TOK_key_switch;
             }
             break;
         }
         case 'u': {
-            if (match_next(ctx, 'n')) {
-                if (match_next(ctx, 'i')) {
-                    if (match_nexts(ctx, "on", 2) && !match_word(ctx)) {
+            if (match_char(ctx, 'n')) {
+                if (match_char(ctx, 'i')) {
+                    if (match_chars(ctx, "on", 2) && !match_word(ctx)) {
                         return TOK_key_union;
                     }
                 }
-                else if (match_nexts(ctx, "signed", 6) && !match_word(ctx)) {
+                else if (match_chars(ctx, "signed", 6) && !match_word(ctx)) {
                     return TOK_key_unsigned;
                 }
             }
             break;
         }
         case 'v': {
-            if (match_nexts(ctx, "oid", 3) && !match_word(ctx)) {
+            if (match_chars(ctx, "oid", 3) && !match_word(ctx)) {
                 return TOK_key_void;
             }
             break;
         }
         case 'w': {
-            if (match_nexts(ctx, "hile", 4) && !match_word(ctx)) {
+            if (match_chars(ctx, "hile", 4) && !match_word(ctx)) {
                 return TOK_key_while;
             }
             break;
@@ -480,7 +480,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
         case ',':
             return TOK_comma_separator;
         case '=': {
-            if (match_next(ctx, '=')) {
+            if (match_char(ctx, '=')) {
                 return TOK_binop_eq;
             }
             else {
@@ -488,7 +488,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '!': {
-            if (match_next(ctx, '=')) {
+            if (match_char(ctx, '=')) {
                 return TOK_binop_ne;
             }
             else {
@@ -496,13 +496,13 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '-': {
-            if (match_next(ctx, '>')) {
+            if (match_char(ctx, '>')) {
                 return TOK_structop_ptr;
             }
-            else if (match_next(ctx, '-')) {
+            else if (match_char(ctx, '-')) {
                 return TOK_unop_decr;
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_assign_subtract;
             }
             else {
@@ -510,10 +510,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '+': {
-            if (match_next(ctx, '+')) {
+            if (match_char(ctx, '+')) {
                 return TOK_unop_incr;
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_assign_add;
             }
             else {
@@ -521,10 +521,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '*': {
-            if (match_next(ctx, '/')) {
+            if (match_char(ctx, '/')) {
                 return TOK_comment_end;
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_assign_multiply;
             }
             else {
@@ -532,13 +532,13 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '/': {
-            if (match_next(ctx, '/')) {
+            if (match_char(ctx, '/')) {
                 return TOK_comment_line;
             }
-            else if (match_next(ctx, '*')) {
+            else if (match_char(ctx, '*')) {
                 return TOK_comment_start;
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_assign_divide;
             }
             else {
@@ -546,7 +546,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '%': {
-            if (match_next(ctx, '=')) {
+            if (match_char(ctx, '=')) {
                 return TOK_assign_remainder;
             }
             else {
@@ -554,10 +554,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '&': {
-            if (match_next(ctx, '&')) {
+            if (match_char(ctx, '&')) {
                 return TOK_binop_and;
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_assign_bitand;
             }
             else {
@@ -565,10 +565,10 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '|': {
-            if (match_next(ctx, '|')) {
+            if (match_char(ctx, '|')) {
                 return TOK_binop_or;
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_assign_bitor;
             }
             else {
@@ -576,15 +576,15 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '<': {
-            if (match_next(ctx, '<')) {
-                if (match_next(ctx, '=')) {
+            if (match_char(ctx, '<')) {
+                if (match_char(ctx, '=')) {
                     return TOK_assign_shiftleft;
                 }
                 else {
                     return TOK_binop_shiftleft;
                 }
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_binop_le;
             }
             else {
@@ -592,15 +592,15 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '>': {
-            if (match_next(ctx, '>')) {
-                if (match_next(ctx, '=')) {
+            if (match_char(ctx, '>')) {
+                if (match_char(ctx, '=')) {
                     return TOK_assign_shiftright;
                 }
                 else {
                     return TOK_binop_shiftright;
                 }
             }
-            else if (match_next(ctx, '=')) {
+            else if (match_char(ctx, '=')) {
                 return TOK_binop_ge;
             }
             else {
@@ -608,7 +608,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '^': {
-            if (match_next(ctx, '=')) {
+            if (match_char(ctx, '=')) {
                 return TOK_assign_xor;
             }
             else {
@@ -616,7 +616,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
             }
         }
         case '.': {
-            switch (get_next(ctx)) {
+            switch (get_char(ctx)) {
                 case LEX_DIGIT:
                     return match_dbl_fraction(ctx);
                 default:
