@@ -23,7 +23,6 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 wheelcc is implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up a lot to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
 - [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
-- [ ] Replace C++ regex in lexing with a C alternative ([regexp9](https://github.com/tylov/regexp9)), or write a hand-rolled lexer
 - [ ] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
 - [ ] Replace throwing exceptions in user error handling with progragating error codes
 - [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
@@ -235,7 +234,7 @@ There is no built-in linker, the compiler outputs assembly that is then assemble
 
 > **TL;DR** No dependencies are required other than the system tools already installed.
 
-wheelcc aims to be self-contained and avoid bloat when possible. It only depends on the C and C++ standard libraries and a few file-only dependencies that are already included in the sources ([ctre](https://github.com/hanickadot/compile-time-regular-expressions), [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
+wheelcc aims to be self-contained and avoid bloat when possible. It only depends on the C and C++ standard libraries and a header-only dependency included in the sources ([tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
 
 ### Limitations
 
