@@ -282,21 +282,27 @@ static TOKEN_KIND match_const(Ctx ctx) {
         case 'l':
         case 'L': {
             ctx->match_size++;
-            if (match_char(ctx, 'u') || match_char(ctx, 'U')) {
-                return match_const_end(ctx, TOK_ulong_const);
-            }
-            else {
-                return match_const_end(ctx, TOK_long_const);
+            switch (get_char(ctx)) {
+                case 'u':
+                case 'U': {
+                    ctx->match_size++;
+                    return match_const_end(ctx, TOK_ulong_const);
+                }
+                default:
+                    return match_const_end(ctx, TOK_long_const);
             }
         }
         case 'u':
         case 'U': {
             ctx->match_size++;
-            if (match_char(ctx, 'l') || match_char(ctx, 'L')) {
-                return match_const_end(ctx, TOK_ulong_const);
-            }
-            else {
-                return match_const_end(ctx, TOK_uint_const);
+            switch (get_char(ctx)) {
+                case 'l':
+                case 'L': {
+                    ctx->match_size++;
+                    return match_const_end(ctx, TOK_ulong_const);
+                }
+                default:
+                    return match_const_end(ctx, TOK_uint_const);
             }
         }
         case 'e':
