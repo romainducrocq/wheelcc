@@ -16,7 +16,7 @@ struct IdentifierContext;
 
 // Pretty print
 
-void pprint_toks(const std::vector<Token>& tokens);
+void pprint_toks(IdentifierContext* ctx, std::vector<Token>& tokens);
 void pprint_ast(IdentifierContext* ctx, Ast* node, const std::string& name);
 void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend);
 void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend);

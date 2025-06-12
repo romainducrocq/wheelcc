@@ -63,9 +63,9 @@ static void verbose(Ctx ctx, const char* msg) {
 }
 
 #ifndef __NDEBUG__
-static void debug_toks(Ctx ctx, const std::vector<Token>& tokens) {
+static void debug_toks(Ctx ctx, std::vector<Token>& tokens) {
     if (ctx->is_verbose) {
-        pprint_toks(tokens);
+        pprint_toks(ctx->identifiers, tokens);
     }
 }
 

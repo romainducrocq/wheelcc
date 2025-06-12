@@ -23,16 +23,26 @@
 
 static void print_title(const std::string& title) { std::cout << "+\n+\n@@ " << title << " @@"; }
 
-void pprint_toks(const std::vector<Token>& tokens) {
+void pprint_toks(IdentifierContext* ctx, std::vector<Token>& tokens) {
     print_title("Tokens");
     std::cout << "\nList[" << std::to_string(tokens.size()) << "]:";
-    for (const auto& token : tokens) {
+    for (Token& token : tokens) {
         std::cout << "\n  ";
-        if (token.tok.compare(get_tok_kind_fmt(token.tok_kind)) == 0) {
-            std::cout << token.tok;
-            continue;
+        switch (token.tok_kind) {
+            case TOK_identifier:
+            case TOK_string_literal:
+            case TOK_char_const:
+            case TOK_int_const:
+            case TOK_long_const:
+            case TOK_uint_const:
+            case TOK_ulong_const:
+            case TOK_dbl_const:
+                std::cout << get_tok_kind_fmt(token.tok_kind) << "(" << get_tok_fmt(ctx, &token) << ")";
+                break;
+            default:
+                std::cout << get_tok_fmt(ctx, &token);
+                break;
         }
-        std::cout << get_tok_kind_fmt(token.tok_kind) << "(" << token.tok << ")";
     }
     std::cout << std::endl;
 }
