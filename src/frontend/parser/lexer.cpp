@@ -532,7 +532,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
         }
         case '*': {
             if (match_char(ctx, '/')) {
-                return TOK_comment_end;
+                return TOK_error;
             }
             else if (match_char(ctx, '=')) {
                 return TOK_assign_multiply;
@@ -652,6 +652,22 @@ static TOKEN_KIND match_token(Ctx ctx) {
     }
 }
 
+static TOKEN_KIND match_comment_end(Ctx ctx) {
+    ctx->match_size = 1;
+    switch (ctx->line[ctx->match_at]) {
+        case '*': {
+            if (match_char(ctx, '/')) {
+                return TOK_comment_end;
+            }
+            else {
+                return TOK_skip;
+            }
+            default:
+                return TOK_skip;
+        }
+    }
+}
+
 static void tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum);
 
 static void tokenize_file(Ctx ctx) {
@@ -661,48 +677,42 @@ static void tokenize_file(Ctx ctx) {
         std::string_view line_sv(ctx->line);
 
         for (ctx->match_at = 0; ctx->match_at < ctx->line_size; ctx->match_at += ctx->match_size) {
-            TOKEN_KIND match_kind = match_token(ctx);
+            TOKEN_KIND match_kind = is_comment ? match_comment_end(ctx) : match_token(ctx);
             // TODO
             std::string match_tok = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
                                                            std::string(line_sv.substr(ctx->match_at, ctx->match_size));
-            if (is_comment) {
-                if (match_kind == TOK_comment_end) {
+            switch (match_kind) {
+                case TOK_error:
+                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match_tok.c_str()), linenum);
+                case TOK_skip:
+                    goto Lcontinue;
+                case TOK_comment_start: {
+                    is_comment = true;
+                    goto Lcontinue;
+                }
+                case TOK_comment_end: {
                     is_comment = false;
+                    goto Lcontinue;
                 }
-                continue;
-            }
-            else {
-                switch (match_kind) {
-                    case TOK_error:
-                    case TOK_comment_end:
-                        THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match_tok.c_str()), linenum);
-                    case TOK_skip:
-                        goto Lcontinue;
-                    case TOK_comment_start: {
-                        is_comment = true;
-                        goto Lcontinue;
-                    }
-                    case TOK_include_preproc:
-                        tokenize_include(ctx, line_sv, linenum);
-                        goto Lcontinue;
-                    case TOK_comment_line:
-                    case TOK_strip_preproc:
-                        goto Lbreak;
-                    case TOK_identifier: {
-                        // hash_t identifier = string_to_hash(match_tok);
-                        // TODO
-                        goto Lpass;
-                    }
-                    default:
-                        goto Lpass;
+                case TOK_include_preproc:
+                    tokenize_include(ctx, line_sv, linenum);
+                    goto Lcontinue;
+                case TOK_comment_line:
+                case TOK_strip_preproc:
+                    goto Lbreak;
+                case TOK_identifier: {
+                    // hash_t identifier = string_to_hash(match_tok);
+                    // TODO
+                    goto Lpass;
                 }
-            Lbreak:
-                break;
-            Lcontinue:
-                continue;
-            Lpass:;
+                default:
+                    goto Lpass;
             }
-
+        Lbreak:
+            break;
+        Lcontinue:
+            continue;
+        Lpass:
             Token token = {match_kind, match_tok, ctx->total_linenum};
             ctx->p_toks->emplace_back(std::move(token));
         }
