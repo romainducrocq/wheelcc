@@ -710,7 +710,14 @@ static void tokenize_file(Ctx ctx) {
                 case TOK_comment_line:
                 case TOK_strip_preproc:
                     goto Lbreak;
-                case TOK_identifier: {
+                case TOK_identifier:
+                case TOK_string_literal:
+                case TOK_char_const:
+                case TOK_int_const:
+                case TOK_long_const:
+                case TOK_uint_const:
+                case TOK_ulong_const:
+                case TOK_dbl_const: {
                     match_tok = make_string_identifier(ctx->identifiers, std::string(match));
                     goto Lpass;
                 }
