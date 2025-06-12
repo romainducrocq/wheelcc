@@ -464,7 +464,7 @@ function preprocess () {
     if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess (${CC}) -> ${FILE}.i"
-            ${CC} -E -P ${FILE}.c -o ${FILE}.i
+            ${CC} -E -P ${FILE}.${EXT_IN} -o ${FILE}.i
             if [ ${?} -ne 0 ]; then
                 raise_error "preprocessing failed"
             fi
@@ -493,7 +493,7 @@ function compile () {
 function assemble () {
     for FILE in ${FILES}; do
         verbose "Assemble (as) -> ${FILE}.o"
-        as ${AS_FLAGS} ${FILE}.s -o ${FILE}.o
+        as ${AS_FLAGS} ${FILE}.${EXT_OUT} -o ${FILE}.o
         if [ ${?} -ne 0 ]; then
             raise_error "assembling failed"
         fi
@@ -510,7 +510,7 @@ function link () {
                 fi
                 if [ ! -z "${LD_LIB_64}" ]; then
                     verbose "Assemble (as) -> ${PACKAGE_DIR}/crt.o"
-                    as ${AS_FLAGS} ${PACKAGE_DIR}/crt.s -o ${PACKAGE_DIR}/crt.o
+                    as ${AS_FLAGS} ${PACKAGE_DIR}/crt.${EXT_OUT} -o ${PACKAGE_DIR}/crt.o
                     if [ ${?} -ne 0 ]; then
                         raise_error "assembling failed"
                     fi
@@ -541,6 +541,9 @@ function link () {
     return 0
 }
 
+EXT_IN="c"
+EXT_OUT="s"
+
 IS_VERBOSE=0
 IS_PREPROC=0
 
@@ -555,9 +558,6 @@ LINK_DIRS=""
 LINK_LIBS=""
 NAME_OUT=""
 FILES=""
-
-EXT_IN="c"
-EXT_OUT="s"
 
 parse_args
 add_includedirs
