@@ -105,17 +105,17 @@ static Token* peek_next_i(Ctx ctx, size_t i) {
 }
 
 // <identifier> ::= ? An identifier token ?
-static TIdentifier parse_identifier(Ctx ctx, size_t i) { return pop_next_i(ctx, i)->tok_key; }
+static TIdentifier parse_identifier(Ctx ctx, size_t i) { return pop_next_i(ctx, i)->tok; }
 
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
 static std::shared_ptr<CStringLiteral> parse_string_literal(Ctx ctx) {
     std::vector<TChar> value;
     {
-        string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok_key], value);
+        string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], value);
         while (peek_next(ctx)->tok_kind == TOK_string_literal) {
             pop_next(ctx);
-            string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok_key], value);
+            string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], value);
         }
     }
     return std::make_shared<CStringLiteral>(std::move(value));
@@ -129,7 +129,7 @@ static std::shared_ptr<CConstInt> parse_int_const(intmax_t intmax) {
 
 // <char> ::= ? A char token ?
 static std::shared_ptr<CConstInt> parse_char_const(Ctx ctx) {
-    TInt value = string_to_char_ascii(ctx->identifiers->hash_table[ctx->next_tok->tok_key]);
+    TInt value = string_to_char_ascii(ctx->identifiers->hash_table[ctx->next_tok->tok]);
     return std::make_shared<CConstInt>(value);
 }
 
@@ -142,7 +142,7 @@ static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
 // <double> ::= ? A floating-point constant token ?
 static std::shared_ptr<CConstDouble> parse_dbl_const(Ctx ctx) {
     TDouble value =
-        string_to_dbl(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok_key].c_str(), ctx->next_tok->line);
+        string_to_dbl(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str(), ctx->next_tok->line);
     return std::make_shared<CConstDouble>(value);
 }
 
@@ -170,11 +170,10 @@ static std::shared_ptr<CConst> parse_const(Ctx ctx) {
             break;
     }
 
-    intmax_t value = string_to_intmax(
-        ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok_key].c_str(), ctx->next_tok->line);
+    intmax_t value =
+        string_to_intmax(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str(), ctx->next_tok->line);
     if (value > 9223372036854775807ll) {
-        THROW_AT_LINE(
-            GET_PARSER_MSG(MSG_overflow_long_const, ctx->identifiers->hash_table[ctx->next_tok->tok_key].c_str()),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_overflow_long_const, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str()),
             ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_int_const && value <= 2147483647l) {
@@ -188,11 +187,11 @@ static std::shared_ptr<CConst> parse_const(Ctx ctx) {
 static std::shared_ptr<CConst> parse_unsigned_const(Ctx ctx) {
     pop_next(ctx);
 
-    uintmax_t value = string_to_uintmax(
-        ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok_key].c_str(), ctx->next_tok->line);
+    uintmax_t value =
+        string_to_uintmax(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str(), ctx->next_tok->line);
     if (value > 18446744073709551615ull) {
         THROW_AT_LINE(
-            GET_PARSER_MSG(MSG_overflow_ulong_const, ctx->identifiers->hash_table[ctx->next_tok->tok_key].c_str()),
+            GET_PARSER_MSG(MSG_overflow_ulong_const, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str()),
             ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_uint_const && value <= 4294967295ul) {

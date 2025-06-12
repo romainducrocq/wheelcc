@@ -687,9 +687,6 @@ static void tokenize_file(Ctx ctx) {
 
         for (ctx->match_at = 0; ctx->match_at < ctx->line_size; ctx->match_at += ctx->match_size) {
             TOKEN_KIND match_kind = is_comment ? match_comment_end(ctx) : match_token(ctx);
-            // TODO
-            std::string match = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
-                                                       std::string(line_sv.substr(ctx->match_at, ctx->match_size));
             TIdentifier match_tok = 0;
             switch (match_kind) {
                 case TOK_comment_line:
@@ -716,11 +713,18 @@ static void tokenize_file(Ctx ctx) {
                 case TOK_uint_const:
                 case TOK_ulong_const:
                 case TOK_dbl_const: {
-                    match_tok = make_string_identifier(ctx->identifiers, std::string(match));
+                    std::string match = ctx->match_size == 1 ?
+                                            std::string({ctx->line[ctx->match_at]}) :
+                                            std::string(line_sv.substr(ctx->match_at, ctx->match_size));
+                    match_tok = make_string_identifier(ctx->identifiers, std::move(match));
                     goto Lpass;
                 }
-                case TOK_error:
+                case TOK_error: {
+                    std::string match = ctx->match_size == 1 ?
+                                            std::string({ctx->line[ctx->match_at]}) :
+                                            std::string(line_sv.substr(ctx->match_at, ctx->match_size));
                     THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
+                }
                 default:
                     goto Lpass;
             }
@@ -729,7 +733,7 @@ static void tokenize_file(Ctx ctx) {
         Lcontinue:
             continue;
         Lpass:
-            Token token = {match_kind, match_tok, match, ctx->total_linenum};
+            Token token = {match_kind, match_tok, ctx->total_linenum};
             ctx->p_toks->emplace_back(std::move(token));
         }
     }

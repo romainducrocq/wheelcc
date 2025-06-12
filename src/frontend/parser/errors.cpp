@@ -184,7 +184,7 @@ const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
         case TOK_uint_const:
         case TOK_ulong_const:
         case TOK_dbl_const:
-            return ctx->hash_table[token->tok_key].c_str();
+            return ctx->hash_table[token->tok].c_str();
         default:
             return get_tok_kind_fmt(token->tok_kind);
     }

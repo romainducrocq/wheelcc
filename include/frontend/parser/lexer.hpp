@@ -18,8 +18,7 @@ struct IdentifierContext;
 
 struct Token {
     TOKEN_KIND tok_kind;
-    TIdentifier tok_key;
-    std::string tok;
+    TIdentifier tok;
     size_t line;
 };
 
