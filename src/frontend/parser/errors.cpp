@@ -7,7 +7,7 @@
 #include "ast/front_symt.hpp"
 
 #include "frontend/parser/errors.hpp"
-#include "parser/tokens.hpp" // frontend
+#include "frontend/parser/lexer.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,6 +171,22 @@ const char* get_tok_kind_fmt(TOKEN_KIND tok_kind) {
             return "const double";
         default:
             THROW_ABORT;
+    }
+}
+
+const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
+    switch (token->tok_kind) {
+        case TOK_identifier:
+        case TOK_string_literal:
+        case TOK_char_const:
+        case TOK_int_const:
+        case TOK_long_const:
+        case TOK_uint_const:
+        case TOK_ulong_const:
+        case TOK_dbl_const:
+            return ctx->hash_table[token->tok_key].c_str();
+        default:
+            return get_tok_kind_fmt(token->tok_kind);
     }
 }
 

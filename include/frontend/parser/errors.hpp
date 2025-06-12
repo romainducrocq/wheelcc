@@ -11,6 +11,7 @@
 
 #include "intermediate/messages.hpp" // frontend
 
+struct Token;
 struct Type;
 struct CConst;
 struct CUnaryOp;
@@ -52,6 +53,7 @@ enum MESSAGE_UTIL {
 };
 
 const char* get_tok_kind_fmt(TOKEN_KIND tok_kind);
+const char* get_tok_fmt(IdentifierContext* ctx, Token* token);
 const char* get_const_fmt(CConst* node);
 const char* get_storage_class_fmt(CStorageClass* node);
 const char* get_unop_fmt(CUnaryOp* node);
