@@ -650,7 +650,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
     }
 }
 
-static void tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
+static bool tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
 
 static void tokenize_file(Ctx ctx) {
     bool is_comment = false;
@@ -684,10 +684,11 @@ static void tokenize_file(Ctx ctx) {
                     case TOK_include_preproc: {
                         size_t match_at = ctx->match_at;
                         size_t match_size = ctx->match_size;
-                        tokenize_include(ctx, match_tok, linenum);
-                        ctx->match_at = match_at;
-                        ctx->match_size = match_size;
-                        ctx->line = std::string(line);
+                        if (tokenize_include(ctx, match_tok, linenum)) {
+                            ctx->match_at = match_at;
+                            ctx->match_size = match_size;
+                            ctx->line = std::string(line);
+                        }
                         goto Lcontinue;
                     }
                     case TOK_comment_line:
@@ -725,15 +726,14 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
     return false;
 }
 
-// #include <iostream>
-static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
+static bool tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
     // TODO
     char variant = filename[0];
     filename = filename.substr(1, filename.size() - 2);
     {
         hash_t includename = string_to_hash(filename);
         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
-            return;
+            return false;
         }
         ctx->includename_set.insert(includename);
     }
@@ -766,6 +766,7 @@ static void tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
+    return true;
 }
 
 static void strip_filename_ext(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
