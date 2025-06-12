@@ -7,12 +7,15 @@
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
+#include "ast/ast.hpp"
+
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
 
 struct LexerContext {
     ErrorsContext* errors;
     FileIoContext* fileio;
+    IdentifierContext* identifiers;
     // Lexer
     char* line;
     size_t line_size;
@@ -685,11 +688,12 @@ static void tokenize_file(Ctx ctx) {
         for (ctx->match_at = 0; ctx->match_at < ctx->line_size; ctx->match_at += ctx->match_size) {
             TOKEN_KIND match_kind = is_comment ? match_comment_end(ctx) : match_token(ctx);
             // TODO
-            std::string match_tok = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
-                                                           std::string(line_sv.substr(ctx->match_at, ctx->match_size));
+            std::string match = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
+                                                       std::string(line_sv.substr(ctx->match_at, ctx->match_size));
+            TIdentifier match_tok = 0;
             switch (match_kind) {
                 case TOK_error:
-                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match_tok.c_str()), linenum);
+                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
                 case TOK_skip:
                     goto Lcontinue;
                 case TOK_comment_start: {
@@ -707,8 +711,7 @@ static void tokenize_file(Ctx ctx) {
                 case TOK_strip_preproc:
                     goto Lbreak;
                 case TOK_identifier: {
-                    // hash_t identifier = string_to_hash(match_tok);
-                    // TODO
+                    match_tok = make_string_identifier(ctx->identifiers, std::string(match));
                     goto Lpass;
                 }
                 default:
@@ -719,7 +722,7 @@ static void tokenize_file(Ctx ctx) {
         Lcontinue:
             continue;
         Lpass:
-            Token token = {match_kind, match_tok, ctx->total_linenum};
+            Token token = {match_kind, match_tok, match, ctx->total_linenum};
             ctx->p_toks->emplace_back(std::move(token));
         }
     }
@@ -799,13 +802,14 @@ static void strip_filename_ext(std::string& filename) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<Token> lex_c_code(
-    std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors, FileIoContext* fileio) {
+std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors,
+    FileIoContext* fileio, IdentifierContext* identifiers) {
     std::vector<Token> tokens;
     LexerContext ctx;
     {
         ctx.errors = errors;
         ctx.fileio = fileio;
+        ctx.identifiers = identifiers;
 #ifndef __APPLE__
         ctx.stdlibdirs.push_back("/usr/include/");
         ctx.stdlibdirs.push_back("/usr/local/include/");

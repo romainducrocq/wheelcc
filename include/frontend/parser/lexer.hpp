@@ -4,10 +4,13 @@
 #include <string>
 #include <vector>
 
+#include "ast_t.hpp" // ast
+
 #include "parser/tokens.hpp" // frontend
 
 struct ErrorsContext;
 struct FileIoContext;
+struct IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -15,11 +18,12 @@ struct FileIoContext;
 
 struct Token {
     TOKEN_KIND tok_kind;
+    TIdentifier tok_key;
     std::string tok;
     size_t line;
 };
 
-std::vector<Token> lex_c_code(
-    std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors, FileIoContext* fileio);
+std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors,
+    FileIoContext* fileio, IdentifierContext* identifiers);
 
 #endif

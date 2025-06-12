@@ -148,16 +148,6 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         ctx->is_verbose = true;
     }
 
-    verbose(ctx, "-- Lexing ... ");
-    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio);
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 255) {
-        debug_toks(ctx, tokens);
-        return;
-    }
-#endif
-
     IdentifierContext identifiers;
     {
         identifiers.label_count = 0u;
@@ -166,6 +156,16 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #ifndef __NDEBUG__
     ctx->identifiers = &identifiers;
+#endif
+
+    verbose(ctx, "-- Lexing ... ");
+    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio, &identifiers);
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 255) {
+        debug_toks(ctx, tokens);
+        return;
+    }
 #endif
 
     verbose(ctx, "-- Parsing ... ");
