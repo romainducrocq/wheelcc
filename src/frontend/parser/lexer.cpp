@@ -692,8 +692,9 @@ static void tokenize_file(Ctx ctx) {
                                                        std::string(line_sv.substr(ctx->match_at, ctx->match_size));
             TIdentifier match_tok = 0;
             switch (match_kind) {
-                case TOK_error:
-                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
+                case TOK_comment_line:
+                case TOK_strip_preproc:
+                    goto Lbreak;
                 case TOK_skip:
                     goto Lcontinue;
                 case TOK_comment_start: {
@@ -707,9 +708,6 @@ static void tokenize_file(Ctx ctx) {
                 case TOK_include_preproc:
                     tokenize_include(ctx, line_sv, linenum);
                     goto Lcontinue;
-                case TOK_comment_line:
-                case TOK_strip_preproc:
-                    goto Lbreak;
                 case TOK_identifier:
                 case TOK_string_literal:
                 case TOK_char_const:
@@ -721,6 +719,8 @@ static void tokenize_file(Ctx ctx) {
                     match_tok = make_string_identifier(ctx->identifiers, std::string(match));
                     goto Lpass;
                 }
+                case TOK_error:
+                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
                 default:
                     goto Lpass;
             }
