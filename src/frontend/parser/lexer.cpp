@@ -771,7 +771,15 @@ static void tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t li
     ctx->match_size = match_size;
 }
 
-static void strip_filename_ext(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
+static void strip_filename_ext(std::string& filename) {
+    for (size_t i = filename.size(); i-- > 0;) {
+        if (filename.back() == '.') {
+            filename.pop_back();
+            break;
+        }
+        filename.pop_back();
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
