@@ -32,7 +32,7 @@ const std::string& get_filename(FileIoContext* ctx);
 void set_filename(FileIoContext* ctx, const std::string& filename);
 void open_fread(FileIoContext* ctx, const std::string& filename);
 void open_fwrite(FileIoContext* ctx, const std::string& filename);
-bool read_line(FileIoContext* ctx, char*& line);
+bool read_line(FileIoContext* ctx, char*& line, size_t& line_size);
 void write_buffer(FileIoContext* ctx, const char* buf);
 void close_fread(FileIoContext* ctx, size_t linenum);
 void close_fwrite(FileIoContext* ctx);

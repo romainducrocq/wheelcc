@@ -652,7 +652,7 @@ static TOKEN_KIND match_token(Ctx ctx) {
     }
 }
 
-static bool tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum);
+static void tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum);
 
 static void tokenize_file(Ctx ctx) {
     bool is_comment = false;
@@ -682,19 +682,9 @@ static void tokenize_file(Ctx ctx) {
                         is_comment = true;
                         goto Lcontinue;
                     }
-                    case TOK_include_preproc: {
-                        char* line = ctx->line;
-                        size_t line_size = ctx->line_size;
-                        size_t match_at = ctx->match_at;
-                        size_t match_size = ctx->match_size;
-                        if (tokenize_include(ctx, line_sv, linenum)) {
-                            ctx->line = line;
-                            ctx->line_size = line_size;
-                            ctx->match_at = match_at;
-                            ctx->match_size = match_size;
-                        }
+                    case TOK_include_preproc:
+                        tokenize_include(ctx, line_sv, linenum);
                         goto Lcontinue;
-                    }
                     case TOK_comment_line:
                     case TOK_strip_preproc:
                         goto Lbreak;
@@ -730,13 +720,13 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
     return false;
 }
 
-static bool tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum) {
+static void tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum) {
     std::string filename = ctx->match_size == 3 ? std::string({ctx->line[ctx->match_at + 1]}) :
                                                   std::string(line_sv.substr(ctx->match_at + 1, ctx->match_size - 2));
     {
         hash_t includename = string_to_hash(filename);
         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
-            return false;
+            return;
         }
         ctx->includename_set.insert(includename);
     }
@@ -757,6 +747,11 @@ static bool tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t li
             THROW_ABORT;
     }
 
+    char* line = ctx->line;
+    size_t line_size = ctx->line_size;
+    size_t match_at = ctx->match_at;
+    size_t match_size = ctx->match_size;
+
     std::string fopen_name = ctx->errors->fopen_lines.back().filename;
     open_fread(ctx->fileio, filename);
     {
@@ -769,7 +764,11 @@ static bool tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t li
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
-    return true;
+
+    ctx->line = line;
+    ctx->line_size = line_size;
+    ctx->match_at = match_at;
+    ctx->match_size = match_size;
 }
 
 static void strip_filename_ext(std::string& filename) { filename = filename.substr(0, filename.size() - 2); }
