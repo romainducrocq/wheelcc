@@ -120,6 +120,11 @@ static bool match_word(Ctx ctx) {
     }
 }
 
+static TOKEN_KIND match_error(Ctx ctx) {
+    ctx->match_size++;
+    return TOK_error;
+}
+
 static TOKEN_KIND match_preproc(Ctx ctx) {
     while (match_space(ctx)) {
     }
@@ -128,7 +133,7 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
         case LEX_LETTER:
             break;
         default:
-            return TOK_error;
+            return match_error(ctx);
     }
 
     if (match_chars(ctx, "include", 7)) {
@@ -157,10 +162,7 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
                 return TOK_include_preproc;
             }
         }
-        else if (!match_char(ctx, 0)) {
-            ctx->match_size++;
-        }
-        return TOK_error;
+        return match_error(ctx);
     }
     else {
         while (match_word(ctx)) {
@@ -171,11 +173,10 @@ static TOKEN_KIND match_preproc(Ctx ctx) {
 }
 
 static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
-    // TODO when switch on get_char, also return error when 0 ?
     switch (get_char(ctx)) {
         case '\'': {
             if (!is_str) {
-                return TOK_error;
+                return match_error(ctx);
             }
             break;
         }
@@ -187,7 +188,7 @@ static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
             break;
         }
         case '\n':
-            return TOK_error;
+            return match_error(ctx);
         case '\\': {
             ctx->match_size++;
             switch (get_char(ctx)) {
@@ -204,7 +205,7 @@ static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
                 case 'v':
                     break;
                 default:
-                    return TOK_error;
+                    return match_error(ctx);
             }
         }
         default:
@@ -216,7 +217,7 @@ static TOKEN_KIND match_char_const(Ctx ctx, bool is_str) {
         return TOK_char_const;
     }
     else {
-        return TOK_error;
+        return match_error(ctx);
     }
 }
 
@@ -233,8 +234,7 @@ static TOKEN_KIND match_const_end(Ctx ctx, TOKEN_KIND tok_kind) {
     switch (get_char(ctx)) {
         case LEX_WORD:
         case '.':
-            // TODO when TOK_error, need to incr match_size for error msg ?
-            return TOK_error;
+            return match_error(ctx);
         default:
             return tok_kind;
     }
