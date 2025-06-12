@@ -73,17 +73,21 @@ void open_fwrite(Ctx ctx, const std::string& filename) {
     ctx->write_buf = "";
 }
 
-bool read_line(Ctx ctx, char*& line) {
-    if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
+bool read_line(Ctx ctx, char*& line, size_t& line_size) {
+    ssize_t line_ssize = getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd);
+    if (line_ssize == -1) {
         line = nullptr;
+        line_size = 0;
         ctx->file_reads.back().len = 0;
         free(ctx->file_reads.back().buf);
         ctx->file_reads.back().buf = nullptr;
         return false;
     }
-
-    line = ctx->file_reads.back().buf;
-    return true;
+    else {
+        line = ctx->file_reads.back().buf;
+        line_size = (size_t)line_ssize;
+        return true;
+    }
 }
 
 static void write_chunk(Ctx ctx, const std::string& buf) {

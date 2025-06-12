@@ -1,4 +1,5 @@
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -13,9 +14,10 @@ struct LexerContext {
     ErrorsContext* errors;
     FileIoContext* fileio;
     // Lexer
+    char* line;
+    size_t line_size;
     size_t match_at;
     size_t match_size;
-    std::string line;
     std::vector<std::string> stdlibdirs;
     std::unordered_set<hash_t> includename_set;
     std::vector<std::string>* p_includedirs;
@@ -31,7 +33,7 @@ typedef LexerContext* Ctx;
 
 static char get_char(Ctx ctx) {
     size_t i = ctx->match_at + ctx->match_size;
-    if (i < ctx->line.size()) {
+    if (i < ctx->line_size) {
         return ctx->line[i];
     }
     else {
@@ -650,20 +652,19 @@ static TOKEN_KIND match_token(Ctx ctx) {
     }
 }
 
-static bool tokenize_include(Ctx ctx, std::string include_match, size_t linenum);
+static bool tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum);
 
 static void tokenize_file(Ctx ctx) {
     bool is_comment = false;
-    char* line = nullptr;
-    for (size_t linenum = 1; read_line(ctx->fileio, line); ++linenum) {
-        ctx->line = std::string(line);
+    for (size_t linenum = 1; read_line(ctx->fileio, ctx->line, ctx->line_size); ++linenum) {
         ctx->total_linenum++;
+        std::string_view line_sv(ctx->line);
 
-        for (ctx->match_at = 0; ctx->match_at < ctx->line.size(); ctx->match_at += ctx->match_size) {
+        for (ctx->match_at = 0; ctx->match_at < ctx->line_size; ctx->match_at += ctx->match_size) {
             TOKEN_KIND match_kind = match_token(ctx);
             // TODO
             std::string match_tok = ctx->match_size == 1 ? std::string({ctx->line[ctx->match_at]}) :
-                                                           ctx->line.substr(ctx->match_at, ctx->match_size);
+                                                           std::string(line_sv.substr(ctx->match_at, ctx->match_size));
             if (is_comment) {
                 if (match_kind == TOK_comment_end) {
                     is_comment = false;
@@ -682,12 +683,15 @@ static void tokenize_file(Ctx ctx) {
                         goto Lcontinue;
                     }
                     case TOK_include_preproc: {
+                        char* line = ctx->line;
+                        size_t line_size = ctx->line_size;
                         size_t match_at = ctx->match_at;
                         size_t match_size = ctx->match_size;
-                        if (tokenize_include(ctx, match_tok, linenum)) {
+                        if (tokenize_include(ctx, line_sv, linenum)) {
+                            ctx->line = line;
+                            ctx->line_size = line_size;
                             ctx->match_at = match_at;
                             ctx->match_size = match_size;
-                            ctx->line = std::string(line);
                         }
                         goto Lcontinue;
                     }
@@ -726,10 +730,9 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
     return false;
 }
 
-static bool tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
-    // TODO
-    char variant = filename[0];
-    filename = filename.substr(1, filename.size() - 2);
+static bool tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum) {
+    std::string filename = ctx->match_size == 3 ? std::string({ctx->line[ctx->match_at + 1]}) :
+                                                  std::string(line_sv.substr(ctx->match_at + 1, ctx->match_size - 2));
     {
         hash_t includename = string_to_hash(filename);
         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
@@ -737,7 +740,7 @@ static bool tokenize_include(Ctx ctx, std::string filename, size_t linenum) {
         }
         ctx->includename_set.insert(includename);
     }
-    switch (variant) {
+    switch (ctx->line[ctx->match_at]) {
         case '<': {
             if (!find_include(ctx->stdlibdirs, filename) && !find_include(*ctx->p_includedirs, filename)) {
                 THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
