@@ -349,6 +349,9 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 - System V x86-64 ABI: https://gitlab.com/x86-psABIs/x86-64-ABI/
 - x86-64 instruction reference: https://www.felixcloutier.com/x86/
 - Compiler explorer online: https://godbolt.org/
+<!---->
+
+- Some Were Meant for C, _Stephen Kell_: https://www.cs.tufts.edu/comp/150FP/archive/stephen-kell/some-were-meant-for-c.pdf
 
 ****
 
