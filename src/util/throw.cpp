@@ -92,3 +92,85 @@ size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
     set_filename(ctx->fileio, ctx->fopen_lines.back().filename);
     return total_linenum - ctx->fopen_lines.back().total_linenum + ctx->fopen_lines.back().linenum;
 }
+
+// TODO rm
+
+static void raise_base_error_cerr(Ctx ctx) {
+    free_fileio(ctx->fileio);
+    const std::string& filename = get_filename(ctx->fileio);
+    std::string err_what = "\033[1m";
+    err_what += filename;
+    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
+    err_what += std::string(ctx->msg);
+    // TODO
+    // if (ctx.is_verbose) {
+    //     printf("\n");
+    //     fflush(stdout);
+    // }
+    fprintf(stderr, "%s\n", err_what.c_str());
+}
+
+void raise_init_error_cerr(Ctx ctx) {
+    std::string err_what = "\033[0;31merror:\033[0m ";
+    err_what += std::string(ctx->msg);
+    // TODO
+    // if (ctx.is_verbose) {
+    //     printf("\n");
+    //     fflush(stdout);
+    // }
+    fprintf(stderr, "%s\n", err_what.c_str());
+}
+
+void raise_error_at_line_cerr(Ctx ctx, size_t linenum) {
+    if (linenum == 0) {
+        raise_base_error_cerr(ctx);
+        return;
+    }
+    free_fileio(ctx->fileio);
+    const std::string& filename = get_filename(ctx->fileio);
+    std::string line;
+    {
+        size_t len = 0;
+        char* buf = nullptr;
+        FILE* fd = fopen(filename.c_str(), "rb");
+        if (!fd) {
+            raise_base_error_cerr(ctx);
+            return;
+        }
+        for (size_t i = 0; i < linenum; ++i) {
+            if (getline(&buf, &len, fd) == -1) {
+                free(buf);
+                fclose(fd);
+                buf = nullptr;
+                fd = nullptr;
+                raise_base_error_cerr(ctx);
+                return;
+            }
+        }
+        line = buf;
+        free(buf);
+        fclose(fd);
+        buf = nullptr;
+        fd = nullptr;
+        if (line.back() == '\n') {
+            line.pop_back();
+        }
+    }
+    std::string err_what = "\033[1m";
+    err_what += filename;
+    err_what += ":";
+    err_what += std::to_string(linenum);
+    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
+    err_what += std::string(ctx->msg);
+    err_what += "\nat line ";
+    err_what += std::to_string(linenum);
+    err_what += ": \033[1m";
+    err_what += line;
+    err_what += "\033[0m";
+    // TODO
+    // if (ctx.is_verbose) {
+    //     printf("\n");
+    //     fflush(stdout);
+    // }
+    fprintf(stderr, "%s\n", err_what.c_str());
+}

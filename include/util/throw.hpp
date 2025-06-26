@@ -29,6 +29,18 @@ struct ErrorsContext {
     std::vector<FileOpenLine> fopen_lines;
 };
 
+typedef int error_t;
+#define CATCH_ENTER error_t _errval = 0
+#define CATCH_EXIT return _errval
+#define EARLY_EXIT goto _Lfinally
+#define FINALLY \
+    _Lfinally:
+#define TRY(X)          \
+    _errval = X;        \
+    if (_errval != 0) { \
+        EARLY_EXIT;     \
+    }
+
 [[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
 [[noreturn]] void raise_init_error(ErrorsContext* ctx);
 [[noreturn]] void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
@@ -46,5 +58,15 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
         THROW_ABORT;      \
     }
 #endif
+
+void raise_init_error_cerr(ErrorsContext* ctx);
+void raise_error_at_line_cerr(ErrorsContext* ctx, size_t linenum);
+#define THROW_INIT_CERR(X)                                    \
+    X > 0 ? raise_init_error_cerr(ctx->errors) : THROW_ABORT; \
+    EARLY_EXIT
+#define THROW_AT_CERR(X, Y) X > 0 ? raise_error_at_line_cerr(ctx->errors, Y) : THROW_ABORT EARLY_EXIT
+#define THROW_AT_LINE_CERR(X, Y)                           \
+    THROW_AT_CERR(X, handle_error_at_line(ctx->errors, Y)) \
+    EARLY_EXIT
 
 #endif
