@@ -106,7 +106,35 @@ static void debug_backend_symbol_table(Ctx ctx) {
 }
 #endif
 
-static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
+static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
+    IdentifierContext identifiers;
+    FrontEndContext frontend;
+    BackEndContext backend;
+    std::vector<Token> tokens;
+    std::unique_ptr<CProgram> c_ast;
+    std::unique_ptr<TacProgram> tac_ast;
+    std::unique_ptr<AsmProgram> asm_ast;
+    {
+#ifndef __NDEBUG__
+        ctx->identifiers = &identifiers;
+        ctx->frontend = &frontend;
+        ctx->backend = &backend;
+#endif
+
+        if (ctx->debug_code > 0
+#ifdef __NDEBUG__
+            && ctx->debug_code <= 127
+#endif
+        ) {
+            ctx->is_verbose = true;
+        }
+
+        identifiers.label_count = 0u;
+        identifiers.var_count = 0u;
+        identifiers.struct_count = 0u;
+    }
+
+    CATCH_ENTER;
 
 #ifdef _WIN32
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
@@ -140,47 +168,24 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
 #endif
 
-    if (ctx->debug_code > 0
-#ifdef __NDEBUG__
-        && ctx->debug_code <= 127
-#endif
-    ) {
-        ctx->is_verbose = true;
-    }
-
-    IdentifierContext identifiers;
-    {
-        identifiers.label_count = 0u;
-        identifiers.var_count = 0u;
-        identifiers.struct_count = 0u;
-    }
-#ifndef __NDEBUG__
-    ctx->identifiers = &identifiers;
-#endif
-
     verbose(ctx, "-- Lexing ... ");
-    std::vector<Token> tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio, &identifiers);
+    tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio, &identifiers);
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
         debug_toks(ctx, tokens);
-        return;
+        EARLY_EXIT;
     }
 #endif
 
     verbose(ctx, "-- Parsing ... ");
-    std::unique_ptr<CProgram> c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
+    c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
         debug_ast(ctx, c_ast.get(), "C AST");
-        return;
+        EARLY_EXIT;
     }
-#endif
-
-    FrontEndContext frontend;
-#ifndef __NDEBUG__
-    ctx->frontend = &frontend;
 #endif
 
     verbose(ctx, "-- Semantic analysis ... ");
@@ -192,12 +197,12 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         debug_string_const_table(ctx);
         debug_struct_typedef_table(ctx);
         debug_symbol_table(ctx);
-        return;
+        EARLY_EXIT;
     }
 #endif
 
     verbose(ctx, "-- TAC representation ... ");
-    std::unique_ptr<TacProgram> tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
+    tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
     if (ctx->optim_1_mask > 0) {
         verbose(ctx, "OK\n-- Level 1 optimization ... ");
         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
@@ -209,17 +214,12 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         debug_string_const_table(ctx);
         debug_struct_typedef_table(ctx);
         debug_symbol_table(ctx);
-        return;
+        EARLY_EXIT;
     }
 #endif
 
-    BackEndContext backend;
-#ifndef __NDEBUG__
-    ctx->backend = &backend;
-#endif
-
     verbose(ctx, "-- Assembly generation ... ");
-    std::unique_ptr<AsmProgram> asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
+    asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
     convert_symbol_table(asm_ast.get(), &backend, &frontend);
     if (ctx->optim_2_code > 0) {
         verbose(ctx, "OK\n-- Level 2 optimization ... ");
@@ -235,7 +235,7 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         debug_struct_typedef_table(ctx);
         debug_symbol_table(ctx);
         debug_backend_symbol_table(ctx);
-        return;
+        EARLY_EXIT;
     }
 #endif
 
@@ -243,6 +243,9 @@ static void compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     ctx->filename += ".s";
     emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
     verbose(ctx, "OK\n");
+
+    FINALLY;
+    CATCH_EXIT;
 }
 
 static bool arg_parse_uint8(const char* arg, uint8_t& value) {
@@ -251,8 +254,10 @@ static bool arg_parse_uint8(const char* arg, uint8_t& value) {
     return end_ptr == arg;
 }
 
-static void arg_parse(Ctx ctx, char** argv) {
+static error_t arg_parse(Ctx ctx, char** argv) {
     size_t i = 0;
+
+    CATCH_ENTER;
 
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
@@ -287,11 +292,14 @@ static void arg_parse(Ctx ctx, char** argv) {
         ctx->includedirs.emplace_back(std::string(argv[i]));
     }
     while (argv[++i]);
+
+    FINALLY;
+    CATCH_EXIT;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int main(int, char** argv) {
+error_t main(int, char** argv) {
     ErrorsContext errors;
     FileIoContext fileio;
     MainContext ctx;
@@ -306,9 +314,11 @@ int main(int, char** argv) {
         ctx.is_verbose = false;
     }
 
+    CATCH_ENTER;
+
     try {
-        arg_parse(&ctx, argv);
-        compile(&ctx, &errors, &fileio);
+        TRY(arg_parse(&ctx, argv));
+        TRY(compile(&ctx, &errors, &fileio));
     }
     catch (const std::runtime_error& err) {
         if (ctx.is_verbose) {
@@ -316,8 +326,9 @@ int main(int, char** argv) {
             fflush(stdout);
         }
         fprintf(stderr, "%s\n", err.what());
-        return 1;
+        TRY(1);
     }
 
-    return 0;
+    FINALLY;
+    CATCH_EXIT;
 }
