@@ -30,6 +30,12 @@ struct ErrorsContext {
 };
 
 typedef int error_t;
+
+[[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
+void raise_init_error(ErrorsContext* ctx);
+[[noreturn]] void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
+size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
+
 #define CATCH_ENTER error_t _errval = 0
 #define CATCH_EXIT return _errval
 #define EARLY_EXIT goto _Lfinally
@@ -44,12 +50,15 @@ typedef int error_t;
     }                       \
     while (0)
 
-[[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
-void raise_init_error(ErrorsContext* ctx);
-[[noreturn]] void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
-size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
-#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
 #define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
+#ifdef __NDEBUG__
+#define THROW_ABORT_IF(X)
+#else
+#define THROW_ABORT_IF(X) \
+    if (X)                \
+    THROW_ABORT
+#endif
+
 #define THROW_INIT(X)                                        \
     do {                                                     \
         X > 0 ? raise_init_error(ctx->errors) : THROW_ABORT; \
@@ -59,13 +68,8 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
     while (0)
 #define THROW_AT(X, Y) X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT
 #define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(ctx->errors, Y))
-#ifdef __NDEBUG__
-#define THROW_ABORT_IF(X)
-#else
-#define THROW_ABORT_IF(X) \
-    if (X)                \
-    THROW_ABORT
-#endif
+
+#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
 
 // TODO rm
 void raise_error_at_line_cerr(ErrorsContext* ctx, size_t linenum);
