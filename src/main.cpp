@@ -244,6 +244,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
     verbose(ctx, "OK\n");
 
+    EARLY_EXIT;
     FINALLY;
     CATCH_EXIT;
 }
