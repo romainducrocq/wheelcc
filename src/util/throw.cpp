@@ -21,11 +21,10 @@ static void raise_base_error(Ctx ctx) {
     err_what += filename;
     err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
     err_what += std::string(ctx->msg);
-    // TODO
-    // if (ctx.is_verbose) {
-    //     printf("\n");
-    //     fflush(stdout);
-    // }
+    if (ctx->is_stdout) {
+        printf("\n");
+        fflush(stdout);
+    }
     fprintf(stderr, "%s\n", err_what.c_str());
 }
 
@@ -38,11 +37,10 @@ static void raise_base_error(Ctx ctx) {
 void raise_init_error(Ctx ctx) {
     std::string err_what = "\033[0;31merror:\033[0m ";
     err_what += std::string(ctx->msg);
-    // TODO
-    // if (ctx.is_verbose) {
-    //     printf("\n");
-    //     fflush(stdout);
-    // }
+    if (ctx->is_stdout) {
+        printf("\n");
+        fflush(stdout);
+    }
     fprintf(stderr, "%s\n", err_what.c_str());
 }
 
@@ -92,11 +90,10 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
     err_what += ": \033[1m";
     err_what += line;
     err_what += "\033[0m";
-    // TODO
-    // if (ctx.is_verbose) {
-    //     printf("\n");
-    //     fflush(stdout);
-    // }
+    if (ctx->is_stdout) {
+        printf("\n");
+        fflush(stdout);
+    }
     fprintf(stderr, "%s\n", err_what.c_str());
 }
 
@@ -122,7 +119,6 @@ static void raise_base_error_ex(Ctx ctx) {
     throw std::runtime_error(err_what);
 }
 
-// TODO rm
 [[noreturn]] void raise_error_at_line_ex(Ctx ctx, size_t linenum) {
     if (linenum == 0) {
         raise_base_error_ex(ctx);

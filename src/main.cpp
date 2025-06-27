@@ -127,6 +127,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
         ) {
             ctx->is_verbose = true;
+            errors->is_stdout = true;
         }
 
         identifiers.label_count = 0u;
@@ -304,6 +305,7 @@ error_t main(int, char** argv) {
     {
         errors.errors = &errors;
         errors.fileio = &fileio;
+        errors.is_stdout = false;
 
         fileio.errors = &errors;
         fileio.fd_write = nullptr;
@@ -317,7 +319,7 @@ error_t main(int, char** argv) {
         TRY(compile(&ctx, &errors, &fileio));
     }
     catch (const std::runtime_error& err) {
-        if (ctx.is_verbose) {
+        if (errors.is_stdout) {
             printf("\n");
             fflush(stdout);
         }
