@@ -241,10 +241,9 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
     verbose(ctx, "-- Code emission ... ");
     ctx->filename += ".s";
-    emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers);
+    TRY(emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers));
     verbose(ctx, "OK\n");
 
-    EARLY_EXIT;
     FINALLY;
     CATCH_EXIT;
 }
@@ -256,9 +255,8 @@ static bool arg_parse_uint8(const char* arg, uint8_t& value) {
 }
 
 static error_t arg_parse(Ctx ctx, char** argv) {
-    size_t i = 0;
-
     CATCH_ENTER;
+    size_t i = 0;
 
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
@@ -293,7 +291,6 @@ static error_t arg_parse(Ctx ctx, char** argv) {
         ctx->includedirs.emplace_back(std::string(argv[i]));
     }
     while (argv[++i]);
-
     FINALLY;
     CATCH_EXIT;
 }
@@ -314,9 +311,7 @@ error_t main(int, char** argv) {
         ctx.errors = &errors;
         ctx.is_verbose = false;
     }
-
     CATCH_ENTER;
-
     try {
         TRY(arg_parse(&ctx, argv));
         TRY(compile(&ctx, &errors, &fileio));
@@ -329,7 +324,6 @@ error_t main(int, char** argv) {
         fprintf(stderr, "%s\n", err.what());
         TRY(1);
     }
-
     FINALLY;
     CATCH_EXIT;
 }

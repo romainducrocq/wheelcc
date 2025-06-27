@@ -1031,7 +1031,7 @@ static void emit_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, std::string&& filename, BackEndContext* backend,
+error_t emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, std::string&& filename, BackEndContext* backend,
     FileIoContext* fileio, IdentifierContext* identifiers) {
     GasCodeContext ctx;
     {
@@ -1039,8 +1039,11 @@ void emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, std::string&& filename
         ctx.fileio = fileio;
         ctx.identifiers = identifiers;
     }
-    open_fwrite(ctx.fileio, filename); // TODO TRY
+    CATCH_ENTER;
+    TRY(open_fwrite(ctx.fileio, filename));
     emit_program(&ctx, asm_ast.get());
     asm_ast.reset();
     close_fwrite(ctx.fileio);
+    FINALLY;
+    CATCH_EXIT;
 }
