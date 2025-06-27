@@ -169,7 +169,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Lexing ... ");
-    tokens = lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio, &identifiers);
+    TRY(lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio, &identifiers, &tokens));
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {

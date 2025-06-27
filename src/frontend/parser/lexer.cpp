@@ -813,9 +813,8 @@ static void strip_filename_ext(std::string& filename) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors,
-    FileIoContext* fileio, IdentifierContext* identifiers) {
-    std::vector<Token> tokens;
+error_t lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors,
+    FileIoContext* fileio, IdentifierContext* identifiers, std::vector<Token>* tokens) {
     LexerContext ctx;
     {
         ctx.errors = errors;
@@ -826,20 +825,23 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
         ctx.stdlibdirs.push_back("/usr/local/include/");
 #endif
         ctx.p_includedirs = &includedirs;
-        ctx.p_toks = &tokens;
+        ctx.p_toks = tokens;
         ctx.total_linenum = 0;
     }
-    open_fread(ctx.fileio, filename); // TODO TRY
+    CATCH_ENTER;
+    TRY(open_fread(ctx.fileio, filename));
     {
         FileOpenLine fopen_line = {1, 1, filename};
         ctx.errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     tokenize_file(&ctx);
 
-    close_fread(ctx.fileio, 0); // TODO TRY
+    TRY(close_fread(ctx.fileio, 0));
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
     set_filename(ctx.fileio, filename);
     strip_filename_ext(filename);
-    return tokens;
+    EARLY_EXIT;
+    FINALLY;
+    CATCH_EXIT;
 }

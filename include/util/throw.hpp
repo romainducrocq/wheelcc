@@ -36,6 +36,7 @@ void raise_init_error(ErrorsContext* ctx);
 [[noreturn]] void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
 size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 
+#define return_t(X) X*
 #define CATCH_ENTER error_t _errval = 0
 #define CATCH_EXIT return _errval
 #define EARLY_EXIT goto _Lfinally
