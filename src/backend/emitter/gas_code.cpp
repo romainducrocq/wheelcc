@@ -1039,7 +1039,7 @@ void emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, std::string&& filename
         ctx.fileio = fileio;
         ctx.identifiers = identifiers;
     }
-    open_fwrite(ctx.fileio, filename);
+    open_fwrite(ctx.fileio, filename); // TODO TRY
     emit_program(&ctx, asm_ast.get());
     asm_ast.reset();
     close_fwrite(ctx.fileio);

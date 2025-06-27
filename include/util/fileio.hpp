@@ -30,11 +30,11 @@ struct FileIoContext {
 bool find_file(const std::string& filename);
 const std::string& get_filename(FileIoContext* ctx);
 void set_filename(FileIoContext* ctx, const std::string& filename);
-void open_fread(FileIoContext* ctx, const std::string& filename);
-void open_fwrite(FileIoContext* ctx, const std::string& filename);
+int open_fread(FileIoContext* ctx, const std::string& filename);
+int open_fwrite(FileIoContext* ctx, const std::string& filename);
 bool read_line(FileIoContext* ctx, char*& line, size_t& line_size);
 void write_buffer(FileIoContext* ctx, const char* buf);
-void close_fread(FileIoContext* ctx, size_t linenum);
+int close_fread(FileIoContext* ctx, size_t linenum);
 void close_fwrite(FileIoContext* ctx);
 void free_fileio(FileIoContext* ctx);
 

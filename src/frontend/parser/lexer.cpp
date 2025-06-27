@@ -783,13 +783,13 @@ static void tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t li
     size_t match_size = ctx->match_size;
 
     std::string fopen_name = ctx->errors->fopen_lines.back().filename;
-    open_fread(ctx->fileio, filename);
+    open_fread(ctx->fileio, filename); // TODO TRY
     {
         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(filename)};
         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     tokenize_file(ctx);
-    close_fread(ctx->fileio, linenum);
+    close_fread(ctx->fileio, linenum); // TODO TRY
     {
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
@@ -829,14 +829,14 @@ std::vector<Token> lex_c_code(std::string& filename, std::vector<std::string>&& 
         ctx.p_toks = &tokens;
         ctx.total_linenum = 0;
     }
-    open_fread(ctx.fileio, filename);
+    open_fread(ctx.fileio, filename); // TODO TRY
     {
         FileOpenLine fopen_line = {1, 1, filename};
         ctx.errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     tokenize_file(&ctx);
 
-    close_fread(ctx.fileio, 0);
+    close_fread(ctx.fileio, 0); // TODO TRY
     includedirs.clear();
     std::vector<std::string>().swap(includedirs);
     set_filename(ctx.fileio, filename);
