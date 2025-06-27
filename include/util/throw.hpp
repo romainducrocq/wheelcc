@@ -33,7 +33,9 @@ typedef int error_t;
 
 [[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
 void raise_init_error(ErrorsContext* ctx);
-[[noreturn]] void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
+void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
+// TODO rm
+[[noreturn]] void raise_error_at_line_ex(ErrorsContext* ctx, size_t linenum);
 size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 
 #define return_t(X) X*
@@ -67,20 +69,19 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
         EARLY_EXIT;                                          \
     }                                                        \
     while (0)
-#define THROW_AT(X, Y) X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT
-#define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(ctx->errors, Y))
+#define THROW_AT(X, Y)                                             \
+    do {                                                           \
+        X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT; \
+        _errval = 1;                                               \
+        EARLY_EXIT;                                                \
+    }                                                              \
+    while (0)
+#define THROW_AT_LINE_CERR(X, Y) THROW_AT(X, handle_error_at_line(ctx->errors, Y))
+// TODO rm
+#define THROW_AT_EX(X, Y) X > 0 ? raise_error_at_line_ex(ctx->errors, Y) : THROW_ABORT
+// TODO rm
+#define THROW_AT_LINE(X, Y) THROW_AT_EX(X, handle_error_at_line(ctx->errors, Y))
 
 #define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
-
-// TODO rm
-void raise_error_at_line_cerr(ErrorsContext* ctx, size_t linenum);
-#define THROW_AT_CERR(X, Y)                                             \
-    do {                                                                \
-        X > 0 ? raise_error_at_line_cerr(ctx->errors, Y) : THROW_ABORT; \
-        _errval = 1;                                                    \
-        EARLY_EXIT;                                                     \
-    }                                                                   \
-    while (0)
-#define THROW_AT_LINE_CERR(X, Y) THROW_AT_CERR(X, handle_error_at_line(ctx->errors, Y))
 
 #endif

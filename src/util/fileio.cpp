@@ -53,7 +53,7 @@ error_t open_fread(Ctx ctx, const std::string& filename) {
     ctx->file_reads.back().fd = nullptr;
     ctx->file_reads.back().fd = fopen(filename.c_str(), "rb");
     if (!ctx->file_reads.back().fd || filename.size() >= PATH_MAX) {
-        THROW_AT_CERR(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()), 0);
+        THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()), 0);
     }
 
     ctx->file_reads.back().len = 0;
@@ -70,7 +70,7 @@ error_t open_fwrite(Ctx ctx, const std::string& filename) {
     ctx->fd_write = nullptr;
     ctx->fd_write = fopen(filename.c_str(), "wb");
     if (!ctx->fd_write || filename.size() >= PATH_MAX) {
-        THROW_AT_CERR(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
+        THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
     }
 
     ctx->write_buf.reserve(WRITE_BUF_SIZE);
@@ -118,11 +118,11 @@ error_t close_fread(Ctx ctx, size_t linenum) {
         THROW_ABORT_IF(ctx->file_reads.back().buf || ctx->file_reads.back().len != 0);
         ctx->file_reads.back().fd = fopen(ctx->file_reads.back().filename.c_str(), "rb");
         if (!ctx->file_reads.back().fd) {
-            THROW_AT_CERR(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
+            THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
-                THROW_AT_CERR(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
+                THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
             }
         }
     }

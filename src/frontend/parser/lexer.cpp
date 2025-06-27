@@ -724,7 +724,7 @@ static error_t tokenize_file(Ctx ctx) {
                     std::string match = ctx->match_size == 1 ?
                                             std::string({ctx->line[ctx->match_at]}) :
                                             std::string(line_sv.substr(ctx->match_at, ctx->match_size));
-                    THROW_AT_CERR(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
+                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
                 }
                 default:
                     goto Lpass;
@@ -773,13 +773,13 @@ static error_t tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t
     switch (ctx->line[ctx->match_at]) {
         case '<': {
             if (!find_include(ctx->stdlibdirs, filename) && !find_include(*ctx->p_includedirs, filename)) {
-                THROW_AT_CERR(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
             }
             break;
         }
         case '"': {
             if (!find_include(*ctx->p_includedirs, filename)) {
-                THROW_AT_CERR(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
+                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename.c_str()), linenum);
             }
             break;
         }
