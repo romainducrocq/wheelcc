@@ -112,9 +112,9 @@ int32_t string_to_char_ascii(const std::string& str_char) {
 
 static intmax_t hex_string_to_intmax(const char* str_hex) {
     char* end_ptr = nullptr;
-    intmax_t intmax = strtoimax(str_hex, &end_ptr, 16);
+    intmax_t value = strtoimax(str_hex, &end_ptr, 16);
     THROW_ABORT_IF(end_ptr == str_hex);
-    return intmax;
+    return value;
 }
 
 static int8_t hex_string_to_int8(const char* str_hex) { return (int8_t)hex_string_to_intmax(str_hex); }
@@ -210,29 +210,35 @@ uint64_t dbl_to_binary(double decimal) {
     return binary;
 }
 
-intmax_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line) {
+error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, intmax_t* value) {
+    CATCH_ENTER;
     char* end_ptr = nullptr;
-    intmax_t intmax = strtoimax(str_int, &end_ptr, 10);
+    *value = strtoimax(str_int, &end_ptr, 10);
     if (end_ptr == str_int) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int), line);
+        THROW_AT_LINE_CERR(GET_UTIL_MSG(MSG_failed_strtoi, str_int), line);
     }
-    return intmax;
+    FINALLY;
+    CATCH_EXIT;
 }
 
-uintmax_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line) {
+error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line, uintmax_t* value) {
+    CATCH_ENTER;
     char* end_ptr = nullptr;
-    uintmax_t uintmax = strtoumax(str_uint, &end_ptr, 10);
+    *value = strtoumax(str_uint, &end_ptr, 10);
     if (end_ptr == str_uint) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint), line);
+        THROW_AT_LINE_CERR(GET_UTIL_MSG(MSG_failed_strtou, str_uint), line);
     }
-    return uintmax;
+    FINALLY;
+    CATCH_EXIT;
 }
 
-double string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line) {
+error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line, double* value) {
+    CATCH_ENTER;
     char* end_ptr = nullptr;
-    double float64 = strtod(str_dbl, &end_ptr);
+    *value = strtod(str_dbl, &end_ptr);
     if (end_ptr == str_dbl) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl), line);
+        THROW_AT_LINE_CERR(GET_UTIL_MSG(MSG_failed_strtod, str_dbl), line);
     }
-    return float64;
+    FINALLY;
+    CATCH_EXIT;
 }
