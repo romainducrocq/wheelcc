@@ -814,7 +814,7 @@ static void strip_filename_ext(std::string& filename) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 error_t lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors,
-    FileIoContext* fileio, IdentifierContext* identifiers, std::vector<Token>* tokens) {
+    FileIoContext* fileio, IdentifierContext* identifiers, return_t(std::vector<Token>) tokens) {
     LexerContext ctx;
     {
         ctx.errors = errors;
