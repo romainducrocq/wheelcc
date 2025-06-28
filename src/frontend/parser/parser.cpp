@@ -35,6 +35,7 @@ struct ParserContext {
     size_t pop_idx;
     Token* next_tok;
     Token* peek_tok;
+    Token* next_tok_i;
     std::vector<Token>* p_toks;
 };
 
@@ -61,10 +62,11 @@ static void /* TODO TRY */ pop_next(Ctx ctx) {
     ctx->pop_idx++;
 }
 
-static Token* /* TODO TRY */ pop_next_i(Ctx ctx, size_t i) {
+static void /* TODO TRY */ pop_next_i(Ctx ctx, size_t i) {
     if (i == 0) {
         /* TODO TRY */ pop_next(ctx);
-        return ctx->next_tok;
+        ctx->next_tok_i = ctx->next_tok;
+        return;
     }
     if (ctx->pop_idx + i >= ctx->p_toks->size()) {
         THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
@@ -81,7 +83,7 @@ static Token* /* TODO TRY */ pop_next_i(Ctx ctx, size_t i) {
         (*ctx->p_toks)[ctx->pop_idx] = std::move(swap_token_i);
     }
     /* TODO TRY */ pop_next(ctx);
-    return &(*ctx->p_toks)[ctx->pop_idx - 1];
+    ctx->next_tok_i = &(*ctx->p_toks)[ctx->pop_idx - 1];
 }
 
 static void /* TODO TRY */ peek_next(Ctx ctx) {
@@ -105,7 +107,10 @@ static Token* /* TODO TRY */ peek_next_i(Ctx ctx, size_t i) {
 }
 
 // <identifier> ::= ? An identifier token ?
-static TIdentifier /* TODO TRY */ parse_identifier(Ctx ctx, size_t i) { return /* TODO TRY */ pop_next_i(ctx, i)->tok; }
+static TIdentifier /* TODO TRY */ parse_identifier(Ctx ctx, size_t i) {
+    /* TODO TRY */ pop_next_i(ctx, i);
+    return ctx->next_tok_i->tok;
+}
 
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
@@ -1284,14 +1289,15 @@ static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx) {
             case TOK_key_unsigned:
             case TOK_key_signed:
             case TOK_key_void:
-                type_tok_kinds.push_back(/* TODO TRY */ pop_next_i(ctx, i)->tok_kind);
+                /* TODO TRY */ pop_next_i(ctx, i);
+                type_tok_kinds.push_back(ctx->next_tok_i->tok_kind);
                 break;
             case TOK_key_struct:
-            case TOK_key_union: {
-                type_tok_kinds.push_back(/* TODO TRY */ pop_next_i(ctx, i)->tok_kind);
+            case TOK_key_union:
+                /* TODO TRY */ pop_next_i(ctx, i);
+                type_tok_kinds.push_back(ctx->next_tok_i->tok_kind);
                 /* TODO TRY */ expect_next(ctx, /* TODO TRY */ peek_next_i(ctx, i), TOK_identifier);
                 break;
-            }
             case TOK_key_static:
             case TOK_key_extern:
             case TOK_binop_multiply:
