@@ -36,6 +36,7 @@ struct ParserContext {
     Token* next_tok;
     Token* peek_tok;
     Token* next_tok_i;
+    Token* peek_tok_i;
     std::vector<Token>* p_toks;
 };
 
@@ -94,16 +95,17 @@ static void /* TODO TRY */ peek_next(Ctx ctx) {
     ctx->peek_tok = &(*ctx->p_toks)[ctx->pop_idx];
 }
 
-static Token* /* TODO TRY */ peek_next_i(Ctx ctx, size_t i) {
+static void /* TODO TRY */ peek_next_i(Ctx ctx, size_t i) {
     if (i == 0) {
         /* TODO TRY */ peek_next(ctx);
-        return ctx->peek_tok;
+        ctx->peek_tok_i = ctx->peek_tok;
+        return;
     }
     if (ctx->pop_idx + i >= ctx->p_toks->size()) {
         THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
     }
 
-    return &(*ctx->p_toks)[ctx->pop_idx + i];
+    ctx->peek_tok_i = &(*ctx->p_toks)[ctx->pop_idx + i];
 }
 
 // <identifier> ::= ? An identifier token ?
@@ -626,7 +628,8 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_sizeof_unary_factor(Ctx ctx) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_open_paren) {
-        switch (/* TODO TRY */ peek_next_i(ctx, 1)->tok_kind) {
+        /* TODO TRY */ peek_next_i(ctx, 1);
+        switch (ctx->peek_tok_i->tok_kind) {
             case TOK_key_char:
             case TOK_key_int:
             case TOK_key_long:
@@ -667,7 +670,8 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_primary_exp_factor(Ctx ctx) {
         case TOK_ulong_const:
             return /* TODO TRY */ parse_unsigned_const_factor(ctx);
         case TOK_identifier: {
-            if (/* TODO TRY */ peek_next_i(ctx, 1)->tok_kind == TOK_open_paren) {
+            /* TODO TRY */ peek_next_i(ctx, 1);
+            if (ctx->peek_tok_i->tok_kind == TOK_open_paren) {
                 return /* TODO TRY */ parse_call_factor(ctx);
             }
             return /* TODO TRY */ parse_var_factor(ctx);
@@ -752,7 +756,8 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_unary_exp_factor(Ctx ctx) {
 static std::unique_ptr<CExp> /* TODO TRY */ parse_cast_exp_factor(Ctx ctx) {
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_open_paren) {
-        switch (/* TODO TRY */ peek_next_i(ctx, 1)->tok_kind) {
+        /* TODO TRY */ peek_next_i(ctx, 1);
+        switch (ctx->peek_tok_i->tok_kind) {
             case TOK_key_char:
             case TOK_key_int:
             case TOK_key_long:
@@ -1136,7 +1141,8 @@ static std::unique_ptr<CStatement> /* TODO TRY */ parse_statement(Ctx ctx) {
         case TOK_key_goto:
             return /* TODO TRY */ parse_goto_statement(ctx);
         case TOK_identifier: {
-            if (/* TODO TRY */ peek_next_i(ctx, 1)->tok_kind == TOK_ternary_else) {
+            /* TODO TRY */ peek_next_i(ctx, 1);
+            if (ctx->peek_tok_i->tok_kind == TOK_ternary_else) {
                 return /* TODO TRY */ parse_label_statement(ctx);
             }
             break;
@@ -1278,7 +1284,8 @@ static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     std::vector<TOKEN_KIND> type_tok_kinds;
     while (true) {
-        switch (/* TODO TRY */ peek_next_i(ctx, i)->tok_kind) {
+        /* TODO TRY */ peek_next_i(ctx, i);
+        switch (ctx->peek_tok_i->tok_kind) {
             case TOK_identifier:
             case TOK_close_paren:
                 goto Lbreak;
@@ -1296,7 +1303,8 @@ static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx) {
             case TOK_key_union:
                 /* TODO TRY */ pop_next_i(ctx, i);
                 type_tok_kinds.push_back(ctx->next_tok_i->tok_kind);
-                /* TODO TRY */ expect_next(ctx, /* TODO TRY */ peek_next_i(ctx, i), TOK_identifier);
+                /* TODO TRY */ peek_next_i(ctx, i);
+                /* TODO TRY */ expect_next(ctx, ctx->peek_tok_i, TOK_identifier);
                 break;
             case TOK_key_static:
             case TOK_key_extern:
@@ -1305,17 +1313,17 @@ static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx) {
                 i++;
                 break;
             case TOK_open_bracket: {
-                i++;
-                while (/* TODO TRY */ peek_next_i(ctx, i)->tok_kind != TOK_close_bracket) {
+                do {
                     i++;
+                    /* TODO TRY */ peek_next_i(ctx, i);
                 }
+                while (ctx->peek_tok_i->tok_kind != TOK_close_bracket);
                 i++;
                 break;
             }
             default:
-                THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_specifier,
-                                     get_tok_fmt(ctx->identifiers, /* TODO TRY */ peek_next_i(ctx, i))),
-                    /* TODO TRY */ peek_next_i(ctx, i)->line);
+                THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_specifier, get_tok_fmt(ctx->identifiers, ctx->peek_tok_i)),
+                    ctx->peek_tok_i->line);
         }
     }
 Lbreak:
@@ -1599,7 +1607,8 @@ static std::vector<std::unique_ptr<CParam>> /* TODO TRY */ parse_param_list(Ctx 
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_void: {
-            if (/* TODO TRY */ peek_next_i(ctx, 1)->tok_kind == TOK_close_paren) {
+            /* TODO TRY */ peek_next_i(ctx, 1);
+            if (ctx->peek_tok_i->tok_kind == TOK_close_paren) {
                 /* TODO TRY */ parse_empty_param_list(ctx);
             }
             else {
@@ -1807,7 +1816,8 @@ static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx) {
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_struct:
         case TOK_key_union: {
-            switch (/* TODO TRY */ peek_next_i(ctx, 2)->tok_kind) {
+            /* TODO TRY */ peek_next_i(ctx, 2);
+            switch (ctx->peek_tok_i->tok_kind) {
                 case TOK_open_brace:
                 case TOK_semicolon:
                     return /* TODO TRY */ parse_struct_declaration(ctx);
