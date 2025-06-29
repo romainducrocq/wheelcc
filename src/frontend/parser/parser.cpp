@@ -778,40 +778,40 @@ static void /* TODO TRY */ parse_primary_exp_factor(Ctx ctx, return_t(std::uniqu
 // TODO HERE
 
 // <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
-static std::unique_ptr<CExp> /* TODO TRY */ parse_postfix_op_exp_factor(Ctx ctx, std::unique_ptr<CExp>&& primary_exp) {
-    /* TODO return_t */ std::unique_ptr<CExp> exp;
+static void /* TODO TRY */ parse_postfix_op_exp_factor(
+    Ctx ctx, std::unique_ptr<CExp>&& primary_exp, return_t(std::unique_ptr<CExp>) exp) {
     std::unique_ptr<CExp> postfix_exp = std::move(primary_exp);
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_open_bracket: {
-            /* TODO TRY */ parse_subscript_factor(ctx, std::move(postfix_exp), &exp);
-            postfix_exp = std::move(exp);
+            /* TODO TRY */ parse_subscript_factor(ctx, std::move(postfix_exp), exp);
             break;
         }
         case TOK_structop_member: {
-            /* TODO TRY */ parse_dot_factor(ctx, std::move(postfix_exp), &exp);
-            postfix_exp = std::move(exp);
+            /* TODO TRY */ parse_dot_factor(ctx, std::move(postfix_exp), exp);
             break;
         }
         case TOK_structop_ptr: {
-            /* TODO TRY */ parse_arrow_factor(ctx, std::move(postfix_exp), &exp);
-            postfix_exp = std::move(exp);
+            /* TODO TRY */ parse_arrow_factor(ctx, std::move(postfix_exp), exp);
             break;
         }
         case TOK_unop_incr:
         case TOK_unop_decr: {
-            /* TODO TRY */ parse_postfix_incr_factor(ctx, std::move(postfix_exp), &exp);
-            postfix_exp = std::move(exp);
+            /* TODO TRY */ parse_postfix_incr_factor(ctx, std::move(postfix_exp), exp);
             break;
         }
-        default:
-            return postfix_exp;
+        default: {
+            *exp = std::move(postfix_exp);
+            return;
+        }
     }
-    return /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(postfix_exp));
+    postfix_exp = std::move(*exp);
+    /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(postfix_exp), exp);
 }
 
 // <postfix-exp> ::= <primary-exp> { <postfix-op> }
 static std::unique_ptr<CExp> /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx) {
+    /* TODO return_t */ std::unique_ptr<CExp> exp;
     std::unique_ptr<CExp> primary_exp;
     /* TODO TRY */ parse_primary_exp_factor(ctx, &primary_exp);
     /* TODO TRY */ peek_next(ctx);
@@ -821,7 +821,8 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx) {
         case TOK_structop_ptr:
         case TOK_unop_incr:
         case TOK_unop_decr:
-            return /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(primary_exp));
+            /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(primary_exp), &exp);
+            return exp;
         default:
             return primary_exp;
     }
