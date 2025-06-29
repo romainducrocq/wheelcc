@@ -109,14 +109,14 @@ static void /* TODO TRY */ peek_next_i(Ctx ctx, size_t i) {
 }
 
 // <identifier> ::= ? An identifier token ?
-static TIdentifier /* TODO TRY */ parse_identifier(Ctx ctx, size_t i) {
+static void /* TODO TRY */ parse_identifier(Ctx ctx, size_t i, return_t(TIdentifier) identifier) {
     /* TODO TRY */ pop_next_i(ctx, i);
-    return ctx->next_tok_i->tok;
+    *identifier = ctx->next_tok_i->tok;
 }
 
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
-static std::shared_ptr<CStringLiteral> /* TODO TRY */ parse_string_literal(Ctx ctx) {
+static void /* TODO TRY */ parse_string_literal(Ctx ctx, return_t(std::shared_ptr<CStringLiteral>) literal) {
     std::vector<TChar> value;
     {
         string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], value);
@@ -127,7 +127,7 @@ static std::shared_ptr<CStringLiteral> /* TODO TRY */ parse_string_literal(Ctx c
             /* TODO TRY */ peek_next(ctx);
         }
     }
-    return std::make_shared<CStringLiteral>(std::move(value));
+    *literal = std::make_shared<CStringLiteral>(std::move(value));
 }
 
 // <int> ::= ? An int constant token ?
@@ -149,11 +149,11 @@ static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
 }
 
 // <double> ::= ? A floating-point constant token ?
-static std::shared_ptr<CConstDouble> /* TODO TRY */ parse_dbl_const(Ctx ctx) {
+static void /* TODO TRY */ parse_dbl_const(Ctx ctx, return_t(std::shared_ptr<CConst>) constant) {
     TDouble value;
     /* TODO TRY */ string_to_dbl(
         ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str(), ctx->next_tok->line, &value);
-    return std::make_shared<CConstDouble>(value);
+    *constant = std::make_shared<CConstDouble>(value);
 }
 
 // <unsigned int> ::= ? An unsigned int constant token ?
@@ -170,13 +170,16 @@ static std::shared_ptr<CConstULong> parse_ulong_const(uintmax_t uintmax) {
 
 // <const> ::= <int> | <long> | <double> | <char>
 // (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double) | ConstChar(int)
-static std::shared_ptr<CConst> /* TODO TRY */ parse_const(Ctx ctx) {
+static void /* TODO TRY */ parse_const(Ctx ctx, return_t(std::shared_ptr<CConst>) constant) {
     /* TODO TRY */ pop_next(ctx);
     switch (ctx->next_tok->tok_kind) {
-        case TOK_char_const:
-            return parse_char_const(ctx);
+        case TOK_char_const: {
+            *constant = parse_char_const(ctx);
+            return;
+        }
         case TOK_dbl_const:
-            return /* TODO TRY */ parse_dbl_const(ctx);
+            /* TODO TRY */ parse_dbl_const(ctx, constant);
+            return;
         default:
             break;
     }
@@ -190,14 +193,16 @@ static std::shared_ptr<CConst> /* TODO TRY */ parse_const(Ctx ctx) {
             ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_int_const && value <= 2147483647l) {
-        return parse_int_const(value);
+        *constant = parse_int_const(value);
     }
-    return parse_long_const(value);
+    else {
+        *constant = parse_long_const(value);
+    }
 }
 
 // <const> ::= <unsigned int> | <unsigned long>
 // (unsigned) const = ConstUInt(uint) | ConstULong(ulong) | ConstUChar(int)
-static std::shared_ptr<CConst> /* TODO TRY */ parse_unsigned_const(Ctx ctx) {
+static void /* TODO TRY */ parse_unsigned_const(Ctx ctx, return_t(std::shared_ptr<CConst>) constant) {
     /* TODO TRY */ pop_next(ctx);
 
     uintmax_t value;
@@ -209,12 +214,14 @@ static std::shared_ptr<CConst> /* TODO TRY */ parse_unsigned_const(Ctx ctx) {
             ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_uint_const && value <= 4294967295ul) {
-        return parse_uint_const(value);
+        *constant = parse_uint_const(value);
     }
-    return parse_ulong_const(value);
+    else {
+        *constant = parse_ulong_const(value);
+    }
 }
 
-static TLong /* TODO TRY */ parse_arr_size(Ctx ctx) {
+static void /* TODO TRY */ parse_arr_size(Ctx ctx, return_t(TLong) size) {
     /* TODO TRY */ pop_next(ctx);
     std::shared_ptr<CConst> constant;
     /* TODO TRY */ peek_next(ctx);
@@ -222,11 +229,11 @@ static TLong /* TODO TRY */ parse_arr_size(Ctx ctx) {
         case TOK_int_const:
         case TOK_long_const:
         case TOK_char_const:
-            constant = /* TODO TRY */ parse_const(ctx);
+            /* TODO TRY */ parse_const(ctx, &constant);
             break;
         case TOK_uint_const:
         case TOK_ulong_const:
-            constant = /* TODO TRY */ parse_unsigned_const(ctx);
+            /* TODO TRY */ parse_unsigned_const(ctx, &constant);
             break;
         default:
             THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_arr_size_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
@@ -235,14 +242,22 @@ static TLong /* TODO TRY */ parse_arr_size(Ctx ctx) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_bracket);
     switch (constant->type()) {
-        case AST_CConstInt_t:
-            return (TLong)(static_cast<CConstInt*>(constant.get())->value);
-        case AST_CConstLong_t:
-            return static_cast<CConstLong*>(constant.get())->value;
-        case AST_CConstUInt_t:
-            return (TLong)(static_cast<CConstUInt*>(constant.get())->value);
-        case AST_CConstULong_t:
-            return (TLong)(static_cast<CConstULong*>(constant.get())->value);
+        case AST_CConstInt_t: {
+            *size = (TLong)(static_cast<CConstInt*>(constant.get())->value);
+            break;
+        }
+        case AST_CConstLong_t: {
+            *size = static_cast<CConstLong*>(constant.get())->value;
+            break;
+        }
+        case AST_CConstUInt_t: {
+            *size = (TLong)(static_cast<CConstUInt*>(constant.get())->value);
+            break;
+        }
+        case AST_CConstULong_t: {
+            *size = (TLong)(static_cast<CConstULong*>(constant.get())->value);
+            break;
+        }
         default:
             THROW_ABORT;
     }
@@ -250,15 +265,21 @@ static TLong /* TODO TRY */ parse_arr_size(Ctx ctx) {
 
 // <unop> ::= "-" | "~" | "!" | "*" | "&" | "++" | "--"
 // unary_operator = Complement | Negate | Not | Prefix | Postfix
-static std::unique_ptr<CUnaryOp> /* TODO TRY */ parse_unop(Ctx ctx) {
+static void /* TODO TRY */ parse_unop(Ctx ctx, return_t(std::unique_ptr<CUnaryOp>) unop) {
     /* TODO TRY */ pop_next(ctx);
     switch (ctx->next_tok->tok_kind) {
-        case TOK_unop_complement:
-            return std::make_unique<CComplement>();
-        case TOK_unop_neg:
-            return std::make_unique<CNegate>();
-        case TOK_unop_not:
-            return std::make_unique<CNot>();
+        case TOK_unop_complement: {
+            *unop = std::make_unique<CComplement>();
+            break;
+        }
+        case TOK_unop_neg: {
+            *unop = std::make_unique<CNegate>();
+            break;
+        }
+        case TOK_unop_not: {
+            *unop = std::make_unique<CNot>();
+            break;
+        }
         default:
             THROW_AT_LINE_EX(
                 GET_PARSER_MSG(MSG_expect_unop, get_tok_fmt(ctx->identifiers, ctx->next_tok)), ctx->next_tok->line);
@@ -270,57 +291,93 @@ static std::unique_ptr<CUnaryOp> /* TODO TRY */ parse_unop(Ctx ctx) {
 // binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
 //                 | BitShiftRight | BitShrArithmetic | And | Or | Equal | NotEqual | LessThan | LessOrEqual
 //                 | GreaterThan | GreaterOrEqual
-static std::unique_ptr<CBinaryOp> /* TODO TRY */ parse_binop(Ctx ctx) {
+static void /* TODO TRY */ parse_binop(Ctx ctx, return_t(std::unique_ptr<CBinaryOp>) binop) {
     /* TODO TRY */ pop_next(ctx);
     switch (ctx->next_tok->tok_kind) {
         case TOK_binop_add:
         case TOK_assign_add:
-        case TOK_unop_incr:
-            return std::make_unique<CAdd>();
+        case TOK_unop_incr: {
+            *binop = std::make_unique<CAdd>();
+            break;
+        }
         case TOK_unop_neg:
         case TOK_assign_subtract:
-        case TOK_unop_decr:
-            return std::make_unique<CSubtract>();
+        case TOK_unop_decr: {
+            *binop = std::make_unique<CSubtract>();
+            break;
+        }
         case TOK_binop_multiply:
-        case TOK_assign_multiply:
-            return std::make_unique<CMultiply>();
+        case TOK_assign_multiply: {
+            *binop = std::make_unique<CMultiply>();
+            break;
+        }
         case TOK_binop_divide:
-        case TOK_assign_divide:
-            return std::make_unique<CDivide>();
+        case TOK_assign_divide: {
+            *binop = std::make_unique<CDivide>();
+            break;
+        }
         case TOK_binop_remainder:
-        case TOK_assign_remainder:
-            return std::make_unique<CRemainder>();
+        case TOK_assign_remainder: {
+            *binop = std::make_unique<CRemainder>();
+            break;
+        }
         case TOK_binop_bitand:
-        case TOK_assign_bitand:
-            return std::make_unique<CBitAnd>();
+        case TOK_assign_bitand: {
+            *binop = std::make_unique<CBitAnd>();
+            break;
+        }
         case TOK_binop_bitor:
-        case TOK_assign_bitor:
-            return std::make_unique<CBitOr>();
+        case TOK_assign_bitor: {
+            *binop = std::make_unique<CBitOr>();
+            break;
+        }
         case TOK_binop_xor:
-        case TOK_assign_xor:
-            return std::make_unique<CBitXor>();
+        case TOK_assign_xor: {
+            *binop = std::make_unique<CBitXor>();
+            break;
+        }
         case TOK_binop_shiftleft:
-        case TOK_assign_shiftleft:
-            return std::make_unique<CBitShiftLeft>();
+        case TOK_assign_shiftleft: {
+            *binop = std::make_unique<CBitShiftLeft>();
+            break;
+        }
         case TOK_binop_shiftright:
-        case TOK_assign_shiftright:
-            return std::make_unique<CBitShiftRight>();
-        case TOK_binop_and:
-            return std::make_unique<CAnd>();
-        case TOK_binop_or:
-            return std::make_unique<COr>();
-        case TOK_binop_eq:
-            return std::make_unique<CEqual>();
-        case TOK_binop_ne:
-            return std::make_unique<CNotEqual>();
-        case TOK_binop_lt:
-            return std::make_unique<CLessThan>();
-        case TOK_binop_le:
-            return std::make_unique<CLessOrEqual>();
-        case TOK_binop_gt:
-            return std::make_unique<CGreaterThan>();
-        case TOK_binop_ge:
-            return std::make_unique<CGreaterOrEqual>();
+        case TOK_assign_shiftright: {
+            *binop = std::make_unique<CBitShiftRight>();
+            break;
+        }
+        case TOK_binop_and: {
+            *binop = std::make_unique<CAnd>();
+            break;
+        }
+        case TOK_binop_or: {
+            *binop = std::make_unique<COr>();
+            break;
+        }
+        case TOK_binop_eq: {
+            *binop = std::make_unique<CEqual>();
+            break;
+        }
+        case TOK_binop_ne: {
+            *binop = std::make_unique<CNotEqual>();
+            break;
+        }
+        case TOK_binop_lt: {
+            *binop = std::make_unique<CLessThan>();
+            break;
+        }
+        case TOK_binop_le: {
+            *binop = std::make_unique<CLessOrEqual>();
+            break;
+        }
+        case TOK_binop_gt: {
+            *binop = std::make_unique<CGreaterThan>();
+            break;
+        }
+        case TOK_binop_ge: {
+            *binop = std::make_unique<CGreaterOrEqual>();
+            break;
+        }
         default:
             THROW_AT_LINE_EX(
                 GET_PARSER_MSG(MSG_expect_binop, get_tok_fmt(ctx->identifiers, ctx->next_tok)), ctx->next_tok->line);
@@ -370,7 +427,8 @@ static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_abstract_declto
 static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_arr_abstract_decltor(Ctx ctx) {
     std::unique_ptr<CAbstractDeclarator> abstract_decltor = std::make_unique<CAbstractBase>();
     do {
-        TLong size = /* TODO TRY */ parse_arr_size(ctx);
+        TLong size;
+        /* TODO TRY */ parse_arr_size(ctx, &size);
         abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(abstract_decltor));
         /* TODO TRY */ peek_next(ctx);
     }
@@ -386,7 +444,8 @@ static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_direct_abstract
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
     /* TODO TRY */ peek_next(ctx);
     while (ctx->peek_tok->tok_kind == TOK_open_bracket) {
-        TLong size = /* TODO TRY */ parse_arr_size(ctx);
+        TLong size;
+        /* TODO TRY */ parse_arr_size(ctx, &size);
         abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(abstract_decltor));
         /* TODO TRY */ peek_next(ctx);
     }
@@ -469,32 +528,37 @@ static std::vector<std::unique_ptr<CExp>> /* TODO TRY */ parse_arg_list(Ctx ctx)
 
 static std::unique_ptr<CConstant> /* TODO TRY */ parse_const_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
-    std::shared_ptr<CConst> constant = /* TODO TRY */ parse_const(ctx);
+    std::shared_ptr<CConst> constant;
+    /* TODO TRY */ parse_const(ctx, &constant);
     return std::make_unique<CConstant>(std::move(constant), line);
 }
 
 static std::unique_ptr<CConstant> /* TODO TRY */ parse_unsigned_const_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
-    std::shared_ptr<CConst> constant = /* TODO TRY */ parse_unsigned_const(ctx);
+    std::shared_ptr<CConst> constant;
+    /* TODO TRY */ parse_unsigned_const(ctx, &constant);
     return std::make_unique<CConstant>(std::move(constant), line);
 }
 
 static std::unique_ptr<CString> /* TODO TRY */ parse_string_literal_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
-    std::shared_ptr<CStringLiteral> literal = /* TODO TRY */ parse_string_literal(ctx);
+    std::shared_ptr<CStringLiteral> literal;
+    /* TODO TRY */ parse_string_literal(ctx, &literal);
     return std::make_unique<CString>(std::move(literal), line);
 }
 
 static std::unique_ptr<CVar> /* TODO TRY */ parse_var_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
-    TIdentifier name = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier name;
+    /* TODO TRY */ parse_identifier(ctx, 0, &name);
     return std::make_unique<CVar>(name, line);
 }
 
 static std::unique_ptr<CFunctionCall> /* TODO TRY */ parse_call_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
-    TIdentifier name = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier name;
+    /* TODO TRY */ parse_identifier(ctx, 0, &name);
     /* TODO TRY */ pop_next(ctx);
     std::vector<std::unique_ptr<CExp>> args;
     /* TODO TRY */ peek_next(ctx);
@@ -528,7 +592,8 @@ static std::unique_ptr<CDot> /* TODO TRY */ parse_dot_factor(Ctx ctx, std::uniqu
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_identifier);
-    TIdentifier member = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier member;
+    /* TODO TRY */ parse_identifier(ctx, 0, &member);
     return std::make_unique<CDot>(member, std::move(structure), line);
 }
 
@@ -537,7 +602,8 @@ static std::unique_ptr<CArrow> /* TODO TRY */ parse_arrow_factor(Ctx ctx, std::u
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_identifier);
-    TIdentifier member = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier member;
+    /* TODO TRY */ parse_identifier(ctx, 0, &member);
     return std::make_unique<CArrow>(member, std::move(pointer), line);
 }
 
@@ -548,7 +614,8 @@ static std::unique_ptr<CAssignment> /* TODO TRY */ parse_postfix_incr_factor(
     std::unique_ptr<CExp> exp_left_1;
     std::unique_ptr<CExp> exp_right_1;
     {
-        std::unique_ptr<CBinaryOp> binop = /* TODO TRY */ parse_binop(ctx);
+        std::unique_ptr<CBinaryOp> binop;
+        /* TODO TRY */ parse_binop(ctx, &binop);
         std::unique_ptr<CExp> exp_right;
         {
             std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
@@ -561,7 +628,8 @@ static std::unique_ptr<CAssignment> /* TODO TRY */ parse_postfix_incr_factor(
 
 static std::unique_ptr<CUnary> /* TODO TRY */ parse_unary_factor(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
-    std::unique_ptr<CUnaryOp> unop = /* TODO TRY */ parse_unop(ctx);
+    std::unique_ptr<CUnaryOp> unop;
+    /* TODO TRY */ parse_unop(ctx, &unop);
     std::unique_ptr<CExp> exp = /* TODO TRY */ parse_cast_exp_factor(ctx);
     return std::make_unique<CUnary>(std::move(unop), std::move(exp), line);
 }
@@ -572,7 +640,8 @@ static std::unique_ptr<CAssignment> /* TODO TRY */ parse_incr_unary_factor(Ctx c
     std::unique_ptr<CExp> exp_left_1;
     std::unique_ptr<CExp> exp_right_1;
     {
-        std::unique_ptr<CBinaryOp> binop = /* TODO TRY */ parse_binop(ctx);
+        std::unique_ptr<CBinaryOp> binop;
+        /* TODO TRY */ parse_binop(ctx, &binop);
         std::unique_ptr<CExp> exp_left = /* TODO TRY */ parse_cast_exp_factor(ctx);
         std::unique_ptr<CExp> exp_right;
         {
@@ -791,7 +860,8 @@ static std::unique_ptr<CAssignment> /* TODO TRY */ parse_assign_compound_exp(
     std::unique_ptr<CExp> exp_left_1;
     std::unique_ptr<CExp> exp_right_1;
     {
-        std::unique_ptr<CBinaryOp> binop = /* TODO TRY */ parse_binop(ctx);
+        std::unique_ptr<CBinaryOp> binop;
+        /* TODO TRY */ parse_binop(ctx, &binop);
         std::unique_ptr<CExp> exp_right = /* TODO TRY */ parse_exp(ctx, precedence);
         exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
     }
@@ -801,7 +871,8 @@ static std::unique_ptr<CAssignment> /* TODO TRY */ parse_assign_compound_exp(
 static std::unique_ptr<CBinary> /* TODO TRY */ parse_binary_exp(
     Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
     size_t line = ctx->peek_tok->line;
-    std::unique_ptr<CBinaryOp> binop = /* TODO TRY */ parse_binop(ctx);
+    std::unique_ptr<CBinaryOp> binop;
+    /* TODO TRY */ parse_binop(ctx, &binop);
     std::unique_ptr<CExp> exp_right = /* TODO TRY */ parse_exp(ctx, precedence + 1);
     return std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
 }
@@ -976,7 +1047,8 @@ static std::unique_ptr<CGoto> /* TODO TRY */ parse_goto_statement(Ctx ctx) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_identifier);
-    TIdentifier target = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier target;
+    /* TODO TRY */ parse_identifier(ctx, 0, &target);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
     return std::make_unique<CGoto>(target, line);
@@ -984,7 +1056,8 @@ static std::unique_ptr<CGoto> /* TODO TRY */ parse_goto_statement(Ctx ctx) {
 
 static std::unique_ptr<CLabel> /* TODO TRY */ parse_label_statement(Ctx ctx) {
     size_t line = ctx->peek_tok->line;
-    TIdentifier target = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier target;
+    /* TODO TRY */ parse_identifier(ctx, 0, &target);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     std::unique_ptr<CStatement> jump_to = /* TODO TRY */ parse_statement(ctx);
@@ -1071,11 +1144,11 @@ static std::unique_ptr<CCase> /* TODO TRY */ parse_case_statement(Ctx ctx) {
             case TOK_int_const:
             case TOK_long_const:
             case TOK_char_const:
-                constant = /* TODO TRY */ parse_const(ctx);
+                /* TODO TRY */ parse_const(ctx, &constant);
                 break;
             case TOK_uint_const:
             case TOK_ulong_const:
-                constant = /* TODO TRY */ parse_unsigned_const(ctx);
+                /* TODO TRY */ parse_unsigned_const(ctx, &constant);
                 break;
             default:
                 THROW_AT_LINE_EX(
@@ -1345,11 +1418,13 @@ Lbreak:
                 case TOK_key_void:
                     return std::make_shared<Void>();
                 case TOK_key_struct: {
-                    TIdentifier tag = /* TODO TRY */ parse_identifier(ctx, i);
+                    TIdentifier tag;
+                    /* TODO TRY */ parse_identifier(ctx, i, &tag);
                     return std::make_shared<Structure>(tag, false);
                 }
                 case TOK_key_union: {
-                    TIdentifier tag = /* TODO TRY */ parse_identifier(ctx, i);
+                    TIdentifier tag;
+                    /* TODO TRY */ parse_identifier(ctx, i, &tag);
                     return std::make_shared<Structure>(tag, true);
                 }
                 default:
@@ -1546,7 +1621,8 @@ static void /* TODO TRY */ proc_decltor(
 }
 
 static std::unique_ptr<CIdent> /* TODO TRY */ parse_ident_decltor(Ctx ctx) {
-    TIdentifier name = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier name;
+    /* TODO TRY */ parse_identifier(ctx, 0, &name);
     return std::make_unique<CIdent>(name);
 }
 
@@ -1647,7 +1723,8 @@ static std::unique_ptr<CFunDeclarator> /* TODO TRY */ parse_fun_decltor_suffix(
 static std::unique_ptr<CDeclarator> /* TODO TRY */ parse_arr_decltor_suffix(
     Ctx ctx, std::unique_ptr<CDeclarator>&& decltor) {
     do {
-        TLong size = /* TODO TRY */ parse_arr_size(ctx);
+        TLong size;
+        /* TODO TRY */ parse_arr_size(ctx, &size);
         decltor = std::make_unique<CArrayDeclarator>(size, std::move(decltor));
         /* TODO TRY */ peek_next(ctx);
     }
@@ -1756,7 +1833,8 @@ static std::unique_ptr<CStructDeclaration> /* TODO TRY */ parse_struct_decl(Ctx 
     bool is_union = ctx->next_tok->tok_kind == TOK_key_union;
     /* TODO TRY */ peek_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_identifier);
-    TIdentifier tag = /* TODO TRY */ parse_identifier(ctx, 0);
+    TIdentifier tag;
+    /* TODO TRY */ parse_identifier(ctx, 0, &tag);
     std::vector<std::unique_ptr<CMemberDeclaration>> members;
     /* TODO TRY */ pop_next(ctx);
     if (ctx->next_tok->tok_kind == TOK_open_brace) {
