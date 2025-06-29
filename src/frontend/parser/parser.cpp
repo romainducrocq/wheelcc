@@ -421,61 +421,66 @@ static void proc_abstract_decltor(
     }
 }
 
-static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_abstract_decltor(Ctx ctx);
+static void /* TODO TRY */ parse_abstract_decltor(
+    Ctx ctx, return_t(std::unique_ptr<CAbstractDeclarator>) abstract_decltor);
 
 // (array) <direct-abstract-declarator> ::= { "[" <const> "]" }+
-static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_arr_abstract_decltor(Ctx ctx) {
-    std::unique_ptr<CAbstractDeclarator> abstract_decltor = std::make_unique<CAbstractBase>();
+static void /* TODO TRY */ parse_arr_abstract_decltor(
+    Ctx ctx, return_t(std::unique_ptr<CAbstractDeclarator>) abstract_decltor) {
+    *abstract_decltor = std::make_unique<CAbstractBase>();
     do {
         TLong size;
         /* TODO TRY */ parse_arr_size(ctx, &size);
-        abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(abstract_decltor));
+        *abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(*abstract_decltor));
         /* TODO TRY */ peek_next(ctx);
     }
     while (ctx->peek_tok->tok_kind == TOK_open_bracket);
-    return abstract_decltor;
 }
 
 // (direct) <direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" }
-static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_direct_abstract_decltor(Ctx ctx) {
+static void /* TODO TRY */ parse_direct_abstract_decltor(
+    Ctx ctx, return_t(std::unique_ptr<CAbstractDeclarator>) abstract_decltor) {
     /* TODO TRY */ pop_next(ctx);
-    std::unique_ptr<CAbstractDeclarator> abstract_decltor = /* TODO TRY */ parse_abstract_decltor(ctx);
+    /* TODO TRY */ parse_abstract_decltor(ctx, abstract_decltor);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
     /* TODO TRY */ peek_next(ctx);
     while (ctx->peek_tok->tok_kind == TOK_open_bracket) {
         TLong size;
         /* TODO TRY */ parse_arr_size(ctx, &size);
-        abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(abstract_decltor));
+        *abstract_decltor = std::make_unique<CAbstractArray>(size, std::move(*abstract_decltor));
         /* TODO TRY */ peek_next(ctx);
     }
-    return abstract_decltor;
 }
 
-static std::unique_ptr<CAbstractPointer> /* TODO TRY */ parse_ptr_abstract_decltor(Ctx ctx) {
+static void /* TODO TRY */ parse_ptr_abstract_decltor(
+    Ctx ctx, return_t(std::unique_ptr<CAbstractDeclarator>) abstract_decltor) {
     /* TODO TRY */ pop_next(ctx);
-    std::unique_ptr<CAbstractDeclarator> abstract_decltor;
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_close_paren) {
-        abstract_decltor = std::make_unique<CAbstractBase>();
+        *abstract_decltor = std::make_unique<CAbstractBase>();
     }
     else {
-        abstract_decltor = /* TODO TRY */ parse_abstract_decltor(ctx);
+        /* TODO TRY */ parse_abstract_decltor(ctx, abstract_decltor);
     }
-    return std::make_unique<CAbstractPointer>(std::move(abstract_decltor));
+    *abstract_decltor = std::make_unique<CAbstractPointer>(std::move(*abstract_decltor));
 }
 
 // <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
 // abstract_declarator = AbstractPointer(abstract_declarator) | AbstractArray(int, abstract_declarator) | AbstractBase
-static std::unique_ptr<CAbstractDeclarator> /* TODO TRY */ parse_abstract_decltor(Ctx ctx) {
+static void /* TODO TRY */ parse_abstract_decltor(
+    Ctx ctx, return_t(std::unique_ptr<CAbstractDeclarator>) abstract_decltor) {
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_binop_multiply:
-            return /* TODO TRY */ parse_ptr_abstract_decltor(ctx);
+            /* TODO TRY */ parse_ptr_abstract_decltor(ctx, abstract_decltor);
+            break;
         case TOK_open_paren:
-            return /* TODO TRY */ parse_direct_abstract_decltor(ctx);
+            /* TODO TRY */ parse_direct_abstract_decltor(ctx, abstract_decltor);
+            break;
         case TOK_open_bracket:
-            return /* TODO TRY */ parse_arr_abstract_decltor(ctx);
+            /* TODO TRY */ parse_arr_abstract_decltor(ctx, abstract_decltor);
+            break;
         default:
             THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_abstract_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
@@ -490,7 +495,9 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_prece
 
 static void /* TODO TRY */ parse_decltor_cast_factor(Ctx ctx, std::shared_ptr<Type>& target_type) {
     AbstractDeclarator abstract_decltor;
-    proc_abstract_decltor(/* TODO TRY */ parse_abstract_decltor(ctx).get(), std::move(target_type), abstract_decltor);
+    std::unique_ptr<CAbstractDeclarator> abstract_decltor_1;
+    /* TODO TRY */ parse_abstract_decltor(ctx, &abstract_decltor_1);
+    proc_abstract_decltor(abstract_decltor_1.get(), std::move(target_type), abstract_decltor);
     target_type = std::move(abstract_decltor.derived_type);
 }
 
