@@ -489,8 +489,8 @@ static void /* TODO TRY */ parse_abstract_decltor(
 
 static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx);
 
-static std::unique_ptr<CExp> /* TODO TRY */ parse_unary_exp_factor(Ctx ctx);
-static std::unique_ptr<CExp> /* TODO TRY */ parse_cast_exp_factor(Ctx ctx);
+static void /* TODO TRY */ parse_unary_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp);
+static void /* TODO TRY */ parse_cast_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp);
 static std::unique_ptr<CExp> /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_precedence);
 
 static void /* TODO TRY */ parse_decltor_cast_factor(Ctx ctx, return_t(std::shared_ptr<Type>) target_type) {
@@ -637,7 +637,8 @@ static void /* TODO TRY */ parse_unary_factor(Ctx ctx, return_t(std::unique_ptr<
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CUnaryOp> unop;
     /* TODO TRY */ parse_unop(ctx, &unop);
-    std::unique_ptr<CExp> cast_exp = /* TODO TRY */ parse_cast_exp_factor(ctx);
+    std::unique_ptr<CExp> cast_exp;
+    /* TODO TRY */ parse_cast_exp_factor(ctx, &cast_exp);
     *exp = std::make_unique<CUnary>(std::move(unop), std::move(cast_exp), line);
 }
 
@@ -649,7 +650,8 @@ static void /* TODO TRY */ parse_incr_unary_factor(Ctx ctx, return_t(std::unique
     {
         std::unique_ptr<CBinaryOp> binop;
         /* TODO TRY */ parse_binop(ctx, &binop);
-        std::unique_ptr<CExp> exp_left = /* TODO TRY */ parse_cast_exp_factor(ctx);
+        std::unique_ptr<CExp> exp_left;
+        /* TODO TRY */ parse_cast_exp_factor(ctx, &exp_left);
         std::unique_ptr<CExp> exp_right;
         {
             std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
@@ -662,13 +664,15 @@ static void /* TODO TRY */ parse_incr_unary_factor(Ctx ctx, return_t(std::unique
 
 static void /* TODO TRY */ parse_deref_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->next_tok->line;
-    std::unique_ptr<CExp> cast_exp = /* TODO TRY */ parse_cast_exp_factor(ctx);
+    std::unique_ptr<CExp> cast_exp;
+    /* TODO TRY */ parse_cast_exp_factor(ctx, &cast_exp);
     *exp = std::make_unique<CDereference>(std::move(cast_exp), line);
 }
 
 static void /* TODO TRY */ parse_addrof_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->next_tok->line;
-    std::unique_ptr<CExp> cast_exp = /* TODO TRY */ parse_cast_exp_factor(ctx);
+    std::unique_ptr<CExp> cast_exp;
+    /* TODO TRY */ parse_cast_exp_factor(ctx, &cast_exp);
     *exp = std::make_unique<CAddrOf>(std::move(cast_exp), line);
 }
 
@@ -699,8 +703,9 @@ static void /* TODO TRY */ parse_sizeoft_factor(Ctx ctx, return_t(std::unique_pt
 
 static void /* TODO TRY */ parse_sizeof_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
-    std::unique_ptr<CExp> cast_exp = /* TODO TRY */ parse_unary_exp_factor(ctx);
-    *exp = std::make_unique<CSizeOf>(std::move(cast_exp), line);
+    std::unique_ptr<CExp> unary_exp;
+    /* TODO TRY */ parse_unary_exp_factor(ctx, &unary_exp);
+    *exp = std::make_unique<CSizeOf>(std::move(unary_exp), line);
 }
 
 static void /* TODO TRY */ parse_sizeof_unary_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
@@ -734,7 +739,8 @@ static void /* TODO TRY */ parse_cast_factor(Ctx ctx, return_t(std::unique_ptr<C
     /* TODO TRY */ parse_type_name(ctx, &target_type);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
-    std::unique_ptr<CExp> cast_exp = /* TODO TRY */ parse_cast_exp_factor(ctx);
+    std::unique_ptr<CExp> cast_exp;
+    /* TODO TRY */ parse_cast_exp_factor(ctx, &cast_exp);
     *exp = std::make_unique<CCast>(std::move(cast_exp), std::move(target_type), line);
 }
 
@@ -775,43 +781,39 @@ static void /* TODO TRY */ parse_primary_exp_factor(Ctx ctx, return_t(std::uniqu
     }
 }
 
-// TODO HERE
-
 // <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
 static void /* TODO TRY */ parse_postfix_op_exp_factor(
     Ctx ctx, std::unique_ptr<CExp>&& primary_exp, return_t(std::unique_ptr<CExp>) exp) {
-    std::unique_ptr<CExp> postfix_exp = std::move(primary_exp);
+    std::unique_ptr<CExp> postfix_exp;
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_open_bracket: {
-            /* TODO TRY */ parse_subscript_factor(ctx, std::move(postfix_exp), exp);
+            /* TODO TRY */ parse_subscript_factor(ctx, std::move(primary_exp), &postfix_exp);
             break;
         }
         case TOK_structop_member: {
-            /* TODO TRY */ parse_dot_factor(ctx, std::move(postfix_exp), exp);
+            /* TODO TRY */ parse_dot_factor(ctx, std::move(primary_exp), &postfix_exp);
             break;
         }
         case TOK_structop_ptr: {
-            /* TODO TRY */ parse_arrow_factor(ctx, std::move(postfix_exp), exp);
+            /* TODO TRY */ parse_arrow_factor(ctx, std::move(primary_exp), &postfix_exp);
             break;
         }
         case TOK_unop_incr:
         case TOK_unop_decr: {
-            /* TODO TRY */ parse_postfix_incr_factor(ctx, std::move(postfix_exp), exp);
+            /* TODO TRY */ parse_postfix_incr_factor(ctx, std::move(primary_exp), &postfix_exp);
             break;
         }
         default: {
-            *exp = std::move(postfix_exp);
+            *exp = std::move(primary_exp);
             return;
         }
     }
-    postfix_exp = std::move(*exp);
     /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(postfix_exp), exp);
 }
 
 // <postfix-exp> ::= <primary-exp> { <postfix-op> }
-static std::unique_ptr<CExp> /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx) {
-    /* TODO return_t */ std::unique_ptr<CExp> exp;
+static void /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     std::unique_ptr<CExp> primary_exp;
     /* TODO TRY */ parse_primary_exp_factor(ctx, &primary_exp);
     /* TODO TRY */ peek_next(ctx);
@@ -821,42 +823,43 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx) {
         case TOK_structop_ptr:
         case TOK_unop_incr:
         case TOK_unop_decr:
-            /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(primary_exp), &exp);
-            return exp;
-        default:
-            return primary_exp;
+            /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(primary_exp), exp);
+            break;
+        default: {
+            *exp = std::move(primary_exp);
+            break;
+        }
     }
 }
 
 //<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" | <postfix-exp>
-static std::unique_ptr<CExp> /* TODO TRY */ parse_unary_exp_factor(Ctx ctx) {
-    /* TODO return_t */ std::unique_ptr<CExp> exp;
+static void /* TODO TRY */ parse_unary_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_unop_complement:
         case TOK_unop_neg:
         case TOK_unop_not:
-            /* TODO TRY */ parse_unary_factor(ctx, &exp);
-            return exp;
+            /* TODO TRY */ parse_unary_factor(ctx, exp);
+            break;
         case TOK_unop_incr:
         case TOK_unop_decr:
-            /* TODO TRY */ parse_incr_unary_factor(ctx, &exp);
-            return exp;
+            /* TODO TRY */ parse_incr_unary_factor(ctx, exp);
+            break;
         case TOK_binop_multiply:
         case TOK_binop_bitand:
-            /* TODO TRY */ parse_ptr_unary_factor(ctx, &exp);
-            return exp;
+            /* TODO TRY */ parse_ptr_unary_factor(ctx, exp);
+            break;
         case TOK_key_sizeof:
-            /* TODO TRY */ parse_sizeof_unary_factor(ctx, &exp);
-            return exp;
+            /* TODO TRY */ parse_sizeof_unary_factor(ctx, exp);
+            break;
         default:
-            return /* TODO TRY */ parse_postfix_exp_factor(ctx);
+            /* TODO TRY */ parse_postfix_exp_factor(ctx, exp);
+            break;
     }
 }
 
 // <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
-static std::unique_ptr<CExp> /* TODO TRY */ parse_cast_exp_factor(Ctx ctx) {
-    /* TODO return_t */ std::unique_ptr<CExp> exp;
+static void /* TODO TRY */ parse_cast_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_open_paren) {
         /* TODO TRY */ peek_next_i(ctx, 1);
@@ -870,14 +873,16 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_cast_exp_factor(Ctx ctx) {
             case TOK_key_void:
             case TOK_key_struct:
             case TOK_key_union:
-                /* TODO TRY */ parse_cast_factor(ctx, &exp);
-                return exp;
+                /* TODO TRY */ parse_cast_factor(ctx, exp);
+                return;
             default:
                 break;
         }
     }
-    return /* TODO TRY */ parse_unary_exp_factor(ctx);
+    /* TODO TRY */ parse_unary_exp_factor(ctx, exp);
 }
+
+// TODO HERE
 
 static std::unique_ptr<CAssignment> /* TODO TRY */ parse_assign_exp(
     Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
@@ -980,7 +985,8 @@ static int32_t get_tok_precedence(TOKEN_KIND tok_kind) {
 //     | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type) | Dot(exp, identifier, type)
 //     | Arrow(exp, identifier, type)
 static std::unique_ptr<CExp> /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_precedence) {
-    std::unique_ptr<CExp> exp_left = /* TODO TRY */ parse_cast_exp_factor(ctx);
+    std::unique_ptr<CExp> exp_left;
+    /* TODO TRY */ parse_cast_exp_factor(ctx, &exp_left);
     while (true) {
         /* TODO TRY */ peek_next(ctx);
         int32_t precedence = get_tok_precedence(ctx->peek_tok->tok_kind);
