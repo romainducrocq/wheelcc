@@ -14,7 +14,7 @@ struct IdentifierContext;
 
 // Parser
 
-void parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers,
+int parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers,
     std::unique_ptr<CProgram>* c_ast);
 
 #endif
