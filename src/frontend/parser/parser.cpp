@@ -1044,7 +1044,7 @@ static void /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_precedence, return_t(s
     }
 }
 
-static std::unique_ptr<CForInit> /* TODO TRY */ parse_for_init(Ctx ctx);
+static void /* TODO TRY */ parse_for_init(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init);
 static std::unique_ptr<CBlock> /* TODO TRY */ parse_block(Ctx ctx);
 static void /* TODO TRY */ parse_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement);
 
@@ -1154,7 +1154,8 @@ static void /* TODO TRY */ parse_for_statement(Ctx ctx, return_t(std::unique_ptr
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_open_paren);
-    std::unique_ptr<CForInit> init = /* TODO TRY */ parse_for_init(ctx);
+    std::unique_ptr<CForInit> for_init;
+    /* TODO TRY */ parse_for_init(ctx, &for_init);
     std::unique_ptr<CExp> condition;
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind != TOK_semicolon) {
@@ -1172,7 +1173,7 @@ static void /* TODO TRY */ parse_for_statement(Ctx ctx, return_t(std::unique_ptr
     /* TODO TRY */ peek_next(ctx);
     std::unique_ptr<CStatement> body;
     /* TODO TRY */ parse_statement(ctx, &body);
-    *statement = std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
+    *statement = std::make_unique<CFor>(std::move(for_init), std::move(condition), std::move(post), std::move(body));
 }
 
 static void /* TODO TRY */ parse_switch_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
@@ -1322,7 +1323,7 @@ static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx,
 static std::unique_ptr<CVariableDeclaration> /* TODO TRY */ parse_var_declaration(
     Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor);
 
-static std::unique_ptr<CInitDecl> /* TODO TRY */ parse_for_init_decl(Ctx ctx) {
+static void /* TODO TRY */ parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init) {
     Declarator decltor;
     std::unique_ptr<CStorageClass> storage_class = /* TODO TRY */ parse_decltor_decl(ctx, decltor);
     if (decltor.derived_type->type() == AST_FunType_t) {
@@ -1331,10 +1332,10 @@ static std::unique_ptr<CInitDecl> /* TODO TRY */ parse_for_init_decl(Ctx ctx) {
     }
     std::unique_ptr<CVariableDeclaration> init =
         /* TODO TRY */ parse_var_declaration(ctx, std::move(storage_class), std::move(decltor));
-    return std::make_unique<CInitDecl>(std::move(init));
+    *for_init = std::make_unique<CInitDecl>(std::move(init));
 }
 
-static std::unique_ptr<CInitExp> /* TODO TRY */ parse_for_init_exp(Ctx ctx) {
+static void /* TODO TRY */ parse_for_init_exp(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init) {
     std::unique_ptr<CExp> init;
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind != TOK_semicolon) {
@@ -1342,12 +1343,12 @@ static std::unique_ptr<CInitExp> /* TODO TRY */ parse_for_init_exp(Ctx ctx) {
     }
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CInitExp>(std::move(init));
+    *for_init = std::make_unique<CInitExp>(std::move(init));
 }
 
 // <for-init> ::= <variable-declaration> | [ <exp> ] ";"
 // for_init = InitDecl(variable_declaration) | InitExp(exp?)
-static std::unique_ptr<CForInit> /* TODO TRY */ parse_for_init(Ctx ctx) {
+static void /* TODO TRY */ parse_for_init(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init) {
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_char:
@@ -1361,9 +1362,11 @@ static std::unique_ptr<CForInit> /* TODO TRY */ parse_for_init(Ctx ctx) {
         case TOK_key_union:
         case TOK_key_static:
         case TOK_key_extern:
-            return /* TODO TRY */ parse_for_init_decl(ctx);
+            /* TODO TRY */ parse_for_init_decl(ctx, for_init);
+            break;
         default:
-            return /* TODO TRY */ parse_for_init_exp(ctx);
+            /* TODO TRY */ parse_for_init_exp(ctx, for_init);
+            break;
     }
 }
 
