@@ -44,6 +44,8 @@ struct ParserContext {
 
 // Parser
 
+// TODO rm
+// TR_Y should be 372
 #define FINALLY_EXIT \
     EARLY_EXIT;      \
     FINALLY;
