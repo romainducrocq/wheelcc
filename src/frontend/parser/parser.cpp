@@ -1046,7 +1046,7 @@ static void /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_precedence, return_t(s
 
 static std::unique_ptr<CForInit> /* TODO TRY */ parse_for_init(Ctx ctx);
 static std::unique_ptr<CBlock> /* TODO TRY */ parse_block(Ctx ctx);
-static std::unique_ptr<CStatement> /* TODO TRY */ parse_statement(Ctx ctx);
+static void /* TODO TRY */ parse_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement);
 
 static void /* TODO TRY */ parse_ret_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     size_t line = ctx->peek_tok->line;
@@ -1078,13 +1078,14 @@ static void /* TODO TRY */ parse_if_statement(Ctx ctx, return_t(std::unique_ptr<
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> then = /* TODO TRY */ parse_statement(ctx);
+    std::unique_ptr<CStatement> then;
+    /* TODO TRY */ parse_statement(ctx, &then);
     std::unique_ptr<CStatement> else_fi;
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_key_else) {
         /* TODO TRY */ pop_next(ctx);
         /* TODO TRY */ peek_next(ctx);
-        else_fi = /* TODO TRY */ parse_statement(ctx);
+        /* TODO TRY */ parse_statement(ctx, &else_fi);
     }
     *statement = std::make_unique<CIf>(std::move(condition), std::move(then), std::move(else_fi));
 }
@@ -1107,7 +1108,8 @@ static void /* TODO TRY */ parse_label_statement(Ctx ctx, return_t(std::unique_p
     /* TODO TRY */ parse_identifier(ctx, 0, &target);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> jump_to = /* TODO TRY */ parse_statement(ctx);
+    std::unique_ptr<CStatement> jump_to;
+    /* TODO TRY */ parse_statement(ctx, &jump_to);
     *statement = std::make_unique<CLabel>(target, std::move(jump_to), line);
 }
 
@@ -1125,14 +1127,16 @@ static void /* TODO TRY */ parse_while_statement(Ctx ctx, return_t(std::unique_p
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> body = /* TODO TRY */ parse_statement(ctx);
+    std::unique_ptr<CStatement> body;
+    /* TODO TRY */ parse_statement(ctx, &body);
     *statement = std::make_unique<CWhile>(std::move(condition), std::move(body));
 }
 
 static void /* TODO TRY */ parse_do_while_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> body = /* TODO TRY */ parse_statement(ctx);
+    std::unique_ptr<CStatement> body;
+    /* TODO TRY */ parse_statement(ctx, &body);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_key_while);
     /* TODO TRY */ pop_next(ctx);
@@ -1166,11 +1170,12 @@ static void /* TODO TRY */ parse_for_statement(Ctx ctx, return_t(std::unique_ptr
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> body = /* TODO TRY */ parse_statement(ctx);
+    std::unique_ptr<CStatement> body;
+    /* TODO TRY */ parse_statement(ctx, &body);
     *statement = std::make_unique<CFor>(std::move(init), std::move(condition), std::move(post), std::move(body));
 }
 
-static std::unique_ptr<CSwitch> /* TODO TRY */ parse_switch_statement(Ctx ctx) {
+static void /* TODO TRY */ parse_switch_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_open_paren);
@@ -1179,11 +1184,12 @@ static std::unique_ptr<CSwitch> /* TODO TRY */ parse_switch_statement(Ctx ctx) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> body = /* TODO TRY */ parse_statement(ctx);
-    return std::make_unique<CSwitch>(std::move(match), std::move(body));
+    std::unique_ptr<CStatement> body;
+    /* TODO TRY */ parse_statement(ctx, &body);
+    *statement = std::make_unique<CSwitch>(std::move(match), std::move(body));
 }
 
-static std::unique_ptr<CCase> /* TODO TRY */ parse_case_statement(Ctx ctx) {
+static void /* TODO TRY */ parse_case_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     /* TODO TRY */ pop_next(ctx);
     std::unique_ptr<CExp> value;
     {
@@ -1210,39 +1216,41 @@ static std::unique_ptr<CCase> /* TODO TRY */ parse_case_statement(Ctx ctx) {
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_ternary_else);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> jump_to = /* TODO TRY */ parse_statement(ctx);
-    return std::make_unique<CCase>(std::move(value), std::move(jump_to));
+    std::unique_ptr<CStatement> jump_to;
+    /* TODO TRY */ parse_statement(ctx, &jump_to);
+    *statement = std::make_unique<CCase>(std::move(value), std::move(jump_to));
 }
 
-static std::unique_ptr<CDefault> /* TODO TRY */ parse_default_statement(Ctx ctx) {
+static void /* TODO TRY */ parse_default_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_ternary_else);
     /* TODO TRY */ peek_next(ctx);
-    std::unique_ptr<CStatement> jump_to = /* TODO TRY */ parse_statement(ctx);
-    return std::make_unique<CDefault>(std::move(jump_to), line);
+    std::unique_ptr<CStatement> jump_to;
+    /* TODO TRY */ parse_statement(ctx, &jump_to);
+    *statement = std::make_unique<CDefault>(std::move(jump_to), line);
 }
 
-static std::unique_ptr<CBreak> /* TODO TRY */ parse_break_statement(Ctx ctx) {
+static void /* TODO TRY */ parse_break_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CBreak>(line);
+    *statement = std::make_unique<CBreak>(line);
 }
 
-static std::unique_ptr<CContinue> /* TODO TRY */ parse_continue_statement(Ctx ctx) {
+static void /* TODO TRY */ parse_continue_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CContinue>(line);
+    *statement = std::make_unique<CContinue>(line);
 }
 
-static std::unique_ptr<CNull> /* TODO TRY */ parse_null_statement(Ctx ctx) {
+static void /* TODO TRY */ parse_null_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     /* TODO TRY */ pop_next(ctx);
-    return std::make_unique<CNull>();
+    *statement = std::make_unique<CNull>();
 }
 
 // <statement> ::= ";" | "return" [ <exp> ] ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
@@ -1255,55 +1263,59 @@ static std::unique_ptr<CNull> /* TODO TRY */ parse_null_statement(Ctx ctx) {
 //           | DoWhile(statement, exp, identifier) | For(for_init, exp?, exp?, statement, identifier)
 //           | Switch(identifier, bool, exp, statement, exp*) | Case(identifier, exp, statement)
 //           | Default(identifier, statement) | Break(identifier) | Continue(identifier) | Null
-static std::unique_ptr<CStatement> /* TODO TRY */ parse_statement(Ctx ctx) {
-    /* TODO return_t */ std::unique_ptr<CStatement> statement;
+static void /* TODO TRY */ parse_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_return:
-            /* TODO TRY */ parse_ret_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_ret_statement(ctx, statement);
+            return;
         case TOK_key_if:
-            /* TODO TRY */ parse_if_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_if_statement(ctx, statement);
+            return;
         case TOK_key_goto:
-            /* TODO TRY */ parse_goto_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_goto_statement(ctx, statement);
+            return;
         case TOK_identifier: {
             /* TODO TRY */ peek_next_i(ctx, 1);
             if (ctx->peek_tok_i->tok_kind == TOK_ternary_else) {
-                /* TODO TRY */ parse_label_statement(ctx, &statement);
-                return statement;
+                /* TODO TRY */ parse_label_statement(ctx, statement);
+                return;
             }
             break;
         }
         case TOK_open_brace:
-            /* TODO TRY */ parse_compound_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_compound_statement(ctx, statement);
+            return;
         case TOK_key_while:
-            /* TODO TRY */ parse_while_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_while_statement(ctx, statement);
+            return;
         case TOK_key_do:
-            /* TODO TRY */ parse_do_while_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_do_while_statement(ctx, statement);
+            return;
         case TOK_key_for:
-            /* TODO TRY */ parse_for_statement(ctx, &statement);
-            return statement;
+            /* TODO TRY */ parse_for_statement(ctx, statement);
+            return;
         case TOK_key_switch:
-            return /* TODO TRY */ parse_switch_statement(ctx);
+            /* TODO TRY */ parse_switch_statement(ctx, statement);
+            return;
         case TOK_key_case:
-            return /* TODO TRY */ parse_case_statement(ctx);
+            /* TODO TRY */ parse_case_statement(ctx, statement);
+            return;
         case TOK_key_default:
-            return /* TODO TRY */ parse_default_statement(ctx);
+            /* TODO TRY */ parse_default_statement(ctx, statement);
+            return;
         case TOK_key_break:
-            return /* TODO TRY */ parse_break_statement(ctx);
+            /* TODO TRY */ parse_break_statement(ctx, statement);
+            return;
         case TOK_key_continue:
-            return /* TODO TRY */ parse_continue_statement(ctx);
+            /* TODO TRY */ parse_continue_statement(ctx, statement);
+            return;
         case TOK_semicolon:
-            return /* TODO TRY */ parse_null_statement(ctx);
+            /* TODO TRY */ parse_null_statement(ctx, statement);
+            return;
         default:
             break;
     }
-    /* TODO TRY */ parse_exp_statement(ctx, &statement);
-    return statement;
+    /* TODO TRY */ parse_exp_statement(ctx, statement);
 }
 
 static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx, Declarator& decltor);
@@ -1358,7 +1370,8 @@ static std::unique_ptr<CForInit> /* TODO TRY */ parse_for_init(Ctx ctx) {
 static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx);
 
 static std::unique_ptr<CS> /* TODO TRY */ parse_s_block_item(Ctx ctx) {
-    std::unique_ptr<CStatement> statement = /* TODO TRY */ parse_statement(ctx);
+    std::unique_ptr<CStatement> statement;
+    /* TODO TRY */ parse_statement(ctx, &statement);
     return std::make_unique<CS>(std::move(statement));
 }
 
