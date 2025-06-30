@@ -2,7 +2,6 @@
 #include <inttypes.h>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "util/str2t.hpp"
@@ -44,34 +43,28 @@ struct ParserContext {
 
 // Parser
 
-// TODO rm
-// TR_Y should be 372
-#define FINALLY_EXIT \
-    EARLY_EXIT;      \
-    FINALLY;
-
 typedef ParserContext* Ctx;
 
 static error_t expect_next(Ctx ctx, Token* next_tok, TOKEN_KIND expect_tok) {
     CATCH_ENTER;
     if (next_tok->tok_kind != expect_tok) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_unexpected_next_tok, get_tok_fmt(ctx->identifiers, next_tok),
-                             get_tok_kind_fmt(expect_tok)),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_unexpected_next_tok, get_tok_fmt(ctx->identifiers, next_tok),
+                          get_tok_kind_fmt(expect_tok)),
             next_tok->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t pop_next(Ctx ctx) {
     CATCH_ENTER;
     if (ctx->pop_idx >= ctx->p_toks->size()) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
+        THROW_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
     }
 
     ctx->next_tok = &(*ctx->p_toks)[ctx->pop_idx];
     ctx->pop_idx++;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -83,7 +76,7 @@ static error_t pop_next_i(Ctx ctx, size_t i) {
         EARLY_EXIT;
     }
     if (ctx->pop_idx + i >= ctx->p_toks->size()) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
+        THROW_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
     }
 
     if (i == 1) {
@@ -105,11 +98,11 @@ static error_t pop_next_i(Ctx ctx, size_t i) {
 static error_t peek_next(Ctx ctx) {
     CATCH_ENTER;
     if (ctx->pop_idx >= ctx->p_toks->size()) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
+        THROW_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
     }
 
     ctx->peek_tok = &(*ctx->p_toks)[ctx->pop_idx];
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -121,7 +114,7 @@ static error_t peek_next_i(Ctx ctx, size_t i) {
         EARLY_EXIT;
     }
     if (ctx->pop_idx + i >= ctx->p_toks->size()) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
+        THROW_AT_LINE(GET_PARSER_MSG_0(MSG_reached_eof), ctx->p_toks->back().line);
     }
 
     ctx->peek_tok_i = &(*ctx->p_toks)[ctx->pop_idx + i];
@@ -217,8 +210,7 @@ static error_t parse_const(Ctx ctx, return_t(std::shared_ptr<CConst>) constant) 
     TRY(string_to_intmax(
         ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str(), ctx->next_tok->line, &value));
     if (value > 9223372036854775807ll) {
-        THROW_AT_LINE_EX(
-            GET_PARSER_MSG(MSG_overflow_long_const, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str()),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_overflow_long_const, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str()),
             ctx->next_tok->line);
     }
     if (ctx->next_tok->tok_kind == TOK_int_const && value <= 2147483647l) {
@@ -241,7 +233,7 @@ static error_t parse_unsigned_const(Ctx ctx, return_t(std::shared_ptr<CConst>) c
     TRY(string_to_uintmax(
         ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str(), ctx->next_tok->line, &value));
     if (value > 18446744073709551615ull) {
-        THROW_AT_LINE_EX(
+        THROW_AT_LINE(
             GET_PARSER_MSG(MSG_overflow_ulong_const, ctx->identifiers->hash_table[ctx->next_tok->tok].c_str()),
             ctx->next_tok->line);
     }
@@ -271,7 +263,7 @@ static error_t parse_arr_size(Ctx ctx, return_t(TLong) size) {
             TRY(parse_unsigned_const(ctx, &constant));
             break;
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_arr_size_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_arr_size_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     TRY(pop_next(ctx));
@@ -319,7 +311,7 @@ static error_t parse_unop(Ctx ctx, return_t(std::unique_ptr<CUnaryOp>) unop) {
             break;
         }
         default:
-            THROW_AT_LINE_EX(
+            THROW_AT_LINE(
                 GET_PARSER_MSG(MSG_expect_unop, get_tok_fmt(ctx->identifiers, ctx->next_tok)), ctx->next_tok->line);
     }
     FINALLY;
@@ -420,7 +412,7 @@ static error_t parse_binop(Ctx ctx, return_t(std::unique_ptr<CBinaryOp>) binop) 
             break;
         }
         default:
-            THROW_AT_LINE_EX(
+            THROW_AT_LINE(
                 GET_PARSER_MSG(MSG_expect_binop, get_tok_fmt(ctx->identifiers, ctx->next_tok)), ctx->next_tok->line);
     }
     FINALLY;
@@ -530,7 +522,7 @@ static error_t parse_abstract_decltor(Ctx ctx, return_t(std::unique_ptr<CAbstrac
             TRY(parse_arr_abstract_decltor(ctx, abstract_decltor));
             break;
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_abstract_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_abstract_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     FINALLY;
@@ -779,7 +771,7 @@ static error_t parse_ptr_unary_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) e
             TRY(parse_addrof_factor(ctx, exp));
             break;
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_ptr_unary_factor, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_ptr_unary_factor, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
                 ctx->next_tok->line);
     }
     FINALLY;
@@ -883,8 +875,7 @@ static error_t parse_primary_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>)
             TRY(parse_inner_exp_factor(ctx, exp));
             break;
         default:
-            THROW_AT_LINE_EX(
-                GET_PARSER_MSG(MSG_expect_primary_exp_factor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_primary_exp_factor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     FINALLY;
@@ -1151,7 +1142,7 @@ static error_t parse_exp(Ctx ctx, int32_t min_precedence, return_t(std::unique_p
                 TRY(parse_ternary_exp(ctx, precedence, exp));
                 break;
             default:
-                THROW_AT_LINE_EX(
+                THROW_AT_LINE(
                     GET_PARSER_MSG(MSG_expect_exp, get_tok_fmt(ctx->identifiers, ctx->peek_tok)), ctx->peek_tok->line);
         }
     }
@@ -1356,7 +1347,7 @@ static error_t parse_case_statement(Ctx ctx, return_t(std::unique_ptr<CStatement
             TRY(parse_unsigned_const(ctx, &constant));
             break;
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_case_value_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_case_value_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     value = std::make_unique<CConstant>(std::move(constant), line);
@@ -1492,7 +1483,7 @@ static error_t parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) 
     CATCH_ENTER;
     TRY(parse_decltor_decl(ctx, decltor, &storage_class));
     if (decltor.derived_type->type() == AST_FunType_t) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_for_init_decl_as_fun, ctx->identifiers->hash_table[decltor.name].c_str()),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_for_init_decl_as_fun, ctx->identifiers->hash_table[decltor.name].c_str()),
             ctx->next_tok->line);
     }
     TRY(parse_var_declaration(ctx, std::move(storage_class), std::move(decltor), &var_decl));
@@ -1664,7 +1655,7 @@ static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) typ
                 break;
             }
             default:
-                THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_specifier, get_tok_fmt(ctx->identifiers, ctx->peek_tok_i)),
+                THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier, get_tok_fmt(ctx->identifiers, ctx->peek_tok_i)),
                     ctx->peek_tok_i->line);
         }
     }
@@ -1786,7 +1777,7 @@ Lbreak:
         type_tok_kinds_s.pop_back();
     }
     type_tok_kinds_s += ")";
-    THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_specifier_list, type_tok_kinds_s.c_str()), line);
+    THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier_list, type_tok_kinds_s.c_str()), line);
     FINALLY;
     CATCH_EXIT;
 }
@@ -1806,7 +1797,7 @@ static error_t parse_storage_class(Ctx ctx, return_t(std::unique_ptr<CStorageCla
             break;
         }
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_storage_class, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_storage_class, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
                 ctx->next_tok->line);
     }
     FINALLY;
@@ -1843,7 +1834,7 @@ static error_t parse_compound_init(Ctx ctx, return_t(std::unique_ptr<CInitialize
         TRY(expect_next(ctx, ctx->next_tok, TOK_comma_separator));
     }
     if (initializers.empty()) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_empty_compound_init), ctx->peek_tok->line);
+        THROW_AT_LINE(GET_PARSER_MSG_0(MSG_empty_compound_init), ctx->peek_tok->line);
     }
     TRY(pop_next(ctx));
     *initializer = std::make_unique<CCompoundInit>(std::move(initializers));
@@ -1915,7 +1906,7 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     std::vector<std::shared_ptr<Type>> param_types;
     CATCH_ENTER;
     if (node->decltor->type() != AST_CIdent_t) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_derived_fun_decl), ctx->next_tok->line);
+        THROW_AT_LINE(GET_PARSER_MSG_0(MSG_derived_fun_decl), ctx->next_tok->line);
     }
 
     TIdentifier name;
@@ -1986,7 +1977,7 @@ static error_t parse_simple_decltor_decl(Ctx ctx, return_t(std::unique_ptr<CDecl
             TRY(parse_simple_decltor(ctx, decltor));
             break;
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_simple_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_simple_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     FINALLY;
@@ -2056,7 +2047,7 @@ static error_t parse_param_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CP
             TRY(parse_non_empty_param_list(ctx, param_list));
             break;
         default:
-            THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_param_list, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_param_list, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     TRY(pop_next(ctx));
@@ -2183,12 +2174,12 @@ static error_t parse_member_declaration(Ctx ctx, return_t(std::unique_ptr<CMembe
     size_t line;
     TRY(parse_decltor_decl(ctx, decltor, &storage_class));
     if (storage_class) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_member_decl_not_auto, ctx->identifiers->hash_table[decltor.name].c_str(),
-                             get_storage_class_fmt(storage_class.get())),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_member_decl_not_auto, ctx->identifiers->hash_table[decltor.name].c_str(),
+                          get_storage_class_fmt(storage_class.get())),
             ctx->next_tok->line);
     }
     if (decltor.derived_type->type() == AST_FunType_t) {
-        THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_member_decl_as_fun, ctx->identifiers->hash_table[decltor.name].c_str()),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_member_decl_as_fun, ctx->identifiers->hash_table[decltor.name].c_str()),
             ctx->next_tok->line);
     }
     line = ctx->next_tok->line;
@@ -2314,8 +2305,6 @@ static error_t parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>
     FINALLY;
     CATCH_EXIT;
 }
-
-// TODO HERE going up^
 
 // <program> ::= { <declaration> }
 // AST = Program(declaration*)
