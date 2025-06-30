@@ -1601,28 +1601,32 @@ Lbreak:
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
 // storage_class = Static | Extern
-static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_storage_class(Ctx ctx) {
+static void /* TODO TRY */ parse_storage_class(Ctx ctx, return_t(std::unique_ptr<CStorageClass>) storage_class) {
     /* TODO TRY */ pop_next(ctx);
     switch (ctx->next_tok->tok_kind) {
-        case TOK_key_static:
-            return std::make_unique<CStatic>();
-        case TOK_key_extern:
-            return std::make_unique<CExtern>();
+        case TOK_key_static: {
+            *storage_class = std::make_unique<CStatic>();
+            break;
+        }
+        case TOK_key_extern: {
+            *storage_class = std::make_unique<CExtern>();
+            break;
+        }
         default:
             THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_storage_class, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
                 ctx->next_tok->line);
     }
 }
 
-static std::unique_ptr<CInitializer> /* TODO TRY */ parse_initializer(Ctx ctx);
+static void /* TODO TRY */ parse_initializer(Ctx ctx, return_t(std::unique_ptr<CInitializer>) initializer);
 
-static std::unique_ptr<CSingleInit> /* TODO TRY */ parse_single_init(Ctx ctx) {
+static void /* TODO TRY */ parse_single_init(Ctx ctx, return_t(std::unique_ptr<CInitializer>) init) {
     std::unique_ptr<CExp> exp;
     /* TODO TRY */ parse_exp(ctx, 0, &exp);
-    return std::make_unique<CSingleInit>(std::move(exp));
+    *init = std::make_unique<CSingleInit>(std::move(exp));
 }
 
-static std::unique_ptr<CCompoundInit> /* TODO TRY */ parse_compound_init(Ctx ctx) {
+static void /* TODO TRY */ parse_compound_init(Ctx ctx, return_t(std::unique_ptr<CInitializer>) init) {
     /* TODO TRY */ pop_next(ctx);
     std::vector<std::unique_ptr<CInitializer>> initializers;
     while (true) {
@@ -1630,7 +1634,8 @@ static std::unique_ptr<CCompoundInit> /* TODO TRY */ parse_compound_init(Ctx ctx
         if (ctx->peek_tok->tok_kind == TOK_close_brace) {
             break;
         }
-        std::unique_ptr<CInitializer> initializer = /* TODO TRY */ parse_initializer(ctx);
+        std::unique_ptr<CInitializer> initializer;
+        /* TODO TRY */ parse_initializer(ctx, &initializer);
         initializers.push_back(std::move(initializer));
         /* TODO TRY */ peek_next(ctx);
         if (ctx->peek_tok->tok_kind == TOK_close_brace) {
@@ -1643,18 +1648,18 @@ static std::unique_ptr<CCompoundInit> /* TODO TRY */ parse_compound_init(Ctx ctx
         THROW_AT_LINE_EX(GET_PARSER_MSG_0(MSG_empty_compound_init), ctx->peek_tok->line);
     }
     /* TODO TRY */ pop_next(ctx);
-    return std::make_unique<CCompoundInit>(std::move(initializers));
+    *init = std::make_unique<CCompoundInit>(std::move(initializers));
 }
 
 // <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [","] "}"
 // initializer = SingleInit(exp) | CompoundInit(initializer*)
-static std::unique_ptr<CInitializer> /* TODO TRY */ parse_initializer(Ctx ctx) {
+static void /* TODO TRY */ parse_initializer(Ctx ctx, return_t(std::unique_ptr<CInitializer>) initializer) {
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_open_brace) {
-        return /* TODO TRY */ parse_compound_init(ctx);
+        /* TODO TRY */ parse_compound_init(ctx, initializer);
     }
     else {
-        return /* TODO TRY */ parse_single_init(ctx);
+        /* TODO TRY */ parse_single_init(ctx, initializer);
     }
 }
 
@@ -1896,16 +1901,16 @@ static std::unique_ptr<CFunctionDeclaration> /* TODO TRY */ parse_fun_declaratio
 static std::unique_ptr<CVariableDeclaration> /* TODO TRY */ parse_var_declaration(
     Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
     size_t line = ctx->next_tok->line;
-    std::unique_ptr<CInitializer> init;
+    std::unique_ptr<CInitializer> initializer;
     /* TODO TRY */ peek_next(ctx);
     if (ctx->peek_tok->tok_kind == TOK_assign) {
         /* TODO TRY */ pop_next(ctx);
-        init = /* TODO TRY */ parse_initializer(ctx);
+        /* TODO TRY */ parse_initializer(ctx, &initializer);
     }
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
     return std::make_unique<CVariableDeclaration>(
-        decltor.name, std::move(init), std::move(decltor.derived_type), std::move(storage_class), line);
+        decltor.name, std::move(initializer), std::move(decltor.derived_type), std::move(storage_class), line);
 }
 
 // <member-declaration> ::= { <type-specifier> }+ <declarator> ";"
@@ -1987,7 +1992,8 @@ static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx,
         case TOK_open_paren:
             break;
         default:
-            storage_class = /* TODO TRY */ parse_storage_class(ctx);
+            /* TODO TRY */ parse_storage_class(ctx, &storage_class);
+            break;
     }
     std::unique_ptr<CDeclarator> decltor_1 = /* TODO TRY */ parse_decltor(ctx);
     /* TODO TRY */ proc_decltor(ctx, decltor_1.get(), std::move(type_specifier), decltor);
