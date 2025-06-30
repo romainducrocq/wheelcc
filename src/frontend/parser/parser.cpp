@@ -577,47 +577,44 @@ static void /* TODO TRY */ parse_call_factor(Ctx ctx, return_t(std::unique_ptr<C
     *exp = std::make_unique<CFunctionCall>(name, std::move(args), line);
 }
 
-static void /* TODO TRY */ parse_inner_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) inner_exp) {
+static void /* TODO TRY */ parse_inner_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     /* TODO TRY */ pop_next(ctx);
-    /* TODO TRY */ parse_exp(ctx, 0, inner_exp);
+    /* TODO TRY */ parse_exp(ctx, 0, exp);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
 }
 
-static void /* TODO TRY */ parse_subscript_factor(
-    Ctx ctx, std::unique_ptr<CExp>&& primary_exp, return_t(std::unique_ptr<CExp>) subscript_exp) {
+static void /* TODO TRY */ parse_subscript_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
+    std::unique_ptr<CExp> subscript_exp;
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
-    /* TODO TRY */ parse_exp(ctx, 0, subscript_exp);
+    /* TODO TRY */ parse_exp(ctx, 0, &subscript_exp);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_bracket);
-    *subscript_exp = std::make_unique<CSubscript>(std::move(primary_exp), std::move(*subscript_exp), line);
+    *exp = std::make_unique<CSubscript>(std::move(*exp), std::move(subscript_exp), line);
 }
 
-static void /* TODO TRY */ parse_dot_factor(
-    Ctx ctx, std::unique_ptr<CExp>&& structure, return_t(std::unique_ptr<CExp>) exp) {
+static void /* TODO TRY */ parse_dot_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_identifier);
     TIdentifier member;
     /* TODO TRY */ parse_identifier(ctx, 0, &member);
-    *exp = std::make_unique<CDot>(member, std::move(structure), line);
+    *exp = std::make_unique<CDot>(member, std::move(*exp), line);
 }
 
-static void /* TODO TRY */ parse_arrow_factor(
-    Ctx ctx, std::unique_ptr<CExp>&& pointer, return_t(std::unique_ptr<CExp>) exp) {
+static void /* TODO TRY */ parse_arrow_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ peek_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_identifier);
     TIdentifier member;
     /* TODO TRY */ parse_identifier(ctx, 0, &member);
-    *exp = std::make_unique<CArrow>(member, std::move(pointer), line);
+    *exp = std::make_unique<CArrow>(member, std::move(*exp), line);
 }
 
-static void /* TODO TRY */ parse_postfix_incr_factor(
-    Ctx ctx, std::unique_ptr<CExp>&& exp_left, return_t(std::unique_ptr<CExp>) exp) {
+static void /* TODO TRY */ parse_postfix_incr_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CUnaryOp> unop = std::make_unique<CPostfix>();
     std::unique_ptr<CExp> exp_left_1;
@@ -630,7 +627,7 @@ static void /* TODO TRY */ parse_postfix_incr_factor(
             std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
             exp_right = std::make_unique<CConstant>(std::move(constant), line);
         }
-        exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
+        exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(*exp), std::move(exp_right), line);
     }
     *exp = std::make_unique<CAssignment>(std::move(unop), std::move(exp_left_1), std::move(exp_right_1), line);
 }
@@ -784,36 +781,31 @@ static void /* TODO TRY */ parse_primary_exp_factor(Ctx ctx, return_t(std::uniqu
 }
 
 // <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
-static void /* TODO TRY */ parse_postfix_op_exp_factor(
-    Ctx ctx, std::unique_ptr<CExp>&& primary_exp, return_t(std::unique_ptr<CExp>) exp) {
-    std::unique_ptr<CExp> postfix_exp;
+static void /* TODO TRY */ parse_postfix_op_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_open_bracket:
-            /* TODO TRY */ parse_subscript_factor(ctx, std::move(primary_exp), &postfix_exp);
+            /* TODO TRY */ parse_subscript_factor(ctx, exp);
             break;
         case TOK_structop_member:
-            /* TODO TRY */ parse_dot_factor(ctx, std::move(primary_exp), &postfix_exp);
+            /* TODO TRY */ parse_dot_factor(ctx, exp);
             break;
         case TOK_structop_ptr:
-            /* TODO TRY */ parse_arrow_factor(ctx, std::move(primary_exp), &postfix_exp);
+            /* TODO TRY */ parse_arrow_factor(ctx, exp);
             break;
         case TOK_unop_incr:
         case TOK_unop_decr:
-            /* TODO TRY */ parse_postfix_incr_factor(ctx, std::move(primary_exp), &postfix_exp);
+            /* TODO TRY */ parse_postfix_incr_factor(ctx, exp);
             break;
-        default: {
-            *exp = std::move(primary_exp);
+        default:
             return;
-        }
     }
-    /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(postfix_exp), exp);
+    /* TODO TRY */ parse_postfix_op_exp_factor(ctx, exp);
 }
 
 // <postfix-exp> ::= <primary-exp> { <postfix-op> }
 static void /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
-    std::unique_ptr<CExp> primary_exp;
-    /* TODO TRY */ parse_primary_exp_factor(ctx, &primary_exp);
+    /* TODO TRY */ parse_primary_exp_factor(ctx, exp);
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_open_bracket:
@@ -821,12 +813,10 @@ static void /* TODO TRY */ parse_postfix_exp_factor(Ctx ctx, return_t(std::uniqu
         case TOK_structop_ptr:
         case TOK_unop_incr:
         case TOK_unop_decr:
-            /* TODO TRY */ parse_postfix_op_exp_factor(ctx, std::move(primary_exp), exp);
+            /* TODO TRY */ parse_postfix_op_exp_factor(ctx, exp);
             break;
-        default: {
-            *exp = std::move(primary_exp);
+        default:
             break;
-        }
     }
 }
 
