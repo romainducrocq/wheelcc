@@ -882,19 +882,17 @@ static void /* TODO TRY */ parse_cast_exp_factor(Ctx ctx, return_t(std::unique_p
     /* TODO TRY */ parse_unary_exp_factor(ctx, exp);
 }
 
-// TODO HERE
-
-static std::unique_ptr<CAssignment> /* TODO TRY */ parse_assign_exp(
-    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
+static void /* TODO TRY */ parse_assign_exp(
+    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     std::unique_ptr<CUnaryOp> unop;
     std::unique_ptr<CExp> exp_right = /* TODO TRY */ parse_exp(ctx, precedence);
-    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left), std::move(exp_right), line);
+    *exp = std::make_unique<CAssignment>(std::move(unop), std::move(exp_left), std::move(exp_right), line);
 }
 
-static std::unique_ptr<CAssignment> /* TODO TRY */ parse_assign_compound_exp(
-    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
+static void /* TODO TRY */ parse_assign_compound_exp(
+    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CUnaryOp> unop;
     std::unique_ptr<CExp> exp_left_1;
@@ -905,27 +903,27 @@ static std::unique_ptr<CAssignment> /* TODO TRY */ parse_assign_compound_exp(
         std::unique_ptr<CExp> exp_right = /* TODO TRY */ parse_exp(ctx, precedence);
         exp_right_1 = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
     }
-    return std::make_unique<CAssignment>(std::move(unop), std::move(exp_left_1), std::move(exp_right_1), line);
+    *exp = std::make_unique<CAssignment>(std::move(unop), std::move(exp_left_1), std::move(exp_right_1), line);
 }
 
-static std::unique_ptr<CBinary> /* TODO TRY */ parse_binary_exp(
-    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
+static void /* TODO TRY */ parse_binary_exp(
+    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     std::unique_ptr<CBinaryOp> binop;
     /* TODO TRY */ parse_binop(ctx, &binop);
     std::unique_ptr<CExp> exp_right = /* TODO TRY */ parse_exp(ctx, precedence + 1);
-    return std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
+    *exp = std::make_unique<CBinary>(std::move(binop), std::move(exp_left), std::move(exp_right), line);
 }
 
-static std::unique_ptr<CConditional> /* TODO TRY */ parse_ternary_exp(
-    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence) {
+static void /* TODO TRY */ parse_ternary_exp(
+    Ctx ctx, std::unique_ptr<CExp>&& exp_left, int32_t precedence, return_t(std::unique_ptr<CExp>) exp) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     std::unique_ptr<CExp> exp_middle = /* TODO TRY */ parse_exp(ctx, 0);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_ternary_else);
     std::unique_ptr<CExp> exp_right = /* TODO TRY */ parse_exp(ctx, precedence);
-    return std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right), line);
+    *exp = std::make_unique<CConditional>(std::move(exp_left), std::move(exp_middle), std::move(exp_right), line);
 }
 
 static int32_t get_tok_precedence(TOKEN_KIND tok_kind) {
@@ -985,6 +983,7 @@ static int32_t get_tok_precedence(TOKEN_KIND tok_kind) {
 //     | Subscript(exp, exp, type) | SizeOf(exp, type) | SizeOfT(type, type) | Dot(exp, identifier, type)
 //     | Arrow(exp, identifier, type)
 static std::unique_ptr<CExp> /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_precedence) {
+    /* TODO return_t */ std::unique_ptr<CExp> exp;
     std::unique_ptr<CExp> exp_left;
     /* TODO TRY */ parse_cast_exp_factor(ctx, &exp_left);
     while (true) {
@@ -1012,10 +1011,12 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_prece
             case TOK_binop_ne:
             case TOK_binop_and:
             case TOK_binop_or:
-                exp_left = /* TODO TRY */ parse_binary_exp(ctx, std::move(exp_left), precedence);
+                /* TODO TRY */ parse_binary_exp(ctx, std::move(exp_left), precedence, &exp);
+                exp_left = std::move(exp);
                 break;
             case TOK_assign:
-                exp_left = /* TODO TRY */ parse_assign_exp(ctx, std::move(exp_left), precedence);
+                /* TODO TRY */ parse_assign_exp(ctx, std::move(exp_left), precedence, &exp);
+                exp_left = std::move(exp);
                 break;
             case TOK_assign_add:
             case TOK_assign_subtract:
@@ -1027,10 +1028,12 @@ static std::unique_ptr<CExp> /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_prece
             case TOK_assign_xor:
             case TOK_assign_shiftleft:
             case TOK_assign_shiftright:
-                exp_left = /* TODO TRY */ parse_assign_compound_exp(ctx, std::move(exp_left), precedence);
+                /* TODO TRY */ parse_assign_compound_exp(ctx, std::move(exp_left), precedence, &exp);
+                exp_left = std::move(exp);
                 break;
             case TOK_ternary_if:
-                exp_left = /* TODO TRY */ parse_ternary_exp(ctx, std::move(exp_left), precedence);
+                /* TODO TRY */ parse_ternary_exp(ctx, std::move(exp_left), precedence, &exp);
+                exp_left = std::move(exp);
                 break;
             default:
                 THROW_AT_LINE_EX(
