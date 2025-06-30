@@ -2321,14 +2321,16 @@ static error_t parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>
     CATCH_EXIT;
 }
 
+// TODO HERE going up^
+
 // <program> ::= { <declaration> }
 // AST = Program(declaration*)
 static error_t parse_program(Ctx ctx, return_t(std::unique_ptr<CProgram>) c_ast) {
-    CATCH_ENTER;
     std::vector<std::unique_ptr<CDeclaration>> declarations;
+    std::unique_ptr<CDeclaration> declaration;
+    CATCH_ENTER;
     while (ctx->pop_idx < ctx->p_toks->size()) {
-        std::unique_ptr<CDeclaration> declaration;
-        /* TODO TRY */ parse_declaration(ctx, &declaration);
+        TRY(parse_declaration(ctx, &declaration));
         declarations.push_back(std::move(declaration));
     }
     *c_ast = std::make_unique<CProgram>(std::move(declarations));
@@ -2348,11 +2350,11 @@ error_t parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, Identif
         ctx.p_toks = &tokens;
     }
     CATCH_ENTER;
-    /* TODO TRY */ parse_program(&ctx, c_ast);
+    TRY(parse_program(&ctx, c_ast));
     THROW_ABORT_IF(ctx.pop_idx != tokens.size());
 
-    std::vector<Token>().swap(tokens);
     THROW_ABORT_IF(!*c_ast);
-    FINALLY_EXIT;
+    FINALLY;
+    std::vector<Token>().swap(tokens);
     CATCH_EXIT;
 }
