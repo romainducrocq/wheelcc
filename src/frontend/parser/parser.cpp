@@ -1756,37 +1756,37 @@ static void /* TODO TRY */ parse_simple_decltor_decl(Ctx ctx, return_t(std::uniq
 
 // <param> ::= { <type-specifier> }+ <declarator>
 // param_info = Param(type, declarator)
-static std::unique_ptr<CParam> /* TODO TRY */ parse_param(Ctx ctx) {
+static void /* TODO TRY */ parse_param(Ctx ctx, return_t(std::unique_ptr<CParam>) param) {
     std::shared_ptr<Type> param_type;
     /* TODO TRY */ parse_type_specifier(ctx, &param_type);
     std::unique_ptr<CDeclarator> decltor = /* TODO TRY */ parse_decltor(ctx);
-    return std::make_unique<CParam>(std::move(decltor), std::move(param_type));
+    *param = std::make_unique<CParam>(std::move(decltor), std::move(param_type));
 }
 
 static void /* TODO TRY */ parse_empty_param_list(Ctx ctx) { /* TODO TRY */
     pop_next(ctx);
 }
 
-static std::vector<std::unique_ptr<CParam>> /* TODO TRY */ parse_non_empty_param_list(Ctx ctx) {
-    std::vector<std::unique_ptr<CParam>> param_list;
+static void /* TODO TRY */ parse_non_empty_param_list(
+    Ctx ctx, return_t(std::vector<std::unique_ptr<CParam>>) param_list) {
     {
-        std::unique_ptr<CParam> param = /* TODO TRY */ parse_param(ctx);
-        param_list.push_back(std::move(param));
+        std::unique_ptr<CParam> param;
+        /* TODO TRY */ parse_param(ctx, &param);
+        param_list->push_back(std::move(param));
     }
     /* TODO TRY */ peek_next(ctx);
     while (ctx->peek_tok->tok_kind == TOK_comma_separator) {
         /* TODO TRY */ pop_next(ctx);
-        std::unique_ptr<CParam> param = /* TODO TRY */ parse_param(ctx);
-        param_list.push_back(std::move(param));
+        std::unique_ptr<CParam> param;
+        /* TODO TRY */ parse_param(ctx, &param);
+        param_list->push_back(std::move(param));
         /* TODO TRY */ peek_next(ctx);
     }
-    return param_list;
 }
 
 // <param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")"
-static std::vector<std::unique_ptr<CParam>> /* TODO TRY */ parse_param_list(Ctx ctx) {
+static void /* TODO TRY */ parse_param_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CParam>>) param_list) {
     /* TODO TRY */ pop_next(ctx);
-    std::vector<std::unique_ptr<CParam>> param_list;
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_void: {
@@ -1795,7 +1795,7 @@ static std::vector<std::unique_ptr<CParam>> /* TODO TRY */ parse_param_list(Ctx 
                 /* TODO TRY */ parse_empty_param_list(ctx);
             }
             else {
-                param_list = /* TODO TRY */ parse_non_empty_param_list(ctx);
+                /* TODO TRY */ parse_non_empty_param_list(ctx, param_list);
             }
             break;
         }
@@ -1806,24 +1806,23 @@ static std::vector<std::unique_ptr<CParam>> /* TODO TRY */ parse_param_list(Ctx 
         case TOK_key_unsigned:
         case TOK_key_signed:
         case TOK_key_struct:
-        case TOK_key_union: {
-            param_list = /* TODO TRY */ parse_non_empty_param_list(ctx);
+        case TOK_key_union:
+            /* TODO TRY */ parse_non_empty_param_list(ctx, param_list);
             break;
-        }
         default:
             THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_expect_param_list, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
                 ctx->peek_tok->line);
     }
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_paren);
-    return param_list;
 }
 
 // (fun) <declarator-suffix> ::= <param-list>
-static std::unique_ptr<CFunDeclarator> /* TODO TRY */ parse_fun_decltor_suffix(
-    Ctx ctx, std::unique_ptr<CDeclarator>&& decltor) {
-    std::vector<std::unique_ptr<CParam>> param_list = /* TODO TRY */ parse_param_list(ctx);
-    return std::make_unique<CFunDeclarator>(std::move(param_list), std::move(decltor));
+static void /* TODO TRY */ parse_fun_decltor_suffix(
+    Ctx ctx, std::unique_ptr<CDeclarator>&& decltor, return_t(std::unique_ptr<CDeclarator>) direct_decltor) {
+    std::vector<std::unique_ptr<CParam>> param_list;
+    /* TODO TRY */ parse_param_list(ctx, &param_list);
+    *direct_decltor = std::make_unique<CFunDeclarator>(std::move(param_list), std::move(decltor));
 }
 
 // (array) <declarator-suffix> ::= { "[" <const> "]" }+
@@ -1841,16 +1840,16 @@ static std::unique_ptr<CDeclarator> /* TODO TRY */ parse_arr_decltor_suffix(
 
 // <direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
 static std::unique_ptr<CDeclarator> /* TODO TRY */ parse_direct_decltor(Ctx ctx) {
+    /* TODO return_t */ std::unique_ptr<CDeclarator> direct_decltor;
     std::unique_ptr<CDeclarator> decltor;
     /* TODO TRY */ parse_simple_decltor_decl(ctx, &decltor);
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
-        case TOK_open_paren: {
-            return /* TODO TRY */ parse_fun_decltor_suffix(ctx, std::move(decltor));
-        }
-        case TOK_open_bracket: {
+        case TOK_open_paren:
+            /* TODO TRY */ parse_fun_decltor_suffix(ctx, std::move(decltor), &direct_decltor);
+            return direct_decltor;
+        case TOK_open_bracket:
             return /* TODO TRY */ parse_arr_decltor_suffix(ctx, std::move(decltor));
-        }
         default:
             return decltor;
     }
