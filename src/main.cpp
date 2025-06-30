@@ -180,7 +180,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Parsing ... ");
-    c_ast = parse_tokens(std::move(tokens), errors, &identifiers);
+    parse_tokens(std::move(tokens), errors, &identifiers, &c_ast);
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {

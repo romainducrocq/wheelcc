@@ -1302,20 +1302,22 @@ static void /* TODO TRY */ parse_statement(Ctx ctx, return_t(std::unique_ptr<CSt
     /* TODO TRY */ parse_exp_statement(ctx, statement);
 }
 
-static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx, Declarator& decltor);
-static std::unique_ptr<CVariableDeclaration> /* TODO TRY */ parse_var_declaration(
-    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor);
+static void /* TODO TRY */ parse_decltor_decl(
+    Ctx ctx, Declarator& decltor, return_t(std::unique_ptr<CStorageClass>) storage_class);
+static void /* TODO TRY */ parse_var_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class,
+    Declarator&& decltor, return_t(std::unique_ptr<CVariableDeclaration>) var_decl);
 
 static void /* TODO TRY */ parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init) {
     Declarator decltor;
-    std::unique_ptr<CStorageClass> storage_class = /* TODO TRY */ parse_decltor_decl(ctx, decltor);
+    std::unique_ptr<CStorageClass> storage_class;
+    /* TODO TRY */ parse_decltor_decl(ctx, decltor, &storage_class);
     if (decltor.derived_type->type() == AST_FunType_t) {
         THROW_AT_LINE_EX(GET_PARSER_MSG(MSG_for_init_decl_as_fun, ctx->identifiers->hash_table[decltor.name].c_str()),
             ctx->next_tok->line);
     }
-    std::unique_ptr<CVariableDeclaration> init =
-        /* TODO TRY */ parse_var_declaration(ctx, std::move(storage_class), std::move(decltor));
-    *for_init = std::make_unique<CInitDecl>(std::move(init));
+    std::unique_ptr<CVariableDeclaration> var_decl;
+    /* TODO TRY */ parse_var_declaration(ctx, std::move(storage_class), std::move(decltor), &var_decl);
+    *for_init = std::make_unique<CInitDecl>(std::move(var_decl));
 }
 
 static void /* TODO TRY */ parse_for_init_exp(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init) {
@@ -1353,7 +1355,7 @@ static void /* TODO TRY */ parse_for_init(Ctx ctx, return_t(std::unique_ptr<CFor
     }
 }
 
-static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx);
+static void /* TODO TRY */ parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>) declaration);
 
 static void /* TODO TRY */ parse_s_block_item(Ctx ctx, return_t(std::unique_ptr<CBlockItem>) block_item) {
     std::unique_ptr<CStatement> statement;
@@ -1362,7 +1364,8 @@ static void /* TODO TRY */ parse_s_block_item(Ctx ctx, return_t(std::unique_ptr<
 }
 
 static void /* TODO TRY */ parse_d_block_item(Ctx ctx, return_t(std::unique_ptr<CBlockItem>) block_item) {
-    std::unique_ptr<CDeclaration> declaration = /* TODO TRY */ parse_declaration(ctx);
+    std::unique_ptr<CDeclaration> declaration;
+    /* TODO TRY */ parse_declaration(ctx, &declaration);
     *block_item = std::make_unique<CD>(std::move(declaration));
 }
 
@@ -1859,8 +1862,8 @@ static void /* TODO TRY */ parse_decltor(Ctx ctx, return_t(std::unique_ptr<CDecl
 
 // <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
-static std::unique_ptr<CFunctionDeclaration> /* TODO TRY */ parse_fun_declaration(
-    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
+static void /* TODO TRY */ parse_fun_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class,
+    Declarator&& decltor, return_t(std::unique_ptr<CFunctionDeclaration>) fun_decl) {
     size_t line = ctx->next_tok->line;
     std::unique_ptr<CBlock> body;
     /* TODO TRY */ peek_next(ctx);
@@ -1871,14 +1874,14 @@ static std::unique_ptr<CFunctionDeclaration> /* TODO TRY */ parse_fun_declaratio
         /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_open_brace);
         /* TODO TRY */ parse_block(ctx, &body);
     }
-    return std::make_unique<CFunctionDeclaration>(decltor.name, std::move(decltor.params), std::move(body),
+    *fun_decl = std::make_unique<CFunctionDeclaration>(decltor.name, std::move(decltor.params), std::move(body),
         std::move(decltor.derived_type), std::move(storage_class), line);
 }
 
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
 // variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
-static std::unique_ptr<CVariableDeclaration> /* TODO TRY */ parse_var_declaration(
-    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
+static void /* TODO TRY */ parse_var_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class,
+    Declarator&& decltor, return_t(std::unique_ptr<CVariableDeclaration>) var_decl) {
     size_t line = ctx->next_tok->line;
     std::unique_ptr<CInitializer> initializer;
     /* TODO TRY */ peek_next(ctx);
@@ -1888,16 +1891,18 @@ static std::unique_ptr<CVariableDeclaration> /* TODO TRY */ parse_var_declaratio
     }
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CVariableDeclaration>(
+    *var_decl = std::make_unique<CVariableDeclaration>(
         decltor.name, std::move(initializer), std::move(decltor.derived_type), std::move(storage_class), line);
 }
 
 // <member-declaration> ::= { <type-specifier> }+ <declarator> ";"
 // member_declaration = MemberDeclaration(identifier, type)
-static std::unique_ptr<CMemberDeclaration> /* TODO TRY */ parse_member_decl(Ctx ctx) {
+static void /* TODO TRY */ parse_member_declaration(
+    Ctx ctx, return_t(std::unique_ptr<CMemberDeclaration>) member_decl) {
     Declarator decltor;
     {
-        std::unique_ptr<CStorageClass> storage_class = /* TODO TRY */ parse_decltor_decl(ctx, decltor);
+        std::unique_ptr<CStorageClass> storage_class;
+        /* TODO TRY */ parse_decltor_decl(ctx, decltor, &storage_class);
         if (storage_class) {
             THROW_AT_LINE_EX(
                 GET_PARSER_MSG(MSG_member_decl_not_auto, ctx->identifiers->hash_table[decltor.name].c_str(),
@@ -1912,12 +1917,13 @@ static std::unique_ptr<CMemberDeclaration> /* TODO TRY */ parse_member_decl(Ctx 
     size_t line = ctx->next_tok->line;
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CMemberDeclaration>(decltor.name, std::move(decltor.derived_type), line);
+    *member_decl = std::make_unique<CMemberDeclaration>(decltor.name, std::move(decltor.derived_type), line);
 }
 
 // <struct-declaration> ::= ("struct" | "union") <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
 // struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
-static std::unique_ptr<CStructDeclaration> /* TODO TRY */ parse_struct_decl(Ctx ctx) {
+static void /* TODO TRY */ parse_struct_declaration(
+    Ctx ctx, return_t(std::unique_ptr<CStructDeclaration>) struct_decl) {
     size_t line = ctx->peek_tok->line;
     /* TODO TRY */ pop_next(ctx);
     bool is_union = ctx->next_tok->tok_kind == TOK_key_union;
@@ -1929,7 +1935,8 @@ static std::unique_ptr<CStructDeclaration> /* TODO TRY */ parse_struct_decl(Ctx 
     /* TODO TRY */ pop_next(ctx);
     if (ctx->next_tok->tok_kind == TOK_open_brace) {
         do {
-            std::unique_ptr<CMemberDeclaration> member = /* TODO TRY */ parse_member_decl(ctx);
+            std::unique_ptr<CMemberDeclaration> member;
+            /* TODO TRY */ parse_member_declaration(ctx, &member);
             members.push_back(std::move(member));
             /* TODO TRY */ peek_next(ctx);
         }
@@ -1938,32 +1945,33 @@ static std::unique_ptr<CStructDeclaration> /* TODO TRY */ parse_struct_decl(Ctx 
         /* TODO TRY */ pop_next(ctx);
     }
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_semicolon);
-    return std::make_unique<CStructDeclaration>(tag, is_union, std::move(members), line);
+    *struct_decl = std::make_unique<CStructDeclaration>(tag, is_union, std::move(members), line);
 }
 
-static std::unique_ptr<CFunDecl> /* TODO TRY */ parse_fun_decl(
-    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
-    std::unique_ptr<CFunctionDeclaration> fun_decl =
-        /* TODO TRY */ parse_fun_declaration(ctx, std::move(storage_class), std::move(decltor));
-    return std::make_unique<CFunDecl>(std::move(fun_decl));
+static void /* TODO TRY */ parse_fun_decl(Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor,
+    return_t(std::unique_ptr<CDeclaration>) declaration) {
+    std::unique_ptr<CFunctionDeclaration> fun_decl;
+    /* TODO TRY */ parse_fun_declaration(ctx, std::move(storage_class), std::move(decltor), &fun_decl);
+    *declaration = std::make_unique<CFunDecl>(std::move(fun_decl));
 }
 
-static std::unique_ptr<CVarDecl> /* TODO TRY */ parse_var_decl(
-    Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor) {
-    std::unique_ptr<CVariableDeclaration> var_decl =
-        /* TODO TRY */ parse_var_declaration(ctx, std::move(storage_class), std::move(decltor));
-    return std::make_unique<CVarDecl>(std::move(var_decl));
+static void /* TODO TRY */ parse_var_decl(Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor,
+    return_t(std::unique_ptr<CDeclaration>) declaration) {
+    std::unique_ptr<CVariableDeclaration> var_decl;
+    /* TODO TRY */ parse_var_declaration(ctx, std::move(storage_class), std::move(decltor), &var_decl);
+    *declaration = std::make_unique<CVarDecl>(std::move(var_decl));
 }
 
-static std::unique_ptr<CStructDecl> /* TODO TRY */ parse_struct_declaration(Ctx ctx) {
-    std::unique_ptr<CStructDeclaration> struct_decl = /* TODO TRY */ parse_struct_decl(ctx);
-    return std::make_unique<CStructDecl>(std::move(struct_decl));
+static void /* TODO TRY */ parse_struct_decl(Ctx ctx, return_t(std::unique_ptr<CDeclaration>) declaration) {
+    std::unique_ptr<CStructDeclaration> struct_decl;
+    /* TODO TRY */ parse_struct_declaration(ctx, &struct_decl);
+    *declaration = std::make_unique<CStructDecl>(std::move(struct_decl));
 }
 
-static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx, Declarator& decltor) {
+static void /* TODO TRY */ parse_decltor_decl(
+    Ctx ctx, Declarator& decltor, return_t(std::unique_ptr<CStorageClass>) storage_class) {
     std::shared_ptr<Type> type_specifier;
     /* TODO TRY */ parse_type_specifier(ctx, &type_specifier);
-    std::unique_ptr<CStorageClass> storage_class;
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_identifier:
@@ -1971,18 +1979,17 @@ static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx,
         case TOK_open_paren:
             break;
         default:
-            /* TODO TRY */ parse_storage_class(ctx, &storage_class);
+            /* TODO TRY */ parse_storage_class(ctx, storage_class);
             break;
     }
     std::unique_ptr<CDeclarator> decltor_1;
     /* TODO TRY */ parse_decltor(ctx, &decltor_1);
     /* TODO TRY */ proc_decltor(ctx, decltor_1.get(), std::move(type_specifier), decltor);
-    return storage_class;
 }
 
 // <declaration> ::= <variable-declaration> | <function-declaration> | <struct-declaration>
 // declaration = FunDecl(function_declaration) | VarDecl(variable_declaration) | StructDecl(struct_declaration)
-static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx) {
+static void /* TODO TRY */ parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>) declaration) {
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_struct:
@@ -1991,7 +1998,8 @@ static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx) {
             switch (ctx->peek_tok_i->tok_kind) {
                 case TOK_open_brace:
                 case TOK_semicolon:
-                    return /* TODO TRY */ parse_struct_declaration(ctx);
+                    /* TODO TRY */ parse_struct_decl(ctx, declaration);
+                    return;
                 default:
                     break;
             }
@@ -2000,30 +2008,32 @@ static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx) {
             break;
     }
     Declarator decltor;
-    std::unique_ptr<CStorageClass> storage_class = /* TODO TRY */ parse_decltor_decl(ctx, decltor);
+    std::unique_ptr<CStorageClass> storage_class;
+    /* TODO TRY */ parse_decltor_decl(ctx, decltor, &storage_class);
     if (decltor.derived_type->type() == AST_FunType_t) {
-        return /* TODO TRY */ parse_fun_decl(ctx, std::move(storage_class), std::move(decltor));
+        /* TODO TRY */ parse_fun_decl(ctx, std::move(storage_class), std::move(decltor), declaration);
     }
     else {
-        return /* TODO TRY */ parse_var_decl(ctx, std::move(storage_class), std::move(decltor));
+        /* TODO TRY */ parse_var_decl(ctx, std::move(storage_class), std::move(decltor), declaration);
     }
 }
 
 // <program> ::= { <declaration> }
 // AST = Program(declaration*)
-static std::unique_ptr<CProgram> /* TODO TRY */ parse_program(Ctx ctx) {
+static void /* TODO TRY */ parse_program(Ctx ctx, return_t(std::unique_ptr<CProgram>) c_ast) {
     std::vector<std::unique_ptr<CDeclaration>> declarations;
     while (ctx->pop_idx < ctx->p_toks->size()) {
-        std::unique_ptr<CDeclaration> declaration = /* TODO TRY */ parse_declaration(ctx);
+        std::unique_ptr<CDeclaration> declaration;
+        /* TODO TRY */ parse_declaration(ctx, &declaration);
         declarations.push_back(std::move(declaration));
     }
-    return std::make_unique<CProgram>(std::move(declarations));
+    *c_ast = std::make_unique<CProgram>(std::move(declarations));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<CProgram> /* TODO TRY */ parse_tokens(
-    std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers) {
+void /* TODO TRY */ parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers,
+    return_t(std::unique_ptr<CProgram>) c_ast) {
     ParserContext ctx;
     {
         ctx.errors = errors;
@@ -2031,10 +2041,9 @@ std::unique_ptr<CProgram> /* TODO TRY */ parse_tokens(
         ctx.pop_idx = 0;
         ctx.p_toks = &tokens;
     }
-    std::unique_ptr<CProgram> c_ast = /* TODO TRY */ parse_program(&ctx);
+    /* TODO TRY */ parse_program(&ctx, c_ast);
     THROW_ABORT_IF(ctx.pop_idx != tokens.size());
 
     std::vector<Token>().swap(tokens);
-    THROW_ABORT_IF(!c_ast);
-    return c_ast;
+    THROW_ABORT_IF(!*c_ast);
 }
