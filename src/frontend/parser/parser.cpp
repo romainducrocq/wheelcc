@@ -1893,9 +1893,22 @@ static error_t proc_arr_decltor(
     CATCH_EXIT;
 }
 
+static error_t proc_param_decltor(
+    Ctx ctx, CParam* node, std::vector<TIdentifier>& params, std::vector<std::shared_ptr<Type>>& param_types) {
+    Declarator decltor;
+    std::shared_ptr<Type> param_type;
+    CATCH_ENTER;
+    param_type = node->param_type;
+    /* TODO TRY */ proc_decltor(ctx, node->decltor.get(), std::move(param_type), decltor);
+    THROW_ABORT_IF(decltor.derived_type->type() == AST_FunType_t);
+    params.push_back(decltor.name);
+    param_types.push_back(std::move(decltor.derived_type));
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
+
 static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     std::shared_ptr<Type> derived_type;
-    std::shared_ptr<Type> param_type;
     std::vector<TIdentifier> params;
     std::vector<std::shared_ptr<Type>> param_types;
     CATCH_ENTER;
@@ -1906,12 +1919,7 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     params.reserve(node->param_list.size());
     param_types.reserve(node->param_list.size());
     for (const auto& param : node->param_list) {
-        Declarator param_decltor; // TODO ?
-        param_type = param->param_type;
-        /* TODO TRY */ proc_decltor(ctx, param->decltor.get(), std::move(param_type), param_decltor);
-        THROW_ABORT_IF(param_decltor.derived_type->type() == AST_FunType_t);
-        params.push_back(param_decltor.name);
-        param_types.push_back(std::move(param_decltor.derived_type));
+        proc_param_decltor(ctx, param.get(), params, param_types);
     }
     TIdentifier name = static_cast<CIdent*>(node->decltor.get())->name;
     derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
