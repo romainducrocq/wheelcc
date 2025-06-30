@@ -487,7 +487,7 @@ static void /* TODO TRY */ parse_abstract_decltor(
     }
 }
 
-static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx);
+static void /* TODO TRY */ parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) type_specifier);
 
 static void /* TODO TRY */ parse_unary_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp);
 static void /* TODO TRY */ parse_cast_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp);
@@ -503,7 +503,7 @@ static void /* TODO TRY */ parse_decltor_cast_factor(Ctx ctx, return_t(std::shar
 
 // <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
 static void /* TODO TRY */ parse_type_name(Ctx ctx, return_t(std::shared_ptr<Type>) target_type) {
-    *target_type = /* TODO TRY */ parse_type_specifier(ctx);
+    /* TODO TRY */ parse_type_specifier(ctx, target_type);
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
         case TOK_binop_multiply:
@@ -1045,7 +1045,7 @@ static void /* TODO TRY */ parse_exp(Ctx ctx, int32_t min_precedence, return_t(s
 }
 
 static void /* TODO TRY */ parse_for_init(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init);
-static std::unique_ptr<CBlock> /* TODO TRY */ parse_block(Ctx ctx);
+static void /* TODO TRY */ parse_block(Ctx ctx, return_t(std::unique_ptr<CBlock>) block);
 static void /* TODO TRY */ parse_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement);
 
 static void /* TODO TRY */ parse_ret_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
@@ -1114,7 +1114,8 @@ static void /* TODO TRY */ parse_label_statement(Ctx ctx, return_t(std::unique_p
 }
 
 static void /* TODO TRY */ parse_compound_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) statement) {
-    std::unique_ptr<CBlock> block = /* TODO TRY */ parse_block(ctx);
+    std::unique_ptr<CBlock> block;
+    /* TODO TRY */ parse_block(ctx, &block);
     *statement = std::make_unique<CCompound>(std::move(block));
 }
 
@@ -1372,20 +1373,20 @@ static void /* TODO TRY */ parse_for_init(Ctx ctx, return_t(std::unique_ptr<CFor
 
 static std::unique_ptr<CDeclaration> /* TODO TRY */ parse_declaration(Ctx ctx);
 
-static std::unique_ptr<CS> /* TODO TRY */ parse_s_block_item(Ctx ctx) {
+static void /* TODO TRY */ parse_s_block_item(Ctx ctx, return_t(std::unique_ptr<CBlockItem>) block_item) {
     std::unique_ptr<CStatement> statement;
     /* TODO TRY */ parse_statement(ctx, &statement);
-    return std::make_unique<CS>(std::move(statement));
+    *block_item = std::make_unique<CS>(std::move(statement));
 }
 
-static std::unique_ptr<CD> /* TODO TRY */ parse_d_block_item(Ctx ctx) {
+static void /* TODO TRY */ parse_d_block_item(Ctx ctx, return_t(std::unique_ptr<CBlockItem>) block_item) {
     std::unique_ptr<CDeclaration> declaration = /* TODO TRY */ parse_declaration(ctx);
-    return std::make_unique<CD>(std::move(declaration));
+    *block_item = std::make_unique<CD>(std::move(declaration));
 }
 
 // <block-item> ::= <statement> | <declaration>
 // block_item = S(statement) | D(declaration)
-static std::unique_ptr<CBlockItem> /* TODO TRY */ parse_block_item(Ctx ctx) {
+static void /* TODO TRY */ parse_block_item(Ctx ctx, return_t(std::unique_ptr<CBlockItem>) block_item) {
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_char:
         case TOK_key_int:
@@ -1398,36 +1399,38 @@ static std::unique_ptr<CBlockItem> /* TODO TRY */ parse_block_item(Ctx ctx) {
         case TOK_key_union:
         case TOK_key_static:
         case TOK_key_extern:
-            return /* TODO TRY */ parse_d_block_item(ctx);
+            /* TODO TRY */ parse_d_block_item(ctx, block_item);
+            break;
         default:
-            return /* TODO TRY */ parse_s_block_item(ctx);
+            /* TODO TRY */ parse_s_block_item(ctx, block_item);
+            break;
     }
 }
 
-static std::unique_ptr<CB> /* TODO TRY */ parse_b_block(Ctx ctx) {
+static void /* TODO TRY */ parse_b_block(Ctx ctx, return_t(std::unique_ptr<CBlock>) block) {
     std::vector<std::unique_ptr<CBlockItem>> block_items;
     /* TODO TRY */ peek_next(ctx);
     while (ctx->peek_tok->tok_kind != TOK_close_brace) {
-        std::unique_ptr<CBlockItem> block_item = /* TODO TRY */ parse_block_item(ctx);
+        std::unique_ptr<CBlockItem> block_item;
+        /* TODO TRY */ parse_block_item(ctx, &block_item);
         block_items.push_back(std::move(block_item));
         /* TODO TRY */ peek_next(ctx);
     }
-    return std::make_unique<CB>(std::move(block_items));
+    *block = std::make_unique<CB>(std::move(block_items));
 }
 
 // <block> ::= "{" { <block-item> } "}"
 // block = B(block_item*)
-static std::unique_ptr<CBlock> /* TODO TRY */ parse_block(Ctx ctx) {
+static void /* TODO TRY */ parse_block(Ctx ctx, return_t(std::unique_ptr<CBlock>) block) {
     /* TODO TRY */ pop_next(ctx);
-    std::unique_ptr<CBlock> block = /* TODO TRY */ parse_b_block(ctx);
+    /* TODO TRY */ parse_b_block(ctx, block);
     /* TODO TRY */ pop_next(ctx);
     /* TODO TRY */ expect_next(ctx, ctx->next_tok, TOK_close_brace);
-    return block;
 }
 
 // <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
 //                    | ("struct" | "union") <identifier>
-static std::shared_ptr<Type> /* TODO TRY */ parse_type_specifier(Ctx ctx) {
+static void /* TODO TRY */ parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) type_specifier) {
     size_t i = 0;
     /* TODO TRY */ peek_next(ctx);
     size_t line = ctx->peek_tok->line;
@@ -1479,29 +1482,45 @@ Lbreak:
     switch (type_tok_kinds.size()) {
         case 1: {
             switch (type_tok_kinds[0]) {
-                case TOK_key_char:
-                    return std::make_shared<Char>();
-                case TOK_key_int:
-                    return std::make_shared<Int>();
-                case TOK_key_long:
-                    return std::make_shared<Long>();
-                case TOK_key_double:
-                    return std::make_shared<Double>();
-                case TOK_key_unsigned:
-                    return std::make_shared<UInt>();
-                case TOK_key_signed:
-                    return std::make_shared<Int>();
-                case TOK_key_void:
-                    return std::make_shared<Void>();
+                case TOK_key_char: {
+                    *type_specifier = std::make_shared<Char>();
+                    return;
+                }
+                case TOK_key_int: {
+                    *type_specifier = std::make_shared<Int>();
+                    return;
+                }
+                case TOK_key_long: {
+                    *type_specifier = std::make_shared<Long>();
+                    return;
+                }
+                case TOK_key_double: {
+                    *type_specifier = std::make_shared<Double>();
+                    return;
+                }
+                case TOK_key_unsigned: {
+                    *type_specifier = std::make_shared<UInt>();
+                    return;
+                }
+                case TOK_key_signed: {
+                    *type_specifier = std::make_shared<Int>();
+                    return;
+                }
+                case TOK_key_void: {
+                    *type_specifier = std::make_shared<Void>();
+                    return;
+                }
                 case TOK_key_struct: {
                     TIdentifier tag;
                     /* TODO TRY */ parse_identifier(ctx, i, &tag);
-                    return std::make_shared<Structure>(tag, false);
+                    *type_specifier = std::make_shared<Structure>(tag, false);
+                    return;
                 }
                 case TOK_key_union: {
                     TIdentifier tag;
                     /* TODO TRY */ parse_identifier(ctx, i, &tag);
-                    return std::make_shared<Structure>(tag, true);
+                    *type_specifier = std::make_shared<Structure>(tag, true);
+                    return;
                 }
                 default:
                     break;
@@ -1511,34 +1530,41 @@ Lbreak:
         case 2: {
             if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_unsigned) != type_tok_kinds.end()) {
                 if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end()) {
-                    return std::make_shared<UInt>();
+                    *type_specifier = std::make_shared<UInt>();
+                    return;
                 }
                 else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
                          != type_tok_kinds.end()) {
-                    return std::make_shared<ULong>();
+                    *type_specifier = std::make_shared<ULong>();
+                    return;
                 }
                 else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_char)
                          != type_tok_kinds.end()) {
-                    return std::make_shared<UChar>();
+                    *type_specifier = std::make_shared<UChar>();
+                    return;
                 }
             }
             else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_signed) != type_tok_kinds.end()) {
                 if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end()) {
-                    return std::make_shared<Int>();
+                    *type_specifier = std::make_shared<Int>();
+                    return;
                 }
                 else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
                          != type_tok_kinds.end()) {
-                    return std::make_shared<Long>();
+                    *type_specifier = std::make_shared<Long>();
+                    return;
                 }
                 else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_char)
                          != type_tok_kinds.end()) {
-                    return std::make_shared<SChar>();
+                    *type_specifier = std::make_shared<SChar>();
+                    return;
                 }
             }
             else if ((std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end())
                      && (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
                          != type_tok_kinds.end())) {
-                return std::make_shared<Long>();
+                *type_specifier = std::make_shared<Long>();
+                return;
             }
             break;
         }
@@ -1546,11 +1572,13 @@ Lbreak:
             if ((std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end())
                 && (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long) != type_tok_kinds.end())) {
                 if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_unsigned) != type_tok_kinds.end()) {
-                    return std::make_shared<ULong>();
+                    *type_specifier = std::make_shared<ULong>();
+                    return;
                 }
                 else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_signed)
                          != type_tok_kinds.end()) {
-                    return std::make_shared<Long>();
+                    *type_specifier = std::make_shared<Long>();
+                    return;
                 }
             }
             break;
@@ -1728,7 +1756,8 @@ static std::unique_ptr<CDeclarator> /* TODO TRY */ parse_simple_decltor_decl(Ctx
 // <param> ::= { <type-specifier> }+ <declarator>
 // param_info = Param(type, declarator)
 static std::unique_ptr<CParam> /* TODO TRY */ parse_param(Ctx ctx) {
-    std::shared_ptr<Type> param_type = /* TODO TRY */ parse_type_specifier(ctx);
+    std::shared_ptr<Type> param_type;
+    /* TODO TRY */ parse_type_specifier(ctx, &param_type);
     std::unique_ptr<CDeclarator> decltor = /* TODO TRY */ parse_decltor(ctx);
     return std::make_unique<CParam>(std::move(decltor), std::move(param_type));
 }
@@ -1856,7 +1885,7 @@ static std::unique_ptr<CFunctionDeclaration> /* TODO TRY */ parse_fun_declaratio
     }
     else {
         /* TODO TRY */ expect_next(ctx, ctx->peek_tok, TOK_open_brace);
-        body = /* TODO TRY */ parse_block(ctx);
+        /* TODO TRY */ parse_block(ctx, &body);
     }
     return std::make_unique<CFunctionDeclaration>(decltor.name, std::move(decltor.params), std::move(body),
         std::move(decltor.derived_type), std::move(storage_class), line);
@@ -1948,7 +1977,8 @@ static std::unique_ptr<CStructDecl> /* TODO TRY */ parse_struct_declaration(Ctx 
 }
 
 static std::unique_ptr<CStorageClass> /* TODO TRY */ parse_decltor_decl(Ctx ctx, Declarator& decltor) {
-    std::shared_ptr<Type> type_specifier = /* TODO TRY */ parse_type_specifier(ctx);
+    std::shared_ptr<Type> type_specifier;
+    /* TODO TRY */ parse_type_specifier(ctx, &type_specifier);
     std::unique_ptr<CStorageClass> storage_class;
     /* TODO TRY */ peek_next(ctx);
     switch (ctx->peek_tok->tok_kind) {
