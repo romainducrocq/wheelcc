@@ -2003,9 +2003,9 @@ static error_t parse_param(Ctx ctx, return_t(std::unique_ptr<CParam>) param) {
     CATCH_EXIT;
 }
 
-static error_t parse_empty_param_list(Ctx ctx) { /* TODO TRY */
+static error_t parse_empty_param_list(Ctx ctx) {
     CATCH_ENTER;
-    pop_next(ctx);
+    /* TODO TRY */ pop_next(ctx);
     FINALLY_EXIT;
     CATCH_EXIT;
 }
