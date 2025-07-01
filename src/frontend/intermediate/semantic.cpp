@@ -2979,7 +2979,7 @@ static error_t resolve_program(Ctx ctx, CProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void /* TODO TRY */ analyze_semantic(
+error_t analyze_semantic(
     CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers) {
     SemanticContext ctx;
     {
@@ -2988,4 +2988,5 @@ void /* TODO TRY */ analyze_semantic(
         ctx.identifiers = identifiers;
     }
     /* TODO TRY */ resolve_program(&ctx, node);
+    TEMP_EXIT;
 }
