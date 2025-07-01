@@ -355,25 +355,26 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     }
 }
 
-static std::shared_ptr<Type> /* TODO TRY */ get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2) {
+static void /* TODO TRY */ get_joint_ptr_type(
+    Ctx ctx, CExp* node_1, CExp* node_2, return_t(std::shared_ptr<Type>) joint_type) {
     if (is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
-        return node_1->exp_type;
+        *joint_type = node_1->exp_type;
     }
     else if (node_1->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_1))) {
-        return node_2->exp_type;
+        *joint_type = node_2->exp_type;
     }
     else if (node_2->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_2))) {
-        return node_1->exp_type;
+        *joint_type = node_1->exp_type;
     }
     else if (node_1->exp_type->type() == AST_Pointer_t
              && static_cast<Pointer*>(node_1->exp_type.get())->ref_type->type() == AST_Void_t
              && node_2->exp_type->type() == AST_Pointer_t) {
-        return node_1->exp_type;
+        *joint_type = node_1->exp_type;
     }
     else if (node_2->exp_type->type() == AST_Pointer_t
              && static_cast<Pointer*>(node_2->exp_type.get())->ref_type->type() == AST_Void_t
              && node_1->exp_type->type() == AST_Pointer_t) {
-        return node_2->exp_type;
+        *joint_type = node_2->exp_type;
     }
     else {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_joint_ptr_mismatch, fmt_type_c_str(node_1->exp_type.get()),
@@ -888,7 +889,7 @@ static void /* TODO TRY */ check_binary_logical_exp(Ctx ctx, CBinary* node) {
 static void /* TODO TRY */ check_binary_equality_exp(Ctx ctx, CBinary* node) {
     std::shared_ptr<Type> common_type;
     if (node->exp_left->exp_type->type() == AST_Pointer_t || node->exp_right->exp_type->type() == AST_Pointer_t) {
-        common_type = /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_left.get(), node->exp_right.get());
+        /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_left.get(), node->exp_right.get(), &common_type);
     }
     else if (is_type_arithmetic(node->exp_left->exp_type.get())
              && is_type_arithmetic(node->exp_right->exp_type.get())) {
@@ -1036,7 +1037,7 @@ static void /* TODO TRY */ check_conditional_exp(Ctx ctx, CConditional* node) {
     }
     else if (node->exp_middle->exp_type->type() == AST_Pointer_t
              || node->exp_right->exp_type->type() == AST_Pointer_t) {
-        common_type = /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_middle.get(), node->exp_right.get());
+        /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_middle.get(), node->exp_right.get(), &common_type);
     }
     else {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_ternary_op, fmt_type_c_str(node->exp_middle->exp_type.get()),
