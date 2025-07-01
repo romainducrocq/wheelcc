@@ -613,37 +613,34 @@ static void /* TODO TRY */ check_cast_exp(Ctx ctx, CCast* node) {
     node->exp_type = node->target_type;
 }
 
-static std::unique_ptr<CCast> /* TODO TRY */ cast_exp(
-    Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
-    size_t line = node->line;
+static void /* TODO TRY */ cast_exp(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(std::unique_ptr<CExp>) exp) {
+    size_t line = (*exp)->line;
     std::shared_ptr<Type> exp_type_cp = exp_type;
-    std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), std::move(exp_type_cp), line);
-    /* TODO TRY */ check_cast_exp(ctx, exp.get());
-    return exp;
+    *exp = std::make_unique<CCast>(std::move(*exp), std::move(exp_type_cp), line);
+    /* TODO TRY */ check_cast_exp(ctx, static_cast<CCast*>(exp->get()));
 }
 
-static std::unique_ptr<CCast> /* TODO TRY */ cast_assign(
-    Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
-    if (is_type_arithmetic(node->exp_type.get()) && is_type_arithmetic(exp_type.get())) {
-        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
+static void /* TODO TRY */ cast_assign(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(std::unique_ptr<CExp>) exp) {
+    if (is_type_arithmetic((*exp)->exp_type.get()) && is_type_arithmetic(exp_type.get())) {
+        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
     }
-    else if (node->type() == AST_CConstant_t && exp_type->type() == AST_Pointer_t
-             && is_const_null_ptr(static_cast<CConstant*>(node.get()))) {
-        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
+    else if ((*exp)->type() == AST_CConstant_t && exp_type->type() == AST_Pointer_t
+             && is_const_null_ptr(static_cast<CConstant*>(exp->get()))) {
+        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
     }
     else if (exp_type->type() == AST_Pointer_t && static_cast<Pointer*>(exp_type.get())->ref_type->type() == AST_Void_t
-             && node->exp_type->type() == AST_Pointer_t) {
-        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
+             && (*exp)->exp_type->type() == AST_Pointer_t) {
+        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
     }
-    else if (node->exp_type->type() == AST_Pointer_t
-             && static_cast<Pointer*>(node->exp_type.get())->ref_type->type() == AST_Void_t
+    else if ((*exp)->exp_type->type() == AST_Pointer_t
+             && static_cast<Pointer*>((*exp)->exp_type.get())->ref_type->type() == AST_Void_t
              && exp_type->type() == AST_Pointer_t) {
-        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
+        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
     }
     else {
         THROW_AT_LINE_EX(
-            GET_SEMANTIC_MSG(MSG_illegal_cast, fmt_type_c_str(node->exp_type.get()), fmt_type_c_str(exp_type.get())),
-            node->line);
+            GET_SEMANTIC_MSG(MSG_illegal_cast, fmt_type_c_str((*exp)->exp_type.get()), fmt_type_c_str(exp_type.get())),
+            (*exp)->line);
     }
 }
 
@@ -663,7 +660,7 @@ static void /* TODO TRY */ check_unary_complement_exp(Ctx ctx, CUnary* node) {
         case AST_SChar_t:
         case AST_UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            node->exp = /* TODO TRY */ cast_exp(ctx, std::move(node->exp), promote_type);
+            /* TODO TRY */ cast_exp(ctx, promote_type, &node->exp);
             break;
         }
         default:
@@ -684,7 +681,7 @@ static void /* TODO TRY */ check_unary_neg_exp(Ctx ctx, CUnary* node) {
         case AST_SChar_t:
         case AST_UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            node->exp = /* TODO TRY */ cast_exp(ctx, std::move(node->exp), promote_type);
+            /* TODO TRY */ cast_exp(ctx, promote_type, &node->exp);
             break;
         }
         default:
@@ -729,7 +726,7 @@ static void /* TODO TRY */ check_binary_add_exp(Ctx ctx, CBinary* node) {
              && is_type_int(node->exp_right->exp_type.get())) {
         common_type = std::make_shared<Long>();
         if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-            node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+            /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
         }
         node->exp_type = node->exp_left->exp_type;
         return;
@@ -738,7 +735,7 @@ static void /* TODO TRY */ check_binary_add_exp(Ctx ctx, CBinary* node) {
              && is_type_complete(ctx, static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get())) {
         common_type = std::make_shared<Long>();
         if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-            node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+            /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
         }
         node->exp_type = node->exp_right->exp_type;
         return;
@@ -751,10 +748,10 @@ static void /* TODO TRY */ check_binary_add_exp(Ctx ctx, CBinary* node) {
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::move(common_type);
 }
@@ -769,7 +766,7 @@ static void /* TODO TRY */ check_binary_subtract_exp(Ctx ctx, CBinary* node) {
         if (is_type_int(node->exp_right->exp_type.get())) {
             common_type = std::make_shared<Long>();
             if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-                node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+                /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
             }
             node->exp_type = node->exp_left->exp_type;
             return;
@@ -796,10 +793,10 @@ static void /* TODO TRY */ check_binary_subtract_exp(Ctx ctx, CBinary* node) {
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::move(common_type);
 }
@@ -814,10 +811,10 @@ static void /* TODO TRY */ check_multiply_divide_exp(Ctx ctx, CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::move(common_type);
 }
@@ -832,10 +829,10 @@ static void /* TODO TRY */ check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::move(common_type);
     if (node->exp_type->type() == AST_Double_t) {
@@ -855,10 +852,10 @@ static void /* TODO TRY */ check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
 
     else if (is_type_char(node->exp_left->exp_type.get())) {
         std::shared_ptr<Type> left_type = std::make_shared<Int>();
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), left_type);
+        /* TODO TRY */ cast_exp(ctx, left_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), node->exp_left->exp_type);
+        /* TODO TRY */ cast_exp(ctx, node->exp_left->exp_type, &node->exp_right);
     }
     node->exp_type = node->exp_left->exp_type;
     if (node->exp_type->type() == AST_Double_t) {
@@ -903,10 +900,10 @@ static void /* TODO TRY */ check_binary_equality_exp(Ctx ctx, CBinary* node) {
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::make_shared<Int>();
 }
@@ -927,10 +924,10 @@ static void /* TODO TRY */ check_binary_relational_exp(Ctx ctx, CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::make_shared<Int>();
 }
@@ -988,7 +985,7 @@ static void /* TODO TRY */ check_assign_exp(Ctx ctx, CAssignment* node) {
                 GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(nullptr, node->unop.get())), node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
-            node->exp_right = /* TODO TRY */ cast_assign(ctx, std::move(node->exp_right), node->exp_left->exp_type);
+            /* TODO TRY */ cast_assign(ctx, node->exp_left->exp_type, &node->exp_right);
         }
         node->exp_type = node->exp_left->exp_type;
     }
@@ -1005,7 +1002,7 @@ static void /* TODO TRY */ check_assign_exp(Ctx ctx, CAssignment* node) {
                 node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
-            node->exp_right = /* TODO TRY */ cast_assign(ctx, std::move(node->exp_right), exp_left->exp_type);
+            /* TODO TRY */ cast_assign(ctx, exp_left->exp_type, &node->exp_right);
         }
         node->exp_type = exp_left->exp_type;
     }
@@ -1045,10 +1042,10 @@ static void /* TODO TRY */ check_conditional_exp(Ctx ctx, CConditional* node) {
             node->line);
     }
     if (!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
-        node->exp_middle = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_middle), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_middle);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
+        /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
     }
     node->exp_type = std::move(common_type);
 }
@@ -1066,7 +1063,7 @@ static void /* TODO TRY */ check_call_exp(Ctx ctx, CFunctionCall* node) {
     }
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
-            node->args[i] = /* TODO TRY */ cast_assign(ctx, std::move(node->args[i]), fun_type->param_types[i]);
+            /* TODO TRY */ cast_assign(ctx, fun_type->param_types[i], &node->args[i]);
         }
     }
     node->exp_type = fun_type->ret_type;
@@ -1094,7 +1091,7 @@ static void /* TODO TRY */ check_subscript_exp(Ctx ctx, CSubscript* node) {
         && is_type_int(node->subscript_exp->exp_type.get())) {
         std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
         if (!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
-            node->subscript_exp = /* TODO TRY */ cast_exp(ctx, std::move(node->subscript_exp), subscript_type);
+            /* TODO TRY */ cast_exp(ctx, subscript_type, &node->subscript_exp);
         }
         ref_type = static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type;
     }
@@ -1102,7 +1099,7 @@ static void /* TODO TRY */ check_subscript_exp(Ctx ctx, CSubscript* node) {
              && is_type_complete(ctx, static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get())) {
         std::shared_ptr<Type> primary_type = std::make_shared<Long>();
         if (!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
-            node->primary_exp = /* TODO TRY */ cast_exp(ctx, std::move(node->primary_exp), primary_type);
+            /* TODO TRY */ cast_exp(ctx, primary_type, &node->primary_exp);
         }
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
@@ -1175,6 +1172,7 @@ static void /* TODO TRY */ check_arrow_exp(Ctx ctx, CArrow* node) {
     node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
 
+// TODO what is this
 static std::unique_ptr<CExp> check_scalar_typed_exp(std::unique_ptr<CExp>&& node) {
     std::unique_ptr<CExp> exp = std::move(node);
     return exp;
@@ -1227,7 +1225,7 @@ static void /* TODO TRY */ check_ret_statement(Ctx ctx, CReturn* node) {
     }
 
     else if (!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
-        node->exp = /* TODO TRY */ cast_assign(ctx, std::move(node->exp), fun_type->ret_type);
+        /* TODO TRY */ cast_assign(ctx, fun_type->ret_type, &node->exp);
     }
     node->exp = /* TODO TRY */ check_typed_exp(ctx, std::move(node->exp));
 }
@@ -1270,7 +1268,7 @@ static void /* TODO TRY */ check_switch_statement(Ctx ctx, CSwitch* node) {
         case AST_SChar_t:
         case AST_UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            node->match = /* TODO TRY */ cast_exp(ctx, std::move(node->match), promote_type);
+            /* TODO TRY */ cast_exp(ctx, promote_type, &node->match);
             break;
         }
         default:
@@ -1363,7 +1361,7 @@ static void /* TODO TRY */ check_bound_string_init(Ctx ctx, CString* node, Array
 
 static void /* TODO TRY */ check_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if (!is_same_type(node->exp->exp_type.get(), init_type.get())) {
-        node->exp = /* TODO TRY */ cast_assign(ctx, std::move(node->exp), init_type);
+        /* TODO TRY */ cast_assign(ctx, init_type, &node->exp);
     }
     node->init_type = init_type;
 }
