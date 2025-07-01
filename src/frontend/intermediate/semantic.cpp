@@ -183,26 +183,28 @@ static bool is_type_complete(Ctx ctx, Type* type) {
     }
 }
 
-static void is_valid_type(Ctx ctx, Type* type);
+static void /* TODO TRY */ is_valid_type(Ctx ctx, Type* type);
 
-static void is_valid_ptr(Ctx ctx, Pointer* ptr_type) { is_valid_type(ctx, ptr_type->ref_type.get()); }
+static void /* TODO TRY */ is_valid_ptr(Ctx ctx, Pointer* ptr_type) { /* TODO TRY */
+    is_valid_type(ctx, ptr_type->ref_type.get());
+}
 
-static void is_valid_arr(Ctx ctx, Array* arr_type) {
+static void /* TODO TRY */ is_valid_arr(Ctx ctx, Array* arr_type) {
     if (!is_type_complete(ctx, arr_type->elem_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_incomplete_arr, fmt_type_c_str(arr_type), fmt_type_c_str(arr_type->elem_type.get())),
             ctx->errors->linebuf);
     }
-    is_valid_type(ctx, arr_type->elem_type.get());
+    /* TODO TRY */ is_valid_type(ctx, arr_type->elem_type.get());
 }
 
-static void is_valid_type(Ctx ctx, Type* type) {
+static void /* TODO TRY */ is_valid_type(Ctx ctx, Type* type) {
     switch (type->type()) {
         case AST_Pointer_t:
-            is_valid_ptr(ctx, static_cast<Pointer*>(type));
+            /* TODO TRY */ is_valid_ptr(ctx, static_cast<Pointer*>(type));
             break;
         case AST_Array_t:
-            is_valid_arr(ctx, static_cast<Array*>(type));
+            /* TODO TRY */ is_valid_arr(ctx, static_cast<Array*>(type));
             break;
         case AST_FunType_t:
             THROW_ABORT;
@@ -353,7 +355,7 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     }
 }
 
-static std::shared_ptr<Type> get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2) {
+static std::shared_ptr<Type> /* TODO TRY */ get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2) {
     if (is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
         return node_1->exp_type;
     }
@@ -588,14 +590,14 @@ static void check_string_exp(CString* node) {
     node->exp_type = std::make_shared<Array>(size, std::move(elem_type));
 }
 
-static void check_var_exp(Ctx ctx, CVar* node) {
+static void /* TODO TRY */ check_var_exp(Ctx ctx, CVar* node) {
     if (ctx->frontend->symbol_table[node->name]->type_t->type() == AST_FunType_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_fun_used_as_var, fmt_name_c_str(node->name)), node->line);
     }
     node->exp_type = ctx->frontend->symbol_table[node->name]->type_t;
 }
 
-static void check_cast_exp(Ctx ctx, CCast* node) {
+static void /* TODO TRY */ check_cast_exp(Ctx ctx, CCast* node) {
     ctx->errors->linebuf = node->line;
     reslv_struct_type(ctx, node->target_type.get());
     if (node->target_type->type() != AST_Void_t
@@ -606,34 +608,36 @@ static void check_cast_exp(Ctx ctx, CCast* node) {
                              fmt_type_c_str(node->target_type.get())),
             node->line);
     }
-    is_valid_type(ctx, node->target_type.get());
+    /* TODO TRY */ is_valid_type(ctx, node->target_type.get());
     node->exp_type = node->target_type;
 }
 
-static std::unique_ptr<CCast> cast_exp(Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
+static std::unique_ptr<CCast> /* TODO TRY */ cast_exp(
+    Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
     size_t line = node->line;
     std::shared_ptr<Type> exp_type_cp = exp_type;
     std::unique_ptr<CCast> exp = std::make_unique<CCast>(std::move(node), std::move(exp_type_cp), line);
-    check_cast_exp(ctx, exp.get());
+    /* TODO TRY */ check_cast_exp(ctx, exp.get());
     return exp;
 }
 
-static std::unique_ptr<CCast> cast_assign(Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
+static std::unique_ptr<CCast> /* TODO TRY */ cast_assign(
+    Ctx ctx, std::unique_ptr<CExp>&& node, std::shared_ptr<Type>& exp_type) {
     if (is_type_arithmetic(node->exp_type.get()) && is_type_arithmetic(exp_type.get())) {
-        return cast_exp(ctx, std::move(node), exp_type);
+        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
     }
     else if (node->type() == AST_CConstant_t && exp_type->type() == AST_Pointer_t
              && is_const_null_ptr(static_cast<CConstant*>(node.get()))) {
-        return cast_exp(ctx, std::move(node), exp_type);
+        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
     }
     else if (exp_type->type() == AST_Pointer_t && static_cast<Pointer*>(exp_type.get())->ref_type->type() == AST_Void_t
              && node->exp_type->type() == AST_Pointer_t) {
-        return cast_exp(ctx, std::move(node), exp_type);
+        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
     }
     else if (node->exp_type->type() == AST_Pointer_t
              && static_cast<Pointer*>(node->exp_type.get())->ref_type->type() == AST_Void_t
              && exp_type->type() == AST_Pointer_t) {
-        return cast_exp(ctx, std::move(node), exp_type);
+        return /* TODO TRY */ cast_exp(ctx, std::move(node), exp_type);
     }
     else {
         THROW_AT_LINE_EX(
@@ -642,7 +646,7 @@ static std::unique_ptr<CCast> cast_assign(Ctx ctx, std::unique_ptr<CExp>&& node,
     }
 }
 
-static void check_unary_complement_exp(Ctx ctx, CUnary* node) {
+static void /* TODO TRY */ check_unary_complement_exp(Ctx ctx, CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                              fmt_type_c_str(node->exp->exp_type.get())),
@@ -658,7 +662,7 @@ static void check_unary_complement_exp(Ctx ctx, CUnary* node) {
         case AST_SChar_t:
         case AST_UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            node->exp = cast_exp(ctx, std::move(node->exp), promote_type);
+            node->exp = /* TODO TRY */ cast_exp(ctx, std::move(node->exp), promote_type);
             break;
         }
         default:
@@ -667,7 +671,7 @@ static void check_unary_complement_exp(Ctx ctx, CUnary* node) {
     node->exp_type = node->exp->exp_type;
 }
 
-static void check_unary_neg_exp(Ctx ctx, CUnary* node) {
+static void /* TODO TRY */ check_unary_neg_exp(Ctx ctx, CUnary* node) {
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                              fmt_type_c_str(node->exp->exp_type.get())),
@@ -679,7 +683,7 @@ static void check_unary_neg_exp(Ctx ctx, CUnary* node) {
         case AST_SChar_t:
         case AST_UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            node->exp = cast_exp(ctx, std::move(node->exp), promote_type);
+            node->exp = /* TODO TRY */ cast_exp(ctx, std::move(node->exp), promote_type);
             break;
         }
         default:
@@ -688,7 +692,7 @@ static void check_unary_neg_exp(Ctx ctx, CUnary* node) {
     node->exp_type = node->exp->exp_type;
 }
 
-static void check_unary_not_exp(Ctx ctx, CUnary* node) {
+static void /* TODO TRY */ check_unary_not_exp(Ctx ctx, CUnary* node) {
     if (!is_type_scalar(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
                              fmt_type_c_str(node->exp->exp_type.get())),
@@ -698,23 +702,23 @@ static void check_unary_not_exp(Ctx ctx, CUnary* node) {
     node->exp_type = std::make_shared<Int>();
 }
 
-static void check_unary_exp(Ctx ctx, CUnary* node) {
+static void /* TODO TRY */ check_unary_exp(Ctx ctx, CUnary* node) {
     switch (node->unop->type()) {
         case AST_CComplement_t:
-            check_unary_complement_exp(ctx, node);
+            /* TODO TRY */ check_unary_complement_exp(ctx, node);
             break;
         case AST_CNegate_t:
-            check_unary_neg_exp(ctx, node);
+            /* TODO TRY */ check_unary_neg_exp(ctx, node);
             break;
         case AST_CNot_t:
-            check_unary_not_exp(ctx, node);
+            /* TODO TRY */ check_unary_not_exp(ctx, node);
             break;
         default:
             THROW_ABORT;
     }
 }
 
-static void check_binary_add_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_add_exp(Ctx ctx, CBinary* node) {
     std::shared_ptr<Type> common_type;
     if (is_type_arithmetic(node->exp_left->exp_type.get()) && is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -724,7 +728,7 @@ static void check_binary_add_exp(Ctx ctx, CBinary* node) {
              && is_type_int(node->exp_right->exp_type.get())) {
         common_type = std::make_shared<Long>();
         if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-            node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+            node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
         }
         node->exp_type = node->exp_left->exp_type;
         return;
@@ -733,7 +737,7 @@ static void check_binary_add_exp(Ctx ctx, CBinary* node) {
              && is_type_complete(ctx, static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get())) {
         common_type = std::make_shared<Long>();
         if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-            node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+            node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
         }
         node->exp_type = node->exp_right->exp_type;
         return;
@@ -746,15 +750,15 @@ static void check_binary_add_exp(Ctx ctx, CBinary* node) {
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
 
-static void check_binary_subtract_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_subtract_exp(Ctx ctx, CBinary* node) {
     std::shared_ptr<Type> common_type;
     if (is_type_arithmetic(node->exp_left->exp_type.get()) && is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
@@ -764,7 +768,7 @@ static void check_binary_subtract_exp(Ctx ctx, CBinary* node) {
         if (is_type_int(node->exp_right->exp_type.get())) {
             common_type = std::make_shared<Long>();
             if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-                node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+                node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
             }
             node->exp_type = node->exp_left->exp_type;
             return;
@@ -791,15 +795,15 @@ static void check_binary_subtract_exp(Ctx ctx, CBinary* node) {
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
 
-static void check_multiply_divide_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_multiply_divide_exp(Ctx ctx, CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
@@ -809,15 +813,15 @@ static void check_multiply_divide_exp(Ctx ctx, CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
 
-static void check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
@@ -827,10 +831,10 @@ static void check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
     if (node->exp_type->type() == AST_Double_t) {
@@ -840,7 +844,7 @@ static void check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     }
 }
 
-static void check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_int(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
@@ -850,10 +854,10 @@ static void check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
 
     else if (is_type_char(node->exp_left->exp_type.get())) {
         std::shared_ptr<Type> left_type = std::make_shared<Int>();
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), left_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), left_type);
     }
     if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), node->exp_left->exp_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), node->exp_left->exp_type);
     }
     node->exp_type = node->exp_left->exp_type;
     if (node->exp_type->type() == AST_Double_t) {
@@ -863,14 +867,14 @@ static void check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     }
 }
 
-static void check_bitshift_right_exp(Ctx ctx, CBinary* node) {
-    check_binary_bitshift_exp(ctx, node);
+static void /* TODO TRY */ check_bitshift_right_exp(Ctx ctx, CBinary* node) {
+    /* TODO TRY */ check_binary_bitshift_exp(ctx, node);
     if (is_type_signed(node->exp_left->exp_type.get())) {
         node->binop = std::make_unique<CBitShrArithmetic>();
     }
 }
 
-static void check_binary_logical_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_logical_exp(Ctx ctx, CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop.get()),
@@ -881,10 +885,10 @@ static void check_binary_logical_exp(Ctx ctx, CBinary* node) {
     node->exp_type = std::make_shared<Int>();
 }
 
-static void check_binary_equality_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_equality_exp(Ctx ctx, CBinary* node) {
     std::shared_ptr<Type> common_type;
     if (node->exp_left->exp_type->type() == AST_Pointer_t || node->exp_right->exp_type->type() == AST_Pointer_t) {
-        common_type = get_joint_ptr_type(ctx, node->exp_left.get(), node->exp_right.get());
+        common_type = /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_left.get(), node->exp_right.get());
     }
     else if (is_type_arithmetic(node->exp_left->exp_type.get())
              && is_type_arithmetic(node->exp_right->exp_type.get())) {
@@ -898,15 +902,15 @@ static void check_binary_equality_exp(Ctx ctx, CBinary* node) {
     }
 
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::make_shared<Int>();
 }
 
-static void check_binary_relational_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_relational_exp(Ctx ctx, CBinary* node) {
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())
         || (node->exp_left->exp_type->type() == AST_Pointer_t
             && (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())
@@ -922,58 +926,58 @@ static void check_binary_relational_exp(Ctx ctx, CBinary* node) {
 
     std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
-        node->exp_left = cast_exp(ctx, std::move(node->exp_left), common_type);
+        node->exp_left = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_left), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::make_shared<Int>();
 }
 
-static void check_binary_exp(Ctx ctx, CBinary* node) {
+static void /* TODO TRY */ check_binary_exp(Ctx ctx, CBinary* node) {
     switch (node->binop->type()) {
         case AST_CAdd_t:
-            check_binary_add_exp(ctx, node);
+            /* TODO TRY */ check_binary_add_exp(ctx, node);
             break;
         case AST_CSubtract_t:
-            check_binary_subtract_exp(ctx, node);
+            /* TODO TRY */ check_binary_subtract_exp(ctx, node);
             break;
         case AST_CMultiply_t:
         case AST_CDivide_t:
-            check_multiply_divide_exp(ctx, node);
+            /* TODO TRY */ check_multiply_divide_exp(ctx, node);
             break;
         case AST_CRemainder_t:
         case AST_CBitAnd_t:
         case AST_CBitOr_t:
         case AST_CBitXor_t:
-            check_remainder_bitwise_exp(ctx, node);
+            /* TODO TRY */ check_remainder_bitwise_exp(ctx, node);
             break;
         case AST_CBitShiftLeft_t:
-            check_binary_bitshift_exp(ctx, node);
+            /* TODO TRY */ check_binary_bitshift_exp(ctx, node);
             break;
         case AST_CBitShiftRight_t:
-            check_bitshift_right_exp(ctx, node);
+            /* TODO TRY */ check_bitshift_right_exp(ctx, node);
             break;
         case AST_CAnd_t:
         case AST_COr_t:
-            check_binary_logical_exp(ctx, node);
+            /* TODO TRY */ check_binary_logical_exp(ctx, node);
             break;
         case AST_CEqual_t:
         case AST_CNotEqual_t:
-            check_binary_equality_exp(ctx, node);
+            /* TODO TRY */ check_binary_equality_exp(ctx, node);
             break;
         case AST_CLessThan_t:
         case AST_CLessOrEqual_t:
         case AST_CGreaterThan_t:
         case AST_CGreaterOrEqual_t:
-            check_binary_relational_exp(ctx, node);
+            /* TODO TRY */ check_binary_relational_exp(ctx, node);
             break;
         default:
             THROW_ABORT;
     }
 }
 
-static void check_assign_exp(Ctx ctx, CAssignment* node) {
+static void /* TODO TRY */ check_assign_exp(Ctx ctx, CAssignment* node) {
     if (node->exp_left) {
         if (node->exp_left->exp_type->type() == AST_Void_t) {
             THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_assign_to_void), node->line);
@@ -983,7 +987,7 @@ static void check_assign_exp(Ctx ctx, CAssignment* node) {
                 GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(nullptr, node->unop.get())), node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
-            node->exp_right = cast_assign(ctx, std::move(node->exp_right), node->exp_left->exp_type);
+            node->exp_right = /* TODO TRY */ cast_assign(ctx, std::move(node->exp_right), node->exp_left->exp_type);
         }
         node->exp_type = node->exp_left->exp_type;
     }
@@ -1000,13 +1004,13 @@ static void check_assign_exp(Ctx ctx, CAssignment* node) {
                 node->line);
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), exp_left->exp_type.get())) {
-            node->exp_right = cast_assign(ctx, std::move(node->exp_right), exp_left->exp_type);
+            node->exp_right = /* TODO TRY */ cast_assign(ctx, std::move(node->exp_right), exp_left->exp_type);
         }
         node->exp_type = exp_left->exp_type;
     }
 }
 
-static void check_conditional_exp(Ctx ctx, CConditional* node) {
+static void /* TODO TRY */ check_conditional_exp(Ctx ctx, CConditional* node) {
     if (!is_type_scalar(node->condition->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_condition, fmt_type_c_str(node->condition->exp_type.get())), node->line);
@@ -1032,7 +1036,7 @@ static void check_conditional_exp(Ctx ctx, CConditional* node) {
     }
     else if (node->exp_middle->exp_type->type() == AST_Pointer_t
              || node->exp_right->exp_type->type() == AST_Pointer_t) {
-        common_type = get_joint_ptr_type(ctx, node->exp_middle.get(), node->exp_right.get());
+        common_type = /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_middle.get(), node->exp_right.get());
     }
     else {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_ternary_op, fmt_type_c_str(node->exp_middle->exp_type.get()),
@@ -1040,15 +1044,15 @@ static void check_conditional_exp(Ctx ctx, CConditional* node) {
             node->line);
     }
     if (!is_same_type(node->exp_middle->exp_type.get(), common_type.get())) {
-        node->exp_middle = cast_exp(ctx, std::move(node->exp_middle), common_type);
+        node->exp_middle = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_middle), common_type);
     }
     if (!is_same_type(node->exp_right->exp_type.get(), common_type.get())) {
-        node->exp_right = cast_exp(ctx, std::move(node->exp_right), common_type);
+        node->exp_right = /* TODO TRY */ cast_exp(ctx, std::move(node->exp_right), common_type);
     }
     node->exp_type = std::move(common_type);
 }
 
-static void check_call_exp(Ctx ctx, CFunctionCall* node) {
+static void /* TODO TRY */ check_call_exp(Ctx ctx, CFunctionCall* node) {
     if (ctx->frontend->symbol_table[node->name]->type_t->type() != AST_FunType_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_var_used_as_fun, fmt_name_c_str(node->name)), node->line);
     }
@@ -1061,20 +1065,20 @@ static void check_call_exp(Ctx ctx, CFunctionCall* node) {
     }
     for (size_t i = 0; i < node->args.size(); ++i) {
         if (!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
-            node->args[i] = cast_assign(ctx, std::move(node->args[i]), fun_type->param_types[i]);
+            node->args[i] = /* TODO TRY */ cast_assign(ctx, std::move(node->args[i]), fun_type->param_types[i]);
         }
     }
     node->exp_type = fun_type->ret_type;
 }
 
-static void check_deref_exp(Ctx ctx, CDereference* node) {
+static void /* TODO TRY */ check_deref_exp(Ctx ctx, CDereference* node) {
     if (node->exp->exp_type->type() != AST_Pointer_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_deref_not_ptr, fmt_type_c_str(node->exp->exp_type.get())), node->line);
     }
     node->exp_type = static_cast<Pointer*>(node->exp->exp_type.get())->ref_type;
 }
 
-static void check_addrof_exp(Ctx ctx, CAddrOf* node) {
+static void /* TODO TRY */ check_addrof_exp(Ctx ctx, CAddrOf* node) {
     if (!is_exp_lvalue(node->exp.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_addrof_rvalue), node->line);
     }
@@ -1082,14 +1086,14 @@ static void check_addrof_exp(Ctx ctx, CAddrOf* node) {
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
 }
 
-static void check_subscript_exp(Ctx ctx, CSubscript* node) {
+static void /* TODO TRY */ check_subscript_exp(Ctx ctx, CSubscript* node) {
     std::shared_ptr<Type> ref_type;
     if (node->primary_exp->exp_type->type() == AST_Pointer_t
         && is_type_complete(ctx, static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get())
         && is_type_int(node->subscript_exp->exp_type.get())) {
         std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
         if (!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
-            node->subscript_exp = cast_exp(ctx, std::move(node->subscript_exp), subscript_type);
+            node->subscript_exp = /* TODO TRY */ cast_exp(ctx, std::move(node->subscript_exp), subscript_type);
         }
         ref_type = static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type;
     }
@@ -1097,7 +1101,7 @@ static void check_subscript_exp(Ctx ctx, CSubscript* node) {
              && is_type_complete(ctx, static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get())) {
         std::shared_ptr<Type> primary_type = std::make_shared<Long>();
         if (!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
-            node->primary_exp = cast_exp(ctx, std::move(node->primary_exp), primary_type);
+            node->primary_exp = /* TODO TRY */ cast_exp(ctx, std::move(node->primary_exp), primary_type);
         }
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
@@ -1109,7 +1113,7 @@ static void check_subscript_exp(Ctx ctx, CSubscript* node) {
     node->exp_type = std::move(ref_type);
 }
 
-static void check_sizeof_exp(Ctx ctx, CSizeOf* node) {
+static void /* TODO TRY */ check_sizeof_exp(Ctx ctx, CSizeOf* node) {
     if (!is_type_complete(ctx, node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_sizeof_incomplete, fmt_type_c_str(node->exp->exp_type.get())), node->line);
@@ -1117,17 +1121,17 @@ static void check_sizeof_exp(Ctx ctx, CSizeOf* node) {
     node->exp_type = std::make_shared<ULong>();
 }
 
-static void check_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
+static void /* TODO TRY */ check_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
     ctx->errors->linebuf = node->line;
     reslv_struct_type(ctx, node->target_type.get());
     if (!is_type_complete(ctx, node->target_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_sizeof_incomplete, fmt_type_c_str(node->target_type.get())), node->line);
     }
-    is_valid_type(ctx, node->target_type.get());
+    /* TODO TRY */ is_valid_type(ctx, node->target_type.get());
     node->exp_type = std::make_shared<ULong>();
 }
 
-static void check_dot_exp(Ctx ctx, CDot* node) {
+static void /* TODO TRY */ check_dot_exp(Ctx ctx, CDot* node) {
     if (node->structure->exp_type->type() != AST_Structure_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_dot_not_struct, fmt_name_c_str(node->member),
                              fmt_type_c_str(node->structure->exp_type.get())),
@@ -1143,7 +1147,7 @@ static void check_dot_exp(Ctx ctx, CDot* node) {
     node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
 
-static void check_arrow_exp(Ctx ctx, CArrow* node) {
+static void /* TODO TRY */ check_arrow_exp(Ctx ctx, CArrow* node) {
     if (node->pointer->exp_type->type() != AST_Pointer_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, fmt_name_c_str(node->member),
                              fmt_type_c_str(node->pointer->exp_type.get())),
@@ -1186,7 +1190,7 @@ static std::unique_ptr<CAddrOf> check_arr_typed_exp(std::unique_ptr<CExp>&& node
     return addrof;
 }
 
-static std::unique_ptr<CExp> check_struct_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
+static std::unique_ptr<CExp> /* TODO TRY */ check_struct_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
     if (!is_struct_complete(ctx, static_cast<Structure*>(node->exp_type.get()))) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_exp_incomplete, fmt_type_c_str(node->exp_type.get())), node->line);
     }
@@ -1195,18 +1199,18 @@ static std::unique_ptr<CExp> check_struct_typed_exp(Ctx ctx, std::unique_ptr<CEx
     return exp;
 }
 
-static std::unique_ptr<CExp> check_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
+static std::unique_ptr<CExp> /* TODO TRY */ check_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
     switch (node->exp_type->type()) {
         case AST_Array_t:
             return check_arr_typed_exp(std::move(node));
         case AST_Structure_t:
-            return check_struct_typed_exp(ctx, std::move(node));
+            return /* TODO TRY */ check_struct_typed_exp(ctx, std::move(node));
         default:
             return check_scalar_typed_exp(std::move(node));
     }
 }
 
-static void check_ret_statement(Ctx ctx, CReturn* node) {
+static void /* TODO TRY */ check_ret_statement(Ctx ctx, CReturn* node) {
     FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[ctx->fun_def_name]->type_t.get());
     if (fun_type->ret_type->type() == AST_Void_t) {
         if (node->exp) {
@@ -1222,40 +1226,40 @@ static void check_ret_statement(Ctx ctx, CReturn* node) {
     }
 
     else if (!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
-        node->exp = cast_assign(ctx, std::move(node->exp), fun_type->ret_type);
+        node->exp = /* TODO TRY */ cast_assign(ctx, std::move(node->exp), fun_type->ret_type);
     }
-    node->exp = check_typed_exp(ctx, std::move(node->exp));
+    node->exp = /* TODO TRY */ check_typed_exp(ctx, std::move(node->exp));
 }
 
-static void check_if_statement(Ctx ctx, CIf* node) {
+static void /* TODO TRY */ check_if_statement(Ctx ctx, CIf* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_if, fmt_type_c_str(node->condition->exp_type.get())), node->condition->line);
     }
 }
 
-static void check_while_statement(Ctx ctx, CWhile* node) {
+static void /* TODO TRY */ check_while_statement(Ctx ctx, CWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_while, fmt_type_c_str(node->condition->exp_type.get())),
             node->condition->line);
     }
 }
 
-static void check_do_while_statement(Ctx ctx, CDoWhile* node) {
+static void /* TODO TRY */ check_do_while_statement(Ctx ctx, CDoWhile* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_do_while, fmt_type_c_str(node->condition->exp_type.get())),
             node->condition->line);
     }
 }
 
-static void check_for_statement(Ctx ctx, CFor* node) {
+static void /* TODO TRY */ check_for_statement(Ctx ctx, CFor* node) {
     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_for, fmt_type_c_str(node->condition->exp_type.get())), node->condition->line);
     }
 }
 
-static void check_switch_statement(Ctx ctx, CSwitch* node) {
+static void /* TODO TRY */ check_switch_statement(Ctx ctx, CSwitch* node) {
     if (!is_type_int(node->match->exp_type.get())) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_invalid_switch, fmt_type_c_str(node->match->exp_type.get())), node->match->line);
@@ -1265,7 +1269,7 @@ static void check_switch_statement(Ctx ctx, CSwitch* node) {
         case AST_SChar_t:
         case AST_UChar_t: {
             std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            node->match = cast_exp(ctx, std::move(node->match), promote_type);
+            node->match = /* TODO TRY */ cast_exp(ctx, std::move(node->match), promote_type);
             break;
         }
         default:
@@ -1345,7 +1349,7 @@ static void check_switch_statement(Ctx ctx, CSwitch* node) {
     }
 }
 
-static void check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) {
+static void /* TODO TRY */ check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) {
     if (!is_type_char(arr_type->elem_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_string_init_not_char_arr, fmt_type_c_str(arr_type)), node->line);
     }
@@ -1356,9 +1360,9 @@ static void check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) {
     }
 }
 
-static void check_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Type>& init_type) {
+static void /* TODO TRY */ check_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if (!is_same_type(node->exp->exp_type.get(), init_type.get())) {
-        node->exp = cast_assign(ctx, std::move(node->exp), init_type);
+        node->exp = /* TODO TRY */ cast_assign(ctx, std::move(node->exp), init_type);
     }
     node->init_type = init_type;
 }
@@ -1446,7 +1450,7 @@ static std::unique_ptr<CInitializer> check_zero_init(Ctx ctx, Type* init_type) {
     }
 }
 
-static void check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
+static void /* TODO TRY */ check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
     if (node->initializers.size() > (size_t)arr_type->size) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_arr_init_overflow, std::to_string(arr_type->size).c_str(),
                              fmt_type_c_str(arr_type), std::to_string(node->initializers.size()).c_str()),
@@ -1454,7 +1458,7 @@ static void check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) 
     }
 }
 
-static void check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
+static void /* TODO TRY */ check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
     size_t bound = struct_type->is_union ? 1 : ctx->frontend->struct_typedef_table[struct_type->tag]->members.size();
     if (node->initializers.size() > bound) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_struct_init_overflow, fmt_type_c_str(struct_type),
@@ -1481,11 +1485,11 @@ static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_ty
     node->init_type = init_type;
 }
 
-static void check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
+static void /* TODO TRY */ check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     ctx->errors->linebuf = node->line;
     reslv_struct_type(ctx, fun_type->ret_type.get());
-    is_valid_type(ctx, fun_type->ret_type.get());
+    /* TODO TRY */ is_valid_type(ctx, fun_type->ret_type.get());
 
     switch (fun_type->ret_type->type()) {
         case AST_Array_t:
@@ -1505,7 +1509,7 @@ static void check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     }
 }
 
-static void check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
+static void /* TODO TRY */ check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for (size_t i = 0; i < node->params.size(); ++i) {
         ctx->errors->linebuf = node->line;
@@ -1515,7 +1519,7 @@ static void check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
                 GET_SEMANTIC_MSG(MSG_void_param, fmt_name_c_str(node->name), fmt_name_c_str(node->params[i])),
                 node->line);
         }
-        is_valid_type(ctx, fun_type->param_types[i].get());
+        /* TODO TRY */ is_valid_type(ctx, fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_Array_t) {
             std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
             fun_type->param_types[i] = std::make_shared<Pointer>(std::move(ref_type));
@@ -1536,7 +1540,7 @@ static void check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     }
 }
 
-static void check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
+static void /* TODO TRY */ check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     THROW_ABORT_IF(node->fun_type->type() == AST_Void_t);
 
     bool is_def = ctx->fun_def_set.find(node->name) != ctx->fun_def_set.end();
@@ -1588,7 +1592,7 @@ static void push_zero_static_init(Ctx ctx, TLong byte) {
     }
 }
 
-static void check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type);
+static void /* TODO TRY */ check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type);
 
 static void check_static_no_init(Ctx ctx, Type* static_init_type, TLong size) {
     TLong byte = static_init_type == nullptr ? size : get_type_scale(ctx, static_init_type) * size;
@@ -1605,7 +1609,7 @@ static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
-static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
+static void /* TODO TRY */ check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
     switch (static_init_type->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
@@ -1705,7 +1709,7 @@ static void check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_
     }
 }
 
-static void check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
+static void /* TODO TRY */ check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
     if (static_ptr_type->ref_type->type() != AST_Char_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_static_ptr_init_string, fmt_type_c_str(static_ptr_type)), node->line);
     }
@@ -1745,8 +1749,8 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static
     push_static_init(ctx, std::make_shared<PointerInit>(string_const_label));
 }
 
-static void check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
-    check_bound_string_init(ctx, node, static_arr_type);
+static void /* TODO TRY */ check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
+    /* TODO TRY */ check_bound_string_init(ctx, node, static_arr_type);
     TLong byte = static_arr_type->size - ((TLong)node->literal->value.size()) - 1l;
     {
         bool is_null_term = byte >= 0l;
@@ -1763,26 +1767,26 @@ static void check_static_arr_string_init(Ctx ctx, CString* node, Array* static_a
     }
 }
 
-static void check_static_string_init(Ctx ctx, CString* node, Type* static_init_type) {
+static void /* TODO TRY */ check_static_string_init(Ctx ctx, CString* node, Type* static_init_type) {
     switch (static_init_type->type()) {
         case AST_Pointer_t:
-            check_static_ptr_string_init(ctx, node, static_cast<Pointer*>(static_init_type));
+            /* TODO TRY */ check_static_ptr_string_init(ctx, node, static_cast<Pointer*>(static_init_type));
             break;
         case AST_Array_t:
-            check_static_arr_string_init(ctx, node, static_cast<Array*>(static_init_type));
+            /* TODO TRY */ check_static_arr_string_init(ctx, node, static_cast<Array*>(static_init_type));
             break;
         default:
             THROW_ABORT;
     }
 }
 
-static void check_single_static_init(Ctx ctx, CSingleInit* node, Type* static_init_type) {
+static void /* TODO TRY */ check_single_static_init(Ctx ctx, CSingleInit* node, Type* static_init_type) {
     switch (node->exp->type()) {
         case AST_CConstant_t:
-            check_static_const_init(ctx, static_cast<CConstant*>(node->exp.get()), static_init_type);
+            /* TODO TRY */ check_static_const_init(ctx, static_cast<CConstant*>(node->exp.get()), static_init_type);
             break;
         case AST_CString_t:
-            check_static_string_init(ctx, static_cast<CString*>(node->exp.get()), static_init_type);
+            /* TODO TRY */ check_static_string_init(ctx, static_cast<CString*>(node->exp.get()), static_init_type);
             break;
         default:
             THROW_AT_LINE_EX(
@@ -1790,19 +1794,19 @@ static void check_single_static_init(Ctx ctx, CSingleInit* node, Type* static_in
     }
 }
 
-static void check_static_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
-    check_bound_arr_init(ctx, node, arr_type);
+static void /* TODO TRY */ check_static_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
+    /* TODO TRY */ check_bound_arr_init(ctx, node, arr_type);
 
     for (const auto& initializer : node->initializers) {
-        check_static_init(ctx, initializer.get(), arr_type->elem_type.get());
+        /* TODO TRY */ check_static_init(ctx, initializer.get(), arr_type->elem_type.get());
     }
     if ((size_t)arr_type->size > node->initializers.size()) {
         check_static_no_init(ctx, arr_type->elem_type.get(), arr_type->size - node->initializers.size());
     }
 }
 
-static void check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
-    check_bound_struct_init(ctx, node, struct_type);
+static void /* TODO TRY */ check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
+    /* TODO TRY */ check_bound_struct_init(ctx, node, struct_type);
 
     TLong size = 0l;
     for (size_t i = 0; i < node->initializers.size(); ++i) {
@@ -1811,7 +1815,7 @@ static void check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure* st
             check_static_no_init(ctx, nullptr, member->offset - size);
             size = member->offset;
         }
-        check_static_init(ctx, node->initializers[i].get(), member->member_type.get());
+        /* TODO TRY */ check_static_init(ctx, node->initializers[i].get(), member->member_type.get());
         size += get_type_scale(ctx, member->member_type.get());
     }
     if (ctx->frontend->struct_typedef_table[struct_type->tag]->size != size) {
@@ -1819,13 +1823,13 @@ static void check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure* st
     }
 }
 
-static void check_static_compound_init(Ctx ctx, CCompoundInit* node, Type* static_init_type) {
+static void /* TODO TRY */ check_static_compound_init(Ctx ctx, CCompoundInit* node, Type* static_init_type) {
     switch (static_init_type->type()) {
         case AST_Array_t:
-            check_static_arr_init(ctx, node, static_cast<Array*>(static_init_type));
+            /* TODO TRY */ check_static_arr_init(ctx, node, static_cast<Array*>(static_init_type));
             break;
         case AST_Structure_t:
-            check_static_struct_init(ctx, node, static_cast<Structure*>(static_init_type));
+            /* TODO TRY */ check_static_struct_init(ctx, node, static_cast<Structure*>(static_init_type));
             break;
         default:
             THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, fmt_type_c_str(static_init_type)),
@@ -1833,36 +1837,36 @@ static void check_static_compound_init(Ctx ctx, CCompoundInit* node, Type* stati
     }
 }
 
-static void check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type) {
+static void /* TODO TRY */ check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type) {
     switch (node->type()) {
         case AST_CSingleInit_t:
-            check_single_static_init(ctx, static_cast<CSingleInit*>(node), static_init_type);
+            /* TODO TRY */ check_single_static_init(ctx, static_cast<CSingleInit*>(node), static_init_type);
             break;
         case AST_CCompoundInit_t:
-            check_static_compound_init(ctx, static_cast<CCompoundInit*>(node), static_init_type);
+            /* TODO TRY */ check_static_compound_init(ctx, static_cast<CCompoundInit*>(node), static_init_type);
             break;
         default:
             THROW_ABORT;
     }
 }
 
-static std::shared_ptr<Initial> check_initializer(Ctx ctx, CInitializer* node, Type* static_init_type) {
+static std::shared_ptr<Initial> /* TODO TRY */ check_initializer(Ctx ctx, CInitializer* node, Type* static_init_type) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     {
         ctx->p_static_inits = &static_inits;
-        check_static_init(ctx, node, static_init_type);
+        /* TODO TRY */ check_static_init(ctx, node, static_init_type);
         ctx->p_static_inits = nullptr;
     }
     return std::make_shared<Initial>(std::move(static_inits));
 }
 
-static void check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
+static void /* TODO TRY */ check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     ctx->errors->linebuf = node->line;
     reslv_struct_type(ctx, node->var_type.get());
     if (node->var_type->type() == AST_Void_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_void_var_decl, fmt_name_c_str(node->name)), node->line);
     }
-    is_valid_type(ctx, node->var_type.get());
+    /* TODO TRY */ is_valid_type(ctx, node->var_type.get());
 
     std::shared_ptr<InitialValue> init_value;
     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
@@ -1874,7 +1878,7 @@ static void check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
                                  fmt_type_c_str(node->var_type.get())),
                 node->line);
         }
-        init_value = check_initializer(ctx, node->init.get(), node->var_type.get());
+        init_value = /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get());
     }
     else {
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
@@ -1923,7 +1927,7 @@ static void check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
         std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
 }
 
-static void check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+static void /* TODO TRY */ check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     if (node->init) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redef_extern_var, fmt_name_c_str(node->name)), node->line);
     }
@@ -1947,13 +1951,13 @@ static void check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
 }
 
-static void check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+static void /* TODO TRY */ check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     THROW_ABORT_IF(node->var_type->type() == AST_Structure_t
                    && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get())));
 
     std::shared_ptr<InitialValue> init_value;
     if (node->init) {
-        init_value = check_initializer(ctx, node->init.get(), node->var_type.get());
+        init_value = /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get());
     }
     else {
         init_value = check_no_initializer(ctx, node->var_type.get());
@@ -1965,7 +1969,7 @@ static void check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
 }
 
-static void check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+static void /* TODO TRY */ check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     if (node->var_type->type() == AST_Structure_t
         && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get()))) {
         THROW_AT_LINE_EX(
@@ -1979,32 +1983,32 @@ static void check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
 }
 
-static void check_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+static void /* TODO TRY */ check_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     ctx->errors->linebuf = node->line;
     reslv_struct_type(ctx, node->var_type.get());
     if (node->var_type->type() == AST_Void_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_void_var_decl, fmt_name_c_str(node->name)), node->line);
     }
-    is_valid_type(ctx, node->var_type.get());
+    /* TODO TRY */ is_valid_type(ctx, node->var_type.get());
 
     if (node->storage_class) {
         switch (node->storage_class->type()) {
             case AST_CExtern_t:
-                check_extern_block_var_decl(ctx, node);
+                /* TODO TRY */ check_extern_block_var_decl(ctx, node);
                 break;
             case AST_CStatic_t:
-                check_static_block_var_decl(ctx, node);
+                /* TODO TRY */ check_static_block_var_decl(ctx, node);
                 break;
             default:
                 THROW_ABORT;
         }
     }
     else {
-        check_auto_block_var_decl(ctx, node);
+        /* TODO TRY */ check_auto_block_var_decl(ctx, node);
     }
 }
 
-static void check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
+static void /* TODO TRY */ check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
     for (size_t i = 0; i < node->members.size(); ++i) {
         for (size_t j = i + 1; j < node->members.size(); ++j) {
             if (node->members[i]->member_name == node->members[j]->member_name) {
@@ -2024,11 +2028,11 @@ static void check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
                     fmt_type_c_str(node->members[i].get()->member_type.get())),
                 node->members[i]->line);
         }
-        is_valid_type(ctx, node->members[i].get()->member_type.get());
+        /* TODO TRY */ is_valid_type(ctx, node->members[i].get()->member_type.get());
     }
 }
 
-static void check_struct_decl(Ctx ctx, CStructDeclaration* node) {
+static void /* TODO TRY */ check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     if (ctx->frontend->struct_typedef_table.find(node->tag) != ctx->frontend->struct_typedef_table.end()) {
         THROW_AT_LINE_EX(
             GET_SEMANTIC_MSG(MSG_redecl_struct_in_scope, fmt_struct_name_c_str(node->tag, node->is_union)), node->line);
@@ -2077,6 +2081,8 @@ static void check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     ctx->frontend->struct_typedef_table[node->tag] =
         std::make_unique<StructTypedef>(alignment, size, std::move(member_names), std::move(members));
 }
+
+// TODO HERE v
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2249,23 +2255,23 @@ static void reslv_var_exp(Ctx ctx, CVar* node) {
     THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_undecl_var_in_scope, fmt_name_c_str(node->name)), node->line);
 Lelse:
 
-    check_var_exp(ctx, node);
+    /* TODO TRY */ check_var_exp(ctx, node);
 }
 
 static void reslv_cast_exp(Ctx ctx, CCast* node) {
     node->exp = reslv_typed_exp(ctx, std::move(node->exp));
-    check_cast_exp(ctx, node);
+    /* TODO TRY */ check_cast_exp(ctx, node);
 }
 
 static void reslv_unary_exp(Ctx ctx, CUnary* node) {
     node->exp = reslv_typed_exp(ctx, std::move(node->exp));
-    check_unary_exp(ctx, node);
+    /* TODO TRY */ check_unary_exp(ctx, node);
 }
 
 static void reslv_binary_exp(Ctx ctx, CBinary* node) {
     node->exp_left = reslv_typed_exp(ctx, std::move(node->exp_left));
     node->exp_right = reslv_typed_exp(ctx, std::move(node->exp_right));
-    check_binary_exp(ctx, node);
+    /* TODO TRY */ check_binary_exp(ctx, node);
 }
 
 static void reslv_assign_exp(Ctx ctx, CAssignment* node) {
@@ -2273,14 +2279,14 @@ static void reslv_assign_exp(Ctx ctx, CAssignment* node) {
         node->exp_left = reslv_typed_exp(ctx, std::move(node->exp_left));
     }
     node->exp_right = reslv_typed_exp(ctx, std::move(node->exp_right));
-    check_assign_exp(ctx, node);
+    /* TODO TRY */ check_assign_exp(ctx, node);
 }
 
 static void reslv_conditional_exp(Ctx ctx, CConditional* node) {
     node->condition = reslv_typed_exp(ctx, std::move(node->condition));
     node->exp_middle = reslv_typed_exp(ctx, std::move(node->exp_middle));
     node->exp_right = reslv_typed_exp(ctx, std::move(node->exp_right));
-    check_conditional_exp(ctx, node);
+    /* TODO TRY */ check_conditional_exp(ctx, node);
 }
 
 static void reslv_call_exp(Ctx ctx, CFunctionCall* node) {
@@ -2296,40 +2302,42 @@ Lelse:
     for (size_t i = 0; i < node->args.size(); ++i) {
         node->args[i] = reslv_typed_exp(ctx, std::move(node->args[i]));
     }
-    check_call_exp(ctx, node);
+    /* TODO TRY */ check_call_exp(ctx, node);
 }
 
 static void reslv_deref_exp(Ctx ctx, CDereference* node) {
     node->exp = reslv_typed_exp(ctx, std::move(node->exp));
-    check_deref_exp(ctx, node);
+    /* TODO TRY */ check_deref_exp(ctx, node);
 }
 
 static void reslv_addrof_expr(Ctx ctx, CAddrOf* node) {
     reslv_exp(ctx, node->exp.get());
-    check_addrof_exp(ctx, node);
+    /* TODO TRY */ check_addrof_exp(ctx, node);
 }
 
 static void reslv_subscript_exp(Ctx ctx, CSubscript* node) {
     node->primary_exp = reslv_typed_exp(ctx, std::move(node->primary_exp));
     node->subscript_exp = reslv_typed_exp(ctx, std::move(node->subscript_exp));
-    check_subscript_exp(ctx, node);
+    /* TODO TRY */ check_subscript_exp(ctx, node);
 }
 
 static void reslv_sizeof_exp(Ctx ctx, CSizeOf* node) {
     reslv_exp(ctx, node->exp.get());
-    check_sizeof_exp(ctx, node);
+    /* TODO TRY */ check_sizeof_exp(ctx, node);
 }
 
-static void reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) { check_sizeoft_exp(ctx, node); }
+static void reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) { /* TODO TRY */
+    check_sizeoft_exp(ctx, node);
+}
 
 static void reslv_dot_exp(Ctx ctx, CDot* node) {
     node->structure = reslv_typed_exp(ctx, std::move(node->structure));
-    check_dot_exp(ctx, node);
+    /* TODO TRY */ check_dot_exp(ctx, node);
 }
 
 static void reslv_arrow_exp(Ctx ctx, CArrow* node) {
     node->pointer = reslv_typed_exp(ctx, std::move(node->pointer));
-    check_arrow_exp(ctx, node);
+    /* TODO TRY */ check_arrow_exp(ctx, node);
 }
 
 static void reslv_exp(Ctx ctx, CExp* node) {
@@ -2389,7 +2397,7 @@ static void reslv_exp(Ctx ctx, CExp* node) {
 
 static std::unique_ptr<CExp> reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
     reslv_exp(ctx, node.get());
-    return check_typed_exp(ctx, std::move(node));
+    return /* TODO TRY */ check_typed_exp(ctx, std::move(node));
 }
 
 static void reslv_block(Ctx ctx, CBlock* node);
@@ -2430,7 +2438,7 @@ static void reslv_ret_statement(Ctx ctx, CReturn* node) {
     if (node->exp) {
         node->exp = reslv_typed_exp(ctx, std::move(node->exp));
     }
-    check_ret_statement(ctx, node);
+    /* TODO TRY */ check_ret_statement(ctx, node);
 }
 
 static void reslv_exp_statement(Ctx ctx, CExpression* node) { node->exp = reslv_typed_exp(ctx, std::move(node->exp)); }
@@ -2441,7 +2449,7 @@ static void reslv_if_statement(Ctx ctx, CIf* node) {
     if (node->else_fi) {
         reslv_statement(ctx, node->else_fi.get());
     }
-    check_if_statement(ctx, node);
+    /* TODO TRY */ check_if_statement(ctx, node);
 }
 
 static void reslv_goto_statement(Ctx ctx, CGoto* node) {
@@ -2479,7 +2487,7 @@ static void reslv_while_statement(Ctx ctx, CWhile* node) {
     node->condition = reslv_typed_exp(ctx, std::move(node->condition));
     reslv_statement(ctx, node->body.get());
     deannotate_loop(ctx);
-    check_while_statement(ctx, node);
+    /* TODO TRY */ check_while_statement(ctx, node);
 }
 
 static void reslv_do_while_statement(Ctx ctx, CDoWhile* node) {
@@ -2487,7 +2495,7 @@ static void reslv_do_while_statement(Ctx ctx, CDoWhile* node) {
     reslv_statement(ctx, node->body.get());
     node->condition = reslv_typed_exp(ctx, std::move(node->condition));
     deannotate_loop(ctx);
-    check_do_while_statement(ctx, node);
+    /* TODO TRY */ check_do_while_statement(ctx, node);
 }
 
 static void reslv_for_statement(Ctx ctx, CFor* node) {
@@ -2503,7 +2511,7 @@ static void reslv_for_statement(Ctx ctx, CFor* node) {
     reslv_statement(ctx, node->body.get());
     exit_scope(ctx);
     deannotate_loop(ctx);
-    check_for_statement(ctx, node);
+    /* TODO TRY */ check_for_statement(ctx, node);
 }
 
 static void reslv_switch_statement(Ctx ctx, CSwitch* node) {
@@ -2518,7 +2526,7 @@ static void reslv_switch_statement(Ctx ctx, CSwitch* node) {
     }
     exit_scope(ctx);
     deannotate_lookup(ctx);
-    check_switch_statement(ctx, node);
+    /* TODO TRY */ check_switch_statement(ctx, node);
 }
 
 static void reslv_case_statement(Ctx ctx, CCase* node) {
@@ -2618,17 +2626,18 @@ static void reslv_initializer(Ctx ctx, CInitializer* node, std::shared_ptr<Type>
 
 static void reslv_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Type>& init_type) {
     if (node->exp->type() == AST_CString_t && init_type->type() == AST_Array_t) {
-        check_bound_string_init(ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type.get()));
+        /* TODO TRY */ check_bound_string_init(
+            ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type.get()));
         check_string_init(node, init_type);
     }
     else {
         node->exp = reslv_typed_exp(ctx, std::move(node->exp));
-        check_single_init(ctx, node, init_type);
+        /* TODO TRY */ check_single_init(ctx, node, init_type);
     }
 }
 
 static void reslv_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>& init_type) {
-    check_bound_arr_init(ctx, node, arr_type);
+    /* TODO TRY */ check_bound_arr_init(ctx, node, arr_type);
 
     for (const auto& initializer : node->initializers) {
         reslv_initializer(ctx, initializer.get(), arr_type->elem_type);
@@ -2637,7 +2646,7 @@ static void reslv_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::s
 }
 
 static void reslv_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
-    check_bound_struct_init(ctx, node, struct_type);
+    /* TODO TRY */ check_bound_struct_init(ctx, node, struct_type);
 
     for (size_t i = 0; i < node->initializers.size(); ++i) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
@@ -2681,7 +2690,7 @@ static void reslv_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
         ctx->scoped_identifier_maps.back()[param] = rslv_var_identifier(ctx->identifiers, param);
         param = ctx->scoped_identifier_maps.back()[param];
     }
-    check_fun_params_decl(ctx, node);
+    /* TODO TRY */ check_fun_params_decl(ctx, node);
 }
 
 static void reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
@@ -2702,13 +2711,13 @@ static void reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
     }
 
     ctx->scoped_identifier_maps.back()[node->name] = node->name;
-    check_ret_fun_decl(ctx, node);
+    /* TODO TRY */ check_ret_fun_decl(ctx, node);
 
     enter_scope(ctx);
     if (!node->params.empty()) {
         reslv_fun_params_decl(ctx, node);
     }
-    check_fun_decl(ctx, node);
+    /* TODO TRY */ check_fun_decl(ctx, node);
 
     if (node->body) {
         reslv_block(ctx, node->body.get());
@@ -2723,10 +2732,10 @@ static void reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
 
     ctx->scoped_identifier_maps.back()[node->name] = node->name;
     if (is_file_scope(ctx)) {
-        check_file_var_decl(ctx, node);
+        /* TODO TRY */ check_file_var_decl(ctx, node);
     }
     else {
-        check_block_var_decl(ctx, node);
+        /* TODO TRY */ check_block_var_decl(ctx, node);
     }
 }
 
@@ -2743,14 +2752,16 @@ static void reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
 
     ctx->scoped_identifier_maps.back()[node->name] = rslv_var_identifier(ctx->identifiers, node->name);
     node->name = ctx->scoped_identifier_maps.back()[node->name];
-    check_block_var_decl(ctx, node);
+    /* TODO TRY */ check_block_var_decl(ctx, node);
 
     if (node->init && !node->storage_class) {
         reslv_initializer(ctx, node->init.get(), node->var_type);
     }
 }
 
-static void reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) { check_struct_members_decl(ctx, node); }
+static void reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) { /* TODO TRY */
+    check_struct_members_decl(ctx, node);
+}
 
 static void reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     if (ctx->scoped_struct_maps.back().find(node->tag) != ctx->scoped_struct_maps.back().end()) {
@@ -2784,7 +2795,7 @@ static void reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     }
     if (!node->members.empty()) {
         reslv_struct_members_decl(ctx, node);
-        check_struct_decl(ctx, node);
+        /* TODO TRY */ check_struct_decl(ctx, node);
     }
 }
 
