@@ -1172,16 +1172,14 @@ static void /* TODO TRY */ check_arrow_exp(Ctx ctx, CArrow* node) {
     node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
 
-// TODO see if can use in/out node param instead of return
-static std::unique_ptr<CAddrOf> check_arr_typed_exp(std::unique_ptr<CExp>&& node) {
+static void check_arr_typed_exp(std::unique_ptr<CExp>& addrof) {
     {
-        std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
-        node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
+        std::shared_ptr<Type> ref_type = static_cast<Array*>(addrof->exp_type.get())->elem_type;
+        addrof->exp_type = std::make_shared<Pointer>(std::move(ref_type));
     }
-    size_t line = node->line;
-    std::unique_ptr<CAddrOf> addrof = std::make_unique<CAddrOf>(std::move(node), line);
-    addrof->exp_type = addrof->exp->exp_type;
-    return addrof;
+    size_t line = addrof->line;
+    addrof = std::make_unique<CAddrOf>(std::move(addrof), line);
+    addrof->exp_type = static_cast<CAddrOf*>(addrof.get())->exp->exp_type;
 }
 
 static void /* TODO TRY */ check_struct_typed_exp(Ctx ctx, CExp* node) {
@@ -1192,10 +1190,9 @@ static void /* TODO TRY */ check_struct_typed_exp(Ctx ctx, CExp* node) {
 
 static void /* TODO TRY */ check_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     switch ((*exp)->exp_type->type()) {
-        case AST_Array_t: {
-            *exp = check_arr_typed_exp(std::move(*exp));
+        case AST_Array_t:
+            check_arr_typed_exp(*exp);
             break;
-        }
         case AST_Structure_t:
             /* TODO TRY */ check_struct_typed_exp(ctx, exp->get());
             break;
