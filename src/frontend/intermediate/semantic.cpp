@@ -1172,12 +1172,7 @@ static void /* TODO TRY */ check_arrow_exp(Ctx ctx, CArrow* node) {
     node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
 }
 
-// TODO what is this
-static std::unique_ptr<CExp> check_scalar_typed_exp(std::unique_ptr<CExp>&& node) {
-    std::unique_ptr<CExp> exp = std::move(node);
-    return exp;
-}
-
+// TODO see if can use in/out node param instead of return
 static std::unique_ptr<CAddrOf> check_arr_typed_exp(std::unique_ptr<CExp>&& node) {
     {
         std::shared_ptr<Type> ref_type = static_cast<Array*>(node->exp_type.get())->elem_type;
@@ -1189,23 +1184,23 @@ static std::unique_ptr<CAddrOf> check_arr_typed_exp(std::unique_ptr<CExp>&& node
     return addrof;
 }
 
-static std::unique_ptr<CExp> /* TODO TRY */ check_struct_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
+static void /* TODO TRY */ check_struct_typed_exp(Ctx ctx, CExp* node) {
     if (!is_struct_complete(ctx, static_cast<Structure*>(node->exp_type.get()))) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_exp_incomplete, fmt_type_c_str(node->exp_type.get())), node->line);
     }
-
-    std::unique_ptr<CExp> exp = std::move(node);
-    return exp;
 }
 
-static std::unique_ptr<CExp> /* TODO TRY */ check_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
-    switch (node->exp_type->type()) {
-        case AST_Array_t:
-            return check_arr_typed_exp(std::move(node));
+static void /* TODO TRY */ check_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
+    switch ((*exp)->exp_type->type()) {
+        case AST_Array_t: {
+            *exp = check_arr_typed_exp(std::move(*exp));
+            break;
+        }
         case AST_Structure_t:
-            return /* TODO TRY */ check_struct_typed_exp(ctx, std::move(node));
+            /* TODO TRY */ check_struct_typed_exp(ctx, exp->get());
+            break;
         default:
-            return check_scalar_typed_exp(std::move(node));
+            break;
     }
 }
 
@@ -1227,7 +1222,7 @@ static void /* TODO TRY */ check_ret_statement(Ctx ctx, CReturn* node) {
     else if (!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
         /* TODO TRY */ cast_assign(ctx, fun_type->ret_type, &node->exp);
     }
-    node->exp = /* TODO TRY */ check_typed_exp(ctx, std::move(node->exp));
+    /* TODO TRY */ check_typed_exp(ctx, &node->exp);
 }
 
 static void /* TODO TRY */ check_if_statement(Ctx ctx, CIf* node) {
@@ -1849,14 +1844,15 @@ static void /* TODO TRY */ check_static_init(Ctx ctx, CInitializer* node, Type* 
     }
 }
 
-static std::shared_ptr<Initial> /* TODO TRY */ check_initializer(Ctx ctx, CInitializer* node, Type* static_init_type) {
+static void /* TODO TRY */ check_initializer(
+    Ctx ctx, CInitializer* node, Type* static_init_type, return_t(std::shared_ptr<InitialValue>) init_value) {
     std::vector<std::shared_ptr<StaticInit>> static_inits;
     {
         ctx->p_static_inits = &static_inits;
         /* TODO TRY */ check_static_init(ctx, node, static_init_type);
         ctx->p_static_inits = nullptr;
     }
-    return std::make_shared<Initial>(std::move(static_inits));
+    *init_value = std::make_shared<Initial>(std::move(static_inits));
 }
 
 static void /* TODO TRY */ check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
@@ -1877,7 +1873,7 @@ static void /* TODO TRY */ check_file_var_decl(Ctx ctx, CVariableDeclaration* no
                                  fmt_type_c_str(node->var_type.get())),
                 node->line);
         }
-        init_value = /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get());
+        /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get(), &init_value);
     }
     else {
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
@@ -1956,7 +1952,7 @@ static void /* TODO TRY */ check_static_block_var_decl(Ctx ctx, CVariableDeclara
 
     std::shared_ptr<InitialValue> init_value;
     if (node->init) {
-        init_value = /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get());
+        /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get(), &init_value);
     }
     else {
         init_value = check_no_initializer(ctx, node->var_type.get());
@@ -2397,8 +2393,10 @@ static void /* TODO TRY */ reslv_exp(Ctx ctx, CExp* node) {
 }
 
 static std::unique_ptr<CExp> /* TODO TRY */ reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
-    /* TODO TRY */ reslv_exp(ctx, node.get());
-    return /* TODO TRY */ check_typed_exp(ctx, std::move(node));
+    /* TODO return_t */ std::unique_ptr<CExp> exp = std::move(node);
+    /* TODO TRY */ reslv_exp(ctx, exp.get());
+    /* TODO TRY */ check_typed_exp(ctx, &exp);
+    return exp;
 }
 
 static void /* TODO TRY */ reslv_block(Ctx ctx, CBlock* node);
