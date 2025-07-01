@@ -242,7 +242,9 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
     verbose(ctx, "-- Code emission ... ");
     ctx->filename += ".s";
-    TRY(emit_gas_code(std::move(asm_ast), std::move(ctx->filename), &backend, fileio, &identifiers));
+    TRY(open_fwrite(fileio, ctx->filename));
+    emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
+    close_fwrite(fileio);
     verbose(ctx, "OK\n");
 
     FINALLY;
