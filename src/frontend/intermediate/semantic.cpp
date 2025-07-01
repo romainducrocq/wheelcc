@@ -2082,13 +2082,11 @@ static void /* TODO TRY */ check_struct_decl(Ctx ctx, CStructDeclaration* node) 
         std::make_unique<StructTypedef>(alignment, size, std::move(member_names), std::move(members));
 }
 
-// TODO HERE v
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Loop labeling
 
-static void annotate_goto_label(Ctx ctx, CLabel* node) {
+static void /* TODO TRY */ annotate_goto_label(Ctx ctx, CLabel* node) {
     if (ctx->label_set.find(node->target) != ctx->label_set.end()) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redef_label_in_scope, fmt_name_c_str(node->target)), node->line);
     }
@@ -2119,7 +2117,7 @@ static void annotate_switch_lookup(Ctx ctx, CSwitch* node) {
     ctx->break_loop_labels.push_back(node->target);
 }
 
-static void annotate_case_jump(Ctx ctx, CCase* node) {
+static void /* TODO TRY */ annotate_case_jump(Ctx ctx, CCase* node) {
     if (!ctx->p_switch_statement) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_case_out_of_switch), node->value->line);
     }
@@ -2127,7 +2125,7 @@ static void annotate_case_jump(Ctx ctx, CCase* node) {
         ctx->identifiers, ctx->p_switch_statement->target, false, ctx->p_switch_statement->cases.size());
 }
 
-static void annotate_default_jump(Ctx ctx, CDefault* node) {
+static void /* TODO TRY */ annotate_default_jump(Ctx ctx, CDefault* node) {
     if (!ctx->p_switch_statement) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_default_out_of_switch), node->line);
     }
@@ -2138,14 +2136,14 @@ static void annotate_default_jump(Ctx ctx, CDefault* node) {
     ctx->p_switch_statement->is_default = true;
 }
 
-static void annotate_break_jump(Ctx ctx, CBreak* node) {
+static void /* TODO TRY */ annotate_break_jump(Ctx ctx, CBreak* node) {
     if (ctx->break_loop_labels.empty()) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_break_out_of_loop), node->line);
     }
     node->target = ctx->break_loop_labels.back();
 }
 
-static void annotate_continue_jump(Ctx ctx, CContinue* node) {
+static void /* TODO TRY */ annotate_continue_jump(Ctx ctx, CContinue* node) {
     if (ctx->continue_loop_labels.empty()) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_continue_out_of_loop), node->line);
     }
@@ -2158,6 +2156,8 @@ static void deannotate_loop(Ctx ctx) {
 }
 
 static void deannotate_lookup(Ctx ctx) { ctx->break_loop_labels.pop_back(); }
+
+// TODO HERE v
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2465,7 +2465,7 @@ static void reslv_goto_statement(Ctx ctx, CGoto* node) {
 }
 
 static void reslv_label_statement(Ctx ctx, CLabel* node) {
-    annotate_goto_label(ctx, node);
+    /* TODO TRY */ annotate_goto_label(ctx, node);
     if (ctx->goto_map.find(node->target) != ctx->goto_map.end()) {
         node->target = ctx->goto_map[node->target];
     }
@@ -2530,20 +2530,24 @@ static void reslv_switch_statement(Ctx ctx, CSwitch* node) {
 }
 
 static void reslv_case_statement(Ctx ctx, CCase* node) {
-    annotate_case_jump(ctx, node);
+    /* TODO TRY */ annotate_case_jump(ctx, node);
     node->value = reslv_typed_exp(ctx, std::move(node->value));
     ctx->p_switch_statement->cases.push_back(std::move(node->value));
     reslv_statement(ctx, node->jump_to.get());
 }
 
 static void reslv_default_statement(Ctx ctx, CDefault* node) {
-    annotate_default_jump(ctx, node);
+    /* TODO TRY */ annotate_default_jump(ctx, node);
     reslv_statement(ctx, node->jump_to.get());
 }
 
-static void reslv_break_statement(Ctx ctx, CBreak* node) { annotate_break_jump(ctx, node); }
+static void reslv_break_statement(Ctx ctx, CBreak* node) { /* TODO TRY */
+    annotate_break_jump(ctx, node);
+}
 
-static void reslv_continue_statement(Ctx ctx, CContinue* node) { annotate_continue_jump(ctx, node); }
+static void reslv_continue_statement(Ctx ctx, CContinue* node) { /* TODO TRY */
+    annotate_continue_jump(ctx, node);
+}
 
 static void reslv_statement(Ctx ctx, CStatement* node) {
     switch (node->type()) {
