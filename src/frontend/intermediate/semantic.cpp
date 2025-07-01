@@ -2236,7 +2236,7 @@ static void /* TODO TRY */ reslv_struct_type(Ctx ctx, Type* type) {
 }
 
 static void /* TODO TRY */ reslv_exp(Ctx ctx, CExp* node);
-static std::unique_ptr<CExp> /* TODO TRY */ reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node);
+static void /* TODO TRY */ reslv_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp);
 
 static void reslv_const_exp(CConstant* node) { check_const_exp(node); }
 
@@ -2256,33 +2256,33 @@ Lelse:
 }
 
 static void /* TODO TRY */ reslv_cast_exp(Ctx ctx, CCast* node) {
-    node->exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp);
     /* TODO TRY */ check_cast_exp(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_unary_exp(Ctx ctx, CUnary* node) {
-    node->exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp);
     /* TODO TRY */ check_unary_exp(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_binary_exp(Ctx ctx, CBinary* node) {
-    node->exp_left = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp_left));
-    node->exp_right = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp_right));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp_left);
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp_right);
     /* TODO TRY */ check_binary_exp(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_assign_exp(Ctx ctx, CAssignment* node) {
     if (node->exp_left) {
-        node->exp_left = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp_left));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->exp_left);
     }
-    node->exp_right = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp_right));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp_right);
     /* TODO TRY */ check_assign_exp(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_conditional_exp(Ctx ctx, CConditional* node) {
-    node->condition = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->condition));
-    node->exp_middle = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp_middle));
-    node->exp_right = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp_right));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->condition);
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp_middle);
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp_right);
     /* TODO TRY */ check_conditional_exp(ctx, node);
 }
 
@@ -2297,13 +2297,13 @@ static void /* TODO TRY */ reslv_call_exp(Ctx ctx, CFunctionCall* node) {
 Lelse:
 
     for (size_t i = 0; i < node->args.size(); ++i) {
-        node->args[i] = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->args[i]));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->args[i]);
     }
     /* TODO TRY */ check_call_exp(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_deref_exp(Ctx ctx, CDereference* node) {
-    node->exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp);
     /* TODO TRY */ check_deref_exp(ctx, node);
 }
 
@@ -2313,8 +2313,8 @@ static void /* TODO TRY */ reslv_addrof_expr(Ctx ctx, CAddrOf* node) {
 }
 
 static void /* TODO TRY */ reslv_subscript_exp(Ctx ctx, CSubscript* node) {
-    node->primary_exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->primary_exp));
-    node->subscript_exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->subscript_exp));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->primary_exp);
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->subscript_exp);
     /* TODO TRY */ check_subscript_exp(ctx, node);
 }
 
@@ -2328,12 +2328,12 @@ static void /* TODO TRY */ reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) { /* TODO 
 }
 
 static void /* TODO TRY */ reslv_dot_exp(Ctx ctx, CDot* node) {
-    node->structure = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->structure));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->structure);
     /* TODO TRY */ check_dot_exp(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_arrow_exp(Ctx ctx, CArrow* node) {
-    node->pointer = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->pointer));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->pointer);
     /* TODO TRY */ check_arrow_exp(ctx, node);
 }
 
@@ -2392,11 +2392,9 @@ static void /* TODO TRY */ reslv_exp(Ctx ctx, CExp* node) {
     }
 }
 
-static std::unique_ptr<CExp> /* TODO TRY */ reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>&& node) {
-    /* TODO return_t */ std::unique_ptr<CExp> exp = std::move(node);
-    /* TODO TRY */ reslv_exp(ctx, exp.get());
-    /* TODO TRY */ check_typed_exp(ctx, &exp);
-    return exp;
+static void /* TODO TRY */ reslv_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
+    /* TODO TRY */ reslv_exp(ctx, exp->get());
+    /* TODO TRY */ check_typed_exp(ctx, exp);
 }
 
 static void /* TODO TRY */ reslv_block(Ctx ctx, CBlock* node);
@@ -2415,7 +2413,7 @@ static void /* TODO TRY */ reslv_for_init_decl(Ctx ctx, CInitDecl* node) {
 
 static void /* TODO TRY */ reslv_for_init_exp(Ctx ctx, CInitExp* node) {
     if (node->init) {
-        node->init = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->init));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->init);
     }
 }
 
@@ -2435,17 +2433,17 @@ static void /* TODO TRY */ reslv_for_init(Ctx ctx, CForInit* node) {
 
 static void /* TODO TRY */ reslv_ret_statement(Ctx ctx, CReturn* node) {
     if (node->exp) {
-        node->exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->exp);
     }
     /* TODO TRY */ check_ret_statement(ctx, node);
 }
 
 static void /* TODO TRY */ reslv_exp_statement(Ctx ctx, CExpression* node) {
-    node->exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->exp);
 }
 
 static void /* TODO TRY */ reslv_if_statement(Ctx ctx, CIf* node) {
-    node->condition = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->condition));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->condition);
     /* TODO TRY */ reslv_statement(ctx, node->then.get());
     if (node->else_fi) {
         /* TODO TRY */ reslv_statement(ctx, node->else_fi.get());
@@ -2485,7 +2483,7 @@ static void /* TODO TRY */ reslv_compound_statement(Ctx ctx, CCompound* node) {
 
 static void /* TODO TRY */ reslv_while_statement(Ctx ctx, CWhile* node) {
     annotate_while_loop(ctx, node);
-    node->condition = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->condition));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->condition);
     /* TODO TRY */ reslv_statement(ctx, node->body.get());
     deannotate_loop(ctx);
     /* TODO TRY */ check_while_statement(ctx, node);
@@ -2494,7 +2492,7 @@ static void /* TODO TRY */ reslv_while_statement(Ctx ctx, CWhile* node) {
 static void /* TODO TRY */ reslv_do_while_statement(Ctx ctx, CDoWhile* node) {
     annotate_do_while_loop(ctx, node);
     /* TODO TRY */ reslv_statement(ctx, node->body.get());
-    node->condition = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->condition));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->condition);
     deannotate_loop(ctx);
     /* TODO TRY */ check_do_while_statement(ctx, node);
 }
@@ -2504,10 +2502,10 @@ static void /* TODO TRY */ reslv_for_statement(Ctx ctx, CFor* node) {
     enter_scope(ctx);
     /* TODO TRY */ reslv_for_init(ctx, node->init.get());
     if (node->condition) {
-        node->condition = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->condition));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->condition);
     }
     if (node->post) {
-        node->post = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->post));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->post);
     }
     /* TODO TRY */ reslv_statement(ctx, node->body.get());
     exit_scope(ctx);
@@ -2518,7 +2516,7 @@ static void /* TODO TRY */ reslv_for_statement(Ctx ctx, CFor* node) {
 static void /* TODO TRY */ reslv_switch_statement(Ctx ctx, CSwitch* node) {
     annotate_switch_lookup(ctx, node);
     enter_scope(ctx);
-    node->match = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->match));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->match);
     {
         CSwitch* p_switch_statement = ctx->p_switch_statement;
         ctx->p_switch_statement = node;
@@ -2532,7 +2530,7 @@ static void /* TODO TRY */ reslv_switch_statement(Ctx ctx, CSwitch* node) {
 
 static void /* TODO TRY */ reslv_case_statement(Ctx ctx, CCase* node) {
     /* TODO TRY */ annotate_case_jump(ctx, node);
-    node->value = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->value));
+    /* TODO TRY */ reslv_typed_exp(ctx, &node->value);
     ctx->p_switch_statement->cases.push_back(std::move(node->value));
     /* TODO TRY */ reslv_statement(ctx, node->jump_to.get());
 }
@@ -2636,7 +2634,7 @@ static void /* TODO TRY */ reslv_single_init(Ctx ctx, CSingleInit* node, std::sh
         check_string_init(node, init_type);
     }
     else {
-        node->exp = /* TODO TRY */ reslv_typed_exp(ctx, std::move(node->exp));
+        /* TODO TRY */ reslv_typed_exp(ctx, &node->exp);
         /* TODO TRY */ check_single_init(ctx, node, init_type);
     }
 }
