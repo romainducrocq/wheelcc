@@ -636,9 +636,10 @@ static error_t check_cast_exp(Ctx ctx, CCast* node) {
 }
 
 static error_t cast_exp(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(std::unique_ptr<CExp>) exp) {
+    std::shared_ptr<Type> exp_type_cp;
     CATCH_ENTER;
     size_t line = (*exp)->line;
-    std::shared_ptr<Type> exp_type_cp = exp_type;
+    exp_type_cp = exp_type;
     *exp = std::make_unique<CCast>(std::move(*exp), std::move(exp_type_cp), line);
     /* TODO TRY */ check_cast_exp(ctx, static_cast<CCast*>(exp->get()));
     FINALLY_EXIT;
@@ -673,6 +674,7 @@ static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(st
 }
 
 static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
+    std::shared_ptr<Type> promote_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
@@ -688,7 +690,7 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t: {
-            std::shared_ptr<Type> promote_type = std::make_shared<Int>();
+            promote_type = std::make_shared<Int>();
             /* TODO TRY */ cast_exp(ctx, promote_type, &node->exp);
             break;
         }
@@ -701,6 +703,7 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
 }
 
 static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
+    std::shared_ptr<Type> promote_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
@@ -712,7 +715,7 @@ static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t: {
-            std::shared_ptr<Type> promote_type = std::make_shared<Int>();
+            promote_type = std::make_shared<Int>();
             /* TODO TRY */ cast_exp(ctx, promote_type, &node->exp);
             break;
         }
@@ -757,8 +760,8 @@ static error_t check_unary_exp(Ctx ctx, CUnary* node) {
 }
 
 static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
-    CATCH_ENTER;
     std::shared_ptr<Type> common_type;
+    CATCH_ENTER;
     if (is_type_arithmetic(node->exp_left->exp_type.get()) && is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
@@ -800,8 +803,8 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
-    CATCH_ENTER;
     std::shared_ptr<Type> common_type;
+    CATCH_ENTER;
     if (is_type_arithmetic(node->exp_left->exp_type.get()) && is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     }
@@ -848,6 +851,7 @@ static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
+    std::shared_ptr<Type> common_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
@@ -856,7 +860,7 @@ static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
             node->line);
     }
 
-    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
+    common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
         /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
@@ -869,6 +873,7 @@ static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
+    std::shared_ptr<Type> common_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_arithmetic(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
@@ -877,7 +882,7 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
             node->line);
     }
 
-    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
+    common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
         /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
@@ -895,6 +900,7 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
+    std::shared_ptr<Type> left_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_int(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
@@ -904,7 +910,7 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     }
 
     else if (is_type_char(node->exp_left->exp_type.get())) {
-        std::shared_ptr<Type> left_type = std::make_shared<Int>();
+        left_type = std::make_shared<Int>();
         /* TODO TRY */ cast_exp(ctx, left_type, &node->exp_left);
     }
     if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
@@ -945,8 +951,8 @@ static error_t check_binary_logical_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_binary_equality_exp(Ctx ctx, CBinary* node) {
-    CATCH_ENTER;
     std::shared_ptr<Type> common_type;
+    CATCH_ENTER;
     if (node->exp_left->exp_type->type() == AST_Pointer_t || node->exp_right->exp_type->type() == AST_Pointer_t) {
         /* TODO TRY */ get_joint_ptr_type(ctx, node->exp_left.get(), node->exp_right.get(), &common_type);
     }
@@ -973,6 +979,7 @@ static error_t check_binary_equality_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
+    std::shared_ptr<Type> common_type;
     CATCH_ENTER;
     if (!is_type_scalar(node->exp_left->exp_type.get()) || !is_type_scalar(node->exp_right->exp_type.get())
         || (node->exp_left->exp_type->type() == AST_Pointer_t
@@ -987,7 +994,7 @@ static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
             node->line);
     }
 
-    std::shared_ptr<Type> common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
+    common_type = get_joint_type(node->exp_left.get(), node->exp_right.get());
     if (!is_same_type(node->exp_left->exp_type.get(), common_type.get())) {
         /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
     }
@@ -1082,6 +1089,7 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
 }
 
 static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
+    std::shared_ptr<Type> common_type;
     CATCH_ENTER;
     if (!is_type_scalar(node->condition->exp_type.get())) {
         THROW_AT_LINE_EX(
@@ -1102,7 +1110,6 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
         TEMP_RETURN;
     }
 
-    std::shared_ptr<Type> common_type;
     if (is_type_arithmetic(node->exp_middle->exp_type.get()) && is_type_arithmetic(node->exp_right->exp_type.get())) {
         common_type = get_joint_type(node->exp_middle.get(), node->exp_right.get());
     }
@@ -1159,23 +1166,25 @@ static error_t check_deref_exp(Ctx ctx, CDereference* node) {
 }
 
 static error_t check_addrof_exp(Ctx ctx, CAddrOf* node) {
+    std::shared_ptr<Type> ref_type;
     CATCH_ENTER;
     if (!is_exp_lvalue(node->exp.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG_0(MSG_addrof_rvalue), node->line);
     }
-    std::shared_ptr<Type> ref_type = node->exp->exp_type;
+    ref_type = node->exp->exp_type;
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
     FINALLY_EXIT;
     CATCH_EXIT;
 }
 
 static error_t check_subscript_exp(Ctx ctx, CSubscript* node) {
-    CATCH_ENTER;
     std::shared_ptr<Type> ref_type;
+    std::shared_ptr<Type> subscript_type;
+    CATCH_ENTER;
     if (node->primary_exp->exp_type->type() == AST_Pointer_t
         && is_type_complete(ctx, static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get())
         && is_type_int(node->subscript_exp->exp_type.get())) {
-        std::shared_ptr<Type> subscript_type = std::make_shared<Long>();
+        subscript_type = std::make_shared<Long>();
         if (!is_same_type(node->subscript_exp->exp_type.get(), subscript_type.get())) {
             /* TODO TRY */ cast_exp(ctx, subscript_type, &node->subscript_exp);
         }
@@ -1183,9 +1192,9 @@ static error_t check_subscript_exp(Ctx ctx, CSubscript* node) {
     }
     else if (is_type_int(node->primary_exp->exp_type.get()) && node->subscript_exp->exp_type->type() == AST_Pointer_t
              && is_type_complete(ctx, static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get())) {
-        std::shared_ptr<Type> primary_type = std::make_shared<Long>();
-        if (!is_same_type(node->primary_exp->exp_type.get(), primary_type.get())) {
-            /* TODO TRY */ cast_exp(ctx, primary_type, &node->primary_exp);
+        subscript_type = std::make_shared<Long>();
+        if (!is_same_type(node->primary_exp->exp_type.get(), subscript_type.get())) {
+            /* TODO TRY */ cast_exp(ctx, subscript_type, &node->primary_exp);
         }
         ref_type = static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type;
     }
@@ -1371,6 +1380,7 @@ static error_t check_for_statement(Ctx ctx, CFor* node) {
     CATCH_EXIT;
 }
 
+// TODO maybe refactor this one
 static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
     CATCH_ENTER;
     if (!is_type_int(node->match->exp_type.get())) {
@@ -1641,6 +1651,8 @@ static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 
 static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     std::unique_ptr<IdentifierAttr> param_attrs;
+    std::shared_ptr<Type> ref_type;
+    std::shared_ptr<Type> param_type;
     CATCH_ENTER;
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for (size_t i = 0; i < node->params.size(); ++i) {
@@ -1653,7 +1665,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
         }
         /* TODO TRY */ is_valid_type(ctx, fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_Array_t) {
-            std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
+            ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
             fun_type->param_types[i] = std::make_shared<Pointer>(std::move(ref_type));
         }
 
@@ -1664,10 +1676,10 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
                                      fmt_name_c_str(node->params[i]), fmt_type_c_str(fun_type->param_types[i].get())),
                     node->line);
             }
-            std::shared_ptr<Type> type_t = fun_type->param_types[i];
+            param_type = fun_type->param_types[i];
             param_attrs = std::make_unique<LocalAttr>();
             ctx->frontend->symbol_table[node->params[i]] =
-                std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
+                std::make_unique<Symbol>(std::move(param_type), std::move(param_attrs));
         }
     }
     FINALLY_EXIT;
@@ -1676,6 +1688,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
 
 static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     std::unique_ptr<IdentifierAttr> glob_fun_attrs;
+    std::shared_ptr<Type> glob_fun_type;
     CATCH_ENTER;
     THROW_ABORT_IF(node->fun_type->type() == AST_Void_t);
 
@@ -1710,9 +1723,10 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
         ctx->fun_def_name = node->name;
     }
 
-    std::shared_ptr<Type> fun_type = node->fun_type;
+    glob_fun_type = node->fun_type;
     glob_fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
-    ctx->frontend->symbol_table[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(glob_fun_attrs));
+    ctx->frontend->symbol_table[node->name] =
+        std::make_unique<Symbol>(std::move(glob_fun_type), std::move(glob_fun_attrs));
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -1895,6 +1909,7 @@ static error_t check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* sta
 }
 
 static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
+    std::shared_ptr<CStringLiteral> literal;
     CATCH_ENTER;
     /* TODO TRY */ check_bound_string_init(ctx, node, static_arr_type);
     TLong byte = static_arr_type->size - ((TLong)node->literal->value.size()) - 1l;
@@ -1905,7 +1920,7 @@ static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* stati
             std::string value = string_literal_to_const(node->literal->value);
             string_const = make_string_identifier(ctx->identifiers, std::move(value));
         }
-        std::shared_ptr<CStringLiteral> literal = node->literal;
+        literal = node->literal;
         push_static_init(ctx, std::make_shared<StringInit>(string_const, is_null_term, std::move(literal)));
     }
     if (byte > 0l) {
@@ -2018,8 +2033,8 @@ static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_
 
 static error_t check_initializer(
     Ctx ctx, CInitializer* node, Type* static_init_type, return_t(std::shared_ptr<InitialValue>) init_value) {
-    CATCH_ENTER;
     std::vector<std::shared_ptr<StaticInit>> static_inits;
+    CATCH_ENTER;
     {
         ctx->p_static_inits = &static_inits;
         /* TODO TRY */ check_static_init(ctx, node, static_init_type);
@@ -2032,6 +2047,8 @@ static error_t check_initializer(
 
 static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     std::unique_ptr<IdentifierAttr> glob_var_attrs;
+    std::shared_ptr<InitialValue> init_value;
+    std::shared_ptr<Type> glob_var_type;
     CATCH_ENTER;
     ctx->errors->linebuf = node->line;
     /* TODO TRY */ reslv_struct_type(ctx, node->var_type.get());
@@ -2040,7 +2057,6 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
     /* TODO TRY */ is_valid_type(ctx, node->var_type.get());
 
-    std::shared_ptr<InitialValue> init_value;
     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
 
     if (node->init) {
@@ -2075,25 +2091,25 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
                 node->line);
         }
 
-        StaticAttr* static_attrs = static_cast<StaticAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get());
+        StaticAttr* var_attrs = static_cast<StaticAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get());
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-            is_glob = static_attrs->is_glob;
+            is_glob = var_attrs->is_glob;
         }
-        else if (is_glob != static_attrs->is_glob) {
+        else if (is_glob != var_attrs->is_glob) {
             THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redecl_var_storage, fmt_name_c_str(node->name)), node->line);
         }
 
-        if (static_attrs->init->type() == AST_Initial_t) {
+        if (var_attrs->init->type() == AST_Initial_t) {
             if (init_value->type() == AST_Initial_t) {
                 THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redecl_var_storage, fmt_name_c_str(node->name)), node->line);
             }
             else {
-                init_value = static_attrs->init;
+                init_value = var_attrs->init;
             }
         }
     }
 
-    std::shared_ptr<Type> glob_var_type = node->var_type;
+    glob_var_type = node->var_type;
     glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
@@ -2103,6 +2119,8 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
 
 static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     std::unique_ptr<IdentifierAttr> local_var_attrs;
+    std::shared_ptr<InitialValue> init_value;
+    std::shared_ptr<Type> local_var_type;
     CATCH_ENTER;
     if (node->init) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redef_extern_var, fmt_name_c_str(node->name)), node->line);
@@ -2117,11 +2135,9 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
         TEMP_RETURN;
     }
 
-    std::shared_ptr<Type> local_var_type = node->var_type;
-    {
-        std::shared_ptr<InitialValue> init_value = std::make_shared<NoInitializer>();
-        local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
-    }
+    local_var_type = node->var_type;
+    init_value = std::make_shared<NoInitializer>();
+    local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
     FINALLY_EXIT;
@@ -2130,11 +2146,12 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
 
 static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     std::unique_ptr<IdentifierAttr> local_var_attrs;
+    std::shared_ptr<InitialValue> init_value;
+    std::shared_ptr<Type> local_var_type;
     CATCH_ENTER;
     THROW_ABORT_IF(node->var_type->type() == AST_Structure_t
                    && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get())));
 
-    std::shared_ptr<InitialValue> init_value;
     if (node->init) {
         /* TODO TRY */ check_initializer(ctx, node->init.get(), node->var_type.get(), &init_value);
     }
@@ -2142,7 +2159,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
         init_value = check_no_initializer(ctx, node->var_type.get());
     }
 
-    std::shared_ptr<Type> local_var_type = node->var_type;
+    local_var_type = node->var_type;
     local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
@@ -2152,6 +2169,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
 
 static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     std::unique_ptr<IdentifierAttr> local_var_attrs;
+    std::shared_ptr<Type> local_var_type;
     CATCH_ENTER;
     if (node->var_type->type() == AST_Structure_t
         && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get()))) {
@@ -2160,7 +2178,7 @@ static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
             node->line);
     }
 
-    std::shared_ptr<Type> local_var_type = node->var_type;
+    local_var_type = node->var_type;
     local_var_attrs = std::make_unique<LocalAttr>();
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
@@ -2224,6 +2242,9 @@ static error_t check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
 }
 
 static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
+    std::shared_ptr<Type> member_type;
+    std::vector<TIdentifier> member_names;
+    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
     CATCH_ENTER;
     if (ctx->frontend->struct_typedef_table.find(node->tag) != ctx->frontend->struct_typedef_table.end()) {
         THROW_AT_LINE_EX(
@@ -2231,8 +2252,6 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     }
     TInt alignment = 0;
     TLong size = 0l;
-    std::vector<TIdentifier> member_names;
-    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
     member_names.reserve(node->members.size());
     members.reserve(node->members.size());
     for (const auto& member : node->members) {
@@ -2257,7 +2276,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
                 offset = size;
                 size += member_size;
             }
-            std::shared_ptr<Type> member_type = member->member_type;
+            member_type = member->member_type;
             members[member_names.back()] = std::make_unique<StructMember>(offset, std::move(member_type));
         }
         if (alignment < member_alignment) {
