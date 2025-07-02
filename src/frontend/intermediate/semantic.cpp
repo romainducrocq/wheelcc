@@ -1381,6 +1381,86 @@ static error_t check_for_statement(Ctx ctx, CFor* node) {
     CATCH_EXIT;
 }
 
+static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
+    std::vector<TInt> values(node->cases.size());
+    CATCH_ENTER;
+    for (size_t i = 0; i < values.size(); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
+        CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+        values[i] = get_const_int_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
+                    node->cases[i]->line);
+            }
+        }
+        esac->constant = std::make_shared<CConstInt>(values[i]);
+        esac->exp_type = node->match->exp_type;
+    }
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
+
+static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
+    std::vector<TLong> values(node->cases.size());
+    CATCH_ENTER;
+    for (size_t i = 0; i < values.size(); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
+        CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+        values[i] = get_const_long_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
+                    node->cases[i]->line);
+            }
+        }
+        esac->constant = std::make_shared<CConstLong>(values[i]);
+        esac->exp_type = node->match->exp_type;
+    }
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
+
+static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
+    std::vector<TUInt> values(node->cases.size());
+    CATCH_ENTER;
+    for (size_t i = 0; i < values.size(); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
+        CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+        values[i] = get_const_uint_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
+                    node->cases[i]->line);
+            }
+        }
+        esac->constant = std::make_shared<CConstUInt>(values[i]);
+        esac->exp_type = node->match->exp_type;
+    }
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
+
+static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
+    std::vector<TULong> values(node->cases.size());
+    CATCH_ENTER;
+    for (size_t i = 0; i < values.size(); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
+        CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
+        values[i] = get_const_ulong_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
+                    node->cases[i]->line);
+            }
+        }
+        esac->constant = std::make_shared<CConstULong>(values[i]);
+        esac->exp_type = node->match->exp_type;
+    }
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
+
 // TODO maybe refactor this one
 static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
     CATCH_ENTER;
@@ -1398,74 +1478,18 @@ static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
             break;
     }
     switch (node->match->exp_type->type()) {
-        case AST_Int_t: {
-            std::vector<TInt> values(node->cases.size());
-            for (size_t i = 0; i < values.size(); ++i) {
-                THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-                values[i] = get_const_int_value(esac);
-                for (size_t j = 0; j < i; ++j) {
-                    if (values[i] == values[j]) {
-                        THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
-                            node->cases[i]->line);
-                    }
-                }
-                esac->constant = std::make_shared<CConstInt>(values[i]);
-                esac->exp_type = node->match->exp_type;
-            }
+        case AST_Int_t:
+            /* TODO TRY */ check_switch_int_cases(ctx, node);
             break;
-        }
-        case AST_Long_t: {
-            std::vector<TLong> values(node->cases.size());
-            for (size_t i = 0; i < values.size(); ++i) {
-                THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-                values[i] = get_const_long_value(esac);
-                for (size_t j = 0; j < i; ++j) {
-                    if (values[i] == values[j]) {
-                        THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
-                            node->cases[i]->line);
-                    }
-                }
-                esac->constant = std::make_shared<CConstLong>(values[i]);
-                esac->exp_type = node->match->exp_type;
-            }
+        case AST_Long_t:
+            /* TODO TRY */ check_switch_long_cases(ctx, node);
             break;
-        }
-        case AST_UInt_t: {
-            std::vector<TUInt> values(node->cases.size());
-            for (size_t i = 0; i < values.size(); ++i) {
-                THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-                values[i] = get_const_uint_value(esac);
-                for (size_t j = 0; j < i; ++j) {
-                    if (values[i] == values[j]) {
-                        THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
-                            node->cases[i]->line);
-                    }
-                }
-                esac->constant = std::make_shared<CConstUInt>(values[i]);
-                esac->exp_type = node->match->exp_type;
-            }
+        case AST_UInt_t:
+            /* TODO TRY */ check_switch_uint_cases(ctx, node);
             break;
-        }
-        case AST_ULong_t: {
-            std::vector<TULong> values(node->cases.size());
-            for (size_t i = 0; i < values.size(); ++i) {
-                THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-                CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-                values[i] = get_const_ulong_value(esac);
-                for (size_t j = 0; j < i; ++j) {
-                    if (values[i] == values[j]) {
-                        THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_duplicate_case_value, std::to_string(values[i]).c_str()),
-                            node->cases[i]->line);
-                    }
-                }
-                esac->constant = std::make_shared<CConstULong>(values[i]);
-                esac->exp_type = node->match->exp_type;
-            }
+        case AST_ULong_t:
+            /* TODO TRY */ check_switch_ulong_cases(ctx, node);
             break;
-        }
         default:
             THROW_ABORT;
     }
