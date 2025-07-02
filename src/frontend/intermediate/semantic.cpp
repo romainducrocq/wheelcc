@@ -1866,13 +1866,16 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
     CATCH_EXIT;
 }
 
-// TODO maybe check before
-static error_t check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
+static error_t check_literal_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
     CATCH_ENTER;
     if (static_ptr_type->ref_type->type() != AST_Char_t) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_static_ptr_init_string, fmt_type_c_str(static_ptr_type)), node->line);
     }
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
 
+static void check_static_ptr_string_init(Ctx ctx, CString* node) {
     TIdentifier string_const_label;
     {
         TIdentifier string_const;
@@ -1906,8 +1909,6 @@ static error_t check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* sta
         }
     }
     push_static_init(ctx, std::make_shared<PointerInit>(string_const_label));
-    FINALLY_EXIT;
-    CATCH_EXIT;
 }
 
 static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
@@ -1934,7 +1935,8 @@ static error_t check_static_string_init(Ctx ctx, CString* node, Type* static_ini
     CATCH_ENTER;
     switch (static_init_type->type()) {
         case AST_Pointer_t:
-            /* TODO TRY */ check_static_ptr_string_init(ctx, node, static_cast<Pointer*>(static_init_type));
+            /* TODO TRY */ check_literal_string_init(ctx, node, static_cast<Pointer*>(static_init_type));
+            check_static_ptr_string_init(ctx, node);
             break;
         case AST_Array_t:
             /* TODO TRY */ check_static_arr_string_init(ctx, node, static_cast<Array*>(static_init_type));
