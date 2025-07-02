@@ -316,18 +316,8 @@ error_t main(int, char** argv) {
         ctx.is_verbose = false;
     }
     CATCH_ENTER;
-    try {
-        TRY(arg_parse(&ctx, argv));
-        TRY(compile(&ctx, &errors, &fileio));
-    }
-    catch (const std::runtime_error& err) {
-        if (errors.is_stdout) {
-            printf("\n");
-            fflush(stdout);
-        }
-        fprintf(stderr, "%s\n", err.what());
-        TRY(1);
-    }
+    TRY(arg_parse(&ctx, argv));
+    TRY(compile(&ctx, &errors, &fileio));
     FINALLY;
     CATCH_EXIT;
 }

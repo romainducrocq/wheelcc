@@ -81,9 +81,4 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
     while (0)
 #define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(ctx->errors, Y))
 
-// TODO rm
-[[noreturn]] void raise_error_at_line_ex(ErrorsContext* ctx, size_t linenum);
-#define THROW_AT_EX(X, Y) X > 0 ? raise_error_at_line_ex(ctx->errors, Y) : THROW_ABORT
-#define THROW_AT_LINE_EX(X, Y) THROW_AT_EX(X, handle_error_at_line(ctx->errors, Y))
-
 #endif

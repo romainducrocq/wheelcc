@@ -1,6 +1,4 @@
-#include <array>
 #include <cstdio>
-#include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -106,61 +104,4 @@ size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
     }
     set_filename(ctx->fileio, ctx->fopen_lines.back().filename);
     return total_linenum - ctx->fopen_lines.back().total_linenum + ctx->fopen_lines.back().linenum;
-}
-
-// TODO rm
-static void raise_base_error_ex(Ctx ctx) {
-    free_fileio(ctx->fileio);
-    const std::string& filename = get_filename(ctx->fileio);
-    std::string err_what = "\033[1m";
-    err_what += filename;
-    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
-    err_what += std::string(ctx->msg);
-    throw std::runtime_error(err_what);
-}
-
-[[noreturn]] void raise_error_at_line_ex(Ctx ctx, size_t linenum) {
-    if (linenum == 0) {
-        raise_base_error_ex(ctx);
-    }
-    free_fileio(ctx->fileio);
-    const std::string& filename = get_filename(ctx->fileio);
-    std::string line;
-    {
-        size_t len = 0;
-        char* buf = nullptr;
-        FILE* fd = fopen(filename.c_str(), "rb");
-        if (!fd) {
-            raise_base_error_ex(ctx);
-        }
-        for (size_t i = 0; i < linenum; ++i) {
-            if (getline(&buf, &len, fd) == -1) {
-                free(buf);
-                fclose(fd);
-                buf = nullptr;
-                fd = nullptr;
-                raise_base_error_ex(ctx);
-            }
-        }
-        line = buf;
-        free(buf);
-        fclose(fd);
-        buf = nullptr;
-        fd = nullptr;
-        if (line.back() == '\n') {
-            line.pop_back();
-        }
-    }
-    std::string err_what = "\033[1m";
-    err_what += filename;
-    err_what += ":";
-    err_what += std::to_string(linenum);
-    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
-    err_what += std::string(ctx->msg);
-    err_what += "\nat line ";
-    err_what += std::to_string(linenum);
-    err_what += ": \033[1m";
-    err_what += line;
-    err_what += "\033[0m";
-    throw std::runtime_error(err_what);
 }
