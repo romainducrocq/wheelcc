@@ -87,10 +87,8 @@ static bool is_same_type(Type* type_1, Type* type_2) {
 }
 
 static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
-    if (fun_type_1->param_types.size() != fun_type_2->param_types.size()) {
-        return false;
-    }
-    else if (!is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
+    if (fun_type_1->param_types.size() != fun_type_2->param_types.size()
+        || !is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
         return false;
     }
     for (size_t i = 0; i < fun_type_1->param_types.size(); ++i) {
@@ -190,9 +188,9 @@ static bool is_type_complete(Ctx ctx, Type* type) {
 
 static error_t is_valid_type(Ctx ctx, Type* type);
 
-static error_t is_valid_ptr(Ctx ctx, Pointer* ptr_type) { /* TODO TRY */
+static error_t is_valid_ptr(Ctx ctx, Pointer* ptr_type) {
     CATCH_ENTER;
-    is_valid_type(ctx, ptr_type->ref_type.get());
+    /* TODO TRY */ is_valid_type(ctx, ptr_type->ref_type.get());
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -338,10 +336,10 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
         return joint_type;
     }
     else if (is_type_char(node_2->exp_type.get())) {
-        std::shared_ptr<Type> exp_type_2 = std::move(node_2->exp_type);
+        std::shared_ptr<Type> exp_type = std::move(node_2->exp_type);
         node_2->exp_type = std::make_shared<Int>();
         std::shared_ptr<Type> joint_type = get_joint_type(node_1, node_2);
-        node_2->exp_type = std::move(exp_type_2);
+        node_2->exp_type = std::move(exp_type);
         return joint_type;
     }
     else if (is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
@@ -377,12 +375,10 @@ static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, return_t(
     else if (node_1->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_1))) {
         *joint_type = node_2->exp_type;
     }
-    else if (node_2->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_2))) {
-        *joint_type = node_1->exp_type;
-    }
-    else if (node_1->exp_type->type() == AST_Pointer_t
-             && static_cast<Pointer*>(node_1->exp_type.get())->ref_type->type() == AST_Void_t
-             && node_2->exp_type->type() == AST_Pointer_t) {
+    else if ((node_2->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_2)))
+             || (node_1->exp_type->type() == AST_Pointer_t
+                 && static_cast<Pointer*>(node_1->exp_type.get())->ref_type->type() == AST_Void_t
+                 && node_2->exp_type->type() == AST_Pointer_t)) {
         *joint_type = node_1->exp_type;
     }
     else if (node_2->exp_type->type() == AST_Pointer_t
@@ -648,20 +644,14 @@ static error_t cast_exp(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(std::
 
 static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(std::unique_ptr<CExp>) exp) {
     CATCH_ENTER;
-    if (is_type_arithmetic((*exp)->exp_type.get()) && is_type_arithmetic(exp_type.get())) {
-        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
-    }
-    else if ((*exp)->type() == AST_CConstant_t && exp_type->type() == AST_Pointer_t
-             && is_const_null_ptr(static_cast<CConstant*>(exp->get()))) {
-        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
-    }
-    else if (exp_type->type() == AST_Pointer_t && static_cast<Pointer*>(exp_type.get())->ref_type->type() == AST_Void_t
-             && (*exp)->exp_type->type() == AST_Pointer_t) {
-        /* TODO TRY */ cast_exp(ctx, exp_type, exp);
-    }
-    else if ((*exp)->exp_type->type() == AST_Pointer_t
-             && static_cast<Pointer*>((*exp)->exp_type.get())->ref_type->type() == AST_Void_t
-             && exp_type->type() == AST_Pointer_t) {
+    if ((is_type_arithmetic((*exp)->exp_type.get()) && is_type_arithmetic(exp_type.get()))
+        || ((*exp)->type() == AST_CConstant_t && exp_type->type() == AST_Pointer_t
+            && is_const_null_ptr(static_cast<CConstant*>(exp->get())))
+        || (exp_type->type() == AST_Pointer_t && static_cast<Pointer*>(exp_type.get())->ref_type->type() == AST_Void_t
+            && (*exp)->exp_type->type() == AST_Pointer_t)
+        || ((*exp)->exp_type->type() == AST_Pointer_t
+            && static_cast<Pointer*>((*exp)->exp_type.get())->ref_type->type() == AST_Void_t
+            && exp_type->type() == AST_Pointer_t)) {
         /* TODO TRY */ cast_exp(ctx, exp_type, exp);
     }
     else {
@@ -2446,16 +2436,16 @@ static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
     CATCH_EXIT;
 }
 
-static error_t reslv_ptr_struct(Ctx ctx, Pointer* ptr_type) { /* TODO TRY */
+static error_t reslv_ptr_struct(Ctx ctx, Pointer* ptr_type) {
     CATCH_ENTER;
-    reslv_struct_type(ctx, ptr_type->ref_type.get());
+    /* TODO TRY */ reslv_struct_type(ctx, ptr_type->ref_type.get());
     FINALLY_EXIT;
     CATCH_EXIT;
 }
 
-static error_t reslv_arr_struct(Ctx ctx, Array* arr_type) { /* TODO TRY */
+static error_t reslv_arr_struct(Ctx ctx, Array* arr_type) {
     CATCH_ENTER;
-    reslv_struct_type(ctx, arr_type->elem_type.get());
+    /* TODO TRY */ reslv_struct_type(ctx, arr_type->elem_type.get());
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -2467,10 +2457,8 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
             TEMP_RETURN;
         }
     }
-    else {
-        if (ctx->struct_def_set.find(struct_type->tag) != ctx->struct_def_set.end()) {
-            TEMP_RETURN;
-        }
+    else if (ctx->struct_def_set.find(struct_type->tag) != ctx->struct_def_set.end()) {
+        TEMP_RETURN;
     }
     for (size_t i = ctx->scoped_identifier_maps.size(); i-- > 0;) {
         if (ctx->scoped_struct_maps[i].find(struct_type->tag) != ctx->scoped_struct_maps[i].end()) {
@@ -2630,9 +2618,9 @@ static error_t reslv_sizeof_exp(Ctx ctx, CSizeOf* node) {
     CATCH_EXIT;
 }
 
-static error_t reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) { /* TODO TRY */
+static error_t reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
     CATCH_ENTER;
-    check_sizeoft_exp(ctx, node);
+    /* TODO TRY */ check_sizeoft_exp(ctx, node);
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -2904,16 +2892,16 @@ static error_t reslv_default_statement(Ctx ctx, CDefault* node) {
     CATCH_EXIT;
 }
 
-static error_t reslv_break_statement(Ctx ctx, CBreak* node) { /* TODO TRY */
+static error_t reslv_break_statement(Ctx ctx, CBreak* node) {
     CATCH_ENTER;
-    annotate_break_jump(ctx, node);
+    /* TODO TRY */ annotate_break_jump(ctx, node);
     FINALLY_EXIT;
     CATCH_EXIT;
 }
 
-static error_t reslv_continue_statement(Ctx ctx, CContinue* node) { /* TODO TRY */
+static error_t reslv_continue_statement(Ctx ctx, CContinue* node) {
     CATCH_ENTER;
-    annotate_continue_jump(ctx, node);
+    /* TODO TRY */ annotate_continue_jump(ctx, node);
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -2994,12 +2982,8 @@ static error_t reslv_block_items(Ctx ctx, const std::vector<std::unique_ptr<CBlo
 
 static error_t reslv_block(Ctx ctx, CBlock* node) {
     CATCH_ENTER;
-    if (node->type() == AST_CB_t) {
-        /* TODO TRY */ reslv_block_items(ctx, static_cast<CB*>(node)->block_items);
-    }
-    else {
-        THROW_ABORT;
-    }
+    THROW_ABORT_IF(node->type() != AST_CB_t);
+    /* TODO TRY */ reslv_block_items(ctx, static_cast<CB*>(node)->block_items);
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -3169,9 +3153,9 @@ static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     CATCH_EXIT;
 }
 
-static error_t reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) { /* TODO TRY */
+static error_t reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
     CATCH_ENTER;
-    check_struct_members_decl(ctx, node);
+    /* TODO TRY */ check_struct_members_decl(ctx, node);
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -3188,13 +3172,11 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
                     node->line);
             }
         }
-        else {
-            if (ctx->struct_def_set.find(node->tag) == ctx->struct_def_set.end()) {
-                THROW_AT_LINE_EX(
-                    GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, fmt_struct_name_c_str(node->tag, node->is_union),
-                        fmt_struct_name_c_str(node->tag, !node->is_union)),
-                    node->line);
-            }
+        else if (ctx->struct_def_set.find(node->tag) == ctx->struct_def_set.end()) {
+            THROW_AT_LINE_EX(
+                GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, fmt_struct_name_c_str(node->tag, node->is_union),
+                    fmt_struct_name_c_str(node->tag, !node->is_union)),
+                node->line);
         }
     }
     else {
@@ -3244,9 +3226,9 @@ static error_t reslv_var_decl(Ctx ctx, CVarDecl* node) {
     CATCH_EXIT;
 }
 
-static error_t reslv_struct_decl(Ctx ctx, CStructDecl* node) { /* TODO TRY */
+static error_t reslv_struct_decl(Ctx ctx, CStructDecl* node) {
     CATCH_ENTER;
-    reslv_struct_declaration(ctx, node->struct_decl.get());
+    /* TODO TRY */ reslv_struct_declaration(ctx, node->struct_decl.get());
     FINALLY_EXIT;
     CATCH_EXIT;
 }
