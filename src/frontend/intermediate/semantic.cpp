@@ -1640,6 +1640,7 @@ static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 }
 
 static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
+    std::unique_ptr<IdentifierAttr> param_attrs;
     CATCH_ENTER;
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
     for (size_t i = 0; i < node->params.size(); ++i) {
@@ -1664,7 +1665,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
                     node->line);
             }
             std::shared_ptr<Type> type_t = fun_type->param_types[i];
-            std::unique_ptr<IdentifierAttr> param_attrs = std::make_unique<LocalAttr>();
+            param_attrs = std::make_unique<LocalAttr>();
             ctx->frontend->symbol_table[node->params[i]] =
                 std::make_unique<Symbol>(std::move(type_t), std::move(param_attrs));
         }
@@ -1674,6 +1675,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
 }
 
 static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
+    std::unique_ptr<IdentifierAttr> glob_fun_attrs;
     CATCH_ENTER;
     THROW_ABORT_IF(node->fun_type->type() == AST_Void_t);
 
@@ -1709,8 +1711,8 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     }
 
     std::shared_ptr<Type> fun_type = node->fun_type;
-    std::unique_ptr<IdentifierAttr> fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
-    ctx->frontend->symbol_table[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(fun_attrs));
+    glob_fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
+    ctx->frontend->symbol_table[node->name] = std::make_unique<Symbol>(std::move(fun_type), std::move(glob_fun_attrs));
     FINALLY_EXIT;
     CATCH_EXIT;
 }
@@ -1848,6 +1850,7 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
     CATCH_EXIT;
 }
 
+// TODO maybe check before
 static error_t check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
     CATCH_ENTER;
     if (static_ptr_type->ref_type->type() != AST_Char_t) {
@@ -2028,6 +2031,7 @@ static error_t check_initializer(
 }
 
 static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    std::unique_ptr<IdentifierAttr> glob_var_attrs;
     CATCH_ENTER;
     ctx->errors->linebuf = node->line;
     /* TODO TRY */ reslv_struct_type(ctx, node->var_type.get());
@@ -2071,26 +2075,26 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
                 node->line);
         }
 
-        StaticAttr* glob_var_attrs = static_cast<StaticAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get());
+        StaticAttr* static_attrs = static_cast<StaticAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get());
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-            is_glob = glob_var_attrs->is_glob;
+            is_glob = static_attrs->is_glob;
         }
-        else if (is_glob != glob_var_attrs->is_glob) {
+        else if (is_glob != static_attrs->is_glob) {
             THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redecl_var_storage, fmt_name_c_str(node->name)), node->line);
         }
 
-        if (glob_var_attrs->init->type() == AST_Initial_t) {
+        if (static_attrs->init->type() == AST_Initial_t) {
             if (init_value->type() == AST_Initial_t) {
                 THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redecl_var_storage, fmt_name_c_str(node->name)), node->line);
             }
             else {
-                init_value = glob_var_attrs->init;
+                init_value = static_attrs->init;
             }
         }
     }
 
     std::shared_ptr<Type> glob_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
+    glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
     FINALLY_EXIT;
@@ -2098,6 +2102,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
 }
 
 static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    std::unique_ptr<IdentifierAttr> local_var_attrs;
     CATCH_ENTER;
     if (node->init) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_redef_extern_var, fmt_name_c_str(node->name)), node->line);
@@ -2113,7 +2118,6 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> local_var_attrs;
     {
         std::shared_ptr<InitialValue> init_value = std::make_shared<NoInitializer>();
         local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
@@ -2125,6 +2129,7 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
 }
 
 static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    std::unique_ptr<IdentifierAttr> local_var_attrs;
     CATCH_ENTER;
     THROW_ABORT_IF(node->var_type->type() == AST_Structure_t
                    && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get())));
@@ -2138,7 +2143,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
+    local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
     FINALLY_EXIT;
@@ -2146,6 +2151,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
 }
 
 static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    std::unique_ptr<IdentifierAttr> local_var_attrs;
     CATCH_ENTER;
     if (node->var_type->type() == AST_Structure_t
         && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get()))) {
@@ -2155,7 +2161,7 @@ static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
 
     std::shared_ptr<Type> local_var_type = node->var_type;
-    std::unique_ptr<IdentifierAttr> local_var_attrs = std::make_unique<LocalAttr>();
+    local_var_attrs = std::make_unique<LocalAttr>();
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
     FINALLY_EXIT;
