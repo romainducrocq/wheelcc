@@ -673,8 +673,16 @@ static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(st
     CATCH_EXIT;
 }
 
-static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
+static error_t promote_char_to_int(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     std::shared_ptr<Type> promote_type;
+    CATCH_ENTER;
+    promote_type = std::make_shared<Int>();
+    /* TODO TRY */ cast_exp(ctx, promote_type, exp);
+    FINALLY_EXIT;
+    CATCH_EXIT;
+}
+
+static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
@@ -689,11 +697,9 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
                 node->line);
         case AST_Char_t:
         case AST_SChar_t:
-        case AST_UChar_t: {
-            promote_type = std::make_shared<Int>();
-            /* TODO TRY */ cast_exp(ctx, promote_type, &node->exp);
+        case AST_UChar_t:
+            /* TODO TRY */ promote_char_to_int(ctx, &node->exp);
             break;
-        }
         default:
             break;
     }
@@ -703,7 +709,6 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
 }
 
 static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
-    std::shared_ptr<Type> promote_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type.get())) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop.get()),
@@ -714,11 +719,9 @@ static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
     switch (node->exp->exp_type->type()) {
         case AST_Char_t:
         case AST_SChar_t:
-        case AST_UChar_t: {
-            promote_type = std::make_shared<Int>();
-            /* TODO TRY */ cast_exp(ctx, promote_type, &node->exp);
+        case AST_UChar_t:
+            /* TODO TRY */ promote_char_to_int(ctx, &node->exp);
             break;
-        }
         default:
             break;
     }
@@ -900,7 +903,6 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
 }
 
 static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
-    std::shared_ptr<Type> left_type;
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type.get()) || !is_type_int(node->exp_right->exp_type.get())) {
         THROW_AT_LINE_EX(
@@ -910,8 +912,7 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     }
 
     else if (is_type_char(node->exp_left->exp_type.get())) {
-        left_type = std::make_shared<Int>();
-        /* TODO TRY */ cast_exp(ctx, left_type, &node->exp_left);
+        /* TODO TRY */ promote_char_to_int(ctx, &node->exp_left);
     }
     if (!is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())) {
         /* TODO TRY */ cast_exp(ctx, node->exp_left->exp_type, &node->exp_right);
@@ -1390,11 +1391,9 @@ static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
     switch (node->match->exp_type->type()) {
         case AST_Char_t:
         case AST_SChar_t:
-        case AST_UChar_t: {
-            std::shared_ptr<Type> promote_type = std::make_shared<Int>();
-            /* TODO TRY */ cast_exp(ctx, promote_type, &node->match);
+        case AST_UChar_t:
+            /* TODO TRY */ promote_char_to_int(ctx, &node->match);
             break;
-        }
         default:
             break;
     }
@@ -1649,9 +1648,13 @@ static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     CATCH_EXIT;
 }
 
+static void check_arr_param_decl(FunType* fun_type, size_t i) {
+    std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
+    fun_type->param_types[i] = std::make_shared<Pointer>(std::move(ref_type));
+}
+
 static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     std::unique_ptr<IdentifierAttr> param_attrs;
-    std::shared_ptr<Type> ref_type;
     std::shared_ptr<Type> param_type;
     CATCH_ENTER;
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
@@ -1665,8 +1668,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
         }
         /* TODO TRY */ is_valid_type(ctx, fun_type->param_types[i].get());
         if (fun_type->param_types[i]->type() == AST_Array_t) {
-            ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
-            fun_type->param_types[i] = std::make_shared<Pointer>(std::move(ref_type));
+            check_arr_param_decl(fun_type, i);
         }
 
         if (node->body) {
@@ -1909,17 +1911,15 @@ static error_t check_static_ptr_string_init(Ctx ctx, CString* node, Pointer* sta
 }
 
 static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
+    std::string value;
     std::shared_ptr<CStringLiteral> literal;
     CATCH_ENTER;
     /* TODO TRY */ check_bound_string_init(ctx, node, static_arr_type);
     TLong byte = static_arr_type->size - ((TLong)node->literal->value.size()) - 1l;
     {
         bool is_null_term = byte >= 0l;
-        TIdentifier string_const;
-        {
-            std::string value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(ctx->identifiers, std::move(value));
-        }
+        value = string_literal_to_const(node->literal->value);
+        TIdentifier string_const = make_string_identifier(ctx->identifiers, std::move(value));
         literal = node->literal;
         push_static_init(ctx, std::make_shared<StringInit>(string_const, is_null_term, std::move(literal)));
     }
