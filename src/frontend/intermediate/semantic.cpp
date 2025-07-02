@@ -16,10 +16,6 @@
 #include "frontend/intermediate/idents.hpp"
 #include "frontend/intermediate/semantic.hpp"
 
-#define FINALLY_EXIT \
-    EARLY_EXIT;      \
-    FINALLY
-
 struct SemanticContext {
     ErrorsContext* errors;
     FrontEndContext* frontend;
@@ -190,7 +186,7 @@ static error_t is_valid_type(Ctx ctx, Type* type);
 static error_t is_valid_ptr(Ctx ctx, Pointer* ptr_type) {
     CATCH_ENTER;
     TRY(is_valid_type(ctx, ptr_type->ref_type.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -202,7 +198,7 @@ static error_t is_valid_arr(Ctx ctx, Array* arr_type) {
             ctx->errors->linebuf);
     }
     TRY(is_valid_type(ctx, arr_type->elem_type.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -220,7 +216,7 @@ static error_t is_valid_type(Ctx ctx, Type* type) {
         default:
             break;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -390,7 +386,7 @@ static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, return_t(
                           fmt_type_c_str(node_2->exp_type.get())),
             node_1->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -608,7 +604,7 @@ static error_t check_var_exp(Ctx ctx, CVar* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_fun_used_as_var, fmt_name_c_str(node->name)), node->line);
     }
     node->exp_type = ctx->frontend->symbol_table[node->name]->type_t;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -626,7 +622,7 @@ static error_t check_cast_exp(Ctx ctx, CCast* node) {
     }
     TRY(is_valid_type(ctx, node->target_type.get()));
     node->exp_type = node->target_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -637,7 +633,7 @@ static error_t cast_exp(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(std::
     exp_type_cp = exp_type;
     *exp = std::make_unique<CCast>(std::move(*exp), std::move(exp_type_cp), line);
     TRY(check_cast_exp(ctx, static_cast<CCast*>(exp->get())));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -658,7 +654,7 @@ static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>& exp_type, return_t(st
             GET_SEMANTIC_MSG(MSG_illegal_cast, fmt_type_c_str((*exp)->exp_type.get()), fmt_type_c_str(exp_type.get())),
             (*exp)->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -667,7 +663,7 @@ static error_t promote_char_to_int(Ctx ctx, return_t(std::unique_ptr<CExp>) exp)
     CATCH_ENTER;
     promote_type = std::make_shared<Int>();
     TRY(cast_exp(ctx, promote_type, exp));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -693,7 +689,7 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
             break;
     }
     node->exp_type = node->exp->exp_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -715,7 +711,7 @@ static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
             break;
     }
     node->exp_type = node->exp->exp_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -728,7 +724,7 @@ static error_t check_unary_not_exp(Ctx ctx, CUnary* node) {
     }
 
     node->exp_type = std::make_shared<Int>();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -747,7 +743,7 @@ static error_t check_unary_exp(Ctx ctx, CUnary* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -790,7 +786,7 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
         TRY(cast_exp(ctx, common_type, &node->exp_right));
     }
     node->exp_type = std::move(common_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -838,7 +834,7 @@ static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
         TRY(cast_exp(ctx, common_type, &node->exp_right));
     }
     node->exp_type = std::move(common_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -860,7 +856,7 @@ static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
         TRY(cast_exp(ctx, common_type, &node->exp_right));
     }
     node->exp_type = std::move(common_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -887,7 +883,7 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
                           fmt_type_c_str(node->exp_type.get())),
             node->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -912,7 +908,7 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
                           fmt_type_c_str(node->exp_type.get())),
             node->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -922,7 +918,7 @@ static error_t check_bitshift_right_exp(Ctx ctx, CBinary* node) {
     if (is_type_signed(node->exp_left->exp_type.get())) {
         node->binop = std::make_unique<CBitShrArithmetic>();
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -936,7 +932,7 @@ static error_t check_binary_logical_exp(Ctx ctx, CBinary* node) {
     }
 
     node->exp_type = std::make_shared<Int>();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -964,7 +960,7 @@ static error_t check_binary_equality_exp(Ctx ctx, CBinary* node) {
         TRY(cast_exp(ctx, common_type, &node->exp_right));
     }
     node->exp_type = std::make_shared<Int>();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -992,7 +988,7 @@ static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
         TRY(cast_exp(ctx, common_type, &node->exp_right));
     }
     node->exp_type = std::make_shared<Int>();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1038,7 +1034,7 @@ static error_t check_binary_exp(Ctx ctx, CBinary* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1074,7 +1070,7 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
         }
         node->exp_type = exp_left->exp_type;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1119,7 +1115,7 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
         TRY(cast_exp(ctx, common_type, &node->exp_right));
     }
     node->exp_type = std::move(common_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1142,7 +1138,7 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
         }
     }
     node->exp_type = fun_type->ret_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1152,7 +1148,7 @@ static error_t check_deref_exp(Ctx ctx, CDereference* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_deref_not_ptr, fmt_type_c_str(node->exp->exp_type.get())), node->line);
     }
     node->exp_type = static_cast<Pointer*>(node->exp->exp_type.get())->ref_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1164,7 +1160,7 @@ static error_t check_addrof_exp(Ctx ctx, CAddrOf* node) {
     }
     ref_type = node->exp->exp_type;
     node->exp_type = std::make_shared<Pointer>(std::move(ref_type));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1195,7 +1191,7 @@ static error_t check_subscript_exp(Ctx ctx, CSubscript* node) {
             node->line);
     }
     node->exp_type = std::move(ref_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1205,7 +1201,7 @@ static error_t check_sizeof_exp(Ctx ctx, CSizeOf* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_sizeof_incomplete, fmt_type_c_str(node->exp->exp_type.get())), node->line);
     }
     node->exp_type = std::make_shared<ULong>();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1218,7 +1214,7 @@ static error_t check_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
     }
     TRY(is_valid_type(ctx, node->target_type.get()));
     node->exp_type = std::make_shared<ULong>();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1238,7 +1234,7 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
             node->line);
     }
     node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1269,7 +1265,7 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
             node->line);
     }
     node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1288,7 +1284,7 @@ static error_t check_struct_typed_exp(Ctx ctx, CExp* node) {
     if (!is_struct_complete(ctx, static_cast<Structure*>(node->exp_type.get()))) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_exp_incomplete, fmt_type_c_str(node->exp_type.get())), node->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1304,7 +1300,7 @@ static error_t check_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
         default:
             break;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1327,7 +1323,7 @@ static error_t check_ret_statement(Ctx ctx, CReturn* node) {
         TRY(cast_assign(ctx, fun_type->ret_type, &node->exp));
     }
     TRY(check_typed_exp(ctx, &node->exp));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1337,7 +1333,7 @@ static error_t check_if_statement(Ctx ctx, CIf* node) {
         THROW_AT_LINE(
             GET_SEMANTIC_MSG(MSG_invalid_if, fmt_type_c_str(node->condition->exp_type.get())), node->condition->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1347,7 +1343,7 @@ static error_t check_while_statement(Ctx ctx, CWhile* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_while, fmt_type_c_str(node->condition->exp_type.get())),
             node->condition->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1357,7 +1353,7 @@ static error_t check_do_while_statement(Ctx ctx, CDoWhile* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_invalid_do_while, fmt_type_c_str(node->condition->exp_type.get())),
             node->condition->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1367,7 +1363,7 @@ static error_t check_for_statement(Ctx ctx, CFor* node) {
         THROW_AT_LINE(
             GET_SEMANTIC_MSG(MSG_invalid_for, fmt_type_c_str(node->condition->exp_type.get())), node->condition->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1387,7 +1383,7 @@ static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
         esac->constant = std::make_shared<CConstInt>(values[i]);
         esac->exp_type = node->match->exp_type;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1407,7 +1403,7 @@ static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
         esac->constant = std::make_shared<CConstLong>(values[i]);
         esac->exp_type = node->match->exp_type;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1427,7 +1423,7 @@ static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
         esac->constant = std::make_shared<CConstUInt>(values[i]);
         esac->exp_type = node->match->exp_type;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1447,7 +1443,7 @@ static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
         esac->constant = std::make_shared<CConstULong>(values[i]);
         esac->exp_type = node->match->exp_type;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1482,7 +1478,7 @@ static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1496,7 +1492,7 @@ static error_t check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) 
                           std::to_string(node->literal->value.size()).c_str()),
             node->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1506,7 +1502,7 @@ static error_t check_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Typ
         TRY(cast_assign(ctx, init_type, &node->exp));
     }
     node->init_type = init_type;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1600,7 +1596,7 @@ static error_t check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_typ
                           fmt_type_c_str(arr_type), std::to_string(node->initializers.size()).c_str()),
             get_compound_line(node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1612,7 +1608,7 @@ static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* 
                           std::to_string(node->initializers.size()).c_str(), std::to_string(bound).c_str()),
             get_compound_line(node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1657,7 +1653,7 @@ static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
         default:
             break;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1696,7 +1692,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
                 std::make_unique<Symbol>(std::move(param_type), std::move(param_attrs));
         }
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1741,7 +1737,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     glob_fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(glob_fun_type), std::move(glob_fun_attrs));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1874,7 +1870,7 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
         default:
             THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_agg_init_with_single, fmt_type_c_str(static_init_type)), node->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1883,7 +1879,7 @@ static error_t check_literal_string_init(Ctx ctx, CString* node, Pointer* static
     if (static_ptr_type->ref_type->type() != AST_Char_t) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_static_ptr_init_string, fmt_type_c_str(static_ptr_type)), node->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1940,7 +1936,7 @@ static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* stati
     if (byte > 0l) {
         push_zero_static_init(ctx, byte);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1957,7 +1953,7 @@ static error_t check_static_string_init(Ctx ctx, CString* node, Type* static_ini
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1974,7 +1970,7 @@ static error_t check_single_static_init(Ctx ctx, CSingleInit* node, Type* static
             THROW_AT_LINE(
                 GET_SEMANTIC_MSG(MSG_static_init_not_const, fmt_type_c_str(static_init_type)), node->exp->line);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -1988,7 +1984,7 @@ static error_t check_static_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_ty
     if ((size_t)arr_type->size > node->initializers.size()) {
         check_static_no_init(ctx, arr_type->elem_type.get(), arr_type->size - node->initializers.size());
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2010,7 +2006,7 @@ static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure*
     if (ctx->frontend->struct_typedef_table[struct_type->tag]->size != size) {
         check_static_no_init(ctx, nullptr, ctx->frontend->struct_typedef_table[struct_type->tag]->size - size);
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2027,7 +2023,7 @@ static error_t check_static_compound_init(Ctx ctx, CCompoundInit* node, Type* st
             THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, fmt_type_c_str(static_init_type)),
                 get_compound_line(node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2043,7 +2039,7 @@ static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2057,7 +2053,7 @@ static error_t check_initializer(
         ctx->p_static_inits = nullptr;
     }
     *init_value = std::make_shared<Initial>(std::move(static_inits));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2130,7 +2126,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2157,7 +2153,7 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2180,7 +2176,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2199,7 +2195,7 @@ static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     local_var_attrs = std::make_unique<LocalAttr>();
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2227,7 +2223,7 @@ static error_t check_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     else {
         TRY(check_auto_block_var_decl(ctx, node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2253,7 +2249,7 @@ static error_t check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
         }
         TRY(is_valid_type(ctx, node->members[i].get()->member_type.get()));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2309,7 +2305,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     }
     ctx->frontend->struct_typedef_table[node->tag] =
         std::make_unique<StructTypedef>(alignment, size, std::move(member_names), std::move(members));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2323,7 +2319,7 @@ static error_t annotate_goto_label(Ctx ctx, CLabel* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_redef_label_in_scope, fmt_name_c_str(node->target)), node->line);
     }
     ctx->label_set.insert(node->target);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2358,7 +2354,7 @@ static error_t annotate_case_jump(Ctx ctx, CCase* node) {
     }
     node->target = repr_case_identifier(
         ctx->identifiers, ctx->p_switch_statement->target, false, ctx->p_switch_statement->cases.size());
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2372,7 +2368,7 @@ static error_t annotate_default_jump(Ctx ctx, CDefault* node) {
     }
     node->target = ctx->p_switch_statement->target;
     ctx->p_switch_statement->is_default = true;
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2382,7 +2378,7 @@ static error_t annotate_break_jump(Ctx ctx, CBreak* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG_0(MSG_break_out_of_loop), node->line);
     }
     node->target = ctx->break_loop_labels.back();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2392,7 +2388,7 @@ static error_t annotate_continue_jump(Ctx ctx, CContinue* node) {
         THROW_AT_LINE(GET_SEMANTIC_MSG_0(MSG_continue_out_of_loop), node->line);
     }
     node->target = ctx->continue_loop_labels.back();
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2434,21 +2430,21 @@ static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
                 ctx->errors->linebuf_map[target.second]);
         }
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_ptr_struct(Ctx ctx, Pointer* ptr_type) {
     CATCH_ENTER;
     TRY(reslv_struct_type(ctx, ptr_type->ref_type.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_arr_struct(Ctx ctx, Array* arr_type) {
     CATCH_ENTER;
     TRY(reslv_struct_type(ctx, arr_type->elem_type.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2474,7 +2470,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
         }
     }
     THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_undef_struct_in_scope, fmt_type_c_str(struct_type)), ctx->errors->linebuf);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2495,7 +2491,7 @@ static error_t reslv_struct_type(Ctx ctx, Type* type) {
         default:
             break;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2518,7 +2514,7 @@ static error_t reslv_var_exp(Ctx ctx, CVar* node) {
 Lelse:
 
     TRY(check_var_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2526,7 +2522,7 @@ static error_t reslv_cast_exp(Ctx ctx, CCast* node) {
     CATCH_ENTER;
     TRY(reslv_typed_exp(ctx, &node->exp));
     TRY(check_cast_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2534,7 +2530,7 @@ static error_t reslv_unary_exp(Ctx ctx, CUnary* node) {
     CATCH_ENTER;
     TRY(reslv_typed_exp(ctx, &node->exp));
     TRY(check_unary_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2543,7 +2539,7 @@ static error_t reslv_binary_exp(Ctx ctx, CBinary* node) {
     TRY(reslv_typed_exp(ctx, &node->exp_left));
     TRY(reslv_typed_exp(ctx, &node->exp_right));
     TRY(check_binary_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2554,7 +2550,7 @@ static error_t reslv_assign_exp(Ctx ctx, CAssignment* node) {
     }
     TRY(reslv_typed_exp(ctx, &node->exp_right));
     TRY(check_assign_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2564,7 +2560,7 @@ static error_t reslv_conditional_exp(Ctx ctx, CConditional* node) {
     TRY(reslv_typed_exp(ctx, &node->exp_middle));
     TRY(reslv_typed_exp(ctx, &node->exp_right));
     TRY(check_conditional_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2583,7 +2579,7 @@ Lelse:
         TRY(reslv_typed_exp(ctx, &node->args[i]));
     }
     TRY(check_call_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2591,7 +2587,7 @@ static error_t reslv_deref_exp(Ctx ctx, CDereference* node) {
     CATCH_ENTER;
     TRY(reslv_typed_exp(ctx, &node->exp));
     TRY(check_deref_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2599,7 +2595,7 @@ static error_t reslv_addrof_expr(Ctx ctx, CAddrOf* node) {
     CATCH_ENTER;
     TRY(reslv_exp(ctx, node->exp.get()));
     TRY(check_addrof_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2608,7 +2604,7 @@ static error_t reslv_subscript_exp(Ctx ctx, CSubscript* node) {
     TRY(reslv_typed_exp(ctx, &node->primary_exp));
     TRY(reslv_typed_exp(ctx, &node->subscript_exp));
     TRY(check_subscript_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2616,14 +2612,14 @@ static error_t reslv_sizeof_exp(Ctx ctx, CSizeOf* node) {
     CATCH_ENTER;
     TRY(reslv_exp(ctx, node->exp.get()));
     TRY(check_sizeof_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
     CATCH_ENTER;
     TRY(check_sizeoft_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2631,7 +2627,7 @@ static error_t reslv_dot_exp(Ctx ctx, CDot* node) {
     CATCH_ENTER;
     TRY(reslv_typed_exp(ctx, &node->structure));
     TRY(check_dot_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2639,7 +2635,7 @@ static error_t reslv_arrow_exp(Ctx ctx, CArrow* node) {
     CATCH_ENTER;
     TRY(reslv_typed_exp(ctx, &node->pointer));
     TRY(check_arrow_exp(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2697,7 +2693,7 @@ static error_t reslv_exp(Ctx ctx, CExp* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2705,7 +2701,7 @@ static error_t reslv_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     CATCH_ENTER;
     TRY(reslv_exp(ctx, exp->get()));
     TRY(check_typed_exp(ctx, exp));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2722,7 +2718,7 @@ static error_t reslv_for_init_decl(Ctx ctx, CInitDecl* node) {
             node->init->line);
     }
     TRY(reslv_block_var_decl(ctx, node->init.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2731,7 +2727,7 @@ static error_t reslv_for_init_exp(Ctx ctx, CInitExp* node) {
     if (node->init) {
         TRY(reslv_typed_exp(ctx, &node->init));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2748,7 +2744,7 @@ static error_t reslv_for_init(Ctx ctx, CForInit* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2758,14 +2754,14 @@ static error_t reslv_ret_statement(Ctx ctx, CReturn* node) {
         TRY(reslv_typed_exp(ctx, &node->exp));
     }
     TRY(check_ret_statement(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_exp_statement(Ctx ctx, CExpression* node) {
     CATCH_ENTER;
     TRY(reslv_typed_exp(ctx, &node->exp));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2777,7 +2773,7 @@ static error_t reslv_if_statement(Ctx ctx, CIf* node) {
         TRY(reslv_statement(ctx, node->else_fi.get()));
     }
     TRY(check_if_statement(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2804,7 +2800,7 @@ static error_t reslv_label_statement(Ctx ctx, CLabel* node) {
         node->target = ctx->goto_map[node->target];
     }
     TRY(reslv_statement(ctx, node->jump_to.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2813,7 +2809,7 @@ static error_t reslv_compound_statement(Ctx ctx, CCompound* node) {
     enter_scope(ctx);
     TRY(reslv_block(ctx, node->block.get()));
     exit_scope(ctx);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2824,7 +2820,7 @@ static error_t reslv_while_statement(Ctx ctx, CWhile* node) {
     TRY(reslv_statement(ctx, node->body.get()));
     deannotate_loop(ctx);
     TRY(check_while_statement(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2835,7 +2831,7 @@ static error_t reslv_do_while_statement(Ctx ctx, CDoWhile* node) {
     TRY(reslv_typed_exp(ctx, &node->condition));
     deannotate_loop(ctx);
     TRY(check_do_while_statement(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2854,7 +2850,7 @@ static error_t reslv_for_statement(Ctx ctx, CFor* node) {
     exit_scope(ctx);
     deannotate_loop(ctx);
     TRY(check_for_statement(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2872,7 +2868,7 @@ static error_t reslv_switch_statement(Ctx ctx, CSwitch* node) {
     exit_scope(ctx);
     deannotate_lookup(ctx);
     TRY(check_switch_statement(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2882,7 +2878,7 @@ static error_t reslv_case_statement(Ctx ctx, CCase* node) {
     TRY(reslv_typed_exp(ctx, &node->value));
     ctx->p_switch_statement->cases.push_back(std::move(node->value));
     TRY(reslv_statement(ctx, node->jump_to.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2890,21 +2886,21 @@ static error_t reslv_default_statement(Ctx ctx, CDefault* node) {
     CATCH_ENTER;
     TRY(annotate_default_jump(ctx, node));
     TRY(reslv_statement(ctx, node->jump_to.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_break_statement(Ctx ctx, CBreak* node) {
     CATCH_ENTER;
     TRY(annotate_break_jump(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_continue_statement(Ctx ctx, CContinue* node) {
     CATCH_ENTER;
     TRY(annotate_continue_jump(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2958,7 +2954,7 @@ static error_t reslv_statement(Ctx ctx, CStatement* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2978,7 +2974,7 @@ static error_t reslv_block_items(Ctx ctx, const std::vector<std::unique_ptr<CBlo
                 THROW_ABORT;
         }
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -2986,7 +2982,7 @@ static error_t reslv_block(Ctx ctx, CBlock* node) {
     CATCH_ENTER;
     THROW_ABORT_IF(node->type() != AST_CB_t);
     TRY(reslv_block_items(ctx, static_cast<CB*>(node)->block_items));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3002,7 +2998,7 @@ static error_t reslv_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Typ
         TRY(reslv_typed_exp(ctx, &node->exp));
         TRY(check_single_init(ctx, node, init_type));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3014,7 +3010,7 @@ static error_t reslv_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std
         TRY(reslv_initializer(ctx, initializer.get(), arr_type->elem_type));
     }
     check_arr_init(ctx, node, arr_type, init_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3028,7 +3024,7 @@ static error_t reslv_struct_init(
         TRY(reslv_initializer(ctx, node->initializers[i].get(), member->member_type));
     }
     check_struct_init(ctx, node, struct_type, init_type);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3045,7 +3041,7 @@ static error_t reslv_compound_init(Ctx ctx, CCompoundInit* node, std::shared_ptr
             THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, fmt_type_c_str(init_type.get())),
                 get_compound_line(node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3061,7 +3057,7 @@ static error_t reslv_initializer(Ctx ctx, CInitializer* node, std::shared_ptr<Ty
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3075,7 +3071,7 @@ static error_t reslv_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
         param = ctx->scoped_identifier_maps.back()[param];
     }
     TRY(check_fun_params_decl(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3110,7 +3106,7 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
         TRY(reslv_block(ctx, node->body.get()));
     }
     exit_scope(ctx);
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3127,7 +3123,7 @@ static error_t reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     else {
         TRY(check_block_var_decl(ctx, node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3150,14 +3146,14 @@ static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     if (node->init && !node->storage_class) {
         TRY(reslv_initializer(ctx, node->init.get(), node->var_type));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
     CATCH_ENTER;
     TRY(check_struct_members_decl(ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3193,7 +3189,7 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
         TRY(reslv_struct_members_decl(ctx, node));
         TRY(check_struct_decl(ctx, node));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3210,7 +3206,7 @@ static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
     if (is_file_scope(ctx)) {
         TRY(reslv_label(ctx, node->fun_decl.get()));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3222,14 +3218,14 @@ static error_t reslv_var_decl(Ctx ctx, CVarDecl* node) {
     else {
         TRY(reslv_block_var_decl(ctx, node->var_decl.get()));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
 static error_t reslv_struct_decl(Ctx ctx, CStructDecl* node) {
     CATCH_ENTER;
     TRY(reslv_struct_declaration(ctx, node->struct_decl.get()));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3248,7 +3244,7 @@ static error_t reslv_declaration(Ctx ctx, CDeclaration* node) {
         default:
             THROW_ABORT;
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3258,7 +3254,7 @@ static error_t resolve_program(Ctx ctx, CProgram* node) {
     for (const auto& declaration : node->declarations) {
         TRY(reslv_declaration(ctx, declaration.get()));
     }
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
 
@@ -3274,6 +3270,6 @@ error_t analyze_semantic(
     }
     CATCH_ENTER;
     TRY(resolve_program(&ctx, node));
-    FINALLY_EXIT;
+    FINALLY;
     CATCH_EXIT;
 }
