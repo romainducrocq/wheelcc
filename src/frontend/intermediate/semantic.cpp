@@ -16,7 +16,6 @@
 #include "frontend/intermediate/idents.hpp"
 #include "frontend/intermediate/semantic.hpp"
 
-#define TEMP_RETURN return 0
 #define FINALLY_EXIT \
     EARLY_EXIT;      \
     FINALLY
@@ -766,7 +765,7 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
             /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
         }
         node->exp_type = node->exp_left->exp_type;
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
     else if (is_type_int(node->exp_left->exp_type.get()) && node->exp_right->exp_type->type() == AST_Pointer_t
              && is_type_complete(ctx, static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get())) {
@@ -775,7 +774,7 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
             /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_left);
         }
         node->exp_type = node->exp_right->exp_type;
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
     else {
         THROW_AT_LINE_EX(
@@ -809,14 +808,14 @@ static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
                 /* TODO TRY */ cast_exp(ctx, common_type, &node->exp_right);
             }
             node->exp_type = node->exp_left->exp_type;
-            TEMP_RETURN;
+            EARLY_EXIT;
         }
         else if (is_same_type(node->exp_left->exp_type.get(), node->exp_right->exp_type.get())
                  && !(node->exp_left->type() == AST_CConstant_t
                       && is_const_null_ptr(static_cast<CConstant*>(node->exp_left.get())))) {
             common_type = std::make_shared<Long>();
             node->exp_type = std::move(common_type);
-            TEMP_RETURN;
+            EARLY_EXIT;
         }
         else {
             THROW_AT_LINE_EX(
@@ -1088,7 +1087,7 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
     }
     else if (node->exp_middle->exp_type->type() == AST_Void_t && node->exp_right->exp_type->type() == AST_Void_t) {
         node->exp_type = node->exp_middle->exp_type;
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
     else if (node->exp_middle->exp_type->type() == AST_Structure_t
              || node->exp_right->exp_type->type() == AST_Structure_t) {
@@ -1098,7 +1097,7 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
                 node->line);
         }
         node->exp_type = node->exp_middle->exp_type;
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
 
     if (is_type_arithmetic(node->exp_middle->exp_type.get()) && is_type_arithmetic(node->exp_right->exp_type.get())) {
@@ -1315,7 +1314,7 @@ static error_t check_ret_statement(Ctx ctx, CReturn* node) {
             THROW_AT_LINE_EX(
                 GET_SEMANTIC_MSG(MSG_ret_value_in_void_fun, fmt_name_c_str(ctx->fun_def_name)), node->line);
         }
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
     else if (!node->exp) {
         THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_no_ret_value_in_fun, fmt_name_c_str(ctx->fun_def_name),
@@ -1451,7 +1450,6 @@ static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
     CATCH_EXIT;
 }
 
-// TODO maybe refactor this one
 static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
     CATCH_ENTER;
     if (!is_type_int(node->match->exp_type.get())) {
@@ -2148,7 +2146,7 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
                                  fmt_type_c_str(ctx->frontend->symbol_table[node->name]->type_t.get())),
                 node->line);
         }
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
 
     local_var_type = node->var_type;
@@ -2454,11 +2452,11 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
     CATCH_ENTER;
     if (struct_type->is_union) {
         if (ctx->union_def_set.find(struct_type->tag) != ctx->union_def_set.end()) {
-            TEMP_RETURN;
+            EARLY_EXIT;
         }
     }
     else if (ctx->struct_def_set.find(struct_type->tag) != ctx->struct_def_set.end()) {
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
     for (size_t i = ctx->scoped_identifier_maps.size(); i-- > 0;) {
         if (ctx->scoped_struct_maps[i].find(struct_type->tag) != ctx->scoped_struct_maps[i].end()) {
@@ -2468,7 +2466,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
                     ctx->errors->linebuf);
             }
             struct_type->tag = ctx->scoped_struct_maps[i][struct_type->tag].tag;
-            TEMP_RETURN;
+            EARLY_EXIT;
         }
     }
     THROW_AT_LINE_EX(GET_SEMANTIC_MSG(MSG_undef_struct_in_scope, fmt_type_c_str(struct_type)), ctx->errors->linebuf);
@@ -3139,7 +3137,7 @@ static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
     else if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
         /* TODO TRY */ reslv_file_var_decl(ctx, node);
-        TEMP_RETURN;
+        EARLY_EXIT;
     }
 
     ctx->scoped_identifier_maps.back()[node->name] = rslv_var_identifier(ctx->identifiers, node->name);
