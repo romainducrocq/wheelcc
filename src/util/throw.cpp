@@ -12,34 +12,35 @@
 
 typedef ErrorsContext* Ctx;
 
-static void raise_base_error(Ctx ctx) {
-    free_fileio(ctx->fileio);
-    const std::string& filename = get_filename(ctx->fileio);
-    std::string err_what = "\033[1m";
-    err_what += filename;
-    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
-    err_what += std::string(ctx->msg);
-    if (ctx->is_stdout) {
-        printf("\n");
-        fflush(stdout);
-    }
-    fprintf(stderr, "%s\n", err_what.c_str());
-}
-
-[[noreturn]] void raise_sigabrt(const char* func, const char* file, int line) {
+#ifdef __cplusplus
+[[noreturn]]
+#else
+#include
+#include <stdnoreturn.h>
+_Noreturn
+#endif
+void raise_sigabrt(const char* func, const char* file, int line) {
     fflush(stdout);
     fprintf(stderr, "\033[1m%s:%i:\033[0m\n\033[0;31minternal error:\033[0m %s\n", file, line, func);
     abort();
 }
 
 void raise_init_error(Ctx ctx) {
-    std::string err_what = "\033[0;31merror:\033[0m ";
-    err_what += std::string(ctx->msg);
     if (ctx->is_stdout) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "%s\n", err_what.c_str());
+    fprintf(stderr, "\033[0;31merror:\033[0m %s\n", std::string(ctx->msg).c_str());
+}
+
+static void raise_base_error(Ctx ctx) {
+    free_fileio(ctx->fileio);
+    const std::string& filename = get_filename(ctx->fileio);
+    if (ctx->is_stdout) {
+        printf("\n");
+        fflush(stdout);
+    }
+    fprintf(stderr, "\033[1m%s:\033[0m\n\033[0;31merror:\033[0m %s\n", filename.c_str(), std::string(ctx->msg).c_str());
 }
 
 void raise_error_at_line(Ctx ctx, size_t linenum) {
@@ -77,22 +78,12 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
             line.pop_back();
         }
     }
-    std::string err_what = "\033[1m";
-    err_what += filename;
-    err_what += ":";
-    err_what += std::to_string(linenum);
-    err_what += ":\033[0m\n\033[0;31merror:\033[0m ";
-    err_what += std::string(ctx->msg);
-    err_what += "\nat line ";
-    err_what += std::to_string(linenum);
-    err_what += ": \033[1m";
-    err_what += line;
-    err_what += "\033[0m";
     if (ctx->is_stdout) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "%s\n", err_what.c_str());
+    fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n",
+        filename.c_str(), linenum, std::string(ctx->msg).c_str(), linenum, line.c_str());
 }
 
 size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {

@@ -32,7 +32,15 @@ struct ErrorsContext {
 
 typedef int error_t;
 
-[[noreturn]] void raise_sigabrt(const char* func, const char* file, int line);
+// TODO rm
+#ifdef __cplusplus
+[[noreturn]]
+#else
+#include
+#include <stdnoreturn.h>
+_Noreturn
+#endif
+void raise_sigabrt(const char* func, const char* file, int line);
 void raise_init_error(ErrorsContext* ctx);
 void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
 size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
