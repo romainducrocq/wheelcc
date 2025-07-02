@@ -23,7 +23,7 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 
 wheelcc is implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up a lot to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
 - [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
-- [ ] Replace throwing exceptions in user error handling with progragating error codes
+- [x] Replace throwing exceptions in user error handling with progragating error codes
 - [ ] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
 - [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
 - [ ] Replace smart pointers with manual memory management for runtime polymorphism
