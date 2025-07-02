@@ -39,6 +39,8 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 
 #define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
 
+// TODO maybe remove return_t, as POD*, unique_ptr*, shared_ptr*, etc...
+// already assumes mutable in/out parameter
 #define return_t(X) X*
 #define CATCH_ENTER error_t _errval = 0
 #define CATCH_EXIT return _errval
