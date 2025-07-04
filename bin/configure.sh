@@ -7,6 +7,7 @@ if [ ${?} -ne 0 ]; then
     echo -e "\033[0;31merror:\033[0m configuration failed" 1>&2
     exit 1
 fi
+echo "-- Package name ${PACKAGE_NAME}"
 
 INSTALL_CC=0
 
