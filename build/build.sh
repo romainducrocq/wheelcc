@@ -70,7 +70,7 @@ mkdir ${BUILD_CACHE}/
 if [ ${?} -ne 0 ]; then exit 1; fi
 
 OBJECT_FILES=""
-echo "build objects ..."
+echo "-- Build objects ..."
 for FILE in ${SOURCE_FILES}; do
     OBJECT="${BUILD_CACHE}/$(basename ${FILE%.*}).o"
     OBJECT_FILES="${OBJECT_FILES} ${OBJECT}"
@@ -88,12 +88,14 @@ for FILE in ${SOURCE_FILES}; do
             exit 1
     esac
 done
+echo "OK"
 
-echo "linking executable ..."
+echo "-- Linking executable ..."
 echo "${BUILD_CACHE}/*.o -> ${PROJECT_NAME}"
 ${CXX} ${OBJECT_FILES} ${CC_FLAGS} -o ${PROJECT_NAME}
 if [ ${?} -ne 0 ]; then exit 1; fi
+echo "OK"
 
-echo "created target ${PROJECT_NAME}"
+echo "-- Created target ${PROJECT_NAME}"
 
 exit 0
