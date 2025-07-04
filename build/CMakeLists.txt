@@ -22,7 +22,7 @@ list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/backend/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/frontend/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/lib/")
 
-file(GLOB_RECURSE SOURCE_FILES "${PROJECT_DIR}/src/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES "${PROJECT_DIR}/src/*.cpp" "${PROJECT_DIR}/lib/*.c")
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})

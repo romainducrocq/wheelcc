@@ -54,6 +54,8 @@ SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/fileio.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/pprint.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/str2t.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/throw.cpp"
+SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/lib/sds/sds.c"
+SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/lib/stb_ds/stb_ds.c"
 
 ${CXX} ${SOURCE_FILES} ${CXX_FLAGS} ${INCLUDE_DIRS} ${PROJECT_NAME}
 if [ ${?} -ne 0 ]; then exit 1; fi
