@@ -237,6 +237,10 @@ static inline void sdssetalloc(sds s, size_t newlen) {
     }
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 sds sdsnewlen(const void *init, size_t initlen);
 sds sdsnew(const char *init);
 sds sdsempty(void);
@@ -291,6 +295,10 @@ void sds_free(void *ptr);
 
 #ifdef REDIS_TEST
 int sdsTest(int argc, char *argv[]);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif
