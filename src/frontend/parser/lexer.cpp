@@ -1,8 +1,8 @@
 #include <string>
-#include <string_view>
 #include <unordered_set>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/fileio.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
@@ -677,14 +677,23 @@ static TOKEN_KIND match_comment_end(Ctx ctx) {
     }
 }
 
-static error_t tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum);
+static string_t get_match(Ctx ctx, size_t match_at, size_t match_size) {
+    string_t match = str_new("");
+    str_resize(match, match_size);
+    for (size_t i = 0; i < match_size; ++i) {
+        match[i] = ctx->line[match_at + i];
+    }
+    return match;
+}
+
+static error_t tokenize_include(Ctx ctx, size_t linenum);
 
 static error_t tokenize_file(Ctx ctx) {
+    string_t match = str_new(NULL);
     CATCH_ENTER;
     bool is_comment = false;
     for (size_t linenum = 1; read_line(ctx->fileio, ctx->line, ctx->line_size); ++linenum) {
         ctx->total_linenum++;
-        std::string_view line_sv(ctx->line);
 
         for (ctx->match_at = 0; ctx->match_at < ctx->line_size; ctx->match_at += ctx->match_size) {
             TOKEN_KIND match_kind = is_comment ? match_comment_end(ctx) : match_token(ctx);
@@ -704,7 +713,7 @@ static error_t tokenize_file(Ctx ctx) {
                     goto Lcontinue;
                 }
                 case TOK_include_preproc:
-                    TRY(tokenize_include(ctx, line_sv, linenum));
+                    TRY(tokenize_include(ctx, linenum));
                     goto Lcontinue;
                 case TOK_identifier:
                 case TOK_string_literal:
@@ -714,17 +723,14 @@ static error_t tokenize_file(Ctx ctx) {
                 case TOK_uint_const:
                 case TOK_ulong_const:
                 case TOK_dbl_const: {
-                    std::string match = ctx->match_size == 1 ?
-                                            std::string({ctx->line[ctx->match_at]}) :
-                                            std::string(line_sv.substr(ctx->match_at, ctx->match_size));
-                    match_tok = make_string_identifier(ctx->identifiers, std::move(match));
+                    match = get_match(ctx, ctx->match_at, ctx->match_size);
+                    match_tok = make_string_identifier(ctx->identifiers, std::string(match));
+                    str_delete(match); // TODO rm
                     goto Lpass;
                 }
                 case TOK_error: {
-                    std::string match = ctx->match_size == 1 ?
-                                            std::string({ctx->line[ctx->match_at]}) :
-                                            std::string(line_sv.substr(ctx->match_at, ctx->match_size));
-                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match.c_str()), linenum);
+                    match = get_match(ctx, ctx->match_at, ctx->match_size);
+                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match), linenum);
                 }
                 default:
                     goto Lpass;
@@ -739,6 +745,7 @@ static error_t tokenize_file(Ctx ctx) {
         }
     }
     FINALLY;
+    str_delete(match);
     CATCH_EXIT;
 }
 
@@ -753,16 +760,18 @@ static bool find_include(std::vector<std::string>& dirnames, std::string& filena
     return false;
 }
 
-static error_t tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t linenum) {
+static error_t tokenize_include(Ctx ctx, size_t linenum) {
     std::string filename;
     std::string fopen_name;
+    string_t sds_filename = str_new(NULL);
+    CATCH_ENTER;
     char* line;
     size_t line_size;
     size_t match_at;
     size_t match_size;
-    CATCH_ENTER;
-    filename = ctx->match_size == 3 ? std::string({ctx->line[ctx->match_at + 1]}) :
-                                      std::string(line_sv.substr(ctx->match_at + 1, ctx->match_size - 2));
+
+    sds_filename = get_match(ctx, ctx->match_at + 1, ctx->match_size - 2);
+    filename = std::string(sds_filename); // TODO rm
     {
         hash_t includename = string_to_hash(filename);
         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
@@ -810,6 +819,7 @@ static error_t tokenize_include(Ctx ctx, const std::string_view& line_sv, size_t
     ctx->match_at = match_at;
     ctx->match_size = match_size;
     FINALLY;
+    str_delete(sds_filename);
     CATCH_EXIT;
 }
 
