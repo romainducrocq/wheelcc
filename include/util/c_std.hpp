@@ -12,7 +12,7 @@
 
 // String
 
-#define string_t sds
+typedef sds string_t;
 #define str_delete(X) \
     if (X) {          \
         sdsfree(X);   \
@@ -37,14 +37,12 @@
     }                  \
     while (0)
 #define str_to_string(X) sdsfromlonglong((long long)(X))
-// #define str_substr_view(X, Y, Z) sdsrange(X, Y, Z)
 #define str_substr(X, Y, Z, S) \
     do {                       \
         str_copy(X, S);        \
         sdsrange(S, Y, Z);     \
     }                          \
     while (0)
-// #define str_reserve
 #define str_resize(X, Y)       \
     do {                       \
         X = sdsgrowzero(X, Y); \
