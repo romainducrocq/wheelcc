@@ -77,7 +77,7 @@ void string_to_literal(string_t str_string, std::vector<int8_t>& string_literal)
 }
 
 int32_t string_to_char_ascii(string_t str_char) {
-    THROW_ABORT_IF(str_size(str_char) == 0 || str_size(str_char) > 2);
+    THROW_ABORT_IF(str_size(str_char) < 2 || str_size(str_char) > 4);
     char c_char = (char)str_char[1];
     if (c_char == '\\') {
         c_char = (char)str_char[2];
