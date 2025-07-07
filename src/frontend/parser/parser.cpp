@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <inttypes.h>
 #include <memory>
-#include <string>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -1605,7 +1605,7 @@ static error_t parse_block(Ctx ctx, return_t(std::unique_ptr<CBlock>) block) {
 // <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
 //                    | ("struct" | "union") <identifier>
 static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) type_specifier) {
-    std::string type_tok_kinds_s;
+    string_t type_tok_kinds_fmt = str_new(NULL);
     std::vector<TOKEN_KIND> type_tok_kinds;
     CATCH_ENTER;
     size_t line;
@@ -1763,18 +1763,19 @@ Lbreak:
         default:
             break;
     }
-    type_tok_kinds_s = "(";
+    type_tok_kinds_fmt = str_new("(");
     for (TOKEN_KIND type_tok_kind : type_tok_kinds) {
-        type_tok_kinds_s += get_tok_kind_fmt(type_tok_kind);
-        type_tok_kinds_s += ", ";
+        str_append(type_tok_kinds_fmt, get_tok_kind_fmt(type_tok_kind));
+        str_append(type_tok_kinds_fmt, ", ");
     }
     if (!type_tok_kinds.empty()) {
-        type_tok_kinds_s.pop_back();
-        type_tok_kinds_s.pop_back();
+        str_pop_back(type_tok_kinds_fmt);
+        str_pop_back(type_tok_kinds_fmt);
     }
-    type_tok_kinds_s += ")";
-    THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier_list, type_tok_kinds_s.c_str()), line);
+    str_append(type_tok_kinds_fmt, ")");
+    THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier_list, type_tok_kinds_fmt), line);
     FINALLY;
+    str_delete(type_tok_kinds_fmt);
     CATCH_EXIT;
 }
 

@@ -5,7 +5,6 @@
 #include <memory>
 #include <stdexcept>
 #include <stdio.h>
-#include <string>
 #include <vector>
 
 #include "util/c_std.hpp"

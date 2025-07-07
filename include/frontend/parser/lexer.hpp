@@ -1,7 +1,6 @@
 #ifndef _FRONT_PARSER_LEXER_H
 #define _FRONT_PARSER_LEXER_H
 
-#include <string>
 #include <vector>
 
 #include "ast_t.hpp" // ast
