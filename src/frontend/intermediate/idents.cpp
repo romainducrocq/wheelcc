@@ -1,5 +1,6 @@
 #include <string>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -15,183 +16,190 @@
 typedef IdentifierContext* Ctx;
 
 TIdentifier rslv_label_identifier(Ctx ctx, TIdentifier label) {
-    std::string name = ctx->hash_table[label];
-    return make_label_identifier(ctx, std::move(name));
+    string_t name = str_new(NULL);
+    str_copy(ctx->hash_table[label], name);
+    return make_label_identifier(ctx, &name);
 }
 
 TIdentifier rslv_var_identifier(Ctx ctx, TIdentifier variable) {
-    std::string name = ctx->hash_table[variable];
-    return make_var_identifier(ctx, std::move(name));
+    string_t name = str_new(NULL);
+    str_copy(ctx->hash_table[variable], name);
+    return make_var_identifier(ctx, &name);
 }
 
 TIdentifier rslv_struct_tag(Ctx ctx, TIdentifier structure) {
-    std::string name = ctx->hash_table[structure];
-    return make_struct_identifier(ctx, std::move(name));
+    string_t name = str_new(NULL);
+    str_copy(ctx->hash_table[structure], name);
+    return make_struct_identifier(ctx, &name);
 }
 
 TIdentifier repr_label_identifier(Ctx ctx, LABEL_KIND label_kind) {
-    std::string name;
+    string_t name = str_new(NULL);
     switch (label_kind) {
         case LBL_Land_false: {
-            name = "and_false";
+            name = str_new("and_false");
             break;
         }
         case LBL_Land_true: {
-            name = "and_true";
+            name = str_new("and_true");
             break;
         }
         case LBL_Ldo_while: {
-            name = "do_while";
+            name = str_new("do_while");
             break;
         }
         case LBL_Ldo_while_start: {
-            name = "do_while_start";
+            name = str_new("do_while_start");
             break;
         }
         case LBL_Lfor: {
-            name = "for";
+            name = str_new("for");
             break;
         }
         case LBL_Lswitch: {
-            name = "switch";
+            name = str_new("switch");
             break;
         }
         case LBL_Lfor_start: {
-            name = "for_start";
+            name = str_new("for_start");
             break;
         }
         case LBL_Lif_else: {
-            name = "if_else";
+            name = str_new("if_else");
             break;
         }
         case LBL_Lif_false: {
-            name = "if_false";
+            name = str_new("if_false");
             break;
         }
         case LBL_Lor_false: {
-            name = "or_false";
+            name = str_new("or_false");
             break;
         }
         case LBL_Lor_true: {
-            name = "or_true";
+            name = str_new("or_true");
             break;
         }
         case LBL_Lstring: {
-            name = "string";
+            name = str_new("string");
             break;
         }
         case LBL_Lternary_else: {
-            name = "ternary_else";
+            name = str_new("ternary_else");
             break;
         }
         case LBL_Lternary_false: {
-            name = "ternary_false";
+            name = str_new("ternary_false");
             break;
         }
         case LBL_Lwhile: {
-            name = "while";
+            name = str_new("while");
             break;
         }
         default:
             THROW_ABORT;
     }
-    return make_label_identifier(ctx, std::move(name));
+    return make_label_identifier(ctx, &name);
 }
 
 TIdentifier repr_loop_identifier(Ctx ctx, LABEL_KIND label_kind, TIdentifier target) {
-    std::string name;
+    string_t name = str_new(NULL);
     switch (label_kind) {
         case LBL_Lbreak: {
-            name = "break_";
+            name = str_new("break_");
             break;
         }
         case LBL_Lcase: {
-            name = "case_";
+            name = str_new("case_");
             break;
         }
         case LBL_Lcontinue: {
-            name = "continue_";
+            name = str_new("continue_");
             break;
         }
         case LBL_Ldefault: {
-            name = "default_";
+            name = str_new("default_");
             break;
         }
         default:
             THROW_ABORT;
     }
-    name += ctx->hash_table[target];
-    return make_string_identifier(ctx, std::move(name));
+    str_append(name, ctx->hash_table[target]);
+    return make_string_identifier(ctx, &name);
 }
 
 TIdentifier repr_case_identifier(Ctx ctx, TIdentifier target, bool is_label, size_t i) {
-    std::string name = is_label ? "case_" : "";
-    name += std::to_string(i);
-    name += ctx->hash_table[target];
-    return make_string_identifier(ctx, std::move(name));
+    string_t name = is_label ? str_new("case_") : str_new("");
+    {
+        string_t case_id = str_to_string(i);
+        str_append(name, case_id);
+        str_delete(case_id);
+    }
+    str_append(name, ctx->hash_table[target]);
+    return make_string_identifier(ctx, &name);
 }
 
 TIdentifier repr_var_identifier(Ctx ctx, CExp* node) {
-    std::string name;
+    string_t name = str_new(NULL);
     switch (node->type()) {
         case AST_CConstant_t: {
-            name = "const";
+            name = str_new("const");
             break;
         }
         case AST_CString_t: {
-            name = "string";
+            name = str_new("string");
             break;
         }
         case AST_CVar_t: {
-            name = "var";
+            name = str_new("var");
             break;
         }
         case AST_CCast_t: {
-            name = "cast";
+            name = str_new("cast");
             break;
         }
         case AST_CUnary_t: {
-            name = "unop";
+            name = str_new("unop");
             break;
         }
         case AST_CBinary_t: {
-            name = "binop";
+            name = str_new("binop");
             break;
         }
         case AST_CAssignment_t: {
-            name = "assign";
+            name = str_new("assign");
             break;
         }
         case AST_CConditional_t: {
-            name = "ternop";
+            name = str_new("ternop");
             break;
         }
         case AST_CFunctionCall_t: {
-            name = "call";
+            name = str_new("call");
             break;
         }
         case AST_CDereference_t: {
-            name = "deref";
+            name = str_new("deref");
             break;
         }
         case AST_CAddrOf_t: {
-            name = "addr";
+            name = str_new("addr");
             break;
         }
         case AST_CSubscript_t: {
-            name = "subscr";
+            name = str_new("subscr");
             break;
         }
         case AST_CDot_t: {
-            name = "smem";
+            name = str_new("smem");
             break;
         }
         case AST_CArrow_t: {
-            name = "sptr";
+            name = str_new("sptr");
             break;
         }
         default:
             THROW_ABORT;
     }
-    return make_var_identifier(ctx, std::move(name));
+    return make_var_identifier(ctx, &name);
 }
