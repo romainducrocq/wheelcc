@@ -41,10 +41,11 @@ typedef sds string_t;
     }                  \
     while (0)
 #define str_to_string(X) sdsfromlonglong((long long)(X))
-#define str_substr(X, Y, Z, S) \
+#define str_pop_back(X) sdsrange(X, 0, -2)
+#define str_substr(X, Y, Z, W) \
     do {                       \
-        str_copy(X, S);        \
-        sdsrange(S, Y, Z);     \
+        str_copy(X, W);        \
+        sdsrange(W, Y, Z);     \
     }                          \
     while (0)
 #define str_resize(X, Y)       \
