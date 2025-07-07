@@ -33,7 +33,7 @@ const char* get_filename(Ctx ctx) {
 
 void set_filename(Ctx ctx, string_t filename) { str_copy(filename, ctx->filename); }
 
-error_t open_fread(Ctx ctx, const char* filename, size_t filename_size) {
+error_t open_fread(Ctx ctx, string_t filename) {
     CATCH_ENTER;
     for (size_t i = 0; i < ctx->file_reads.size(); ++i) {
         if (ctx->file_reads[i].fd) {
@@ -50,10 +50,16 @@ error_t open_fread(Ctx ctx, const char* filename, size_t filename_size) {
         }
     }
 
+    // {
+    //     FileRead file_read = {0, NULL, NULL, NULL};
+    //     file_read.filename = std::string(filename);
+    //     ctx->file_reads.emplace_back(std::move(file_read));
+    // }
+
     ctx->file_reads.emplace_back();
     ctx->file_reads.back().fd = nullptr;
     ctx->file_reads.back().fd = fopen(filename, "rb");
-    if (!ctx->file_reads.back().fd || filename_size >= PATH_MAX) {
+    if (!ctx->file_reads.back().fd || str_size(filename) >= PATH_MAX) {
         THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename), 0);
     }
 
@@ -64,13 +70,13 @@ error_t open_fread(Ctx ctx, const char* filename, size_t filename_size) {
     CATCH_EXIT;
 }
 
-error_t open_fwrite(Ctx ctx, const char* filename, size_t filename_size) {
+error_t open_fwrite(Ctx ctx, string_t filename) {
     CATCH_ENTER;
     THROW_ABORT_IF(!ctx->file_reads.empty());
 
     ctx->fd_write = nullptr;
     ctx->fd_write = fopen(filename, "wb");
-    if (!ctx->fd_write || filename_size >= PATH_MAX) {
+    if (!ctx->fd_write || str_size(filename) >= PATH_MAX) {
         THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename), 0);
     }
 

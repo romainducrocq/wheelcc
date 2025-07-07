@@ -802,7 +802,7 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     match_size = ctx->match_size;
 
     str_copy(ctx->errors->fopen_lines.back().filename, fopen_name);
-    TRY(open_fread(ctx->fileio, filename, str_size(filename)));
+    TRY(open_fread(ctx->fileio, filename));
     {
         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, NULL};
         str_move(&filename, &fopen_line.filename);
@@ -844,7 +844,7 @@ error_t lex_c_code(string_t filename, std::vector<const char*>&& includedirs, Er
         ctx.total_linenum = 0;
     }
     CATCH_ENTER;
-    TRY(open_fread(ctx.fileio, filename, str_size(filename)));
+    TRY(open_fread(ctx.fileio, filename));
     {
         FileOpenLine fopen_line = {1, 1, NULL};
         str_copy(filename, fopen_line.filename);

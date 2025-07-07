@@ -254,7 +254,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
     verbose(ctx, "-- Code emission ... ");
     set_filename_ext(ctx, "s");
-    TRY(open_fwrite(fileio, ctx->filename, str_size(ctx->filename)));
+    TRY(open_fwrite(fileio, ctx->filename));
     emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
     close_fwrite(fileio);
     verbose(ctx, "OK\n");
