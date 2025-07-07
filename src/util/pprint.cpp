@@ -21,7 +21,7 @@
 
 // Pretty print
 
-static void print_title(const std::string& title) { std::cout << "+\n+\n@@ " << title << " @@"; }
+static void print_title(const char* title) { std::cout << "+\n+\n@@ " << std::string(title) << " @@"; }
 
 void pprint_toks(IdentifierContext* ctx, std::vector<Token>& tokens) {
     print_title("Tokens");
@@ -52,7 +52,7 @@ static void print_field(const std::string& name, const std::string& value, size_
     for (size_t i = 0; i < t - 1; ++i) {
         std::cout << "  ";
     }
-    std::cout << name << ": ";
+    std::cout << std::string(name) << ": ";
     if (!value.empty()) {
         std::cout << value;
     }
@@ -1790,7 +1790,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
     }
 }
 
-void pprint_ast(IdentifierContext* ctx, Ast* node, const std::string& name) {
+void pprint_ast(IdentifierContext* ctx, Ast* node, const char* name) {
     print_title(name);
     print_ast(ctx, node, 0);
     std::cout << std::endl;

@@ -50,7 +50,7 @@ error_t open_fread(Ctx ctx, string_t filename) {
         }
     }
 
-    FileRead file_read = {0, NULL, NULL, NULL /* str_new(NULL) */};
+    FileRead file_read = {0, NULL, NULL, str_new(NULL)};
     file_read.fd = fopen(filename, "rb");
     if (!file_read.fd || str_size(filename) >= PATH_MAX) {
         THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename), 0);
