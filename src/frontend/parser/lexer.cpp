@@ -826,19 +826,19 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     CATCH_EXIT;
 }
 
-static void strip_filename_ext(std::string& filename) {
-    for (size_t i = filename.size(); i-- > 0;) {
-        if (filename.back() == '.') {
-            filename.pop_back();
+static void strip_filename_ext(string_t filename) {
+    for (size_t i = str_size(filename); i-- > 0;) {
+        if (str_back(filename) == '.') {
+            str_pop_back(filename);
             break;
         }
-        filename.pop_back();
+        str_pop_back(filename);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-error_t lex_c_code(std::string& filename, std::vector<const char*>&& includedirs, ErrorsContext* errors,
+error_t lex_c_code(string_t filename, std::vector<const char*>&& includedirs, ErrorsContext* errors,
     FileIoContext* fileio, IdentifierContext* identifiers, return_t(std::vector<Token>) tokens) {
     LexerContext ctx;
     {
@@ -853,23 +853,20 @@ error_t lex_c_code(std::string& filename, std::vector<const char*>&& includedirs
         ctx.p_toks = tokens;
         ctx.total_linenum = 0;
     }
-    string_t sds_filename = str_new(filename.c_str()); // TODO
     CATCH_ENTER;
-    TRY(open_fread(ctx.fileio, sds_filename, str_size(sds_filename)));
+    TRY(open_fread(ctx.fileio, filename, str_size(filename)));
     {
         FileOpenLine fopen_line = {1, 1, NULL};
-        str_copy(sds_filename, fopen_line.filename);
+        str_copy(filename, fopen_line.filename);
         ctx.errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     TRY(tokenize_file(&ctx));
 
     TRY(close_fread(ctx.fileio, 0));
     includedirs.clear();
-    set_filename(ctx.fileio, sds_filename);
+    set_filename(ctx.fileio, filename);
     strip_filename_ext(filename);
-    EARLY_EXIT;
     FINALLY;
     std::vector<const char*>().swap(includedirs);
-    str_delete(sds_filename);
     CATCH_EXIT;
 }

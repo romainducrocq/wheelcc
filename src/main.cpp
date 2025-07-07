@@ -47,7 +47,7 @@ struct MainContext {
     uint8_t debug_code;
     uint8_t optim_1_mask;
     uint8_t optim_2_code;
-    std::string filename;
+    string_t filename;
     std::vector<const char*> includedirs;
 };
 
@@ -242,8 +242,8 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Code emission ... ");
-    ctx->filename += ".s";
-    TRY(open_fwrite(fileio, ctx->filename));
+    str_append(ctx->filename, ".s");
+    TRY(open_fwrite(fileio, ctx->filename, str_size(ctx->filename)));
     emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
     close_fwrite(fileio);
     verbose(ctx, "OK\n");
@@ -286,7 +286,7 @@ static error_t arg_parse(Ctx ctx, char** argv) {
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_input_files_arg));
     }
-    ctx->filename = std::string(argv[i]);
+    ctx->filename = str_new(argv[i]);
 
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
@@ -315,6 +315,7 @@ error_t main(int, char** argv) {
 
         ctx.errors = &errors;
         ctx.is_verbose = false;
+        ctx.filename = str_new(NULL);
     }
     CATCH_ENTER;
     TRY(arg_parse(&ctx, argv));
@@ -323,5 +324,6 @@ error_t main(int, char** argv) {
     for (size_t i = 0; i < errors.fopen_lines.size(); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
+    str_delete(ctx.filename);
     CATCH_EXIT;
 }

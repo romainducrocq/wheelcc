@@ -63,14 +63,14 @@ error_t open_fread(Ctx ctx, const char* filename, size_t filename_size) {
     CATCH_EXIT;
 }
 
-error_t open_fwrite(Ctx ctx, const std::string& filename) {
+error_t open_fwrite(Ctx ctx, const char* filename, size_t filename_size) {
     CATCH_ENTER;
     THROW_ABORT_IF(!ctx->file_reads.empty());
 
     ctx->fd_write = nullptr;
-    ctx->fd_write = fopen(filename.c_str(), "wb");
-    if (!ctx->fd_write || filename.size() >= PATH_MAX) {
-        THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename.c_str()), 0);
+    ctx->fd_write = fopen(filename, "wb");
+    if (!ctx->fd_write || filename_size >= PATH_MAX) {
+        THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename), 0);
     }
 
     ctx->write_buf.reserve(WRITE_BUF_SIZE);
