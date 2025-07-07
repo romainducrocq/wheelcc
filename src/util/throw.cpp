@@ -30,17 +30,17 @@ void raise_init_error(Ctx ctx) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "\033[0;31merror:\033[0m %s\n", std::string(ctx->msg).c_str());
+    fprintf(stderr, "\033[0;31merror:\033[0m %s\n", ctx->msg);
 }
 
 static void raise_base_error(Ctx ctx) {
     free_fileio(ctx->fileio);
-    const std::string& filename = get_filename(ctx->fileio);
+    const char* filename = get_filename(ctx->fileio);
     if (ctx->is_stdout) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "\033[1m%s:\033[0m\n\033[0;31merror:\033[0m %s\n", filename.c_str(), std::string(ctx->msg).c_str());
+    fprintf(stderr, "\033[1m%s:\033[0m\n\033[0;31merror:\033[0m %s\n", filename, ctx->msg);
 }
 
 void raise_error_at_line(Ctx ctx, size_t linenum) {
@@ -49,12 +49,12 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
         return;
     }
     free_fileio(ctx->fileio);
-    const std::string& filename = get_filename(ctx->fileio);
+    const char* filename = get_filename(ctx->fileio);
     std::string line;
     {
         size_t len = 0;
         char* buf = nullptr;
-        FILE* fd = fopen(filename.c_str(), "rb");
+        FILE* fd = fopen(filename, "rb");
         if (!fd) {
             raise_base_error(ctx);
             return;
@@ -82,8 +82,8 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n",
-        filename.c_str(), linenum, std::string(ctx->msg).c_str(), linenum, line.c_str());
+    fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n", filename,
+        linenum, ctx->msg, linenum, line.c_str());
 }
 
 size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {

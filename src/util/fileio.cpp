@@ -21,12 +21,12 @@ bool find_file(const char* filename) {
     return tinydir_file_open(&file, filename) != -1 && !file.is_dir;
 }
 
-const std::string& get_filename(Ctx ctx) {
+const char* get_filename(Ctx ctx) {
     if (!ctx->file_reads.empty()) {
-        return ctx->file_reads.back().filename;
+        return ctx->file_reads.back().filename.c_str();
     }
     else {
-        return ctx->filename;
+        return ctx->filename.c_str();
     }
 }
 

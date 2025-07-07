@@ -28,7 +28,7 @@ struct FileIoContext {
 };
 
 bool find_file(const char* filename);
-const std::string& get_filename(FileIoContext* ctx);
+const char* get_filename(FileIoContext* ctx);
 void set_filename(FileIoContext* ctx, const char* filename);
 int open_fread(FileIoContext* ctx, const char* filename, size_t filename_size);
 int open_fwrite(FileIoContext* ctx, const char* filename, size_t filename_size);
