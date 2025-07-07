@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -25,8 +26,9 @@ uint32_t uintmax_to_uint32(uintmax_t uintmax) { return (uint32_t)uintmax; }
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) { return (uint64_t)uintmax; }
 
-void string_to_literal(const std::string& str_string, std::vector<int8_t>& string_literal) {
-    for (size_t byte = 1; byte < str_string.size() - 1; ++byte) {
+void string_to_literal(string_t str_string, std::vector<int8_t>& string_literal) {
+    THROW_ABORT_IF(str_size(str_string) < 2);
+    for (size_t byte = 1; byte < str_size(str_string) - 1; ++byte) {
         char c_char = (char)str_string[byte];
         if (c_char == '\\') {
             c_char = (char)str_string[++byte];
@@ -74,7 +76,8 @@ void string_to_literal(const std::string& str_string, std::vector<int8_t>& strin
     }
 }
 
-int32_t string_to_char_ascii(const std::string& str_char) {
+int32_t string_to_char_ascii(string_t str_char) {
+    THROW_ABORT_IF(str_size(str_char) == 0 || str_size(str_char) > 2);
     char c_char = (char)str_char[1];
     if (c_char == '\\') {
         c_char = (char)str_char[2];
