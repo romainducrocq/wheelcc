@@ -337,6 +337,9 @@ error_t main(int, char** argv) {
         str_delete(errors.fopen_lines[i].filename);
     }
     str_delete(fileio.filename);
+    for (size_t i = 0; i < fileio.file_reads.size(); ++i) {
+        str_delete(fileio.file_reads[i].filename);
+    }
     str_delete(ctx.filename);
     CATCH_EXIT;
 }

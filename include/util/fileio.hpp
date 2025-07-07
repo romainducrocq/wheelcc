@@ -15,7 +15,7 @@ struct FileRead {
     size_t len;
     char* buf;
     FILE* fd;
-    std::string filename;
+    char* filename; /* string_t */
 };
 
 struct FileIoContext {

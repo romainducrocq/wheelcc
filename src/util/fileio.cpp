@@ -24,7 +24,7 @@ bool find_file(const char* filename) {
 
 const char* get_filename(Ctx ctx) {
     if (!ctx->file_reads.empty()) {
-        return ctx->file_reads.back().filename.c_str();
+        return ctx->file_reads.back().filename;
     }
     else {
         return ctx->filename;
@@ -50,22 +50,13 @@ error_t open_fread(Ctx ctx, string_t filename) {
         }
     }
 
-    // {
-    //     FileRead file_read = {0, NULL, NULL, NULL};
-    //     file_read.filename = std::string(filename);
-    //     ctx->file_reads.emplace_back(std::move(file_read));
-    // }
-
-    ctx->file_reads.emplace_back();
-    ctx->file_reads.back().fd = nullptr;
-    ctx->file_reads.back().fd = fopen(filename, "rb");
-    if (!ctx->file_reads.back().fd || str_size(filename) >= PATH_MAX) {
+    FileRead file_read = {0, NULL, NULL, NULL /* str_new(NULL) */};
+    file_read.fd = fopen(filename, "rb");
+    if (!file_read.fd || str_size(filename) >= PATH_MAX) {
         THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename), 0);
     }
-
-    ctx->file_reads.back().len = 0;
-    ctx->file_reads.back().buf = nullptr;
-    ctx->file_reads.back().filename = std::string(filename);
+    str_copy(filename, file_read.filename);
+    ctx->file_reads.emplace_back(std::move(file_read));
     FINALLY;
     CATCH_EXIT;
 }
@@ -119,17 +110,18 @@ error_t close_fread(Ctx ctx, size_t linenum) {
     CATCH_ENTER;
     fclose(ctx->file_reads.back().fd);
     ctx->file_reads.back().fd = nullptr;
+    str_delete(ctx->file_reads.back().filename);
     ctx->file_reads.pop_back();
 
     if (!ctx->file_reads.empty() && !ctx->file_reads.back().fd) {
         THROW_ABORT_IF(ctx->file_reads.back().buf || ctx->file_reads.back().len != 0);
-        ctx->file_reads.back().fd = fopen(ctx->file_reads.back().filename.c_str(), "rb");
+        ctx->file_reads.back().fd = fopen(ctx->file_reads.back().filename, "rb");
         if (!ctx->file_reads.back().fd) {
-            THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
+            THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename), 0);
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
-                THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename.c_str()), 0);
+                THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename), 0);
             }
         }
     }
