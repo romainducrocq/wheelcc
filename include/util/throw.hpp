@@ -3,6 +3,9 @@
 
 #include <unordered_map>
 #include <vector>
+#ifndef __cplusplus
+#include <stdnoreturn.h>
+#endif
 
 #include "util/str2t.hpp"
 
@@ -31,12 +34,9 @@ struct ErrorsContext {
 
 typedef int error_t;
 
-// TODO rm
 #ifdef __cplusplus
 [[noreturn]]
 #else
-#include
-#include <stdnoreturn.h>
 _Noreturn
 #endif
 void raise_sigabrt(const char* func, const char* file, int line);

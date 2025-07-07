@@ -1,8 +1,11 @@
 #include <cstdio>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
+#ifndef __cplusplus
+#include <stdnoreturn.h>
+#endif
 
+#include "util/c_std.hpp"
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
@@ -15,8 +18,6 @@ typedef ErrorsContext* Ctx;
 #ifdef __cplusplus
 [[noreturn]]
 #else
-#include
-#include <stdnoreturn.h>
 _Noreturn
 #endif
 void raise_sigabrt(const char* func, const char* file, int line) {
@@ -50,7 +51,7 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
     }
     free_fileio(ctx->fileio);
     const char* filename = get_filename(ctx->fileio);
-    std::string line;
+    string_t line = str_new(NULL);
     {
         size_t len = 0;
         char* buf = nullptr;
@@ -69,13 +70,13 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
                 return;
             }
         }
-        line = buf;
+        line = str_new(buf);
         free(buf);
         fclose(fd);
         buf = nullptr;
         fd = nullptr;
-        if (line.back() == '\n') {
-            line.pop_back();
+        if (str_back(line) == '\n') {
+            str_pop_back(line);
         }
     }
     if (ctx->is_stdout) {
@@ -83,7 +84,8 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
         fflush(stdout);
     }
     fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n", filename,
-        linenum, ctx->msg, linenum, line.c_str());
+        linenum, ctx->msg, linenum, line);
+    str_delete(line);
 }
 
 size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
