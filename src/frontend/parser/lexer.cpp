@@ -724,8 +724,7 @@ static error_t tokenize_file(Ctx ctx) {
                 case TOK_ulong_const:
                 case TOK_dbl_const: {
                     match = get_match(ctx, ctx->match_at, ctx->match_size);
-                    match_tok = make_string_identifier(ctx->identifiers, std::string(match));
-                    str_delete(match); // TODO rm
+                    match_tok = make_string_identifier(ctx->identifiers, &match);
                     goto Lpass;
                 }
                 case TOK_error: {

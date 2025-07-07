@@ -66,43 +66,43 @@ static void verbose(Ctx ctx, const char* msg) {
 #ifndef __NDEBUG__
 static void debug_toks(Ctx ctx, std::vector<Token>& tokens) {
     if (ctx->is_verbose) {
-        pprint_toks(ctx->identifiers, tokens);
+        // pprint_toks(ctx->identifiers, tokens);
     }
 }
 
 static void debug_ast(Ctx ctx, Ast* node, const char* name) {
     if (ctx->is_verbose) {
-        pprint_ast(ctx->identifiers, node, name);
+        // pprint_ast(ctx->identifiers, node, name);
     }
 }
 
 static void debug_addressed_set(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_addressed_set(ctx->identifiers, ctx->frontend);
+        // pprint_addressed_set(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_string_const_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_string_const_table(ctx->identifiers, ctx->frontend);
+        // pprint_string_const_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_struct_typedef_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
+        // pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_symbol_table(ctx->identifiers, ctx->frontend);
+        // pprint_symbol_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_backend_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
+        // pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
     }
 }
 #endif
@@ -191,73 +191,73 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    verbose(ctx, "-- Parsing ... ");
-    TRY(parse_tokens(std::move(tokens), errors, &identifiers, &c_ast));
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 254) {
-        debug_ast(ctx, c_ast.get(), "C AST");
-        EARLY_EXIT;
-    }
-#endif
+    //     verbose(ctx, "-- Parsing ... ");
+    //     TRY(parse_tokens(std::move(tokens), errors, &identifiers, &c_ast));
+    //     verbose(ctx, "OK\n");
+    // #ifndef __NDEBUG__
+    //     if (ctx->debug_code == 254) {
+    //         debug_ast(ctx, c_ast.get(), "C AST");
+    //         EARLY_EXIT;
+    //     }
+    // #endif
 
-    verbose(ctx, "-- Semantic analysis ... ");
-    TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 253) {
-        debug_ast(ctx, c_ast.get(), "C AST");
-        debug_string_const_table(ctx);
-        debug_struct_typedef_table(ctx);
-        debug_symbol_table(ctx);
-        EARLY_EXIT;
-    }
-#endif
+    //     verbose(ctx, "-- Semantic analysis ... ");
+    //     TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
+    //     verbose(ctx, "OK\n");
+    // #ifndef __NDEBUG__
+    //     if (ctx->debug_code == 253) {
+    //         debug_ast(ctx, c_ast.get(), "C AST");
+    //         debug_string_const_table(ctx);
+    //         debug_struct_typedef_table(ctx);
+    //         debug_symbol_table(ctx);
+    //         EARLY_EXIT;
+    //     }
+    // #endif
 
-    verbose(ctx, "-- TAC representation ... ");
-    tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
-    if (ctx->optim_1_mask > 0) {
-        verbose(ctx, "OK\n-- Level 1 optimization ... ");
-        optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
-    }
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 252) {
-        debug_ast(ctx, tac_ast.get(), "TAC AST");
-        debug_string_const_table(ctx);
-        debug_struct_typedef_table(ctx);
-        debug_symbol_table(ctx);
-        EARLY_EXIT;
-    }
-#endif
+    //     verbose(ctx, "-- TAC representation ... ");
+    //     tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
+    //     if (ctx->optim_1_mask > 0) {
+    //         verbose(ctx, "OK\n-- Level 1 optimization ... ");
+    //         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
+    //     }
+    //     verbose(ctx, "OK\n");
+    // #ifndef __NDEBUG__
+    //     if (ctx->debug_code == 252) {
+    //         debug_ast(ctx, tac_ast.get(), "TAC AST");
+    //         debug_string_const_table(ctx);
+    //         debug_struct_typedef_table(ctx);
+    //         debug_symbol_table(ctx);
+    //         EARLY_EXIT;
+    //     }
+    // #endif
 
-    verbose(ctx, "-- Assembly generation ... ");
-    asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
-    convert_symbol_table(asm_ast.get(), &backend, &frontend);
-    if (ctx->optim_2_code > 0) {
-        verbose(ctx, "OK\n-- Level 2 optimization ... ");
-        allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
-    }
-    fix_stack(asm_ast.get(), &backend);
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 251) {
-        debug_ast(ctx, asm_ast.get(), "ASM AST");
-        debug_addressed_set(ctx);
-        debug_string_const_table(ctx);
-        debug_struct_typedef_table(ctx);
-        debug_symbol_table(ctx);
-        debug_backend_symbol_table(ctx);
-        EARLY_EXIT;
-    }
-#endif
+    //     verbose(ctx, "-- Assembly generation ... ");
+    //     asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
+    //     convert_symbol_table(asm_ast.get(), &backend, &frontend);
+    //     if (ctx->optim_2_code > 0) {
+    //         verbose(ctx, "OK\n-- Level 2 optimization ... ");
+    //         allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
+    //     }
+    //     fix_stack(asm_ast.get(), &backend);
+    //     verbose(ctx, "OK\n");
+    // #ifndef __NDEBUG__
+    //     if (ctx->debug_code == 251) {
+    //         debug_ast(ctx, asm_ast.get(), "ASM AST");
+    //         debug_addressed_set(ctx);
+    //         debug_string_const_table(ctx);
+    //         debug_struct_typedef_table(ctx);
+    //         debug_symbol_table(ctx);
+    //         debug_backend_symbol_table(ctx);
+    //         EARLY_EXIT;
+    //     }
+    // #endif
 
-    verbose(ctx, "-- Code emission ... ");
-    set_filename_ext(ctx, "s");
-    TRY(open_fwrite(fileio, ctx->filename));
-    emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
-    close_fwrite(fileio);
-    verbose(ctx, "OK\n");
+    //     verbose(ctx, "-- Code emission ... ");
+    //     set_filename_ext(ctx, "s");
+    //     TRY(open_fwrite(fileio, ctx->filename));
+    //     emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
+    //     close_fwrite(fileio);
+    //     verbose(ctx, "OK\n");
 
     FINALLY;
     CATCH_EXIT;

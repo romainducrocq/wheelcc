@@ -184,7 +184,7 @@ const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
         case TOK_uint_const:
         case TOK_ulong_const:
         case TOK_dbl_const:
-            return ctx->hash_table[token->tok].c_str();
+            return ctx->hash_table[token->tok];
         default:
             return get_tok_kind_fmt(token->tok_kind);
     }
@@ -341,7 +341,8 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
 }
 
 std::string get_name_fmt(IdentifierContext* ctx, TIdentifier name) {
-    return ctx->hash_table[name].substr(0, ctx->hash_table[name].find(UID_SEPARATOR[0]));
+    // TODO
+    return std::string(ctx->hash_table[name]).substr(0, std::string(ctx->hash_table[name]).find(UID_SEPARATOR[0]));
 }
 
 std::string get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union) {

@@ -106,13 +106,13 @@ struct IdentifierContext {
     uint32_t label_count;
     uint32_t var_count;
     uint32_t struct_count;
-    std::unordered_map<TIdentifier, std::string> hash_table;
+    std::unordered_map<TIdentifier, char* /* string_t */> hash_table;
 };
 
-TIdentifier make_string_identifier(IdentifierContext* ctx, std::string&& value);
-TIdentifier make_label_identifier(IdentifierContext* ctx, std::string&& name);
-TIdentifier make_var_identifier(IdentifierContext* ctx, std::string&& name);
-TIdentifier make_struct_identifier(IdentifierContext* ctx, std::string&& name);
+TIdentifier make_string_identifier(IdentifierContext* ctx, char** value);
+TIdentifier make_label_identifier(IdentifierContext* ctx, char** name);
+TIdentifier make_var_identifier(IdentifierContext* ctx, char** name);
+TIdentifier make_struct_identifier(IdentifierContext* ctx, char** name);
 #define UID_SEPARATOR "."
 
 #endif

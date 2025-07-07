@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,29 +45,47 @@ typedef IdentifierContext* Ctx;
 
 TIdentifier string_to_hash(const char* string);
 
-TIdentifier make_string_identifier(Ctx ctx, std::string&& value) {
-    TIdentifier identifier = string_to_hash(value.c_str());
-    ctx->hash_table[identifier] = std::move(value);
+TIdentifier make_string_identifier(Ctx ctx, string_t* value) {
+    TIdentifier identifier = string_to_hash(*value);
+    if (ctx->hash_table.find(identifier) == ctx->hash_table.end()) {
+        ctx->hash_table[identifier] = str_new(NULL);
+        str_move(value, &ctx->hash_table[identifier]);
+    }
+    else {
+        str_delete(*value);
+    }
     return identifier;
 }
 
-TIdentifier make_label_identifier(Ctx ctx, std::string&& name) {
-    name += UID_SEPARATOR;
-    name += std::to_string(ctx->label_count);
+TIdentifier make_label_identifier(Ctx ctx, string_t* name) {
+    str_append(*name, UID_SEPARATOR);
+    {
+        string_t uid = str_to_string(ctx->label_count);
+        str_append(*name, uid);
+        str_delete(uid);
+    }
     ctx->label_count++;
-    return make_string_identifier(ctx, std::move(name));
+    return make_string_identifier(ctx, name);
 }
 
-TIdentifier make_var_identifier(Ctx ctx, std::string&& name) {
-    name += UID_SEPARATOR;
-    name += std::to_string(ctx->var_count);
+TIdentifier make_var_identifier(Ctx ctx, string_t* name) {
+    str_append(*name, UID_SEPARATOR);
+    {
+        string_t uid = str_to_string(ctx->var_count);
+        str_append(*name, uid);
+        str_delete(uid);
+    }
     ctx->var_count++;
-    return make_string_identifier(ctx, std::move(name));
+    return make_string_identifier(ctx, name);
 }
 
-TIdentifier make_struct_identifier(Ctx ctx, std::string&& name) {
-    name += UID_SEPARATOR;
-    name += std::to_string(ctx->struct_count);
+TIdentifier make_struct_identifier(Ctx ctx, string_t* name) {
+    str_append(*name, UID_SEPARATOR);
+    {
+        string_t uid = str_to_string(ctx->struct_count);
+        str_append(*name, uid);
+        str_delete(uid);
+    }
     ctx->struct_count++;
-    return make_string_identifier(ctx, std::move(name));
+    return make_string_identifier(ctx, name);
 }
