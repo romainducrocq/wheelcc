@@ -320,5 +320,8 @@ error_t main(int, char** argv) {
     TRY(arg_parse(&ctx, argv));
     TRY(compile(&ctx, &errors, &fileio));
     FINALLY;
+    for (size_t i = 0; i < errors.fopen_lines.size(); ++i) {
+        str_delete(errors.fopen_lines[i].filename);
+    }
     CATCH_EXIT;
 }

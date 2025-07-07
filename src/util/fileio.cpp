@@ -30,9 +30,9 @@ const std::string& get_filename(Ctx ctx) {
     }
 }
 
-void set_filename(Ctx ctx, const std::string& filename) { ctx->filename = filename; }
+void set_filename(Ctx ctx, const char* filename) { ctx->filename = std::string(filename); }
 
-error_t open_fread(Ctx ctx, const std::string& filename) {
+error_t open_fread(Ctx ctx, const char* filename, size_t filename_size) {
     CATCH_ENTER;
     for (size_t i = 0; i < ctx->file_reads.size(); ++i) {
         if (ctx->file_reads[i].fd) {
@@ -51,14 +51,14 @@ error_t open_fread(Ctx ctx, const std::string& filename) {
 
     ctx->file_reads.emplace_back();
     ctx->file_reads.back().fd = nullptr;
-    ctx->file_reads.back().fd = fopen(filename.c_str(), "rb");
-    if (!ctx->file_reads.back().fd || filename.size() >= PATH_MAX) {
-        THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename.c_str()), 0);
+    ctx->file_reads.back().fd = fopen(filename, "rb");
+    if (!ctx->file_reads.back().fd || filename_size >= PATH_MAX) {
+        THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename), 0);
     }
 
     ctx->file_reads.back().len = 0;
     ctx->file_reads.back().buf = nullptr;
-    ctx->file_reads.back().filename = filename;
+    ctx->file_reads.back().filename = std::string(filename);
     FINALLY;
     CATCH_EXIT;
 }

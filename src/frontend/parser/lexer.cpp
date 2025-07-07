@@ -763,9 +763,8 @@ static bool find_include(std::vector<const char*>& dirnames, string_t* filename)
 }
 
 static error_t tokenize_include(Ctx ctx, size_t linenum) {
-    std::string str_filename;
-    std::string fopen_name;
     string_t filename = str_new(NULL);
+    string_t fopen_name = str_new(NULL);
     CATCH_ENTER;
     char* line;
     size_t line_size;
@@ -802,17 +801,18 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     match_at = ctx->match_at;
     match_size = ctx->match_size;
 
-    str_filename = std::string(filename); // TODO rm
-    fopen_name = ctx->errors->fopen_lines.back().filename;
-    TRY(open_fread(ctx->fileio, str_filename));
+    str_copy(ctx->errors->fopen_lines.back().filename, fopen_name);
+    TRY(open_fread(ctx->fileio, filename, str_size(filename)));
     {
-        FileOpenLine fopen_line = {1, ctx->total_linenum + 1, std::move(str_filename)};
+        FileOpenLine fopen_line = {1, ctx->total_linenum + 1, NULL};
+        str_move(&filename, &fopen_line.filename);
         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     TRY(tokenize_file(ctx));
     TRY(close_fread(ctx->fileio, linenum));
     {
-        FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, std::move(fopen_name)};
+        FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, NULL};
+        str_move(&fopen_name, &fopen_line.filename);
         ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
 
@@ -822,6 +822,7 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     ctx->match_size = match_size;
     FINALLY;
     str_delete(filename);
+    str_delete(fopen_name);
     CATCH_EXIT;
 }
 
@@ -852,20 +853,23 @@ error_t lex_c_code(std::string& filename, std::vector<const char*>&& includedirs
         ctx.p_toks = tokens;
         ctx.total_linenum = 0;
     }
+    string_t sds_filename = str_new(filename.c_str()); // TODO
     CATCH_ENTER;
-    TRY(open_fread(ctx.fileio, filename));
+    TRY(open_fread(ctx.fileio, sds_filename, str_size(sds_filename)));
     {
-        FileOpenLine fopen_line = {1, 1, filename};
+        FileOpenLine fopen_line = {1, 1, NULL};
+        str_copy(sds_filename, fopen_line.filename);
         ctx.errors->fopen_lines.emplace_back(std::move(fopen_line));
     }
     TRY(tokenize_file(&ctx));
 
     TRY(close_fread(ctx.fileio, 0));
     includedirs.clear();
-    set_filename(ctx.fileio, filename);
+    set_filename(ctx.fileio, sds_filename);
     strip_filename_ext(filename);
     EARLY_EXIT;
     FINALLY;
     std::vector<const char*>().swap(includedirs);
+    str_delete(sds_filename);
     CATCH_EXIT;
 }

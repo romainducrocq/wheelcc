@@ -16,7 +16,7 @@ struct FileIoContext;
 struct FileOpenLine {
     size_t linenum;
     size_t total_linenum;
-    std::string filename;
+    char* filename;
 };
 
 struct ErrorsContext {
