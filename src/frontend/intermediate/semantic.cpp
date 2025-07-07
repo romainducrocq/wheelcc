@@ -1773,7 +1773,7 @@ static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_
 }
 
 static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
-    string_t binary_value = str_new(NULL);
+    string_t binary_value = str_new(NULL); // TODO refactor in function?
     CATCH_ENTER;
     switch (static_init_type->type()) {
         case AST_Char_t:

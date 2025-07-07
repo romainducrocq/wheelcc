@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -93,36 +94,36 @@ static std::shared_ptr<AsmImm> ulong_imm_op(CConstULong* node) {
 }
 
 static TIdentifier repr_asm_label(Ctx ctx, ASM_LABEL_KIND asm_label_kind) {
-    std::string name;
+    string_t name = str_new(NULL);
     switch (asm_label_kind) {
         case LBL_Lcomisd_nan: {
-            name = "comisd_nan";
+            name = str_new("comisd_nan");
             break;
         }
         case LBL_Ldouble: {
-            name = "double";
+            name = str_new("double");
             break;
         }
         case LBL_Lsd2si_after: {
-            name = "sd2si_after";
+            name = str_new("sd2si_after");
             break;
         }
         case LBL_Lsd2si_out_of_range: {
-            name = "sd2si_out_of_range";
+            name = str_new("sd2si_out_of_range");
             break;
         }
         case LBL_Lsi2sd_after: {
-            name = "si2sd_after";
+            name = str_new("si2sd_after");
             break;
         }
         case LBL_Lsi2sd_out_of_range: {
-            name = "si2sd_out_of_range";
+            name = str_new("si2sd_out_of_range");
             break;
         }
         default:
             THROW_ABORT;
     }
-    return make_label_identifier(ctx->identifiers, std::move(name));
+    return make_label_identifier(ctx->identifiers, &name);
 }
 
 static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte);
@@ -130,7 +131,11 @@ static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier
 static std::shared_ptr<AsmData> dbl_static_const_op(Ctx ctx, TULong binary, TInt byte) {
     TIdentifier dbl_const_label;
     {
-        TIdentifier dbl_const = make_string_identifier(ctx->identifiers, std::to_string(binary));
+        TIdentifier dbl_const;
+        {
+            string_t value = str_to_string(binary);
+            dbl_const = make_string_identifier(ctx->identifiers, &value);
+        }
         if (ctx->dbl_const_table.find(dbl_const) != ctx->dbl_const_table.end()) {
             dbl_const_label = ctx->dbl_const_table[dbl_const];
         }

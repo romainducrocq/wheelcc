@@ -1,8 +1,8 @@
 #include <inttypes.h>
 #include <memory>
-#include <string>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -141,8 +141,8 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node)
     {
         TIdentifier string_const;
         {
-            std::string value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(ctx->identifiers, std::move(value));
+            string_t value = string_literal_to_const(node->literal->value);
+            string_const = make_string_identifier(ctx->identifiers, &value);
         }
         if (ctx->frontend->string_const_table.find(string_const) != ctx->frontend->string_const_table.end()) {
             string_const_label = ctx->frontend->string_const_table[string_const];
