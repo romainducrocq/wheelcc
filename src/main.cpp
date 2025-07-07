@@ -259,6 +259,9 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 
     FINALLY;
+    for (auto& identifier : identifiers.hash_table) {
+        str_delete(identifier.second);
+    }
     CATCH_EXIT;
 }
 
