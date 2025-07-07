@@ -27,7 +27,7 @@ struct FileIoContext {
     std::vector<FileRead> file_reads;
 };
 
-bool find_file(const std::string& filename);
+bool find_file(const char* filename);
 const std::string& get_filename(FileIoContext* ctx);
 void set_filename(FileIoContext* ctx, const std::string& filename);
 int open_fread(FileIoContext* ctx, const std::string& filename);

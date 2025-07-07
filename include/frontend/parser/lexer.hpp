@@ -22,7 +22,7 @@ struct Token {
     size_t line;
 };
 
-int lex_c_code(std::string& filename, std::vector<std::string>&& includedirs, ErrorsContext* errors,
+int lex_c_code(std::string& filename, std::vector<const char*>&& includedirs, ErrorsContext* errors,
     FileIoContext* fileio, IdentifierContext* identifiers, std::vector<Token>* tokens);
 
 #endif

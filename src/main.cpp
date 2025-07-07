@@ -48,7 +48,7 @@ struct MainContext {
     uint8_t optim_1_mask;
     uint8_t optim_2_code;
     std::string filename;
-    std::vector<std::string> includedirs;
+    std::vector<const char*> includedirs;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,7 +292,7 @@ static error_t arg_parse(Ctx ctx, char** argv) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
-        ctx->includedirs.emplace_back(std::string(argv[i]));
+        ctx->includedirs.push_back((const char*)argv[i]);
     }
     while (argv[++i]);
     FINALLY;

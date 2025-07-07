@@ -15,7 +15,7 @@
 
 // String to type
 
-hash_t string_to_hash(const std::string& str) { return std::hash<std::string> {}(str); }
+hash_t string_to_hash(const char* str) { return std::hash<std::string> {}(std::string(str)); }
 
 int32_t intmax_to_int32(intmax_t intmax) { return (int32_t)intmax; }
 

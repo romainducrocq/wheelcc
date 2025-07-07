@@ -13,7 +13,7 @@ struct ErrorsContext;
 
 typedef size_t hash_t;
 
-hash_t string_to_hash(const std::string& str);
+hash_t string_to_hash(const char* str);
 int32_t intmax_to_int32(intmax_t intmax);
 int64_t intmax_to_int64(intmax_t intmax);
 uint32_t uintmax_to_uint32(uintmax_t uintmax);

@@ -19,11 +19,15 @@ typedef sds string_t;
         X = NULL;     \
     }
 #define str_new(X) X ? sdsnew(X) : NULL
-#define str_move(X, Y) \
-    if (!*Y) {         \
-        *Y = *X;       \
-        *X = NULL;     \
-    }
+#define str_move(X, Y)  \
+    if (*Y) {           \
+        str_delete(*Y); \
+    }                   \
+    do {                \
+        *Y = *X;        \
+        *X = NULL;      \
+    }                   \
+    while (0);
 #define str_size(X) sdslen(X)
 #define str_append(X, Y)  \
     do {                  \

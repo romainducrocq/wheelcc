@@ -16,9 +16,9 @@ typedef FileIoContext* Ctx;
 
 #define WRITE_BUF_SIZE 4096
 
-bool find_file(const std::string& filename) {
+bool find_file(const char* filename) {
     tinydir_file file = {};
-    return tinydir_file_open(&file, filename.c_str()) != -1 && !file.is_dir;
+    return tinydir_file_open(&file, filename) != -1 && !file.is_dir;
 }
 
 const std::string& get_filename(Ctx ctx) {
