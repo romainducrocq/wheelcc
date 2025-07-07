@@ -323,6 +323,7 @@ error_t main(int, char** argv) {
 
         fileio.errors = &errors;
         fileio.fd_write = nullptr;
+        fileio.filename = str_new(NULL);
 
         ctx.errors = &errors;
         ctx.is_verbose = false;
@@ -335,6 +336,7 @@ error_t main(int, char** argv) {
     for (size_t i = 0; i < errors.fopen_lines.size(); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
+    str_delete(fileio.filename);
     str_delete(ctx.filename);
     CATCH_EXIT;
 }

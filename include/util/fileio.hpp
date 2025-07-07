@@ -23,13 +23,13 @@ struct FileIoContext {
     // File io
     FILE* fd_write;
     std::string write_buf;
-    std::string filename;
+    char* filename; /* string_t */
     std::vector<FileRead> file_reads;
 };
 
 bool find_file(const char* filename);
 const char* get_filename(FileIoContext* ctx);
-void set_filename(FileIoContext* ctx, const char* filename);
+void set_filename(FileIoContext* ctx, char* filename);
 int open_fread(FileIoContext* ctx, const char* filename, size_t filename_size);
 int open_fwrite(FileIoContext* ctx, const char* filename, size_t filename_size);
 bool read_line(FileIoContext* ctx, char*& line, size_t& line_size);

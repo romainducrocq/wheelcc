@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string>
 
+#include "util/c_std.hpp"
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
@@ -26,11 +27,11 @@ const char* get_filename(Ctx ctx) {
         return ctx->file_reads.back().filename.c_str();
     }
     else {
-        return ctx->filename.c_str();
+        return ctx->filename;
     }
 }
 
-void set_filename(Ctx ctx, const char* filename) { ctx->filename = std::string(filename); }
+void set_filename(Ctx ctx, string_t filename) { str_copy(filename, ctx->filename); }
 
 error_t open_fread(Ctx ctx, const char* filename, size_t filename_size) {
     CATCH_ENTER;
