@@ -1,7 +1,6 @@
 #ifndef _UTIL_THROW_H
 #define _UTIL_THROW_H
 
-#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -16,7 +15,7 @@ struct FileIoContext;
 struct FileOpenLine {
     size_t linenum;
     size_t total_linenum;
-    char* filename;
+    char* filename; /* string_t */
 };
 
 struct ErrorsContext {

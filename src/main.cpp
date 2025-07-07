@@ -107,6 +107,17 @@ static void debug_backend_symbol_table(Ctx ctx) {
 }
 #endif
 
+static void set_filename_ext(Ctx ctx, const char* ext) {
+    for (size_t i = str_size(ctx->filename); i-- > 0;) {
+        if (str_back(ctx->filename) == '.') {
+            str_append(ctx->filename, ext);
+            return;
+        }
+        str_pop_back(ctx->filename);
+    }
+    THROW_ABORT;
+}
+
 static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     IdentifierContext identifiers;
     FrontEndContext frontend;
@@ -242,7 +253,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Code emission ... ");
-    str_append(ctx->filename, ".s");
+    set_filename_ext(ctx, "s");
     TRY(open_fwrite(fileio, ctx->filename, str_size(ctx->filename)));
     emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
     close_fwrite(fileio);

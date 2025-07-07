@@ -826,16 +826,6 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     CATCH_EXIT;
 }
 
-static void strip_filename_ext(string_t filename) {
-    for (size_t i = str_size(filename); i-- > 0;) {
-        if (str_back(filename) == '.') {
-            str_pop_back(filename);
-            break;
-        }
-        str_pop_back(filename);
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 error_t lex_c_code(string_t filename, std::vector<const char*>&& includedirs, ErrorsContext* errors,
@@ -865,7 +855,6 @@ error_t lex_c_code(string_t filename, std::vector<const char*>&& includedirs, Er
     TRY(close_fread(ctx.fileio, 0));
     includedirs.clear();
     set_filename(ctx.fileio, filename);
-    strip_filename_ext(filename);
     FINALLY;
     std::vector<const char*>().swap(includedirs);
     CATCH_EXIT;
