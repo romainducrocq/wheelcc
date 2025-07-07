@@ -29,6 +29,7 @@ typedef sds string_t;
     }                   \
     while (0);
 #define str_size(X) sdslen(X)
+#define str_back(X) (X)[str_size(X) - 1]
 #define str_append(X, Y)  \
     do {                  \
         X = sdscat(X, Y); \
@@ -41,6 +42,12 @@ typedef sds string_t;
     }                  \
     while (0)
 #define str_pop_back(X) sdsrange(X, 0, -2)
+#define str_push_back(X, Y)             \
+    do {                                \
+        str_resize(X, str_size(X) + 1); \
+        str_back(X) = Y;                \
+    }                                   \
+    while (0)
 #define str_substr(X, Y, Z, W) \
     do {                       \
         str_copy(X, W);        \
@@ -54,6 +61,5 @@ typedef sds string_t;
     while (0)
 #define str_to_string(X) (X) > 0 ? sdsfromunsignedlonglong((unsigned long long)(X)) : sdsfromlonglong((long long)(X))
 #define str_clear(X) sdsclear(X)
-#define str_back(X) (X)[str_size(X) - 1]
 
 #endif

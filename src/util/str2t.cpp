@@ -162,45 +162,45 @@ int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t 
     return hex_string_to_int64(str_hex.c_str());
 }
 
-std::string string_literal_to_const(const std::vector<int8_t>& string_literal) {
-    std::string string_const = "";
+string_t string_literal_to_const(const std::vector<int8_t>& string_literal) {
+    string_t string_const = str_new("");
     for (int8_t byte : string_literal) {
         switch (byte) {
             case 39:
-                string_const += "\\047";
+                str_append(string_const, "\\047");
                 break;
             case 34:
-                string_const += "\\042";
+                str_append(string_const, "\\042");
                 break;
             case 63:
-                string_const += "\\077";
+                str_append(string_const, "\\077");
                 break;
             case 92:
-                string_const += "\\134";
+                str_append(string_const, "\\134");
                 break;
             case 7:
-                string_const += "\\007";
+                str_append(string_const, "\\007");
                 break;
             case 8:
-                string_const += "\\010";
+                str_append(string_const, "\\010");
                 break;
             case 12:
-                string_const += "\\014";
+                str_append(string_const, "\\014");
                 break;
             case 10:
-                string_const += "\\012";
+                str_append(string_const, "\\012");
                 break;
             case 13:
-                string_const += "\\013";
+                str_append(string_const, "\\013");
                 break;
             case 9:
-                string_const += "\\011";
+                str_append(string_const, "\\011");
                 break;
             case 11:
-                string_const += "\\013";
+                str_append(string_const, "\\013");
                 break;
             default:
-                string_const += (char)byte;
+                str_push_back(string_const, (char)byte);
                 break;
         }
     }

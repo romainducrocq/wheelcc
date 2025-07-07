@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -1772,6 +1773,7 @@ static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_
 }
 
 static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
+    string_t binary_value = str_new(NULL);
     CATCH_ENTER;
     switch (static_init_type->type()) {
         case AST_Char_t:
@@ -1812,7 +1814,8 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
                 push_zero_static_init(ctx, 8l);
             }
             else {
-                TIdentifier dbl_const = make_string_identifier(ctx->identifiers, std::to_string(binary));
+                binary_value = str_to_string(binary);
+                TIdentifier dbl_const = make_string_identifier(ctx->identifiers, &binary_value);
                 push_static_init(ctx, std::make_shared<DoubleInit>(dbl_const));
             }
             break;
@@ -1871,6 +1874,7 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
             THROW_AT_LINE(GET_SEMANTIC_MSG(MSG_agg_init_with_single, fmt_type_c_str(static_init_type)), node->line);
     }
     FINALLY;
+    str_delete(binary_value);
     CATCH_EXIT;
 }
 
@@ -1888,8 +1892,8 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
     {
         TIdentifier string_const;
         {
-            std::string value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(ctx->identifiers, std::move(value));
+            string_t value = string_literal_to_const(node->literal->value);
+            string_const = make_string_identifier(ctx->identifiers, &value);
         }
         if (ctx->frontend->string_const_table.find(string_const) != ctx->frontend->string_const_table.end()) {
             string_const_label = ctx->frontend->string_const_table[string_const];
@@ -1920,7 +1924,7 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
 }
 
 static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
-    std::string value;
+    string_t value = str_new(NULL);
     std::shared_ptr<CStringLiteral> literal;
     CATCH_ENTER;
     TLong byte;
@@ -1929,7 +1933,7 @@ static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* stati
     {
         bool is_null_term = byte >= 0l;
         value = string_literal_to_const(node->literal->value);
-        TIdentifier string_const = make_string_identifier(ctx->identifiers, std::move(value));
+        TIdentifier string_const = make_string_identifier(ctx->identifiers, &value);
         literal = node->literal;
         push_static_init(ctx, std::make_shared<StringInit>(string_const, is_null_term, std::move(literal)));
     }
@@ -1937,6 +1941,7 @@ static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* stati
         push_zero_static_init(ctx, byte);
     }
     FINALLY;
+    str_delete(value);
     CATCH_EXIT;
 }
 

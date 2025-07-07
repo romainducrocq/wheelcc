@@ -2,7 +2,6 @@
 #define _UTIL_STR2T_H
 
 #include <inttypes.h>
-#include <string>
 #include <vector>
 
 struct ErrorsContext;
@@ -23,7 +22,7 @@ int32_t string_to_char_ascii(char* str_char);
 int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at);
 int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at);
 int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at);
-std::string string_literal_to_const(const std::vector<int8_t>& string_literal);
+char* string_literal_to_const(const std::vector<int8_t>& string_literal);
 uint64_t dbl_to_binary(double decimal);
 int string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, intmax_t* value);
 int string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line, uintmax_t* value);
