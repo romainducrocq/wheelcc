@@ -1,7 +1,7 @@
 #include <memory>
-#include <string>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
 
@@ -39,39 +39,63 @@ static void emit_identifier(Ctx ctx, TIdentifier identifier) {
 #ifdef __APPLE__
     emit(ctx, "_");
 #endif
-    const std::string& value = ctx->identifiers->hash_table[identifier];
-    emit(ctx, value.c_str());
+    string_t value = ctx->identifiers->hash_table[identifier];
+    emit(ctx, value);
 }
 
 // string -> $ string
 static void emit_string(Ctx ctx, TIdentifier string_const) {
-    const std::string& value = ctx->identifiers->hash_table[string_const];
-    emit(ctx, value.c_str());
+    string_t value = ctx->identifiers->hash_table[string_const];
+    emit(ctx, value);
 }
 
 // char -> $ char
-static void emit_char(Ctx ctx, TChar value) { emit(ctx, std::to_string(value).c_str()); }
+static void emit_char(Ctx ctx, TChar value) { // TODO is this going to keep the value because of long cast?
+    string_t char_value = str_to_string(value);
+    emit(ctx, char_value);
+    str_delete(char_value);
+}
 
 // int -> $ int
-static void emit_int(Ctx ctx, TInt value) { emit(ctx, std::to_string(value).c_str()); }
+static void emit_int(Ctx ctx, TInt value) {
+    string_t int_value = str_to_string(value);
+    emit(ctx, int_value);
+    str_delete(int_value);
+}
 
 // long -> $ long
-static void emit_long(Ctx ctx, TLong value) { emit(ctx, std::to_string(value).c_str()); }
+static void emit_long(Ctx ctx, TLong value) {
+    string_t long_value = str_to_string(value);
+    emit(ctx, long_value);
+    str_delete(long_value);
+}
 
 // double -> $ double
 static void emit_dbl(Ctx ctx, TIdentifier dbl_const) {
-    const std::string& value = ctx->identifiers->hash_table[dbl_const];
-    emit(ctx, value.c_str());
+    string_t value = ctx->identifiers->hash_table[dbl_const];
+    emit(ctx, value);
 }
 
 // uchar -> $ uchar
-static void emit_uchar(Ctx ctx, TUChar value) { emit(ctx, std::to_string(value).c_str()); }
+static void emit_uchar(Ctx ctx, TUChar value) {
+    string_t uchar_value = str_to_string(value);
+    emit(ctx, uchar_value);
+    str_delete(uchar_value);
+}
 
 // uint -> $ uint
-static void emit_uint(Ctx ctx, TUInt value) { emit(ctx, std::to_string(value).c_str()); }
+static void emit_uint(Ctx ctx, TUInt value) {
+    string_t uint_value = str_to_string(value);
+    emit(ctx, uint_value);
+    str_delete(uint_value);
+}
 
 // ulong -> $ ulong
-static void emit_ulong(Ctx ctx, TULong value) { emit(ctx, std::to_string(value).c_str()); }
+static void emit_ulong(Ctx ctx, TULong value) {
+    string_t ulong_value = str_to_string(value);
+    emit(ctx, ulong_value);
+    str_delete(ulong_value);
+}
 
 // Reg(SP)    -> $ %rsp
 // Reg(BP)    -> $ %rbp

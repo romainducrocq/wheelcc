@@ -128,14 +128,15 @@ static TIdentifier repr_asm_label(Ctx ctx, ASM_LABEL_KIND asm_label_kind) {
 
 static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte);
 
+static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
+    string_t value = str_to_string(binary);
+    return make_string_identifier(ctx->identifiers, &value);
+}
+
 static std::shared_ptr<AsmData> dbl_static_const_op(Ctx ctx, TULong binary, TInt byte) {
     TIdentifier dbl_const_label;
     {
-        TIdentifier dbl_const;
-        {
-            string_t value = str_to_string(binary);
-            dbl_const = make_string_identifier(ctx->identifiers, &value);
-        }
+        TIdentifier dbl_const = make_binary_identifier(ctx, binary);
         if (ctx->dbl_const_table.find(dbl_const) != ctx->dbl_const_table.end()) {
             dbl_const_label = ctx->dbl_const_table[dbl_const];
         }

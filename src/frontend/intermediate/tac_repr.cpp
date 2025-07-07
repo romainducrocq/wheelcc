@@ -136,14 +136,15 @@ static std::unique_ptr<TacPlainOperand> const_res_instr(CConstant* node) {
     return std::make_unique<TacPlainOperand>(std::move(val));
 }
 
+static TIdentifier make_literal_identifier(Ctx ctx, CStringLiteral* node) {
+    string_t value = string_literal_to_const(node->value);
+    return make_string_identifier(ctx->identifiers, &value);
+}
+
 static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node) {
     TIdentifier string_const_label;
     {
-        TIdentifier string_const;
-        {
-            string_t value = string_literal_to_const(node->literal->value);
-            string_const = make_string_identifier(ctx->identifiers, &value);
-        }
+        TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());
         if (ctx->frontend->string_const_table.find(string_const) != ctx->frontend->string_const_table.end()) {
             string_const_label = ctx->frontend->string_const_table[string_const];
         }
