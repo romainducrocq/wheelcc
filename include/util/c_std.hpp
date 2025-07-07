@@ -40,7 +40,6 @@ typedef sds string_t;
         Y = sdsdup(X); \
     }                  \
     while (0)
-#define str_to_string(X) sdsfromlonglong((long long)(X))
 #define str_pop_back(X) sdsrange(X, 0, -2)
 #define str_substr(X, Y, Z, W) \
     do {                       \
@@ -53,6 +52,7 @@ typedef sds string_t;
         X = sdsgrowzero(X, Y); \
     }                          \
     while (0)
+#define str_to_string(X) (X) > 0 ? sdsfromunsignedlonglong((unsigned long long)(X)) : sdsfromlonglong((long long)(X))
 #define str_clear(X) sdsclear(X)
 #define str_back(X) (X)[str_size(X) - 1]
 
