@@ -3,7 +3,6 @@
 #endif
 #include <inttypes.h>
 #include <memory>
-#include <stdexcept>
 #include <stdio.h>
 #include <vector>
 

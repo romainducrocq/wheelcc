@@ -1,5 +1,4 @@
 #include "util/c_std.hpp"
-#include "util/str2t.hpp"
 #include "util/throw.hpp"
 
 #include "ast/ast.hpp"
