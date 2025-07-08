@@ -61,6 +61,7 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, char** name_fmt);
 const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, char** struct_fmt);
 const char* get_type_fmt(IdentifierContext* ctx, Type* type, char** type_fmt);
+#define str_fmt_tok(X) get_tok_fmt(ctx->identifiers, X)
 #define str_fmt_name(X, Y) get_name_fmt(ctx->identifiers, X, Y)
 #define str_fmt_struct_name(X, Y, Z) get_struct_name_fmt(ctx->identifiers, X, Y, Z)
 #define str_fmt_type(X, Y) get_type_fmt(ctx->identifiers, X, Y)

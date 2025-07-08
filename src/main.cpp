@@ -108,11 +108,11 @@ static void debug_backend_symbol_table(Ctx ctx) {
 
 static void set_filename_ext(Ctx ctx, const char* ext) {
     for (size_t i = str_size(ctx->filename); i-- > 0;) {
-        if (str_back(ctx->filename) == '.') {
+        if (ctx->filename[i] == '.') {
+            str_substr(ctx->filename, 0, i);
             str_append(ctx->filename, ext);
             return;
         }
-        str_pop_back(ctx->filename);
     }
     THROW_ABORT;
 }

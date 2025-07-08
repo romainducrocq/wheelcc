@@ -48,8 +48,7 @@ typedef ParserContext* Ctx;
 static error_t expect_next(Ctx ctx, Token* next_tok, TOKEN_KIND expect_tok) {
     CATCH_ENTER;
     if (next_tok->tok_kind != expect_tok) {
-        THROW_AT_LINE(GET_PARSER_MSG(MSG_unexpected_next_tok, get_tok_fmt(ctx->identifiers, next_tok),
-                          get_tok_kind_fmt(expect_tok)),
+        THROW_AT_LINE(GET_PARSER_MSG(MSG_unexpected_next_tok, str_fmt_tok(next_tok), get_tok_kind_fmt(expect_tok)),
             next_tok->line);
     }
     FINALLY;
@@ -259,8 +258,7 @@ static error_t parse_arr_size(Ctx ctx, return_t(TLong) size) {
             TRY(parse_unsigned_const(ctx, &constant));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_arr_size_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
-                ctx->peek_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_arr_size_not_int_const, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
     }
     TRY(pop_next(ctx));
     TRY(expect_next(ctx, ctx->next_tok, TOK_close_bracket));
@@ -307,8 +305,7 @@ static error_t parse_unop(Ctx ctx, return_t(std::unique_ptr<CUnaryOp>) unop) {
             break;
         }
         default:
-            THROW_AT_LINE(
-                GET_PARSER_MSG(MSG_expect_unop, get_tok_fmt(ctx->identifiers, ctx->next_tok)), ctx->next_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_unop, str_fmt_tok(ctx->next_tok)), ctx->next_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -408,8 +405,7 @@ static error_t parse_binop(Ctx ctx, return_t(std::unique_ptr<CBinaryOp>) binop) 
             break;
         }
         default:
-            THROW_AT_LINE(
-                GET_PARSER_MSG(MSG_expect_binop, get_tok_fmt(ctx->identifiers, ctx->next_tok)), ctx->next_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_binop, str_fmt_tok(ctx->next_tok)), ctx->next_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -518,8 +514,7 @@ static error_t parse_abstract_decltor(Ctx ctx, return_t(std::unique_ptr<CAbstrac
             TRY(parse_arr_abstract_decltor(ctx, abstract_decltor));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_abstract_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
-                ctx->peek_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_abstract_decltor, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -767,8 +762,7 @@ static error_t parse_ptr_unary_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) e
             TRY(parse_addrof_factor(ctx, exp));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_ptr_unary_factor, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
-                ctx->next_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_ptr_unary_factor, str_fmt_tok(ctx->next_tok)), ctx->next_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -871,8 +865,8 @@ static error_t parse_primary_exp_factor(Ctx ctx, return_t(std::unique_ptr<CExp>)
             TRY(parse_inner_exp_factor(ctx, exp));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_primary_exp_factor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
-                ctx->peek_tok->line);
+            THROW_AT_LINE(
+                GET_PARSER_MSG(MSG_expect_primary_exp_factor, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -1138,8 +1132,7 @@ static error_t parse_exp(Ctx ctx, int32_t min_precedence, return_t(std::unique_p
                 TRY(parse_ternary_exp(ctx, precedence, exp));
                 break;
             default:
-                THROW_AT_LINE(
-                    GET_PARSER_MSG(MSG_expect_exp, get_tok_fmt(ctx->identifiers, ctx->peek_tok)), ctx->peek_tok->line);
+                THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_exp, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
         }
     }
     FINALLY;
@@ -1343,8 +1336,8 @@ static error_t parse_case_statement(Ctx ctx, return_t(std::unique_ptr<CStatement
             TRY(parse_unsigned_const(ctx, &constant));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_case_value_not_int_const, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
-                ctx->peek_tok->line);
+            THROW_AT_LINE(
+                GET_PARSER_MSG(MSG_case_value_not_int_const, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
     }
     value = std::make_unique<CConstant>(std::move(constant), line);
     TRY(pop_next(ctx));
@@ -1651,8 +1644,8 @@ static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) typ
                 break;
             }
             default:
-                THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_specifier, get_tok_fmt(ctx->identifiers, ctx->peek_tok_i)),
-                    ctx->peek_tok_i->line);
+                THROW_AT_LINE(
+                    GET_PARSER_MSG(MSG_expect_specifier, str_fmt_tok(ctx->peek_tok_i)), ctx->peek_tok_i->line);
         }
     }
 Lbreak:
@@ -1794,8 +1787,7 @@ static error_t parse_storage_class(Ctx ctx, return_t(std::unique_ptr<CStorageCla
             break;
         }
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_storage_class, get_tok_fmt(ctx->identifiers, ctx->next_tok)),
-                ctx->next_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_storage_class, str_fmt_tok(ctx->next_tok)), ctx->next_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -1974,8 +1966,7 @@ static error_t parse_simple_decltor_decl(Ctx ctx, return_t(std::unique_ptr<CDecl
             TRY(parse_simple_decltor(ctx, decltor));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_simple_decltor, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
-                ctx->peek_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_simple_decltor, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
     }
     FINALLY;
     CATCH_EXIT;
@@ -2044,8 +2035,7 @@ static error_t parse_param_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CP
             TRY(parse_non_empty_param_list(ctx, param_list));
             break;
         default:
-            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_param_list, get_tok_fmt(ctx->identifiers, ctx->peek_tok)),
-                ctx->peek_tok->line);
+            THROW_AT_LINE(GET_PARSER_MSG(MSG_expect_param_list, str_fmt_tok(ctx->peek_tok)), ctx->peek_tok->line);
     }
     TRY(pop_next(ctx));
     TRY(expect_next(ctx, ctx->next_tok, TOK_close_paren));
