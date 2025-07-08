@@ -342,13 +342,12 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt) {
     str_copy(ctx->hash_table[name], *name_fmt);
     for (size_t i = str_size(*name_fmt); i-- > 0;) {
-        if (str_back(*name_fmt) == UID_SEPARATOR[0]) {
-            str_pop_back(*name_fmt);
-            return *name_fmt;
+        if ((*name_fmt)[i] == UID_SEPARATOR[0]) {
+            str_substr(*name_fmt, 0, i - 1);
+            break;
         }
-        str_pop_back(*name_fmt);
     }
-    THROW_ABORT;
+    return *name_fmt;
 }
 
 const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, string_t* struct_fmt) {

@@ -48,17 +48,12 @@ typedef sds string_t;
         str_back(X) = Y;                \
     }                                   \
     while (0)
-#define str_substr(X, Y, Z, W) \
-    do {                       \
-        str_copy(X, W);        \
-        sdsrange(W, Y, Z);     \
-    }                          \
-    while (0)
 #define str_resize(X, Y)       \
     do {                       \
         X = sdsgrowzero(X, Y); \
     }                          \
     while (0)
+#define str_substr(X, Y, Z) sdsrange(X, Y, Z)
 #define str_to_string(X) (X) > 0 ? sdsfromunsignedlonglong((unsigned long long)(X)) : sdsfromlonglong((long long)(X))
 #define str_clear(X) sdsclear(X)
 
