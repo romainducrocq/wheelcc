@@ -1,8 +1,5 @@
 #include <cstring>
 #include <inttypes.h>
-#include <iomanip>
-#include <sstream>
-#include <stdlib.h>
 #include <string>
 #include <vector>
 
@@ -127,9 +124,9 @@ static int32_t hex_string_to_int32(const char* str_hex) { return (int32_t)hex_st
 static int64_t hex_string_to_int64(const char* str_hex) { return (int64_t)hex_string_to_intmax(str_hex); }
 
 static void string_literal_byte_to_hex(int8_t val, string_t* str_hex) {
-    std::stringstream ss;
-    ss << std::setfill('0') << std::setw(sizeof(int8_t) * 2) << std::hex << (val | 0);
-    str_append(*str_hex, ss.str().c_str());
+    string_t byte_hex = str_format("%.2x", (uint8_t)val);
+    str_append(*str_hex, byte_hex);
+    str_delete(byte_hex);
 }
 
 int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {

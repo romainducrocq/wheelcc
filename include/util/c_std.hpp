@@ -39,12 +39,18 @@ typedef sds string_t;
         Y = sdsdup(X); \
     }                  \
     while (0)
+#define str_format(X, ...) sdscatprintf(sdsempty(), X, __VA_ARGS__)
 #define str_pop_back(X) sdsrange(X, 0, -2)
 #define str_push_back(X, Y)             \
     do {                                \
         str_resize(X, str_size(X) + 1); \
         str_back(X) = Y;                \
     }                                   \
+    while (0)
+#define str_reserve(X, Y)         \
+    do {                          \
+        X = sdsMakeRoomFor(X, Y); \
+    }                             \
     while (0)
 #define str_resize(X, Y)       \
     do {                       \
