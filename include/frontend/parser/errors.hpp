@@ -2,7 +2,6 @@
 #define _FRONT_PARSER_ERRORS_H
 
 #include <cstdio>
-#include <string>
 
 #include "ast_t.hpp" // ast
 
@@ -59,12 +58,13 @@ const char* get_storage_class_fmt(CStorageClass* node);
 const char* get_unop_fmt(CUnaryOp* node);
 const char* get_binop_fmt(CBinaryOp* node);
 const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
-std::string get_name_fmt(IdentifierContext* ctx, TIdentifier name);
-std::string get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union);
-std::string get_type_fmt(IdentifierContext* ctx, Type* type);
-#define fmt_name_c_str(X) get_name_fmt(ctx->identifiers, X).c_str()
-#define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(ctx->identifiers, X, Y).c_str()
-#define fmt_type_c_str(X) get_type_fmt(ctx->identifiers, X).c_str()
+const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, char** name_fmt);
+const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, char** struct_fmt);
+const char* get_type_fmt(IdentifierContext* ctx, Type* type, char** type_fmt);
+// TODO rm
+// #define fmt_name_c_str(X) get_name_fmt(ctx->identifiers, X).c_str()
+// #define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(ctx->identifiers, X, Y).c_str()
+// #define fmt_type_c_str(X) get_type_fmt(ctx->identifiers, X).c_str()
 
 const char* get_fatal_msg(MESSAGE_FATAL msg);
 const char* get_arg_msg(MESSAGE_ARG msg);

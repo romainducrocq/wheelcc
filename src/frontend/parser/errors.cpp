@@ -1,5 +1,4 @@
-#include <string>
-
+#include "util/c_std.hpp"
 #include "util/throw.hpp"
 
 #include "ast/ast.hpp"
@@ -340,64 +339,103 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
     }
 }
 
-std::string get_name_fmt(IdentifierContext* ctx, TIdentifier name) {
-    // TODO
-    return std::string(ctx->hash_table[name]).substr(0, std::string(ctx->hash_table[name]).find(UID_SEPARATOR[0]));
+const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt) {
+    str_copy(ctx->hash_table[name], *name_fmt);
+    for (size_t i = str_size(*name_fmt); i-- > 0;) {
+        if (str_back(*name_fmt) == UID_SEPARATOR[0]) {
+            str_pop_back(*name_fmt);
+            return *name_fmt;
+        }
+        str_pop_back(*name_fmt);
+    }
+    THROW_ABORT;
 }
 
-std::string get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union) {
-    std::string type_fmt = is_union ? "union " : "struct ";
-    type_fmt += get_name_fmt(ctx, name);
-    return type_fmt;
+const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, string_t* struct_fmt) {
+    *struct_fmt = is_union ? str_new("union ") : str_new("struct ");
+    {
+        string_t name_fmt = str_new(NULL);
+        str_append(*struct_fmt, get_name_fmt(ctx, name, &name_fmt));
+        str_delete(name_fmt);
+    }
+    return *struct_fmt;
 }
 
-static std::string get_fun_fmt(IdentifierContext* ctx, FunType* fun_type) {
-    std::string type_fmt = "(";
-    type_fmt += get_type_fmt(ctx, fun_type->ret_type.get());
-    type_fmt += ")(";
+static const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string_t* fun_fmt) {
+    *fun_fmt = str_new("(");
+    {
+        string_t type_fmt = str_new(NULL);
+        str_append(*fun_fmt, get_type_fmt(ctx, fun_type->ret_type.get(), &type_fmt));
+        str_delete(type_fmt);
+    }
+    str_append(*fun_fmt, ")(");
     for (const auto& param_type : fun_type->param_types) {
-        type_fmt += get_type_fmt(ctx, param_type.get());
-        type_fmt += ", ";
+        {
+            string_t type_fmt = str_new(NULL);
+            str_append(*fun_fmt, get_type_fmt(ctx, param_type.get(), &type_fmt));
+            str_delete(type_fmt);
+        }
+        str_append(*fun_fmt, ", ");
     }
     if (!fun_type->param_types.empty()) {
-        type_fmt.pop_back();
-        type_fmt.pop_back();
+        str_pop_back(*fun_fmt);
+        str_pop_back(*fun_fmt);
     }
-    type_fmt += ")";
-    return type_fmt;
+    str_append(*fun_fmt, ")");
+    return *fun_fmt;
 }
 
-static std::string get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type) {
-    std::string decl_type_fmt = "*";
+static const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string_t* ptr_fmt) {
+    *ptr_fmt = str_new("");
+    string_t decltor_fmt = str_new("*");
     while (ptr_type->ref_type->type() == AST_Pointer_t) {
         ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
-        decl_type_fmt += "*";
+        str_append(decltor_fmt, "*");
     }
-    std::string type_fmt = get_type_fmt(ctx, ptr_type->ref_type.get());
-    type_fmt += decl_type_fmt;
-    return type_fmt;
+    {
+        string_t type_fmt = str_new(NULL);
+        str_append(*ptr_fmt, get_type_fmt(ctx, ptr_type->ref_type.get(), &type_fmt));
+        str_delete(type_fmt);
+    }
+    str_append(*ptr_fmt, decltor_fmt);
+    str_delete(decltor_fmt);
+    return *ptr_fmt;
 }
 
-static std::string get_arr_fmt(IdentifierContext* ctx, Array* arr_type) {
-    std::string decl_type_fmt = "[";
-    decl_type_fmt += std::to_string(arr_type->size);
-    decl_type_fmt += "]";
+static const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t* arr_fmt) {
+    *arr_fmt = str_new("");
+    string_t decltor_fmt = str_new("[");
+    {
+        string_t idx = str_to_string(arr_type->size);
+        str_append(decltor_fmt, idx);
+        str_delete(idx);
+    }
+    str_append(decltor_fmt, "]");
     while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
-        decl_type_fmt += "[";
-        decl_type_fmt += std::to_string(arr_type->size);
-        decl_type_fmt += "]";
+        str_append(decltor_fmt, "[");
+        {
+            string_t idx = str_to_string(arr_type->size);
+            str_append(decltor_fmt, idx);
+            str_delete(idx);
+        }
+        str_append(decltor_fmt, "]");
     }
-    std::string type_fmt = get_type_fmt(ctx, arr_type->elem_type.get());
-    type_fmt += decl_type_fmt;
-    return type_fmt;
+    {
+        string_t type_fmt = str_new(NULL);
+        str_append(*arr_fmt, get_type_fmt(ctx, arr_type->elem_type.get(), &type_fmt));
+        str_delete(type_fmt);
+    }
+    str_append(*arr_fmt, decltor_fmt);
+    str_delete(decltor_fmt);
+    return *arr_fmt;
 }
 
-static std::string get_struct_fmt(IdentifierContext* ctx, Structure* struct_type) {
-    return get_struct_name_fmt(ctx, struct_type->tag, struct_type->is_union);
+static const char* get_struct_fmt(IdentifierContext* ctx, Structure* struct_type, string_t* struct_fmt) {
+    return get_struct_name_fmt(ctx, struct_type->tag, struct_type->is_union, struct_fmt);
 }
 
-std::string get_type_fmt(IdentifierContext* ctx, Type* type) {
+const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt) {
     switch (type->type()) {
         case AST_Char_t:
             return "char";
@@ -418,13 +456,13 @@ std::string get_type_fmt(IdentifierContext* ctx, Type* type) {
         case AST_Void_t:
             return "void";
         case AST_FunType_t:
-            return get_fun_fmt(ctx, static_cast<FunType*>(type));
+            return get_fun_fmt(ctx, static_cast<FunType*>(type), type_fmt);
         case AST_Pointer_t:
-            return get_ptr_fmt(ctx, static_cast<Pointer*>(type));
+            return get_ptr_fmt(ctx, static_cast<Pointer*>(type), type_fmt);
         case AST_Array_t:
-            return get_arr_fmt(ctx, static_cast<Array*>(type));
+            return get_arr_fmt(ctx, static_cast<Array*>(type), type_fmt);
         case AST_Structure_t:
-            return get_struct_fmt(ctx, static_cast<Structure*>(type));
+            return get_struct_fmt(ctx, static_cast<Structure*>(type), type_fmt);
         default:
             THROW_ABORT;
     }
