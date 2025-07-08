@@ -42,10 +42,8 @@ CStringLiteral::CStringLiteral(std::vector<TChar>&& value) : value(std::move(val
 
 typedef IdentifierContext* Ctx;
 
-TIdentifier string_to_hash(const char* string);
-
 TIdentifier make_string_identifier(Ctx ctx, string_t* value) {
-    TIdentifier identifier = string_to_hash(*value);
+    TIdentifier identifier = str_hash(*value);
     if (ctx->hash_table.find(identifier) == ctx->hash_table.end()) {
         ctx->hash_table[identifier] = str_new(NULL);
         str_move(value, &ctx->hash_table[identifier]);

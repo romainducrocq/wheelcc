@@ -7,13 +7,14 @@
 #include <stdnoreturn.h>
 #endif
 
-#include "util/str2t.hpp"
-
 struct FileIoContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Throw
+
+typedef int error_t;
+typedef size_t hash_t;
 
 struct FileOpenLine {
     size_t linenum;
@@ -31,8 +32,6 @@ struct ErrorsContext {
     std::unordered_map<hash_t, size_t> linebuf_map;
     std::vector<FileOpenLine> fopen_lines;
 };
-
-typedef int error_t;
 
 #ifdef __cplusplus
 [[noreturn]]

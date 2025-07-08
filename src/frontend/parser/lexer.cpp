@@ -3,7 +3,6 @@
 
 #include "util/c_std.hpp"
 #include "util/fileio.hpp"
-#include "util/str2t.hpp"
 #include "util/throw.hpp"
 
 #include "ast/ast.hpp"
@@ -771,7 +770,7 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
 
     filename = get_match(ctx, ctx->match_at + 1, ctx->match_size - 2);
     {
-        hash_t includename = string_to_hash(filename);
+        hash_t includename = str_hash(filename);
         if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
             EARLY_EXIT;
         }

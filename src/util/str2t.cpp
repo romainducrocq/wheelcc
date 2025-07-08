@@ -1,6 +1,5 @@
 #include <cstring>
 #include <inttypes.h>
-#include <string>
 #include <vector>
 
 #include "util/c_std.hpp"
@@ -12,8 +11,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // String to type
-
-hash_t string_to_hash(const char* str) { return std::hash<std::string> {}(std::string(str)); }
 
 int32_t intmax_to_int32(intmax_t intmax) { return (int32_t)intmax; }
 
