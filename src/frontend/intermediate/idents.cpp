@@ -129,9 +129,9 @@ TIdentifier repr_loop_identifier(Ctx ctx, LABEL_KIND label_kind, TIdentifier tar
 TIdentifier repr_case_identifier(Ctx ctx, TIdentifier target, bool is_label, size_t i) {
     string_t name = is_label ? str_new("case_") : str_new("");
     {
-        string_t case_id = str_to_string(i);
-        str_append(name, case_id);
-        str_delete(case_id);
+        string_t strto_i = str_to_string(i);
+        str_append(name, strto_i);
+        str_delete(strto_i);
     }
     str_append(name, ctx->hash_table[target]);
     return make_string_identifier(ctx, &name);

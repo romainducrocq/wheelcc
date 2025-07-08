@@ -405,18 +405,18 @@ static const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t
     *arr_fmt = str_new("");
     string_t decltor_fmt = str_new("[");
     {
-        string_t idx = str_to_string(arr_type->size);
-        str_append(decltor_fmt, idx);
-        str_delete(idx);
+        string_t strto_size = str_to_string(arr_type->size);
+        str_append(decltor_fmt, strto_size);
+        str_delete(strto_size);
     }
     str_append(decltor_fmt, "]");
     while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
         str_append(decltor_fmt, "[");
         {
-            string_t idx = str_to_string(arr_type->size);
-            str_append(decltor_fmt, idx);
-            str_delete(idx);
+            string_t strto_size = str_to_string(arr_type->size);
+            str_append(decltor_fmt, strto_size);
+            str_delete(strto_size);
         }
         str_append(decltor_fmt, "]");
     }

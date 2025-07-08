@@ -59,10 +59,9 @@ TIdentifier make_string_identifier(Ctx ctx, string_t* value) {
 TIdentifier make_label_identifier(Ctx ctx, string_t* name) {
     str_append(*name, UID_SEPARATOR);
     {
-        // TODO maybe rename all str_to_string to something greppable ? (ex: to_str)
-        string_t uid = str_to_string(ctx->label_count);
-        str_append(*name, uid);
-        str_delete(uid);
+        string_t strto_uid = str_to_string(ctx->label_count);
+        str_append(*name, strto_uid);
+        str_delete(strto_uid);
     }
     ctx->label_count++;
     return make_string_identifier(ctx, name);
@@ -71,9 +70,9 @@ TIdentifier make_label_identifier(Ctx ctx, string_t* name) {
 TIdentifier make_var_identifier(Ctx ctx, string_t* name) {
     str_append(*name, UID_SEPARATOR);
     {
-        string_t uid = str_to_string(ctx->var_count);
-        str_append(*name, uid);
-        str_delete(uid);
+        string_t strto_uid = str_to_string(ctx->var_count);
+        str_append(*name, strto_uid);
+        str_delete(strto_uid);
     }
     ctx->var_count++;
     return make_string_identifier(ctx, name);
@@ -82,9 +81,9 @@ TIdentifier make_var_identifier(Ctx ctx, string_t* name) {
 TIdentifier make_struct_identifier(Ctx ctx, string_t* name) {
     str_append(*name, UID_SEPARATOR);
     {
-        string_t uid = str_to_string(ctx->struct_count);
-        str_append(*name, uid);
-        str_delete(uid);
+        string_t strto_uid = str_to_string(ctx->struct_count);
+        str_append(*name, strto_uid);
+        str_delete(strto_uid);
     }
     ctx->struct_count++;
     return make_string_identifier(ctx, name);

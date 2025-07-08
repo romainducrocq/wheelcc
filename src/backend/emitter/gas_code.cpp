@@ -50,24 +50,24 @@ static void emit_string(Ctx ctx, TIdentifier string_const) {
 }
 
 // char -> $ char
-static void emit_char(Ctx ctx, TChar value) { // TODO is this going to keep the value because of long cast?
-    string_t char_value = str_to_string(value);
-    emit(ctx, char_value);
-    str_delete(char_value);
+static void emit_char(Ctx ctx, TChar value) {
+    string_t strto_value = str_to_string(value);
+    emit(ctx, strto_value);
+    str_delete(strto_value);
 }
 
 // int -> $ int
 static void emit_int(Ctx ctx, TInt value) {
-    string_t int_value = str_to_string(value);
-    emit(ctx, int_value);
-    str_delete(int_value);
+    string_t strto_value = str_to_string(value);
+    emit(ctx, strto_value);
+    str_delete(strto_value);
 }
 
 // long -> $ long
 static void emit_long(Ctx ctx, TLong value) {
-    string_t long_value = str_to_string(value);
-    emit(ctx, long_value);
-    str_delete(long_value);
+    string_t strto_value = str_to_string(value);
+    emit(ctx, strto_value);
+    str_delete(strto_value);
 }
 
 // double -> $ double
@@ -78,23 +78,23 @@ static void emit_dbl(Ctx ctx, TIdentifier dbl_const) {
 
 // uchar -> $ uchar
 static void emit_uchar(Ctx ctx, TUChar value) {
-    string_t uchar_value = str_to_string(value);
-    emit(ctx, uchar_value);
-    str_delete(uchar_value);
+    string_t strto_value = str_to_string(value);
+    emit(ctx, strto_value);
+    str_delete(strto_value);
 }
 
 // uint -> $ uint
 static void emit_uint(Ctx ctx, TUInt value) {
-    string_t uint_value = str_to_string(value);
-    emit(ctx, uint_value);
-    str_delete(uint_value);
+    string_t strto_value = str_to_string(value);
+    emit(ctx, strto_value);
+    str_delete(strto_value);
 }
 
 // ulong -> $ ulong
 static void emit_ulong(Ctx ctx, TULong value) {
-    string_t ulong_value = str_to_string(value);
-    emit(ctx, ulong_value);
-    str_delete(ulong_value);
+    string_t strto_value = str_to_string(value);
+    emit(ctx, strto_value);
+    str_delete(strto_value);
 }
 
 // Reg(SP)    -> $ %rsp

@@ -1931,8 +1931,8 @@ static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_
 }
 
 static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
-    string_t value = str_to_string(binary);
-    return make_string_identifier(ctx->identifiers, &value);
+    string_t strto_binary = str_to_string(binary);
+    return make_string_identifier(ctx->identifiers, &strto_binary);
 }
 
 static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
