@@ -61,10 +61,9 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, char** name_fmt);
 const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, char** struct_fmt);
 const char* get_type_fmt(IdentifierContext* ctx, Type* type, char** type_fmt);
-// TODO rm
-// #define fmt_name_c_str(X) get_name_fmt(ctx->identifiers, X).c_str()
-// #define fmt_struct_name_c_str(X, Y) get_struct_name_fmt(ctx->identifiers, X, Y).c_str()
-// #define fmt_type_c_str(X) get_type_fmt(ctx->identifiers, X).c_str()
+#define str_fmt_name(X, Y) get_name_fmt(ctx->identifiers, X, Y)
+#define str_fmt_struct_name(X, Y, Z) get_struct_name_fmt(ctx->identifiers, X, Y, Z)
+#define str_fmt_type(X, Y) get_type_fmt(ctx->identifiers, X, Y)
 
 const char* get_fatal_msg(MESSAGE_FATAL msg);
 const char* get_arg_msg(MESSAGE_ARG msg);
