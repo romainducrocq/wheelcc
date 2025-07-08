@@ -1,7 +1,7 @@
 #include "util/pprint.hpp"
 #ifndef __NDEBUG__
-#include <cstring>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "util/str2t.hpp"
@@ -187,7 +187,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_Structure_t: {
             print_field("Structure", "", ++t);
             Structure* p_node = static_cast<Structure*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->tag], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->tag]), t + 1);
             print_field("Bool", std::to_string(p_node->is_union), t + 1);
             break;
         }
@@ -234,7 +234,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_DoubleInit_t: {
             print_field("DoubleInit", "", ++t);
             DoubleInit* p_node = static_cast<DoubleInit*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->dbl_const], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->dbl_const]), t + 1);
             break;
         }
         case AST_ZeroInit_t: {
@@ -246,7 +246,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_StringInit_t: {
             print_field("StringInit", "", ++t);
             StringInit* p_node = static_cast<StringInit*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->string_const], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->string_const]), t + 1);
             print_field("Bool", std::to_string(p_node->is_null_term), t + 1);
             print_ast(ctx, p_node->literal.get(), t);
             break;
@@ -254,7 +254,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_PointerInit_t: {
             print_field("PointerInit", "", ++t);
             PointerInit* p_node = static_cast<PointerInit*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_InitialValue_t: {
@@ -327,11 +327,11 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             print_field("TLong", std::to_string(p_node->size), t + 1);
             print_field("List[" + std::to_string(p_node->member_names.size()) + "]", "", t + 1);
             for (const auto& item : p_node->member_names) {
-                print_field("TIdentifier", ctx->hash_table[item], t + 2);
+                print_field("TIdentifier", std::string(ctx->hash_table[item]), t + 2);
             }
             print_field("Dict[" + std::to_string(p_node->members.size()) + "]", "", t + 1);
             for (const auto& item : p_node->members) {
-                print_field("[" + ctx->hash_table[item.first] + "]", "", t + 2);
+                print_field("[" + std::string(ctx->hash_table[item.first]) + "]", "", t + 2);
                 print_ast(ctx, item.second.get(), t + 2);
             }
             break;
@@ -524,7 +524,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CIdent_t: {
             print_field("CIdent", "", ++t);
             CIdent* p_node = static_cast<CIdent*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_CPointerDeclarator_t: {
@@ -573,7 +573,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CVar_t: {
             print_field("CVar", "", ++t);
             CVar* p_node = static_cast<CVar*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_ast(ctx, p_node->exp_type.get(), t);
             break;
         }
@@ -623,7 +623,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CFunctionCall_t: {
             print_field("CFunctionCall", "", ++t);
             CFunctionCall* p_node = static_cast<CFunctionCall*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("List[" + std::to_string(p_node->args.size()) + "]", "", t + 1);
             for (const auto& item : p_node->args) {
                 print_ast(ctx, item.get(), t + 1);
@@ -670,7 +670,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CDot_t: {
             print_field("CDot", "", ++t);
             CDot* p_node = static_cast<CDot*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->member], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->member]), t + 1);
             print_ast(ctx, p_node->structure.get(), t);
             print_ast(ctx, p_node->exp_type.get(), t);
             break;
@@ -678,7 +678,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CArrow_t: {
             print_field("CArrow", "", ++t);
             CArrow* p_node = static_cast<CArrow*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->member], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->member]), t + 1);
             print_ast(ctx, p_node->pointer.get(), t);
             print_ast(ctx, p_node->exp_type.get(), t);
             break;
@@ -710,13 +710,13 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CGoto_t: {
             print_field("CGoto", "", ++t);
             CGoto* p_node = static_cast<CGoto*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             break;
         }
         case AST_CLabel_t: {
             print_field("CLabel", "", ++t);
             CLabel* p_node = static_cast<CLabel*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->jump_to.get(), t);
             break;
         }
@@ -729,7 +729,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CWhile_t: {
             print_field("CWhile", "", ++t);
             CWhile* p_node = static_cast<CWhile*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->condition.get(), t);
             print_ast(ctx, p_node->body.get(), t);
             break;
@@ -737,7 +737,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CDoWhile_t: {
             print_field("CDoWhile", "", ++t);
             CDoWhile* p_node = static_cast<CDoWhile*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->condition.get(), t);
             print_ast(ctx, p_node->body.get(), t);
             break;
@@ -745,7 +745,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CFor_t: {
             print_field("CFor", "", ++t);
             CFor* p_node = static_cast<CFor*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->init.get(), t);
             print_ast(ctx, p_node->condition.get(), t);
             print_ast(ctx, p_node->post.get(), t);
@@ -755,7 +755,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CSwitch_t: {
             print_field("CSwitch", "", ++t);
             CSwitch* p_node = static_cast<CSwitch*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_field("Bool", std::to_string(p_node->is_default), t + 1);
             print_ast(ctx, p_node->match.get(), t);
             print_ast(ctx, p_node->body.get(), t);
@@ -768,7 +768,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CCase_t: {
             print_field("CCase", "", ++t);
             CCase* p_node = static_cast<CCase*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->value.get(), t);
             print_ast(ctx, p_node->jump_to.get(), t);
             break;
@@ -776,20 +776,20 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CDefault_t: {
             print_field("CDefault", "", ++t);
             CDefault* p_node = static_cast<CDefault*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->jump_to.get(), t);
             break;
         }
         case AST_CBreak_t: {
             print_field("CBreak", "", ++t);
             CBreak* p_node = static_cast<CBreak*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             break;
         }
         case AST_CContinue_t: {
             print_field("CContinue", "", ++t);
             CContinue* p_node = static_cast<CContinue*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             break;
         }
         case AST_CNull_t: {
@@ -879,14 +879,14 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CMemberDeclaration_t: {
             print_field("CMemberDeclaration", "", ++t);
             CMemberDeclaration* p_node = static_cast<CMemberDeclaration*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->member_name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->member_name]), t + 1);
             print_ast(ctx, p_node->member_type.get(), t);
             break;
         }
         case AST_CStructDeclaration_t: {
             print_field("CStructDeclaration", "", ++t);
             CStructDeclaration* p_node = static_cast<CStructDeclaration*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->tag], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->tag]), t + 1);
             print_field("Bool", std::to_string(p_node->is_union), t + 1);
             print_field("List[" + std::to_string(p_node->members.size()) + "]", "", t + 1);
             for (const auto& item : p_node->members) {
@@ -897,10 +897,10 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CFunctionDeclaration_t: {
             print_field("CFunctionDeclaration", "", ++t);
             CFunctionDeclaration* p_node = static_cast<CFunctionDeclaration*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("List[" + std::to_string(p_node->params.size()) + "]", "", t + 1);
             for (const auto& item : p_node->params) {
-                print_field("TIdentifier", ctx->hash_table[item], t + 2);
+                print_field("TIdentifier", std::string(ctx->hash_table[item]), t + 2);
             }
             print_ast(ctx, p_node->body.get(), t);
             print_ast(ctx, p_node->fun_type.get(), t);
@@ -910,7 +910,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CVariableDeclaration_t: {
             print_field("CVariableDeclaration", "", ++t);
             CVariableDeclaration* p_node = static_cast<CVariableDeclaration*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_ast(ctx, p_node->init.get(), t);
             print_ast(ctx, p_node->var_type.get(), t);
             print_ast(ctx, p_node->storage_class.get(), t);
@@ -1048,7 +1048,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacVariable_t: {
             print_field("TacVariable", "", ++t);
             TacVariable* p_node = static_cast<TacVariable*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_TacExpResult_t: {
@@ -1070,7 +1070,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacSubObject_t: {
             print_field("TacSubObject", "", ++t);
             TacSubObject* p_node = static_cast<TacSubObject*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->base_name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->base_name]), t + 1);
             print_field("TLong", std::to_string(p_node->offset), t + 1);
             break;
         }
@@ -1136,7 +1136,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacFunCall_t: {
             print_field("TacFunCall", "", ++t);
             TacFunCall* p_node = static_cast<TacFunCall*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("List[" + std::to_string(p_node->args.size()) + "]", "", t + 1);
             for (const auto& item : p_node->args) {
                 print_ast(ctx, item.get(), t + 1);
@@ -1201,7 +1201,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacCopyToOffset_t: {
             print_field("TacCopyToOffset", "", ++t);
             TacCopyToOffset* p_node = static_cast<TacCopyToOffset*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->dst_name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->dst_name]), t + 1);
             print_field("TLong", std::to_string(p_node->offset), t + 1);
             print_ast(ctx, p_node->src.get(), t);
             break;
@@ -1209,7 +1209,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacCopyFromOffset_t: {
             print_field("TacCopyFromOffset", "", ++t);
             TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->src_name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->src_name]), t + 1);
             print_field("TLong", std::to_string(p_node->offset), t + 1);
             print_ast(ctx, p_node->dst.get(), t);
             break;
@@ -1217,27 +1217,27 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacJump_t: {
             print_field("TacJump", "", ++t);
             TacJump* p_node = static_cast<TacJump*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             break;
         }
         case AST_TacJumpIfZero_t: {
             print_field("TacJumpIfZero", "", ++t);
             TacJumpIfZero* p_node = static_cast<TacJumpIfZero*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->condition.get(), t);
             break;
         }
         case AST_TacJumpIfNotZero_t: {
             print_field("TacJumpIfNotZero", "", ++t);
             TacJumpIfNotZero* p_node = static_cast<TacJumpIfNotZero*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->condition.get(), t);
             break;
         }
         case AST_TacLabel_t: {
             print_field("TacLabel", "", ++t);
             TacLabel* p_node = static_cast<TacLabel*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_TacTopLevel_t: {
@@ -1247,11 +1247,11 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacFunction_t: {
             print_field("TacFunction", "", ++t);
             TacFunction* p_node = static_cast<TacFunction*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("Bool", std::to_string(p_node->is_glob), t + 1);
             print_field("List[" + std::to_string(p_node->params.size()) + "]", "", t + 1);
             for (const auto& item : p_node->params) {
-                print_field("TIdentifier", ctx->hash_table[item], t + 2);
+                print_field("TIdentifier", std::string(ctx->hash_table[item]), t + 2);
             }
             print_field("List[" + std::to_string(p_node->body.size()) + "]", "", t + 1);
             for (const auto& item : p_node->body) {
@@ -1262,7 +1262,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacStaticVariable_t: {
             print_field("TacStaticVariable", "", ++t);
             TacStaticVariable* p_node = static_cast<TacStaticVariable*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("Bool", std::to_string(p_node->is_glob), t + 1);
             print_ast(ctx, p_node->static_init_type.get(), t);
             print_field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t + 1);
@@ -1274,7 +1274,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_TacStaticConstant_t: {
             print_field("TacStaticConstant", "", ++t);
             TacStaticConstant* p_node = static_cast<TacStaticConstant*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_ast(ctx, p_node->static_init_type.get(), t);
             print_ast(ctx, p_node->static_init.get(), t);
             break;
@@ -1498,7 +1498,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmPseudo_t: {
             print_field("AsmPseudo", "", ++t);
             AsmPseudo* p_node = static_cast<AsmPseudo*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_AsmMemory_t: {
@@ -1511,14 +1511,14 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmData_t: {
             print_field("AsmData", "", ++t);
             AsmData* p_node = static_cast<AsmData*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("TLong", std::to_string(p_node->offset), t + 1);
             break;
         }
         case AST_AsmPseudoMem_t: {
             print_field("AsmPseudoMem", "", ++t);
             AsmPseudoMem* p_node = static_cast<AsmPseudoMem*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("TLong", std::to_string(p_node->offset), t + 1);
             break;
         }
@@ -1691,13 +1691,13 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmJmp_t: {
             print_field("AsmJmp", "", ++t);
             AsmJmp* p_node = static_cast<AsmJmp*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             break;
         }
         case AST_AsmJmpCC_t: {
             print_field("AsmJmpCC", "", ++t);
             AsmJmpCC* p_node = static_cast<AsmJmpCC*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->target], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->target]), t + 1);
             print_ast(ctx, p_node->cond_code.get(), t);
             break;
         }
@@ -1711,7 +1711,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmLabel_t: {
             print_field("AsmLabel", "", ++t);
             AsmLabel* p_node = static_cast<AsmLabel*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_AsmPush_t: {
@@ -1729,7 +1729,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmCall_t: {
             print_field("AsmCall", "", ++t);
             AsmCall* p_node = static_cast<AsmCall*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             break;
         }
         case AST_AsmRet_t: {
@@ -1743,7 +1743,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmFunction_t: {
             print_field("AsmFunction", "", ++t);
             AsmFunction* p_node = static_cast<AsmFunction*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("Bool", std::to_string(p_node->is_glob), t + 1);
             print_field("Bool", std::to_string(p_node->is_ret_memory), t + 1);
             print_field("List[" + std::to_string(p_node->instructions.size()) + "]", "", t + 1);
@@ -1755,7 +1755,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmStaticVariable_t: {
             print_field("AsmStaticVariable", "", ++t);
             AsmStaticVariable* p_node = static_cast<AsmStaticVariable*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("TInt", std::to_string(p_node->alignment), t + 1);
             print_field("Bool", std::to_string(p_node->is_glob), t + 1);
             print_field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t + 1);
@@ -1767,7 +1767,7 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_AsmStaticConstant_t: {
             print_field("AsmStaticConstant", "", ++t);
             AsmStaticConstant* p_node = static_cast<AsmStaticConstant*>(node);
-            print_field("TIdentifier", ctx->hash_table[p_node->name], t + 1);
+            print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("TInt", std::to_string(p_node->alignment), t + 1);
             print_ast(ctx, p_node->static_init.get(), t);
             break;
@@ -1800,7 +1800,7 @@ void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Addressed Set");
     std::cout << "\nSet(" << std::to_string(frontend->addressed_set.size()) << "):";
     for (const TIdentifier& name : frontend->addressed_set) {
-        print_field("", ctx->hash_table[name], 2);
+        print_field("", std::string(ctx->hash_table[name]), 2);
     }
     std::cout << std::endl;
 }
@@ -1809,7 +1809,7 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
     print_title("String Constant Table");
     std::cout << "\nDict(" << std::to_string(frontend->string_const_table.size()) << "):";
     for (const auto& static_const : frontend->string_const_table) {
-        print_field("[" + ctx->hash_table[static_const.first] + "]", "", 2);
+        print_field("[" + std::string(ctx->hash_table[static_const.first]) + "]", "", 2);
         if (frontend->symbol_table.find(static_const.second) != frontend->symbol_table.end()
             && frontend->symbol_table[static_const.second]->attrs->type() == AST_ConstantAttr_t) {
             ConstantAttr* constant_attr =
@@ -1870,7 +1870,7 @@ void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* fronte
     print_title("Structure Typedef Table");
     std::cout << "\nDict(" << std::to_string(frontend->struct_typedef_table.size()) << "):";
     for (const auto& struct_typedef : frontend->struct_typedef_table) {
-        print_field("[" + ctx->hash_table[struct_typedef.first] + "]", "", 2);
+        print_field("[" + std::string(ctx->hash_table[struct_typedef.first]) + "]", "", 2);
         print_ast(ctx, struct_typedef.second.get(), 2);
     }
     std::cout << std::endl;
@@ -1880,7 +1880,7 @@ void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Symbol Table");
     std::cout << "\nDict(" << std::to_string(frontend->symbol_table.size()) << "):";
     for (const auto& symbol : frontend->symbol_table) {
-        print_field("[" + ctx->hash_table[symbol.first] + "]", "", 2);
+        print_field("[" + std::string(ctx->hash_table[symbol.first]) + "]", "", 2);
         print_ast(ctx, symbol.second.get(), 2);
     }
     std::cout << std::endl;
@@ -1890,7 +1890,7 @@ void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend
     print_title("Backend Symbol Table");
     std::cout << "\nDict(" << std::to_string(backend->symbol_table.size()) << "):";
     for (const auto& backend_symbol : backend->symbol_table) {
-        print_field("[" + ctx->hash_table[backend_symbol.first] + "]", "", 2);
+        print_field("[" + std::string(ctx->hash_table[backend_symbol.first]) + "]", "", 2);
         print_ast(ctx, backend_symbol.second.get(), 2);
     }
     std::cout << std::endl;

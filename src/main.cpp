@@ -64,43 +64,43 @@ static void verbose(Ctx ctx, const char* msg) {
 #ifndef __NDEBUG__
 static void debug_toks(Ctx ctx, std::vector<Token>& tokens) {
     if (ctx->is_verbose) {
-        // pprint_toks(ctx->identifiers, tokens);
+        pprint_toks(ctx->identifiers, tokens);
     }
 }
 
 static void debug_ast(Ctx ctx, Ast* node, const char* name) {
     if (ctx->is_verbose) {
-        // pprint_ast(ctx->identifiers, node, name);
+        pprint_ast(ctx->identifiers, node, name);
     }
 }
 
 static void debug_addressed_set(Ctx ctx) {
     if (ctx->is_verbose) {
-        // pprint_addressed_set(ctx->identifiers, ctx->frontend);
+        pprint_addressed_set(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_string_const_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        // pprint_string_const_table(ctx->identifiers, ctx->frontend);
+        pprint_string_const_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_struct_typedef_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        // pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
+        pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        // pprint_symbol_table(ctx->identifiers, ctx->frontend);
+        pprint_symbol_table(ctx->identifiers, ctx->frontend);
     }
 }
 
 static void debug_backend_symbol_table(Ctx ctx) {
     if (ctx->is_verbose) {
-        // pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
+        pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
     }
 }
 #endif
