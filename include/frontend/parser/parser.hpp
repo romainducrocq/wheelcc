@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/throw.hpp"
+
 struct Token;
 struct CProgram;
 struct ErrorsContext;
@@ -13,7 +15,7 @@ struct IdentifierContext;
 
 // Parser
 
-int parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers,
+error_t parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers,
     std::unique_ptr<CProgram>* c_ast);
 
 #endif

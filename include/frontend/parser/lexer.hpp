@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "util/throw.hpp"
+
 #include "ast_t.hpp" // ast
 
 #include "parser/tokens.hpp" // frontend
@@ -21,7 +23,7 @@ struct Token {
     size_t line;
 };
 
-int lex_c_code(char* filename, std::vector<const char*>&& includedirs, ErrorsContext* errors, FileIoContext* fileio,
+error_t lex_c_code(char* filename, std::vector<const char*>&& includedirs, ErrorsContext* errors, FileIoContext* fileio,
     IdentifierContext* identifiers, std::vector<Token>* tokens);
 
 #endif

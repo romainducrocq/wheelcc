@@ -1,6 +1,8 @@
 #ifndef _FRONT_INTERMEDIATE_SEMANTIC_H
 #define _FRONT_INTERMEDIATE_SEMANTIC_H
 
+#include "util/throw.hpp"
+
 struct CProgram;
 struct ErrorsContext;
 struct FrontEndContext;
@@ -16,6 +18,7 @@ struct IdentifierContext;
 // Loop labeling
 // Identifier resolution
 
-int analyze_semantic(CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers);
+error_t analyze_semantic(
+    CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers);
 
 #endif
