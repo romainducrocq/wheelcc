@@ -20,10 +20,8 @@ typedef sds string_t;
     }
 #define str_new(X) X ? sdsnew(X) : NULL
 #define str_move(X, Y)  \
-    if (*Y) {           \
-        str_delete(*Y); \
-    }                   \
     do {                \
+        str_delete(*Y); \
         *Y = *X;        \
         *X = NULL;      \
     }                   \
