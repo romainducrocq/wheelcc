@@ -200,18 +200,18 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    //     verbose(ctx, "-- Semantic analysis ... ");
-    //     TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 253) {
-    //         debug_ast(ctx, c_ast.get(), "C AST");
-    //         debug_string_const_table(ctx);
-    //         debug_struct_typedef_table(ctx);
-    //         debug_symbol_table(ctx);
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- Semantic analysis ... ");
+    TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 253) {
+        debug_ast(ctx, c_ast.get(), "C AST");
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
+        EARLY_EXIT;
+    }
+#endif
 
     verbose(ctx, "-- TAC representation ... ");
     tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
