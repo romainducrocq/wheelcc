@@ -1,7 +1,6 @@
 #include "tinydir/tinydir.h"
 #include <limits.h>
 #include <stdio.h>
-#include <string>
 
 #include "util/c_std.hpp"
 #include "util/fileio.hpp"
@@ -71,8 +70,8 @@ error_t open_fwrite(Ctx ctx, string_t filename) {
         THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename), 0);
     }
 
-    ctx->write_buf.reserve(WRITE_BUF_SIZE);
-    ctx->write_buf = "";
+    ctx->write_buf = str_new("");
+    str_reserve(ctx->write_buf, WRITE_BUF_SIZE);
     FINALLY;
     CATCH_EXIT;
 }
@@ -94,15 +93,15 @@ bool read_line(Ctx ctx, char*& line, size_t& line_size) {
     }
 }
 
-static void write_chunk(Ctx ctx, const std::string& buf) {
-    fwrite(buf.c_str(), sizeof(char), buf.size(), ctx->fd_write);
+static void write_chunk(Ctx ctx, const char* buf, size_t buf_size) {
+    fwrite(buf, sizeof(char), buf_size, ctx->fd_write);
 }
 
 void write_buffer(Ctx ctx, const char* buf) {
-    ctx->write_buf += std::string(buf);
-    while (ctx->write_buf.size() >= WRITE_BUF_SIZE) {
-        write_chunk(ctx, ctx->write_buf.substr(0, WRITE_BUF_SIZE));
-        ctx->write_buf = ctx->write_buf.substr(WRITE_BUF_SIZE, ctx->write_buf.size() - WRITE_BUF_SIZE);
+    str_append(ctx->write_buf, buf);
+    while (str_size(ctx->write_buf) >= WRITE_BUF_SIZE) {
+        write_chunk(ctx, ctx->write_buf, WRITE_BUF_SIZE);
+        str_substr(ctx->write_buf, WRITE_BUF_SIZE, -1);
     }
 }
 
@@ -130,8 +129,8 @@ error_t close_fread(Ctx ctx, size_t linenum) {
 }
 
 void close_fwrite(Ctx ctx) {
-    write_chunk(ctx, ctx->write_buf);
-    ctx->write_buf = "";
+    write_chunk(ctx, ctx->write_buf, str_size(ctx->write_buf));
+    str_delete(ctx->write_buf);
 
     fclose(ctx->fd_write);
     ctx->fd_write = nullptr;

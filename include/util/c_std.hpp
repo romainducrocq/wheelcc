@@ -33,6 +33,7 @@ typedef sds string_t;
         X = sdscat(X, Y); \
     }                     \
     while (0)
+#define str_clear(X) sdsclear(X)
 #define str_copy(X, Y) \
     do {               \
         str_delete(Y); \
@@ -59,6 +60,5 @@ typedef sds string_t;
     while (0)
 #define str_substr(X, Y, Z) sdsrange(X, Y, Z)
 #define str_to_string(X) (X) > 0 ? sdsfromunsignedlonglong((unsigned long long)(X)) : sdsfromlonglong((long long)(X))
-#define str_clear(X) sdsclear(X)
 
 #endif

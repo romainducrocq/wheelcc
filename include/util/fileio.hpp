@@ -2,7 +2,6 @@
 #define _UTIL_FILEIO_H
 
 #include <stdio.h>
-#include <string>
 #include <vector>
 
 struct ErrorsContext;
@@ -22,8 +21,8 @@ struct FileIoContext {
     ErrorsContext* errors;
     // File io
     FILE* fd_write;
-    std::string write_buf;
-    char* filename; /* string_t */
+    char* write_buf; /* string_t */
+    char* filename;  /* string_t */
     std::vector<FileRead> file_reads;
 };
 

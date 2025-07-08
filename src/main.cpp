@@ -325,6 +325,7 @@ error_t main(int, char** argv) {
 
         fileio.errors = &errors;
         fileio.fd_write = nullptr;
+        fileio.write_buf = str_new(NULL);
         fileio.filename = str_new(NULL);
 
         ctx.errors = &errors;
@@ -338,6 +339,7 @@ error_t main(int, char** argv) {
     for (size_t i = 0; i < errors.fopen_lines.size(); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
+    str_delete(fileio.write_buf);
     str_delete(fileio.filename);
     for (size_t i = 0; i < fileio.file_reads.size(); ++i) {
         str_delete(fileio.file_reads[i].filename);
