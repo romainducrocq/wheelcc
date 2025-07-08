@@ -59,6 +59,7 @@ TIdentifier make_string_identifier(Ctx ctx, string_t* value) {
 TIdentifier make_label_identifier(Ctx ctx, string_t* name) {
     str_append(*name, UID_SEPARATOR);
     {
+        // TODO maybe rename all str_to_string to something greppable ? (ex: to_str)
         string_t uid = str_to_string(ctx->label_count);
         str_append(*name, uid);
         str_delete(uid);
