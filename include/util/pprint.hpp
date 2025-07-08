@@ -4,8 +4,7 @@
 #ifndef __NDEBUG__
 #include <vector>
 
-#include "frontend/parser/lexer.hpp"
-
+struct Token;
 struct Ast;
 struct BackEndContext;
 struct FrontEndContext;

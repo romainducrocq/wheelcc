@@ -4,8 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "frontend/parser/lexer.hpp"
-
+struct Token;
 struct CProgram;
 struct ErrorsContext;
 struct IdentifierContext;
