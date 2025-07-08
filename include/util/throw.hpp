@@ -7,6 +7,8 @@
 #include <stdnoreturn.h>
 #endif
 
+#include "util/c_std.hpp"
+
 struct FileIoContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +21,7 @@ typedef size_t hash_t;
 struct FileOpenLine {
     size_t linenum;
     size_t total_linenum;
-    char* filename; /* string_t */
+    string_t filename;
 };
 
 struct ErrorsContext {

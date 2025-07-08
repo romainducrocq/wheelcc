@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast_t.hpp" // ast
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,13 +107,13 @@ struct IdentifierContext {
     uint32_t label_count;
     uint32_t var_count;
     uint32_t struct_count;
-    std::unordered_map<TIdentifier, char* /* string_t */> hash_table;
+    std::unordered_map<TIdentifier, string_t> hash_table;
 };
 
-TIdentifier make_string_identifier(IdentifierContext* ctx, char** value);
-TIdentifier make_label_identifier(IdentifierContext* ctx, char** name);
-TIdentifier make_var_identifier(IdentifierContext* ctx, char** name);
-TIdentifier make_struct_identifier(IdentifierContext* ctx, char** name);
+TIdentifier make_string_identifier(IdentifierContext* ctx, string_t* value);
+TIdentifier make_label_identifier(IdentifierContext* ctx, string_t* name);
+TIdentifier make_var_identifier(IdentifierContext* ctx, string_t* name);
+TIdentifier make_struct_identifier(IdentifierContext* ctx, string_t* name);
 #define UID_SEPARATOR "."
 
 #endif

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/throw.hpp"
 
 struct ErrorsContext;
@@ -16,23 +17,23 @@ struct FileRead {
     size_t len;
     char* buf;
     FILE* fd;
-    char* filename; /* string_t */
+    string_t filename;
 };
 
 struct FileIoContext {
     ErrorsContext* errors;
     // File io
     FILE* fd_write;
-    char* write_buf; /* string_t */
-    char* filename;  /* string_t */
+    string_t write_buf;
+    string_t filename;
     std::vector<FileRead> file_reads;
 };
 
 bool find_file(const char* filename);
 const char* get_filename(FileIoContext* ctx);
-void set_filename(FileIoContext* ctx, char* filename);
-error_t open_fread(FileIoContext* ctx, char* filename);
-error_t open_fwrite(FileIoContext* ctx, char* filename);
+void set_filename(FileIoContext* ctx, string_t filename);
+error_t open_fread(FileIoContext* ctx, string_t filename);
+error_t open_fwrite(FileIoContext* ctx, string_t filename);
 bool read_line(FileIoContext* ctx, char*& line, size_t& line_size);
 void write_buffer(FileIoContext* ctx, const char* buf);
 error_t close_fread(FileIoContext* ctx, size_t linenum);

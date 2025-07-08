@@ -3,6 +3,8 @@
 
 #include <cstdio>
 
+#include "util/c_std.hpp"
+
 #include "ast_t.hpp" // ast
 
 #include "parser/messages.hpp" // frontend
@@ -58,9 +60,9 @@ const char* get_storage_class_fmt(CStorageClass* node);
 const char* get_unop_fmt(CUnaryOp* node);
 const char* get_binop_fmt(CBinaryOp* node);
 const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
-const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, char** name_fmt);
-const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, char** struct_fmt);
-const char* get_type_fmt(IdentifierContext* ctx, Type* type, char** type_fmt);
+const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt);
+const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, string_t* struct_fmt);
+const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt);
 #define str_fmt_tok(X) get_tok_fmt(ctx->identifiers, X)
 #define str_fmt_name(X, Y) get_name_fmt(ctx->identifiers, X, Y)
 #define str_fmt_struct_name(X, Y, Z) get_struct_name_fmt(ctx->identifiers, X, Y, Z)
