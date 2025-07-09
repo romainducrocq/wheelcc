@@ -35,8 +35,6 @@ struct ErrorsContext {
     std::vector<FileOpenLine> fopen_lines;
 };
 
-// TODO maybe remove return_t, as POD*, unique_ptr*, shared_ptr*, etc...
-// already assumes mutable in/out parameter
 #define return_t(X) X*
 #define CATCH_ENTER error_t _errval = 0
 #define CATCH_EXIT return _errval
