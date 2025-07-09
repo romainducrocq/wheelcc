@@ -189,15 +189,15 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    //     verbose(ctx, "-- Parsing ... ");
-    //     TRY(parse_tokens(std::move(tokens), errors, &identifiers, &c_ast));
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 254) {
-    //         debug_ast(ctx, c_ast.get(), "C AST");
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- Parsing ... ");
+    TRY(parse_tokens(std::move(tokens), errors, &identifiers, &c_ast));
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 254) {
+        debug_ast(ctx, c_ast.get(), "C AST");
+        EARLY_EXIT;
+    }
+#endif
 
     //     verbose(ctx, "-- Semantic analysis ... ");
     //     TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
