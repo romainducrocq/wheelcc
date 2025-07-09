@@ -30,9 +30,9 @@ const char* get_filename(Ctx ctx) {
     }
 }
 
-void set_filename(Ctx ctx, string_t filename) { str_copy(filename, ctx->filename); }
+void set_filename(Ctx ctx, const string_t filename) { str_copy(filename, ctx->filename); }
 
-error_t open_fread(Ctx ctx, string_t filename) {
+error_t open_fread(Ctx ctx, const string_t filename) {
     CATCH_ENTER;
     for (size_t i = 0; i < ctx->file_reads.size(); ++i) {
         if (ctx->file_reads[i].fd) {
@@ -60,7 +60,7 @@ error_t open_fread(Ctx ctx, string_t filename) {
     CATCH_EXIT;
 }
 
-error_t open_fwrite(Ctx ctx, string_t filename) {
+error_t open_fwrite(Ctx ctx, const string_t filename) {
     CATCH_ENTER;
     THROW_ABORT_IF(!ctx->file_reads.empty());
 

@@ -21,7 +21,7 @@ uint32_t uintmax_to_uint32(uintmax_t uintmax) { return (uint32_t)uintmax; }
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) { return (uint64_t)uintmax; }
 
-void string_to_literal(string_t str_string, std::vector<int8_t>& string_literal) {
+void string_to_literal(const string_t str_string, std::vector<int8_t>& string_literal) {
     THROW_ABORT_IF(str_size(str_string) < 2);
     for (size_t byte = 1; byte < str_size(str_string) - 1; ++byte) {
         char c_char = (char)str_string[byte];
@@ -71,7 +71,7 @@ void string_to_literal(string_t str_string, std::vector<int8_t>& string_literal)
     }
 }
 
-int32_t string_to_char_ascii(string_t str_char) {
+int32_t string_to_char_ascii(const string_t str_char) {
     THROW_ABORT_IF(str_size(str_char) < 2 || str_size(str_char) > 4);
     char c_char = (char)str_char[1];
     if (c_char == '\\') {
