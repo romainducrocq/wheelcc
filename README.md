@@ -66,6 +66,7 @@ $ ./make.sh
 ```
 $ ./install.sh
 ```
+> **Warning**: <ins>Whitespaces in paths and file names are not supported</ins>, for both compiler installation and runtime.
 
 ### Use
 
