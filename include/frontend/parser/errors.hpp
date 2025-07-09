@@ -1,7 +1,7 @@
 #ifndef _FRONT_PARSER_ERRORS_H
 #define _FRONT_PARSER_ERRORS_H
 
-#include <cstdio>
+#include <stdio.h>
 
 #include "util/c_std.hpp"
 

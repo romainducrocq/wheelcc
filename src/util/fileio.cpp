@@ -130,7 +130,7 @@ error_t close_fread(Ctx ctx, size_t linenum) {
 
 void close_fwrite(Ctx ctx) {
     write_chunk(ctx, ctx->write_buf, str_size(ctx->write_buf));
-    str_delete(ctx->write_buf);
+    str_clear(ctx->write_buf);
 
     fclose(ctx->fd_write);
     ctx->fd_write = nullptr;

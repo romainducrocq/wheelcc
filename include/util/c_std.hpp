@@ -40,7 +40,6 @@ typedef sds string_t;
         Y = sdsdup(X); \
     }                  \
     while (0)
-#define str_format(X, ...) sdscatprintf(sdsempty(), X, __VA_ARGS__)
 #define str_hash(X) stbds_hash_string(X, 42)
 #define str_pop_back(X) sdsrange(X, 0, -2)
 #define str_push_back(X, Y)             \
