@@ -219,7 +219,7 @@ error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, r
     char* end_ptr = nullptr;
     *value = strtoimax(str_int, &end_ptr, 10);
     if (end_ptr == str_int) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtoi, str_int), line);
+        THROW_AT_LINE(line, GET_UTIL_MSG(MSG_failed_strtoi, str_int));
     }
     FINALLY;
     CATCH_EXIT;
@@ -230,7 +230,7 @@ error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line,
     char* end_ptr = nullptr;
     *value = strtoumax(str_uint, &end_ptr, 10);
     if (end_ptr == str_uint) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtou, str_uint), line);
+        THROW_AT_LINE(line, GET_UTIL_MSG(MSG_failed_strtou, str_uint));
     }
     FINALLY;
     CATCH_EXIT;
@@ -241,7 +241,7 @@ error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line, retu
     char* end_ptr = nullptr;
     *value = strtod(str_dbl, &end_ptr);
     if (end_ptr == str_dbl) {
-        THROW_AT_LINE(GET_UTIL_MSG(MSG_failed_strtod, str_dbl), line);
+        THROW_AT_LINE(line, GET_UTIL_MSG(MSG_failed_strtod, str_dbl));
     }
     FINALLY;
     CATCH_EXIT;

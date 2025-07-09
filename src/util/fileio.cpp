@@ -52,7 +52,7 @@ error_t open_fread(Ctx ctx, string_t filename) {
     FileRead file_read = {0, NULL, NULL, str_new(NULL)};
     file_read.fd = fopen(filename, "rb");
     if (!file_read.fd || str_size(filename) >= PATH_MAX) {
-        THROW_AT(GET_UTIL_MSG(MSG_failed_fread, filename), 0);
+        THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, filename));
     }
     str_copy(filename, file_read.filename);
     ctx->file_reads.emplace_back(std::move(file_read));
@@ -67,7 +67,7 @@ error_t open_fwrite(Ctx ctx, string_t filename) {
     ctx->fd_write = nullptr;
     ctx->fd_write = fopen(filename, "wb");
     if (!ctx->fd_write || str_size(filename) >= PATH_MAX) {
-        THROW_AT(GET_UTIL_MSG(MSG_failed_fwrite, filename), 0);
+        THROW_AT(0, GET_UTIL_MSG(MSG_failed_fwrite, filename));
     }
 
     ctx->write_buf = str_new("");
@@ -116,11 +116,11 @@ error_t close_fread(Ctx ctx, size_t linenum) {
         THROW_ABORT_IF(ctx->file_reads.back().buf || ctx->file_reads.back().len != 0);
         ctx->file_reads.back().fd = fopen(ctx->file_reads.back().filename, "rb");
         if (!ctx->file_reads.back().fd) {
-            THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename), 0);
+            THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename));
         }
         for (size_t i = 0; i < linenum; ++i) {
             if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
-                THROW_AT(GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename), 0);
+                THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename));
             }
         }
     }

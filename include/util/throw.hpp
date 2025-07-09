@@ -35,18 +35,6 @@ struct ErrorsContext {
     std::vector<FileOpenLine> fopen_lines;
 };
 
-#ifdef __cplusplus
-[[noreturn]]
-#else
-_Noreturn
-#endif
-void raise_sigabrt(const char* func, const char* file, int line);
-void raise_init_error(ErrorsContext* ctx);
-void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
-size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
-
-#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
-
 // TODO maybe remove return_t, as POD*, unique_ptr*, shared_ptr*, etc...
 // already assumes mutable in/out parameter
 #define return_t(X) X*
@@ -64,6 +52,12 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
     }                       \
     while (0)
 
+#ifdef __cplusplus
+[[noreturn]]
+#else
+_Noreturn
+#endif
+void raise_sigabrt(const char* func, const char* file, int line);
 #define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
 #ifdef __NDEBUG__
 #define THROW_ABORT_IF(X)
@@ -73,20 +67,24 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
     THROW_ABORT
 #endif
 
-#define THROW_INIT(X)                                        \
-    do {                                                     \
-        X > 0 ? raise_init_error(ctx->errors) : THROW_ABORT; \
-        _errval = 1;                                         \
-        EARLY_EXIT;                                          \
-    }                                                        \
+void raise_init_error(ErrorsContext* ctx);
+void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
+size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
+#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
+#define THROW_INIT(...)                                                               \
+    do {                                                                              \
+        GET_ERROR_MSG(__VA_ARGS__) > 0 ? raise_init_error(ctx->errors) : THROW_ABORT; \
+        _errval = 1;                                                                  \
+        EARLY_EXIT;                                                                   \
+    }                                                                                 \
     while (0)
-#define THROW_AT(X, Y)                                             \
-    do {                                                           \
-        X > 0 ? raise_error_at_line(ctx->errors, Y) : THROW_ABORT; \
-        _errval = 1;                                               \
-        EARLY_EXIT;                                                \
-    }                                                              \
+#define THROW_AT(X, ...)                                                                    \
+    do {                                                                                    \
+        GET_ERROR_MSG(__VA_ARGS__) > 0 ? raise_error_at_line(ctx->errors, X) : THROW_ABORT; \
+        _errval = 1;                                                                        \
+        EARLY_EXIT;                                                                         \
+    }                                                                                       \
     while (0)
-#define THROW_AT_LINE(X, Y) THROW_AT(X, handle_error_at_line(ctx->errors, Y))
+#define THROW_AT_LINE(X, ...) THROW_AT(handle_error_at_line(ctx->errors, X), __VA_ARGS__)
 
 #endif

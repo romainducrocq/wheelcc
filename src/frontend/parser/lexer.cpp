@@ -727,7 +727,7 @@ static error_t tokenize_file(Ctx ctx) {
                 }
                 case TOK_error: {
                     match = get_match(ctx, ctx->match_at, ctx->match_size);
-                    THROW_AT(GET_LEXER_MSG(MSG_invalid_tok, match), linenum);
+                    THROW_AT(linenum, GET_LEXER_MSG(MSG_invalid_tok, match));
                 }
                 default:
                     goto Lpass;
@@ -779,13 +779,13 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     switch (ctx->line[ctx->match_at]) {
         case '<': {
             if (!find_include(ctx->stdlibdirs, &filename) && !find_include(*ctx->p_includedirs, &filename)) {
-                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename), linenum);
+                THROW_AT(linenum, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
         }
         case '"': {
             if (!find_include(*ctx->p_includedirs, &filename)) {
-                THROW_AT(GET_LEXER_MSG(MSG_failed_include, filename), linenum);
+                THROW_AT(linenum, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
         }

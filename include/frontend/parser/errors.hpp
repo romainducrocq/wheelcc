@@ -74,15 +74,15 @@ const char* get_util_msg(MESSAGE_UTIL msg);
 const char* get_lexer_msg(MESSAGE_LEXER msg);
 const char* get_parser_msg(MESSAGE_PARSER msg);
 const char* get_semantic_msg(MESSAGE_SEMANTIC msg);
-#define GET_FATAL_MSG(X, ...) GET_ERROR_MSG(get_fatal_msg(X), (int)X, __VA_ARGS__)
-#define GET_ARG_MSG(X, ...) GET_ERROR_MSG(get_arg_msg(X), (int)X, __VA_ARGS__)
-#define GET_UTIL_MSG(X, ...) GET_ERROR_MSG(get_util_msg(X), (int)X, __VA_ARGS__)
-#define GET_LEXER_MSG(X, ...) GET_ERROR_MSG(get_lexer_msg(X), (int)X, __VA_ARGS__)
-#define GET_PARSER_MSG(X, ...) GET_ERROR_MSG(get_parser_msg(X), (int)X, __VA_ARGS__)
-#define GET_SEMANTIC_MSG(X, ...) GET_ERROR_MSG(get_semantic_msg(X), (int)X, __VA_ARGS__)
-#define GET_ARG_MSG_0(X) GET_ERROR_MSG(get_arg_msg(X), (int)X)
-#define GET_PARSER_MSG_0(X) GET_ERROR_MSG(get_parser_msg(X), (int)X)
-#define GET_SEMANTIC_MSG_0(X) GET_ERROR_MSG(get_semantic_msg(X), (int)X)
+#define GET_FATAL_MSG(X, ...) get_fatal_msg(X), (int)X, __VA_ARGS__
+#define GET_ARG_MSG(X, ...) get_arg_msg(X), (int)X, __VA_ARGS__
+#define GET_UTIL_MSG(X, ...) get_util_msg(X), (int)X, __VA_ARGS__
+#define GET_LEXER_MSG(X, ...) get_lexer_msg(X), (int)X, __VA_ARGS__
+#define GET_PARSER_MSG(X, ...) get_parser_msg(X), (int)X, __VA_ARGS__
+#define GET_SEMANTIC_MSG(X, ...) get_semantic_msg(X), (int)X, __VA_ARGS__
+#define GET_ARG_MSG_0(X) get_arg_msg(X), (int)X
+#define GET_PARSER_MSG_0(X) get_parser_msg(X), (int)X
+#define GET_SEMANTIC_MSG_0(X) get_semantic_msg(X), (int)X
 #define GCC_VERSION __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
 #define CLANG_VERSION __clang_major__, __clang_minor__, __clang_patchlevel__
 
