@@ -441,6 +441,14 @@ sds sdscpy(sds s, const char *t) {
     return sdscpylen(s, t, strlen(t));
 }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wstringop-overflow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
+
 /* Helper for sdscatlonglong() doing the actual number -> string
  * conversion. 's' must point to a string with room for at least
  * SDS_LLSTR_SIZE bytes.
@@ -518,6 +526,12 @@ int sdsull2str(char *s, unsigned long long v) {
     }
     return l;
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 /* Create an sds string from a long long value. It is much faster than:
  *

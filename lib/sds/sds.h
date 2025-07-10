@@ -43,10 +43,10 @@ extern const char *SDS_NOINIT;
 typedef char *sds;
 
 #ifdef __cplusplus
-#ifdef __APPLE__
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
-#else
+#elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -84,9 +84,9 @@ struct __attribute__ ((__packed__)) sdshdr64 {
 };
 
 #ifdef __cplusplus
-#ifdef __APPLE__
+#ifdef __clang__
 #pragma clang diagnostic pop
-#else
+#elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
 #endif

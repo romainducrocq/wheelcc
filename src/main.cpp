@@ -149,8 +149,8 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
 #ifdef _WIN32
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "Windows"));
-#elif defined(__APPLE__)
 
+#elif defined(__APPLE__)
 #if defined(__GNUC__) && !defined(__clang__)
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_compiler, "gcc"));
 #elif !defined(__clang__)
@@ -160,7 +160,6 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
 #elif defined(__linux__)
-
 #ifdef __arm__
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_arch, "arm"));
 #elif defined(__i386__)
