@@ -4,7 +4,6 @@
 #include <inttypes.h>
 #include <memory>
 #include <stdio.h>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/fileio.hpp"
@@ -62,7 +61,7 @@ static void verbose(Ctx ctx, const char* msg) {
 }
 
 #ifndef __NDEBUG__
-static void debug_toks(Ctx ctx, std::vector<Token>& tokens) {
+static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
     if (ctx->is_verbose) {
         pprint_toks(ctx->identifiers, tokens);
     }
@@ -183,7 +182,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
-        // debug_toks(ctx, tokens);
+        debug_toks(ctx, tokens);
         EARLY_EXIT;
     }
 #endif

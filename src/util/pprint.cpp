@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -23,12 +24,12 @@
 
 static void print_title(const char* title) { std::cout << "+\n+\n@@ " << std::string(title) << " @@"; }
 
-void pprint_toks(IdentifierContext* ctx, std::vector<Token>& tokens) {
+void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
     print_title("Tokens");
-    std::cout << "\nList[" << std::to_string(tokens.size()) << "]:";
-    for (Token& token : tokens) {
+    std::cout << "\nList[" << std::to_string(vec_size(tokens)) << "]:";
+    for (size_t i = 0; i < vec_size(tokens); ++i) {
         std::cout << "\n  ";
-        switch (token.tok_kind) {
+        switch (tokens[i].tok_kind) {
             case TOK_identifier:
             case TOK_string_literal:
             case TOK_char_const:
@@ -37,10 +38,10 @@ void pprint_toks(IdentifierContext* ctx, std::vector<Token>& tokens) {
             case TOK_uint_const:
             case TOK_ulong_const:
             case TOK_dbl_const:
-                std::cout << get_tok_kind_fmt(token.tok_kind) << "(" << get_tok_fmt(ctx, &token) << ")";
+                std::cout << get_tok_kind_fmt(tokens[i].tok_kind) << "(" << get_tok_fmt(ctx, &tokens[i]) << ")";
                 break;
             default:
-                std::cout << get_tok_fmt(ctx, &token);
+                std::cout << get_tok_fmt(ctx, &tokens[i]);
                 break;
         }
     }

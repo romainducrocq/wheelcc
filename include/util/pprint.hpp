@@ -2,7 +2,7 @@
 #define _UTIL_PPRINT_H
 
 #ifndef __NDEBUG__
-#include <vector>
+#include "util/c_std.hpp"
 
 struct Token;
 struct Ast;
@@ -14,7 +14,7 @@ struct IdentifierContext;
 
 // Pretty print
 
-void pprint_toks(IdentifierContext* ctx, std::vector<Token>& tokens);
+void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens);
 void pprint_ast(IdentifierContext* ctx, Ast* node, const char* name);
 void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend);
 void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend);
