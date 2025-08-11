@@ -46,7 +46,7 @@ struct MainContext {
     uint8_t optim_1_mask;
     uint8_t optim_2_code;
     string_t filename;
-    std::vector<const char*> includedirs;
+    vector_t(const char*) includedirs;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +179,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Lexing ... ");
-    TRY(lex_c_code(ctx->filename, std::move(ctx->includedirs), errors, fileio, &identifiers, &tokens));
+    TRY(lex_c_code(ctx->filename, &ctx->includedirs, errors, fileio, &identifiers, &tokens));
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
@@ -303,7 +303,7 @@ static error_t arg_parse(Ctx ctx, char** argv) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
-        ctx->includedirs.push_back((const char*)argv[i]);
+        vec_push_back(ctx->includedirs, (const char*)argv[i]);
     }
     while (argv[++i]);
     FINALLY;
@@ -331,6 +331,7 @@ error_t main(int, char** argv) {
         ctx.errors = &errors;
         ctx.is_verbose = false;
         ctx.filename = str_new(NULL);
+        ctx.includedirs = vec_new();
     }
     CATCH_ENTER;
     TRY(arg_parse(&ctx, argv));
@@ -347,5 +348,6 @@ error_t main(int, char** argv) {
     }
     vec_delete(fileio.file_reads);
     str_delete(ctx.filename);
+    vec_delete(ctx.includedirs);
     CATCH_EXIT;
 }

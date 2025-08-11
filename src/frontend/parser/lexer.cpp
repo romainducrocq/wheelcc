@@ -19,9 +19,9 @@ struct LexerContext {
     size_t line_size;
     size_t match_at;
     size_t match_size;
-    std::vector<const char*> stdlibdirs;
+    vector_t(const char*) includedirs;
+    vector_t(const char*) stdlibdirs;
     std::unordered_set<hash_t> includename_set;
-    std::vector<const char*>* p_includedirs;
     std::vector<Token>* p_toks;
     size_t total_linenum;
 };
@@ -746,8 +746,8 @@ static error_t tokenize_file(Ctx ctx) {
     CATCH_EXIT;
 }
 
-static bool find_include(std::vector<const char*>& dirnames, string_t* filename) {
-    for (size_t i = 0; i < dirnames.size(); ++i) {
+static bool find_include(vector_t(const char*) dirnames, string_t* filename) {
+    for (size_t i = 0; i < vec_size(dirnames); ++i) {
         string_t dirname = str_new(dirnames[i]);
         str_append(dirname, *filename);
         if (find_file(dirname)) {
@@ -778,13 +778,13 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     }
     switch (ctx->line[ctx->match_at]) {
         case '<': {
-            if (!find_include(ctx->stdlibdirs, &filename) && !find_include(*ctx->p_includedirs, &filename)) {
+            if (!find_include(ctx->stdlibdirs, &filename) && !find_include(ctx->includedirs, &filename)) {
                 THROW_AT(linenum, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
         }
         case '"': {
-            if (!find_include(*ctx->p_includedirs, &filename)) {
+            if (!find_include(ctx->includedirs, &filename)) {
                 THROW_AT(linenum, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
@@ -825,18 +825,19 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-error_t lex_c_code(const string_t filename, std::vector<const char*>&& includedirs, ErrorsContext* errors,
+error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, ErrorsContext* errors,
     FileIoContext* fileio, IdentifierContext* identifiers, return_t(std::vector<Token>) tokens) {
     LexerContext ctx;
     {
         ctx.errors = errors;
         ctx.fileio = fileio;
         ctx.identifiers = identifiers;
+        ctx.includedirs = *includedirs;
+        ctx.stdlibdirs = vec_new();
 #ifndef __APPLE__
-        ctx.stdlibdirs.push_back("/usr/include/");
-        ctx.stdlibdirs.push_back("/usr/local/include/");
+        vec_push_back(ctx.stdlibdirs, "/usr/include/");
+        vec_push_back(ctx.stdlibdirs, "/usr/local/include/");
 #endif
-        ctx.p_includedirs = &includedirs;
         ctx.p_toks = tokens;
         ctx.total_linenum = 0;
     }
@@ -850,9 +851,9 @@ error_t lex_c_code(const string_t filename, std::vector<const char*>&& includedi
     TRY(tokenize_file(&ctx));
 
     TRY(close_fread(ctx.fileio, 0));
-    includedirs.clear();
     set_filename(ctx.fileio, filename);
     FINALLY;
-    std::vector<const char*>().swap(includedirs);
+    vec_delete(ctx.stdlibdirs);
+    vec_delete(*includedirs);
     CATCH_EXIT;
 }
