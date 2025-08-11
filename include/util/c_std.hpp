@@ -25,7 +25,7 @@ typedef sds string_t;
         *Y = *X;        \
         *X = NULL;      \
     }                   \
-    while (0);
+    while (0)
 #define str_size(X) sdslen(X)
 #define str_back(X) (X)[str_size(X) - 1]
 #define str_append(X, Y)  \
@@ -60,5 +60,34 @@ typedef sds string_t;
     while (0)
 #define str_substr(X, Y, Z) sdsrange(X, Y, Z)
 #define str_to_string(X) (X) > 0 ? sdsfromunsignedlonglong((unsigned long long)(X)) : sdsfromlonglong((long long)(X))
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Vector
+
+#define vector_t(T) T*
+#define vec_delete(X) \
+    if (X) {          \
+        arrfree(X);   \
+        X = NULL;     \
+    }
+#define vec_new() NULL
+#define vec_move(X, Y)  \
+    do {                \
+        vec_delete(*Y); \
+        *Y = *X;        \
+        *X = NULL;      \
+    }                   \
+    while (0)
+#define vec_size(X) arrlenu(X)
+#define vec_back(X) (X)[vec_size(X) - 1]
+#define vec_clear(X) arrdeln(X, 0, vec_size(X))
+#define vec_pop_back(X) arrpop(X)
+#define vec_push_back(X, Y) arrput(X, Y)
+#define vec_push_back_new(X) arraddnindex(X, 1)
+#define vec_remove(X, Y) arrdel(X, Y)
+#define vec_remove_swap(X, Y) arrdelswap(X, Y)
+#define vec_resize(X, Y) arrsetlen(X, Y)
+#define vec_reserve(X, Y) arrsetcap(X, Y)
 
 #endif
