@@ -2,7 +2,6 @@
 #define _UTIL_FILEIO_H
 
 #include <stdio.h>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
@@ -26,7 +25,7 @@ struct FileIoContext {
     FILE* fd_write;
     string_t write_buf;
     string_t filename;
-    std::vector<FileRead> file_reads;
+    vector_t(FileRead) file_reads;
 };
 
 bool find_file(const char* filename);

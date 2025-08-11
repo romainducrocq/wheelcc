@@ -82,6 +82,7 @@ typedef sds string_t;
 #define vec_size(X) arrlenu(X)
 #define vec_back(X) (X)[vec_size(X) - 1]
 #define vec_clear(X) arrdeln(X, 0, vec_size(X))
+#define vec_empty(X) (vec_size(X) == 0)
 #define vec_pop_back(X) arrpop(X)
 #define vec_push_back(X, Y) arrput(X, Y)
 #define vec_push_back_new(X) arraddnindex(X, 1)

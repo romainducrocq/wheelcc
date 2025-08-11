@@ -326,6 +326,7 @@ error_t main(int, char** argv) {
         fileio.fd_write = nullptr;
         fileio.write_buf = str_new(NULL);
         fileio.filename = str_new(NULL);
+        fileio.file_reads = vec_new();
 
         ctx.errors = &errors;
         ctx.is_verbose = false;
@@ -341,9 +342,10 @@ error_t main(int, char** argv) {
     vec_delete(errors.fopen_lines);
     str_delete(fileio.write_buf);
     str_delete(fileio.filename);
-    for (size_t i = 0; i < fileio.file_reads.size(); ++i) {
+    for (size_t i = 0; i < vec_size(fileio.file_reads); ++i) {
         str_delete(fileio.file_reads[i].filename);
     }
+    vec_delete(fileio.file_reads);
     str_delete(ctx.filename);
     CATCH_EXIT;
 }

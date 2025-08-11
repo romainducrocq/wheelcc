@@ -22,8 +22,8 @@ bool find_file(const char* filename) {
 }
 
 const char* get_filename(Ctx ctx) {
-    if (!ctx->file_reads.empty()) {
-        return ctx->file_reads.back().filename;
+    if (!vec_empty(ctx->file_reads)) {
+        return vec_back(ctx->file_reads).filename;
     }
     else {
         return ctx->filename;
@@ -34,9 +34,9 @@ void set_filename(Ctx ctx, const string_t filename) { str_copy(filename, ctx->fi
 
 error_t open_fread(Ctx ctx, const string_t filename) {
     CATCH_ENTER;
-    for (size_t i = 0; i < ctx->file_reads.size(); ++i) {
+    for (size_t i = 0; i < vec_size(ctx->file_reads); ++i) {
         if (ctx->file_reads[i].fd) {
-            size_t n_fopens = ctx->file_reads.size() - i;
+            size_t n_fopens = vec_size(ctx->file_reads) - i;
             THROW_ABORT_IF(n_fopens > FOPEN_MAX);
             if (n_fopens == FOPEN_MAX) {
                 ctx->file_reads[i].len = 0;
@@ -55,14 +55,14 @@ error_t open_fread(Ctx ctx, const string_t filename) {
         THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, filename));
     }
     str_copy(filename, file_read.filename);
-    ctx->file_reads.emplace_back(std::move(file_read));
+    vec_push_back(ctx->file_reads, file_read);
     FINALLY;
     CATCH_EXIT;
 }
 
 error_t open_fwrite(Ctx ctx, const string_t filename) {
     CATCH_ENTER;
-    THROW_ABORT_IF(!ctx->file_reads.empty());
+    THROW_ABORT_IF(!vec_empty(ctx->file_reads));
 
     ctx->fd_write = nullptr;
     ctx->fd_write = fopen(filename, "wb");
@@ -77,17 +77,18 @@ error_t open_fwrite(Ctx ctx, const string_t filename) {
 }
 
 bool read_line(Ctx ctx, char*& line, size_t& line_size) {
-    ssize_t line_ssize = getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd);
+    ssize_t line_ssize =
+        getline(&vec_back(ctx->file_reads).buf, &vec_back(ctx->file_reads).len, vec_back(ctx->file_reads).fd);
     if (line_ssize == -1) {
         line = nullptr;
         line_size = 0;
-        ctx->file_reads.back().len = 0;
-        free(ctx->file_reads.back().buf);
-        ctx->file_reads.back().buf = nullptr;
+        vec_back(ctx->file_reads).len = 0;
+        free(vec_back(ctx->file_reads).buf);
+        vec_back(ctx->file_reads).buf = nullptr;
         return false;
     }
     else {
-        line = ctx->file_reads.back().buf;
+        line = vec_back(ctx->file_reads).buf;
         line_size = (size_t)line_ssize;
         return true;
     }
@@ -107,20 +108,21 @@ void write_buffer(Ctx ctx, const char* buf) {
 
 error_t close_fread(Ctx ctx, size_t linenum) {
     CATCH_ENTER;
-    fclose(ctx->file_reads.back().fd);
-    ctx->file_reads.back().fd = nullptr;
-    str_delete(ctx->file_reads.back().filename);
-    ctx->file_reads.pop_back();
+    fclose(vec_back(ctx->file_reads).fd);
+    vec_back(ctx->file_reads).fd = nullptr;
+    str_delete(vec_back(ctx->file_reads).filename);
+    vec_pop_back(ctx->file_reads);
 
-    if (!ctx->file_reads.empty() && !ctx->file_reads.back().fd) {
-        THROW_ABORT_IF(ctx->file_reads.back().buf || ctx->file_reads.back().len != 0);
-        ctx->file_reads.back().fd = fopen(ctx->file_reads.back().filename, "rb");
-        if (!ctx->file_reads.back().fd) {
-            THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename));
+    if (!vec_empty(ctx->file_reads) && !vec_back(ctx->file_reads).fd) {
+        THROW_ABORT_IF(vec_back(ctx->file_reads).buf || vec_back(ctx->file_reads).len != 0);
+        vec_back(ctx->file_reads).fd = fopen(vec_back(ctx->file_reads).filename, "rb");
+        if (!vec_back(ctx->file_reads).fd) {
+            THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, vec_back(ctx->file_reads).filename));
         }
         for (size_t i = 0; i < linenum; ++i) {
-            if (getline(&ctx->file_reads.back().buf, &ctx->file_reads.back().len, ctx->file_reads.back().fd) == -1) {
-                THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, ctx->file_reads.back().filename));
+            if (getline(&vec_back(ctx->file_reads).buf, &vec_back(ctx->file_reads).len, vec_back(ctx->file_reads).fd)
+                == -1) {
+                THROW_AT(0, GET_UTIL_MSG(MSG_failed_fread, vec_back(ctx->file_reads).filename));
             }
         }
     }
@@ -137,14 +139,15 @@ void close_fwrite(Ctx ctx) {
 }
 
 void free_fileio(Ctx ctx) {
-    for (auto& file_read : ctx->file_reads) {
-        if (file_read.buf != nullptr) {
-            free(file_read.buf);
-            file_read.buf = nullptr;
+    for (size_t i = 0; i < vec_size(ctx->file_reads); ++i) {
+        FileRead* file_read = &ctx->file_reads[i];
+        if (file_read->buf != nullptr) {
+            free(file_read->buf);
+            file_read->buf = nullptr;
         }
-        if (file_read.fd != nullptr) {
-            fclose(file_read.fd);
-            file_read.fd = nullptr;
+        if (file_read->fd != nullptr) {
+            fclose(file_read->fd);
+            file_read->fd = nullptr;
         }
     }
     if (ctx->fd_write != nullptr) {
