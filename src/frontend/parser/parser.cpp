@@ -36,7 +36,7 @@ struct ParserContext {
     Token* peek_tok;
     Token* next_tok_i;
     Token* peek_tok_i;
-    std::vector<Token>* p_toks;
+    vector_t(Token) * p_toks;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,8 +57,8 @@ static error_t expect_next(Ctx ctx, Token* next_tok, TOKEN_KIND expect_tok) {
 
 static error_t pop_next(Ctx ctx) {
     CATCH_ENTER;
-    if (ctx->pop_idx >= ctx->p_toks->size()) {
-        THROW_AT_LINE(ctx->p_toks->back().line, GET_PARSER_MSG_0(MSG_reached_eof));
+    if (ctx->pop_idx >= vec_size(*ctx->p_toks)) {
+        THROW_AT_LINE(vec_back(*ctx->p_toks).line, GET_PARSER_MSG_0(MSG_reached_eof));
     }
 
     ctx->next_tok = &(*ctx->p_toks)[ctx->pop_idx];
@@ -74,19 +74,15 @@ static error_t pop_next_i(Ctx ctx, size_t i) {
         ctx->next_tok_i = ctx->next_tok;
         EARLY_EXIT;
     }
-    if (ctx->pop_idx + i >= ctx->p_toks->size()) {
-        THROW_AT_LINE(ctx->p_toks->back().line, GET_PARSER_MSG_0(MSG_reached_eof));
+    if (ctx->pop_idx + i >= vec_size(*ctx->p_toks)) {
+        THROW_AT_LINE(vec_back(*ctx->p_toks).line, GET_PARSER_MSG_0(MSG_reached_eof));
     }
-
-    if (i == 1) {
-        std::swap((*ctx->p_toks)[ctx->pop_idx], (*ctx->p_toks)[ctx->pop_idx + 1]);
-    }
-    else {
-        Token swap_token_i = std::move((*ctx->p_toks)[ctx->pop_idx + i]);
+    {
+        Token swap_token_i = (*ctx->p_toks)[ctx->pop_idx + i];
         for (size_t j = ctx->pop_idx + i; j-- > ctx->pop_idx;) {
-            (*ctx->p_toks)[j + 1] = std::move((*ctx->p_toks)[j]);
+            (*ctx->p_toks)[j + 1] = (*ctx->p_toks)[j];
         }
-        (*ctx->p_toks)[ctx->pop_idx] = std::move(swap_token_i);
+        (*ctx->p_toks)[ctx->pop_idx] = swap_token_i;
     }
     TRY(pop_next(ctx));
     ctx->next_tok_i = &(*ctx->p_toks)[ctx->pop_idx - 1];
@@ -96,8 +92,8 @@ static error_t pop_next_i(Ctx ctx, size_t i) {
 
 static error_t peek_next(Ctx ctx) {
     CATCH_ENTER;
-    if (ctx->pop_idx >= ctx->p_toks->size()) {
-        THROW_AT_LINE(ctx->p_toks->back().line, GET_PARSER_MSG_0(MSG_reached_eof));
+    if (ctx->pop_idx >= vec_size(*ctx->p_toks)) {
+        THROW_AT_LINE(vec_back(*ctx->p_toks).line, GET_PARSER_MSG_0(MSG_reached_eof));
     }
 
     ctx->peek_tok = &(*ctx->p_toks)[ctx->pop_idx];
@@ -112,8 +108,8 @@ static error_t peek_next_i(Ctx ctx, size_t i) {
         ctx->peek_tok_i = ctx->peek_tok;
         EARLY_EXIT;
     }
-    if (ctx->pop_idx + i >= ctx->p_toks->size()) {
-        THROW_AT_LINE(ctx->p_toks->back().line, GET_PARSER_MSG_0(MSG_reached_eof));
+    if (ctx->pop_idx + i >= vec_size(*ctx->p_toks)) {
+        THROW_AT_LINE(vec_back(*ctx->p_toks).line, GET_PARSER_MSG_0(MSG_reached_eof));
     }
 
     ctx->peek_tok_i = &(*ctx->p_toks)[ctx->pop_idx + i];
@@ -2299,7 +2295,7 @@ static error_t parse_program(Ctx ctx, return_t(std::unique_ptr<CProgram>) c_ast)
     std::unique_ptr<CDeclaration> declaration;
     std::vector<std::unique_ptr<CDeclaration>> declarations;
     CATCH_ENTER;
-    while (ctx->pop_idx < ctx->p_toks->size()) {
+    while (ctx->pop_idx < vec_size(*ctx->p_toks)) {
         TRY(parse_declaration(ctx, &declaration));
         declarations.push_back(std::move(declaration));
     }
@@ -2313,21 +2309,15 @@ static error_t parse_program(Ctx ctx, return_t(std::unique_ptr<CProgram>) c_ast)
 error_t parse_tokens(vector_t(Token) * tokens, ErrorsContext* errors, IdentifierContext* identifiers,
     return_t(std::unique_ptr<CProgram>) c_ast) {
     ParserContext ctx;
-    // TODO rm
-    std::vector<Token> _tokens;
-    for (size_t i = 0; i < vec_size(*tokens); ++i) {
-        _tokens.push_back((*tokens)[i]);
-    }
-    //
     {
         ctx.errors = errors;
         ctx.identifiers = identifiers;
         ctx.pop_idx = 0;
-        ctx.p_toks = &_tokens; // TODO
+        ctx.p_toks = tokens;
     }
     CATCH_ENTER;
     TRY(parse_program(&ctx, c_ast));
-    THROW_ABORT_IF(ctx.pop_idx != _tokens.size()); // TODO
+    THROW_ABORT_IF(ctx.pop_idx != vec_size(*tokens));
 
     THROW_ABORT_IF(!*c_ast);
     FINALLY;
