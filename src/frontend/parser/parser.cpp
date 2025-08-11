@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <inttypes.h>
 #include <memory>
 #include <vector>
@@ -1594,8 +1593,9 @@ static error_t parse_block(Ctx ctx, return_t(std::unique_ptr<CBlock>) block) {
 // <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
 //                    | ("struct" | "union") <identifier>
 static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) type_specifier) {
+    size_t type_tok_kinds_size = 0;
     string_t type_tok_kinds_fmt = str_new(NULL);
-    std::vector<TOKEN_KIND> type_tok_kinds;
+    TOKEN_KIND type_tok_kinds[4] = {TOK_error, TOK_error, TOK_error, TOK_error};
     CATCH_ENTER;
     size_t line;
     size_t i = 0;
@@ -1615,12 +1615,14 @@ static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) typ
             case TOK_key_signed:
             case TOK_key_void:
                 TRY(pop_next_i(ctx, i));
-                type_tok_kinds.push_back(ctx->next_tok_i->tok_kind);
+                type_tok_kinds[type_tok_kinds_size] = ctx->next_tok_i->tok_kind;
+                type_tok_kinds_size++;
                 break;
             case TOK_key_struct:
             case TOK_key_union:
                 TRY(pop_next_i(ctx, i));
-                type_tok_kinds.push_back(ctx->next_tok_i->tok_kind);
+                type_tok_kinds[type_tok_kinds_size] = ctx->next_tok_i->tok_kind;
+                type_tok_kinds_size++;
                 TRY(peek_next_i(ctx, i));
                 TRY(expect_next(ctx, ctx->peek_tok_i, TOK_identifier));
                 break;
@@ -1645,7 +1647,7 @@ static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) typ
         }
     }
 Lbreak:
-    switch (type_tok_kinds.size()) {
+    switch (type_tok_kinds_size) {
         case 1: {
             switch (type_tok_kinds[0]) {
                 case TOK_key_char: {
@@ -1694,55 +1696,53 @@ Lbreak:
             break;
         }
         case 2: {
-            if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_unsigned) != type_tok_kinds.end()) {
-                if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end()) {
+            if (type_tok_kinds[0] == TOK_key_unsigned || type_tok_kinds[1] == TOK_key_unsigned) {
+                if (type_tok_kinds[0] == TOK_key_int || type_tok_kinds[1] == TOK_key_int) {
                     *type_specifier = std::make_shared<UInt>();
                     EARLY_EXIT;
                 }
-                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
-                         != type_tok_kinds.end()) {
+                else if (type_tok_kinds[0] == TOK_key_long || type_tok_kinds[1] == TOK_key_long) {
                     *type_specifier = std::make_shared<ULong>();
                     EARLY_EXIT;
                 }
-                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_char)
-                         != type_tok_kinds.end()) {
+                else if (type_tok_kinds[0] == TOK_key_char || type_tok_kinds[1] == TOK_key_char) {
                     *type_specifier = std::make_shared<UChar>();
                     EARLY_EXIT;
                 }
             }
-            else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_signed) != type_tok_kinds.end()) {
-                if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end()) {
+            else if (type_tok_kinds[0] == TOK_key_signed || type_tok_kinds[1] == TOK_key_signed) {
+                if (type_tok_kinds[0] == TOK_key_int || type_tok_kinds[1] == TOK_key_int) {
                     *type_specifier = std::make_shared<Int>();
                     EARLY_EXIT;
                 }
-                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
-                         != type_tok_kinds.end()) {
+                else if (type_tok_kinds[0] == TOK_key_long || type_tok_kinds[1] == TOK_key_long) {
                     *type_specifier = std::make_shared<Long>();
                     EARLY_EXIT;
                 }
-                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_char)
-                         != type_tok_kinds.end()) {
+                else if (type_tok_kinds[0] == TOK_key_char || type_tok_kinds[1] == TOK_key_char) {
                     *type_specifier = std::make_shared<SChar>();
                     EARLY_EXIT;
                 }
             }
-            else if ((std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end())
-                     && (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long)
-                         != type_tok_kinds.end())) {
+            else if ((type_tok_kinds[0] == TOK_key_int || type_tok_kinds[1] == TOK_key_int)
+                     && (type_tok_kinds[0] == TOK_key_long || type_tok_kinds[1] == TOK_key_long)) {
                 *type_specifier = std::make_shared<Long>();
                 EARLY_EXIT;
             }
             break;
         }
         case 3: {
-            if ((std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_int) != type_tok_kinds.end())
-                && (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_long) != type_tok_kinds.end())) {
-                if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_unsigned) != type_tok_kinds.end()) {
+            if ((type_tok_kinds[0] == TOK_key_int || type_tok_kinds[1] == TOK_key_int
+                    || type_tok_kinds[2] == TOK_key_int)
+                && (type_tok_kinds[0] == TOK_key_long || type_tok_kinds[1] == TOK_key_long
+                    || type_tok_kinds[2] == TOK_key_long)) {
+                if (type_tok_kinds[0] == TOK_key_unsigned || type_tok_kinds[1] == TOK_key_unsigned
+                    || type_tok_kinds[2] == TOK_key_unsigned) {
                     *type_specifier = std::make_shared<ULong>();
                     EARLY_EXIT;
                 }
-                else if (std::find(type_tok_kinds.begin(), type_tok_kinds.end(), TOK_key_signed)
-                         != type_tok_kinds.end()) {
+                else if (type_tok_kinds[0] == TOK_key_signed || type_tok_kinds[1] == TOK_key_signed
+                         || type_tok_kinds[2] == TOK_key_signed) {
                     *type_specifier = std::make_shared<Long>();
                     EARLY_EXIT;
                 }
@@ -1753,11 +1753,11 @@ Lbreak:
             break;
     }
     type_tok_kinds_fmt = str_new("(");
-    for (TOKEN_KIND type_tok_kind : type_tok_kinds) {
-        str_append(type_tok_kinds_fmt, get_tok_kind_fmt(type_tok_kind));
+    for (i = 0; i < type_tok_kinds_size; ++i) {
+        str_append(type_tok_kinds_fmt, get_tok_kind_fmt(type_tok_kinds[i]));
         str_append(type_tok_kinds_fmt, ", ");
     }
-    if (!type_tok_kinds.empty()) {
+    if (type_tok_kinds_size > 0) {
         str_pop_back(type_tok_kinds_fmt);
         str_pop_back(type_tok_kinds_fmt);
     }
