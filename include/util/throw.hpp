@@ -2,7 +2,6 @@
 #define _UTIL_THROW_H
 
 #include <unordered_map>
-#include <vector>
 #ifndef __cplusplus
 #include <stdnoreturn.h>
 #endif
@@ -32,7 +31,7 @@ struct ErrorsContext {
     bool is_stdout;
     size_t linebuf;
     std::unordered_map<hash_t, size_t> linebuf_map;
-    std::vector<FileOpenLine> fopen_lines;
+    vector_t(FileOpenLine) fopen_lines;
 };
 
 #define return_t(X) X*

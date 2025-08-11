@@ -320,6 +320,7 @@ error_t main(int, char** argv) {
         errors.errors = &errors;
         errors.fileio = &fileio;
         errors.is_stdout = false;
+        errors.fopen_lines = vec_new();
 
         fileio.errors = &errors;
         fileio.fd_write = nullptr;
@@ -334,9 +335,10 @@ error_t main(int, char** argv) {
     TRY(arg_parse(&ctx, argv));
     TRY(compile(&ctx, &errors, &fileio));
     FINALLY;
-    for (size_t i = 0; i < errors.fopen_lines.size(); ++i) {
+    for (size_t i = 0; i < vec_size(errors.fopen_lines); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
+    vec_delete(errors.fopen_lines);
     str_delete(fileio.write_buf);
     str_delete(fileio.filename);
     for (size_t i = 0; i < fileio.file_reads.size(); ++i) {

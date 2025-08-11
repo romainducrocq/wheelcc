@@ -798,19 +798,19 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     match_at = ctx->match_at;
     match_size = ctx->match_size;
 
-    str_copy(ctx->errors->fopen_lines.back().filename, fopen_name);
+    str_copy(vec_back(ctx->errors->fopen_lines).filename, fopen_name);
     TRY(open_fread(ctx->fileio, filename));
     {
         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, str_new(NULL)};
         str_move(&filename, &fopen_line.filename);
-        ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
+        vec_push_back(ctx->errors->fopen_lines, fopen_line);
     }
     TRY(tokenize_file(ctx));
     TRY(close_fread(ctx->fileio, linenum));
     {
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, str_new(NULL)};
         str_move(&fopen_name, &fopen_line.filename);
-        ctx->errors->fopen_lines.emplace_back(std::move(fopen_line));
+        vec_push_back(ctx->errors->fopen_lines, fopen_line);
     }
 
     ctx->line = line;
@@ -845,7 +845,7 @@ error_t lex_c_code(const string_t filename, std::vector<const char*>&& includedi
     {
         FileOpenLine fopen_line = {1, 1, str_new(NULL)};
         str_copy(filename, fopen_line.filename);
-        ctx.errors->fopen_lines.emplace_back(std::move(fopen_line));
+        vec_push_back(ctx.errors->fopen_lines, fopen_line);
     }
     TRY(tokenize_file(&ctx));
 

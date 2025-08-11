@@ -88,12 +88,12 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
 }
 
 size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
-    for (size_t i = 0; i < ctx->fopen_lines.size() - 1; ++i) {
+    for (size_t i = 0; i < vec_size(ctx->fopen_lines) - 1; ++i) {
         if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
             set_filename(ctx->fileio, ctx->fopen_lines[i].filename);
             return total_linenum - ctx->fopen_lines[i].total_linenum + ctx->fopen_lines[i].linenum;
         }
     }
-    set_filename(ctx->fileio, ctx->fopen_lines.back().filename);
-    return total_linenum - ctx->fopen_lines.back().total_linenum + ctx->fopen_lines.back().linenum;
+    set_filename(ctx->fileio, vec_back(ctx->fopen_lines).filename);
+    return total_linenum - vec_back(ctx->fopen_lines).total_linenum + vec_back(ctx->fopen_lines).linenum;
 }
