@@ -120,7 +120,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     IdentifierContext identifiers;
     FrontEndContext frontend;
     BackEndContext backend;
-    std::vector<Token> tokens;
+    vector_t(Token) tokens = vec_new();
     std::unique_ptr<CProgram> c_ast;
     std::unique_ptr<TacProgram> tac_ast;
     std::unique_ptr<AsmProgram> asm_ast;
@@ -183,13 +183,13 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
-        debug_toks(ctx, tokens);
+        // debug_toks(ctx, tokens);
         EARLY_EXIT;
     }
 #endif
 
     verbose(ctx, "-- Parsing ... ");
-    TRY(parse_tokens(std::move(tokens), errors, &identifiers, &c_ast));
+    TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
@@ -260,6 +260,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     for (auto& identifier : identifiers.hash_table) {
         str_delete(identifier.second);
     }
+    vec_delete(tokens);
     CATCH_EXIT;
 }
 

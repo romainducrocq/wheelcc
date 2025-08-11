@@ -1,5 +1,4 @@
 #include <unordered_set>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/fileio.hpp"
@@ -22,7 +21,7 @@ struct LexerContext {
     vector_t(const char*) stdlibdirs;
     std::unordered_set<hash_t> includename_set;
     vector_t(const char*) * p_includedirs;
-    std::vector<Token>* p_toks;
+    vector_t(Token) * p_toks;
     size_t total_linenum;
 };
 
@@ -738,7 +737,7 @@ static error_t tokenize_file(Ctx ctx) {
             continue;
         Lpass:
             Token token = {match_kind, match_tok, ctx->total_linenum};
-            ctx->p_toks->emplace_back(std::move(token));
+            vec_push_back(*ctx->p_toks, token);
         }
     }
     FINALLY;
@@ -826,7 +825,7 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, ErrorsContext* errors,
-    FileIoContext* fileio, IdentifierContext* identifiers, return_t(std::vector<Token>) tokens) {
+    FileIoContext* fileio, IdentifierContext* identifiers, return_t(vector_t(Token)) tokens) {
     LexerContext ctx;
     {
         ctx.errors = errors;

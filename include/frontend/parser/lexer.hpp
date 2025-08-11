@@ -1,8 +1,6 @@
 #ifndef _FRONT_PARSER_LEXER_H
 #define _FRONT_PARSER_LEXER_H
 
-#include <vector>
-
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
 
@@ -25,6 +23,6 @@ struct Token {
 };
 
 error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, ErrorsContext* errors,
-    FileIoContext* fileio, IdentifierContext* identifiers, return_t(std::vector<Token>) tokens);
+    FileIoContext* fileio, IdentifierContext* identifiers, return_t(vector_t(Token)) tokens);
 
 #endif

@@ -2310,21 +2310,27 @@ static error_t parse_program(Ctx ctx, return_t(std::unique_ptr<CProgram>) c_ast)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-error_t parse_tokens(std::vector<Token>&& tokens, ErrorsContext* errors, IdentifierContext* identifiers,
+error_t parse_tokens(vector_t(Token) * tokens, ErrorsContext* errors, IdentifierContext* identifiers,
     return_t(std::unique_ptr<CProgram>) c_ast) {
     ParserContext ctx;
+    // TODO rm
+    std::vector<Token> _tokens;
+    for (size_t i = 0; i < vec_size(*tokens); ++i) {
+        _tokens.push_back((*tokens)[i]);
+    }
+    //
     {
         ctx.errors = errors;
         ctx.identifiers = identifiers;
         ctx.pop_idx = 0;
-        ctx.p_toks = &tokens;
+        ctx.p_toks = &_tokens; // TODO
     }
     CATCH_ENTER;
     TRY(parse_program(&ctx, c_ast));
-    THROW_ABORT_IF(ctx.pop_idx != tokens.size());
+    THROW_ABORT_IF(ctx.pop_idx != _tokens.size()); // TODO
 
     THROW_ABORT_IF(!*c_ast);
     FINALLY;
-    std::vector<Token>().swap(tokens);
+    vec_delete(*tokens);
     CATCH_EXIT;
 }
