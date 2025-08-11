@@ -19,9 +19,9 @@ struct LexerContext {
     size_t line_size;
     size_t match_at;
     size_t match_size;
-    vector_t(const char*) includedirs;
     vector_t(const char*) stdlibdirs;
     std::unordered_set<hash_t> includename_set;
+    vector_t(const char*) * p_includedirs;
     std::vector<Token>* p_toks;
     size_t total_linenum;
 };
@@ -778,13 +778,13 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     }
     switch (ctx->line[ctx->match_at]) {
         case '<': {
-            if (!find_include(ctx->stdlibdirs, &filename) && !find_include(ctx->includedirs, &filename)) {
+            if (!find_include(ctx->stdlibdirs, &filename) && !find_include(*ctx->p_includedirs, &filename)) {
                 THROW_AT(linenum, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
         }
         case '"': {
-            if (!find_include(ctx->includedirs, &filename)) {
+            if (!find_include(*ctx->p_includedirs, &filename)) {
                 THROW_AT(linenum, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
@@ -832,12 +832,12 @@ error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs,
         ctx.errors = errors;
         ctx.fileio = fileio;
         ctx.identifiers = identifiers;
-        ctx.includedirs = *includedirs;
         ctx.stdlibdirs = vec_new();
 #ifndef __APPLE__
         vec_push_back(ctx.stdlibdirs, "/usr/include/");
         vec_push_back(ctx.stdlibdirs, "/usr/local/include/");
 #endif
+        ctx.p_includedirs = includedirs;
         ctx.p_toks = tokens;
         ctx.total_linenum = 0;
     }
