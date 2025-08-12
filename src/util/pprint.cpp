@@ -820,9 +820,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CB_t: {
             print_field("CB", "", ++t);
             CB* p_node = static_cast<CB*>(node);
-            print_field("List[" + std::to_string(p_node->block_items.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->block_items) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->block_items)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->block_items); ++i) {
+                print_ast(ctx, p_node->block_items[i].get(), t + 1);
             }
             break;
         }

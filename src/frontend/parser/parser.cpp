@@ -1570,16 +1570,20 @@ static error_t parse_block_item(Ctx ctx, return_t(std::unique_ptr<CBlockItem>) b
 
 static error_t parse_b_block(Ctx ctx, return_t(std::unique_ptr<CBlock>) block) {
     std::unique_ptr<CBlockItem> block_item;
-    std::vector<std::unique_ptr<CBlockItem>> block_items;
+    vector_t(std::unique_ptr<CBlockItem>) block_items = vec_new();
     CATCH_ENTER;
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind != TOK_close_brace) {
         TRY(parse_block_item(ctx, &block_item));
-        block_items.push_back(std::move(block_item));
+        vec_move_back(block_items, block_item);
         TRY(peek_next(ctx));
     }
-    *block = std::make_unique<CB>(std::move(block_items));
+    *block = std::make_unique<CB>(&block_items);
     FINALLY;
+    for (size_t i = 0; i < vec_size(block_items); ++i) {
+        block_items[i].reset();
+    }
+    vec_delete(block_items);
     CATCH_EXIT;
 }
 

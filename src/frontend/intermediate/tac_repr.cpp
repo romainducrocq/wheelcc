@@ -1331,14 +1331,14 @@ static void declaration_instr(Ctx ctx, CDeclaration* node) {
 //             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
 //             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier) | Label(identifier)
-static void repr_instr_list(Ctx ctx, const std::vector<std::unique_ptr<CBlockItem>>& node_list) {
-    for (const auto& block_item : node_list) {
-        switch (block_item->type()) {
+static void repr_instr_list(Ctx ctx, const vector_t(std::unique_ptr<CBlockItem>) node_list) {
+    for (size_t i = 0; i < vec_size(node_list); ++i) {
+        switch (node_list[i]->type()) {
             case AST_CS_t:
-                statement_instr(ctx, static_cast<CS*>(block_item.get())->statement.get());
+                statement_instr(ctx, static_cast<CS*>(node_list[i].get())->statement.get());
                 break;
             case AST_CD_t:
-                declaration_instr(ctx, static_cast<CD*>(block_item.get())->declaration.get());
+                declaration_instr(ctx, static_cast<CD*>(node_list[i].get())->declaration.get());
                 break;
             default:
                 THROW_ABORT;

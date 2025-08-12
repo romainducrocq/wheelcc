@@ -656,10 +656,11 @@ struct CBlock : Ast {
 struct CBlockItem;
 struct CB : CBlock {
     AST_T type() override;
-    CB() = default;
-    CB(std::vector<std::unique_ptr<CBlockItem>>&& block_items);
+    CB();
+    CB(vector_t(std::unique_ptr<CBlockItem>) * block_items);
+    ~CB();
 
-    std::vector<std::unique_ptr<CBlockItem>> block_items;
+    vector_t(std::unique_ptr<CBlockItem>) block_items;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

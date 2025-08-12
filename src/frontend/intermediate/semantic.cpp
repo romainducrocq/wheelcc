@@ -3146,15 +3146,15 @@ static error_t reslv_statement(Ctx ctx, CStatement* node) {
 
 static error_t reslv_declaration(Ctx ctx, CDeclaration* node);
 
-static error_t reslv_block_items(Ctx ctx, const std::vector<std::unique_ptr<CBlockItem>>& node_list) {
+static error_t reslv_block_items(Ctx ctx, const vector_t(std::unique_ptr<CBlockItem>) node_list) {
     CATCH_ENTER;
-    for (const auto& block_item : node_list) {
-        switch (block_item->type()) {
+    for (size_t i = 0; i < vec_size(node_list); ++i) {
+        switch (node_list[i]->type()) {
             case AST_CS_t:
-                TRY(reslv_statement(ctx, static_cast<CS*>(block_item.get())->statement.get()));
+                TRY(reslv_statement(ctx, static_cast<CS*>(node_list[i].get())->statement.get()));
                 break;
             case AST_CD_t:
-                TRY(reslv_declaration(ctx, static_cast<CD*>(block_item.get())->declaration.get()));
+                TRY(reslv_declaration(ctx, static_cast<CD*>(node_list[i].get())->declaration.get()));
                 break;
             default:
                 THROW_ABORT;

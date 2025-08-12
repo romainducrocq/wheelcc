@@ -239,7 +239,16 @@ CInitDecl::CInitDecl(std::unique_ptr<CVariableDeclaration>&& init) : init(std::m
 
 CInitExp::CInitExp(std::unique_ptr<CExp>&& init) : init(std::move(init)) {}
 
-CB::CB(std::vector<std::unique_ptr<CBlockItem>>&& block_items) : block_items(std::move(block_items)) {}
+CB::CB() : block_items(vec_new()) {}
+CB::CB(vector_t(std::unique_ptr<CBlockItem>) * block_items) : block_items(vec_new()) {
+    vec_move(block_items, &this->block_items);
+}
+CB::~CB() {
+    for (size_t i = 0; i < vec_size(this->block_items); ++i) {
+        this->block_items[i].reset();
+    }
+    vec_delete(this->block_items);
+}
 
 CS::CS(std::unique_ptr<CStatement>&& statement) : statement(std::move(statement)) {}
 
