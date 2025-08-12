@@ -1875,7 +1875,7 @@ static error_t proc_arr_decltor(
 }
 
 static error_t proc_param_decltor(
-    Ctx ctx, CParam* node, std::vector<TIdentifier>& params, std::vector<std::shared_ptr<Type>>& param_types) {
+    Ctx ctx, CParam* node, std::vector<TIdentifier>& params, vector_t(std::shared_ptr<Type>) * param_types) {
     Declarator decltor;
     std::shared_ptr<Type> param_type;
     CATCH_ENTER;
@@ -1883,7 +1883,7 @@ static error_t proc_param_decltor(
     TRY(proc_decltor(ctx, node->decltor.get(), std::move(param_type), decltor));
     THROW_ABORT_IF(decltor.derived_type->type() == AST_FunType_t);
     params.push_back(decltor.name);
-    param_types.push_back(std::move(decltor.derived_type));
+    vec_move_back(*param_types, decltor.derived_type);
     FINALLY;
     CATCH_EXIT;
 }
@@ -1891,7 +1891,7 @@ static error_t proc_param_decltor(
 static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     std::shared_ptr<Type> derived_type;
     std::vector<TIdentifier> params;
-    std::vector<std::shared_ptr<Type>> param_types;
+    vector_t(std::shared_ptr<Type>) param_types = vec_new();
     CATCH_ENTER;
     if (node->decltor->type() != AST_CIdent_t) {
         THROW_AT_LINE(ctx->next_tok->line, GET_PARSER_MSG_0(MSG_derived_fun_decl));
@@ -1899,16 +1899,20 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
 
     TIdentifier name;
     params.reserve(node->param_list.size());
-    param_types.reserve(node->param_list.size());
+    vec_reserve(param_types, node->param_list.size());
     for (const auto& param : node->param_list) {
-        TRY(proc_param_decltor(ctx, param.get(), params, param_types));
+        TRY(proc_param_decltor(ctx, param.get(), params, &param_types));
     }
     name = static_cast<CIdent*>(node->decltor.get())->name;
-    derived_type = std::make_shared<FunType>(std::move(param_types), std::move(base_type));
+    derived_type = std::make_shared<FunType>(&param_types, std::move(base_type));
     decltor.name = name;
     decltor.derived_type = std::move(derived_type);
     decltor.params = std::move(params);
     FINALLY;
+    for (size_t i = 0; i < vec_size(param_types); ++i) {
+        param_types[i].reset();
+    }
+    vec_delete(param_types);
     CATCH_EXIT;
 }
 

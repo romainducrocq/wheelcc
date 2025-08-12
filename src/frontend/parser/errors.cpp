@@ -368,15 +368,15 @@ static const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string
         str_delete(type_fmt);
     }
     str_append(*fun_fmt, ")(");
-    for (const auto& param_type : fun_type->param_types) {
+    for (size_t i = 0; i < vec_size(fun_type->param_types); ++i) {
         {
             string_t type_fmt = str_new(NULL);
-            str_append(*fun_fmt, get_type_fmt(ctx, param_type.get(), &type_fmt));
+            str_append(*fun_fmt, get_type_fmt(ctx, fun_type->param_types[i].get(), &type_fmt));
             str_delete(type_fmt);
         }
         str_append(*fun_fmt, ", ");
     }
-    if (!fun_type->param_types.empty()) {
+    if (!vec_empty(fun_type->param_types)) {
         str_pop_back(*fun_fmt);
         str_pop_back(*fun_fmt);
     }

@@ -7,6 +7,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,12 +72,13 @@ struct Void : Type {
 
 struct FunType : Type {
     AST_T type() override;
-    FunType() = default;
-    FunType(std::vector<std::shared_ptr<Type>>&& param_types, std::shared_ptr<Type>&& ret_type);
+    FunType();
+    FunType(vector_t(std::shared_ptr<Type>) * param_types, std::shared_ptr<Type>&& ret_type);
+    ~FunType();
 
     TULong param_reg_mask;
     TULong ret_reg_mask;
-    std::vector<std::shared_ptr<Type>> param_types;
+    vector_t(std::shared_ptr<Type>) param_types;
     std::shared_ptr<Type> ret_type;
 };
 

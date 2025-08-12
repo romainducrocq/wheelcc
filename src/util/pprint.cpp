@@ -165,9 +165,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             FunType* p_node = static_cast<FunType*>(node);
             print_field("TULong", std::to_string(p_node->param_reg_mask), t + 1);
             print_field("TULong", std::to_string(p_node->ret_reg_mask), t + 1);
-            print_field("List[" + std::to_string(p_node->param_types.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->param_types) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->param_types)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->param_types); ++i) {
+                print_ast(ctx, p_node->param_types[i].get(), t + 1);
             }
             print_ast(ctx, p_node->ret_type.get(), t);
             break;

@@ -3,6 +3,10 @@
 
 #include "sds/sds.h"
 #include "stb_ds/stb_ds.h"
+#ifdef __cplusplus
+// TODO rm
+#include <new>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,9 +87,18 @@ typedef sds string_t;
 #define vec_back(X) (X)[vec_size(X) - 1]
 #define vec_clear(X) arrdeln(X, 0, vec_size(X))
 #define vec_empty(X) (vec_size(X) == 0)
+#define vec_emplace_back(X) arraddnindex(X, 1)
+#ifdef __cplusplus
+// TODO rm
+#define vec_move_back(X, Y)                                       \
+    do {                                                          \
+        stbds_arrmaybegrow(X, 1);                                 \
+        new (&(X)[stbds_header(X)->length++]) auto(std::move(Y)); \
+    }                                                             \
+    while (0)
+#endif
 #define vec_pop_back(X) arrpop(X)
 #define vec_push_back(X, Y) arrput(X, Y)
-#define vec_push_back_new(X) arraddnindex(X, 1)
 #define vec_remove(X, Y) arrdel(X, Y)
 #define vec_remove_swap(X, Y) arrdelswap(X, Y)
 #define vec_resize(X, Y) arrsetlen(X, Y)

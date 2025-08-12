@@ -82,11 +82,11 @@ static bool is_same_type(Type* type_1, Type* type_2) {
 }
 
 static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
-    if (fun_type_1->param_types.size() != fun_type_2->param_types.size()
+    if (vec_size(fun_type_1->param_types) != vec_size(fun_type_2->param_types)
         || !is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
         return false;
     }
-    for (size_t i = 0; i < fun_type_1->param_types.size(); ++i) {
+    for (size_t i = 0; i < vec_size(fun_type_1->param_types); ++i) {
         if (!is_same_type(fun_type_1->param_types[i].get(), fun_type_2->param_types[i].get())) {
             return false;
         }
@@ -1172,9 +1172,9 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
     }
     fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
-    if (fun_type->param_types.size() != node->args.size()) {
+    if (vec_size(fun_type->param_types) != node->args.size()) {
         strto_fmt_1 = str_to_string(node->args.size());
-        strto_fmt_2 = str_to_string(fun_type->param_types.size());
+        strto_fmt_2 = str_to_string(vec_size(fun_type->param_types));
         THROW_AT_LINE(node->line,
             GET_SEMANTIC_MSG(MSG_call_with_wrong_argc, str_fmt_name(node->name, &name_fmt), strto_fmt_1, strto_fmt_2));
     }
@@ -1828,7 +1828,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     if (ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end()) {
         FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
         if (!(ctx->frontend->symbol_table[node->name]->type_t->type() == AST_FunType_t
-                && fun_type->param_types.size() == node->params.size()
+                && vec_size(fun_type->param_types) == node->params.size()
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),

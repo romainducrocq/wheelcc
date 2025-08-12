@@ -49,9 +49,18 @@ AST_T Symbol::type() { return AST_Symbol_t; }
 AST_T StructMember::type() { return AST_StructMember_t; }
 AST_T StructTypedef::type() { return AST_StructTypedef_t; }
 
-FunType::FunType(std::vector<std::shared_ptr<Type>>&& param_types, std::shared_ptr<Type>&& ret_type) :
-    param_reg_mask(NULL_REGISTER_MASK), ret_reg_mask(NULL_REGISTER_MASK), param_types(std::move(param_types)),
-    ret_type(std::move(ret_type)) {}
+FunType::FunType() : param_types(vec_new()) {}
+FunType::FunType(vector_t(std::shared_ptr<Type>) * param_types, std::shared_ptr<Type>&& ret_type) :
+    param_reg_mask(NULL_REGISTER_MASK), ret_reg_mask(NULL_REGISTER_MASK), param_types(vec_new()),
+    ret_type(std::move(ret_type)) {
+    vec_move(param_types, &this->param_types);
+}
+FunType::~FunType() {
+    for (size_t i = 0; i < vec_size(param_types); ++i) {
+        param_types[i].reset();
+    }
+    vec_delete(this->param_types);
+}
 
 Pointer::Pointer(std::shared_ptr<Type>&& ref_type) : ref_type(std::move(ref_type)) {}
 
