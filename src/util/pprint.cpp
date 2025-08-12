@@ -114,9 +114,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CStringLiteral_t: {
             print_field("CStringLiteral", "", ++t);
             CStringLiteral* p_node = static_cast<CStringLiteral*>(node);
-            print_field("List[" + std::to_string(p_node->value.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->value) {
-                print_field("TChar", std::to_string(item), t + 2);
+            print_field("List[" + std::to_string(vec_size(p_node->value)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->value); ++i) {
+                print_field("TChar", std::to_string(p_node->value[i]), t + 2);
             }
             break;
         }
@@ -1817,8 +1817,9 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
                 static_cast<ConstantAttr*>(frontend->symbol_table[static_const.second]->attrs.get());
             if (constant_attr->static_init->type() == AST_StringInit_t) {
                 std::cout << "\n    String: \"";
-                for (const TChar& byte :
-                    static_cast<StringInit*>(constant_attr->static_init.get())->literal.get()->value) {
+                StringInit* string_init = static_cast<StringInit*>(constant_attr->static_init.get());
+                for (size_t i = 0; i < vec_size(string_init->literal.get()->value); ++i) {
+                    TChar byte = string_init->literal.get()->value[i];
                     switch (byte) {
                         case 39:
                             std::cout << "\\'";

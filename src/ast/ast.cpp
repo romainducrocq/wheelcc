@@ -1,5 +1,3 @@
-#include <vector>
-
 #include "util/c_std.hpp"
 
 #include "ast/ast.hpp"
@@ -34,7 +32,9 @@ CConstChar::CConstChar(TChar value) : value(value) {}
 
 CConstUChar::CConstUChar(TUChar value) : value(value) {}
 
-CStringLiteral::CStringLiteral(std::vector<TChar>&& value) : value(std::move(value)) {}
+CStringLiteral::CStringLiteral() : value(vec_new()) {}
+CStringLiteral::CStringLiteral(vector_t(TChar) * value) : value(vec_new()) { vec_move(value, &this->value); }
+CStringLiteral::~CStringLiteral() { vec_delete(this->value); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

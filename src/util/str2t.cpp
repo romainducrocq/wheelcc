@@ -1,7 +1,6 @@
 #include <cstring>
 #include <inttypes.h>
 #include <stdio.h>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -21,52 +20,52 @@ uint32_t uintmax_to_uint32(uintmax_t uintmax) { return (uint32_t)uintmax; }
 
 uint64_t uintmax_to_uint64(uintmax_t uintmax) { return (uint64_t)uintmax; }
 
-void string_to_literal(const string_t str_string, std::vector<int8_t>& string_literal) {
+void string_to_literal(const string_t str_string, vector_t(int8_t) * string_literal) {
     THROW_ABORT_IF(str_size(str_string) < 2);
     for (size_t byte = 1; byte < str_size(str_string) - 1; ++byte) {
-        char c_char = (char)str_string[byte];
-        if (c_char == '\\') {
-            c_char = (char)str_string[++byte];
-            switch (c_char) {
+        char str_char = (char)str_string[byte];
+        if (str_char == '\\') {
+            str_char = (char)str_string[++byte];
+            switch (str_char) {
                 case '\'':
-                    string_literal.push_back(39);
+                    vec_push_back(*string_literal, 39);
                     break;
                 case '"':
-                    string_literal.push_back(34);
+                    vec_push_back(*string_literal, 34);
                     break;
                 case '?':
-                    string_literal.push_back(63);
+                    vec_push_back(*string_literal, 63);
                     break;
                 case '\\':
-                    string_literal.push_back(92);
+                    vec_push_back(*string_literal, 92);
                     break;
                 case 'a':
-                    string_literal.push_back(7);
+                    vec_push_back(*string_literal, 7);
                     break;
                 case 'b':
-                    string_literal.push_back(8);
+                    vec_push_back(*string_literal, 8);
                     break;
                 case 'f':
-                    string_literal.push_back(12);
+                    vec_push_back(*string_literal, 12);
                     break;
                 case 'n':
-                    string_literal.push_back(10);
+                    vec_push_back(*string_literal, 10);
                     break;
                 case 'r':
-                    string_literal.push_back(13);
+                    vec_push_back(*string_literal, 13);
                     break;
                 case 't':
-                    string_literal.push_back(9);
+                    vec_push_back(*string_literal, 9);
                     break;
                 case 'v':
-                    string_literal.push_back(11);
+                    vec_push_back(*string_literal, 11);
                     break;
                 default:
                     THROW_ABORT;
             }
         }
         else {
-            string_literal.push_back((int8_t)c_char);
+            vec_push_back(*string_literal, (int8_t)str_char);
         }
     }
 }
@@ -127,10 +126,10 @@ static void string_literal_byte_to_hex(int8_t value, string_t* str_hex) {
     str_append(*str_hex, byte_hex);
 }
 
-int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int8_t string_bytes_to_int8(const vector_t(int8_t) string_literal, size_t byte_at) {
     string_t str_hex = str_new("");
     for (size_t byte = byte_at + 1; byte-- > byte_at;) {
-        if (byte < string_literal.size()) {
+        if (byte < vec_size(string_literal)) {
             string_literal_byte_to_hex(string_literal[byte], &str_hex);
         }
     }
@@ -139,10 +138,10 @@ int8_t string_bytes_to_int8(const std::vector<int8_t>& string_literal, size_t by
     return hex_value;
 }
 
-int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int32_t string_bytes_to_int32(const vector_t(int8_t) string_literal, size_t byte_at) {
     string_t str_hex = str_new("");
     for (size_t byte = byte_at + 4; byte-- > byte_at;) {
-        if (byte < string_literal.size()) {
+        if (byte < vec_size(string_literal)) {
             string_literal_byte_to_hex(string_literal[byte], &str_hex);
         }
     }
@@ -151,10 +150,10 @@ int32_t string_bytes_to_int32(const std::vector<int8_t>& string_literal, size_t 
     return hex_value;
 }
 
-int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t byte_at) {
+int64_t string_bytes_to_int64(const vector_t(int8_t) string_literal, size_t byte_at) {
     string_t str_hex = str_new("");
     for (size_t byte = byte_at + 8; byte-- > byte_at;) {
-        if (byte < string_literal.size()) {
+        if (byte < vec_size(string_literal)) {
             string_literal_byte_to_hex(string_literal[byte], &str_hex);
         }
     }
@@ -163,9 +162,10 @@ int64_t string_bytes_to_int64(const std::vector<int8_t>& string_literal, size_t 
     return hex_value;
 }
 
-string_t string_literal_to_const(const std::vector<int8_t>& string_literal) {
+string_t string_literal_to_const(const vector_t(int8_t) string_literal) {
     string_t string_const = str_new("");
-    for (int8_t byte : string_literal) {
+    for (size_t i = 0; i < vec_size(string_literal); ++i) {
+        int8_t byte = string_literal[i];
         switch (byte) {
             case 39:
                 str_append(string_const, "\\047");

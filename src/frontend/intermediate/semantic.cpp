@@ -600,7 +600,7 @@ static void check_const_exp(CConstant* node) {
 }
 
 static void check_string_exp(CString* node) {
-    TLong size = ((TLong)node->literal->value.size()) + 1l;
+    TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
     std::shared_ptr<Type> elem_type = std::make_shared<Char>();
     node->exp_type = std::make_shared<Array>(size, std::move(elem_type));
 }
@@ -1579,9 +1579,9 @@ static error_t check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) 
     if (!is_type_char(arr_type->elem_type.get())) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_string_init_not_char_arr, str_fmt_type(arr_type, &type_fmt)));
     }
-    else if (node->literal->value.size() > (size_t)arr_type->size) {
+    else if (vec_size(node->literal->value) > (size_t)arr_type->size) {
         strto_fmt_1 = str_to_string(arr_type->size);
-        strto_fmt_2 = str_to_string(node->literal->value.size());
+        strto_fmt_2 = str_to_string(vec_size(node->literal->value));
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_string_init_overflow, strto_fmt_1, strto_fmt_2));
     }
     FINALLY;
@@ -2036,7 +2036,7 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
             ctx->frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
-                TLong size = ((TLong)node->literal->value.size()) + 1l;
+                TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
                 std::shared_ptr<Type> elem_type = std::make_shared<Char>();
                 constant_type = std::make_shared<Array>(size, std::move(elem_type));
             }
@@ -2061,7 +2061,7 @@ static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* stati
     CATCH_ENTER;
     TLong byte;
     TRY(check_bound_string_init(ctx, node, static_arr_type));
-    byte = static_arr_type->size - ((TLong)node->literal->value.size()) - 1l;
+    byte = static_arr_type->size - ((TLong)vec_size(node->literal->value)) - 1l;
     {
         bool is_null_term = byte >= 0l;
         TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());

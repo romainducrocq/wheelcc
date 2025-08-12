@@ -3,7 +3,6 @@
 
 #include <inttypes.h>
 #include <unordered_map>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -90,10 +89,11 @@ struct CConstUChar : CConst {
 // string = StringLiteral(int*)
 struct CStringLiteral : Ast {
     AST_T type() override;
-    CStringLiteral() = default;
-    CStringLiteral(std::vector<TChar>&& value);
+    CStringLiteral();
+    CStringLiteral(vector_t(TChar) * value);
+    ~CStringLiteral();
 
-    std::vector<TChar> value;
+    vector_t(TChar) value;
 };
 
 /*

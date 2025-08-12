@@ -128,17 +128,18 @@ static error_t parse_identifier(Ctx ctx, size_t i, return_t(TIdentifier) identif
 // string = StringLiteral(int*)
 // <string> ::= ? A string token ?
 static error_t parse_string_literal(Ctx ctx, return_t(std::shared_ptr<CStringLiteral>) literal) {
-    std::vector<TChar> value;
+    vector_t(TChar) value = vec_new();
     CATCH_ENTER;
-    string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], value);
+    string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], &value);
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind == TOK_string_literal) {
         TRY(pop_next(ctx));
-        string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], value);
+        string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], &value);
         TRY(peek_next(ctx));
     }
-    *literal = std::make_shared<CStringLiteral>(std::move(value));
+    *literal = std::make_shared<CStringLiteral>(&value);
     FINALLY;
+    vec_delete(value);
     CATCH_EXIT;
 }
 
@@ -1613,19 +1614,21 @@ static error_t parse_type_specifier(Ctx ctx, return_t(std::shared_ptr<Type>) typ
             case TOK_key_double:
             case TOK_key_unsigned:
             case TOK_key_signed:
-            case TOK_key_void:
+            case TOK_key_void: {
                 TRY(pop_next_i(ctx, i));
                 type_tok_kinds[type_tok_kinds_size] = ctx->next_tok_i->tok_kind;
                 type_tok_kinds_size++;
                 break;
+            }
             case TOK_key_struct:
-            case TOK_key_union:
+            case TOK_key_union: {
                 TRY(pop_next_i(ctx, i));
                 type_tok_kinds[type_tok_kinds_size] = ctx->next_tok_i->tok_kind;
                 type_tok_kinds_size++;
                 TRY(peek_next_i(ctx, i));
                 TRY(expect_next(ctx, ctx->peek_tok_i, TOK_identifier));
                 break;
+            }
             case TOK_key_static:
             case TOK_key_extern:
             case TOK_binop_multiply:

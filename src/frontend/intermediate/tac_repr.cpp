@@ -153,7 +153,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node)
             ctx->frontend->string_const_table[string_const] = string_const_label;
             std::shared_ptr<Type> constant_type;
             {
-                TLong size = ((TLong)node->literal->value.size()) + 1l;
+                TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
                 std::shared_ptr<Type> elem_type = std::make_shared<Char>();
                 constant_type = std::make_shared<Array>(size, std::move(elem_type));
             }
@@ -1154,7 +1154,8 @@ static void string_single_init_instr(Ctx ctx, CString* node, Array* arr_type, TI
     size_t byte_at = 0;
 
     size_t bytes_size = (size_t)arr_type->size;
-    size_t bytes_copy = arr_type->size > (TLong)node->literal->value.size() ? node->literal->value.size() : bytes_size;
+    size_t bytes_copy =
+        arr_type->size > (TLong)vec_size(node->literal->value) ? vec_size(node->literal->value) : bytes_size;
 
     while (byte_at < bytes_copy) {
         TIdentifier dst_name = symbol;
