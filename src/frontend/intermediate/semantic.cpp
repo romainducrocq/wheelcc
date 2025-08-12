@@ -3450,8 +3450,8 @@ static error_t reslv_declaration(Ctx ctx, CDeclaration* node) {
 static error_t resolve_program(Ctx ctx, CProgram* node) {
     CATCH_ENTER;
     enter_scope(ctx);
-    for (const auto& declaration : node->declarations) {
-        TRY(reslv_declaration(ctx, declaration.get()));
+    for (size_t i = 0; i < vec_size(node->declarations); ++i) {
+        TRY(reslv_declaration(ctx, node->declarations[i].get()));
     }
     FINALLY;
     CATCH_EXIT;

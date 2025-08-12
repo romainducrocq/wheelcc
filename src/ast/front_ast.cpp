@@ -1,5 +1,4 @@
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -306,4 +305,13 @@ CVarDecl::CVarDecl(std::unique_ptr<CVariableDeclaration>&& var_decl) : var_decl(
 
 CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration>&& struct_decl) : struct_decl(std::move(struct_decl)) {}
 
-CProgram::CProgram(std::vector<std::unique_ptr<CDeclaration>>&& declarations) : declarations(std::move(declarations)) {}
+CProgram::CProgram() : declarations(vec_new()) {}
+CProgram::CProgram(vector_t(std::unique_ptr<CDeclaration>) * declarations) : declarations(vec_new()) {
+    vec_move(declarations, &this->declarations);
+}
+CProgram::~CProgram() {
+    for (size_t i = 0; i < vec_size(this->declarations); ++i) {
+        this->declarations[i].reset();
+    }
+    vec_delete(this->declarations);
+}

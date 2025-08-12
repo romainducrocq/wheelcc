@@ -942,9 +942,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CProgram_t: {
             print_field("CProgram", "", ++t);
             CProgram* p_node = static_cast<CProgram*>(node);
-            print_field("List[" + std::to_string(p_node->declarations.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->declarations) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->declarations)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->declarations); ++i) {
+                print_ast(ctx, p_node->declarations[i].get(), t + 1);
             }
             break;
         }

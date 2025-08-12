@@ -2,7 +2,6 @@
 #define _AST_FRONT_AST_H
 
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -842,10 +841,11 @@ struct CStructDecl : CDeclaration {
 // AST = Program(declaration*)
 struct CProgram : Ast {
     AST_T type() override;
-    CProgram() = default;
-    CProgram(std::vector<std::unique_ptr<CDeclaration>>&& declarations);
+    CProgram();
+    CProgram(vector_t(std::unique_ptr<CDeclaration>) * declarations);
+    ~CProgram();
 
-    std::vector<std::unique_ptr<CDeclaration>> declarations;
+    vector_t(std::unique_ptr<CDeclaration>) declarations;
 };
 
 /*

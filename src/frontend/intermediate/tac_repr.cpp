@@ -1478,8 +1478,8 @@ static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
     std::vector<std::unique_ptr<TacTopLevel>> fun_toplvls;
     {
         ctx->p_toplvls = &fun_toplvls;
-        for (const auto& declaration : node->declarations) {
-            declaration_toplvl(ctx, declaration.get());
+        for (size_t i = 0; i < vec_size(node->declarations); ++i) {
+            declaration_toplvl(ctx, node->declarations[i].get());
         }
         ctx->p_toplvls = nullptr;
     }

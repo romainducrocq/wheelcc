@@ -1,6 +1,5 @@
 #include <inttypes.h>
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -2329,14 +2328,18 @@ static error_t parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>
 // AST = Program(declaration*)
 static error_t parse_program(Ctx ctx, return_t(std::unique_ptr<CProgram>) c_ast) {
     std::unique_ptr<CDeclaration> declaration;
-    std::vector<std::unique_ptr<CDeclaration>> declarations;
+    vector_t(std::unique_ptr<CDeclaration>) declarations = vec_new();
     CATCH_ENTER;
     while (ctx->pop_idx < vec_size(*ctx->p_toks)) {
         TRY(parse_declaration(ctx, &declaration));
-        declarations.push_back(std::move(declaration));
+        vec_move_back(declarations, declaration);
     }
-    *c_ast = std::make_unique<CProgram>(std::move(declarations));
+    *c_ast = std::make_unique<CProgram>(&declarations);
     FINALLY;
+    for (size_t i = 0; i < vec_size(declarations); ++i) {
+        declarations[i].reset();
+    }
+    vec_delete(declarations);
     CATCH_EXIT;
 }
 
