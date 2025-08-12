@@ -1652,26 +1652,26 @@ static std::unique_ptr<CSingleInit> check_single_zero_init(Type* elem_type) {
 }
 
 static std::unique_ptr<CCompoundInit> check_arr_zero_init(Ctx ctx, Array* arr_type) {
-    std::vector<std::unique_ptr<CInitializer>> zero_inits;
+    vector_t(std::unique_ptr<CInitializer>) zero_inits = vec_new();
     size_t arr_type_size = (size_t)arr_type->size;
-    zero_inits.reserve(arr_type_size);
+    vec_reserve(zero_inits, arr_type_size);
     for (size_t i = 0; i < arr_type_size; ++i) {
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, arr_type->elem_type.get());
-        zero_inits.push_back(std::move(initializer));
+        vec_move_back(zero_inits, initializer);
     }
-    return std::make_unique<CCompoundInit>(std::move(zero_inits));
+    return std::make_unique<CCompoundInit>(&zero_inits);
 }
 
 static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure* struct_type) {
-    std::vector<std::unique_ptr<CInitializer>> zero_inits;
-    zero_inits.reserve(vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names));
+    vector_t(std::unique_ptr<CInitializer>) zero_inits = vec_new();
+    vec_reserve(zero_inits, vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names));
     for (size_t i = 0; i < vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names); ++i) {
         TIdentifier member_name = ctx->frontend->struct_typedef_table[struct_type->tag]->member_names[i];
         const auto& member = ctx->frontend->struct_typedef_table[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
-        zero_inits.push_back(std::move(initializer));
+        vec_move_back(zero_inits, initializer);
     }
-    return std::make_unique<CCompoundInit>(std::move(zero_inits));
+    return std::make_unique<CCompoundInit>(&zero_inits);
 }
 
 static std::unique_ptr<CInitializer> check_zero_init(Ctx ctx, Type* init_type) {
@@ -1690,9 +1690,9 @@ static error_t check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_typ
     string_t strto_fmt_1 = str_new(NULL);
     string_t strto_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    if (node->initializers.size() > (size_t)arr_type->size) {
+    if (vec_size(node->initializers) > (size_t)arr_type->size) {
         strto_fmt_1 = str_to_string(arr_type->size);
-        strto_fmt_2 = str_to_string(node->initializers.size());
+        strto_fmt_2 = str_to_string(vec_size(node->initializers));
         THROW_AT_LINE(get_compound_line(node),
             GET_SEMANTIC_MSG(MSG_arr_init_overflow, strto_fmt_1, str_fmt_type(arr_type, &type_fmt), strto_fmt_2));
     }
@@ -1709,8 +1709,8 @@ static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* 
     string_t strto_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     size_t bound = struct_type->is_union ? 1 : ctx->frontend->struct_typedef_table[struct_type->tag]->members.size();
-    if (node->initializers.size() > bound) {
-        strto_fmt_1 = str_to_string(node->initializers.size());
+    if (vec_size(node->initializers) > bound) {
+        strto_fmt_1 = str_to_string(vec_size(node->initializers));
         strto_fmt_2 = str_to_string(bound);
         THROW_AT_LINE(get_compound_line(node),
             GET_SEMANTIC_MSG(MSG_struct_init_overflow, str_fmt_type(struct_type, &type_fmt), strto_fmt_1, strto_fmt_2));
@@ -1723,19 +1723,19 @@ static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* 
 }
 
 static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>& init_type) {
-    while (node->initializers.size() < (size_t)arr_type->size) {
+    while (vec_size(node->initializers) < (size_t)arr_type->size) {
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, arr_type->elem_type.get());
-        node->initializers.push_back(std::move(zero_init));
+        vec_move_back(node->initializers, zero_init);
     }
     node->init_type = init_type;
 }
 
 static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
-    for (size_t i = node->initializers.size();
+    for (size_t i = vec_size(node->initializers);
          i < ctx->frontend->struct_typedef_table[struct_type->tag]->members.size(); ++i) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, member->member_type.get());
-        node->initializers.push_back(std::move(zero_init));
+        vec_move_back(node->initializers, zero_init);
     }
     node->init_type = init_type;
 }
@@ -2116,11 +2116,11 @@ static error_t check_static_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_ty
     CATCH_ENTER;
     TRY(check_bound_arr_init(ctx, node, arr_type));
 
-    for (const auto& initializer : node->initializers) {
-        TRY(check_static_init(ctx, initializer.get(), arr_type->elem_type.get()));
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        TRY(check_static_init(ctx, node->initializers[i].get(), arr_type->elem_type.get()));
     }
-    if ((size_t)arr_type->size > node->initializers.size()) {
-        check_static_no_init(ctx, arr_type->elem_type.get(), arr_type->size - node->initializers.size());
+    if ((size_t)arr_type->size > vec_size(node->initializers)) {
+        check_static_no_init(ctx, arr_type->elem_type.get(), arr_type->size - vec_size(node->initializers));
     }
     FINALLY;
     CATCH_EXIT;
@@ -2132,7 +2132,7 @@ static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure*
     TRY(check_bound_struct_init(ctx, node, struct_type));
 
     size = 0l;
-    for (size_t i = 0; i < node->initializers.size(); ++i) {
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         if (member->offset != size) {
             check_static_no_init(ctx, nullptr, member->offset - size);
@@ -3192,8 +3192,8 @@ static error_t reslv_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std
     CATCH_ENTER;
     TRY(check_bound_arr_init(ctx, node, arr_type));
 
-    for (const auto& initializer : node->initializers) {
-        TRY(reslv_initializer(ctx, initializer.get(), arr_type->elem_type));
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        TRY(reslv_initializer(ctx, node->initializers[i].get(), arr_type->elem_type));
     }
     check_arr_init(ctx, node, arr_type, init_type);
     FINALLY;
@@ -3205,7 +3205,7 @@ static error_t reslv_struct_init(
     CATCH_ENTER;
     TRY(check_bound_struct_init(ctx, node, struct_type));
 
-    for (size_t i = 0; i < node->initializers.size(); ++i) {
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         TRY(reslv_initializer(ctx, node->initializers[i].get(), member->member_type));
     }

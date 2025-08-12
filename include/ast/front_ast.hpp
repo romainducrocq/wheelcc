@@ -728,10 +728,11 @@ struct CSingleInit : CInitializer {
 
 struct CCompoundInit : CInitializer {
     AST_T type() override;
-    CCompoundInit() = default;
-    CCompoundInit(std::vector<std::unique_ptr<CInitializer>>&& initializers);
+    CCompoundInit();
+    CCompoundInit(vector_t(std::unique_ptr<CInitializer>) * initializers);
+    ~CCompoundInit();
 
-    std::vector<std::unique_ptr<CInitializer>> initializers;
+    vector_t(std::unique_ptr<CInitializer>) initializers;
     /*
     std::shared_ptr<Type> init_type;
     */

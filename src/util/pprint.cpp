@@ -870,9 +870,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_CCompoundInit_t: {
             print_field("CCompoundInit", "", ++t);
             CCompoundInit* p_node = static_cast<CCompoundInit*>(node);
-            print_field("List[" + std::to_string(p_node->initializers.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->initializers) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->initializers)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->initializers); ++i) {
+                print_ast(ctx, p_node->initializers[i].get(), t + 1);
             }
             print_ast(ctx, p_node->init_type.get(), t);
             break;

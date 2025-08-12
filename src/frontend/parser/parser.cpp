@@ -1812,7 +1812,7 @@ static error_t parse_single_init(Ctx ctx, return_t(std::unique_ptr<CInitializer>
 }
 
 static error_t parse_compound_init(Ctx ctx, return_t(std::unique_ptr<CInitializer>) initializer) {
-    std::vector<std::unique_ptr<CInitializer>> initializers;
+    vector_t(std::unique_ptr<CInitializer>) initializers = vec_new();
     CATCH_ENTER;
     TRY(pop_next(ctx));
     while (true) {
@@ -1821,7 +1821,7 @@ static error_t parse_compound_init(Ctx ctx, return_t(std::unique_ptr<CInitialize
             break;
         }
         TRY(parse_initializer(ctx, initializer));
-        initializers.push_back(std::move(*initializer));
+        vec_move_back(initializers, *initializer);
         TRY(peek_next(ctx));
         if (ctx->peek_tok->tok_kind == TOK_close_brace) {
             break;
@@ -1829,12 +1829,16 @@ static error_t parse_compound_init(Ctx ctx, return_t(std::unique_ptr<CInitialize
         TRY(pop_next(ctx));
         TRY(expect_next(ctx, ctx->next_tok, TOK_comma_separator));
     }
-    if (initializers.empty()) {
+    if (vec_empty(initializers)) {
         THROW_AT_LINE(ctx->peek_tok->line, GET_PARSER_MSG_0(MSG_empty_compound_init));
     }
     TRY(pop_next(ctx));
-    *initializer = std::make_unique<CCompoundInit>(std::move(initializers));
+    *initializer = std::make_unique<CCompoundInit>(&initializers);
     FINALLY;
+    for (size_t i = 0; i < vec_size(initializers); ++i) {
+        initializers[i].reset();
+    }
+    vec_delete(initializers);
     CATCH_EXIT;
 }
 

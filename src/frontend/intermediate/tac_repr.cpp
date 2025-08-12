@@ -1244,9 +1244,9 @@ static void scalar_compound_init_instr(Ctx ctx, CSingleInit* node, Type* init_ty
 }
 
 static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong& size) {
-    for (const auto& initializer : node->initializers) {
-        compound_init_instr(ctx, initializer.get(), arr_type->elem_type.get(), symbol, size);
-        if (initializer->type() == AST_CSingleInit_t) {
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        compound_init_instr(ctx, node->initializers[i].get(), arr_type->elem_type.get(), symbol, size);
+        if (node->initializers[i]->type() == AST_CSingleInit_t) {
             size += get_type_scale(ctx, arr_type->elem_type.get());
         }
     }
@@ -1254,7 +1254,7 @@ static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_typ
 
 static void struct_compound_init_instr(
     Ctx ctx, CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong& size) {
-    for (size_t i = node->initializers.size(); i-- > 0;) {
+    for (size_t i = vec_size(node->initializers); i-- > 0;) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         TLong offset = size + member->offset;
         compound_init_instr(ctx, node->initializers[i].get(), member->member_type.get(), symbol, offset);

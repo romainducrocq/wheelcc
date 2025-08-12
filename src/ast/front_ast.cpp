@@ -256,8 +256,16 @@ CD::CD(std::unique_ptr<CDeclaration>&& declaration) : declaration(std::move(decl
 
 CSingleInit::CSingleInit(std::unique_ptr<CExp>&& exp) : exp(std::move(exp)) {}
 
-CCompoundInit::CCompoundInit(std::vector<std::unique_ptr<CInitializer>>&& initializers) :
-    initializers(std::move(initializers)) {}
+CCompoundInit::CCompoundInit() : initializers(vec_new()) {}
+CCompoundInit::CCompoundInit(vector_t(std::unique_ptr<CInitializer>) * initializers) : initializers(vec_new()) {
+    vec_move(initializers, &this->initializers);
+}
+CCompoundInit::~CCompoundInit() {
+    for (size_t i = 0; i < vec_size(this->initializers); ++i) {
+        this->initializers[i].reset();
+    }
+    vec_delete(this->initializers);
+}
 
 CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type>&& member_type, size_t line) :
     member_name(member_name), member_type(std::move(member_type)), line(line) {}
