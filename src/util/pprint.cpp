@@ -899,9 +899,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             print_field("CFunctionDeclaration", "", ++t);
             CFunctionDeclaration* p_node = static_cast<CFunctionDeclaration*>(node);
             print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
-            print_field("List[" + std::to_string(p_node->params.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->params) {
-                print_field("TIdentifier", std::string(ctx->hash_table[item]), t + 2);
+            print_field("List[" + std::to_string(vec_size(p_node->params)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->params); ++i) {
+                print_field("TIdentifier", std::string(ctx->hash_table[p_node->params[i]]), t + 2);
             }
             print_ast(ctx, p_node->body.get(), t);
             print_ast(ctx, p_node->fun_type.get(), t);

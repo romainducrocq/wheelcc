@@ -284,12 +284,16 @@ CStructDeclaration::~CStructDeclaration() {
     vec_delete(this->members);
 }
 
-CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier>&& params,
+CFunctionDeclaration::CFunctionDeclaration() : params(vec_new()) {}
+CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params,
     std::unique_ptr<CBlock>&& body, std::shared_ptr<Type>&& fun_type, std::unique_ptr<CStorageClass>&& storage_class,
     size_t line) :
     name(name),
-    params(std::move(params)), body(std::move(body)), fun_type(std::move(fun_type)),
-    storage_class(std::move(storage_class)), line(line) {}
+    params(vec_new()), body(std::move(body)), fun_type(std::move(fun_type)), storage_class(std::move(storage_class)),
+    line(line) {
+    vec_move(params, &this->params);
+}
+CFunctionDeclaration::~CFunctionDeclaration() { vec_delete(this->params); }
 
 CVariableDeclaration::CVariableDeclaration(TIdentifier name, std::unique_ptr<CInitializer>&& init,
     std::shared_ptr<Type>&& var_type, std::unique_ptr<CStorageClass>&& storage_class, size_t line) :

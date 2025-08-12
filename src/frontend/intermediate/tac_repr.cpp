@@ -1359,7 +1359,8 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
     TIdentifier name = node->name;
     bool is_glob = static_cast<FunAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get())->is_glob;
 
-    std::vector<TIdentifier> params(node->params.begin(), node->params.end());
+    std::vector<TIdentifier> params(vec_size(node->params));
+    memcpy(params.data(), node->params, vec_size(node->params) * sizeof(TIdentifier));
 
     std::vector<std::unique_ptr<TacInstruction>> body;
     {

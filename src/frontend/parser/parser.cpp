@@ -23,7 +23,7 @@ struct AbstractDeclarator {
 struct Declarator {
     TIdentifier name;
     std::shared_ptr<Type> derived_type;
-    std::vector<TIdentifier> params;
+    vector_t(TIdentifier) params;
 };
 
 struct ParserContext {
@@ -1467,6 +1467,7 @@ static error_t parse_var_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& s
 
 static error_t parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) for_init) {
     Declarator decltor;
+    decltor.params = vec_new();
     std::unique_ptr<CStorageClass> storage_class;
     std::unique_ptr<CVariableDeclaration> var_decl;
     CATCH_ENTER;
@@ -1478,6 +1479,7 @@ static error_t parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) 
     TRY(parse_var_declaration(ctx, std::move(storage_class), std::move(decltor), &var_decl));
     *for_init = std::make_unique<CInitDecl>(std::move(var_decl));
     FINALLY;
+    vec_delete(decltor.params);
     CATCH_EXIT;
 }
 
@@ -1887,22 +1889,24 @@ static error_t proc_arr_decltor(
 }
 
 static error_t proc_param_decltor(
-    Ctx ctx, CParam* node, std::vector<TIdentifier>& params, vector_t(std::shared_ptr<Type>) * param_types) {
+    Ctx ctx, CParam* node, vector_t(TIdentifier) * params, vector_t(std::shared_ptr<Type>) * param_types) {
     Declarator decltor;
+    decltor.params = vec_new();
     std::shared_ptr<Type> param_type;
     CATCH_ENTER;
     param_type = node->param_type;
     TRY(proc_decltor(ctx, node->decltor.get(), std::move(param_type), decltor));
     THROW_ABORT_IF(decltor.derived_type->type() == AST_FunType_t);
-    params.push_back(decltor.name);
+    vec_push_back(*params, decltor.name);
     vec_move_back(*param_types, decltor.derived_type);
     FINALLY;
+    vec_delete(decltor.params);
     CATCH_EXIT;
 }
 
 static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
     std::shared_ptr<Type> derived_type;
-    std::vector<TIdentifier> params;
+    vector_t(TIdentifier) params = vec_new();
     vector_t(std::shared_ptr<Type>) param_types = vec_new();
     CATCH_ENTER;
     if (node->decltor->type() != AST_CIdent_t) {
@@ -1910,17 +1914,18 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     }
 
     TIdentifier name;
-    params.reserve(vec_size(node->param_list));
+    vec_reserve(params, vec_size(node->param_list));
     vec_reserve(param_types, vec_size(node->param_list));
     for (size_t i = 0; i < vec_size(node->param_list); ++i) {
-        TRY(proc_param_decltor(ctx, node->param_list[i].get(), params, &param_types));
+        TRY(proc_param_decltor(ctx, node->param_list[i].get(), &params, &param_types));
     }
     name = static_cast<CIdent*>(node->decltor.get())->name;
     derived_type = std::make_shared<FunType>(&param_types, std::move(base_type));
     decltor.name = name;
     decltor.derived_type = std::move(derived_type);
-    decltor.params = std::move(params);
+    vec_move(&params, &decltor.params);
     FINALLY;
+    vec_delete(params);
     for (size_t i = 0; i < vec_size(param_types); ++i) {
         param_types[i].reset();
     }
@@ -2145,7 +2150,7 @@ static error_t parse_fun_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& s
         TRY(expect_next(ctx, ctx->peek_tok, TOK_open_brace));
         TRY(parse_block(ctx, &body));
     }
-    *fun_decl = std::make_unique<CFunctionDeclaration>(decltor.name, std::move(decltor.params), std::move(body),
+    *fun_decl = std::make_unique<CFunctionDeclaration>(decltor.name, &decltor.params, std::move(body),
         std::move(decltor.derived_type), std::move(storage_class), line);
     FINALLY;
     CATCH_EXIT;
@@ -2175,6 +2180,7 @@ static error_t parse_var_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& s
 // member_declaration = MemberDeclaration(identifier, type)
 static error_t parse_member_declaration(Ctx ctx, return_t(std::unique_ptr<CMemberDeclaration>) member_decl) {
     Declarator decltor;
+    decltor.params = vec_new();
     std::unique_ptr<CStorageClass> storage_class;
     CATCH_ENTER;
     size_t line;
@@ -2193,6 +2199,7 @@ static error_t parse_member_declaration(Ctx ctx, return_t(std::unique_ptr<CMembe
     TRY(expect_next(ctx, ctx->next_tok, TOK_semicolon));
     *member_decl = std::make_unique<CMemberDeclaration>(decltor.name, std::move(decltor.derived_type), line);
     FINALLY;
+    vec_delete(decltor.params);
     CATCH_EXIT;
 }
 
@@ -2286,6 +2293,7 @@ static error_t parse_decltor_decl(
 // declaration = FunDecl(function_declaration) | VarDecl(variable_declaration) | StructDecl(struct_declaration)
 static error_t parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>) declaration) {
     Declarator decltor;
+    decltor.params = vec_new();
     std::unique_ptr<CStorageClass> storage_class;
     CATCH_ENTER;
     TRY(peek_next(ctx));
@@ -2313,6 +2321,7 @@ static error_t parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>
         TRY(parse_var_decl(ctx, std::move(storage_class), std::move(decltor), declaration));
     }
     FINALLY;
+    vec_delete(decltor.params);
     CATCH_EXIT;
 }
 

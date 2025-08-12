@@ -1782,7 +1782,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     std::shared_ptr<Type> param_type;
     CATCH_ENTER;
     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-    for (size_t i = 0; i < node->params.size(); ++i) {
+    for (size_t i = 0; i < vec_size(node->params); ++i) {
         ctx->errors->linebuf = node->line;
         TRY(reslv_struct_type(ctx, fun_type->param_types[i].get()));
         if (fun_type->param_types[i]->type() == AST_Void_t) {
@@ -1829,7 +1829,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     if (ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end()) {
         FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
         if (!(ctx->frontend->symbol_table[node->name]->type_t->type() == AST_FunType_t
-                && vec_size(fun_type->param_types) == node->params.size()
+                && vec_size(fun_type->param_types) == vec_size(node->params)
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
@@ -3252,12 +3252,13 @@ static error_t reslv_initializer(Ctx ctx, CInitializer* node, std::shared_ptr<Ty
 static error_t reslv_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    for (TIdentifier& param : node->params) {
+    for (size_t i = 0; i < vec_size(node->params); ++i) {
+        TIdentifier param = node->params[i];
         if (ctx->scoped_identifier_maps.back().find(param) != ctx->scoped_identifier_maps.back().end()) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(param, &name_fmt)));
         }
         ctx->scoped_identifier_maps.back()[param] = rslv_var_identifier(ctx->identifiers, param);
-        param = ctx->scoped_identifier_maps.back()[param];
+        node->params[i] = ctx->scoped_identifier_maps.back()[param];
     }
     TRY(check_fun_params_decl(ctx, node));
     FINALLY;
@@ -3289,7 +3290,7 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
     TRY(check_ret_fun_decl(ctx, node));
 
     enter_scope(ctx);
-    if (!node->params.empty()) {
+    if (!vec_empty(node->params)) {
         TRY(reslv_fun_params_decl(ctx, node));
     }
     TRY(check_fun_decl(ctx, node));

@@ -772,12 +772,13 @@ struct CStructDeclaration : Ast {
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 struct CFunctionDeclaration : Ast {
     AST_T type() override;
-    CFunctionDeclaration() = default;
-    CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier>&& params, std::unique_ptr<CBlock>&& body,
+    CFunctionDeclaration();
+    CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params, std::unique_ptr<CBlock>&& body,
         std::shared_ptr<Type>&& fun_type, std::unique_ptr<CStorageClass>&& storage_class, size_t line);
+    ~CFunctionDeclaration();
 
     TIdentifier name;
-    std::vector<TIdentifier> params;
+    vector_t(TIdentifier) params;
     // Optional
     std::unique_ptr<CBlock> body;
     std::shared_ptr<Type> fun_type;
