@@ -567,14 +567,15 @@ struct CFor : CStatement {
 
 struct CSwitch : CStatement {
     AST_T type() override;
-    CSwitch() = default;
+    CSwitch();
     CSwitch(std::unique_ptr<CExp>&& match, std::unique_ptr<CStatement>&& body);
+    ~CSwitch();
 
     TIdentifier target;
     bool is_default;
     std::unique_ptr<CExp> match;
     std::unique_ptr<CStatement> body;
-    std::vector<std::unique_ptr<CExp>> cases;
+    vector_t(std::unique_ptr<CExp>) cases;
 };
 
 struct CCase : CStatement {

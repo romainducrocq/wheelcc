@@ -1048,7 +1048,7 @@ static void switch_statement_instr(Ctx ctx, CSwitch* node) {
     TIdentifier target_break = repr_loop_identifier(ctx->identifiers, LBL_Lbreak, node->target);
     {
         std::shared_ptr<TacValue> match = repr_exp_instr(ctx, node->match.get());
-        for (size_t i = 0; i < node->cases.size(); ++i) {
+        for (size_t i = 0; i < vec_size(node->cases); ++i) {
             TIdentifier target_case = repr_case_identifier(ctx->identifiers, node->target, true, i);
             std::shared_ptr<TacValue> case_match;
             {
@@ -1068,7 +1068,7 @@ static void switch_statement_instr(Ctx ctx, CSwitch* node) {
         push_instr(ctx, std::make_unique<TacJump>(target_default));
         statement_instr(ctx, node->body.get());
     }
-    else if (!node->cases.empty()) {
+    else if (!vec_empty(node->cases)) {
         push_instr(ctx, std::make_unique<TacJump>(target_break));
         statement_instr(ctx, node->body.get());
     }

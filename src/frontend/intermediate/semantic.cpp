@@ -1448,7 +1448,7 @@ static error_t check_for_statement(Ctx ctx, CFor* node) {
 
 static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TInt> values(node->cases.size());
+    std::vector<TInt> values(vec_size(node->cases));
     CATCH_ENTER;
     for (size_t i = 0; i < values.size(); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
@@ -1470,7 +1470,7 @@ static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
 
 static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TLong> values(node->cases.size());
+    std::vector<TLong> values(vec_size(node->cases));
     CATCH_ENTER;
     for (size_t i = 0; i < values.size(); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
@@ -1492,7 +1492,7 @@ static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
 
 static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TUInt> values(node->cases.size());
+    std::vector<TUInt> values(vec_size(node->cases));
     CATCH_ENTER;
     for (size_t i = 0; i < values.size(); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
@@ -1514,7 +1514,7 @@ static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
 
 static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TULong> values(node->cases.size());
+    std::vector<TULong> values(vec_size(node->cases));
     CATCH_ENTER;
     for (size_t i = 0; i < values.size(); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
@@ -2524,7 +2524,7 @@ static error_t annotate_case_jump(Ctx ctx, CCase* node) {
         THROW_AT_LINE(node->value->line, GET_SEMANTIC_MSG_0(MSG_case_out_of_switch));
     }
     node->target = repr_case_identifier(
-        ctx->identifiers, ctx->p_switch_statement->target, false, ctx->p_switch_statement->cases.size());
+        ctx->identifiers, ctx->p_switch_statement->target, false, vec_size(ctx->p_switch_statement->cases));
     FINALLY;
     CATCH_EXIT;
 }
@@ -3062,7 +3062,7 @@ static error_t reslv_case_statement(Ctx ctx, CCase* node) {
     CATCH_ENTER;
     TRY(annotate_case_jump(ctx, node));
     TRY(reslv_typed_exp(ctx, &node->value));
-    ctx->p_switch_statement->cases.push_back(std::move(node->value));
+    vec_move_back(ctx->p_switch_statement->cases, node->value);
     TRY(reslv_statement(ctx, node->jump_to.get()));
     FINALLY;
     CATCH_EXIT;

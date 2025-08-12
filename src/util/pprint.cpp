@@ -760,9 +760,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             print_field("Bool", std::to_string(p_node->is_default), t + 1);
             print_ast(ctx, p_node->match.get(), t);
             print_ast(ctx, p_node->body.get(), t);
-            print_field("List[" + std::to_string(p_node->cases.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->cases) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->cases)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->cases); ++i) {
+                print_ast(ctx, p_node->cases[i].get(), t + 1);
             }
             break;
         }

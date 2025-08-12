@@ -55,8 +55,8 @@ FunType::FunType(vector_t(std::shared_ptr<Type>) * param_types, std::shared_ptr<
     vec_move(param_types, &this->param_types);
 }
 FunType::~FunType() {
-    for (size_t i = 0; i < vec_size(param_types); ++i) {
-        param_types[i].reset();
+    for (size_t i = 0; i < vec_size(this->param_types); ++i) {
+        this->param_types[i].reset();
     }
     vec_delete(this->param_types);
 }
@@ -93,8 +93,8 @@ Initial::Initial(vector_t(std::shared_ptr<StaticInit>) * static_inits) : static_
     vec_move(static_inits, &this->static_inits);
 }
 Initial::~Initial() {
-    for (size_t i = 0; i < vec_size(static_inits); ++i) {
-        static_inits[i].reset();
+    for (size_t i = 0; i < vec_size(this->static_inits); ++i) {
+        this->static_inits[i].reset();
     }
     vec_delete(this->static_inits);
 }

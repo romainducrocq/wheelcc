@@ -126,8 +126,8 @@ CFunDeclarator::CFunDeclarator(vector_t(std::unique_ptr<CParam>) * param_list, s
     vec_move(param_list, &this->param_list);
 }
 CFunDeclarator::~CFunDeclarator() {
-    for (size_t i = 0; i < vec_size(param_list); ++i) {
-        param_list[i].reset();
+    for (size_t i = 0; i < vec_size(this->param_list); ++i) {
+        this->param_list[i].reset();
     }
     vec_delete(this->param_list);
 }
@@ -167,8 +167,8 @@ CFunctionCall::CFunctionCall(TIdentifier name, vector_t(std::unique_ptr<CExp>) *
     vec_move(args, &this->args);
 }
 CFunctionCall::~CFunctionCall() {
-    for (size_t i = 0; i < vec_size(args); ++i) {
-        args[i].reset();
+    for (size_t i = 0; i < vec_size(this->args); ++i) {
+        this->args[i].reset();
     }
     vec_delete(this->args);
 }
@@ -216,8 +216,15 @@ CFor::CFor(std::unique_ptr<CForInit>&& init, std::unique_ptr<CExp>&& condition, 
     init(std::move(init)),
     condition(std::move(condition)), post(std::move(post)), body(std::move(body)) {}
 
+CSwitch::CSwitch() : cases(vec_new()) {}
 CSwitch::CSwitch(std::unique_ptr<CExp>&& match, std::unique_ptr<CStatement>&& body) :
-    match(std::move(match)), body(std::move(body)) {}
+    match(std::move(match)), body(std::move(body)), cases(vec_new()) {}
+CSwitch::~CSwitch() {
+    for (size_t i = 0; i < vec_size(this->cases); ++i) {
+        this->cases[i].reset();
+    }
+    vec_delete(this->cases);
+}
 
 CCase::CCase(std::unique_ptr<CExp>&& value, std::unique_ptr<CStatement>&& jump_to) :
     value(std::move(value)), jump_to(std::move(jump_to)) {}
