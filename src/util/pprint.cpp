@@ -269,9 +269,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
         case AST_Initial_t: {
             print_field("Initial", "", ++t);
             Initial* p_node = static_cast<Initial*>(node);
-            print_field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->static_inits) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->static_inits)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->static_inits); ++i) {
+                print_ast(ctx, p_node->static_inits[i].get(), t + 1);
             }
             break;
         }

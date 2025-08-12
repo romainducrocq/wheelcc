@@ -1411,7 +1411,12 @@ static std::vector<std::shared_ptr<StaticInit>> tentative_static_toplvl(Ctx ctx,
 }
 
 static std::vector<std::shared_ptr<StaticInit>> initial_static_toplvl(Initial* node) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits(node->static_inits.begin(), node->static_inits.end());
+    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    static_inits.reserve(vec_size(node->static_inits));
+    for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
+        std::shared_ptr<StaticInit> static_init = node->static_inits[i];
+        static_inits.push_back(std::move(static_init));
+    }
     return static_inits;
 }
 

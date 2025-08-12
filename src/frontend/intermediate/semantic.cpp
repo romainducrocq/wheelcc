@@ -35,7 +35,7 @@ struct SemanticContext {
     std::unordered_set<TIdentifier> fun_def_set;
     std::unordered_set<TIdentifier> struct_def_set;
     std::unordered_set<TIdentifier> union_def_set;
-    std::vector<std::shared_ptr<StaticInit>>* p_static_inits;
+    vector_t(std::shared_ptr<StaticInit>) * p_static_inits;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1865,12 +1865,12 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 }
 
 static void push_static_init(Ctx ctx, std::shared_ptr<StaticInit>&& static_init) {
-    ctx->p_static_inits->push_back(std::move(static_init));
+    vec_move_back(*ctx->p_static_inits, static_init);
 }
 
 static void push_zero_static_init(Ctx ctx, TLong byte) {
-    if (!ctx->p_static_inits->empty() && ctx->p_static_inits->back()->type() == AST_ZeroInit_t) {
-        static_cast<ZeroInit*>(ctx->p_static_inits->back().get())->byte += byte;
+    if (!vec_empty(*ctx->p_static_inits) && vec_back(*ctx->p_static_inits)->type() == AST_ZeroInit_t) {
+        static_cast<ZeroInit*>(vec_back(*ctx->p_static_inits).get())->byte += byte;
     }
     else {
         push_static_init(ctx, std::make_shared<ZeroInit>(byte));
@@ -1885,13 +1885,13 @@ static void check_static_no_init(Ctx ctx, Type* static_init_type, TLong size) {
 }
 
 static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_type) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
     {
         ctx->p_static_inits = &static_inits;
         check_static_no_init(ctx, static_init_type, 1l);
-        ctx->p_static_inits = nullptr;
+        ctx->p_static_inits = NULL;
     }
-    return std::make_shared<Initial>(std::move(static_inits));
+    return std::make_shared<Initial>(&static_inits);
 }
 
 static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
@@ -2184,15 +2184,19 @@ static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_
 
 static error_t check_initializer(
     Ctx ctx, CInitializer* node, Type* static_init_type, return_t(std::shared_ptr<InitialValue>) init_value) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
     CATCH_ENTER;
     {
         ctx->p_static_inits = &static_inits;
         TRY(check_static_init(ctx, node, static_init_type));
-        ctx->p_static_inits = nullptr;
+        ctx->p_static_inits = NULL;
     }
-    *init_value = std::make_shared<Initial>(std::move(static_inits));
+    *init_value = std::make_shared<Initial>(&static_inits);
     FINALLY;
+    for (size_t i = 0; i < vec_size(static_inits); ++i) {
+        static_inits[i].reset();
+    }
+    vec_delete(static_inits);
     CATCH_EXIT;
 }
 

@@ -89,7 +89,16 @@ StringInit::StringInit(TIdentifier string_const, bool is_null_term, std::shared_
 
 PointerInit::PointerInit(TIdentifier name) : name(name) {}
 
-Initial::Initial(std::vector<std::shared_ptr<StaticInit>>&& static_inits) : static_inits(std::move(static_inits)) {}
+Initial::Initial() : static_inits(vec_new()) {}
+Initial::Initial(vector_t(std::shared_ptr<StaticInit>) * static_inits) : static_inits(vec_new()) {
+    vec_move(static_inits, &this->static_inits);
+}
+Initial::~Initial() {
+    for (size_t i = 0; i < vec_size(static_inits); ++i) {
+        static_inits[i].reset();
+    }
+    vec_delete(this->static_inits);
+}
 
 FunAttr::FunAttr(bool is_def, bool is_glob) : is_def(is_def), is_glob(is_glob) {}
 

@@ -221,10 +221,11 @@ struct Tentative : InitialValue {
 
 struct Initial : InitialValue {
     AST_T type() override;
-    Initial() = default;
-    Initial(std::vector<std::shared_ptr<StaticInit>>&& static_inits);
+    Initial();
+    Initial(vector_t(std::shared_ptr<StaticInit>) * static_inits);
+    ~Initial();
 
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits;
 };
 
 struct NoInitializer : InitialValue {
