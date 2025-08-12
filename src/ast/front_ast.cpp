@@ -1,6 +1,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/front_ast.hpp"
 #include "ast/front_symt.hpp"
@@ -118,10 +120,17 @@ CPointerDeclarator::CPointerDeclarator(std::unique_ptr<CDeclarator>&& decltor) :
 CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator>&& decltor) :
     size(size), decltor(std::move(decltor)) {}
 
-CFunDeclarator::CFunDeclarator(
-    std::vector<std::unique_ptr<CParam>>&& param_list, std::unique_ptr<CDeclarator>&& decltor) :
-    param_list(std::move(param_list)),
-    decltor(std::move(decltor)) {}
+CFunDeclarator::CFunDeclarator() : param_list(vec_new()) {}
+CFunDeclarator::CFunDeclarator(vector_t(std::unique_ptr<CParam>) * param_list, std::unique_ptr<CDeclarator>&& decltor) :
+    param_list(vec_new()), decltor(std::move(decltor)) {
+    vec_move(param_list, &this->param_list);
+}
+CFunDeclarator::~CFunDeclarator() {
+    for (size_t i = 0; i < vec_size(param_list); ++i) {
+        param_list[i].reset();
+    }
+    vec_delete(this->param_list);
+}
 
 CExp::CExp(size_t line) : line(line) {}
 

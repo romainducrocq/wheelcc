@@ -1898,10 +1898,10 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     }
 
     TIdentifier name;
-    params.reserve(node->param_list.size());
-    vec_reserve(param_types, node->param_list.size());
-    for (const auto& param : node->param_list) {
-        TRY(proc_param_decltor(ctx, param.get(), params, &param_types));
+    params.reserve(vec_size(node->param_list));
+    vec_reserve(param_types, vec_size(node->param_list));
+    for (size_t i = 0; i < vec_size(node->param_list); ++i) {
+        TRY(proc_param_decltor(ctx, node->param_list[i].get(), params, &param_types));
     }
     name = static_cast<CIdent*>(node->decltor.get())->name;
     derived_type = std::make_shared<FunType>(&param_types, std::move(base_type));
@@ -1995,16 +1995,16 @@ static error_t parse_empty_param_list(Ctx ctx) {
     CATCH_EXIT;
 }
 
-static error_t parse_non_empty_param_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CParam>>) param_list) {
+static error_t parse_non_empty_param_list(Ctx ctx, return_t(vector_t(std::unique_ptr<CParam>)) param_list) {
     std::unique_ptr<CParam> param;
     CATCH_ENTER;
     TRY(parse_param(ctx, &param));
-    param_list->push_back(std::move(param));
+    vec_move_back(*param_list, param);
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind == TOK_comma_separator) {
         TRY(pop_next(ctx));
         TRY(parse_param(ctx, &param));
-        param_list->push_back(std::move(param));
+        vec_move_back(*param_list, param);
         TRY(peek_next(ctx));
     }
     FINALLY;
@@ -2012,7 +2012,7 @@ static error_t parse_non_empty_param_list(Ctx ctx, return_t(std::vector<std::uni
 }
 
 // <param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")"
-static error_t parse_param_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CParam>>) param_list) {
+static error_t parse_param_list(Ctx ctx, return_t(vector_t(std::unique_ptr<CParam>)) param_list) {
     CATCH_ENTER;
     TRY(pop_next(ctx));
     TRY(peek_next(ctx));
@@ -2048,11 +2048,15 @@ static error_t parse_param_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CP
 
 // (fun) <declarator-suffix> ::= <param-list>
 static error_t parse_fun_decltor_suffix(Ctx ctx, return_t(std::unique_ptr<CDeclarator>) decltor) {
-    std::vector<std::unique_ptr<CParam>> param_list;
+    vector_t(std::unique_ptr<CParam>) param_list = vec_new();
     CATCH_ENTER;
     TRY(parse_param_list(ctx, &param_list));
-    *decltor = std::make_unique<CFunDeclarator>(std::move(param_list), std::move(*decltor));
+    *decltor = std::make_unique<CFunDeclarator>(&param_list, std::move(*decltor));
     FINALLY;
+    for (size_t i = 0; i < vec_size(param_list); ++i) {
+        param_list[i].reset();
+    }
+    vec_delete(param_list);
     CATCH_EXIT;
 }
 

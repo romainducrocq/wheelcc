@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 
@@ -223,10 +225,11 @@ struct CArrayDeclarator : CDeclarator {
 
 struct CFunDeclarator : CDeclarator {
     AST_T type() override;
-    CFunDeclarator() = default;
-    CFunDeclarator(std::vector<std::unique_ptr<CParam>>&& param_list, std::unique_ptr<CDeclarator>&& decltor);
+    CFunDeclarator();
+    CFunDeclarator(vector_t(std::unique_ptr<CParam>) * param_list, std::unique_ptr<CDeclarator>&& decltor);
+    ~CFunDeclarator();
 
-    std::vector<std::unique_ptr<CParam>> param_list;
+    vector_t(std::unique_ptr<CParam>) param_list;
     std::unique_ptr<CDeclarator> decltor;
 };
 
