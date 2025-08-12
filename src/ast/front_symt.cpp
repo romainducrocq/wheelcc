@@ -1,6 +1,5 @@
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
@@ -112,7 +111,11 @@ Symbol::Symbol(std::shared_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&&
 StructMember::StructMember(TLong offset, std::shared_ptr<Type>&& member_type) :
     offset(offset), member_type(std::move(member_type)) {}
 
-StructTypedef::StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier>&& member_names,
+StructTypedef::StructTypedef() : member_names(vec_new()) {}
+StructTypedef::StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) * member_names,
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>&& members) :
     alignment(alignment),
-    size(size), member_names(std::move(member_names)), members(std::move(members)) {}
+    size(size), member_names(vec_new()), members(std::move(members)) {
+    vec_move(member_names, &this->member_names);
+}
+StructTypedef::~StructTypedef() { vec_delete(this->member_names); }

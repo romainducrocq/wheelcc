@@ -326,9 +326,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             StructTypedef* p_node = static_cast<StructTypedef*>(node);
             print_field("TInt", std::to_string(p_node->alignment), t + 1);
             print_field("TLong", std::to_string(p_node->size), t + 1);
-            print_field("List[" + std::to_string(p_node->member_names.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->member_names) {
-                print_field("TIdentifier", std::string(ctx->hash_table[item]), t + 2);
+            print_field("List[" + std::to_string(vec_size(p_node->member_names)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->member_names); ++i) {
+                print_field("TIdentifier", std::string(ctx->hash_table[p_node->member_names[i]]), t + 2);
             }
             print_field("Dict[" + std::to_string(p_node->members.size()) + "]", "", t + 1);
             for (const auto& item : p_node->members) {

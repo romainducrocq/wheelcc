@@ -5,7 +5,6 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -301,13 +300,14 @@ struct StructMember : Ast {
 // struct_typedef(int, int, identifier*, struct_member*)
 struct StructTypedef : Ast {
     AST_T type() override;
-    StructTypedef() = default;
-    StructTypedef(TInt alignment, TLong size, std::vector<TIdentifier>&& member_names,
+    StructTypedef();
+    StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) * member_names,
         std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>&& members);
+    ~StructTypedef();
 
     TInt alignment;
     TLong size;
-    std::vector<TIdentifier> member_names;
+    vector_t(TIdentifier) member_names;
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
 };
 
@@ -328,6 +328,6 @@ struct FrontEndContext {
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
     ctx->frontend->struct_typedef_table[X]->members[ctx->frontend->struct_typedef_table[X]->member_names[Y]]
 #define GET_STRUCT_TYPEDEF_BACK(X) \
-    ctx->frontend->struct_typedef_table[X]->members[ctx->frontend->struct_typedef_table[X]->member_names.back()]
+    ctx->frontend->struct_typedef_table[X]->members[vec_back(ctx->frontend->struct_typedef_table[X]->member_names)]
 
 #endif

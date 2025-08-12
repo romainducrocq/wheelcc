@@ -1664,8 +1664,9 @@ static std::unique_ptr<CCompoundInit> check_arr_zero_init(Ctx ctx, Array* arr_ty
 
 static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure* struct_type) {
     std::vector<std::unique_ptr<CInitializer>> zero_inits;
-    zero_inits.reserve(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names.size());
-    for (TIdentifier member_name : ctx->frontend->struct_typedef_table[struct_type->tag]->member_names) {
+    zero_inits.reserve(vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names));
+    for (size_t i = 0; i < vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names); ++i) {
+        TIdentifier member_name = ctx->frontend->struct_typedef_table[struct_type->tag]->member_names[i];
         const auto& member = ctx->frontend->struct_typedef_table[struct_type->tag]->members[member_name];
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
         zero_inits.push_back(std::move(initializer));
@@ -2421,7 +2422,7 @@ static error_t check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
 static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     string_t struct_fmt = str_new(NULL);
     std::shared_ptr<Type> member_type;
-    std::vector<TIdentifier> member_names;
+    vector_t(TIdentifier) member_names = vec_new();
     std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
     CATCH_ENTER;
     TInt alignment;
@@ -2432,12 +2433,12 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     }
     alignment = 0;
     size = 0l;
-    member_names.reserve(node->members.size());
+    vec_reserve(member_names, node->members.size());
     members.reserve(node->members.size());
     for (const auto& member : node->members) {
         {
             TIdentifier name = member->member_name;
-            member_names.push_back(name);
+            vec_push_back(member_names, name);
         }
         TInt member_alignment = get_type_alignment(ctx, member->member_type.get());
         TLong member_size = get_type_scale(ctx, member->member_type.get());
@@ -2457,7 +2458,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
                 size += member_size;
             }
             member_type = member->member_type;
-            members[member_names.back()] = std::make_unique<StructMember>(offset, std::move(member_type));
+            members[vec_back(member_names)] = std::make_unique<StructMember>(offset, std::move(member_type));
         }
         if (alignment < member_alignment) {
             alignment = member_alignment;
@@ -2470,9 +2471,10 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
         }
     }
     ctx->frontend->struct_typedef_table[node->tag] =
-        std::make_unique<StructTypedef>(alignment, size, std::move(member_names), std::move(members));
+        std::make_unique<StructTypedef>(alignment, size, &member_names, std::move(members));
     FINALLY;
     str_delete(struct_fmt);
+    vec_delete(member_names);
     CATCH_EXIT;
 }
 
