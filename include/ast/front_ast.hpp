@@ -363,11 +363,12 @@ struct CConditional : CExp {
 
 struct CFunctionCall : CExp {
     AST_T type() override;
-    CFunctionCall() = default;
-    CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>>&& args, size_t line);
+    CFunctionCall();
+    CFunctionCall(TIdentifier name, vector_t(std::unique_ptr<CExp>) * args, size_t line);
+    ~CFunctionCall();
 
     TIdentifier name;
-    std::vector<std::unique_ptr<CExp>> args;
+    vector_t(std::unique_ptr<CExp>) args;
     /*
     std::shared_ptr<Type> exp_type;
     */

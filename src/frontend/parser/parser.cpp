@@ -552,16 +552,16 @@ static error_t parse_type_name(Ctx ctx, return_t(std::shared_ptr<Type>) target_t
 }
 
 // <argument-list> ::= <exp> { "," <exp> }
-static error_t parse_arg_list(Ctx ctx, return_t(std::vector<std::unique_ptr<CExp>>) args) {
+static error_t parse_arg_list(Ctx ctx, return_t(vector_t(std::unique_ptr<CExp>)) args) {
     std::unique_ptr<CExp> arg;
     CATCH_ENTER;
     TRY(parse_exp(ctx, 0, &arg));
-    args->push_back(std::move(arg));
+    vec_move_back(*args, arg);
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind == TOK_comma_separator) {
         TRY(pop_next(ctx));
         TRY(parse_exp(ctx, 0, &arg));
-        args->push_back(std::move(arg));
+        vec_move_back(*args, arg);
         TRY(peek_next(ctx));
     }
     FINALLY;
@@ -610,7 +610,7 @@ static error_t parse_var_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
 }
 
 static error_t parse_call_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
-    std::vector<std::unique_ptr<CExp>> args;
+    vector_t(std::unique_ptr<CExp>) args = vec_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
     TIdentifier name;
@@ -622,8 +622,12 @@ static error_t parse_call_factor(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
     }
     TRY(pop_next(ctx));
     TRY(expect_next(ctx, ctx->next_tok, TOK_close_paren));
-    *exp = std::make_unique<CFunctionCall>(name, std::move(args), line);
+    *exp = std::make_unique<CFunctionCall>(name, &args, line);
     FINALLY;
+    for (size_t i = 0; i < vec_size(args); ++i) {
+        args[i].reset();
+    }
+    vec_delete(args);
     CATCH_EXIT;
 }
 

@@ -1172,13 +1172,13 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
     }
     fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
-    if (vec_size(fun_type->param_types) != node->args.size()) {
-        strto_fmt_1 = str_to_string(node->args.size());
+    if (vec_size(fun_type->param_types) != vec_size(node->args)) {
+        strto_fmt_1 = str_to_string(vec_size(node->args));
         strto_fmt_2 = str_to_string(vec_size(fun_type->param_types));
         THROW_AT_LINE(node->line,
             GET_SEMANTIC_MSG(MSG_call_with_wrong_argc, str_fmt_name(node->name, &name_fmt), strto_fmt_1, strto_fmt_2));
     }
-    for (size_t i = 0; i < node->args.size(); ++i) {
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
         if (!is_same_type(node->args[i]->exp_type.get(), fun_type->param_types[i].get())) {
             TRY(cast_assign(ctx, fun_type->param_types[i], &node->args[i]));
         }
@@ -2758,7 +2758,7 @@ static error_t reslv_call_exp(Ctx ctx, CFunctionCall* node) {
     THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_undecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
 Lelse:
 
-    for (size_t i = 0; i < node->args.size(); ++i) {
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
         TRY(reslv_typed_exp(ctx, &node->args[i]));
     }
     TRY(check_call_exp(ctx, node));

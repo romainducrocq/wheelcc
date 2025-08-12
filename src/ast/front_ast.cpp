@@ -161,8 +161,17 @@ CConditional::CConditional(std::unique_ptr<CExp>&& condition, std::unique_ptr<CE
     CExp(line),
     condition(std::move(condition)), exp_middle(std::move(exp_middle)), exp_right(std::move(exp_right)) {}
 
-CFunctionCall::CFunctionCall(TIdentifier name, std::vector<std::unique_ptr<CExp>>&& args, size_t line) :
-    CExp(line), name(name), args(std::move(args)) {}
+CFunctionCall::CFunctionCall() : args(vec_new()) {}
+CFunctionCall::CFunctionCall(TIdentifier name, vector_t(std::unique_ptr<CExp>) * args, size_t line) :
+    CExp(line), name(name), args(vec_new()) {
+    vec_move(args, &this->args);
+}
+CFunctionCall::~CFunctionCall() {
+    for (size_t i = 0; i < vec_size(args); ++i) {
+        args[i].reset();
+    }
+    vec_delete(this->args);
+}
 
 CDereference::CDereference(std::unique_ptr<CExp>&& exp, size_t line) : CExp(line), exp(std::move(exp)) {}
 
