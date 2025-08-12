@@ -2200,7 +2200,7 @@ static error_t parse_member_declaration(Ctx ctx, return_t(std::unique_ptr<CMembe
 // struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 static error_t parse_struct_declaration(Ctx ctx, return_t(std::unique_ptr<CStructDeclaration>) struct_decl) {
     std::unique_ptr<CMemberDeclaration> member;
-    std::vector<std::unique_ptr<CMemberDeclaration>> members;
+    vector_t(std::unique_ptr<CMemberDeclaration>) members = vec_new();
     CATCH_ENTER;
     bool is_union;
     size_t line = ctx->peek_tok->line;
@@ -2214,7 +2214,7 @@ static error_t parse_struct_declaration(Ctx ctx, return_t(std::unique_ptr<CStruc
     if (ctx->next_tok->tok_kind == TOK_open_brace) {
         do {
             TRY(parse_member_declaration(ctx, &member));
-            members.push_back(std::move(member));
+            vec_move_back(members, member);
             TRY(peek_next(ctx));
         }
         while (ctx->peek_tok->tok_kind != TOK_close_brace);
@@ -2222,8 +2222,12 @@ static error_t parse_struct_declaration(Ctx ctx, return_t(std::unique_ptr<CStruc
         TRY(pop_next(ctx));
     }
     TRY(expect_next(ctx, ctx->next_tok, TOK_semicolon));
-    *struct_decl = std::make_unique<CStructDeclaration>(tag, is_union, std::move(members), line);
+    *struct_decl = std::make_unique<CStructDeclaration>(tag, is_union, &members, line);
     FINALLY;
+    for (size_t i = 0; i < vec_size(members); ++i) {
+        members[i].reset();
+    }
+    vec_delete(members);
     CATCH_EXIT;
 }
 

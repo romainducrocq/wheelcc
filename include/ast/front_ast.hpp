@@ -756,13 +756,14 @@ struct CMemberDeclaration : Ast {
 // struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 struct CStructDeclaration : Ast {
     AST_T type() override;
-    CStructDeclaration() = default;
+    CStructDeclaration();
     CStructDeclaration(
-        TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>>&& members, size_t line);
+        TIdentifier tag, bool is_union, vector_t(std::unique_ptr<CMemberDeclaration>) * members, size_t line);
+    ~CStructDeclaration();
 
     TIdentifier tag;
     bool is_union;
-    std::vector<std::unique_ptr<CMemberDeclaration>> members;
+    vector_t(std::unique_ptr<CMemberDeclaration>) members;
     size_t line;
 };
 

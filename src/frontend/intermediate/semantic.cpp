@@ -2392,8 +2392,8 @@ static error_t check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
     string_t struct_fmt = str_new(NULL);
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
-    for (size_t i = 0; i < node->members.size(); ++i) {
-        for (size_t j = i + 1; j < node->members.size(); ++j) {
+    for (size_t i = 0; i < vec_size(node->members); ++i) {
+        for (size_t j = i + 1; j < vec_size(node->members); ++j) {
             if (node->members[i]->member_name == node->members[j]->member_name) {
                 THROW_AT_LINE(node->members[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_member_decl,
                                                           str_fmt_struct_name(node->tag, node->is_union, &struct_fmt),
@@ -2433,15 +2433,15 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     }
     alignment = 0;
     size = 0l;
-    vec_reserve(member_names, node->members.size());
-    members.reserve(node->members.size());
-    for (const auto& member : node->members) {
+    vec_reserve(member_names, vec_size(node->members));
+    members.reserve(vec_size(node->members));
+    for (size_t i = 0; i < vec_size(node->members); ++i) {
         {
-            TIdentifier name = member->member_name;
+            TIdentifier name = node->members[i]->member_name;
             vec_push_back(member_names, name);
         }
-        TInt member_alignment = get_type_alignment(ctx, member->member_type.get());
-        TLong member_size = get_type_scale(ctx, member->member_type.get());
+        TInt member_alignment = get_type_alignment(ctx, node->members[i]->member_type.get());
+        TLong member_size = get_type_scale(ctx, node->members[i]->member_type.get());
         {
             TLong offset = 0l;
             if (node->is_union) {
@@ -2457,7 +2457,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
                 offset = size;
                 size += member_size;
             }
-            member_type = member->member_type;
+            member_type = node->members[i]->member_type;
             members[vec_back(member_names)] = std::make_unique<StructMember>(offset, std::move(member_type));
         }
         if (alignment < member_alignment) {
@@ -3381,7 +3381,7 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
             ctx->struct_def_set.insert(node->tag);
         }
     }
-    if (!node->members.empty()) {
+    if (!vec_empty(node->members)) {
         TRY(reslv_struct_members_decl(ctx, node));
         TRY(check_struct_decl(ctx, node));
     }

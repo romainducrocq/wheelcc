@@ -270,10 +270,19 @@ CCompoundInit::~CCompoundInit() {
 CMemberDeclaration::CMemberDeclaration(TIdentifier member_name, std::shared_ptr<Type>&& member_type, size_t line) :
     member_name(member_name), member_type(std::move(member_type)), line(line) {}
 
+CStructDeclaration::CStructDeclaration() : members(vec_new()) {}
 CStructDeclaration::CStructDeclaration(
-    TIdentifier tag, bool is_union, std::vector<std::unique_ptr<CMemberDeclaration>>&& members, size_t line) :
+    TIdentifier tag, bool is_union, vector_t(std::unique_ptr<CMemberDeclaration>) * members, size_t line) :
     tag(tag),
-    is_union(is_union), members(std::move(members)), line(line) {}
+    is_union(is_union), members(vec_new()), line(line) {
+    vec_move(members, &this->members);
+}
+CStructDeclaration::~CStructDeclaration() {
+    for (size_t i = 0; i < vec_size(this->members); ++i) {
+        this->members[i].reset();
+    }
+    vec_delete(this->members);
+}
 
 CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, std::vector<TIdentifier>&& params,
     std::unique_ptr<CBlock>&& body, std::shared_ptr<Type>&& fun_type, std::unique_ptr<CStorageClass>&& storage_class,
