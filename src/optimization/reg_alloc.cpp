@@ -55,7 +55,7 @@ struct RegAllocContext {
     std::unique_ptr<DataFlowAnalysisO2> dfa_o2;
     std::unique_ptr<InferenceGraph> infer_graph;
     std::unique_ptr<InferenceGraph> sse_infer_graph;
-    std::vector<std::unique_ptr<AsmInstruction>>* p_instrs;
+    vector_t(std::unique_ptr<AsmInstruction>) * p_instrs;
     // Register coalescing
     bool is_with_coal;
 };
@@ -1160,7 +1160,7 @@ static void reallocate_registers(Ctx ctx) {
         alloc_color_infer_graph(ctx);
         alloc_color_reg_map(ctx);
     }
-    for (size_t instr_idx = 0; instr_idx < ctx->p_instrs->size(); ++instr_idx) {
+    for (size_t instr_idx = 0; instr_idx < vec_size(*ctx->p_instrs); ++instr_idx) {
         if (GET_INSTR(instr_idx)) {
             alloc_instr(ctx, instr_idx);
         }
@@ -1683,7 +1683,7 @@ static bool coalesce_registers(Ctx ctx) {
 
     {
         bool is_fixed_point = true;
-        for (size_t instr_idx = 0; instr_idx < ctx->p_instrs->size(); ++instr_idx) {
+        for (size_t instr_idx = 0; instr_idx < vec_size(*ctx->p_instrs); ++instr_idx) {
             if (GET_INSTR(instr_idx) && GET_INSTR(instr_idx)->type() == AST_AsmMov_t
                 && coal_infer_regs(ctx, static_cast<AsmMov*>(GET_INSTR(instr_idx).get()))) {
                 is_fixed_point = false;
@@ -1730,7 +1730,7 @@ Ldowhile:
     }
 Lbreak:
     ctx->p_infer_graph = nullptr;
-    ctx->p_instrs = nullptr;
+    ctx->p_instrs = NULL;
 }
 
 static void alloc_toplvl(Ctx ctx, AsmTopLevel* node) {

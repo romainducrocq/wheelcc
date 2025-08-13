@@ -1,5 +1,4 @@
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -191,10 +190,19 @@ AsmPop::AsmPop(std::unique_ptr<AsmReg>&& reg) : reg(std::move(reg)) {}
 
 AsmCall::AsmCall(TIdentifier name) : name(name) {}
 
+AsmFunction::AsmFunction() : instructions(vec_new()) {}
 AsmFunction::AsmFunction(
-    TIdentifier name, bool is_glob, bool is_ret_memory, std::vector<std::unique_ptr<AsmInstruction>>&& instructions) :
+    TIdentifier name, bool is_glob, bool is_ret_memory, vector_t(std::unique_ptr<AsmInstruction>) * instructions) :
     name(name),
-    is_glob(is_glob), is_ret_memory(is_ret_memory), instructions(std::move(instructions)) {}
+    is_glob(is_glob), is_ret_memory(is_ret_memory), instructions(vec_new()) {
+    vec_move(instructions, &this->instructions);
+}
+AsmFunction::~AsmFunction() {
+    for (size_t i = 0; i < vec_size(this->instructions); ++i) {
+        this->instructions[i].reset();
+    }
+    vec_delete(this->instructions);
+}
 
 AsmStaticVariable::AsmStaticVariable() : static_inits(vec_new()) {}
 AsmStaticVariable::AsmStaticVariable(

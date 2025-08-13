@@ -42,7 +42,7 @@ struct AsmGenContext {
     std::array<REGISTER_KIND, 8> sse_arg_regs;
     std::unordered_map<TIdentifier, TIdentifier> dbl_const_table;
     std::unordered_map<TIdentifier, std::vector<STRUCT_8B_CLS>> struct_8b_cls_map;
-    std::vector<std::unique_ptr<AsmInstruction>>* p_instrs;
+    vector_t(std::unique_ptr<AsmInstruction>) * p_instrs;
     vector_t(std::unique_ptr<AsmTopLevel>) * p_static_consts;
 };
 
@@ -634,7 +634,7 @@ static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
     }
 }
 
-static void push_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) { ctx->p_instrs->push_back(std::move(instr)); }
+static void push_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) { vec_move_back(*ctx->p_instrs, instr); }
 
 static void ret_int_instr(Ctx ctx, TacReturn* node) {
     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->val.get());
@@ -1281,8 +1281,8 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
     size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_padding = 0l;
-    std::vector<std::unique_ptr<AsmInstruction>> stack_instrs;
-    std::vector<std::unique_ptr<AsmInstruction>>* p_instrs = ctx->p_instrs;
+    vector_t(std::unique_ptr<AsmInstruction>) stack_instrs = vec_new();
+    vector_t(std::unique_ptr<AsmInstruction>)* p_instrs = ctx->p_instrs;
     for (size_t i = 0; i < vec_size(node->args); ++i) {
         TacValue* arg = node->args[i].get();
         if (is_value_dbl(ctx, arg)) {
@@ -1359,9 +1359,11 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
         stack_padding++;
     }
     stack_padding *= 8l;
-    for (size_t i = stack_instrs.size(); i-- > 0;) {
+    for (size_t i = vec_size(stack_instrs); i-- > 0;) {
         push_instr(ctx, std::move(stack_instrs[i]));
+        stack_instrs[i].reset();
     }
+    vec_delete(stack_instrs);
     return stack_padding;
 }
 
@@ -2608,7 +2610,7 @@ static std::unique_ptr<AsmFunction> gen_fun_toplvl(Ctx ctx, TacFunction* node) {
     bool is_glob = node->is_glob;
     bool is_ret_memory = false;
 
-    std::vector<std::unique_ptr<AsmInstruction>> body;
+    vector_t(std::unique_ptr<AsmInstruction>) body = vec_new();
     {
         ctx->p_instrs = &body;
 
@@ -2631,10 +2633,10 @@ static std::unique_ptr<AsmFunction> gen_fun_toplvl(Ctx ctx, TacFunction* node) {
         ctx->p_fun_type = fun_type;
         gen_instr_list(ctx, node->body);
         ctx->p_fun_type = nullptr;
-        ctx->p_instrs = nullptr;
+        ctx->p_instrs = NULL;
     }
 
-    return std::make_unique<AsmFunction>(name, is_glob, is_ret_memory, std::move(body));
+    return std::make_unique<AsmFunction>(name, is_glob, is_ret_memory, &body);
 }
 
 static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(Ctx ctx, TacStaticVariable* node) {

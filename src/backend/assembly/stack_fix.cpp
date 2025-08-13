@@ -1,6 +1,5 @@
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
@@ -18,7 +17,7 @@ struct StackFixContext {
     TLong stack_bytes;
     std::unordered_map<TIdentifier, TLong> pseudo_stack_map;
     // Instruction fix up
-    std::vector<std::unique_ptr<AsmInstruction>>* p_fix_instrs;
+    vector_t(std::unique_ptr<AsmInstruction>) * p_fix_instrs;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -480,11 +479,11 @@ std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte) {
 }
 
 static void push_fix_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) {
-    ctx->p_fix_instrs->push_back(std::move(instr));
+    vec_move_back(*ctx->p_fix_instrs, instr);
 }
 
 static void swap_fix_instr_back(Ctx ctx) {
-    std::swap((*ctx->p_fix_instrs)[ctx->p_fix_instrs->size() - 2], ctx->p_fix_instrs->back());
+    std::swap((*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2], vec_back(*ctx->p_fix_instrs));
 }
 
 static void fix_alloc_stack_bytes(Ctx ctx, TLong callee_saved_size) {
@@ -644,8 +643,8 @@ static AsmMov* zero_extend_as_mov(Ctx ctx, AsmMovZeroExtend* node) {
     std::shared_ptr<AsmOperand> src = std::move(node->src);
     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
     std::shared_ptr<AssemblyType> asm_type = std::make_shared<LongWord>();
-    ctx->p_fix_instrs->back() = std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst));
-    return static_cast<AsmMov*>(ctx->p_fix_instrs->back().get());
+    vec_back(*ctx->p_fix_instrs) = std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst));
+    return static_cast<AsmMov*>(vec_back(*ctx->p_fix_instrs).get());
 }
 
 static void zero_extend_to_addr(Ctx ctx, AsmMov* node) {
@@ -928,7 +927,7 @@ static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(8ul, true, false, false);
         std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
         std::shared_ptr<AssemblyType> asm_type_src_cp = asm_type_src;
-        ctx->p_fix_instrs->back() =
+        vec_back(*ctx->p_fix_instrs) =
             std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type_src_cp), std::move(src), std::move(dst));
     }
     {
@@ -999,20 +998,24 @@ static void fix_instr(Ctx ctx, AsmInstruction* node) {
 }
 
 static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
-    std::vector<std::unique_ptr<AsmInstruction>> instructions = std::move(node->instructions);
+    vector_t(std::unique_ptr<AsmInstruction>) instructions = vec_new();
+    vec_move(&node->instructions, &instructions);
     BackendFun* backend_fun = static_cast<BackendFun*>(ctx->backend->symbol_table[node->name].get());
 
-    node->instructions.clear();
-    node->instructions.reserve(instructions.size());
+    vec_clear(node->instructions);
+    vec_reserve(node->instructions, vec_size(instructions));
 
     ctx->stack_bytes = node->is_ret_memory ? 8l : 0l;
     ctx->pseudo_stack_map.clear();
     ctx->p_fix_instrs = &node->instructions;
-    ctx->p_fix_instrs->emplace_back();
+    // TODO
+    // ctx->p_fix_instrs->emplace_back();
+    vec_move_back(*ctx->p_fix_instrs, std::unique_ptr<AsmInstruction>(nullptr));
+    //
 
     bool is_ret = false;
     push_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
-    for (size_t i = 0; i < instructions.size(); ++i) {
+    for (size_t i = 0; i < vec_size(instructions); ++i) {
         if (instructions[i]) {
             if (instructions[i]->type() == AST_AsmRet_t) {
                 pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
@@ -1020,8 +1023,8 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
             }
             push_fix_instr(ctx, std::move(instructions[i]));
 
-            repl_pseudo_regs(ctx, ctx->p_fix_instrs->back().get());
-            fix_instr(ctx, ctx->p_fix_instrs->back().get());
+            repl_pseudo_regs(ctx, vec_back(*ctx->p_fix_instrs).get());
+            fix_instr(ctx, vec_back(*ctx->p_fix_instrs).get());
         }
     }
     if (!is_ret) {
@@ -1031,7 +1034,8 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
         TLong callee_saved_size = (TLong)vec_size(backend_fun->callee_saved_regs);
         fix_alloc_stack_bytes(ctx, callee_saved_size);
     }
-    ctx->p_fix_instrs = nullptr;
+    ctx->p_fix_instrs = NULL;
+    vec_delete(instructions);
 }
 
 static void fix_toplvl(Ctx ctx, AsmTopLevel* node) {

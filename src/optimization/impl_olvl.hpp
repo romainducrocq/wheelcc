@@ -7,13 +7,6 @@
 #define GET_INSTR(X) (*ctx->p_instrs)[X]
 #define GET_CFG_BLOCK(X) ctx->cfg->blocks[X]
 
-// TODO rm
-#if __OPTIM_LEVEL__ == 1
-#define temp_vec_size(X) vec_size(X)
-#elif __OPTIM_LEVEL__ == 2
-#define temp_vec_size(X) (X).size()
-#endif
-
 #if __OPTIM_LEVEL__ == 1
 typedef TULong mask_t;
 typedef TacInstruction AstInstruction;
@@ -229,7 +222,7 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
         case AST_AsmLabel_t:
 #endif
         {
-            if (instrs_back_idx != temp_vec_size(*ctx->p_instrs)) {
+            if (instrs_back_idx != vec_size(*ctx->p_instrs)) {
                 ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
                 ControlFlowBlock block = {0, instr_idx, 0, {}, {}};
                 ctx->cfg->blocks.emplace_back(std::move(block));
@@ -254,7 +247,7 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
 #endif
         {
             ctx->cfg->blocks.back().instrs_back_idx = instr_idx;
-            instrs_back_idx = temp_vec_size(*ctx->p_instrs);
+            instrs_back_idx = vec_size(*ctx->p_instrs);
             break;
         }
         default: {
@@ -327,10 +320,10 @@ static void init_control_flow_graph(Ctx ctx) {
     ctx->cfg->blocks.clear();
     ctx->cfg->identifier_id_map.clear();
     {
-        size_t instrs_back_idx = temp_vec_size(*ctx->p_instrs);
-        for (size_t instr_idx = 0; instr_idx < temp_vec_size(*ctx->p_instrs); ++instr_idx) {
+        size_t instrs_back_idx = vec_size(*ctx->p_instrs);
+        for (size_t instr_idx = 0; instr_idx < vec_size(*ctx->p_instrs); ++instr_idx) {
             if (GET_INSTR(instr_idx)) {
-                if (instrs_back_idx == temp_vec_size(*ctx->p_instrs)) {
+                if (instrs_back_idx == vec_size(*ctx->p_instrs)) {
                     ControlFlowBlock block = {0, instr_idx, 0, {}, {}};
                     ctx->cfg->blocks.emplace_back(std::move(block));
                 }
@@ -338,7 +331,7 @@ static void init_control_flow_graph(Ctx ctx) {
                 ctx->cfg->blocks.back().size++;
             }
         }
-        if (instrs_back_idx != temp_vec_size(*ctx->p_instrs)) {
+        if (instrs_back_idx != vec_size(*ctx->p_instrs)) {
             ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
         }
     }
@@ -842,7 +835,7 @@ static bool init_data_flow_analysis(Ctx ctx,
 #endif
 ) {
     ctx->dfa->set_size = 0;
-    ctx->dfa->incoming_idx = temp_vec_size(*ctx->p_instrs);
+    ctx->dfa->incoming_idx = vec_size(*ctx->p_instrs);
 
     if (ctx->dfa->open_data_map.size() < ctx->cfg->blocks.size()) {
         ctx->dfa->open_data_map.resize(ctx->cfg->blocks.size());
@@ -854,8 +847,8 @@ static bool init_data_flow_analysis(Ctx ctx,
 #elif __OPTIM_LEVEL__ == 2
         i = 2;
 #endif
-        if (ctx->dfa->instr_idx_map.size() < temp_vec_size(*ctx->p_instrs) + i) {
-            ctx->dfa->instr_idx_map.resize(temp_vec_size(*ctx->p_instrs) + i);
+        if (ctx->dfa->instr_idx_map.size() < vec_size(*ctx->p_instrs) + i) {
+            ctx->dfa->instr_idx_map.resize(vec_size(*ctx->p_instrs) + i);
         }
     }
     if (ctx->cfg->reaching_code.size() < ctx->cfg->blocks.size()) {

@@ -840,8 +840,8 @@ static void emit_instr(Ctx ctx, AsmInstruction* node) {
     }
 }
 
-static void emit_instr_list(Ctx ctx, const std::vector<std::unique_ptr<AsmInstruction>>& node_list) {
-    for (size_t i = node_list[0] ? 0 : 1; i < node_list.size(); ++i) {
+static void emit_instr_list(Ctx ctx, const vector_t(std::unique_ptr<AsmInstruction>) node_list) {
+    for (size_t i = node_list[0] ? 0 : 1; i < vec_size(node_list); ++i) {
         emit_instr(ctx, node_list[i].get());
     }
 }

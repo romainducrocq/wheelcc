@@ -2,7 +2,6 @@
 #define _AST_BACK_AST_H
 
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -620,14 +619,15 @@ struct AsmTopLevel : Ast {
 
 struct AsmFunction : AsmTopLevel {
     AST_T type() override;
-    AsmFunction() = default;
-    AsmFunction(TIdentifier name, bool is_glob, bool is_ret_memory,
-        std::vector<std::unique_ptr<AsmInstruction>>&& instructions);
+    AsmFunction();
+    AsmFunction(
+        TIdentifier name, bool is_glob, bool is_ret_memory, vector_t(std::unique_ptr<AsmInstruction>) * instructions);
+    ~AsmFunction();
 
     TIdentifier name;
     bool is_glob;
     bool is_ret_memory;
-    std::vector<std::unique_ptr<AsmInstruction>> instructions;
+    vector_t(std::unique_ptr<AsmInstruction>) instructions;
 };
 
 struct AsmStaticVariable : AsmTopLevel {
