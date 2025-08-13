@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "util/c_std.hpp"
 #include "util/throw.hpp"
 
 #include "ast/back_ast.hpp"
@@ -196,8 +197,8 @@ static void cvt_program(Ctx ctx, AsmProgram* node) {
         }
     }
 
-    for (const auto& top_level : node->static_const_toplvls) {
-        cvt_toplvl(ctx, top_level.get());
+    for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
+        cvt_toplvl(ctx, node->static_const_toplvls[i].get());
     }
 }
 

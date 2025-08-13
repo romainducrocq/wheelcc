@@ -1042,8 +1042,8 @@ static void emit_toplvl(Ctx ctx, AsmTopLevel* node) {
 // Program(top_level*) -> $ [<top_level>]
 //                        $     .section .note.GNU-stack,"",@progbits
 static void emit_program(Ctx ctx, AsmProgram* node) {
-    for (const auto& top_level : node->static_const_toplvls) {
-        emit_toplvl(ctx, top_level.get());
+    for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
+        emit_toplvl(ctx, node->static_const_toplvls[i].get());
     }
     for (const auto& top_level : node->top_levels) {
         emit_toplvl(ctx, top_level.get());
