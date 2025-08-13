@@ -18,7 +18,7 @@ struct TacReprContext {
     FrontEndContext* frontend;
     IdentifierContext* identifiers;
     // Three address code representation
-    std::vector<std::unique_ptr<TacInstruction>>* p_instrs;
+    vector_t(std::unique_ptr<TacInstruction>) * p_instrs;
     std::vector<std::unique_ptr<TacTopLevel>>* p_toplvls;
     std::vector<std::unique_ptr<TacTopLevel>>* p_static_consts;
 };
@@ -126,7 +126,7 @@ static std::shared_ptr<TacValue> repr_value(CExp* node) {
     }
 }
 
-static void push_instr(Ctx ctx, std::unique_ptr<TacInstruction>&& instr) { ctx->p_instrs->push_back(std::move(instr)); }
+static void push_instr(Ctx ctx, std::unique_ptr<TacInstruction>&& instr) { vec_move_back(*ctx->p_instrs, instr); }
 
 static std::unique_ptr<TacExpResult> repr_res_instr(Ctx ctx, CExp* node);
 static std::shared_ptr<TacValue> repr_exp_instr(Ctx ctx, CExp* node);
@@ -553,11 +553,17 @@ static std::unique_ptr<TacExpResult> assign_res_instr(Ctx ctx, CAssignment* node
                 exp_left = static_cast<CCast*>(exp_left)->exp.get();
             }
 
-            std::vector<std::unique_ptr<TacInstruction>> noeval_instrs;
-            std::vector<std::unique_ptr<TacInstruction>>* p_instrs = ctx->p_instrs;
-            ctx->p_instrs = &noeval_instrs;
-            res = repr_res_instr(ctx, exp_left);
-            ctx->p_instrs = p_instrs;
+            {
+                vector_t(std::unique_ptr<TacInstruction>) noeval_instrs = vec_new();
+                vector_t(std::unique_ptr<TacInstruction>)* p_instrs = ctx->p_instrs;
+                ctx->p_instrs = &noeval_instrs;
+                res = repr_res_instr(ctx, exp_left);
+                ctx->p_instrs = p_instrs;
+                for (size_t i = 0; i < vec_size(noeval_instrs); ++i) {
+                    noeval_instrs[i].reset();
+                }
+                vec_delete(noeval_instrs);
+            }
 
             ctx->identifiers->label_count = label_count_2;
             ctx->identifiers->var_count = var_count_2;
@@ -1363,7 +1369,7 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
     vec_resize(params, vec_size(node->params));
     memcpy(params, node->params, vec_size(node->params) * sizeof(TIdentifier));
 
-    std::vector<std::unique_ptr<TacInstruction>> body;
+    vector_t(std::unique_ptr<TacInstruction>) body = vec_new();
     {
         ctx->p_instrs = &body;
         repr_block(ctx, node->body.get());
@@ -1372,10 +1378,10 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
             std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
             push_instr(ctx, std::make_unique<TacReturn>(std::move(val)));
         }
-        ctx->p_instrs = nullptr;
+        ctx->p_instrs = NULL;
     }
 
-    return std::make_unique<TacFunction>(name, is_glob, &params, std::move(body));
+    return std::make_unique<TacFunction>(name, is_glob, &params, &body);
 }
 
 static void push_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& top_level) {

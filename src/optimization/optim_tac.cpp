@@ -31,7 +31,7 @@ struct OptimTacContext {
     std::unique_ptr<ControlFlowGraph> cfg;
     std::unique_ptr<DataFlowAnalysis> dfa;
     std::unique_ptr<DataFlowAnalysisO1> dfa_o1;
-    std::vector<std::unique_ptr<TacInstruction>>* p_instrs;
+    vector_t(std::unique_ptr<TacInstruction>) * p_instrs;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1233,7 +1233,7 @@ static void fold_instr(Ctx ctx, size_t instr_idx) {
 }
 
 static void fold_constants(Ctx ctx) {
-    for (size_t instr_idx = 0; instr_idx < ctx->p_instrs->size(); ++instr_idx) {
+    for (size_t instr_idx = 0; instr_idx < vec_size(*ctx->p_instrs); ++instr_idx) {
         if (GET_INSTR(instr_idx)) {
             fold_instr(ctx, instr_idx);
         }
@@ -2660,7 +2660,7 @@ static void optim_fun_toplvl(Ctx ctx, TacFunction* node) {
         }
     }
     while (!ctx->is_fixed_point);
-    ctx->p_instrs = nullptr;
+    ctx->p_instrs = NULL;
 }
 
 static void optim_toplvl(Ctx ctx, TacTopLevel* node) {

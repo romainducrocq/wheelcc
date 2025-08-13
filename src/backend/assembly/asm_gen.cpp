@@ -2463,10 +2463,10 @@ static void gen_instr(Ctx ctx, TacInstruction* node) {
 //             operand) | Cmp(assembly_type, operand, operand) | Idiv(assembly_type, operand) | Div(assembly_type,
 //             operand) | Cdq(assembly_type) | Jmp(identifier) | JmpCC(cond_code, identifier) | SetCC(cond_code,
 //             operand) | Label(identifier) | Push(operand) | Pop(reg) | Call(identifier) | Ret
-static void gen_instr_list(Ctx ctx, const std::vector<std::unique_ptr<TacInstruction>>& node_list) {
-    for (const auto& instr : node_list) {
-        if (instr) {
-            gen_instr(ctx, instr.get());
+static void gen_instr_list(Ctx ctx, const vector_t(std::unique_ptr<TacInstruction>) node_list) {
+    for (size_t i = 0; i < vec_size(node_list); ++i) {
+        if (node_list[i]) {
+            gen_instr(ctx, node_list[i].get());
         }
     }
 }

@@ -157,14 +157,21 @@ TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue>
 
 TacLabel::TacLabel(TIdentifier name) : name(name) {}
 
-TacFunction::TacFunction() : params(vec_new()) {}
-TacFunction::TacFunction(TIdentifier name, bool is_glob, vector_t(TIdentifier) * params,
-    std::vector<std::unique_ptr<TacInstruction>>&& body) :
+TacFunction::TacFunction() : params(vec_new()), body(vec_new()) {}
+TacFunction::TacFunction(
+    TIdentifier name, bool is_glob, vector_t(TIdentifier) * params, vector_t(std::unique_ptr<TacInstruction>) * body) :
     name(name),
-    is_glob(is_glob), params(vec_new()), body(std::move(body)) {
+    is_glob(is_glob), params(vec_new()), body(vec_new()) {
     vec_move(params, &this->params);
+    vec_move(body, &this->body);
 }
-TacFunction::~TacFunction() { vec_delete(this->params); }
+TacFunction::~TacFunction() {
+    vec_delete(this->params);
+    for (size_t i = 0; i < vec_size(this->body); ++i) {
+        this->body[i].reset();
+    }
+    vec_delete(this->body);
+}
 
 TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type>&& static_init_type,
     std::vector<std::shared_ptr<StaticInit>>&& static_inits) :
