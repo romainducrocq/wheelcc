@@ -28,7 +28,7 @@ struct SemanticContext {
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
     vector_t(TIdentifier) break_loop_labels;
-    std::vector<TIdentifier> continue_loop_labels;
+    vector_t(TIdentifier) continue_loop_labels;
     // Identifier resolution
     TIdentifier fun_def_name;
     CSwitch* p_switch_statement;
@@ -2505,19 +2505,19 @@ static error_t annotate_goto_label(Ctx ctx, CLabel* node) {
 static void annotate_while_loop(Ctx ctx, CWhile* node) {
     node->target = repr_label_identifier(ctx->identifiers, LBL_Lwhile);
     vec_push_back(ctx->break_loop_labels, node->target);
-    ctx->continue_loop_labels.push_back(node->target);
+    vec_push_back(ctx->continue_loop_labels, node->target);
 }
 
 static void annotate_do_while_loop(Ctx ctx, CDoWhile* node) {
     node->target = repr_label_identifier(ctx->identifiers, LBL_Ldo_while);
     vec_push_back(ctx->break_loop_labels, node->target);
-    ctx->continue_loop_labels.push_back(node->target);
+    vec_push_back(ctx->continue_loop_labels, node->target);
 }
 
 static void annotate_for_loop(Ctx ctx, CFor* node) {
     node->target = repr_label_identifier(ctx->identifiers, LBL_Lfor);
     vec_push_back(ctx->break_loop_labels, node->target);
-    ctx->continue_loop_labels.push_back(node->target);
+    vec_push_back(ctx->continue_loop_labels, node->target);
 }
 
 static void annotate_switch_lookup(Ctx ctx, CSwitch* node) {
@@ -2563,17 +2563,17 @@ static error_t annotate_break_jump(Ctx ctx, CBreak* node) {
 
 static error_t annotate_continue_jump(Ctx ctx, CContinue* node) {
     CATCH_ENTER;
-    if (ctx->continue_loop_labels.empty()) {
+    if (vec_empty(ctx->continue_loop_labels)) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_continue_out_of_loop));
     }
-    node->target = ctx->continue_loop_labels.back();
+    node->target = vec_back(ctx->continue_loop_labels);
     FINALLY;
     CATCH_EXIT;
 }
 
 static void deannotate_loop(Ctx ctx) {
     vec_pop_back(ctx->break_loop_labels);
-    ctx->continue_loop_labels.pop_back();
+    vec_pop_back(ctx->continue_loop_labels);
 }
 
 static void deannotate_lookup(Ctx ctx) { vec_pop_back(ctx->break_loop_labels); }
@@ -3406,7 +3406,7 @@ static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
         ctx->goto_map.clear();
         ctx->label_set.clear();
         vec_clear(ctx->break_loop_labels);
-        ctx->continue_loop_labels.clear();
+        vec_clear(ctx->continue_loop_labels);
         ctx->p_switch_statement = nullptr;
     }
     TRY(reslv_fun_declaration(ctx, node->fun_decl.get()));
@@ -3475,10 +3475,12 @@ error_t analyze_semantic(
         ctx.frontend = frontend;
         ctx.identifiers = identifiers;
         ctx.break_loop_labels = vec_new();
+        ctx.continue_loop_labels = vec_new();
     }
     CATCH_ENTER;
     TRY(resolve_program(&ctx, node));
     FINALLY;
     vec_delete(ctx.break_loop_labels);
+    vec_delete(ctx.continue_loop_labels);
     CATCH_EXIT;
 }
