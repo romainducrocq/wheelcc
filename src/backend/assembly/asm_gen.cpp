@@ -1250,7 +1250,6 @@ static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset
         }
         for (size_t i = vec_size(byte_instrs); i-- > 0;) {
             push_instr(ctx, std::move(byte_instrs[i]));
-            byte_instrs[i].reset();
         }
         vec_delete(byte_instrs);
     }
@@ -1363,7 +1362,6 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
     stack_padding *= 8l;
     for (size_t i = vec_size(stack_instrs); i-- > 0;) {
         push_instr(ctx, std::move(stack_instrs[i]));
-        stack_instrs[i].reset();
     }
     vec_delete(stack_instrs);
     return stack_padding;
