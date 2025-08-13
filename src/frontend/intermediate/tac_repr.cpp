@@ -20,7 +20,7 @@ struct TacReprContext {
     // Three address code representation
     vector_t(std::unique_ptr<TacInstruction>) * p_instrs;
     std::vector<std::unique_ptr<TacTopLevel>>* p_toplvls;
-    std::vector<std::unique_ptr<TacTopLevel>>* p_static_consts;
+    vector_t(std::unique_ptr<TacTopLevel>) * p_static_consts;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1453,7 +1453,7 @@ static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
 }
 
 static void push_static_const_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& static_const_toplvls) {
-    ctx->p_static_consts->push_back(std::move(static_const_toplvls));
+    vec_move_back(*ctx->p_static_consts, static_const_toplvls);
 }
 
 static void repr_static_const_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
@@ -1491,7 +1491,7 @@ static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
     }
 
     std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls;
-    std::vector<std::unique_ptr<TacTopLevel>> static_const_toplvls;
+    vector_t(std::unique_ptr<TacTopLevel>) static_const_toplvls = vec_new();
     {
         ctx->p_toplvls = &static_var_toplvls;
         ctx->p_static_consts = &static_const_toplvls;
@@ -1499,11 +1499,10 @@ static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
             symbol_toplvl(ctx, symbol.second.get(), symbol.first);
         }
         ctx->p_toplvls = nullptr;
-        ctx->p_static_consts = nullptr;
+        ctx->p_static_consts = NULL;
     }
 
-    return std::make_unique<TacProgram>(
-        std::move(static_const_toplvls), std::move(static_var_toplvls), std::move(fun_toplvls));
+    return std::make_unique<TacProgram>(&static_const_toplvls, std::move(static_var_toplvls), std::move(fun_toplvls));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
