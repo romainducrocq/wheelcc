@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
 
@@ -1934,7 +1935,7 @@ static void prop_uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node, size_t instr_
 }
 
 static void prop_call_instr(Ctx ctx, TacFunCall* node, size_t instr_idx) {
-    for (size_t i = 0; i < node->args.size(); ++i) {
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
         if (node->args[i]->type() == AST_TacVariable_t) {
             size_t j = 0;
             for (size_t k = 0; k < ctx->dfa->mask_size; ++k) {
@@ -2479,8 +2480,8 @@ static void elim_transfer_live_values(Ctx ctx, size_t instr_idx, size_t next_ins
             if (p_node->dst) {
                 elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
             }
-            for (const auto& arg : p_node->args) {
-                elim_transfer_src_value(ctx, arg.get(), next_instr_idx);
+            for (size_t i = 0; i < vec_size(p_node->args); ++i) {
+                elim_transfer_src_value(ctx, p_node->args[i].get(), next_instr_idx);
             }
             elim_transfer_aliased(ctx, next_instr_idx);
             break;

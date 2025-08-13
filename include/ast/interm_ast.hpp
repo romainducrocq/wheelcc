@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 
@@ -283,11 +285,12 @@ struct TacUIntToDouble : TacInstruction {
 
 struct TacFunCall : TacInstruction {
     AST_T type() override;
-    TacFunCall() = default;
-    TacFunCall(TIdentifier name, std::vector<std::shared_ptr<TacValue>>&& args, std::shared_ptr<TacValue>&& dst);
+    TacFunCall();
+    TacFunCall(TIdentifier name, vector_t(std::shared_ptr<TacValue>) * args, std::shared_ptr<TacValue>&& dst);
+    ~TacFunCall();
 
     TIdentifier name;
-    std::vector<std::shared_ptr<TacValue>> args;
+    vector_t(std::shared_ptr<TacValue>) args;
     // Optional
     std::shared_ptr<TacValue> dst;
 };

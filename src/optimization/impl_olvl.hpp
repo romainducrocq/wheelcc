@@ -947,8 +947,8 @@ static bool init_data_flow_analysis(Ctx ctx,
                         case AST_TacFunCall_t: {
                             if (is_store_elim) {
                                 TacFunCall* p_node = static_cast<TacFunCall*>(node);
-                                for (const auto& arg : p_node->args) {
-                                    elim_add_data_value(ctx, arg.get());
+                                for (size_t i = 0; i < vec_size(p_node->args); ++i) {
+                                    elim_add_data_value(ctx, p_node->args[i].get());
                                 }
                                 if (p_node->dst) {
                                     elim_add_data_value(ctx, p_node->dst.get());

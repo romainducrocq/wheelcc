@@ -2,7 +2,6 @@
 #ifndef __NDEBUG__
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -1138,9 +1137,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             print_field("TacFunCall", "", ++t);
             TacFunCall* p_node = static_cast<TacFunCall*>(node);
             print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
-            print_field("List[" + std::to_string(p_node->args.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->args) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->args)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->args); ++i) {
+                print_ast(ctx, p_node->args[i].get(), t + 1);
             }
             print_ast(ctx, p_node->dst.get(), t);
             break;

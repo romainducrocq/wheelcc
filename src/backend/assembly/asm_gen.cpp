@@ -1283,27 +1283,28 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
     TLong stack_padding = 0l;
     std::vector<std::unique_ptr<AsmInstruction>> stack_instrs;
     std::vector<std::unique_ptr<AsmInstruction>>* p_instrs = ctx->p_instrs;
-    for (const auto& arg : node->args) {
-        if (is_value_dbl(ctx, arg.get())) {
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
+        TacValue* arg = node->args[i].get();
+        if (is_value_dbl(ctx, arg)) {
             if (sse_size < 8) {
-                reg_arg_call_instr(ctx, arg.get(), ctx->sse_arg_regs[sse_size]);
+                reg_arg_call_instr(ctx, arg, ctx->sse_arg_regs[sse_size]);
                 sse_size++;
             }
             else {
                 ctx->p_instrs = &stack_instrs;
-                stack_arg_call_instr(ctx, arg.get());
+                stack_arg_call_instr(ctx, arg);
                 ctx->p_instrs = p_instrs;
                 stack_padding++;
             }
         }
-        else if (!is_value_struct(ctx, arg.get())) {
+        else if (!is_value_struct(ctx, arg)) {
             if (reg_size < 6) {
-                reg_arg_call_instr(ctx, arg.get(), ctx->arg_regs[reg_size]);
+                reg_arg_call_instr(ctx, arg, ctx->arg_regs[reg_size]);
                 reg_size++;
             }
             else {
                 ctx->p_instrs = &stack_instrs;
-                stack_arg_call_instr(ctx, arg.get());
+                stack_arg_call_instr(ctx, arg);
                 ctx->p_instrs = p_instrs;
                 stack_padding++;
             }
@@ -1311,7 +1312,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
         else {
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
-            TIdentifier name = static_cast<TacVariable*>(arg.get())->name;
+            TIdentifier name = static_cast<TacVariable*>(arg)->name;
             Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
             struct_8b_clss(ctx, struct_type);
             if (ctx->struct_8b_cls_map[struct_type->tag][0] != CLS_memory) {

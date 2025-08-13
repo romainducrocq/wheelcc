@@ -1,6 +1,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 #include "ast/interm_ast.hpp"
@@ -100,10 +102,17 @@ TacIntToDouble::TacIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_ptr<
 TacUIntToDouble::TacUIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst) :
     src(std::move(src)), dst(std::move(dst)) {}
 
-TacFunCall::TacFunCall(
-    TIdentifier name, std::vector<std::shared_ptr<TacValue>>&& args, std::shared_ptr<TacValue>&& dst) :
-    name(name),
-    args(std::move(args)), dst(std::move(dst)) {}
+TacFunCall::TacFunCall() : args(vec_new()) {}
+TacFunCall::TacFunCall(TIdentifier name, vector_t(std::shared_ptr<TacValue>) * args, std::shared_ptr<TacValue>&& dst) :
+    name(name), args(vec_new()), dst(std::move(dst)) {
+    vec_move(args, &this->args);
+}
+TacFunCall::~TacFunCall() {
+    for (size_t i = 0; i < vec_size(this->args); ++i) {
+        this->args[i].reset();
+    }
+    vec_delete(this->args);
+}
 
 TacUnary::TacUnary(
     std::unique_ptr<TacUnaryOp>&& unop, std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst) :

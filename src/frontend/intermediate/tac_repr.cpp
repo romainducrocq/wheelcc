@@ -656,18 +656,18 @@ static std::unique_ptr<TacPlainOperand> conditional_res_instr(Ctx ctx, CConditio
 
 static std::unique_ptr<TacPlainOperand> call_res_instr(Ctx ctx, CFunctionCall* node) {
     TIdentifier name = node->name;
-    std::vector<std::shared_ptr<TacValue>> args;
-    args.reserve(vec_size(node->args));
+    vector_t(std::shared_ptr<TacValue>) args = vec_new();
+    vec_reserve(args, vec_size(node->args));
     for (size_t i = 0; i < vec_size(node->args); ++i) {
         std::shared_ptr<TacValue> arg = repr_exp_instr(ctx, node->args[i].get());
-        args.push_back(std::move(arg));
+        vec_move_back(args, arg);
     }
     std::shared_ptr<TacValue> dst;
     if (node->exp_type->type() != AST_Void_t) {
         dst = plain_inner_value(ctx, node);
     }
     std::shared_ptr<TacValue> dst_cp = dst;
-    push_instr(ctx, std::make_unique<TacFunCall>(name, std::move(args), std::move(dst_cp)));
+    push_instr(ctx, std::make_unique<TacFunCall>(name, &args, std::move(dst_cp)));
     return std::make_unique<TacPlainOperand>(std::move(dst));
 }
 
