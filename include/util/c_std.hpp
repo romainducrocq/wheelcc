@@ -3,8 +3,8 @@
 
 #include "sds/sds.h"
 #include "stb_ds/stb_ds.h"
-#ifdef __cplusplus
 // TODO rm
+#ifdef __cplusplus
 #include <new>
 #endif
 
@@ -85,18 +85,21 @@ typedef sds string_t;
     while (0)
 #define vec_size(X) arrlenu(X)
 #define vec_back(X) (X)[vec_size(X) - 1]
-#define vec_clear(X) arrdeln(X, 0, vec_size(X))
+#define vec_clear(X)                 \
+    if (X) {                         \
+        stbds_header(X)->length = 0; \
+    }
 #define vec_empty(X) (vec_size(X) == 0)
-#define vec_emplace_back(X) arraddnindex(X, 1)
-#ifdef __cplusplus
-// TODO rm
-#define vec_move_back(X, Y)                                       \
-    do {                                                          \
-        stbds_arrmaybegrow(X, 1);                                 \
-        new (&(X)[stbds_header(X)->length++]) auto(std::move(Y)); \
-    }                                                             \
+// TODO
+#define vec_copy_back(X, Y)                            \
+    do {                                               \
+        stbds_arrmaybegrow(X, 1);                      \
+        new (&(X)[stbds_header(X)->length++]) auto(Y); \
+    }                                                  \
     while (0)
-#endif
+#define vec_emplace_back(X) arraddnindex(X, 1)
+// TODO
+#define vec_move_back(X, Y) vec_copy_back(X, std::move(Y))
 #define vec_pop_back(X) arrpop(X)
 #define vec_push_back(X, Y) arrput(X, Y)
 #define vec_remove(X, Y) arrdel(X, Y)
