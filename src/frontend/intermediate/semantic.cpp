@@ -1448,9 +1448,10 @@ static error_t check_for_statement(Ctx ctx, CFor* node) {
 
 static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TInt> values(vec_size(node->cases));
+    vector_t(TInt) values = vec_new();
     CATCH_ENTER;
-    for (size_t i = 0; i < values.size(); ++i) {
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
         values[i] = get_const_int_value(esac);
@@ -1465,14 +1466,16 @@ static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
     }
     FINALLY;
     str_delete(strto_fmt);
+    vec_delete(values);
     CATCH_EXIT;
 }
 
 static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TLong> values(vec_size(node->cases));
+    vector_t(TLong) values = vec_new();
     CATCH_ENTER;
-    for (size_t i = 0; i < values.size(); ++i) {
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
         values[i] = get_const_long_value(esac);
@@ -1487,14 +1490,16 @@ static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
     }
     FINALLY;
     str_delete(strto_fmt);
+    vec_delete(values);
     CATCH_EXIT;
 }
 
 static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TUInt> values(vec_size(node->cases));
+    vector_t(TUInt) values = vec_new();
     CATCH_ENTER;
-    for (size_t i = 0; i < values.size(); ++i) {
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
         values[i] = get_const_uint_value(esac);
@@ -1509,14 +1514,16 @@ static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
     }
     FINALLY;
     str_delete(strto_fmt);
+    vec_delete(values);
     CATCH_EXIT;
 }
 
 static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
     string_t strto_fmt = str_new(NULL);
-    std::vector<TULong> values(vec_size(node->cases));
+    vector_t(TULong) values = vec_new();
     CATCH_ENTER;
-    for (size_t i = 0; i < values.size(); ++i) {
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
         values[i] = get_const_ulong_value(esac);
@@ -1531,6 +1538,7 @@ static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
     }
     FINALLY;
     str_delete(strto_fmt);
+    vec_delete(values);
     CATCH_EXIT;
 }
 
