@@ -1,5 +1,4 @@
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -192,17 +191,26 @@ TacStaticConstant::TacStaticConstant(
     name(name),
     static_init_type(std::move(static_init_type)), static_init(std::move(static_init)) {}
 
-TacProgram::TacProgram() : static_const_toplvls(vec_new()) {}
+TacProgram::TacProgram() : static_const_toplvls(vec_new()), static_var_toplvls(vec_new()), fun_toplvls(vec_new()) {}
 TacProgram::TacProgram(vector_t(std::unique_ptr<TacTopLevel>) * static_const_toplvls,
-    std::vector<std::unique_ptr<TacTopLevel>>&& static_var_toplvls,
-    std::vector<std::unique_ptr<TacTopLevel>>&& fun_toplvls) :
+    vector_t(std::unique_ptr<TacTopLevel>) * static_var_toplvls, vector_t(std::unique_ptr<TacTopLevel>) * fun_toplvls) :
     static_const_toplvls(vec_new()),
-    static_var_toplvls(std::move(static_var_toplvls)), fun_toplvls(std::move(fun_toplvls)) {
+    static_var_toplvls(vec_new()), fun_toplvls(vec_new()) {
     vec_move(static_const_toplvls, &this->static_const_toplvls);
+    vec_move(static_var_toplvls, &this->static_var_toplvls);
+    vec_move(fun_toplvls, &this->fun_toplvls);
 }
 TacProgram::~TacProgram() {
     for (size_t i = 0; i < vec_size(this->static_const_toplvls); ++i) {
         this->static_const_toplvls[i].reset();
     }
     vec_delete(this->static_const_toplvls);
+    for (size_t i = 0; i < vec_size(this->static_var_toplvls); ++i) {
+        this->static_var_toplvls[i].reset();
+    }
+    vec_delete(this->static_var_toplvls);
+    for (size_t i = 0; i < vec_size(this->fun_toplvls); ++i) {
+        this->fun_toplvls[i].reset();
+    }
+    vec_delete(this->fun_toplvls);
 }

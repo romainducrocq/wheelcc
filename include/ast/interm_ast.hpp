@@ -2,7 +2,6 @@
 #define _AST_INTERM_AST_H
 
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 
@@ -472,13 +471,13 @@ struct TacProgram : Ast {
     AST_T type() override;
     TacProgram();
     TacProgram(vector_t(std::unique_ptr<TacTopLevel>) * static_const_toplvls,
-        std::vector<std::unique_ptr<TacTopLevel>>&& static_var_toplvls,
-        std::vector<std::unique_ptr<TacTopLevel>>&& fun_toplvls);
+        vector_t(std::unique_ptr<TacTopLevel>) * static_var_toplvls,
+        vector_t(std::unique_ptr<TacTopLevel>) * fun_toplvls);
     ~TacProgram();
 
     vector_t(std::unique_ptr<TacTopLevel>) static_const_toplvls;
-    std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls;
-    std::vector<std::unique_ptr<TacTopLevel>> fun_toplvls;
+    vector_t(std::unique_ptr<TacTopLevel>) static_var_toplvls;
+    vector_t(std::unique_ptr<TacTopLevel>) fun_toplvls;
 };
 
 /*

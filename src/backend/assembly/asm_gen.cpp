@@ -2691,16 +2691,16 @@ static std::unique_ptr<AsmProgram> gen_program(Ctx ctx, TacProgram* node) {
     }
 
     std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
-    top_levels.reserve(node->static_var_toplvls.size() + node->fun_toplvls.size());
+    top_levels.reserve(vec_size(node->static_var_toplvls) + vec_size(node->fun_toplvls));
     {
         ctx->p_static_consts = &static_const_toplvls;
 
-        for (const auto& top_level : node->static_var_toplvls) {
-            std::unique_ptr<AsmTopLevel> static_var_toplvl = gen_toplvl(ctx, top_level.get());
+        for (size_t i = 0; i < vec_size(node->static_var_toplvls); ++i) {
+            std::unique_ptr<AsmTopLevel> static_var_toplvl = gen_toplvl(ctx, node->static_var_toplvls[i].get());
             top_levels.push_back(std::move(static_var_toplvl));
         }
-        for (const auto& top_level : node->fun_toplvls) {
-            std::unique_ptr<AsmTopLevel> fun_toplvl = gen_toplvl(ctx, top_level.get());
+        for (size_t i = 0; i < vec_size(node->fun_toplvls); ++i) {
+            std::unique_ptr<AsmTopLevel> fun_toplvl = gen_toplvl(ctx, node->fun_toplvls[i].get());
             top_levels.push_back(std::move(fun_toplvl));
         }
         ctx->p_static_consts = nullptr;

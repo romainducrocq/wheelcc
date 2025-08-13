@@ -1286,13 +1286,13 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             for (size_t i = 0; i < vec_size(p_node->static_const_toplvls); ++i) {
                 print_ast(ctx, p_node->static_const_toplvls[i].get(), t + 1);
             }
-            print_field("List[" + std::to_string(p_node->static_var_toplvls.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->static_var_toplvls) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->static_var_toplvls)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->static_var_toplvls); ++i) {
+                print_ast(ctx, p_node->static_var_toplvls[i].get(), t + 1);
             }
-            print_field("List[" + std::to_string(p_node->fun_toplvls.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->fun_toplvls) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->fun_toplvls)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->fun_toplvls); ++i) {
+                print_ast(ctx, p_node->fun_toplvls[i].get(), t + 1);
             }
             break;
         }

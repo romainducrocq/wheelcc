@@ -2673,8 +2673,8 @@ static void optim_toplvl(Ctx ctx, TacTopLevel* node) {
 }
 
 static void optim_program(Ctx ctx, TacProgram* node) {
-    for (const auto& top_level : node->fun_toplvls) {
-        optim_toplvl(ctx, top_level.get());
+    for (size_t i = 0; i < vec_size(node->fun_toplvls); ++i) {
+        optim_toplvl(ctx, node->fun_toplvls[i].get());
     }
     ctx->frontend->addressed_set.clear();
 }

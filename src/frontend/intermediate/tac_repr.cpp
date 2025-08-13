@@ -1,6 +1,5 @@
 #include <inttypes.h>
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -19,7 +18,7 @@ struct TacReprContext {
     IdentifierContext* identifiers;
     // Three address code representation
     vector_t(std::unique_ptr<TacInstruction>) * p_instrs;
-    std::vector<std::unique_ptr<TacTopLevel>>* p_toplvls;
+    vector_t(std::unique_ptr<TacTopLevel>) * p_toplvls;
     vector_t(std::unique_ptr<TacTopLevel>) * p_static_consts;
 };
 
@@ -1385,7 +1384,7 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
 }
 
 static void push_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& top_level) {
-    ctx->p_toplvls->push_back(std::move(top_level));
+    vec_move_back(*ctx->p_toplvls, top_level);
 }
 
 static void fun_decl_toplvl(Ctx ctx, CFunDecl* node) {
@@ -1481,16 +1480,16 @@ static void symbol_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
 
 // AST = Program(top_level*, top_level*, top_level*)
 static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
-    std::vector<std::unique_ptr<TacTopLevel>> fun_toplvls;
+    vector_t(std::unique_ptr<TacTopLevel>) fun_toplvls = vec_new();
     {
         ctx->p_toplvls = &fun_toplvls;
         for (size_t i = 0; i < vec_size(node->declarations); ++i) {
             declaration_toplvl(ctx, node->declarations[i].get());
         }
-        ctx->p_toplvls = nullptr;
+        ctx->p_toplvls = NULL;
     }
 
-    std::vector<std::unique_ptr<TacTopLevel>> static_var_toplvls;
+    vector_t(std::unique_ptr<TacTopLevel>) static_var_toplvls = vec_new();
     vector_t(std::unique_ptr<TacTopLevel>) static_const_toplvls = vec_new();
     {
         ctx->p_toplvls = &static_var_toplvls;
@@ -1498,11 +1497,11 @@ static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
         for (const auto& symbol : ctx->frontend->symbol_table) {
             symbol_toplvl(ctx, symbol.second.get(), symbol.first);
         }
-        ctx->p_toplvls = nullptr;
+        ctx->p_toplvls = NULL;
         ctx->p_static_consts = NULL;
     }
 
-    return std::make_unique<TacProgram>(&static_const_toplvls, std::move(static_var_toplvls), std::move(fun_toplvls));
+    return std::make_unique<TacProgram>(&static_const_toplvls, &static_var_toplvls, &fun_toplvls);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
