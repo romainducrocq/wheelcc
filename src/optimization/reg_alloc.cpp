@@ -1746,8 +1746,8 @@ static void alloc_toplvl(Ctx ctx, AsmTopLevel* node) {
 }
 
 static void alloc_program(Ctx ctx, AsmProgram* node) {
-    for (const auto& top_level : node->top_levels) {
-        alloc_toplvl(ctx, top_level.get());
+    for (size_t i = 0; i < vec_size(node->top_levels); ++i) {
+        alloc_toplvl(ctx, node->top_levels[i].get());
     }
 }
 

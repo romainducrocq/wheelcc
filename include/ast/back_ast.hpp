@@ -660,11 +660,11 @@ struct AsmProgram : Ast {
     AST_T type() override;
     AsmProgram();
     AsmProgram(vector_t(std::unique_ptr<AsmTopLevel>) * static_const_toplvls,
-        std::vector<std::unique_ptr<AsmTopLevel>>&& top_levels);
+        vector_t(std::unique_ptr<AsmTopLevel>) * top_levels);
     ~AsmProgram();
 
     vector_t(std::unique_ptr<AsmTopLevel>) static_const_toplvls;
-    std::vector<std::unique_ptr<AsmTopLevel>> top_levels;
+    vector_t(std::unique_ptr<AsmTopLevel>) top_levels;
 };
 
 /*

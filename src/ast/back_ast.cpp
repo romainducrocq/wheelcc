@@ -213,16 +213,21 @@ AsmStaticVariable::~AsmStaticVariable() {
 AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit>&& static_init) :
     name(name), alignment(alignment), static_init(std::move(static_init)) {}
 
-AsmProgram::AsmProgram() : static_const_toplvls(vec_new()) {}
+AsmProgram::AsmProgram() : static_const_toplvls(vec_new()), top_levels(vec_new()) {}
 AsmProgram::AsmProgram(vector_t(std::unique_ptr<AsmTopLevel>) * static_const_toplvls,
-    std::vector<std::unique_ptr<AsmTopLevel>>&& top_levels) :
+    vector_t(std::unique_ptr<AsmTopLevel>) * top_levels) :
     static_const_toplvls(vec_new()),
-    top_levels(std::move(top_levels)) {
+    top_levels(vec_new()) {
     vec_move(static_const_toplvls, &this->static_const_toplvls);
+    vec_move(top_levels, &this->top_levels);
 }
 AsmProgram::~AsmProgram() {
     for (size_t i = 0; i < vec_size(this->static_const_toplvls); ++i) {
         this->static_const_toplvls[i].reset();
     }
     vec_delete(this->static_const_toplvls);
+    for (size_t i = 0; i < vec_size(this->top_levels); ++i) {
+        this->top_levels[i].reset();
+    }
+    vec_delete(this->top_levels);
 }

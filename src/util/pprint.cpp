@@ -1779,9 +1779,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             for (size_t i = 0; i < vec_size(p_node->static_const_toplvls); ++i) {
                 print_ast(ctx, p_node->static_const_toplvls[i].get(), t + 1);
             }
-            print_field("List[" + std::to_string(p_node->top_levels.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->top_levels) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->top_levels)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->top_levels); ++i) {
+                print_ast(ctx, p_node->top_levels[i].get(), t + 1);
             }
             break;
         }

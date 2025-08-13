@@ -1045,8 +1045,8 @@ static void emit_program(Ctx ctx, AsmProgram* node) {
     for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
         emit_toplvl(ctx, node->static_const_toplvls[i].get());
     }
-    for (const auto& top_level : node->top_levels) {
-        emit_toplvl(ctx, top_level.get());
+    for (size_t i = 0; i < vec_size(node->top_levels); ++i) {
+        emit_toplvl(ctx, node->top_levels[i].get());
     }
 #ifndef __APPLE__
     emit(ctx, TAB TAB ".section .note.GNU-stack,\"\",@progbits" LF);

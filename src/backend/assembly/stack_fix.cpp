@@ -1047,8 +1047,8 @@ static void fix_toplvl(Ctx ctx, AsmTopLevel* node) {
 }
 
 static void fix_program(Ctx ctx, AsmProgram* node) {
-    for (const auto& top_level : node->top_levels) {
-        fix_toplvl(ctx, top_level.get());
+    for (size_t i = 0; i < vec_size(node->top_levels); ++i) {
+        fix_toplvl(ctx, node->top_levels[i].get());
     }
 }
 
