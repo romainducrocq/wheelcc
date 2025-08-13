@@ -1408,22 +1408,22 @@ static void declaration_toplvl(Ctx ctx, CDeclaration* node) {
     }
 }
 
-static std::vector<std::shared_ptr<StaticInit>> tentative_static_toplvl(Ctx ctx, Type* static_init_type) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+static vector_t(std::shared_ptr<StaticInit>) tentative_static_toplvl(Ctx ctx, Type* static_init_type) {
+    vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
     {
         TLong byte = get_type_scale(ctx, static_init_type);
         std::shared_ptr<StaticInit> static_init = std::make_shared<ZeroInit>(byte);
-        static_inits.push_back(std::move(static_init));
+        vec_move_back(static_inits, static_init);
     }
     return static_inits;
 }
 
-static std::vector<std::shared_ptr<StaticInit>> initial_static_toplvl(Initial* node) {
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
-    static_inits.reserve(vec_size(node->static_inits));
+static vector_t(std::shared_ptr<StaticInit>) initial_static_toplvl(Initial* node) {
+    vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
+    vec_reserve(static_inits, vec_size(node->static_inits));
     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
         std::shared_ptr<StaticInit> static_init = node->static_inits[i];
-        static_inits.push_back(std::move(static_init));
+        vec_move_back(static_inits, static_init);
     }
     return static_inits;
 }
@@ -1437,7 +1437,7 @@ static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
     TIdentifier name = symbol;
     bool is_glob = static_attr->is_glob;
     std::shared_ptr<Type> static_init_type = node->type_t;
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
     switch (static_attr->init->type()) {
         case AST_Tentative_t:
             static_inits = tentative_static_toplvl(ctx, static_init_type.get());
@@ -1449,8 +1449,7 @@ static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
             THROW_ABORT;
     }
 
-    push_toplvl(
-        ctx, std::make_unique<TacStaticVariable>(name, is_glob, std::move(static_init_type), std::move(static_inits)));
+    push_toplvl(ctx, std::make_unique<TacStaticVariable>(name, is_glob, std::move(static_init_type), &static_inits));
 }
 
 static void push_static_const_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& static_const_toplvls) {

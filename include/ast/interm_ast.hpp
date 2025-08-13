@@ -443,14 +443,15 @@ struct TacFunction : TacTopLevel {
 
 struct TacStaticVariable : TacTopLevel {
     AST_T type() override;
-    TacStaticVariable() = default;
+    TacStaticVariable();
     TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type>&& static_init_type,
-        std::vector<std::shared_ptr<StaticInit>>&& static_inits);
+        vector_t(std::shared_ptr<StaticInit>) * static_inits);
+    ~TacStaticVariable();
 
     TIdentifier name;
     bool is_glob;
     std::shared_ptr<Type> static_init_type;
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits;
 };
 
 struct TacStaticConstant : TacTopLevel {

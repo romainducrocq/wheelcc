@@ -173,10 +173,19 @@ TacFunction::~TacFunction() {
     vec_delete(this->body);
 }
 
+TacStaticVariable::TacStaticVariable() : static_inits(vec_new()) {}
 TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type>&& static_init_type,
-    std::vector<std::shared_ptr<StaticInit>>&& static_inits) :
+    vector_t(std::shared_ptr<StaticInit>) * static_inits) :
     name(name),
-    is_glob(is_glob), static_init_type(std::move(static_init_type)), static_inits(std::move(static_inits)) {}
+    is_glob(is_glob), static_init_type(std::move(static_init_type)), static_inits(vec_new()) {
+    vec_move(static_inits, &this->static_inits);
+}
+TacStaticVariable::~TacStaticVariable() {
+    for (size_t i = 0; i < vec_size(this->static_inits); ++i) {
+        this->static_inits[i].reset();
+    }
+    vec_delete(this->static_inits);
+}
 
 TacStaticConstant::TacStaticConstant(
     TIdentifier name, std::shared_ptr<Type>&& static_init_type, std::shared_ptr<StaticInit>&& static_init) :
