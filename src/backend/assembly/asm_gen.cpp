@@ -1225,7 +1225,7 @@ static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset
     {
         TLong to_offset = 0l;
         TLong size = bytearr_type->size;
-        std::vector<std::unique_ptr<AsmInstruction>> byte_instrs;
+        vector_t(std::unique_ptr<AsmInstruction>) byte_instrs = vec_new();
         while (size > 0l) {
             std::unique_ptr<AsmInstruction> byte_instr;
             {
@@ -1246,11 +1246,13 @@ static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset
                 }
                 byte_instr = std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst));
             }
-            byte_instrs.push_back(std::move(byte_instr));
+            vec_move_back(byte_instrs, byte_instr);
         }
-        for (size_t i = byte_instrs.size(); i-- > 0;) {
+        for (size_t i = vec_size(byte_instrs); i-- > 0;) {
             push_instr(ctx, std::move(byte_instrs[i]));
+            byte_instrs[i].reset();
         }
+        vec_delete(byte_instrs);
     }
     {
         std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmSub>();
