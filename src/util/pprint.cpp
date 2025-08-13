@@ -379,9 +379,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             print_field("BackendFun", "", ++t);
             BackendFun* p_node = static_cast<BackendFun*>(node);
             print_field("Bool", std::to_string(p_node->is_def), t + 1);
-            print_field("List[" + std::to_string(p_node->callee_saved_regs.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->callee_saved_regs) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->callee_saved_regs)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->callee_saved_regs); ++i) {
+                print_ast(ctx, p_node->callee_saved_regs[i].get(), t + 1);
             }
             break;
         }

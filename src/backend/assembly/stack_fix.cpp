@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "util/c_std.hpp"
 #include "util/throw.hpp"
 
 #include "ast/back_ast.hpp"
@@ -496,14 +497,15 @@ static void fix_alloc_stack_bytes(Ctx ctx, TLong callee_saved_size) {
     }
 }
 
-static void push_callee_saved_regs(Ctx ctx, const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_regs) {
-    for (std::shared_ptr<AsmOperand> src : callee_saved_regs) {
+static void push_callee_saved_regs(Ctx ctx, const vector_t(std::shared_ptr<AsmOperand>) callee_saved_regs) {
+    for (size_t i = 0; i < vec_size(callee_saved_regs); ++i) {
+        std::shared_ptr<AsmOperand> src = callee_saved_regs[i];
         push_fix_instr(ctx, std::make_unique<AsmPush>(std::move(src)));
     }
 }
 
-static void pop_callee_saved_regs(Ctx ctx, const std::vector<std::shared_ptr<AsmOperand>>& callee_saved_regs) {
-    for (size_t i = callee_saved_regs.size(); i-- > 0;) {
+static void pop_callee_saved_regs(Ctx ctx, const vector_t(std::shared_ptr<AsmOperand>) callee_saved_regs) {
+    for (size_t i = vec_size(callee_saved_regs); i-- > 0;) {
         THROW_ABORT_IF(callee_saved_regs[i]->type() != AST_AsmRegister_t);
         REGISTER_KIND reg_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_regs[i].get())->reg.get());
         std::unique_ptr<AsmReg> reg;
@@ -1026,7 +1028,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
         pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
     }
     {
-        TLong callee_saved_size = (TLong)backend_fun->callee_saved_regs.size();
+        TLong callee_saved_size = (TLong)vec_size(backend_fun->callee_saved_regs);
         fix_alloc_stack_bytes(ctx, callee_saved_size);
     }
     ctx->p_fix_instrs = nullptr;

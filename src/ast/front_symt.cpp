@@ -1,6 +1,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/front_symt.hpp"
 

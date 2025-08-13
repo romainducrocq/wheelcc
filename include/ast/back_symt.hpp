@@ -3,7 +3,8 @@
 
 #include <memory>
 #include <unordered_map>
-#include <vector>
+
+#include "util/c_std.hpp"
 
 #include "ast/ast.hpp"
 
@@ -68,11 +69,12 @@ struct BackendObj : BackendSymbol {
 struct AsmOperand;
 struct BackendFun : BackendSymbol {
     AST_T type() override;
-    BackendFun() = default;
+    BackendFun();
     BackendFun(bool is_def);
+    ~BackendFun();
 
     bool is_def;
-    std::vector<std::shared_ptr<AsmOperand>> callee_saved_regs;
+    vector_t(std::shared_ptr<AsmOperand>) callee_saved_regs;
 };
 
 /*

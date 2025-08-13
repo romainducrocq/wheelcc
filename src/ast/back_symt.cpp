@@ -1,5 +1,7 @@
 #include <memory>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/back_symt.hpp"
 
@@ -22,4 +24,11 @@ ByteArray::ByteArray(TLong size, TInt alignment) : size(size), alignment(alignme
 BackendObj::BackendObj(bool is_static, bool is_const, std::shared_ptr<AssemblyType>&& asm_type) :
     is_static(is_static), is_const(is_const), asm_type(std::move(asm_type)) {}
 
-BackendFun::BackendFun(bool is_def) : is_def(is_def) {}
+BackendFun::BackendFun() : callee_saved_regs(vec_new()) {}
+BackendFun::BackendFun(bool is_def) : is_def(is_def), callee_saved_regs(vec_new()) {}
+BackendFun::~BackendFun() {
+    for (size_t i = 0; i < vec_size(this->callee_saved_regs); ++i) {
+        this->callee_saved_regs[i].reset();
+    }
+    vec_delete(this->callee_saved_regs);
+}
