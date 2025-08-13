@@ -430,13 +430,14 @@ struct TacTopLevel : Ast {
 
 struct TacFunction : TacTopLevel {
     AST_T type() override;
-    TacFunction() = default;
-    TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier>&& params,
+    TacFunction();
+    TacFunction(TIdentifier name, bool is_glob, vector_t(TIdentifier) * params,
         std::vector<std::unique_ptr<TacInstruction>>&& body);
+    ~TacFunction();
 
     TIdentifier name;
     bool is_glob;
-    std::vector<TIdentifier> params;
+    vector_t(TIdentifier) params;
     std::vector<std::unique_ptr<TacInstruction>> body;
 };
 

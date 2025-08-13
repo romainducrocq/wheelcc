@@ -1249,9 +1249,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             TacFunction* p_node = static_cast<TacFunction*>(node);
             print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("Bool", std::to_string(p_node->is_glob), t + 1);
-            print_field("List[" + std::to_string(p_node->params.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->params) {
-                print_field("TIdentifier", std::string(ctx->hash_table[item]), t + 2);
+            print_field("List[" + std::to_string(vec_size(p_node->params)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->params); ++i) {
+                print_field("TIdentifier", std::string(ctx->hash_table[p_node->params[i]]), t + 2);
             }
             print_field("List[" + std::to_string(p_node->body.size()) + "]", "", t + 1);
             for (const auto& item : p_node->body) {

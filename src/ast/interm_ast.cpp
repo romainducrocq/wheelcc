@@ -157,10 +157,14 @@ TacJumpIfNotZero::TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue>
 
 TacLabel::TacLabel(TIdentifier name) : name(name) {}
 
-TacFunction::TacFunction(TIdentifier name, bool is_glob, std::vector<TIdentifier>&& params,
+TacFunction::TacFunction() : params(vec_new()) {}
+TacFunction::TacFunction(TIdentifier name, bool is_glob, vector_t(TIdentifier) * params,
     std::vector<std::unique_ptr<TacInstruction>>&& body) :
     name(name),
-    is_glob(is_glob), params(std::move(params)), body(std::move(body)) {}
+    is_glob(is_glob), params(vec_new()), body(std::move(body)) {
+    vec_move(params, &this->params);
+}
+TacFunction::~TacFunction() { vec_delete(this->params); }
 
 TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type>&& static_init_type,
     std::vector<std::shared_ptr<StaticInit>>&& static_inits) :

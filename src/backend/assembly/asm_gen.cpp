@@ -2537,7 +2537,8 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
     size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
-    for (TIdentifier param : node->params) {
+    for (size_t i = 0; i < vec_size(node->params); ++i) {
+        TIdentifier param = node->params[i];
         if (ctx->frontend->symbol_table[param]->type_t->type() == AST_Double_t) {
             if (sse_size < 8) {
                 reg_fun_param_instr(ctx, param, ctx->sse_arg_regs[sse_size]);

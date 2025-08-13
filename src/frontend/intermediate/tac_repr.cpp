@@ -1359,8 +1359,9 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
     TIdentifier name = node->name;
     bool is_glob = static_cast<FunAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get())->is_glob;
 
-    std::vector<TIdentifier> params(vec_size(node->params));
-    memcpy(params.data(), node->params, vec_size(node->params) * sizeof(TIdentifier));
+    vector_t(TIdentifier) params = vec_new();
+    vec_resize(params, vec_size(node->params));
+    memcpy(params, node->params, vec_size(node->params) * sizeof(TIdentifier));
 
     std::vector<std::unique_ptr<TacInstruction>> body;
     {
@@ -1374,7 +1375,7 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
         ctx->p_instrs = nullptr;
     }
 
-    return std::make_unique<TacFunction>(name, is_glob, std::move(params), std::move(body));
+    return std::make_unique<TacFunction>(name, is_glob, &params, std::move(body));
 }
 
 static void push_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& top_level) {
