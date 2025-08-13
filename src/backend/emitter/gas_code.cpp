@@ -1,5 +1,4 @@
 #include <memory>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/fileio.hpp"
