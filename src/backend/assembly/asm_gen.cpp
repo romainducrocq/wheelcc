@@ -2641,11 +2641,13 @@ static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(Ctx ctx, TacStat
     TIdentifier name = node->name;
     bool is_glob = node->is_glob;
     TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type.get());
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
+    vec_reserve(static_inits, vec_size(node->static_inits));
     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
-        static_inits.push_back(node->static_inits[i]);
+        std::shared_ptr<StaticInit> static_init = node->static_inits[i];
+        vec_move_back(static_inits, static_init);
     }
-    return std::make_unique<AsmStaticVariable>(name, alignment, is_glob, std::move(static_inits));
+    return std::make_unique<AsmStaticVariable>(name, alignment, is_glob, &static_inits);
 }
 
 static void push_static_const_toplvl(Ctx ctx, std::unique_ptr<AsmTopLevel>&& static_const_toplvls) {

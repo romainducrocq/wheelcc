@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/back_symt.hpp"
 #include "ast/front_symt.hpp"
@@ -630,14 +632,15 @@ struct AsmFunction : AsmTopLevel {
 
 struct AsmStaticVariable : AsmTopLevel {
     AST_T type() override;
-    AsmStaticVariable() = default;
+    AsmStaticVariable();
     AsmStaticVariable(
-        TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>>&& static_inits);
+        TIdentifier name, TInt alignment, bool is_glob, vector_t(std::shared_ptr<StaticInit>) * static_inits);
+    ~AsmStaticVariable();
 
     TIdentifier name;
     TInt alignment;
     bool is_glob;
-    std::vector<std::shared_ptr<StaticInit>> static_inits;
+    vector_t(std::shared_ptr<StaticInit>) static_inits;
 };
 
 struct AsmStaticConstant : AsmTopLevel {

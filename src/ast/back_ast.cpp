@@ -1,6 +1,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/c_std.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/back_ast.hpp"
 #include "ast/back_symt.hpp"
@@ -194,10 +196,19 @@ AsmFunction::AsmFunction(
     name(name),
     is_glob(is_glob), is_ret_memory(is_ret_memory), instructions(std::move(instructions)) {}
 
+AsmStaticVariable::AsmStaticVariable() : static_inits(vec_new()) {}
 AsmStaticVariable::AsmStaticVariable(
-    TIdentifier name, TInt alignment, bool is_glob, std::vector<std::shared_ptr<StaticInit>>&& static_inits) :
+    TIdentifier name, TInt alignment, bool is_glob, vector_t(std::shared_ptr<StaticInit>) * static_inits) :
     name(name),
-    alignment(alignment), is_glob(is_glob), static_inits(std::move(static_inits)) {}
+    alignment(alignment), is_glob(is_glob), static_inits(vec_new()) {
+    vec_move(static_inits, &this->static_inits);
+}
+AsmStaticVariable::~AsmStaticVariable() {
+    for (size_t i = 0; i < vec_size(this->static_inits); ++i) {
+        this->static_inits[i].reset();
+    }
+    vec_delete(this->static_inits);
+}
 
 AsmStaticConstant::AsmStaticConstant(TIdentifier name, TInt alignment, std::shared_ptr<StaticInit>&& static_init) :
     name(name), alignment(alignment), static_init(std::move(static_init)) {}

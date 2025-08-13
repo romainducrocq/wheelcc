@@ -871,8 +871,8 @@ static void emit_fun_toplvl(Ctx ctx, AsmFunction* node) {
 
 // -> if zero initialized $ .bss
 // ->                else $ .data
-static void static_section_toplvl(Ctx ctx, const std::vector<std::shared_ptr<StaticInit>>& node_list) {
-    if (node_list.size() == 1 && node_list[0]->type() == AST_ZeroInit_t) {
+static void static_section_toplvl(Ctx ctx, const vector_t(std::shared_ptr<StaticInit>) node_list) {
+    if (vec_size(node_list) == 1 && node_list[0]->type() == AST_ZeroInit_t) {
         emit(ctx, TAB ".bss" LF);
     }
     else {
@@ -962,18 +962,18 @@ static void static_init_toplvl(Ctx ctx, StaticInit* node) {
 }
 
 // StaticVariable(name, global, init*) -> $     <global-directive>
-//                                     -> $     <data-section>
-//                                     -> $     <alignment-directive>
-//                                     -> $ <name>:
-//                                     -> $     <init_list>
+//                                        $     <data-section>
+//                                        $     <alignment-directive>
+//                                        $ <name>:
+//                                        $     <init_list>
 static void emit_static_var_toplvl(Ctx ctx, AsmStaticVariable* node) {
     glob_directive_toplvl(ctx, node->name, node->is_glob);
     static_section_toplvl(ctx, node->static_inits);
     align_directive_toplvl(ctx, node->alignment);
     emit_identifier(ctx, node->name);
     emit(ctx, ":" LF);
-    for (const auto& static_init : node->static_inits) {
-        static_init_toplvl(ctx, static_init.get());
+    for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
+        static_init_toplvl(ctx, node->static_inits[i].get());
     }
 }
 

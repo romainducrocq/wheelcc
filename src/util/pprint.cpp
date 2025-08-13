@@ -1758,9 +1758,9 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             print_field("TIdentifier", std::string(ctx->hash_table[p_node->name]), t + 1);
             print_field("TInt", std::to_string(p_node->alignment), t + 1);
             print_field("Bool", std::to_string(p_node->is_glob), t + 1);
-            print_field("List[" + std::to_string(p_node->static_inits.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->static_inits) {
-                print_ast(ctx, item.get(), t + 1);
+            print_field("List[" + std::to_string(vec_size(p_node->static_inits)) + "]", "", t + 1);
+            for (size_t i = 0; i < vec_size(p_node->static_inits); ++i) {
+                print_ast(ctx, p_node->static_inits[i].get(), t + 1);
             }
             break;
         }
