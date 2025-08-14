@@ -41,7 +41,7 @@ struct DataFlowAnalysis {
     size_t static_idx;
     vector_t(size_t) open_data_map;
     vector_t(size_t) instr_idx_map;
-    std::vector<mask_t> blocks_mask_sets;
+    vector_t(mask_t) blocks_mask_sets;
     std::vector<mask_t> instrs_mask_sets;
 };
 
@@ -1179,8 +1179,8 @@ static bool init_data_flow_analysis(Ctx ctx,
     instrs_mask_sets_size *= ctx->dfa->mask_size;
     size_t blocks_mask_sets_size = ctx->dfa->mask_size * vec_size(ctx->cfg->blocks);
 
-    if (ctx->dfa->blocks_mask_sets.size() < blocks_mask_sets_size) {
-        ctx->dfa->blocks_mask_sets.resize(blocks_mask_sets_size);
+    if (vec_size(ctx->dfa->blocks_mask_sets) < blocks_mask_sets_size) {
+        vec_resize(ctx->dfa->blocks_mask_sets, blocks_mask_sets_size);
     }
     if (ctx->dfa->instrs_mask_sets.size() < instrs_mask_sets_size) {
         ctx->dfa->instrs_mask_sets.resize(instrs_mask_sets_size);
@@ -1276,7 +1276,7 @@ static bool init_data_flow_analysis(Ctx ctx,
 #endif
         }
 
-        memset(ctx->dfa->blocks_mask_sets.data(), MASK_FALSE, sizeof(mask_t) * blocks_mask_sets_size);
+        memset(ctx->dfa->blocks_mask_sets, MASK_FALSE, sizeof(mask_t) * blocks_mask_sets_size);
 #if __OPTIM_LEVEL__ == 1
     }
 #endif
