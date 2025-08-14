@@ -1184,6 +1184,9 @@ static bool init_data_flow_analysis(Ctx ctx,
     }
     if (vec_size(ctx->dfa->instrs_mask_sets) < instrs_mask_sets_size) {
         vec_resize(ctx->dfa->instrs_mask_sets, instrs_mask_sets_size);
+#if __OPTIM_LEVEL__ == 2
+        memset(ctx->dfa->instrs_mask_sets, MASK_FALSE, sizeof(mask_t) * instrs_mask_sets_size);
+#endif
     }
 
 #if __OPTIM_LEVEL__ == 1
