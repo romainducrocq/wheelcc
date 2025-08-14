@@ -1304,20 +1304,20 @@ static void unreach_label_block(Ctx ctx, size_t block_id, size_t prev_block_id) 
 }
 
 static void eliminate_unreachable_code(Ctx ctx) {
-    if (ctx->cfg->blocks.empty()) {
+    if (vec_empty(ctx->cfg->blocks)) {
         return;
     }
-    if (ctx->cfg->reaching_code.size() < ctx->cfg->blocks.size()) {
-        ctx->cfg->reaching_code.resize(ctx->cfg->blocks.size());
+    if (ctx->cfg->reaching_code.size() < vec_size(ctx->cfg->blocks)) {
+        ctx->cfg->reaching_code.resize(vec_size(ctx->cfg->blocks));
     }
     // TODO
-    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->cfg->blocks.size(), false);
+    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + vec_size(ctx->cfg->blocks), false);
     // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->cfg->blocks.size(), false);
     for (size_t i = 0; i < vec_size(ctx->cfg->entry_succ_ids); ++i) {
         unreach_reachable_block(ctx, ctx->cfg->entry_succ_ids[i]);
     }
 
-    size_t block_id = ctx->cfg->blocks.size();
+    size_t block_id = vec_size(ctx->cfg->blocks);
     size_t next_block_id = ctx->cfg->exit_id;
     while (block_id-- > 0) {
         if (ctx->cfg->reaching_code[block_id]) {
@@ -2344,7 +2344,7 @@ static void propagate_copies(Ctx ctx) {
     }
     dfa_forward_iter_alg(ctx);
 
-    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             size_t incoming_idx = block_id;
             size_t exit_block = 1;
@@ -2622,7 +2622,7 @@ static void eliminate_dead_stores(Ctx ctx, bool is_addressed_set) {
     }
     dfa_iter_alg(ctx);
 
-    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
                  instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
@@ -2700,6 +2700,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
             ctx.cfg = std::make_unique<ControlFlowGraph>();
             ctx.cfg->exit_pred_ids = vec_new();
             ctx.cfg->entry_succ_ids = vec_new();
+            ctx.cfg->blocks = vec_new();
 
             if (ctx.enabled_optims[COPY_PROPAGATION] || ctx.enabled_optims[DEAD_STORE_ELIMINATION]) {
                 ctx.dfa = std::make_unique<DataFlowAnalysis>();
@@ -2712,9 +2713,10 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
     if (ctx.cfg) {
         vec_delete(ctx.cfg->exit_pred_ids);
         vec_delete(ctx.cfg->entry_succ_ids);
-        for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
+        for (size_t i = 0; i < vec_size(ctx.cfg->blocks); ++i) {
             vec_delete(ctx.cfg->blocks[i].pred_ids);
             vec_delete(ctx.cfg->blocks[i].succ_ids);
         }
+        vec_delete(ctx.cfg->blocks);
     }
 }

@@ -30,7 +30,7 @@ struct ControlFlowGraph {
     vector_t(size_t) entry_succ_ids;
     vector_t(size_t) exit_pred_ids;
     std::vector<bool> reaching_code;
-    std::vector<ControlFlowBlock> blocks;
+    vector_t(ControlFlowBlock) blocks;
     std::unordered_map<TIdentifier, size_t> identifier_id_map;
 };
 
@@ -216,11 +216,11 @@ static void cfg_rm_block_instr(Ctx ctx, size_t instr_idx, size_t block_id) {
 
 #if __OPTIM_LEVEL__ == 1
 static void cfg_init_label_block(Ctx ctx, TacLabel* node) {
-    ctx->cfg->identifier_id_map[node->name] = ctx->cfg->blocks.size() - 1;
+    ctx->cfg->identifier_id_map[node->name] = vec_size(ctx->cfg->blocks) - 1;
 }
 #elif __OPTIM_LEVEL__ == 2
 static void cfg_init_label_block(Ctx ctx, AsmLabel* node) {
-    ctx->cfg->identifier_id_map[node->name] = ctx->cfg->blocks.size() - 1;
+    ctx->cfg->identifier_id_map[node->name] = vec_size(ctx->cfg->blocks) - 1;
 }
 #endif
 
@@ -234,9 +234,9 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
 #endif
         {
             if (instrs_back_idx != vec_size(*ctx->p_instrs)) {
-                ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
+                vec_back(ctx->cfg->blocks).instrs_back_idx = instrs_back_idx;
                 ControlFlowBlock block = {0, instr_idx, 0, vec_new(), vec_new()};
-                ctx->cfg->blocks.emplace_back(std::move(block));
+                vec_push_back(ctx->cfg->blocks, block);
             }
 #if __OPTIM_LEVEL__ == 1
             cfg_init_label_block(ctx, static_cast<TacLabel*>(node));
@@ -257,7 +257,7 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
         case AST_AsmRet_t:
 #endif
         {
-            ctx->cfg->blocks.back().instrs_back_idx = instr_idx;
+            vec_back(ctx->cfg->blocks).instrs_back_idx = instr_idx;
             instrs_back_idx = vec_size(*ctx->p_instrs);
             break;
         }
@@ -328,11 +328,11 @@ static void cfg_init_edges(Ctx ctx, size_t block_id) {
 }
 
 static void init_control_flow_graph(Ctx ctx) {
-    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
         vec_delete(GET_CFG_BLOCK(block_id).pred_ids);
         vec_delete(GET_CFG_BLOCK(block_id).succ_ids);
     }
-    ctx->cfg->blocks.clear();
+    vec_clear(ctx->cfg->blocks);
     ctx->cfg->identifier_id_map.clear();
     {
         size_t instrs_back_idx = vec_size(*ctx->p_instrs);
@@ -340,24 +340,24 @@ static void init_control_flow_graph(Ctx ctx) {
             if (GET_INSTR(instr_idx)) {
                 if (instrs_back_idx == vec_size(*ctx->p_instrs)) {
                     ControlFlowBlock block = {0, instr_idx, 0, vec_new(), vec_new()};
-                    ctx->cfg->blocks.emplace_back(std::move(block));
+                    vec_push_back(ctx->cfg->blocks, block);
                 }
                 cfg_init_block(ctx, instr_idx, instrs_back_idx);
-                ctx->cfg->blocks.back().size++;
+                vec_back(ctx->cfg->blocks).size++;
             }
         }
         if (instrs_back_idx != vec_size(*ctx->p_instrs)) {
-            ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
+            vec_back(ctx->cfg->blocks).instrs_back_idx = instrs_back_idx;
         }
     }
 
-    ctx->cfg->exit_id = ctx->cfg->blocks.size();
+    ctx->cfg->exit_id = vec_size(ctx->cfg->blocks);
     ctx->cfg->entry_id = ctx->cfg->exit_id + 1;
     vec_clear(ctx->cfg->entry_succ_ids);
     vec_clear(ctx->cfg->exit_pred_ids);
-    if (!ctx->cfg->blocks.empty()) {
+    if (!vec_empty(ctx->cfg->blocks)) {
         cfg_add_pred_edge(ctx, 0, ctx->cfg->entry_id);
-        for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+        for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
             cfg_init_edges(ctx, block_id);
         }
     }
@@ -678,7 +678,7 @@ Lelse:
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_forward_iter_alg(Ctx ctx) {
-    size_t open_data_map_size = ctx->cfg->blocks.size();
+    size_t open_data_map_size = vec_size(ctx->cfg->blocks);
     for (size_t i = 0; i < open_data_map_size; ++i) {
         size_t block_id = ctx->dfa->open_data_map[i];
         if (block_id == ctx->cfg->exit_id) {
@@ -714,7 +714,7 @@ static void dfa_forward_iter_alg(Ctx ctx) {
 #endif
 
 static void dfa_iter_alg(Ctx ctx) {
-    size_t open_data_map_size = ctx->cfg->blocks.size();
+    size_t open_data_map_size = vec_size(ctx->cfg->blocks);
     for (size_t i = 0; i < open_data_map_size; ++i) {
         size_t block_id = ctx->dfa->open_data_map[i];
         if (block_id == ctx->cfg->exit_id) {
@@ -856,8 +856,8 @@ static bool init_data_flow_analysis(Ctx ctx,
     ctx->dfa->set_size = 0;
     ctx->dfa->incoming_idx = vec_size(*ctx->p_instrs);
 
-    if (ctx->dfa->open_data_map.size() < ctx->cfg->blocks.size()) {
-        ctx->dfa->open_data_map.resize(ctx->cfg->blocks.size());
+    if (ctx->dfa->open_data_map.size() < vec_size(ctx->cfg->blocks)) {
+        ctx->dfa->open_data_map.resize(vec_size(ctx->cfg->blocks));
     }
     {
         size_t i;
@@ -870,11 +870,11 @@ static bool init_data_flow_analysis(Ctx ctx,
             ctx->dfa->instr_idx_map.resize(vec_size(*ctx->p_instrs) + i);
         }
     }
-    if (ctx->cfg->reaching_code.size() < ctx->cfg->blocks.size()) {
-        ctx->cfg->reaching_code.resize(ctx->cfg->blocks.size());
+    if (ctx->cfg->reaching_code.size() < vec_size(ctx->cfg->blocks)) {
+        ctx->cfg->reaching_code.resize(vec_size(ctx->cfg->blocks));
     }
     // TODO
-    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->cfg->blocks.size(), false);
+    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + vec_size(ctx->cfg->blocks), false);
     // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->cfg->blocks.size(), false);
 
     size_t instrs_mask_sets_size = 0;
@@ -891,7 +891,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         ctx->frontend->addressed_set.clear();
     }
 #endif
-    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
                  instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
@@ -1179,7 +1179,7 @@ static bool init_data_flow_analysis(Ctx ctx,
 #endif
     ctx->dfa->mask_size = (ctx->dfa->set_size + 63) / 64;
     instrs_mask_sets_size *= ctx->dfa->mask_size;
-    size_t blocks_mask_sets_size = ctx->dfa->mask_size * ctx->cfg->blocks.size();
+    size_t blocks_mask_sets_size = ctx->dfa->mask_size * vec_size(ctx->cfg->blocks);
 
     if (ctx->dfa->blocks_mask_sets.size() < blocks_mask_sets_size) {
         ctx->dfa->blocks_mask_sets.resize(blocks_mask_sets_size);
@@ -1190,7 +1190,7 @@ static bool init_data_flow_analysis(Ctx ctx,
 
 #if __OPTIM_LEVEL__ == 1
     if (is_copy_prop) {
-        size_t i = ctx->cfg->blocks.size();
+        size_t i = vec_size(ctx->cfg->blocks);
         for (size_t j = 0; j < vec_size(ctx->cfg->entry_succ_ids); ++j) {
             size_t succ_id = ctx->cfg->entry_succ_ids[j];
             if (!ctx->cfg->reaching_code[succ_id]) {
@@ -1247,7 +1247,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                 dfa_backward_open_block(ctx, succ_id, i);
             }
         }
-        for (; i < ctx->cfg->blocks.size(); i++) {
+        for (; i < vec_size(ctx->cfg->blocks); ++i) {
             ctx->dfa->open_data_map[i] = ctx->cfg->exit_id;
         }
 

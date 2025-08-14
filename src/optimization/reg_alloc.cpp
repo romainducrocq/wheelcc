@@ -691,7 +691,7 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
         }
     }
 
-    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
                  instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
@@ -1700,7 +1700,7 @@ static bool coalesce_registers(Ctx ctx) {
         }
     }
 
-    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
         if (GET_CFG_BLOCK(block_id).size > 0) {
             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
                  instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
@@ -1801,6 +1801,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         ctx.cfg = std::make_unique<ControlFlowGraph>();
         ctx.cfg->exit_pred_ids = vec_new();
         ctx.cfg->entry_succ_ids = vec_new();
+        ctx.cfg->blocks = vec_new();
 
         ctx.dfa = std::make_unique<DataFlowAnalysis>();
         ctx.dfa_o2 = std::make_unique<DataFlowAnalysisO2>();
@@ -1860,10 +1861,11 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
 
     vec_delete(ctx.cfg->exit_pred_ids);
     vec_delete(ctx.cfg->entry_succ_ids);
-    for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
+    for (size_t i = 0; i < vec_size(ctx.cfg->blocks); ++i) {
         vec_delete(ctx.cfg->blocks[i].pred_ids);
         vec_delete(ctx.cfg->blocks[i].succ_ids);
     }
+    vec_delete(ctx.cfg->blocks);
 
     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
     vec_delete(ctx.infer_graph->unpruned_pseudo_names);
