@@ -483,7 +483,9 @@ static void push_fix_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) {
 }
 
 static void swap_fix_instr_back(Ctx ctx) {
-    std::swap((*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2], vec_back(*ctx->p_fix_instrs));
+    std::unique_ptr<AsmInstruction> swap_instr = std::move(vec_back(*ctx->p_fix_instrs));
+    vec_back(*ctx->p_fix_instrs) = std::move((*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2]);
+    (*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2] = std::move(swap_instr);
 }
 
 static void fix_alloc_stack_bytes(Ctx ctx, TLong callee_saved_size) {

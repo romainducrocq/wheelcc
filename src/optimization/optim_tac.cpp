@@ -1,10 +1,8 @@
-#include <algorithm>
 #include <array>
 #include <inttypes.h>
 #include <memory>
 #include <string.h>
 #include <unordered_map>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"

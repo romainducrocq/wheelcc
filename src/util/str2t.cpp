@@ -1,4 +1,3 @@
-#include <cstring>
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
@@ -211,7 +210,7 @@ string_t string_literal_to_const(const vector_t(int8_t) string_literal) {
 
 uint64_t dbl_to_binary(double decimal) {
     uint64_t binary;
-    std::memcpy(&binary, &decimal, sizeof(uint64_t));
+    memcpy(&binary, &decimal, sizeof(uint64_t));
     return binary;
 }
 
