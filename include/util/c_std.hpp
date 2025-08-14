@@ -88,7 +88,7 @@ typedef sds string_t;
         stbds_header(X)->length = 0; \
     }
 #define vec_empty(X) (vec_size(X) == 0)
-#define vec_emplace_back(X) arraddnindex(X, 1)
+// #define vec_emplace_back(X) arraddnindex(X, 1)
 // TODO
 #define vec_move_back(X, Y)                                       \
     do {                                                          \
@@ -98,7 +98,7 @@ typedef sds string_t;
     while (0)
 #define vec_pop_back(X) arrpop(X)
 #define vec_push_back(X, Y) arrput(X, Y)
-#define vec_remove(X, Y) arrdel(X, Y)
+// #define vec_remove(X, Y) arrdel(X, Y)
 #define vec_remove_swap(X, Y) arrdelswap(X, Y)
 #define vec_resize(X, Y) arrsetlen(X, Y)
 #define vec_reserve(X, Y) arrsetcap(X, Y)
