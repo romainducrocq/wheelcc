@@ -30,7 +30,7 @@ struct InferenceRegister {
     size_t degree;
     size_t spill_cost;
     mask_t linked_hard_mask;
-    std::vector<TIdentifier> linked_pseudo_names;
+    vector_t(TIdentifier) linked_pseudo_names;
 };
 
 struct InferenceGraph {
@@ -87,8 +87,17 @@ static bool is_bitshift_cl(AsmBinary* node) {
     }
 }
 
-static bool find_identifier(const std::vector<TIdentifier>& xs, TIdentifier x) {
+static bool find_identifier_temp(const std::vector<TIdentifier>& xs, TIdentifier x) {
     for (size_t i = 0; i < xs.size(); ++i) {
+        if (xs[i] == x) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool find_identifier(const vector_t(TIdentifier) xs, TIdentifier x) {
+    for (size_t i = 0; i < vec_size(xs); ++i) {
         if (xs[i] == x) {
             return true;
         }
@@ -298,14 +307,14 @@ static void infer_add_pseudo_edges(Ctx ctx, TIdentifier name_1, TIdentifier name
     {
         InferenceRegister& infer = ctx->p_infer_graph->pseudo_reg_map[name_1];
         if (!find_identifier(infer.linked_pseudo_names, name_2)) {
-            infer.linked_pseudo_names.push_back(name_2);
+            vec_push_back(infer.linked_pseudo_names, name_2);
             infer.degree++;
         }
     }
     {
         InferenceRegister& infer = ctx->p_infer_graph->pseudo_reg_map[name_2];
         if (!find_identifier(infer.linked_pseudo_names, name_1)) {
-            infer.linked_pseudo_names.push_back(name_1);
+            vec_push_back(infer.linked_pseudo_names, name_1);
             infer.degree++;
         }
     }
@@ -322,17 +331,18 @@ static void infer_add_reg_edge(Ctx ctx, REGISTER_KIND reg_kind, TIdentifier name
     {
         InferenceRegister& infer = ctx->hard_regs[register_mask_bit(reg_kind)];
         if (!find_identifier(infer.linked_pseudo_names, name)) {
-            infer.linked_pseudo_names.push_back(name);
+            vec_push_back(infer.linked_pseudo_names, name);
             infer.degree++;
         }
     }
 }
 
 static void infer_rm_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
-    for (size_t i = infer.linked_pseudo_names.size(); i-- > 0;) {
+    for (size_t i = vec_size(infer.linked_pseudo_names); i-- > 0;) {
         if (infer.linked_pseudo_names[i] == name) {
-            std::swap(infer.linked_pseudo_names[i], infer.linked_pseudo_names.back());
-            infer.linked_pseudo_names.pop_back();
+            // TODO use vec_remove_swap()
+            std::swap(infer.linked_pseudo_names[i], vec_back(infer.linked_pseudo_names));
+            vec_pop_back(infer.linked_pseudo_names);
             infer.degree--;
             return;
         }
@@ -635,12 +645,18 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
 
     ctx->callee_saved_reg_mask = REGISTER_MASK_FALSE;
     ctx->infer_graph->unpruned_pseudo_names.clear();
+    for (auto& pseudo_reg : ctx->infer_graph->pseudo_reg_map) {
+        vec_delete(pseudo_reg.second.linked_pseudo_names);
+    }
     ctx->infer_graph->pseudo_reg_map.clear();
     ctx->sse_infer_graph->unpruned_pseudo_names.clear();
+    for (auto& pseudo_reg : ctx->sse_infer_graph->pseudo_reg_map) {
+        vec_delete(pseudo_reg.second.linked_pseudo_names);
+    }
     ctx->sse_infer_graph->pseudo_reg_map.clear();
     for (const auto& name_id : ctx->cfg->identifier_id_map) {
         TIdentifier name = name_id.first;
-        InferenceRegister infer = {REG_Sp, REG_Sp, 0, 0, REGISTER_MASK_FALSE, {}};
+        InferenceRegister infer = {REG_Sp, REG_Sp, 0, 0, REGISTER_MASK_FALSE, vec_new()};
         if (ctx->frontend->symbol_table[name_id.first]->type_t->type() == AST_Double_t) {
             ctx->sse_infer_graph->unpruned_pseudo_names.push_back(name);
             ctx->sse_infer_graph->pseudo_reg_map[name] = std::move(infer);
@@ -663,7 +679,7 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
             ctx->hard_regs[i].degree = 11;
             ctx->hard_regs[i].spill_cost = 0;
             ctx->hard_regs[i].linked_hard_mask = hard_reg_mask;
-            ctx->hard_regs[i].linked_pseudo_names.clear();
+            vec_clear(ctx->hard_regs[i].linked_pseudo_names);
             ctx->infer_graph->unpruned_hard_mask_bits[i] = i;
         }
     }
@@ -679,7 +695,7 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
             ctx->hard_regs[i].degree = 13;
             ctx->hard_regs[i].spill_cost = 0;
             ctx->hard_regs[i].linked_hard_mask = hard_reg_mask;
-            ctx->hard_regs[i].linked_pseudo_names.clear();
+            vec_clear(ctx->hard_regs[i].linked_pseudo_names);
             ctx->sse_infer_graph->unpruned_hard_mask_bits[i - 12] = i;
         }
     }
@@ -733,14 +749,14 @@ static void alloc_prune_infer_reg(Ctx ctx, InferenceRegister* infer, size_t prun
             }
         }
     }
-    for (TIdentifier name : infer->linked_pseudo_names) {
-        ctx->p_infer_graph->pseudo_reg_map[name].degree--;
+    for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
+        ctx->p_infer_graph->pseudo_reg_map[infer->linked_pseudo_names[i]].degree--;
     }
 }
 
 static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->reg_kind == REG_Sp) {
-        THROW_ABORT_IF(find_identifier(ctx->p_infer_graph->unpruned_pseudo_names, pruned_name));
+        THROW_ABORT_IF(find_identifier_temp(ctx->p_infer_graph->unpruned_pseudo_names, pruned_name));
         ctx->p_infer_graph->unpruned_pseudo_names.push_back(pruned_name);
     }
     else {
@@ -756,8 +772,8 @@ static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifi
             }
         }
     }
-    for (TIdentifier name : infer->linked_pseudo_names) {
-        ctx->p_infer_graph->pseudo_reg_map[name].degree++;
+    for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
+        ctx->p_infer_graph->pseudo_reg_map[infer->linked_pseudo_names[i]].degree++;
     }
 }
 
@@ -835,8 +851,8 @@ static void alloc_unprune_infer_graph(Ctx ctx, InferenceRegister* infer, TIdenti
             }
         }
     }
-    for (TIdentifier name : infer->linked_pseudo_names) {
-        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[name];
+    for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
+        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[infer->linked_pseudo_names[i]];
         if (linked_infer.color != REG_Sp) {
             register_mask_set(color_reg_mask, linked_infer.color, false);
         }
@@ -1290,27 +1306,27 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
         GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = MASK_FALSE;
     }
-    for (TIdentifier name : dst_infer->linked_pseudo_names) {
-        size_t i = ctx->cfg->identifier_id_map[name];
-        SET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, i, true);
+    for (size_t i = 0; i < vec_size(dst_infer->linked_pseudo_names); ++i) {
+        size_t j = ctx->cfg->identifier_id_map[dst_infer->linked_pseudo_names[i]];
+        SET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j, true);
     }
-    for (TIdentifier name : src_infer->linked_pseudo_names) {
-        size_t i = ctx->cfg->identifier_id_map[name];
-        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[name];
-        if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, i)) {
+    for (size_t i = 0; i < vec_size(src_infer->linked_pseudo_names); ++i) {
+        size_t j = ctx->cfg->identifier_id_map[src_infer->linked_pseudo_names[i]];
+        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[src_infer->linked_pseudo_names[i]];
+        if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j)) {
             if (linked_infer.degree > ctx->p_infer_graph->k) {
                 degree++;
             }
-            SET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, i, false);
+            SET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j, false);
         }
         else if (linked_infer.degree >= ctx->p_infer_graph->k) {
             degree++;
         }
     }
-    for (TIdentifier name : dst_infer->linked_pseudo_names) {
-        size_t i = ctx->cfg->identifier_id_map[name];
-        if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, i)) {
-            InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[name];
+    for (size_t i = 0; i < vec_size(dst_infer->linked_pseudo_names); ++i) {
+        size_t j = ctx->cfg->identifier_id_map[dst_infer->linked_pseudo_names[i]];
+        if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j)) {
+            InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[dst_infer->linked_pseudo_names[i]];
             if (linked_infer.degree >= ctx->p_infer_graph->k) {
                 degree++;
             }
@@ -1321,8 +1337,8 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
 }
 
 static bool coal_george_test(Ctx ctx, REGISTER_KIND reg_kind, InferenceRegister* infer) {
-    for (TIdentifier name : infer->linked_pseudo_names) {
-        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[name];
+    for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
+        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[infer->linked_pseudo_names[i]];
         if (!register_mask_get(linked_infer.linked_hard_mask, reg_kind)
             && linked_infer.degree >= ctx->p_infer_graph->k) {
             return false;
@@ -1358,10 +1374,10 @@ static void coal_pseudo_infer_reg(Ctx ctx, InferenceRegister* infer, size_t merg
             }
         }
     }
-    for (TIdentifier name : infer->linked_pseudo_names) {
-        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[name];
+    for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
+        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[infer->linked_pseudo_names[i]];
         infer_rm_pseudo_edge(linked_infer, merge_name);
-        infer_add_pseudo_edges(ctx, keep_name, name);
+        infer_add_pseudo_edges(ctx, keep_name, infer->linked_pseudo_names[i]);
     }
     infer_rm_unpruned_pseudo_name(ctx, merge_name);
 }
@@ -1376,10 +1392,10 @@ static void coal_hard_infer_reg(Ctx ctx, REGISTER_KIND reg_kind, InferenceRegist
             }
         }
     }
-    for (TIdentifier name : infer->linked_pseudo_names) {
-        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[name];
+    for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
+        InferenceRegister& linked_infer = ctx->p_infer_graph->pseudo_reg_map[infer->linked_pseudo_names[i]];
         infer_rm_pseudo_edge(linked_infer, merge_name);
-        infer_add_reg_edge(ctx, reg_kind, name);
+        infer_add_reg_edge(ctx, reg_kind, infer->linked_pseudo_names[i]);
     }
     infer_rm_unpruned_pseudo_name(ctx, merge_name);
 }
@@ -1790,6 +1806,10 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         ctx.hard_regs[24].reg_kind = REG_Xmm12;
         ctx.hard_regs[25].reg_kind = REG_Xmm13;
 
+        for (size_t i = 0; i < 26; ++i) {
+            ctx.hard_regs[i].linked_pseudo_names = vec_new();
+        }
+
         ctx.cfg = std::make_unique<ControlFlowGraph>();
         ctx.dfa = std::make_unique<DataFlowAnalysis>();
         ctx.dfa_o2 = std::make_unique<DataFlowAnalysisO2>();
@@ -1835,4 +1855,14 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         }
     }
     alloc_program(&ctx, node);
+
+    for (size_t i = 0; i < 26; ++i) {
+        vec_delete(ctx.hard_regs[i].linked_pseudo_names);
+    }
+    for (auto& pseudo_reg : ctx.infer_graph->pseudo_reg_map) {
+        vec_delete(pseudo_reg.second.linked_pseudo_names);
+    }
+    for (auto& pseudo_reg : ctx.sse_infer_graph->pseudo_reg_map) {
+        vec_delete(pseudo_reg.second.linked_pseudo_names);
+    }
 }
