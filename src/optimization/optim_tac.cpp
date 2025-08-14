@@ -1,4 +1,3 @@
-#include <array>
 #include <inttypes.h>
 #include <memory>
 #include <string.h>
@@ -26,7 +25,7 @@ struct OptimTacContext {
     // Copy propagation
     // Dead store elimination
     bool is_fixed_point;
-    std::array<bool, 5> enabled_optims;
+    bool enabled_optims[5];
     std::unique_ptr<ControlFlowGraph> cfg;
     std::unique_ptr<DataFlowAnalysis> dfa;
     std::unique_ptr<DataFlowAnalysisO1> dfa_o1;

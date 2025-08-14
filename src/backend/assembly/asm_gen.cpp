@@ -1,4 +1,3 @@
-#include <array>
 #include <memory>
 #include <unordered_map>
 
@@ -37,8 +36,8 @@ struct AsmGenContext {
     IdentifierContext* identifiers;
     // Assembly generation
     FunType* p_fun_type;
-    std::array<REGISTER_KIND, 6> arg_regs;
-    std::array<REGISTER_KIND, 8> sse_arg_regs;
+    REGISTER_KIND arg_regs[6];
+    REGISTER_KIND sse_arg_regs[8];
     std::unordered_map<TIdentifier, TIdentifier> dbl_const_table;
     std::unordered_map<TIdentifier, vector_t(STRUCT_8B_CLS)> struct_8b_cls_map;
     vector_t(std::unique_ptr<AsmInstruction>) * p_instrs;

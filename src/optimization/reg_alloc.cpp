@@ -1,4 +1,3 @@
-#include <array>
 #include <inttypes.h>
 #include <memory>
 #include <string.h>
@@ -47,8 +46,8 @@ struct RegAllocContext {
     mask_t callee_saved_reg_mask;
     BackendFun* p_backend_fun;
     InferenceGraph* p_infer_graph;
-    std::array<REGISTER_KIND, 26> reg_color_map;
-    std::array<InferenceRegister, 26> hard_regs;
+    REGISTER_KIND reg_color_map[26];
+    InferenceRegister hard_regs[26];
     std::unique_ptr<ControlFlowGraph> cfg;
     std::unique_ptr<DataFlowAnalysis> dfa;
     std::unique_ptr<DataFlowAnalysisO2> dfa_o2;
