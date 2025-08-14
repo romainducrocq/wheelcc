@@ -20,7 +20,7 @@ struct ControlFlowBlock {
     size_t size;
     size_t instrs_front_idx;
     size_t instrs_back_idx;
-    std::vector<size_t> pred_ids;
+    vector_t(size_t) pred_ids;
     std::vector<size_t> succ_ids;
 };
 
@@ -76,7 +76,6 @@ static void set_instr(Ctx ctx, std::unique_ptr<AstInstruction>&& instr, size_t i
 
 // Control flow graph
 
-#if __OPTIM_LEVEL__ == 2
 static bool find_size_t(const vector_t(size_t) xs, size_t x) {
     for (size_t i = 0; i < vec_size(xs); ++i) {
         if (xs[i] == x) {
@@ -85,7 +84,6 @@ static bool find_size_t(const vector_t(size_t) xs, size_t x) {
     }
     return false;
 }
-#endif
 
 static bool find_size_t_temp(const std::vector<size_t>& xs, size_t x) {
     for (size_t i = 0; i < xs.size(); ++i) {
@@ -96,7 +94,17 @@ static bool find_size_t_temp(const std::vector<size_t>& xs, size_t x) {
     return false;
 }
 
-static void cfg_add_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id) {
+static void cfg_add_edge(std::vector<size_t>& succ_ids, vector_t(size_t) * pred_ids, size_t succ_id, size_t pred_id) {
+    if (!find_size_t_temp(succ_ids, succ_id)) {
+        succ_ids.push_back(succ_id);
+    }
+    if (!find_size_t(*pred_ids, pred_id)) {
+        vec_push_back(*pred_ids, pred_id);
+    }
+}
+
+static void cfg_add_edge_temp(
+    std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id) {
     if (!find_size_t_temp(succ_ids, succ_id)) {
         succ_ids.push_back(succ_id);
     }
@@ -107,10 +115,10 @@ static void cfg_add_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pre
 
 static void cfg_add_succ_edge(Ctx ctx, size_t block_id, size_t succ_id) {
     if (succ_id < ctx->cfg->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id);
+        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, &GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id);
     }
     else if (succ_id == ctx->cfg->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id);
+        cfg_add_edge_temp(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id);
     }
     else {
         THROW_ABORT;
@@ -119,10 +127,10 @@ static void cfg_add_succ_edge(Ctx ctx, size_t block_id, size_t succ_id) {
 
 static void cfg_add_pred_edge(Ctx ctx, size_t block_id, size_t pred_id) {
     if (pred_id < ctx->cfg->exit_id) {
-        cfg_add_edge(GET_CFG_BLOCK(pred_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
+        cfg_add_edge(GET_CFG_BLOCK(pred_id).succ_ids, &GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
     }
     else if (pred_id == ctx->cfg->entry_id) {
-        cfg_add_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
+        cfg_add_edge(ctx->cfg->entry_succ_ids, &GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id);
     }
     else {
         THROW_ABORT;
@@ -130,6 +138,25 @@ static void cfg_add_pred_edge(Ctx ctx, size_t block_id, size_t pred_id) {
 }
 
 static void cfg_rm_edge(
+    std::vector<size_t>& succ_ids, vector_t(size_t) * pred_ids, size_t succ_id, size_t pred_id, bool is_reachable) {
+    if (is_reachable) {
+        for (size_t i = succ_ids.size(); i-- > 0;) {
+            if (succ_ids[i] == succ_id) {
+                std::swap(succ_ids[i], succ_ids.back());
+                succ_ids.pop_back();
+                break;
+            }
+        }
+    }
+    for (size_t i = vec_size(*pred_ids); i-- > 0;) {
+        if ((*pred_ids)[i] == pred_id) {
+            vec_remove_swap(*pred_ids, i);
+            break;
+        }
+    }
+}
+
+static void cfg_rm_edge_temp(
     std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id, bool is_reachable) {
     if (is_reachable) {
         for (size_t i = succ_ids.size(); i-- > 0;) {
@@ -151,10 +178,11 @@ static void cfg_rm_edge(
 
 static void cfg_rm_succ_edge(Ctx ctx, size_t block_id, size_t succ_id, bool is_reachable) {
     if (succ_id < ctx->cfg->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id, is_reachable);
+        cfg_rm_edge(
+            GET_CFG_BLOCK(block_id).succ_ids, &GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id, is_reachable);
     }
     else if (succ_id == ctx->cfg->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id, is_reachable);
+        cfg_rm_edge_temp(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id, is_reachable);
     }
     else {
         THROW_ABORT;
@@ -163,10 +191,10 @@ static void cfg_rm_succ_edge(Ctx ctx, size_t block_id, size_t succ_id, bool is_r
 
 static void cfg_rm_pred_edge(Ctx ctx, size_t block_id, size_t pred_id) {
     if (pred_id < ctx->cfg->exit_id) {
-        cfg_rm_edge(GET_CFG_BLOCK(pred_id).succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
+        cfg_rm_edge(GET_CFG_BLOCK(pred_id).succ_ids, &GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
     }
     else if (pred_id == ctx->cfg->entry_id) {
-        cfg_rm_edge(ctx->cfg->entry_succ_ids, GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
+        cfg_rm_edge(ctx->cfg->entry_succ_ids, &GET_CFG_BLOCK(block_id).pred_ids, block_id, pred_id, true);
     }
     else {
         THROW_ABORT;
@@ -176,7 +204,8 @@ static void cfg_rm_pred_edge(Ctx ctx, size_t block_id, size_t pred_id) {
 static void cfg_rm_empty_block(Ctx ctx, size_t block_id, bool is_reachable) {
     for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
         if (is_reachable) {
-            for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+            for (size_t j = 0; j < vec_size(GET_CFG_BLOCK(block_id).pred_ids); ++j) {
+                size_t pred_id = GET_CFG_BLOCK(block_id).pred_ids[j];
                 if (pred_id == ctx->cfg->entry_id) {
                     cfg_add_pred_edge(ctx, succ_id, pred_id);
                 }
@@ -188,7 +217,8 @@ static void cfg_rm_empty_block(Ctx ctx, size_t block_id, bool is_reachable) {
         cfg_rm_succ_edge(ctx, block_id, succ_id, is_reachable);
     }
     if (is_reachable) {
-        for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+        for (size_t i = 0; i < vec_size(GET_CFG_BLOCK(block_id).pred_ids); ++i) {
+            size_t pred_id = GET_CFG_BLOCK(block_id).pred_ids[i];
             cfg_rm_pred_edge(ctx, block_id, pred_id);
         }
     }
@@ -244,7 +274,7 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
         {
             if (instrs_back_idx != vec_size(*ctx->p_instrs)) {
                 ctx->cfg->blocks.back().instrs_back_idx = instrs_back_idx;
-                ControlFlowBlock block = {0, instr_idx, 0, {}, {}};
+                ControlFlowBlock block = {0, instr_idx, 0, vec_new(), {}};
                 ctx->cfg->blocks.emplace_back(std::move(block));
             }
 #if __OPTIM_LEVEL__ == 1
@@ -337,6 +367,9 @@ static void cfg_init_edges(Ctx ctx, size_t block_id) {
 }
 
 static void init_control_flow_graph(Ctx ctx) {
+    for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
+        vec_delete(GET_CFG_BLOCK(block_id).pred_ids);
+    }
     ctx->cfg->blocks.clear();
     ctx->cfg->identifier_id_map.clear();
     {
@@ -344,7 +377,7 @@ static void init_control_flow_graph(Ctx ctx) {
         for (size_t instr_idx = 0; instr_idx < vec_size(*ctx->p_instrs); ++instr_idx) {
             if (GET_INSTR(instr_idx)) {
                 if (instrs_back_idx == vec_size(*ctx->p_instrs)) {
-                    ControlFlowBlock block = {0, instr_idx, 0, {}, {}};
+                    ControlFlowBlock block = {0, instr_idx, 0, vec_new(), {}};
                     ctx->cfg->blocks.emplace_back(std::move(block));
                 }
                 cfg_init_block(ctx, instr_idx, instrs_back_idx);
@@ -605,15 +638,16 @@ Lelse:
         GET_DFA_INSTR_SET_MASK(instr_idx, i) = MASK_TRUE;
     }
 
-    for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+    for (size_t i = 0; i < vec_size(GET_CFG_BLOCK(block_id).pred_ids); ++i) {
+        size_t pred_id = GET_CFG_BLOCK(block_id).pred_ids[i];
         if (pred_id < ctx->cfg->exit_id) {
-            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instr_idx, i) &= GET_DFA_BLOCK_SET_MASK(pred_id, i);
+            for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+                GET_DFA_INSTR_SET_MASK(instr_idx, j) &= GET_DFA_BLOCK_SET_MASK(pred_id, j);
             }
         }
         else if (pred_id == ctx->cfg->entry_id) {
-            for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-                GET_DFA_INSTR_SET_MASK(instr_idx, i) = MASK_FALSE;
+            for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+                GET_DFA_INSTR_SET_MASK(instr_idx, j) = MASK_FALSE;
             }
             break;
         }
@@ -725,10 +759,11 @@ static void dfa_iter_alg(Ctx ctx) {
 
         bool is_fixed_point = dfa_backward_meet_block(ctx, block_id);
         if (!is_fixed_point) {
-            for (size_t pred_id : GET_CFG_BLOCK(block_id).pred_ids) {
+            for (size_t j = 0; j < vec_size(GET_CFG_BLOCK(block_id).pred_ids); ++j) {
+                size_t pred_id = GET_CFG_BLOCK(block_id).pred_ids[j];
                 if (pred_id < ctx->cfg->exit_id) {
-                    for (size_t j = i + 1; j < open_data_map_size; ++j) {
-                        if (pred_id == ctx->dfa->open_data_map[j]) {
+                    for (size_t k = i + 1; k < open_data_map_size; ++k) {
+                        if (pred_id == ctx->dfa->open_data_map[k]) {
                             goto Lelse;
                         }
                     }

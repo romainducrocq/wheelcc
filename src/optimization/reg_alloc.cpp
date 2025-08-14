@@ -1851,6 +1851,10 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         vec_delete(ctx.hard_regs[i].linked_pseudo_names);
     }
 
+    for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
+        vec_delete(ctx.cfg->blocks[i].pred_ids);
+    }
+
     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
     vec_delete(ctx.infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx.infer_graph->pseudo_reg_map) {

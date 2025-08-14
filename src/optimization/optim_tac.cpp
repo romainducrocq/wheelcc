@@ -1270,7 +1270,7 @@ static void unreach_empty_block(Ctx ctx, size_t block_id) {
     GET_CFG_BLOCK(block_id).size = 0;
     cfg_rm_empty_block(ctx, block_id, false);
     GET_CFG_BLOCK(block_id).succ_ids.clear();
-    GET_CFG_BLOCK(block_id).pred_ids.clear();
+    vec_clear(GET_CFG_BLOCK(block_id).pred_ids);
 }
 
 static void unreach_jump_instr(Ctx ctx, size_t block_id) {
@@ -1298,7 +1298,7 @@ static void unreach_label_instr(Ctx ctx, size_t block_id) {
 }
 
 static void unreach_label_block(Ctx ctx, size_t block_id, size_t prev_block_id) {
-    if (GET_CFG_BLOCK(block_id).pred_ids.size() == 1 && GET_CFG_BLOCK(block_id).pred_ids[0] == prev_block_id) {
+    if (vec_size(GET_CFG_BLOCK(block_id).pred_ids) == 1 && GET_CFG_BLOCK(block_id).pred_ids[0] == prev_block_id) {
         unreach_label_instr(ctx, block_id);
     }
 }
@@ -2705,4 +2705,10 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
         }
     }
     optim_program(&ctx, node);
+
+    if (ctx.enabled_optims[CONTROL_FLOW_GRAPH]) {
+        for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
+            vec_delete(ctx.cfg->blocks[i].pred_ids);
+        }
+    }
 }
