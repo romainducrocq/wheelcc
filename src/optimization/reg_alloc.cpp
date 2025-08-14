@@ -1811,6 +1811,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         ctx.dfa->instrs_mask_sets = vec_new();
 
         ctx.dfa_o2 = std::make_unique<DataFlowAnalysisO2>();
+        ctx.dfa_o2->data_name_map = vec_new();
 
         ctx.infer_graph = std::make_unique<InferenceGraph>();
         {
@@ -1878,6 +1879,8 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
     vec_delete(ctx.dfa->instr_idx_map);
     vec_delete(ctx.dfa->blocks_mask_sets);
     vec_delete(ctx.dfa->instrs_mask_sets);
+
+    vec_delete(ctx.dfa_o2->data_name_map);
 
     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
     vec_delete(ctx.infer_graph->unpruned_pseudo_names);

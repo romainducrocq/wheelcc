@@ -56,7 +56,7 @@ struct DataFlowAnalysisO1 {
 #elif __OPTIM_LEVEL__ == 2
 struct DataFlowAnalysisO2 {
     // Register allocation
-    std::vector<TIdentifier> data_name_map;
+    vector_t(TIdentifier) data_name_map;
 };
 #endif
 
@@ -1157,8 +1157,8 @@ static bool init_data_flow_analysis(Ctx ctx,
     }
 
 #if __OPTIM_LEVEL__ == 2
-    if (ctx->dfa_o2->data_name_map.size() < ctx->dfa->set_size) {
-        ctx->dfa_o2->data_name_map.resize(ctx->dfa->set_size);
+    if (vec_size(ctx->dfa_o2->data_name_map) < ctx->dfa->set_size) {
+        vec_resize(ctx->dfa_o2->data_name_map, ctx->dfa->set_size);
     }
     ctx->dfa->set_size += REGISTER_MASK_SIZE;
 #endif
