@@ -340,9 +340,7 @@ static void infer_add_reg_edge(Ctx ctx, REGISTER_KIND reg_kind, TIdentifier name
 static void infer_rm_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
     for (size_t i = vec_size(infer.linked_pseudo_names); i-- > 0;) {
         if (infer.linked_pseudo_names[i] == name) {
-            // TODO use vec_remove_swap()
-            std::swap(infer.linked_pseudo_names[i], vec_back(infer.linked_pseudo_names));
-            vec_pop_back(infer.linked_pseudo_names);
+            vec_remove_swap(infer.linked_pseudo_names, i);
             infer.degree--;
             return;
         }
