@@ -37,7 +37,7 @@ struct InferenceGraph {
     size_t k;
     size_t offset;
     mask_t hard_reg_mask;
-    std::vector<size_t> unpruned_hard_mask_bits;
+    vector_t(size_t) unpruned_hard_mask_bits;
     std::vector<TIdentifier> unpruned_pseudo_names;
     std::unordered_map<TIdentifier, InferenceRegister> pseudo_reg_map;
 };
@@ -666,8 +666,8 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
     }
 
     if (!ctx->infer_graph->pseudo_reg_map.empty()) {
-        if (ctx->infer_graph->unpruned_hard_mask_bits.size() < 12) {
-            ctx->infer_graph->unpruned_hard_mask_bits.resize(12);
+        if (vec_size(ctx->infer_graph->unpruned_hard_mask_bits) < 12) {
+            vec_resize(ctx->infer_graph->unpruned_hard_mask_bits, 12);
         }
 
         mask_t hard_reg_mask = ctx->infer_graph->hard_reg_mask;
@@ -682,8 +682,8 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
         }
     }
     if (!ctx->sse_infer_graph->pseudo_reg_map.empty()) {
-        if (ctx->sse_infer_graph->unpruned_hard_mask_bits.size() < 14) {
-            ctx->sse_infer_graph->unpruned_hard_mask_bits.resize(14);
+        if (vec_size(ctx->sse_infer_graph->unpruned_hard_mask_bits) < 14) {
+            vec_resize(ctx->sse_infer_graph->unpruned_hard_mask_bits, 14);
         }
 
         mask_t hard_reg_mask = ctx->sse_infer_graph->hard_reg_mask;
@@ -735,9 +735,7 @@ static void alloc_prune_infer_reg(Ctx ctx, InferenceRegister* infer, size_t prun
         ctx->p_infer_graph->unpruned_pseudo_names.pop_back();
     }
     else {
-        std::swap(ctx->p_infer_graph->unpruned_hard_mask_bits[pruned_idx],
-            ctx->p_infer_graph->unpruned_hard_mask_bits.back());
-        ctx->p_infer_graph->unpruned_hard_mask_bits.pop_back();
+        vec_remove_swap(ctx->p_infer_graph->unpruned_hard_mask_bits, pruned_idx);
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
@@ -760,7 +758,7 @@ static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifi
     else {
         size_t pruned_mask_bit = register_mask_bit(infer->reg_kind);
         THROW_ABORT_IF(find_size_t(ctx->p_infer_graph->unpruned_hard_mask_bits, pruned_mask_bit));
-        ctx->p_infer_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
+        vec_push_back(ctx->p_infer_graph->unpruned_hard_mask_bits, pruned_mask_bit);
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
@@ -778,7 +776,7 @@ static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifi
 static void alloc_color_infer_graph(Ctx ctx);
 
 static void alloc_next_color_infer_graph(Ctx ctx) {
-    if (!ctx->p_infer_graph->unpruned_hard_mask_bits.empty() || !ctx->p_infer_graph->unpruned_pseudo_names.empty()) {
+    if (!vec_empty(ctx->p_infer_graph->unpruned_hard_mask_bits) || !ctx->p_infer_graph->unpruned_pseudo_names.empty()) {
         alloc_color_infer_graph(ctx);
     }
 }
@@ -796,7 +794,7 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
         infer = nullptr;
     }
     if (!infer) {
-        for (size_t i = 0; i < ctx->p_infer_graph->unpruned_hard_mask_bits.size(); ++i) {
+        for (size_t i = 0; i < vec_size(ctx->p_infer_graph->unpruned_hard_mask_bits); ++i) {
             size_t pruned_mask_bit = ctx->p_infer_graph->unpruned_hard_mask_bits[i];
             infer = &ctx->hard_regs[pruned_mask_bit];
             if (infer->degree < ctx->p_infer_graph->k) {
@@ -1829,6 +1827,8 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
             register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R13, true);
             register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R14, true);
             register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R15, true);
+
+            ctx.infer_graph->unpruned_hard_mask_bits = vec_new();
         }
         ctx.sse_infer_graph = std::make_unique<InferenceGraph>();
         {
@@ -1850,6 +1850,8 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
             register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm11, true);
             register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm12, true);
             register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm13, true);
+
+            ctx.sse_infer_graph->unpruned_hard_mask_bits = vec_new();
         }
     }
     alloc_program(&ctx, node);
@@ -1857,9 +1859,13 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
     for (size_t i = 0; i < 26; ++i) {
         vec_delete(ctx.hard_regs[i].linked_pseudo_names);
     }
+
+    vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
     for (auto& pseudo_reg : ctx.infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
+
+    vec_delete(ctx.sse_infer_graph->unpruned_hard_mask_bits);
     for (auto& pseudo_reg : ctx.sse_infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
