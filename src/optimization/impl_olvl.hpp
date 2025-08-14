@@ -39,7 +39,7 @@ struct DataFlowAnalysis {
     size_t mask_size;
     size_t incoming_idx;
     size_t static_idx;
-    std::vector<size_t> open_data_map;
+    vector_t(size_t) open_data_map;
     std::vector<size_t> instr_idx_map;
     std::vector<mask_t> blocks_mask_sets;
     std::vector<mask_t> instrs_mask_sets;
@@ -695,11 +695,11 @@ static void dfa_forward_iter_alg(Ctx ctx) {
                             goto Lelse;
                         }
                     }
-                    if (open_data_map_size < ctx->dfa->open_data_map.size()) {
+                    if (open_data_map_size < vec_size(ctx->dfa->open_data_map)) {
                         ctx->dfa->open_data_map[open_data_map_size] = succ_id;
                     }
                     else {
-                        ctx->dfa->open_data_map.push_back(succ_id);
+                        vec_push_back(ctx->dfa->open_data_map, succ_id);
                     }
                     open_data_map_size++;
                 Lelse:;
@@ -731,11 +731,11 @@ static void dfa_iter_alg(Ctx ctx) {
                             goto Lelse;
                         }
                     }
-                    if (open_data_map_size < ctx->dfa->open_data_map.size()) {
+                    if (open_data_map_size < vec_size(ctx->dfa->open_data_map)) {
                         ctx->dfa->open_data_map[open_data_map_size] = pred_id;
                     }
                     else {
-                        ctx->dfa->open_data_map.push_back(pred_id);
+                        vec_push_back(ctx->dfa->open_data_map, pred_id);
                     }
                     open_data_map_size++;
                 Lelse:;
@@ -856,8 +856,8 @@ static bool init_data_flow_analysis(Ctx ctx,
     ctx->dfa->set_size = 0;
     ctx->dfa->incoming_idx = vec_size(*ctx->p_instrs);
 
-    if (ctx->dfa->open_data_map.size() < vec_size(ctx->cfg->blocks)) {
-        ctx->dfa->open_data_map.resize(vec_size(ctx->cfg->blocks));
+    if (vec_size(ctx->dfa->open_data_map) < vec_size(ctx->cfg->blocks)) {
+        vec_resize(ctx->dfa->open_data_map, vec_size(ctx->cfg->blocks));
     }
     {
         size_t i;

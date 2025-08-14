@@ -1679,8 +1679,8 @@ static void coal_instr(Ctx ctx, size_t instr_idx, size_t block_id) {
 static bool coalesce_registers(Ctx ctx) {
     {
         size_t open_data_map_size = ctx->dfa->set_size - REGISTER_MASK_SIZE;
-        if (ctx->dfa->open_data_map.size() < open_data_map_size) {
-            ctx->dfa->open_data_map.resize(open_data_map_size);
+        if (vec_size(ctx->dfa->open_data_map) < open_data_map_size) {
+            vec_resize(ctx->dfa->open_data_map, open_data_map_size);
         }
     }
     for (size_t i = REGISTER_MASK_SIZE; i < ctx->dfa->set_size; ++i) {
@@ -1805,6 +1805,8 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         ctx.cfg->blocks = vec_new();
 
         ctx.dfa = std::make_unique<DataFlowAnalysis>();
+        ctx.dfa->open_data_map = vec_new();
+
         ctx.dfa_o2 = std::make_unique<DataFlowAnalysisO2>();
 
         ctx.infer_graph = std::make_unique<InferenceGraph>();
@@ -1868,6 +1870,8 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         vec_delete(ctx.cfg->blocks[i].succ_ids);
     }
     vec_delete(ctx.cfg->blocks);
+
+    vec_delete(ctx.dfa->open_data_map);
 
     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
     vec_delete(ctx.infer_graph->unpruned_pseudo_names);
