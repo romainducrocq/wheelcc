@@ -1860,6 +1860,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
     vec_delete(ctx.cfg->exit_pred_ids);
     for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
         vec_delete(ctx.cfg->blocks[i].pred_ids);
+        vec_delete(ctx.cfg->blocks[i].succ_ids);
     }
 
     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);

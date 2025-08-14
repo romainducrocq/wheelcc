@@ -1248,8 +1248,8 @@ static void fold_constants(Ctx ctx) {
 static void unreach_reachable_block(Ctx ctx, size_t block_id);
 
 static void unreach_succ_reachable_blocks(Ctx ctx, size_t block_id) {
-    for (size_t succ_id : GET_CFG_BLOCK(block_id).succ_ids) {
-        unreach_reachable_block(ctx, succ_id);
+    for (size_t i = 0; i < vec_size(GET_CFG_BLOCK(block_id).succ_ids); ++i) {
+        unreach_reachable_block(ctx, GET_CFG_BLOCK(block_id).succ_ids[i]);
     }
 }
 
@@ -1269,7 +1269,7 @@ static void unreach_empty_block(Ctx ctx, size_t block_id) {
     }
     GET_CFG_BLOCK(block_id).size = 0;
     cfg_rm_empty_block(ctx, block_id, false);
-    GET_CFG_BLOCK(block_id).succ_ids.clear();
+    vec_clear(GET_CFG_BLOCK(block_id).succ_ids);
     vec_clear(GET_CFG_BLOCK(block_id).pred_ids);
 }
 
@@ -1287,7 +1287,7 @@ static void unreach_jump_instr(Ctx ctx, size_t block_id) {
 }
 
 static void unreach_jump_block(Ctx ctx, size_t block_id, size_t next_block_id) {
-    if (GET_CFG_BLOCK(block_id).succ_ids.size() == 1 && GET_CFG_BLOCK(block_id).succ_ids[0] == next_block_id) {
+    if (vec_size(GET_CFG_BLOCK(block_id).succ_ids) == 1 && GET_CFG_BLOCK(block_id).succ_ids[0] == next_block_id) {
         unreach_jump_instr(ctx, block_id);
     }
 }
@@ -2712,6 +2712,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
         vec_delete(ctx.cfg->exit_pred_ids);
         for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
             vec_delete(ctx.cfg->blocks[i].pred_ids);
+            vec_delete(ctx.cfg->blocks[i].succ_ids);
         }
     }
 }
