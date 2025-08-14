@@ -2709,6 +2709,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
                 ctx.dfa->instrs_mask_sets = vec_new();
 
                 ctx.dfa_o1 = std::make_unique<DataFlowAnalysisO1>();
+                ctx.dfa_o1->data_idx_map = vec_new();
             }
         }
     }
@@ -2729,5 +2730,8 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
         vec_delete(ctx.dfa->instr_idx_map);
         vec_delete(ctx.dfa->blocks_mask_sets);
         vec_delete(ctx.dfa->instrs_mask_sets);
+    }
+    if (ctx.dfa_o1) {
+        vec_delete(ctx.dfa_o1->data_idx_map);
     }
 }

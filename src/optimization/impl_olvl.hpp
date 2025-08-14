@@ -48,7 +48,7 @@ struct DataFlowAnalysis {
 #if __OPTIM_LEVEL__ == 1
 struct DataFlowAnalysisO1 {
     // Copy propagation
-    std::vector<size_t> data_idx_map;
+    vector_t(size_t) data_idx_map;
     std::vector<std::unique_ptr<TacInstruction>> bak_instrs;
     // Dead store elimination
     size_t addressed_idx;
@@ -808,11 +808,11 @@ static bool prop_add_data_idx(Ctx ctx, TacCopy* node, size_t instr_idx, size_t b
         return false;
     }
     else {
-        if (ctx->dfa->set_size < ctx->dfa_o1->data_idx_map.size()) {
+        if (ctx->dfa->set_size < vec_size(ctx->dfa_o1->data_idx_map)) {
             ctx->dfa_o1->data_idx_map[ctx->dfa->set_size] = instr_idx;
         }
         else {
-            ctx->dfa_o1->data_idx_map.push_back(instr_idx);
+            vec_push_back(ctx->dfa_o1->data_idx_map, instr_idx);
         }
         ctx->dfa->set_size++;
         return true;
