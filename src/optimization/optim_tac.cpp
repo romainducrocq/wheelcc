@@ -2,6 +2,7 @@
 #include <array>
 #include <inttypes.h>
 #include <memory>
+#include <string.h>
 #include <unordered_map>
 #include <vector>
 
@@ -1309,7 +1310,9 @@ static void eliminate_unreachable_code(Ctx ctx) {
     if (ctx->cfg->reaching_code.size() < ctx->cfg->blocks.size()) {
         ctx->cfg->reaching_code.resize(ctx->cfg->blocks.size());
     }
+    // TODO
     std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->cfg->blocks.size(), false);
+    // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->cfg->blocks.size(), false);
     for (size_t succ_id : ctx->cfg->entry_succ_ids) {
         unreach_reachable_block(ctx, succ_id);
     }

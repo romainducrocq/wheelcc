@@ -1,5 +1,6 @@
 #include <inttypes.h>
 #include <memory>
+#include <string.h>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -1366,7 +1367,7 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
 
     vector_t(TIdentifier) params = vec_new();
     vec_resize(params, vec_size(node->params));
-    memcpy(params, node->params, vec_size(node->params) * sizeof(TIdentifier));
+    memcpy(params, node->params, sizeof(TIdentifier) * vec_size(node->params));
 
     vector_t(std::unique_ptr<TacInstruction>) body = vec_new();
     {

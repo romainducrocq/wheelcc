@@ -1,6 +1,7 @@
 #include <cstring>
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"

@@ -854,7 +854,9 @@ static bool init_data_flow_analysis(Ctx ctx,
     if (ctx->cfg->reaching_code.size() < ctx->cfg->blocks.size()) {
         ctx->cfg->reaching_code.resize(ctx->cfg->blocks.size());
     }
+    // TODO
     std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->cfg->blocks.size(), false);
+    // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->cfg->blocks.size(), false);
 
     size_t instrs_mask_sets_size = 0;
 #if __OPTIM_LEVEL__ == 1
@@ -1194,7 +1196,9 @@ static bool init_data_flow_analysis(Ctx ctx,
             ctx->dfa_o1->bak_instrs.resize(ctx->dfa->set_size);
         }
 
+        // TODO
         std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->dfa->set_size, false);
+        // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->dfa->set_size, false);
 
         if (ctx->dfa->mask_size > 1) {
             i = 0;
@@ -1209,8 +1213,9 @@ static bool init_data_flow_analysis(Ctx ctx,
             while (i < blocks_mask_sets_size);
         }
         else {
-            std::fill(ctx->dfa->blocks_mask_sets.begin(), ctx->dfa->blocks_mask_sets.begin() + blocks_mask_sets_size,
-                mask_true_back);
+            for (size_t j = 0; j < blocks_mask_sets_size; ++j) {
+                ctx->dfa->blocks_mask_sets[j] = mask_true_back;
+            }
         }
     }
     else {
@@ -1254,8 +1259,7 @@ static bool init_data_flow_analysis(Ctx ctx,
 #endif
         }
 
-        std::fill(
-            ctx->dfa->blocks_mask_sets.begin(), ctx->dfa->blocks_mask_sets.begin() + blocks_mask_sets_size, MASK_FALSE);
+        memset(ctx->dfa->blocks_mask_sets.data(), MASK_FALSE, sizeof(mask_t) * blocks_mask_sets_size);
 #if __OPTIM_LEVEL__ == 1
     }
 #endif
