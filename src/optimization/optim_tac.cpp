@@ -2698,6 +2698,8 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
 
         if (ctx.enabled_optims[CONTROL_FLOW_GRAPH]) {
             ctx.cfg = std::make_unique<ControlFlowGraph>();
+            ctx.cfg->exit_pred_ids = vec_new();
+
             if (ctx.enabled_optims[COPY_PROPAGATION] || ctx.enabled_optims[DEAD_STORE_ELIMINATION]) {
                 ctx.dfa = std::make_unique<DataFlowAnalysis>();
                 ctx.dfa_o1 = std::make_unique<DataFlowAnalysisO1>();
@@ -2706,7 +2708,8 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
     }
     optim_program(&ctx, node);
 
-    if (ctx.enabled_optims[CONTROL_FLOW_GRAPH]) {
+    if (ctx.cfg) {
+        vec_delete(ctx.cfg->exit_pred_ids);
         for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
             vec_delete(ctx.cfg->blocks[i].pred_ids);
         }

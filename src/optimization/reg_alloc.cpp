@@ -632,16 +632,19 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
     }
 
     ctx->callee_saved_reg_mask = REGISTER_MASK_FALSE;
+
     vec_clear(ctx->infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx->infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
     ctx->infer_graph->pseudo_reg_map.clear();
+
     vec_clear(ctx->sse_infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx->sse_infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
     ctx->sse_infer_graph->pseudo_reg_map.clear();
+
     for (const auto& name_id : ctx->cfg->identifier_id_map) {
         TIdentifier name = name_id.first;
         InferenceRegister infer = {REG_Sp, REG_Sp, 0, 0, REGISTER_MASK_FALSE, vec_new()};
@@ -1796,8 +1799,11 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         }
 
         ctx.cfg = std::make_unique<ControlFlowGraph>();
+        ctx.cfg->exit_pred_ids = vec_new();
+
         ctx.dfa = std::make_unique<DataFlowAnalysis>();
         ctx.dfa_o2 = std::make_unique<DataFlowAnalysisO2>();
+
         ctx.infer_graph = std::make_unique<InferenceGraph>();
         {
             ctx.infer_graph->k = 12;
@@ -1851,6 +1857,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         vec_delete(ctx.hard_regs[i].linked_pseudo_names);
     }
 
+    vec_delete(ctx.cfg->exit_pred_ids);
     for (size_t i = 0; i < ctx.cfg->blocks.size(); ++i) {
         vec_delete(ctx.cfg->blocks[i].pred_ids);
     }

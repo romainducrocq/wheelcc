@@ -28,7 +28,7 @@ struct ControlFlowGraph {
     size_t entry_id;
     size_t exit_id;
     std::vector<size_t> entry_succ_ids;
-    std::vector<size_t> exit_pred_ids;
+    vector_t(size_t) exit_pred_ids;
     std::vector<bool> reaching_code;
     std::vector<ControlFlowBlock> blocks;
     std::unordered_map<TIdentifier, size_t> identifier_id_map;
@@ -103,22 +103,12 @@ static void cfg_add_edge(std::vector<size_t>& succ_ids, vector_t(size_t) * pred_
     }
 }
 
-static void cfg_add_edge_temp(
-    std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id) {
-    if (!find_size_t_temp(succ_ids, succ_id)) {
-        succ_ids.push_back(succ_id);
-    }
-    if (!find_size_t_temp(pred_ids, pred_id)) {
-        pred_ids.push_back(pred_id);
-    }
-}
-
 static void cfg_add_succ_edge(Ctx ctx, size_t block_id, size_t succ_id) {
     if (succ_id < ctx->cfg->exit_id) {
         cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, &GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id);
     }
     else if (succ_id == ctx->cfg->exit_id) {
-        cfg_add_edge_temp(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id);
+        cfg_add_edge(GET_CFG_BLOCK(block_id).succ_ids, &ctx->cfg->exit_pred_ids, succ_id, block_id);
     }
     else {
         THROW_ABORT;
@@ -156,33 +146,13 @@ static void cfg_rm_edge(
     }
 }
 
-static void cfg_rm_edge_temp(
-    std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id, bool is_reachable) {
-    if (is_reachable) {
-        for (size_t i = succ_ids.size(); i-- > 0;) {
-            if (succ_ids[i] == succ_id) {
-                std::swap(succ_ids[i], succ_ids.back());
-                succ_ids.pop_back();
-                break;
-            }
-        }
-    }
-    for (size_t i = pred_ids.size(); i-- > 0;) {
-        if (pred_ids[i] == pred_id) {
-            std::swap(pred_ids[i], pred_ids.back());
-            pred_ids.pop_back();
-            break;
-        }
-    }
-}
-
 static void cfg_rm_succ_edge(Ctx ctx, size_t block_id, size_t succ_id, bool is_reachable) {
     if (succ_id < ctx->cfg->exit_id) {
         cfg_rm_edge(
             GET_CFG_BLOCK(block_id).succ_ids, &GET_CFG_BLOCK(succ_id).pred_ids, succ_id, block_id, is_reachable);
     }
     else if (succ_id == ctx->cfg->exit_id) {
-        cfg_rm_edge_temp(GET_CFG_BLOCK(block_id).succ_ids, ctx->cfg->exit_pred_ids, succ_id, block_id, is_reachable);
+        cfg_rm_edge(GET_CFG_BLOCK(block_id).succ_ids, &ctx->cfg->exit_pred_ids, succ_id, block_id, is_reachable);
     }
     else {
         THROW_ABORT;
@@ -392,7 +362,7 @@ static void init_control_flow_graph(Ctx ctx) {
     ctx->cfg->exit_id = ctx->cfg->blocks.size();
     ctx->cfg->entry_id = ctx->cfg->exit_id + 1;
     ctx->cfg->entry_succ_ids.clear();
-    ctx->cfg->exit_pred_ids.clear();
+    vec_clear(ctx->cfg->exit_pred_ids);
     if (!ctx->cfg->blocks.empty()) {
         cfg_add_pred_edge(ctx, 0, ctx->cfg->entry_id);
         for (size_t block_id = 0; block_id < ctx->cfg->blocks.size(); ++block_id) {
