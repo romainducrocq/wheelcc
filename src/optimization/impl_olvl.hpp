@@ -40,7 +40,7 @@ struct DataFlowAnalysis {
     size_t incoming_idx;
     size_t static_idx;
     vector_t(size_t) open_data_map;
-    std::vector<size_t> instr_idx_map;
+    vector_t(size_t) instr_idx_map;
     std::vector<mask_t> blocks_mask_sets;
     std::vector<mask_t> instrs_mask_sets;
 };
@@ -866,8 +866,8 @@ static bool init_data_flow_analysis(Ctx ctx,
 #elif __OPTIM_LEVEL__ == 2
         i = 2;
 #endif
-        if (ctx->dfa->instr_idx_map.size() < vec_size(*ctx->p_instrs) + i) {
-            ctx->dfa->instr_idx_map.resize(vec_size(*ctx->p_instrs) + i);
+        if (vec_size(ctx->dfa->instr_idx_map) < vec_size(*ctx->p_instrs) + i) {
+            vec_resize(ctx->dfa->instr_idx_map, vec_size(*ctx->p_instrs) + i);
         }
     }
     if (vec_size(ctx->cfg->reaching_code) < vec_size(ctx->cfg->blocks)) {
