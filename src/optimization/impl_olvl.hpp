@@ -49,7 +49,7 @@ struct DataFlowAnalysis {
 struct DataFlowAnalysisO1 {
     // Copy propagation
     vector_t(size_t) data_idx_map;
-    std::vector<std::unique_ptr<TacInstruction>> bak_instrs;
+    vector_t(std::unique_ptr<TacInstruction>) bak_instrs;
     // Dead store elimination
     size_t addressed_idx;
 };
@@ -1210,8 +1210,10 @@ static bool init_data_flow_analysis(Ctx ctx,
         if (vec_size(ctx->cfg->reaching_code) < ctx->dfa->set_size) {
             vec_resize(ctx->cfg->reaching_code, ctx->dfa->set_size);
         }
-        if (ctx->dfa_o1->bak_instrs.size() < ctx->dfa->set_size) {
-            ctx->dfa_o1->bak_instrs.resize(ctx->dfa->set_size);
+        for (size_t j = vec_size(ctx->dfa_o1->bak_instrs); j <= ctx->dfa->set_size; ++j) {
+            // TODO
+            vec_move_back(ctx->dfa_o1->bak_instrs, std::unique_ptr<TacInstruction>(nullptr));
+            // vec_push_back(ctx->dfa_o1->bak_instrs, NULL);
         }
 
         memset(ctx->cfg->reaching_code, false, sizeof(bool) * ctx->dfa->set_size);
