@@ -76,11 +76,20 @@ static void set_instr(Ctx ctx, std::unique_ptr<AstInstruction>&& instr, size_t i
 
 // Control flow graph
 
+static bool find_size_t(const std::vector<size_t>& xs, size_t x) {
+    for (size_t i = 0; i < xs.size(); ++i) {
+        if (xs[i] == x) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void cfg_add_edge(std::vector<size_t>& succ_ids, std::vector<size_t>& pred_ids, size_t succ_id, size_t pred_id) {
-    if (std::find(succ_ids.begin(), succ_ids.end(), succ_id) == succ_ids.end()) {
+    if (!find_size_t(succ_ids, succ_id)) {
         succ_ids.push_back(succ_id);
     }
-    if (std::find(pred_ids.begin(), pred_ids.end(), pred_id) == pred_ids.end()) {
+    if (!find_size_t(pred_ids, pred_id)) {
         pred_ids.push_back(pred_id);
     }
 }

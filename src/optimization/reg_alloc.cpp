@@ -87,6 +87,15 @@ static bool is_bitshift_cl(AsmBinary* node) {
     }
 }
 
+static bool find_identifier(const std::vector<TIdentifier>& xs, TIdentifier x) {
+    for (size_t i = 0; i < xs.size(); ++i) {
+        if (xs[i] == x) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void infer_transfer_used_reg(Ctx ctx, REGISTER_KIND reg_kind, size_t next_instr_idx) {
     SET_DFA_INSTR_SET_AT(next_instr_idx, register_mask_bit(reg_kind), true);
 }
@@ -288,16 +297,14 @@ static void set_p_infer_graph(Ctx ctx, bool is_dbl) {
 static void infer_add_pseudo_edges(Ctx ctx, TIdentifier name_1, TIdentifier name_2) {
     {
         InferenceRegister& infer = ctx->p_infer_graph->pseudo_reg_map[name_1];
-        if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name_2)
-            == infer.linked_pseudo_names.end()) {
+        if (!find_identifier(infer.linked_pseudo_names, name_2)) {
             infer.linked_pseudo_names.push_back(name_2);
             infer.degree++;
         }
     }
     {
         InferenceRegister& infer = ctx->p_infer_graph->pseudo_reg_map[name_2];
-        if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name_1)
-            == infer.linked_pseudo_names.end()) {
+        if (!find_identifier(infer.linked_pseudo_names, name_1)) {
             infer.linked_pseudo_names.push_back(name_1);
             infer.degree++;
         }
@@ -314,8 +321,7 @@ static void infer_add_reg_edge(Ctx ctx, REGISTER_KIND reg_kind, TIdentifier name
     }
     {
         InferenceRegister& infer = ctx->hard_regs[register_mask_bit(reg_kind)];
-        if (std::find(infer.linked_pseudo_names.begin(), infer.linked_pseudo_names.end(), name)
-            == infer.linked_pseudo_names.end()) {
+        if (!find_identifier(infer.linked_pseudo_names, name)) {
             infer.linked_pseudo_names.push_back(name);
             infer.degree++;
         }
@@ -734,16 +740,12 @@ static void alloc_prune_infer_reg(Ctx ctx, InferenceRegister* infer, size_t prun
 
 static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->reg_kind == REG_Sp) {
-        THROW_ABORT_IF(std::find(ctx->p_infer_graph->unpruned_pseudo_names.begin(),
-                           ctx->p_infer_graph->unpruned_pseudo_names.end(), pruned_name)
-                       != ctx->p_infer_graph->unpruned_pseudo_names.end());
+        THROW_ABORT_IF(find_identifier(ctx->p_infer_graph->unpruned_pseudo_names, pruned_name));
         ctx->p_infer_graph->unpruned_pseudo_names.push_back(pruned_name);
     }
     else {
         size_t pruned_mask_bit = register_mask_bit(infer->reg_kind);
-        THROW_ABORT_IF(std::find(ctx->p_infer_graph->unpruned_hard_mask_bits.begin(),
-                           ctx->p_infer_graph->unpruned_hard_mask_bits.end(), pruned_mask_bit)
-                       != ctx->p_infer_graph->unpruned_hard_mask_bits.end());
+        THROW_ABORT_IF(find_size_t(ctx->p_infer_graph->unpruned_hard_mask_bits, pruned_mask_bit));
         ctx->p_infer_graph->unpruned_hard_mask_bits.push_back(pruned_mask_bit);
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
@@ -1255,8 +1257,7 @@ static bool get_coalescable_infer_regs(
                 set_p_infer_graph(ctx, is_dbl);
                 src_infer = &ctx->p_infer_graph->pseudo_reg_map[src_name];
                 dst_infer = &ctx->p_infer_graph->pseudo_reg_map[dst_name];
-                return std::find(dst_infer->linked_pseudo_names.begin(), dst_infer->linked_pseudo_names.end(), src_name)
-                       == dst_infer->linked_pseudo_names.end();
+                return !find_identifier(dst_infer->linked_pseudo_names, src_name);
             }
         }
     }
