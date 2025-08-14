@@ -1307,12 +1307,10 @@ static void eliminate_unreachable_code(Ctx ctx) {
     if (vec_empty(ctx->cfg->blocks)) {
         return;
     }
-    if (ctx->cfg->reaching_code.size() < vec_size(ctx->cfg->blocks)) {
-        ctx->cfg->reaching_code.resize(vec_size(ctx->cfg->blocks));
+    if (vec_size(ctx->cfg->reaching_code) < vec_size(ctx->cfg->blocks)) {
+        vec_resize(ctx->cfg->reaching_code, vec_size(ctx->cfg->blocks));
     }
-    // TODO
-    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + vec_size(ctx->cfg->blocks), false);
-    // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->cfg->blocks.size(), false);
+    memset(ctx->cfg->reaching_code, false, sizeof(bool) * vec_size(ctx->cfg->blocks));
     for (size_t i = 0; i < vec_size(ctx->cfg->entry_succ_ids); ++i) {
         unreach_reachable_block(ctx, ctx->cfg->entry_succ_ids[i]);
     }
@@ -2700,6 +2698,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
             ctx.cfg = std::make_unique<ControlFlowGraph>();
             ctx.cfg->exit_pred_ids = vec_new();
             ctx.cfg->entry_succ_ids = vec_new();
+            ctx.cfg->reaching_code = vec_new();
             ctx.cfg->blocks = vec_new();
 
             if (ctx.enabled_optims[COPY_PROPAGATION] || ctx.enabled_optims[DEAD_STORE_ELIMINATION]) {
@@ -2713,6 +2712,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
     if (ctx.cfg) {
         vec_delete(ctx.cfg->exit_pred_ids);
         vec_delete(ctx.cfg->entry_succ_ids);
+        vec_delete(ctx.cfg->reaching_code);
         for (size_t i = 0; i < vec_size(ctx.cfg->blocks); ++i) {
             vec_delete(ctx.cfg->blocks[i].pred_ids);
             vec_delete(ctx.cfg->blocks[i].succ_ids);

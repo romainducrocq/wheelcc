@@ -29,7 +29,7 @@ struct ControlFlowGraph {
     size_t exit_id;
     vector_t(size_t) entry_succ_ids;
     vector_t(size_t) exit_pred_ids;
-    std::vector<bool> reaching_code;
+    vector_t(bool) reaching_code;
     vector_t(ControlFlowBlock) blocks;
     std::unordered_map<TIdentifier, size_t> identifier_id_map;
 };
@@ -870,12 +870,10 @@ static bool init_data_flow_analysis(Ctx ctx,
             ctx->dfa->instr_idx_map.resize(vec_size(*ctx->p_instrs) + i);
         }
     }
-    if (ctx->cfg->reaching_code.size() < vec_size(ctx->cfg->blocks)) {
-        ctx->cfg->reaching_code.resize(vec_size(ctx->cfg->blocks));
+    if (vec_size(ctx->cfg->reaching_code) < vec_size(ctx->cfg->blocks)) {
+        vec_resize(ctx->cfg->reaching_code, vec_size(ctx->cfg->blocks));
     }
-    // TODO
-    std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + vec_size(ctx->cfg->blocks), false);
-    // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->cfg->blocks.size(), false);
+    memset(ctx->cfg->reaching_code, false, sizeof(bool) * vec_size(ctx->cfg->blocks));
 
     size_t instrs_mask_sets_size = 0;
 #if __OPTIM_LEVEL__ == 1
@@ -1209,16 +1207,14 @@ static bool init_data_flow_analysis(Ctx ctx,
             }
         }
 
-        if (ctx->cfg->reaching_code.size() < ctx->dfa->set_size) {
-            ctx->cfg->reaching_code.resize(ctx->dfa->set_size);
+        if (vec_size(ctx->cfg->reaching_code) < ctx->dfa->set_size) {
+            vec_resize(ctx->cfg->reaching_code, ctx->dfa->set_size);
         }
         if (ctx->dfa_o1->bak_instrs.size() < ctx->dfa->set_size) {
             ctx->dfa_o1->bak_instrs.resize(ctx->dfa->set_size);
         }
 
-        // TODO
-        std::fill(ctx->cfg->reaching_code.begin(), ctx->cfg->reaching_code.begin() + ctx->dfa->set_size, false);
-        // memset(ctx->cfg->reaching_code.data(), sizeof(bool) * ctx->dfa->set_size, false);
+        memset(ctx->cfg->reaching_code, false, sizeof(bool) * ctx->dfa->set_size);
 
         if (ctx->dfa->mask_size > 1) {
             i = 0;

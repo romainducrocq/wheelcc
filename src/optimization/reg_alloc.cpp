@@ -1801,6 +1801,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         ctx.cfg = std::make_unique<ControlFlowGraph>();
         ctx.cfg->exit_pred_ids = vec_new();
         ctx.cfg->entry_succ_ids = vec_new();
+        ctx.cfg->reaching_code = vec_new();
         ctx.cfg->blocks = vec_new();
 
         ctx.dfa = std::make_unique<DataFlowAnalysis>();
@@ -1861,6 +1862,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
 
     vec_delete(ctx.cfg->exit_pred_ids);
     vec_delete(ctx.cfg->entry_succ_ids);
+    vec_delete(ctx.cfg->reaching_code);
     for (size_t i = 0; i < vec_size(ctx.cfg->blocks); ++i) {
         vec_delete(ctx.cfg->blocks[i].pred_ids);
         vec_delete(ctx.cfg->blocks[i].succ_ids);
