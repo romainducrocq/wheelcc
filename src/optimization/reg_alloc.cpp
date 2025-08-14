@@ -38,7 +38,7 @@ struct InferenceGraph {
     size_t offset;
     mask_t hard_reg_mask;
     vector_t(size_t) unpruned_hard_mask_bits;
-    std::vector<TIdentifier> unpruned_pseudo_names;
+    vector_t(TIdentifier) unpruned_pseudo_names;
     std::unordered_map<TIdentifier, InferenceRegister> pseudo_reg_map;
 };
 
@@ -85,15 +85,6 @@ static bool is_bitshift_cl(AsmBinary* node) {
         default:
             return false;
     }
-}
-
-static bool find_identifier_temp(const std::vector<TIdentifier>& xs, TIdentifier x) {
-    for (size_t i = 0; i < xs.size(); ++i) {
-        if (xs[i] == x) {
-            return true;
-        }
-    }
-    return false;
 }
 
 static bool find_identifier(const vector_t(TIdentifier) xs, TIdentifier x) {
@@ -349,10 +340,9 @@ static void infer_rm_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
 }
 
 static void infer_rm_unpruned_pseudo_name(Ctx ctx, TIdentifier name) {
-    for (size_t i = ctx->p_infer_graph->unpruned_pseudo_names.size(); i-- > 0;) {
+    for (size_t i = vec_size(ctx->p_infer_graph->unpruned_pseudo_names); i-- > 0;) {
         if (ctx->p_infer_graph->unpruned_pseudo_names[i] == name) {
-            std::swap(ctx->p_infer_graph->unpruned_pseudo_names[i], ctx->p_infer_graph->unpruned_pseudo_names.back());
-            ctx->p_infer_graph->unpruned_pseudo_names.pop_back();
+            vec_remove_swap(ctx->p_infer_graph->unpruned_pseudo_names, i);
             return;
         }
     }
@@ -642,12 +632,12 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
     }
 
     ctx->callee_saved_reg_mask = REGISTER_MASK_FALSE;
-    ctx->infer_graph->unpruned_pseudo_names.clear();
+    vec_clear(ctx->infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx->infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
     ctx->infer_graph->pseudo_reg_map.clear();
-    ctx->sse_infer_graph->unpruned_pseudo_names.clear();
+    vec_clear(ctx->sse_infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx->sse_infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
@@ -656,11 +646,11 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
         TIdentifier name = name_id.first;
         InferenceRegister infer = {REG_Sp, REG_Sp, 0, 0, REGISTER_MASK_FALSE, vec_new()};
         if (ctx->frontend->symbol_table[name_id.first]->type_t->type() == AST_Double_t) {
-            ctx->sse_infer_graph->unpruned_pseudo_names.push_back(name);
+            vec_push_back(ctx->sse_infer_graph->unpruned_pseudo_names, name);
             ctx->sse_infer_graph->pseudo_reg_map[name] = std::move(infer);
         }
         else {
-            ctx->infer_graph->unpruned_pseudo_names.push_back(name);
+            vec_push_back(ctx->infer_graph->unpruned_pseudo_names, name);
             ctx->infer_graph->pseudo_reg_map[name] = std::move(infer);
         }
     }
@@ -730,9 +720,7 @@ static bool is_reg_callee_saved(REGISTER_KIND reg_kind) {
 
 static void alloc_prune_infer_reg(Ctx ctx, InferenceRegister* infer, size_t pruned_idx) {
     if (infer->reg_kind == REG_Sp) {
-        std::swap(
-            ctx->p_infer_graph->unpruned_pseudo_names[pruned_idx], ctx->p_infer_graph->unpruned_pseudo_names.back());
-        ctx->p_infer_graph->unpruned_pseudo_names.pop_back();
+        vec_remove_swap(ctx->p_infer_graph->unpruned_pseudo_names, pruned_idx);
     }
     else {
         vec_remove_swap(ctx->p_infer_graph->unpruned_hard_mask_bits, pruned_idx);
@@ -752,8 +740,8 @@ static void alloc_prune_infer_reg(Ctx ctx, InferenceRegister* infer, size_t prun
 
 static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifier pruned_name) {
     if (infer->reg_kind == REG_Sp) {
-        THROW_ABORT_IF(find_identifier_temp(ctx->p_infer_graph->unpruned_pseudo_names, pruned_name));
-        ctx->p_infer_graph->unpruned_pseudo_names.push_back(pruned_name);
+        THROW_ABORT_IF(find_identifier(ctx->p_infer_graph->unpruned_pseudo_names, pruned_name));
+        vec_push_back(ctx->p_infer_graph->unpruned_pseudo_names, pruned_name);
     }
     else {
         size_t pruned_mask_bit = register_mask_bit(infer->reg_kind);
@@ -776,7 +764,8 @@ static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifi
 static void alloc_color_infer_graph(Ctx ctx);
 
 static void alloc_next_color_infer_graph(Ctx ctx) {
-    if (!vec_empty(ctx->p_infer_graph->unpruned_hard_mask_bits) || !ctx->p_infer_graph->unpruned_pseudo_names.empty()) {
+    if (!vec_empty(ctx->p_infer_graph->unpruned_hard_mask_bits)
+        || !vec_empty(ctx->p_infer_graph->unpruned_pseudo_names)) {
         alloc_color_infer_graph(ctx);
     }
 }
@@ -784,7 +773,7 @@ static void alloc_next_color_infer_graph(Ctx ctx) {
 static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_name) {
     size_t pruned_idx;
     InferenceRegister* infer = nullptr;
-    for (size_t i = 0; i < ctx->p_infer_graph->unpruned_pseudo_names.size(); ++i) {
+    for (size_t i = 0; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
         pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
         infer = &ctx->p_infer_graph->pseudo_reg_map[pruned_name];
         if (infer->degree < ctx->p_infer_graph->k) {
@@ -806,7 +795,7 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
     }
     if (!infer) {
         size_t i = 0;
-        for (; i < ctx->p_infer_graph->unpruned_pseudo_names.size(); ++i) {
+        for (; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
             pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
             infer = &ctx->p_infer_graph->pseudo_reg_map[pruned_name];
             if (infer->degree > 0) {
@@ -817,7 +806,7 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
         }
         THROW_ABORT_IF(!infer);
         double min_spill_metric = ((double)infer->spill_cost) / infer->degree;
-        for (; i < ctx->p_infer_graph->unpruned_pseudo_names.size(); ++i) {
+        for (; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
             TIdentifier spill_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
             InferenceRegister& spill_infer = ctx->p_infer_graph->pseudo_reg_map[spill_name];
             if (spill_infer.degree > 0) {
@@ -1165,12 +1154,12 @@ static void alloc_instr(Ctx ctx, size_t instr_idx) {
 }
 
 static void reallocate_registers(Ctx ctx) {
-    if (!ctx->infer_graph->unpruned_pseudo_names.empty()) {
+    if (!vec_empty(ctx->infer_graph->unpruned_pseudo_names)) {
         set_p_infer_graph(ctx, false);
         alloc_color_infer_graph(ctx);
         alloc_color_reg_map(ctx);
     }
-    if (!ctx->sse_infer_graph->unpruned_pseudo_names.empty()) {
+    if (!vec_empty(ctx->sse_infer_graph->unpruned_pseudo_names)) {
         set_p_infer_graph(ctx, true);
         alloc_color_infer_graph(ctx);
         alloc_color_reg_map(ctx);
@@ -1729,8 +1718,8 @@ static void alloc_fun_toplvl(Ctx ctx, AsmFunction* node) {
 Ldowhile:
     if (init_inference_graph(ctx, node->name)) {
         if (ctx->is_with_coal && coalesce_registers(ctx)) {
-            if (ctx->infer_graph->unpruned_pseudo_names.empty()
-                && ctx->sse_infer_graph->unpruned_pseudo_names.empty()) {
+            if (vec_empty(ctx->infer_graph->unpruned_pseudo_names)
+                && vec_empty(ctx->sse_infer_graph->unpruned_pseudo_names)) {
                 goto Lbreak;
             }
             goto Ldowhile;
@@ -1829,6 +1818,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
             register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R15, true);
 
             ctx.infer_graph->unpruned_hard_mask_bits = vec_new();
+            ctx.infer_graph->unpruned_pseudo_names = vec_new();
         }
         ctx.sse_infer_graph = std::make_unique<InferenceGraph>();
         {
@@ -1852,6 +1842,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
             register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm13, true);
 
             ctx.sse_infer_graph->unpruned_hard_mask_bits = vec_new();
+            ctx.sse_infer_graph->unpruned_pseudo_names = vec_new();
         }
     }
     alloc_program(&ctx, node);
@@ -1861,11 +1852,13 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
     }
 
     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
+    vec_delete(ctx.infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx.infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
 
     vec_delete(ctx.sse_infer_graph->unpruned_hard_mask_bits);
+    vec_delete(ctx.sse_infer_graph->unpruned_pseudo_names);
     for (auto& pseudo_reg : ctx.sse_infer_graph->pseudo_reg_map) {
         vec_delete(pseudo_reg.second.linked_pseudo_names);
     }
