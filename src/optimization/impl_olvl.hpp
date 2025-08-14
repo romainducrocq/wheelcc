@@ -42,7 +42,7 @@ struct DataFlowAnalysis {
     vector_t(size_t) open_data_map;
     vector_t(size_t) instr_idx_map;
     vector_t(mask_t) blocks_mask_sets;
-    std::vector<mask_t> instrs_mask_sets;
+    vector_t(mask_t) instrs_mask_sets;
 };
 
 #if __OPTIM_LEVEL__ == 1
@@ -1182,8 +1182,8 @@ static bool init_data_flow_analysis(Ctx ctx,
     if (vec_size(ctx->dfa->blocks_mask_sets) < blocks_mask_sets_size) {
         vec_resize(ctx->dfa->blocks_mask_sets, blocks_mask_sets_size);
     }
-    if (ctx->dfa->instrs_mask_sets.size() < instrs_mask_sets_size) {
-        ctx->dfa->instrs_mask_sets.resize(instrs_mask_sets_size);
+    if (vec_size(ctx->dfa->instrs_mask_sets) < instrs_mask_sets_size) {
+        vec_resize(ctx->dfa->instrs_mask_sets, instrs_mask_sets_size);
     }
 
 #if __OPTIM_LEVEL__ == 1
