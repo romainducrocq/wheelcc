@@ -100,4 +100,30 @@ typedef sds string_t;
 #define vec_resize(X, Y) arrsetlen(X, Y)
 #define vec_reserve(X, Y) arrsetcap(X, Y)
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Hashmap
+
+#define PairKeyValue(T1, T2)      \
+    typedef struct Pair##T1##T2 { \
+        T1 key;                   \
+        T2 value;                 \
+    } Pair##T1##T2;
+
+#define hashmap_t(T1, T2) Pair##T1##T2*
+#define map_delete(X) \
+    if (X) {          \
+        hmfree(X);    \
+        X = NULL;     \
+    }
+#define map_new() NULL
+#define map_move(X, Y)  \
+    do {                \
+        map_delete(*Y); \
+        *Y = *X;        \
+        *X = NULL;      \
+    }                   \
+    while (0)
+#define map_size(X) hmlenu(X)
+
 #endif
