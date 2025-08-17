@@ -26,7 +26,7 @@ struct SemanticContext {
     hashmap_t(TIdentifier, size_t) extern_scope_map;
     hashmap_t(TIdentifier, TIdentifier) goto_map;
     std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
-    std::vector<hashmap_t(TIdentifier, Structure)> scoped_struct_maps;
+    vector_t(hashmap_t(TIdentifier, Structure)) scoped_struct_maps;
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
     vector_t(TIdentifier) break_loop_labels;
@@ -2594,7 +2594,7 @@ static bool is_file_scope(Ctx ctx) { return ctx->scoped_identifier_maps.size() =
 
 static void enter_scope(Ctx ctx) {
     ctx->scoped_identifier_maps.emplace_back();
-    ctx->scoped_struct_maps.push_back(map_new());
+    vec_push_back(ctx->scoped_struct_maps, map_new());
 }
 
 static void exit_scope(Ctx ctx) {
@@ -2605,8 +2605,8 @@ static void exit_scope(Ctx ctx) {
         }
     }
     ctx->scoped_identifier_maps.pop_back();
-    map_delete(ctx->scoped_struct_maps.back());
-    ctx->scoped_struct_maps.pop_back();
+    map_delete(vec_back(ctx->scoped_struct_maps));
+    vec_pop_back(ctx->scoped_struct_maps);
 }
 
 static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
@@ -3376,8 +3376,8 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     string_t struct_fmt_1 = str_new(NULL);
     string_t struct_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    if (map_find(ctx->scoped_struct_maps.back(), node->tag) != map_end(ctx->scoped_struct_maps.back())) {
-        node->tag = map_get(ctx->scoped_struct_maps.back(), node->tag).tag;
+    if (map_find(vec_back(ctx->scoped_struct_maps), node->tag) != map_end(vec_back(ctx->scoped_struct_maps))) {
+        node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
         if (node->is_union) {
             if (ctx->union_def_set.find(node->tag) == ctx->union_def_set.end()) {
                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
@@ -3394,9 +3394,9 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     else {
         {
             Structure structure = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
-            map_add(ctx->scoped_struct_maps.back(), node->tag, structure);
+            map_add(vec_back(ctx->scoped_struct_maps), node->tag, structure);
         }
-        node->tag = map_get(ctx->scoped_struct_maps.back(), node->tag).tag;
+        node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
         if (node->is_union) {
             ctx->union_def_set.insert(node->tag);
         }
@@ -3490,6 +3490,7 @@ error_t analyze_semantic(
         ctx.identifiers = identifiers;
         ctx.extern_scope_map = map_new();
         ctx.goto_map = map_new();
+        ctx.scoped_struct_maps = vec_new();
         ctx.break_loop_labels = vec_new();
         ctx.continue_loop_labels = vec_new();
     }
@@ -3498,9 +3499,10 @@ error_t analyze_semantic(
     FINALLY;
     map_delete(ctx.extern_scope_map);
     map_delete(ctx.goto_map);
-    for (size_t i = 0; i < ctx.scoped_struct_maps.size(); ++i) {
+    for (size_t i = 0; i < vec_size(ctx.scoped_struct_maps); ++i) {
         map_delete(ctx.scoped_struct_maps[i]);
     }
+    vec_delete(ctx.scoped_struct_maps);
     vec_delete(ctx.break_loop_labels);
     vec_delete(ctx.continue_loop_labels);
     CATCH_EXIT;
