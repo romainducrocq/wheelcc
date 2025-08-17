@@ -1,6 +1,5 @@
 #include <memory>
 #include <unordered_set>
-#include <vector>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -24,7 +23,7 @@ struct SemanticContext {
     // Type checking
     hashmap_t(TIdentifier, size_t) extern_scope_map;
     hashmap_t(TIdentifier, TIdentifier) goto_map;
-    std::vector<hashmap_t(TIdentifier, TIdentifier)> scoped_identifier_maps;
+    vector_t(hashmap_t(TIdentifier, TIdentifier)) scoped_identifier_maps;
     vector_t(hashmap_t(TIdentifier, Structure)) scoped_struct_maps;
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
@@ -2589,23 +2588,23 @@ static void deannotate_lookup(Ctx ctx) { vec_pop_back(ctx->break_loop_labels); }
 
 // Identifier resolution
 
-static bool is_file_scope(Ctx ctx) { return ctx->scoped_identifier_maps.size() == 1; }
+static bool is_file_scope(Ctx ctx) { return vec_size(ctx->scoped_identifier_maps) == 1; }
 
 static void enter_scope(Ctx ctx) {
-    ctx->scoped_identifier_maps.emplace_back();
+    vec_push_back(ctx->scoped_identifier_maps, map_new());
     vec_push_back(ctx->scoped_struct_maps, map_new());
 }
 
 static void exit_scope(Ctx ctx) {
-    for (size_t i = 0; i < map_size(ctx->scoped_identifier_maps.back()); ++i) {
-        TIdentifier identifier = pair_first(ctx->scoped_identifier_maps.back()[i]);
+    for (size_t i = 0; i < map_size(vec_back(ctx->scoped_identifier_maps)); ++i) {
+        TIdentifier identifier = pair_first(vec_back(ctx->scoped_identifier_maps)[i]);
         if (map_find(ctx->extern_scope_map, identifier) != map_end(ctx->extern_scope_map)
-            && map_get(ctx->extern_scope_map, identifier) == ctx->scoped_identifier_maps.size()) {
+            && map_get(ctx->extern_scope_map, identifier) == vec_size(ctx->scoped_identifier_maps)) {
             map_erase(ctx->extern_scope_map, identifier);
         }
     }
-    map_delete(ctx->scoped_identifier_maps.back());
-    ctx->scoped_identifier_maps.pop_back();
+    map_delete(vec_back(ctx->scoped_identifier_maps));
+    vec_pop_back(ctx->scoped_identifier_maps);
     map_delete(vec_back(ctx->scoped_struct_maps));
     vec_pop_back(ctx->scoped_struct_maps);
 }
@@ -2653,7 +2652,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
     else if (ctx->struct_def_set.find(struct_type->tag) != ctx->struct_def_set.end()) {
         EARLY_EXIT;
     }
-    for (size_t i = ctx->scoped_identifier_maps.size(); i-- > 0;) {
+    for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
         if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end(ctx->scoped_struct_maps[i])) {
             if (map_get(ctx->scoped_struct_maps[i], struct_type->tag).is_union != struct_type->is_union) {
                 THROW_AT_LINE(ctx->errors->linebuf,
@@ -2703,7 +2702,7 @@ static void reslv_string_exp(CString* node) { check_string_exp(node); }
 static error_t reslv_var_exp(Ctx ctx, CVar* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    for (size_t i = ctx->scoped_identifier_maps.size(); i-- > 0;) {
+    for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
         if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end(ctx->scoped_identifier_maps[i])) {
             node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
             goto Lelse;
@@ -2767,7 +2766,7 @@ static error_t reslv_conditional_exp(Ctx ctx, CConditional* node) {
 static error_t reslv_call_exp(Ctx ctx, CFunctionCall* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    for (size_t i = ctx->scoped_identifier_maps.size(); i-- > 0;) {
+    for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
         if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end(ctx->scoped_identifier_maps[i])) {
             node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
             goto Lelse;
@@ -3274,11 +3273,11 @@ static error_t reslv_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
     CATCH_ENTER;
     for (size_t i = 0; i < vec_size(node->params); ++i) {
         TIdentifier param = node->params[i];
-        if (map_find(ctx->scoped_identifier_maps.back(), param) != map_end(ctx->scoped_identifier_maps.back())) {
+        if (map_find(vec_back(ctx->scoped_identifier_maps), param) != map_end(vec_back(ctx->scoped_identifier_maps))) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(param, &name_fmt)));
         }
         param = rslv_var_identifier(ctx->identifiers, param);
-        map_add(ctx->scoped_identifier_maps.back(), node->params[i], param);
+        map_add(vec_back(ctx->scoped_identifier_maps), node->params[i], param);
         node->params[i] = param;
     }
     TRY(check_fun_params_decl(ctx, node));
@@ -3301,13 +3300,14 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
     }
 
     if (map_find(ctx->extern_scope_map, node->name) == map_end(ctx->extern_scope_map)) {
-        if (map_find(ctx->scoped_identifier_maps.back(), node->name) != map_end(ctx->scoped_identifier_maps.back())) {
+        if (map_find(vec_back(ctx->scoped_identifier_maps), node->name)
+            != map_end(vec_back(ctx->scoped_identifier_maps))) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
         }
-        map_add(ctx->extern_scope_map, node->name, ctx->scoped_identifier_maps.size());
+        map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
     }
 
-    map_add(ctx->scoped_identifier_maps.back(), node->name, node->name);
+    map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
     TRY(check_ret_fun_decl(ctx, node));
 
     enter_scope(ctx);
@@ -3328,10 +3328,10 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
 static error_t reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     CATCH_ENTER;
     if (map_find(ctx->extern_scope_map, node->name) == map_end(ctx->extern_scope_map)) {
-        map_add(ctx->extern_scope_map, node->name, ctx->scoped_identifier_maps.size());
+        map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
     }
 
-    map_add(ctx->scoped_identifier_maps.back(), node->name, node->name);
+    map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
     if (is_file_scope(ctx)) {
         TRY(check_file_var_decl(ctx, node));
     }
@@ -3345,7 +3345,7 @@ static error_t reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
 static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    if (map_find(ctx->scoped_identifier_maps.back(), node->name) != map_end(ctx->scoped_identifier_maps.back())
+    if (map_find(vec_back(ctx->scoped_identifier_maps), node->name) != map_end(vec_back(ctx->scoped_identifier_maps))
         && !(map_find(ctx->extern_scope_map, node->name) != map_end(ctx->extern_scope_map)
              && (node->storage_class && node->storage_class->type() == AST_CExtern_t))) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
@@ -3357,7 +3357,7 @@ static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
 
     {
         TIdentifier name = rslv_var_identifier(ctx->identifiers, node->name);
-        map_add(ctx->scoped_identifier_maps.back(), node->name, name);
+        map_add(vec_back(ctx->scoped_identifier_maps), node->name, name);
         node->name = name;
     }
     TRY(check_block_var_decl(ctx, node));
@@ -3495,6 +3495,7 @@ error_t analyze_semantic(
         ctx.identifiers = identifiers;
         ctx.extern_scope_map = map_new();
         ctx.goto_map = map_new();
+        ctx.scoped_identifier_maps = vec_new();
         ctx.scoped_struct_maps = vec_new();
         ctx.break_loop_labels = vec_new();
         ctx.continue_loop_labels = vec_new();
@@ -3504,9 +3505,10 @@ error_t analyze_semantic(
     FINALLY;
     map_delete(ctx.extern_scope_map);
     map_delete(ctx.goto_map);
-    for (size_t i = 0; i < ctx.scoped_identifier_maps.size(); ++i) {
+    for (size_t i = 0; i < vec_size(ctx.scoped_identifier_maps); ++i) {
         map_delete(ctx.scoped_identifier_maps[i]);
     }
+    vec_delete(ctx.scoped_identifier_maps);
     for (size_t i = 0; i < vec_size(ctx.scoped_struct_maps); ++i) {
         map_delete(ctx.scoped_struct_maps[i]);
     }
