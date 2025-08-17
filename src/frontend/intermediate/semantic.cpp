@@ -16,15 +16,17 @@
 #include "frontend/intermediate/idents.hpp"
 #include "frontend/intermediate/semantic.hpp"
 
+PairKeyValue(TIdentifier, Structure);
+
 struct SemanticContext {
     ErrorsContext* errors;
     FrontEndContext* frontend;
     IdentifierContext* identifiers;
     // Type checking
     hashmap_t(TIdentifier, size_t) extern_scope_map;
-    std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
-    std::vector<std::unordered_map<TIdentifier, Structure>> scoped_struct_maps;
     hashmap_t(TIdentifier, TIdentifier) goto_map;
+    std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
+    std::vector<hashmap_t(TIdentifier, Structure)> scoped_struct_maps;
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
     vector_t(TIdentifier) break_loop_labels;
@@ -2592,7 +2594,7 @@ static bool is_file_scope(Ctx ctx) { return ctx->scoped_identifier_maps.size() =
 
 static void enter_scope(Ctx ctx) {
     ctx->scoped_identifier_maps.emplace_back();
-    ctx->scoped_struct_maps.emplace_back();
+    ctx->scoped_struct_maps.push_back(map_new());
 }
 
 static void exit_scope(Ctx ctx) {
@@ -2603,6 +2605,7 @@ static void exit_scope(Ctx ctx) {
         }
     }
     ctx->scoped_identifier_maps.pop_back();
+    map_delete(ctx->scoped_struct_maps.back());
     ctx->scoped_struct_maps.pop_back();
 }
 
@@ -2650,13 +2653,13 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
         EARLY_EXIT;
     }
     for (size_t i = ctx->scoped_identifier_maps.size(); i-- > 0;) {
-        if (ctx->scoped_struct_maps[i].find(struct_type->tag) != ctx->scoped_struct_maps[i].end()) {
-            if (ctx->scoped_struct_maps[i][struct_type->tag].is_union != struct_type->is_union) {
+        if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end(ctx->scoped_struct_maps[i])) {
+            if (map_get(ctx->scoped_struct_maps[i], struct_type->tag).is_union != struct_type->is_union) {
                 THROW_AT_LINE(ctx->errors->linebuf,
                     GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_type(struct_type, &type_fmt),
                         str_fmt_struct_name(struct_type->tag, !struct_type->is_union, &struct_fmt)));
             }
-            struct_type->tag = ctx->scoped_struct_maps[i][struct_type->tag].tag;
+            struct_type->tag = map_get(ctx->scoped_struct_maps[i], struct_type->tag).tag;
             EARLY_EXIT;
         }
     }
@@ -3373,8 +3376,8 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     string_t struct_fmt_1 = str_new(NULL);
     string_t struct_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    if (ctx->scoped_struct_maps.back().find(node->tag) != ctx->scoped_struct_maps.back().end()) {
-        node->tag = ctx->scoped_struct_maps.back()[node->tag].tag;
+    if (map_find(ctx->scoped_struct_maps.back(), node->tag) != map_end(ctx->scoped_struct_maps.back())) {
+        node->tag = map_get(ctx->scoped_struct_maps.back(), node->tag).tag;
         if (node->is_union) {
             if (ctx->union_def_set.find(node->tag) == ctx->union_def_set.end()) {
                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
@@ -3389,8 +3392,11 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
         }
     }
     else {
-        ctx->scoped_struct_maps.back()[node->tag] = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
-        node->tag = ctx->scoped_struct_maps.back()[node->tag].tag;
+        {
+            Structure structure = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
+            map_add(ctx->scoped_struct_maps.back(), node->tag, structure);
+        }
+        node->tag = map_get(ctx->scoped_struct_maps.back(), node->tag).tag;
         if (node->is_union) {
             ctx->union_def_set.insert(node->tag);
         }
@@ -3492,6 +3498,9 @@ error_t analyze_semantic(
     FINALLY;
     map_delete(ctx.extern_scope_map);
     map_delete(ctx.goto_map);
+    for (size_t i = 0; i < ctx.scoped_struct_maps.size(); ++i) {
+        map_delete(ctx.scoped_struct_maps[i]);
+    }
     vec_delete(ctx.break_loop_labels);
     vec_delete(ctx.continue_loop_labels);
     CATCH_EXIT;
