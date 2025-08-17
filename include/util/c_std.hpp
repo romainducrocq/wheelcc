@@ -15,18 +15,18 @@
 // String
 
 typedef sds string_t;
-#define str_delete(X) \
-    if (X) {          \
-        sdsfree(X);   \
-        X = NULL;     \
-    }
 #define str_new(X) X ? sdsnew(X) : NULL
-#define str_move(X, Y)  \
-    do {                \
-        str_delete(*Y); \
-        *Y = *X;        \
-        *X = NULL;      \
-    }                   \
+#define str_delete(X)      \
+    if (X) {               \
+        sdsfree(X);        \
+        X = str_new(NULL); \
+    }
+#define str_move(X, Y)      \
+    do {                    \
+        str_delete(*Y);     \
+        *Y = *X;            \
+        *X = str_new(NULL); \
+    }                       \
     while (0)
 #define str_size(X) sdslen(X)
 #define str_back(X) (X)[str_size(X) - 1]
@@ -68,17 +68,17 @@ typedef sds string_t;
 // Vector
 
 #define vector_t(T) T*
-#define vec_delete(X) \
-    if (X) {          \
-        arrfree(X);   \
-        X = NULL;     \
-    }
 #define vec_new() NULL
+#define vec_delete(X)  \
+    if (X) {           \
+        arrfree(X);    \
+        X = vec_new(); \
+    }
 #define vec_move(X, Y)  \
     do {                \
         vec_delete(*Y); \
         *Y = *X;        \
-        *X = NULL;      \
+        *X = vec_new(); \
     }                   \
     while (0)
 #define vec_size(X) arrlenu(X)
@@ -116,17 +116,17 @@ typedef sds string_t;
 #define pair_second(X) (X).value
 
 #define hashmap_t(TK, TV) pair_t(TK, TV)*
-#define map_delete(X) \
-    if (X) {          \
-        hmfree(X);    \
-        X = NULL;     \
-    }
 #define map_new() NULL
+#define map_delete(X)  \
+    if (X) {           \
+        hmfree(X);     \
+        X = map_new(); \
+    }
 #define map_move(X, Y)  \
     do {                \
         map_delete(*Y); \
         *Y = *X;        \
-        *X = NULL;      \
+        *X = map_new(); \
     }                   \
     while (0)
 #define map_size(X) hmlenu(X)
