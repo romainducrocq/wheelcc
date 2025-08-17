@@ -38,7 +38,7 @@ struct AsmGenContext {
     FunType* p_fun_type;
     REGISTER_KIND arg_regs[6];
     REGISTER_KIND sse_arg_regs[8];
-    std::unordered_map<TIdentifier, TIdentifier> dbl_const_table;
+    hashmap_t(TIdentifier, TIdentifier) dbl_const_table;
     std::unordered_map<TIdentifier, vector_t(STRUCT_8B_CLS)> struct_8b_cls_map;
     vector_t(std::unique_ptr<AsmInstruction>) * p_instrs;
     vector_t(std::unique_ptr<AsmTopLevel>) * p_static_consts;
@@ -134,12 +134,12 @@ static std::shared_ptr<AsmData> dbl_static_const_op(Ctx ctx, TULong binary, TInt
     TIdentifier dbl_const_label;
     {
         TIdentifier dbl_const = make_binary_identifier(ctx, binary);
-        if (ctx->dbl_const_table.find(dbl_const) != ctx->dbl_const_table.end()) {
-            dbl_const_label = ctx->dbl_const_table[dbl_const];
+        if (map_find(ctx->dbl_const_table, dbl_const) != map_end(ctx->dbl_const_table)) {
+            dbl_const_label = map_get(ctx->dbl_const_table, dbl_const);
         }
         else {
             dbl_const_label = repr_asm_label(ctx, LBL_Ldouble);
-            ctx->dbl_const_table[dbl_const] = dbl_const_label;
+            map_add(ctx->dbl_const_table, dbl_const, dbl_const_label);
             dbl_static_const_toplvl(ctx, dbl_const_label, dbl_const, byte);
         }
     }
@@ -2739,11 +2739,14 @@ std::unique_ptr<AsmProgram> generate_assembly(
         ctx.sse_arg_regs[5] = REG_Xmm5;
         ctx.sse_arg_regs[6] = REG_Xmm6;
         ctx.sse_arg_regs[7] = REG_Xmm7;
+
+        ctx.dbl_const_table = map_new();
     }
     std::unique_ptr<AsmProgram> asm_ast = gen_program(&ctx, tac_ast.get());
 
     tac_ast.reset();
     THROW_ABORT_IF(!asm_ast);
+    map_delete(ctx.dbl_const_table);
     for (auto& struct_8b_cls : ctx.struct_8b_cls_map) {
         vec_delete(struct_8b_cls.second);
     }
