@@ -104,13 +104,17 @@ typedef sds string_t;
 
 // Hashmap
 
-#define PairKeyValue(T1, T2)      \
-    typedef struct Pair##T1##T2 { \
-        T1 key;                   \
-        T2 value;                 \
-    } Pair##T1##T2;
+#define pair_t(TK, TV) Pair##TK##TV
+#define PairKeyValue(TK, TV)        \
+    typedef struct pair_t(TK, TV) { \
+        TK key;                     \
+        TV value;                   \
+    }                               \
+    pair_t(TK, TV);
+#define pair_first(X) (X).key
+#define pair_second(X) (X).value
 
-#define hashmap_t(T1, T2) Pair##T1##T2*
+#define hashmap_t(TK, TV) pair_t(TK, TV)*
 #define map_delete(X) \
     if (X) {          \
         hmfree(X);    \
@@ -125,5 +129,14 @@ typedef sds string_t;
     }                   \
     while (0)
 #define map_size(X) hmlenu(X)
+#define map_add (X, Y) hmput(X, Y)
+#define map_clear(X)                 \
+    if (X) {                         \
+        stbds_header(X)->length = 0; \
+    }
+#define map_end(X) -1
+#define map_erase(X, Y) hmdel(X, Y)
+#define map_find(X, Y) hmgeti(X, Y)
+#define map_get(X, Y) hmget(X, Y)
 
 #endif
