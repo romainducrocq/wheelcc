@@ -24,7 +24,7 @@ struct SemanticContext {
     hashmap_t(TIdentifier, size_t) extern_scope_map;
     std::vector<std::unordered_map<TIdentifier, TIdentifier>> scoped_identifier_maps;
     std::vector<std::unordered_map<TIdentifier, Structure>> scoped_struct_maps;
-    std::unordered_map<TIdentifier, TIdentifier> goto_map;
+    hashmap_t(TIdentifier, TIdentifier) goto_map;
     std::unordered_set<TIdentifier> label_set;
     // Loop labeling
     vector_t(TIdentifier) break_loop_labels;
@@ -2610,10 +2610,10 @@ static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
     string_t name_fmt_1 = str_new(NULL);
     string_t name_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    for (const auto& target : ctx->goto_map) {
-        if (ctx->label_set.find(target.first) == ctx->label_set.end()) {
-            THROW_AT_LINE(map_get(ctx->errors->linebuf_map, target.second),
-                GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(target.first, &name_fmt_1),
+    for (size_t i = 0; i < map_size(ctx->goto_map); ++i) {
+        if (ctx->label_set.find(pair_first(ctx->goto_map[i])) == ctx->label_set.end()) {
+            THROW_AT_LINE(map_get(ctx->errors->linebuf_map, pair_second(ctx->goto_map[i])),
+                GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(pair_first(ctx->goto_map[i]), &name_fmt_1),
                     str_fmt_name(node->name, &name_fmt_2)));
         }
     }
@@ -2978,13 +2978,14 @@ static error_t reslv_if_statement(Ctx ctx, CIf* node) {
 }
 
 static void reslv_goto_statement(Ctx ctx, CGoto* node) {
-    if (ctx->goto_map.find(node->target) != ctx->goto_map.end()) {
-        node->target = ctx->goto_map[node->target];
+    if (map_find(ctx->goto_map, node->target) != map_end(ctx->goto_map)) {
+        node->target = map_get(ctx->goto_map, node->target);
         map_add(ctx->errors->linebuf_map, node->target, node->line);
     }
     else {
-        ctx->goto_map[node->target] = rslv_label_identifier(ctx->identifiers, node->target);
-        node->target = ctx->goto_map[node->target];
+        TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
+        map_add(ctx->goto_map, node->target, target);
+        node->target = target;
         map_add(ctx->errors->linebuf_map, node->target, node->line);
     }
 }
@@ -2992,12 +2993,13 @@ static void reslv_goto_statement(Ctx ctx, CGoto* node) {
 static error_t reslv_label_statement(Ctx ctx, CLabel* node) {
     CATCH_ENTER;
     TRY(annotate_goto_label(ctx, node));
-    if (ctx->goto_map.find(node->target) != ctx->goto_map.end()) {
-        node->target = ctx->goto_map[node->target];
+    if (map_find(ctx->goto_map, node->target) != map_end(ctx->goto_map)) {
+        node->target = map_get(ctx->goto_map, node->target);
     }
     else {
-        ctx->goto_map[node->target] = rslv_label_identifier(ctx->identifiers, node->target);
-        node->target = ctx->goto_map[node->target];
+        TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
+        map_add(ctx->goto_map, node->target, target);
+        node->target = target;
     }
     TRY(reslv_statement(ctx, node->jump_to.get()));
     FINALLY;
@@ -3409,7 +3411,7 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
 static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
     CATCH_ENTER;
     if (is_file_scope(ctx)) {
-        ctx->goto_map.clear();
+        map_clear(ctx->goto_map);
         ctx->label_set.clear();
         vec_clear(ctx->break_loop_labels);
         vec_clear(ctx->continue_loop_labels);
@@ -3481,6 +3483,7 @@ error_t analyze_semantic(
         ctx.frontend = frontend;
         ctx.identifiers = identifiers;
         ctx.extern_scope_map = map_new();
+        ctx.goto_map = map_new();
         ctx.break_loop_labels = vec_new();
         ctx.continue_loop_labels = vec_new();
     }
@@ -3488,6 +3491,7 @@ error_t analyze_semantic(
     TRY(resolve_program(&ctx, node));
     FINALLY;
     map_delete(ctx.extern_scope_map);
+    map_delete(ctx.goto_map);
     vec_delete(ctx.break_loop_labels);
     vec_delete(ctx.continue_loop_labels);
     CATCH_EXIT;

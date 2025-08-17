@@ -131,10 +131,7 @@ typedef sds string_t;
     while (0)
 #define map_size(X) hmlenu(X)
 #define map_add(X, Y, Z) hmput(X, Y, Z)
-#define map_clear(X)                 \
-    if (X) {                         \
-        stbds_header(X)->length = 0; \
-    }
+#define map_clear(X) map_delete(X)
 #define map_empty(X) (map_size(X) == 0)
 #define map_end(X) -1
 #define map_erase(X, Y) hmdel(X, Y)
