@@ -2606,7 +2606,7 @@ static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
     CATCH_ENTER;
     for (const auto& target : ctx->goto_map) {
         if (ctx->label_set.find(target.first) == ctx->label_set.end()) {
-            THROW_AT_LINE(ctx->errors->linebuf_map[target.second],
+            THROW_AT_LINE(map_get(ctx->errors->linebuf_map, target.second),
                 GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(target.first, &name_fmt_1),
                     str_fmt_name(node->name, &name_fmt_2)));
         }
@@ -2974,12 +2974,12 @@ static error_t reslv_if_statement(Ctx ctx, CIf* node) {
 static void reslv_goto_statement(Ctx ctx, CGoto* node) {
     if (ctx->goto_map.find(node->target) != ctx->goto_map.end()) {
         node->target = ctx->goto_map[node->target];
-        ctx->errors->linebuf_map[node->target] = node->line;
+        map_add(ctx->errors->linebuf_map, node->target, node->line);
     }
     else {
         ctx->goto_map[node->target] = rslv_label_identifier(ctx->identifiers, node->target);
         node->target = ctx->goto_map[node->target];
-        ctx->errors->linebuf_map[node->target] = node->line;
+        map_add(ctx->errors->linebuf_map, node->target, node->line);
     }
 }
 

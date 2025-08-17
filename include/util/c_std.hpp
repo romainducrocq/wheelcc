@@ -110,7 +110,7 @@ typedef sds string_t;
         TK key;                     \
         TV value;                   \
     }                               \
-    pair_t(TK, TV);
+    pair_t(TK, TV)
 #define pair_first(X) (X).key
 #define pair_second(X) (X).value
 
@@ -129,7 +129,7 @@ typedef sds string_t;
     }                   \
     while (0)
 #define map_size(X) hmlenu(X)
-#define map_add (X, Y) hmput(X, Y)
+#define map_add(X, Y, Z) hmput(X, Y, Z)
 #define map_clear(X)                 \
     if (X) {                         \
         stbds_header(X)->length = 0; \

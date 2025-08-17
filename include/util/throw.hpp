@@ -1,7 +1,6 @@
 #ifndef _UTIL_THROW_H
 #define _UTIL_THROW_H
 
-#include <unordered_map>
 #ifndef __cplusplus
 #include <stdnoreturn.h>
 #endif
@@ -16,6 +15,7 @@ struct FileIoContext;
 
 typedef int error_t;
 typedef size_t hash_t;
+PairKeyValue(hash_t, size_t);
 
 struct FileOpenLine {
     size_t linenum;
@@ -30,7 +30,7 @@ struct ErrorsContext {
     char msg[1024];
     bool is_stdout;
     size_t linebuf;
-    std::unordered_map<hash_t, size_t> linebuf_map;
+    hashmap_t(hash_t, size_t) linebuf_map;
     vector_t(FileOpenLine) fopen_lines;
 };
 

@@ -320,6 +320,7 @@ error_t main(int, char** argv) {
         errors.errors = &errors;
         errors.fileio = &fileio;
         errors.is_stdout = false;
+        errors.linebuf_map = map_new();
         errors.fopen_lines = vec_new();
 
         fileio.errors = &errors;
@@ -340,6 +341,7 @@ error_t main(int, char** argv) {
     for (size_t i = 0; i < vec_size(errors.fopen_lines); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
+    map_delete(errors.linebuf_map);
     vec_delete(errors.fopen_lines);
     str_delete(fileio.write_buf);
     str_delete(fileio.filename);
