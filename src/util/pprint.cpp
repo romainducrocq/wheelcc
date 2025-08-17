@@ -329,10 +329,10 @@ static void print_ast(IdentifierContext* ctx, Ast* node, size_t t) {
             for (size_t i = 0; i < vec_size(p_node->member_names); ++i) {
                 print_field("TIdentifier", std::string(ctx->hash_table[p_node->member_names[i]]), t + 2);
             }
-            print_field("Dict[" + std::to_string(p_node->members.size()) + "]", "", t + 1);
-            for (const auto& item : p_node->members) {
-                print_field("[" + std::string(ctx->hash_table[item.first]) + "]", "", t + 2);
-                print_ast(ctx, item.second.get(), t + 2);
+            print_field("Dict[" + std::to_string(map_size(p_node->members)) + "]", "", t + 1);
+            for (size_t i = 0; i < map_size(p_node->members); ++i) {
+                print_field("[" + std::string(ctx->hash_table[pair_first(p_node->members[i])]) + "]", "", t + 2);
+                print_ast(ctx, pair_second(p_node->members[i]).get(), t + 2);
             }
             break;
         }

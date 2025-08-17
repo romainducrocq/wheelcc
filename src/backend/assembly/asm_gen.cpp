@@ -481,7 +481,7 @@ static vector_t(STRUCT_8B_CLS) struct_1_reg_8b_class(Ctx ctx, Structure* struct_
     vector_t(STRUCT_8B_CLS) struct_8b_cls = vec_new();
     vec_push_back(struct_8b_cls, CLS_sse);
     size_t members_front =
-        struct_type->is_union ? ctx->frontend->struct_typedef_table[struct_type->tag]->members.size() : 1;
+        struct_type->is_union ? map_size(ctx->frontend->struct_typedef_table[struct_type->tag]->members) : 1;
     for (size_t i = 0; i < members_front; ++i) {
         if (struct_8b_cls[0] == CLS_integer) {
             break;
@@ -509,7 +509,7 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
     vec_push_back(struct_8b_cls, CLS_sse);
     vec_push_back(struct_8b_cls, CLS_sse);
     size_t members_front =
-        struct_type->is_union ? ctx->frontend->struct_typedef_table[struct_type->tag]->members.size() : 1;
+        struct_type->is_union ? map_size(ctx->frontend->struct_typedef_table[struct_type->tag]->members) : 1;
     for (size_t i = 0; i < members_front; ++i) {
         if (struct_8b_cls[0] == CLS_integer && struct_8b_cls[1] == CLS_integer) {
             break;

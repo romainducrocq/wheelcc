@@ -113,11 +113,18 @@ Symbol::Symbol(std::shared_ptr<Type>&& type_t, std::unique_ptr<IdentifierAttr>&&
 StructMember::StructMember(TLong offset, std::shared_ptr<Type>&& member_type) :
     offset(offset), member_type(std::move(member_type)) {}
 
-StructTypedef::StructTypedef() : member_names(vec_new()) {}
+StructTypedef::StructTypedef() : member_names(vec_new()), members(map_new()) {}
 StructTypedef::StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) * member_names,
-    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>&& members) :
+    hashmap_t(TIdentifier, UPtrStructMember) * members) :
     alignment(alignment),
-    size(size), member_names(vec_new()), members(std::move(members)) {
+    size(size), member_names(vec_new()), members(map_new()) {
     vec_move(member_names, &this->member_names);
+    map_move(members, &this->members);
 }
-StructTypedef::~StructTypedef() { vec_delete(this->member_names); }
+StructTypedef::~StructTypedef() {
+    vec_delete(this->member_names);
+    for (size_t i = 0; i < map_size(this->members); ++i) {
+        pair_second(this->members[i]).reset();
+    }
+    map_delete(this->members);
+}

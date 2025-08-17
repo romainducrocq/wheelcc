@@ -1290,12 +1290,12 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
                                       str_fmt_type(node->structure->exp_type.get(), &type_fmt)));
     }
     struct_type = static_cast<Structure*>(node->structure->exp_type.get());
-    if (ctx->frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
-        == ctx->frontend->struct_typedef_table[struct_type->tag]->members.end()) {
+    if (map_find(ctx->frontend->struct_typedef_table[struct_type->tag]->members, node->member)
+        == map_end(ctx->frontend->struct_typedef_table[struct_type->tag]->members)) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_type(struct_type, &type_fmt),
                                       str_fmt_name(node->member, &name_fmt)));
     }
-    node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
+    node->exp_type = map_get(ctx->frontend->struct_typedef_table[struct_type->tag]->members, node->member)->member_type;
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
@@ -1322,12 +1322,12 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_arrow_incomplete, str_fmt_name(node->member, &name_fmt),
                                       str_fmt_type(struct_type, &type_fmt)));
     }
-    else if (ctx->frontend->struct_typedef_table[struct_type->tag]->members.find(node->member)
-             == ctx->frontend->struct_typedef_table[struct_type->tag]->members.end()) {
+    else if (map_find(ctx->frontend->struct_typedef_table[struct_type->tag]->members, node->member)
+             == map_end(ctx->frontend->struct_typedef_table[struct_type->tag]->members)) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_type(struct_type, &type_fmt),
                                       str_fmt_name(node->member, &name_fmt)));
     }
-    node->exp_type = ctx->frontend->struct_typedef_table[struct_type->tag]->members[node->member]->member_type;
+    node->exp_type = map_get(ctx->frontend->struct_typedef_table[struct_type->tag]->members, node->member)->member_type;
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
@@ -1675,7 +1675,7 @@ static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure*
     vec_reserve(zero_inits, vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names));
     for (size_t i = 0; i < vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names); ++i) {
         TIdentifier member_name = ctx->frontend->struct_typedef_table[struct_type->tag]->member_names[i];
-        const auto& member = ctx->frontend->struct_typedef_table[struct_type->tag]->members[member_name];
+        const auto& member = map_get(ctx->frontend->struct_typedef_table[struct_type->tag]->members, member_name);
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
         vec_move_back(zero_inits, initializer);
     }
@@ -1716,7 +1716,7 @@ static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* 
     string_t strto_fmt_1 = str_new(NULL);
     string_t strto_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    size_t bound = struct_type->is_union ? 1 : ctx->frontend->struct_typedef_table[struct_type->tag]->members.size();
+    size_t bound = struct_type->is_union ? 1 : map_size(ctx->frontend->struct_typedef_table[struct_type->tag]->members);
     if (vec_size(node->initializers) > bound) {
         strto_fmt_1 = str_to_string(vec_size(node->initializers));
         strto_fmt_2 = str_to_string(bound);
@@ -1740,7 +1740,7 @@ static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::s
 
 static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
     for (size_t i = vec_size(node->initializers);
-         i < ctx->frontend->struct_typedef_table[struct_type->tag]->members.size(); ++i) {
+         i < map_size(ctx->frontend->struct_typedef_table[struct_type->tag]->members); ++i) {
         const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, member->member_type.get());
         vec_move_back(node->initializers, zero_init);
@@ -2431,7 +2431,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     string_t struct_fmt = str_new(NULL);
     std::shared_ptr<Type> member_type;
     vector_t(TIdentifier) member_names = vec_new();
-    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
+    hashmap_t(TIdentifier, UPtrStructMember) members = map_new();
     CATCH_ENTER;
     TInt alignment;
     TLong size;
@@ -2442,7 +2442,6 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     alignment = 0;
     size = 0l;
     vec_reserve(member_names, vec_size(node->members));
-    members.reserve(vec_size(node->members));
     for (size_t i = 0; i < vec_size(node->members); ++i) {
         {
             TIdentifier name = node->members[i]->member_name;
@@ -2466,7 +2465,10 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
                 size += member_size;
             }
             member_type = node->members[i]->member_type;
-            members[vec_back(member_names)] = std::make_unique<StructMember>(offset, std::move(member_type));
+
+            std::unique_ptr<StructMember> struct_member =
+                std::make_unique<StructMember>(offset, std::move(member_type));
+            map_move_add(members, vec_back(member_names), struct_member);
         }
         if (alignment < member_alignment) {
             alignment = member_alignment;
@@ -2479,10 +2481,14 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
         }
     }
     ctx->frontend->struct_typedef_table[node->tag] =
-        std::make_unique<StructTypedef>(alignment, size, &member_names, std::move(members));
+        std::make_unique<StructTypedef>(alignment, size, &member_names, &members);
     FINALLY;
     str_delete(struct_fmt);
     vec_delete(member_names);
+    for (size_t i = 0; i < map_size(members); ++i) {
+        pair_second(members[i]).reset();
+    }
+    map_delete(members);
     CATCH_EXIT;
 }
 

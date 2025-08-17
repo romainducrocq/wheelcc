@@ -298,17 +298,19 @@ struct StructMember : Ast {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // struct_typedef(int, int, identifier*, struct_member*)
+typedef std::unique_ptr<StructMember> UPtrStructMember;
+PairKeyValue(TIdentifier, UPtrStructMember);
 struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef();
     StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) * member_names,
-        std::unordered_map<TIdentifier, std::unique_ptr<StructMember>>&& members);
+        hashmap_t(TIdentifier, UPtrStructMember) * members);
     ~StructTypedef();
 
     TInt alignment;
     TLong size;
     vector_t(TIdentifier) member_names;
-    std::unordered_map<TIdentifier, std::unique_ptr<StructMember>> members;
+    hashmap_t(TIdentifier, UPtrStructMember) members;
 };
 
 /*
@@ -326,8 +328,9 @@ struct FrontEndContext {
 };
 
 #define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
-    ctx->frontend->struct_typedef_table[X]->members[ctx->frontend->struct_typedef_table[X]->member_names[Y]]
-#define GET_STRUCT_TYPEDEF_BACK(X) \
-    ctx->frontend->struct_typedef_table[X]->members[vec_back(ctx->frontend->struct_typedef_table[X]->member_names)]
+    map_get(ctx->frontend->struct_typedef_table[X]->members, ctx->frontend->struct_typedef_table[X]->member_names[Y])
+#define GET_STRUCT_TYPEDEF_BACK(X)                           \
+    map_get(ctx->frontend->struct_typedef_table[X]->members, \
+        vec_back(ctx->frontend->struct_typedef_table[X]->member_names))
 
 #endif
