@@ -3502,6 +3502,7 @@ error_t analyze_semantic(
     }
     CATCH_ENTER;
     TRY(resolve_program(&ctx, node));
+
     FINALLY;
     map_delete(ctx.extern_scope_map);
     map_delete(ctx.goto_map);

@@ -1,5 +1,4 @@
 #include <memory>
-#include <unordered_map>
 
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
@@ -11,11 +10,13 @@
 #include "backend/assembly/registers.hpp"
 #include "backend/assembly/stack_fix.hpp"
 
+PairKeyValue(TIdentifier, TLong);
+
 struct StackFixContext {
     BackEndContext* backend;
     // Pseudo register replacement
     TLong stack_bytes;
-    std::unordered_map<TIdentifier, TLong> pseudo_stack_map;
+    hashmap_t(TIdentifier, TLong) pseudo_stack_map;
     // Instruction fix up
     vector_t(std::unique_ptr<AsmInstruction>) * p_fix_instrs;
 };
@@ -42,12 +43,12 @@ static std::shared_ptr<AsmData> pseudo_mem_data(AsmPseudoMem* node) {
 }
 
 static std::shared_ptr<AsmMemory> pseudo_memory(Ctx ctx, AsmPseudo* node) {
-    TLong value = -1l * ctx->pseudo_stack_map[node->name];
+    TLong value = -1l * map_get(ctx->pseudo_stack_map, node->name);
     return gen_memory(REG_Bp, value);
 }
 
 static std::shared_ptr<AsmMemory> pseudo_mem_memory(Ctx ctx, AsmPseudoMem* node) {
-    TLong value = -1l * (ctx->pseudo_stack_map[node->name] - node->offset);
+    TLong value = -1l * (map_get(ctx->pseudo_stack_map, node->name) - node->offset);
     return gen_memory(REG_Bp, value);
 }
 
@@ -91,7 +92,7 @@ static void alloc_offset_pseudo_mem(Ctx ctx, AssemblyType* asm_type) {
 }
 
 static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
-    if (ctx->pseudo_stack_map.find(node->name) == ctx->pseudo_stack_map.end()) {
+    if (map_find(ctx->pseudo_stack_map, node->name) == map_end(ctx->pseudo_stack_map)) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get());
         if (backend_obj->is_static) {
@@ -99,7 +100,7 @@ static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
         }
         else {
             alloc_offset_pseudo(ctx, backend_obj->asm_type.get());
-            ctx->pseudo_stack_map[node->name] = ctx->stack_bytes;
+            map_add(ctx->pseudo_stack_map, node->name, ctx->stack_bytes);
         }
     }
 
@@ -107,7 +108,7 @@ static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
 }
 
 static std::shared_ptr<AsmOperand> repl_pseudo_mem_op(Ctx ctx, AsmPseudoMem* node) {
-    if (ctx->pseudo_stack_map.find(node->name) == ctx->pseudo_stack_map.end()) {
+    if (map_find(ctx->pseudo_stack_map, node->name) == map_end(ctx->pseudo_stack_map)) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get());
         if (backend_obj->is_static) {
@@ -115,7 +116,7 @@ static std::shared_ptr<AsmOperand> repl_pseudo_mem_op(Ctx ctx, AsmPseudoMem* nod
         }
         else {
             alloc_offset_pseudo_mem(ctx, backend_obj->asm_type.get());
-            ctx->pseudo_stack_map[node->name] = ctx->stack_bytes;
+            map_add(ctx->pseudo_stack_map, node->name, ctx->stack_bytes);
         }
     }
 
@@ -1008,7 +1009,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     vec_reserve(node->instructions, vec_size(instructions));
 
     ctx->stack_bytes = node->is_ret_memory ? 8l : 0l;
-    ctx->pseudo_stack_map.clear();
+    map_clear(ctx->pseudo_stack_map);
     ctx->p_fix_instrs = &node->instructions;
     // TODO
     vec_move_back(*ctx->p_fix_instrs, std::unique_ptr<AsmInstruction>(nullptr));
@@ -1064,6 +1065,9 @@ void fix_stack(AsmProgram* node, BackEndContext* backend) {
     {
         ctx.backend = backend;
         ctx.stack_bytes = 0l;
+        ctx.pseudo_stack_map = map_new();
     }
     fix_program(&ctx, node);
+
+    map_delete(ctx.pseudo_stack_map);
 }
