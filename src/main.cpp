@@ -337,18 +337,21 @@ error_t main(int, char** argv) {
     CATCH_ENTER;
     TRY(arg_parse(&ctx, argv));
     TRY(compile(&ctx, &errors, &fileio));
+
     FINALLY;
     for (size_t i = 0; i < vec_size(errors.fopen_lines); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
     map_delete(errors.linebuf_map);
     vec_delete(errors.fopen_lines);
+
     str_delete(fileio.write_buf);
     str_delete(fileio.filename);
     for (size_t i = 0; i < vec_size(fileio.file_reads); ++i) {
         str_delete(fileio.file_reads[i].filename);
     }
     vec_delete(fileio.file_reads);
+
     str_delete(ctx.filename);
     vec_delete(ctx.includedirs);
     CATCH_EXIT;

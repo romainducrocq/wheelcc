@@ -1333,9 +1333,9 @@ static void eliminate_unreachable_code(Ctx ctx) {
     }
 
     for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
-        pair_t(TIdentifier, size_t)* label_id = &ctx->cfg->identifier_id_map[i];
-        if (ctx->cfg->reaching_code[pair_second(*label_id)]) {
-            for (block_id = pair_second(*label_id); block_id-- > 0;) {
+        size_t label_id = pair_second(ctx->cfg->identifier_id_map[i]);
+        if (ctx->cfg->reaching_code[label_id]) {
+            for (block_id = label_id; block_id-- > 0;) {
                 if (ctx->cfg->reaching_code[block_id]) {
                     next_block_id = block_id;
                     goto Lelse;
@@ -1343,10 +1343,10 @@ static void eliminate_unreachable_code(Ctx ctx) {
             }
             next_block_id = ctx->cfg->entry_id;
         Lelse:
-            unreach_label_block(ctx, pair_second(*label_id), next_block_id);
+            unreach_label_block(ctx, label_id, next_block_id);
         }
         else {
-            pair_second(*label_id) = ctx->cfg->exit_id;
+            pair_second(ctx->cfg->identifier_id_map[i]) = ctx->cfg->exit_id;
         }
     }
 }
