@@ -31,7 +31,7 @@ struct ControlFlowGraph {
     vector_t(size_t) exit_pred_ids;
     vector_t(bool) reaching_code;
     vector_t(ControlFlowBlock) blocks;
-    std::unordered_map<TIdentifier, size_t> identifier_id_map;
+    hashmap_t(TIdentifier, size_t) identifier_id_map;
 };
 
 struct DataFlowAnalysis {
@@ -216,11 +216,13 @@ static void cfg_rm_block_instr(Ctx ctx, size_t instr_idx, size_t block_id) {
 
 #if __OPTIM_LEVEL__ == 1
 static void cfg_init_label_block(Ctx ctx, TacLabel* node) {
-    ctx->cfg->identifier_id_map[node->name] = vec_size(ctx->cfg->blocks) - 1;
+    size_t label_id = vec_size(ctx->cfg->blocks) - 1;
+    map_add(ctx->cfg->identifier_id_map, node->name, label_id);
 }
 #elif __OPTIM_LEVEL__ == 2
 static void cfg_init_label_block(Ctx ctx, AsmLabel* node) {
-    ctx->cfg->identifier_id_map[node->name] = vec_size(ctx->cfg->blocks) - 1;
+    size_t label_id = vec_size(ctx->cfg->blocks) - 1;
+    map_add(ctx->cfg->identifier_id_map, node->name, label_id);
 }
 #endif
 
@@ -270,25 +272,25 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
 
 #if __OPTIM_LEVEL__ == 1
 static void cfg_init_jump_edges(Ctx ctx, TacJump* node, size_t block_id) {
-    cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
+    cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
 }
 
 static void cfg_init_jmp_eq_0_edges(Ctx ctx, TacJumpIfZero* node, size_t block_id) {
-    cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
+    cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 
 static void cfg_init_jmp_ne_0_edges(Ctx ctx, TacJumpIfNotZero* node, size_t block_id) {
-    cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
+    cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 #elif __OPTIM_LEVEL__ == 2
 static void cfg_init_jmp_edges(Ctx ctx, AsmJmp* node, size_t block_id) {
-    cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
+    cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
 }
 
 static void cfg_init_jmp_cc_edges(Ctx ctx, AsmJmpCC* node, size_t block_id) {
-    cfg_add_succ_edge(ctx, block_id, ctx->cfg->identifier_id_map[node->target]);
+    cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 #endif
@@ -333,7 +335,7 @@ static void init_control_flow_graph(Ctx ctx) {
         vec_delete(GET_CFG_BLOCK(block_id).succ_ids);
     }
     vec_clear(ctx->cfg->blocks);
-    ctx->cfg->identifier_id_map.clear();
+    map_clear(ctx->cfg->identifier_id_map);
     {
         size_t instrs_back_idx = vec_size(*ctx->p_instrs);
         for (size_t instr_idx = 0; instr_idx < vec_size(*ctx->p_instrs); ++instr_idx) {
@@ -820,8 +822,8 @@ static bool prop_add_data_idx(Ctx ctx, TacCopy* node, size_t instr_idx, size_t b
 }
 
 static void elim_add_data_name(Ctx ctx, TIdentifier name) {
-    if (ctx->cfg->identifier_id_map.find(name) == ctx->cfg->identifier_id_map.end()) {
-        ctx->cfg->identifier_id_map[name] = ctx->dfa->set_size;
+    if (map_find(ctx->cfg->identifier_id_map, name) == map_end(ctx->cfg->identifier_id_map)) {
+        map_add(ctx->cfg->identifier_id_map, name, ctx->dfa->set_size);
         ctx->dfa->set_size++;
     }
 }
@@ -833,8 +835,10 @@ static void elim_add_data_value(Ctx ctx, TacValue* node) {
 }
 #elif __OPTIM_LEVEL__ == 2
 static void infer_add_data_name(Ctx ctx, TIdentifier name) {
-    if (!is_aliased_name(ctx, name) && ctx->cfg->identifier_id_map.find(name) == ctx->cfg->identifier_id_map.end()) {
-        ctx->cfg->identifier_id_map[name] = REGISTER_MASK_SIZE + ctx->dfa->set_size;
+    if (!is_aliased_name(ctx, name)
+        && map_find(ctx->cfg->identifier_id_map, name) == map_end(ctx->cfg->identifier_id_map)) {
+        size_t name_id = REGISTER_MASK_SIZE + ctx->dfa->set_size;
+        map_add(ctx->cfg->identifier_id_map, name, name_id);
         ctx->dfa->set_size++;
     }
 }
@@ -880,7 +884,7 @@ static bool init_data_flow_analysis(Ctx ctx,
     bool is_copy_prop = !is_store_elim;
     if (is_store_elim) {
 #endif
-        ctx->cfg->identifier_id_map.clear();
+        map_clear(ctx->cfg->identifier_id_map);
         ctx->dfa->static_idx = ctx->dfa->incoming_idx + 1;
 #if __OPTIM_LEVEL__ == 1
         ctx->dfa_o1->addressed_idx = ctx->dfa->static_idx + 1;
@@ -1268,16 +1272,17 @@ static bool init_data_flow_analysis(Ctx ctx,
 #endif
         }
 
-        for (const auto& name_id : ctx->cfg->identifier_id_map) {
+        for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
+            const pair_t(TIdentifier, size_t)* name_id = &ctx->cfg->identifier_id_map[i];
 #if __OPTIM_LEVEL__ == 1
-            if (ctx->frontend->symbol_table[name_id.first]->attrs->type() == AST_StaticAttr_t) {
-                SET_DFA_INSTR_SET_AT(ctx->dfa->static_idx, name_id.second, true);
+            if (ctx->frontend->symbol_table[pair_first(*name_id)]->attrs->type() == AST_StaticAttr_t) {
+                SET_DFA_INSTR_SET_AT(ctx->dfa->static_idx, pair_second(*name_id), true);
             }
-            if (ctx->frontend->addressed_set.find(name_id.first) != ctx->frontend->addressed_set.end()) {
-                SET_DFA_INSTR_SET_AT(ctx->dfa_o1->addressed_idx, name_id.second, true);
+            if (ctx->frontend->addressed_set.find(pair_first(*name_id)) != ctx->frontend->addressed_set.end()) {
+                SET_DFA_INSTR_SET_AT(ctx->dfa_o1->addressed_idx, pair_second(*name_id), true);
             }
 #elif __OPTIM_LEVEL__ == 2
-        ctx->dfa_o2->data_name_map[name_id.second - REGISTER_MASK_SIZE] = name_id.first;
+        ctx->dfa_o2->data_name_map[pair_second(*name_id) - REGISTER_MASK_SIZE] = pair_first(*name_id);
 #endif
         }
 

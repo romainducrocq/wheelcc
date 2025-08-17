@@ -1,7 +1,6 @@
 #include <inttypes.h>
 #include <memory>
 #include <string.h>
-#include <unordered_map>
 
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
@@ -101,7 +100,7 @@ static void infer_transfer_used_reg(Ctx ctx, REGISTER_KIND reg_kind, size_t next
 
 static void infer_transfer_used_name(Ctx ctx, TIdentifier name, size_t next_instr_idx) {
     if (!is_aliased_name(ctx, name)) {
-        size_t i = ctx->cfg->identifier_id_map[name];
+        size_t i = map_get(ctx->cfg->identifier_id_map, name);
         SET_DFA_INSTR_SET_AT(next_instr_idx, i, true);
     }
 }
@@ -153,7 +152,7 @@ static void infer_transfer_updated_reg(Ctx ctx, REGISTER_KIND reg_kind, size_t n
 
 static void infer_transfer_updated_name(Ctx ctx, TIdentifier name, size_t next_instr_idx) {
     if (!is_aliased_name(ctx, name)) {
-        size_t i = ctx->cfg->identifier_id_map[name];
+        size_t i = map_get(ctx->cfg->identifier_id_map, name);
         SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
     }
 }
@@ -377,7 +376,7 @@ static void infer_init_updated_regs_edges(
                 bool is_src_dbl = ctx->frontend->symbol_table[src_name]->type_t->type() == AST_Double_t;
                 set_p_infer_graph(ctx, is_src_dbl);
                 map_get(ctx->p_infer_graph->pseudo_reg_map, src_name).spill_cost++;
-                mov_mask_bit = ctx->cfg->identifier_id_map[src_name];
+                mov_mask_bit = map_get(ctx->cfg->identifier_id_map, src_name);
                 is_mov = is_dbl == is_src_dbl;
             }
         }
@@ -453,7 +452,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
                     bool is_src_dbl = ctx->frontend->symbol_table[src_name]->type_t->type() == AST_Double_t;
                     set_p_infer_graph(ctx, is_src_dbl);
                     map_get(ctx->p_infer_graph->pseudo_reg_map, src_name).spill_cost++;
-                    mov_mask_bit = ctx->cfg->identifier_id_map[src_name];
+                    mov_mask_bit = map_get(ctx->cfg->identifier_id_map, src_name);
                     is_mov = is_dbl == is_src_dbl;
                 }
                 break;
@@ -626,7 +625,7 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
         return false;
     }
     dfa_iter_alg(ctx);
-    if (ctx->cfg->identifier_id_map.empty()) {
+    if (map_empty(ctx->cfg->identifier_id_map)) {
         return false;
     }
 
@@ -644,10 +643,10 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
     }
     map_clear(ctx->sse_infer_graph->pseudo_reg_map);
 
-    for (const auto& name_id : ctx->cfg->identifier_id_map) {
-        TIdentifier name = name_id.first;
+    for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
+        TIdentifier name = pair_first(ctx->cfg->identifier_id_map[i]);
         InferenceRegister infer = {REG_Sp, REG_Sp, 0, 0, REGISTER_MASK_FALSE, vec_new()};
-        if (ctx->frontend->symbol_table[name_id.first]->type_t->type() == AST_Double_t) {
+        if (ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t) {
             vec_push_back(ctx->sse_infer_graph->unpruned_pseudo_names, name);
             map_add(ctx->sse_infer_graph->pseudo_reg_map, name, infer);
         }
@@ -1209,7 +1208,7 @@ static size_t get_coalesced_idx(Ctx ctx, AsmOperand* node) {
         case AST_AsmPseudo_t: {
             TIdentifier name = static_cast<AsmPseudo*>(node)->name;
             if (!is_aliased_name(ctx, name)) {
-                coalesced_idx = ctx->cfg->identifier_id_map[name];
+                coalesced_idx = map_get(ctx->cfg->identifier_id_map, name);
             }
             break;
         }
@@ -1294,11 +1293,11 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
         GET_DFA_INSTR_SET_MASK(ctx->dfa->incoming_idx, i) = MASK_FALSE;
     }
     for (size_t i = 0; i < vec_size(dst_infer->linked_pseudo_names); ++i) {
-        size_t j = ctx->cfg->identifier_id_map[dst_infer->linked_pseudo_names[i]];
+        size_t j = map_get(ctx->cfg->identifier_id_map, dst_infer->linked_pseudo_names[i]);
         SET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j, true);
     }
     for (size_t i = 0; i < vec_size(src_infer->linked_pseudo_names); ++i) {
-        size_t j = ctx->cfg->identifier_id_map[src_infer->linked_pseudo_names[i]];
+        size_t j = map_get(ctx->cfg->identifier_id_map, src_infer->linked_pseudo_names[i]);
         InferenceRegister& linked_infer =
             map_get(ctx->p_infer_graph->pseudo_reg_map, src_infer->linked_pseudo_names[i]);
         if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j)) {
@@ -1312,7 +1311,7 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
         }
     }
     for (size_t i = 0; i < vec_size(dst_infer->linked_pseudo_names); ++i) {
-        size_t j = ctx->cfg->identifier_id_map[dst_infer->linked_pseudo_names[i]];
+        size_t j = map_get(ctx->cfg->identifier_id_map, dst_infer->linked_pseudo_names[i]);
         if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j)) {
             InferenceRegister& linked_infer =
                 map_get(ctx->p_infer_graph->pseudo_reg_map, dst_infer->linked_pseudo_names[i]);
@@ -1417,7 +1416,7 @@ static bool coal_infer_regs(Ctx ctx, AsmMov* node) {
 }
 
 static std::shared_ptr<AsmOperand> coal_op_reg(Ctx ctx, TIdentifier name, size_t coalesced_idx) {
-    if (coalesced_idx < ctx->dfa->set_size && coalesced_idx != ctx->cfg->identifier_id_map[name]) {
+    if (coalesced_idx < ctx->dfa->set_size && coalesced_idx != map_get(ctx->cfg->identifier_id_map, name)) {
         if (coalesced_idx < REGISTER_MASK_SIZE) {
             REGISTER_KIND reg_kind = ctx->hard_regs[coalesced_idx].reg_kind;
             return gen_register(reg_kind);
@@ -1804,6 +1803,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         ctx.cfg->entry_succ_ids = vec_new();
         ctx.cfg->reaching_code = vec_new();
         ctx.cfg->blocks = vec_new();
+        ctx.cfg->identifier_id_map = map_new();
 
         ctx.dfa = std::make_unique<DataFlowAnalysis>();
         ctx.dfa->open_data_map = vec_new();
@@ -1877,6 +1877,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
         vec_delete(ctx.cfg->blocks[i].succ_ids);
     }
     vec_delete(ctx.cfg->blocks);
+    map_delete(ctx.cfg->identifier_id_map);
 
     vec_delete(ctx.dfa->open_data_map);
     vec_delete(ctx.dfa->instr_idx_map);

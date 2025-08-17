@@ -1,7 +1,6 @@
 #include <inttypes.h>
 #include <memory>
 #include <string.h>
-#include <unordered_map>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
@@ -1333,9 +1332,10 @@ static void eliminate_unreachable_code(Ctx ctx) {
         }
     }
 
-    for (auto& label_id : ctx->cfg->identifier_id_map) {
-        if (ctx->cfg->reaching_code[label_id.second]) {
-            for (block_id = label_id.second; block_id-- > 0;) {
+    for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
+        pair_t(TIdentifier, size_t)* label_id = &ctx->cfg->identifier_id_map[i];
+        if (ctx->cfg->reaching_code[pair_second(*label_id)]) {
+            for (block_id = pair_second(*label_id); block_id-- > 0;) {
                 if (ctx->cfg->reaching_code[block_id]) {
                     next_block_id = block_id;
                     goto Lelse;
@@ -1343,10 +1343,10 @@ static void eliminate_unreachable_code(Ctx ctx) {
             }
             next_block_id = ctx->cfg->entry_id;
         Lelse:
-            unreach_label_block(ctx, label_id.second, next_block_id);
+            unreach_label_block(ctx, pair_second(*label_id), next_block_id);
         }
         else {
-            label_id.second = ctx->cfg->exit_id;
+            pair_second(*label_id) = ctx->cfg->exit_id;
         }
     }
 }
@@ -2405,7 +2405,7 @@ static void elim_transfer_aliased(Ctx ctx, size_t next_instr_idx) {
 }
 
 static void elim_transfer_src_name(Ctx ctx, TIdentifier name, size_t next_instr_idx) {
-    size_t i = ctx->cfg->identifier_id_map[name];
+    size_t i = map_get(ctx->cfg->identifier_id_map, name);
     SET_DFA_INSTR_SET_AT(next_instr_idx, i, true);
 }
 
@@ -2417,7 +2417,7 @@ static void elim_transfer_src_value(Ctx ctx, TacValue* node, size_t next_instr_i
 
 static void elim_transfer_dst_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
     THROW_ABORT_IF(node->type() != AST_TacVariable_t);
-    size_t i = ctx->cfg->identifier_id_map[static_cast<TacVariable*>(node)->name];
+    size_t i = map_get(ctx->cfg->identifier_id_map, static_cast<TacVariable*>(node)->name);
     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
 }
 
@@ -2547,7 +2547,7 @@ static void elim_transfer_live_values(Ctx ctx, size_t instr_idx, size_t next_ins
 }
 
 static void elim_dst_name_instr(Ctx ctx, TIdentifier name, size_t instr_idx) {
-    size_t i = ctx->cfg->identifier_id_map[name];
+    size_t i = map_get(ctx->cfg->identifier_id_map, name);
     if (!GET_DFA_INSTR_SET_AT(instr_idx, i)) {
         set_instr(ctx, nullptr, instr_idx);
     }
@@ -2697,6 +2697,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
             ctx.cfg->entry_succ_ids = vec_new();
             ctx.cfg->reaching_code = vec_new();
             ctx.cfg->blocks = vec_new();
+            ctx.cfg->identifier_id_map = map_new();
 
             if (ctx.enabled_optims[COPY_PROPAGATION] || ctx.enabled_optims[DEAD_STORE_ELIMINATION]) {
                 ctx.dfa = std::make_unique<DataFlowAnalysis>();
@@ -2722,6 +2723,7 @@ void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, ui
             vec_delete(ctx.cfg->blocks[i].succ_ids);
         }
         vec_delete(ctx.cfg->blocks);
+        map_delete(ctx.cfg->identifier_id_map);
     }
     if (ctx.dfa) {
         vec_delete(ctx.dfa->open_data_map);
