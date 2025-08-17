@@ -320,6 +320,13 @@ struct Dummy : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+PairKeyValue(TIdentifier, size_t);
+PairKeyValue(TIdentifier, TIdentifier);
+typedef std::unique_ptr<StructTypedef> UPtrStructTypedef;
+PairKeyValue(TIdentifier, UPtrStructTypedef);
+typedef std::unique_ptr<Symbol> UPtrSymbol;
+PairKeyValue(TIdentifier, UPtrSymbol);
+
 struct FrontEndContext {
     std::unordered_map<TIdentifier, TIdentifier> string_const_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
