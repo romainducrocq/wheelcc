@@ -3,6 +3,8 @@
 
 #include "sds/sds.h"
 #include "stb_ds/stb_ds.h"
+// TODO
+#include <new>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +89,6 @@ typedef sds string_t;
     }
 #define vec_empty(X) (vec_size(X) == 0)
 // TODO
-#include <new>
 #define vec_move_back(X, Y)                                       \
     do {                                                          \
         stbds_arrmaybegrow(X, 1);                                 \
@@ -134,9 +135,18 @@ typedef sds string_t;
     if (X) {                         \
         stbds_header(X)->length = 0; \
     }
+#define map_empty(X) (map_size(X) == 0)
 #define map_end(X) -1
 #define map_erase(X, Y) hmdel(X, Y)
 #define map_find(X, Y) hmgeti(X, Y)
 #define map_get(X, Y) hmget(X, Y)
+// TODO
+#define map_move_add(X, Y, Z)                                                                                      \
+    do {                                                                                                           \
+        (X) = stbds_hmput_key_wrapper((X), sizeof *(X), (void*)STBDS_ADDRESSOF((X)->key, (Y)), sizeof(X)->key, 0); \
+        (X)[stbds_temp((X)-1)].key = (Y);                                                                          \
+        new (&(X)[stbds_temp((X)-1)].value) auto(std::move(Z));                                                    \
+    }                                                                                                              \
+    while (0)
 
 #endif
