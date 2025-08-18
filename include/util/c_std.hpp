@@ -165,6 +165,7 @@ typedef sds string_t;
 #define hashset_t(TK) element_t(TK)*
 #define set_new() map_new()
 #define set_delete(X) map_delete(X)
+#define set_size(X) map_size(X)
 #define set_clear(X) map_clear(X)
 #define set_end(X) map_end(X)
 #define set_find(X, Y) map_find(X, Y)
