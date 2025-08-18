@@ -99,8 +99,11 @@ static std::shared_ptr<TacVariable> var_value(CVar* node) {
 
 static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::shared_ptr<Type>&& inner_type) {
     TIdentifier inner_name = repr_var_identifier(ctx->identifiers, node);
-    std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
-    ctx->frontend->symbol_table[inner_name] = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
+    if (ctx->frontend->symbol_table.find(inner_name) == ctx->frontend->symbol_table.end()) {
+        std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
+        ctx->frontend->symbol_table[inner_name] =
+            std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
+    }
     return std::make_shared<TacVariable>(inner_name);
 }
 

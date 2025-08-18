@@ -1811,6 +1811,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
             }
             param_type = fun_type->param_types[i];
             param_attrs = std::make_unique<LocalAttr>();
+            THROW_ABORT_IF(ctx->frontend->symbol_table.find(node->params[i]) != ctx->frontend->symbol_table.end());
             ctx->frontend->symbol_table[node->params[i]] =
                 std::make_unique<Symbol>(std::move(param_type), std::move(param_attrs));
         }
@@ -1854,6 +1855,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_static_conflict, str_fmt_name(node->name, &name_fmt)));
         }
         is_glob = fun_attrs->is_glob;
+        ctx->frontend->symbol_table[node->name].reset();
     }
 
     if (node->body) {
@@ -2274,6 +2276,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
                 init_value = var_attrs->init;
             }
         }
+        ctx->frontend->symbol_table[node->name].reset();
     }
 
     glob_var_type = node->var_type;
@@ -2337,6 +2340,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
 
     local_var_type = node->var_type;
     local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
+    THROW_ABORT_IF(ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end());
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
     FINALLY;
@@ -2357,6 +2361,7 @@ static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
 
     local_var_type = node->var_type;
     local_var_attrs = std::make_unique<LocalAttr>();
+    THROW_ABORT_IF(ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end());
     ctx->frontend->symbol_table[node->name] =
         std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
     FINALLY;
@@ -2466,6 +2471,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
             }
             member_type = node->members[i]->member_type;
 
+            THROW_ABORT_IF(map_find(members, vec_back(member_names)) != map_end(members));
             std::unique_ptr<StructMember> struct_member =
                 std::make_unique<StructMember>(offset, std::move(member_type));
             map_move_add(members, vec_back(member_names), struct_member);
