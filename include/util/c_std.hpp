@@ -3,8 +3,11 @@
 
 #include "sds/sds.h"
 #include "stb_ds/stb_ds.h"
+#include <inttypes.h>
 // TODO
 #include <new>
+#include <stdbool.h>
+#include <stddef.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,5 +148,26 @@ typedef sds string_t;
         new (&(X)[stbds_temp((X)-1)].value) auto(std::move(Z));                                                    \
     }                                                                                                              \
     while (0)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Hashset
+
+#define element_t(TK) Element##TK
+#define ElementKey(TK)             \
+    typedef struct element_t(TK) { \
+        TK key;                    \
+        int8_t value;              \
+    }                              \
+    element_t(TK)
+#define element_get(X) (X).key
+
+#define hashset_t(TK) element_t(TK)*
+#define set_new() map_new()
+#define set_delete(X) map_delete(X)
+#define set_clear(X) map_clear(X)
+#define set_end(X) map_end(X)
+#define set_find(X, Y) map_find(X, Y)
+#define set_insert(X, Y) map_add(X, Y, 0)
 
 #endif
