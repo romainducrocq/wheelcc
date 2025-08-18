@@ -2160,9 +2160,9 @@ static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure*
         TRY(check_static_init(ctx, node->initializers[i].get(), member->member_type.get()));
         size += get_type_scale(ctx, member->member_type.get());
     }
-    // TODO size - size
-    if (map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size != size) {
-        check_static_no_init(ctx, nullptr, map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size - size);
+    size -= map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
+    if (size != 0l) {
+        check_static_no_init(ctx, nullptr, -1l * size);
     }
     FINALLY;
     CATCH_EXIT;
