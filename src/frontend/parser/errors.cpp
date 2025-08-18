@@ -183,7 +183,7 @@ const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
         case TOK_uint_const:
         case TOK_ulong_const:
         case TOK_dbl_const:
-            return ctx->hash_table[token->tok];
+            return map_get(ctx->hash_table, token->tok);
         default:
             return get_tok_kind_fmt(token->tok_kind);
     }
@@ -340,7 +340,7 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
 }
 
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt) {
-    str_copy(ctx->hash_table[name], *name_fmt);
+    str_copy(map_get(ctx->hash_table, name), *name_fmt);
     for (size_t i = str_size(*name_fmt); i-- > 0;) {
         if ((*name_fmt)[i] == UID_SEPARATOR[0]) {
             str_substr(*name_fmt, 0, i - 1);

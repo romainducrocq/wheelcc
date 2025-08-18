@@ -142,6 +142,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         identifiers.label_count = 0u;
         identifiers.var_count = 0u;
         identifiers.struct_count = 0u;
+        identifiers.hash_table = map_new();
     }
 
     CATCH_ENTER;
@@ -256,9 +257,11 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 
     FINALLY;
-    for (auto& identifier : identifiers.hash_table) {
-        str_delete(identifier.second);
+    for (size_t i = 0; i < map_size(identifiers.hash_table); ++i) {
+        str_delete(pair_second(identifiers.hash_table[i]));
     }
+    map_delete(identifiers.hash_table);
+
     vec_delete(tokens);
     CATCH_EXIT;
 }

@@ -129,11 +129,11 @@ static error_t parse_identifier(Ctx ctx, size_t i, return_t(TIdentifier) identif
 static error_t parse_string_literal(Ctx ctx, return_t(std::shared_ptr<CStringLiteral>) literal) {
     vector_t(TChar) value = vec_new();
     CATCH_ENTER;
-    string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], &value);
+    string_to_literal(map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), &value);
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind == TOK_string_literal) {
         TRY(pop_next(ctx));
-        string_to_literal(ctx->identifiers->hash_table[ctx->next_tok->tok], &value);
+        string_to_literal(map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), &value);
         TRY(peek_next(ctx));
     }
     *literal = std::make_shared<CStringLiteral>(&value);
@@ -150,7 +150,7 @@ static std::shared_ptr<CConstInt> parse_int_const(intmax_t intmax) {
 
 // <char> ::= ? A char token ?
 static std::shared_ptr<CConstInt> parse_char_const(Ctx ctx) {
-    TInt value = string_to_char_ascii(ctx->identifiers->hash_table[ctx->next_tok->tok]);
+    TInt value = string_to_char_ascii(map_get(ctx->identifiers->hash_table, ctx->next_tok->tok));
     return std::make_shared<CConstInt>(value);
 }
 
@@ -164,7 +164,8 @@ static std::shared_ptr<CConstLong> parse_long_const(intmax_t intmax) {
 static error_t parse_dbl_const(Ctx ctx, return_t(std::shared_ptr<CConst>) constant) {
     CATCH_ENTER;
     TDouble value;
-    TRY(string_to_dbl(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok], ctx->next_tok->line, &value));
+    TRY(string_to_dbl(
+        ctx->errors, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), ctx->next_tok->line, &value));
     *constant = std::make_shared<CConstDouble>(value);
     FINALLY;
     CATCH_EXIT;
@@ -200,10 +201,11 @@ static error_t parse_const(Ctx ctx, return_t(std::shared_ptr<CConst>) constant) 
     }
 
     intmax_t value;
-    TRY(string_to_intmax(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok], ctx->next_tok->line, &value));
+    TRY(string_to_intmax(
+        ctx->errors, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), ctx->next_tok->line, &value));
     if (value > 9223372036854775807ll) {
         THROW_AT_LINE(ctx->next_tok->line,
-            GET_PARSER_MSG(MSG_overflow_long_const, ctx->identifiers->hash_table[ctx->next_tok->tok]));
+            GET_PARSER_MSG(MSG_overflow_long_const, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok)));
     }
     if (ctx->next_tok->tok_kind == TOK_int_const && value <= 2147483647l) {
         *constant = parse_int_const(value);
@@ -222,10 +224,11 @@ static error_t parse_unsigned_const(Ctx ctx, return_t(std::shared_ptr<CConst>) c
     TRY(pop_next(ctx));
 
     uintmax_t value;
-    TRY(string_to_uintmax(ctx->errors, ctx->identifiers->hash_table[ctx->next_tok->tok], ctx->next_tok->line, &value));
+    TRY(string_to_uintmax(
+        ctx->errors, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), ctx->next_tok->line, &value));
     if (value > 18446744073709551615ull) {
         THROW_AT_LINE(ctx->next_tok->line,
-            GET_PARSER_MSG(MSG_overflow_ulong_const, ctx->identifiers->hash_table[ctx->next_tok->tok]));
+            GET_PARSER_MSG(MSG_overflow_ulong_const, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok)));
     }
     if (ctx->next_tok->tok_kind == TOK_uint_const && value <= 4294967295ul) {
         *constant = parse_uint_const(value);
@@ -1472,8 +1475,8 @@ static error_t parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) 
     CATCH_ENTER;
     TRY(parse_decltor_decl(ctx, decltor, &storage_class));
     if (decltor.derived_type->type() == AST_FunType_t) {
-        THROW_AT_LINE(
-            ctx->next_tok->line, GET_PARSER_MSG(MSG_for_init_decl_as_fun, ctx->identifiers->hash_table[decltor.name]));
+        THROW_AT_LINE(ctx->next_tok->line,
+            GET_PARSER_MSG(MSG_for_init_decl_as_fun, map_get(ctx->identifiers->hash_table, decltor.name)));
     }
     TRY(parse_var_declaration(ctx, std::move(storage_class), std::move(decltor), &var_decl));
     *for_init = std::make_unique<CInitDecl>(std::move(var_decl));
@@ -2185,13 +2188,13 @@ static error_t parse_member_declaration(Ctx ctx, return_t(std::unique_ptr<CMembe
     size_t line;
     TRY(parse_decltor_decl(ctx, decltor, &storage_class));
     if (storage_class) {
-        THROW_AT_LINE(
-            ctx->next_tok->line, GET_PARSER_MSG(MSG_member_decl_not_auto, ctx->identifiers->hash_table[decltor.name],
-                                     get_storage_class_fmt(storage_class.get())));
+        THROW_AT_LINE(ctx->next_tok->line,
+            GET_PARSER_MSG(MSG_member_decl_not_auto, map_get(ctx->identifiers->hash_table, decltor.name),
+                get_storage_class_fmt(storage_class.get())));
     }
     if (decltor.derived_type->type() == AST_FunType_t) {
-        THROW_AT_LINE(
-            ctx->next_tok->line, GET_PARSER_MSG(MSG_member_decl_as_fun, ctx->identifiers->hash_table[decltor.name]));
+        THROW_AT_LINE(ctx->next_tok->line,
+            GET_PARSER_MSG(MSG_member_decl_as_fun, map_get(ctx->identifiers->hash_table, decltor.name)));
     }
     line = ctx->next_tok->line;
     TRY(pop_next(ctx));

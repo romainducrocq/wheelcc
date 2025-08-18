@@ -14,19 +14,19 @@ typedef IdentifierContext* Ctx;
 
 TIdentifier rslv_label_identifier(Ctx ctx, TIdentifier label) {
     string_t name = str_new(NULL);
-    str_copy(ctx->hash_table[label], name);
+    str_copy(map_get(ctx->hash_table, label), name);
     return make_label_identifier(ctx, &name);
 }
 
 TIdentifier rslv_var_identifier(Ctx ctx, TIdentifier variable) {
     string_t name = str_new(NULL);
-    str_copy(ctx->hash_table[variable], name);
+    str_copy(map_get(ctx->hash_table, variable), name);
     return make_var_identifier(ctx, &name);
 }
 
 TIdentifier rslv_struct_tag(Ctx ctx, TIdentifier structure) {
     string_t name = str_new(NULL);
-    str_copy(ctx->hash_table[structure], name);
+    str_copy(map_get(ctx->hash_table, structure), name);
     return make_struct_identifier(ctx, &name);
 }
 
@@ -121,7 +121,7 @@ TIdentifier repr_loop_identifier(Ctx ctx, LABEL_KIND label_kind, TIdentifier tar
         default:
             THROW_ABORT;
     }
-    str_append(name, ctx->hash_table[target]);
+    str_append(name, map_get(ctx->hash_table, target));
     return make_string_identifier(ctx, &name);
 }
 
@@ -132,7 +132,7 @@ TIdentifier repr_case_identifier(Ctx ctx, TIdentifier target, bool is_label, siz
         str_append(name, strto_i);
         str_delete(strto_i);
     }
-    str_append(name, ctx->hash_table[target]);
+    str_append(name, map_get(ctx->hash_table, target));
     return make_string_identifier(ctx, &name);
 }
 

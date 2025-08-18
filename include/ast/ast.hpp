@@ -109,7 +109,7 @@ struct IdentifierContext {
     uint32_t label_count;
     uint32_t var_count;
     uint32_t struct_count;
-    std::unordered_map<TIdentifier, string_t> hash_table;
+    hashmap_t(TIdentifier, string_t) hash_table;
 };
 
 TIdentifier make_string_identifier(IdentifierContext* ctx, string_t* value);
