@@ -608,10 +608,10 @@ static void check_string_exp(CString* node) {
 static error_t check_var_exp(Ctx ctx, CVar* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    if (ctx->frontend->symbol_table[node->name]->type_t->type() == AST_FunType_t) {
+    if (map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_FunType_t) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_fun_used_as_var, str_fmt_name(node->name, &name_fmt)));
     }
-    node->exp_type = ctx->frontend->symbol_table[node->name]->type_t;
+    node->exp_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
     FINALLY;
     str_delete(name_fmt);
     CATCH_EXIT;
@@ -1168,10 +1168,10 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
     string_t strto_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     FunType* fun_type;
-    if (ctx->frontend->symbol_table[node->name]->type_t->type() != AST_FunType_t) {
+    if (map_get(ctx->frontend->symbol_table, node->name)->type_t->type() != AST_FunType_t) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
     }
-    fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
+    fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
     if (vec_size(fun_type->param_types) != vec_size(node->args)) {
         strto_fmt_1 = str_to_string(vec_size(node->args));
         strto_fmt_2 = str_to_string(vec_size(fun_type->param_types));
@@ -1375,7 +1375,7 @@ static error_t check_ret_statement(Ctx ctx, CReturn* node) {
     string_t name_fmt = str_new(NULL);
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
-    FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[ctx->fun_def_name]->type_t.get());
+    FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, ctx->fun_def_name)->type_t.get());
     if (fun_type->ret_type->type() == AST_Void_t) {
         if (node->exp) {
             THROW_AT_LINE(
@@ -1812,9 +1812,10 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
             }
             param_type = fun_type->param_types[i];
             param_attrs = std::make_unique<LocalAttr>();
-            THROW_ABORT_IF(ctx->frontend->symbol_table.find(node->params[i]) != ctx->frontend->symbol_table.end());
+            THROW_ABORT_IF(
+                map_find(ctx->frontend->symbol_table, node->params[i]) != map_end(ctx->frontend->symbol_table));
             symbol = std::make_unique<Symbol>(std::move(param_type), std::move(param_attrs));
-            ctx->frontend->symbol_table[node->params[i]] = std::move(symbol);
+            map_move_add(ctx->frontend->symbol_table, node->params[i], symbol);
         }
     }
     FINALLY;
@@ -1837,9 +1838,9 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     bool is_def = ctx->fun_def_set.find(node->name) != ctx->fun_def_set.end();
     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
 
-    if (ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end()) {
-        FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
-        if (!(ctx->frontend->symbol_table[node->name]->type_t->type() == AST_FunType_t
+    if (map_find(ctx->frontend->symbol_table, node->name) != map_end(ctx->frontend->symbol_table)) {
+        FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
+        if (!(map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_FunType_t
                 && vec_size(fun_type->param_types) == vec_size(node->params)
                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
             THROW_AT_LINE(
@@ -1851,13 +1852,13 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
                                           str_fmt_type(node->fun_type.get(), &type_fmt_1)));
         }
 
-        FunAttr* fun_attrs = static_cast<FunAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get());
+        FunAttr* fun_attrs = static_cast<FunAttr*>(map_get(ctx->frontend->symbol_table, node->name)->attrs.get());
         if (!is_glob && fun_attrs->is_glob) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_static_conflict, str_fmt_name(node->name, &name_fmt)));
         }
         is_glob = fun_attrs->is_glob;
-        ctx->frontend->symbol_table[node->name].reset();
+        map_get(ctx->frontend->symbol_table, node->name).reset();
     }
 
     if (node->body) {
@@ -1869,7 +1870,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     glob_fun_type = node->fun_type;
     glob_fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
     symbol = std::make_unique<Symbol>(std::move(glob_fun_type), std::move(glob_fun_attrs));
-    ctx->frontend->symbol_table[node->name] = std::move(symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt_1);
@@ -2064,7 +2065,7 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
             }
             std::unique_ptr<Symbol> symbol =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-            ctx->frontend->symbol_table[string_const_label] = std::move(symbol);
+            map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
         }
     }
     push_static_init(ctx, std::make_shared<PointerInit>(string_const_label));
@@ -2255,15 +2256,15 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
         }
     }
 
-    if (ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end()) {
-        if (!is_same_type(ctx->frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            THROW_AT_LINE(
-                node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
-                                str_fmt_type(node->var_type.get(), &type_fmt_1),
-                                str_fmt_type(ctx->frontend->symbol_table[node->name]->type_t.get(), &type_fmt_2)));
+    if (map_find(ctx->frontend->symbol_table, node->name) != map_end(ctx->frontend->symbol_table)) {
+        if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->var_type.get())) {
+            THROW_AT_LINE(node->line,
+                GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
+                    str_fmt_type(node->var_type.get(), &type_fmt_1),
+                    str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), &type_fmt_2)));
         }
 
-        StaticAttr* var_attrs = static_cast<StaticAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get());
+        StaticAttr* var_attrs = static_cast<StaticAttr*>(map_get(ctx->frontend->symbol_table, node->name)->attrs.get());
         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
             is_glob = var_attrs->is_glob;
         }
@@ -2280,13 +2281,13 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
                 init_value = var_attrs->init;
             }
         }
-        ctx->frontend->symbol_table[node->name].reset();
+        map_get(ctx->frontend->symbol_table, node->name).reset();
     }
 
     glob_var_type = node->var_type;
     glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
     symbol = std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
-    ctx->frontend->symbol_table[node->name] = std::move(symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt_1);
@@ -2306,12 +2307,12 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     if (node->init) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
     }
-    else if (ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end()) {
-        if (!is_same_type(ctx->frontend->symbol_table[node->name]->type_t.get(), node->var_type.get())) {
-            THROW_AT_LINE(
-                node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
-                                str_fmt_type(node->var_type.get(), &type_fmt_1),
-                                str_fmt_type(ctx->frontend->symbol_table[node->name]->type_t.get(), &type_fmt_2)));
+    else if (map_find(ctx->frontend->symbol_table, node->name) != map_end(ctx->frontend->symbol_table)) {
+        if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->var_type.get())) {
+            THROW_AT_LINE(node->line,
+                GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
+                    str_fmt_type(node->var_type.get(), &type_fmt_1),
+                    str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), &type_fmt_2)));
         }
         EARLY_EXIT;
     }
@@ -2320,7 +2321,7 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     init_value = std::make_shared<NoInitializer>();
     local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    ctx->frontend->symbol_table[node->name] = std::move(symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt_1);
@@ -2346,9 +2347,9 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
 
     local_var_type = node->var_type;
     local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
-    THROW_ABORT_IF(ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end());
+    THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end(ctx->frontend->symbol_table));
     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    ctx->frontend->symbol_table[node->name] = std::move(symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     CATCH_EXIT;
 }
@@ -2368,9 +2369,9 @@ static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
 
     local_var_type = node->var_type;
     local_var_attrs = std::make_unique<LocalAttr>();
-    THROW_ABORT_IF(ctx->frontend->symbol_table.find(node->name) != ctx->frontend->symbol_table.end());
+    THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end(ctx->frontend->symbol_table));
     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    ctx->frontend->symbol_table[node->name] = std::move(symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);

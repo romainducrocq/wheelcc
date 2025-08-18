@@ -1812,10 +1812,10 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
     for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
         const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
         print_field("[" + std::string(map_get(ctx->hash_table, pair_first(*static_const))) + "]", "", 2);
-        if (frontend->symbol_table.find(pair_second(*static_const)) != frontend->symbol_table.end()
-            && frontend->symbol_table[pair_second(*static_const)]->attrs->type() == AST_ConstantAttr_t) {
+        if (map_find(frontend->symbol_table, pair_second(*static_const)) != map_end(frontend->symbol_table)
+            && map_get(frontend->symbol_table, pair_second(*static_const))->attrs->type() == AST_ConstantAttr_t) {
             ConstantAttr* constant_attr =
-                static_cast<ConstantAttr*>(frontend->symbol_table[pair_second(*static_const)]->attrs.get());
+                static_cast<ConstantAttr*>(map_get(frontend->symbol_table, pair_second(*static_const))->attrs.get());
             if (constant_attr->static_init->type() == AST_StringInit_t) {
                 std::cout << "\n    String: \"";
                 StringInit* string_init = static_cast<StringInit*>(constant_attr->static_init.get());
@@ -1881,10 +1881,11 @@ void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* fronte
 
 void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Symbol Table");
-    std::cout << "\nDict(" << std::to_string(frontend->symbol_table.size()) << "):";
-    for (const auto& symbol : frontend->symbol_table) {
-        print_field("[" + std::string(map_get(ctx->hash_table, symbol.first)) + "]", "", 2);
-        print_ast(ctx, symbol.second.get(), 2);
+    std::cout << "\nDict(" << std::to_string(map_size(frontend->symbol_table)) << "):";
+    for (size_t i = 0; i < map_size(frontend->symbol_table); ++i) {
+        const pair_t(TIdentifier, UPtrSymbol)* symbol = &frontend->symbol_table[i];
+        print_field("[" + std::string(map_get(ctx->hash_table, pair_first(*symbol))) + "]", "", 2);
+        print_ast(ctx, pair_second(*symbol).get(), 2);
     }
     std::cout << std::endl;
 }

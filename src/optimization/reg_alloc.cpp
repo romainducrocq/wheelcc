@@ -142,7 +142,7 @@ static void infer_transfer_used_op(Ctx ctx, AsmOperand* node, size_t next_instr_
 }
 
 static void infer_transfer_used_call(Ctx ctx, AsmCall* node, size_t next_instr_idx) {
-    FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
+    FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
     GET_DFA_INSTR_SET_MASK(next_instr_idx, 0) |= fun_type->param_reg_mask;
 }
 
@@ -349,7 +349,7 @@ static void infer_rm_unpruned_pseudo_name(Ctx ctx, TIdentifier name) {
 
 static void infer_init_used_name_edges(Ctx ctx, TIdentifier name) {
     if (!is_aliased_name(ctx, name)) {
-        set_p_infer_graph(ctx, ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t);
+        set_p_infer_graph(ctx, map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t);
         map_get(ctx->p_infer_graph->pseudo_reg_map, name).spill_cost++;
     }
 }
@@ -373,7 +373,7 @@ static void infer_init_updated_regs_edges(
                 is_mov = false;
             }
             else {
-                bool is_src_dbl = ctx->frontend->symbol_table[src_name]->type_t->type() == AST_Double_t;
+                bool is_src_dbl = map_get(ctx->frontend->symbol_table, src_name)->type_t->type() == AST_Double_t;
                 set_p_infer_graph(ctx, is_src_dbl);
                 map_get(ctx->p_infer_graph->pseudo_reg_map, src_name).spill_cost++;
                 mov_mask_bit = map_get(ctx->cfg->identifier_id_map, src_name);
@@ -390,7 +390,7 @@ static void infer_init_updated_regs_edges(
         for (size_t i = ctx->dfa->set_size < 64 ? ctx->dfa->set_size : 64; i-- > REGISTER_MASK_SIZE;) {
             if (GET_DFA_INSTR_SET_AT(instr_idx, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = ctx->dfa_o2->data_name_map[i - REGISTER_MASK_SIZE];
-                if (is_dbl == (ctx->frontend->symbol_table[pseudo_name]->type_t->type() == AST_Double_t)) {
+                if (is_dbl == (map_get(ctx->frontend->symbol_table, pseudo_name)->type_t->type() == AST_Double_t)) {
                     for (size_t j = 0; j < reg_kinds_size; ++j) {
                         infer_add_reg_edge(ctx, reg_kinds[j], pseudo_name);
                     }
@@ -411,7 +411,7 @@ static void infer_init_updated_regs_edges(
         for (; i < mask_set_size; ++i) {
             if (GET_DFA_INSTR_SET_AT(instr_idx, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = ctx->dfa_o2->data_name_map[i - REGISTER_MASK_SIZE];
-                if (is_dbl == (ctx->frontend->symbol_table[pseudo_name]->type_t->type() == AST_Double_t)) {
+                if (is_dbl == (map_get(ctx->frontend->symbol_table, pseudo_name)->type_t->type() == AST_Double_t)) {
                     for (size_t k = 0; k < reg_kinds_size; ++k) {
                         infer_add_reg_edge(ctx, reg_kinds[k], pseudo_name);
                     }
@@ -425,7 +425,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
     if (is_aliased_name(ctx, name)) {
         return;
     }
-    bool is_dbl = ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t;
+    bool is_dbl = map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t;
 
     size_t mov_mask_bit = ctx->dfa->set_size;
     bool is_mov = GET_INSTR(instr_idx)->type() == AST_AsmMov_t;
@@ -449,7 +449,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
                     is_mov = false;
                 }
                 else {
-                    bool is_src_dbl = ctx->frontend->symbol_table[src_name]->type_t->type() == AST_Double_t;
+                    bool is_src_dbl = map_get(ctx->frontend->symbol_table, src_name)->type_t->type() == AST_Double_t;
                     set_p_infer_graph(ctx, is_src_dbl);
                     map_get(ctx->p_infer_graph->pseudo_reg_map, src_name).spill_cost++;
                     mov_mask_bit = map_get(ctx->cfg->identifier_id_map, src_name);
@@ -494,7 +494,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
             if (GET_DFA_INSTR_SET_AT(instr_idx, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = ctx->dfa_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
-                    && is_dbl == (ctx->frontend->symbol_table[pseudo_name]->type_t->type() == AST_Double_t)) {
+                    && is_dbl == (map_get(ctx->frontend->symbol_table, pseudo_name)->type_t->type() == AST_Double_t)) {
                     infer_add_pseudo_edges(ctx, name, pseudo_name);
                 }
             }
@@ -514,7 +514,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
             if (GET_DFA_INSTR_SET_AT(instr_idx, i) && !(is_mov && i == mov_mask_bit)) {
                 TIdentifier pseudo_name = ctx->dfa_o2->data_name_map[i - REGISTER_MASK_SIZE];
                 if (name != pseudo_name
-                    && is_dbl == (ctx->frontend->symbol_table[pseudo_name]->type_t->type() == AST_Double_t)) {
+                    && is_dbl == (map_get(ctx->frontend->symbol_table, pseudo_name)->type_t->type() == AST_Double_t)) {
                     infer_add_pseudo_edges(ctx, name, pseudo_name);
                 }
             }
@@ -646,7 +646,7 @@ static bool init_inference_graph(Ctx ctx, TIdentifier fun_name) {
     for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
         TIdentifier name = pair_first(ctx->cfg->identifier_id_map[i]);
         InferenceRegister infer = {REG_Sp, REG_Sp, 0, 0, REGISTER_MASK_FALSE, vec_new()};
-        if (ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t) {
+        if (map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t) {
             vec_push_back(ctx->sse_infer_graph->unpruned_pseudo_names, name);
             map_add(ctx->sse_infer_graph->pseudo_reg_map, name, infer);
         }
@@ -886,7 +886,7 @@ static std::shared_ptr<AsmRegister> alloc_hard_reg(Ctx ctx, TIdentifier name) {
     if (is_aliased_name(ctx, name)) {
         return nullptr;
     }
-    set_p_infer_graph(ctx, ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t);
+    set_p_infer_graph(ctx, map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t);
     REGISTER_KIND color = map_get(ctx->p_infer_graph->pseudo_reg_map, name).color;
     if (color != REG_Sp) {
         REGISTER_KIND reg_kind = ctx->reg_color_map[register_mask_bit(color)];
@@ -912,7 +912,7 @@ static REGISTER_KIND get_op_reg_kind(Ctx ctx, AsmOperand* node) {
             if (is_aliased_name(ctx, name)) {
                 return REG_Sp;
             }
-            set_p_infer_graph(ctx, ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t);
+            set_p_infer_graph(ctx, map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t);
             REGISTER_KIND color = map_get(ctx->p_infer_graph->pseudo_reg_map, name).color;
             if (color == REG_Sp) {
                 return REG_Sp;
@@ -1231,7 +1231,7 @@ static bool get_coalescable_infer_regs(
         && src_idx < ctx->dfa->set_size && dst_idx < ctx->dfa->set_size) {
         if (src_idx < REGISTER_MASK_SIZE) {
             TIdentifier dst_name = ctx->dfa_o2->data_name_map[dst_idx - REGISTER_MASK_SIZE];
-            bool is_dbl = ctx->frontend->symbol_table[dst_name]->type_t->type() == AST_Double_t;
+            bool is_dbl = map_get(ctx->frontend->symbol_table, dst_name)->type_t->type() == AST_Double_t;
             if (is_dbl == (src_idx > 11)) {
                 set_p_infer_graph(ctx, is_dbl);
                 src_infer = &ctx->hard_regs[src_idx];
@@ -1241,7 +1241,7 @@ static bool get_coalescable_infer_regs(
         }
         else if (dst_idx < REGISTER_MASK_SIZE) {
             TIdentifier src_name = ctx->dfa_o2->data_name_map[src_idx - REGISTER_MASK_SIZE];
-            bool is_dbl = ctx->frontend->symbol_table[src_name]->type_t->type() == AST_Double_t;
+            bool is_dbl = map_get(ctx->frontend->symbol_table, src_name)->type_t->type() == AST_Double_t;
             if (is_dbl == (dst_idx > 11)) {
                 set_p_infer_graph(ctx, is_dbl);
                 src_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, src_name);
@@ -1252,10 +1252,10 @@ static bool get_coalescable_infer_regs(
         else {
             TIdentifier src_name = ctx->dfa_o2->data_name_map[src_idx - REGISTER_MASK_SIZE];
             TIdentifier dst_name = ctx->dfa_o2->data_name_map[dst_idx - REGISTER_MASK_SIZE];
-            bool is_dbl = ctx->frontend->symbol_table[src_name]->type_t->type() == AST_Double_t;
-            if (is_dbl == (ctx->frontend->symbol_table[dst_name]->type_t->type() == AST_Double_t)
-                && get_type_size(ctx->frontend->symbol_table[src_name]->type_t.get())
-                       == get_type_size(ctx->frontend->symbol_table[dst_name]->type_t.get())) {
+            Type* src_type = map_get(ctx->frontend->symbol_table, src_name)->type_t.get();
+            Type* dst_type = map_get(ctx->frontend->symbol_table, dst_name)->type_t.get();
+            bool is_dbl = src_type->type() == AST_Double_t;
+            if (is_dbl == (dst_type->type() == AST_Double_t) && get_type_size(src_type) == get_type_size(dst_type)) {
                 set_p_infer_graph(ctx, is_dbl);
                 src_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, src_name);
                 dst_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, dst_name);
@@ -1422,7 +1422,7 @@ static std::shared_ptr<AsmOperand> coal_op_reg(Ctx ctx, TIdentifier name, size_t
             return gen_register(reg_kind);
         }
         else {
-            set_p_infer_graph(ctx, ctx->frontend->symbol_table[name]->type_t->type() == AST_Double_t);
+            set_p_infer_graph(ctx, map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t);
             name = ctx->dfa_o2->data_name_map[coalesced_idx - REGISTER_MASK_SIZE];
             map_get(ctx->p_infer_graph->pseudo_reg_map, name).spill_cost++;
             return std::make_shared<AsmPseudo>(name);

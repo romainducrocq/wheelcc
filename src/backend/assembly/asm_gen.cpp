@@ -186,7 +186,7 @@ static std::shared_ptr<AsmPseudoMem> pseudo_mem_op(TacVariable* node) {
 }
 
 static std::shared_ptr<AsmOperand> var_op(Ctx ctx, TacVariable* node) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Array_t:
         case AST_Structure_t:
             return pseudo_mem_op(node);
@@ -301,7 +301,7 @@ static bool is_const_signed(TacConstant* node) {
 }
 
 static bool is_var_signed(Ctx ctx, TacVariable* node) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_Int_t:
@@ -335,7 +335,7 @@ static bool is_const_1b(TacConstant* node) {
 }
 
 static bool is_var_1b(Ctx ctx, TacVariable* node) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t:
@@ -367,7 +367,7 @@ static bool is_const_4b(TacConstant* node) {
 }
 
 static bool is_var_4b(Ctx ctx, TacVariable* node) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Int_t:
         case AST_UInt_t:
             return true;
@@ -390,7 +390,7 @@ static bool is_value_4b(Ctx ctx, TacValue* node) {
 static bool is_const_dbl(TacConstant* node) { return node->constant->type() == AST_CConstDouble_t; }
 
 static bool is_var_dbl(Ctx ctx, TacVariable* node) {
-    return ctx->frontend->symbol_table[node->name]->type_t->type() == AST_Double_t;
+    return map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_Double_t;
 }
 
 static bool is_value_dbl(Ctx ctx, TacValue* node) {
@@ -405,7 +405,7 @@ static bool is_value_dbl(Ctx ctx, TacValue* node) {
 }
 
 static bool is_var_struct(Ctx ctx, TacVariable* node) {
-    return ctx->frontend->symbol_table[node->name]->type_t->type() == AST_Structure_t;
+    return map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_Structure_t;
 }
 
 static bool is_value_struct(Ctx ctx, TacValue* node) {
@@ -715,7 +715,7 @@ static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* str
 
 static void ret_struct_instr(Ctx ctx, TacReturn* node) {
     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
-    Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
+    Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
     struct_8b_class(ctx, struct_type);
     if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] == CLS_memory) {
         {
@@ -1318,7 +1318,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
             TIdentifier name = static_cast<TacVariable*>(arg)->name;
-            Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
+            Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
             struct_8b_class(ctx, struct_type);
             if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] != CLS_memory) {
                 struct_reg_size = 0;
@@ -1436,11 +1436,11 @@ static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure
 
 static void call_instr(Ctx ctx, TacFunCall* node) {
     bool is_ret_memory = false;
-    FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
+    FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
     {
         if (node->dst && is_value_struct(ctx, node->dst.get())) {
             TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
-            Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
+            Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
             struct_8b_class(ctx, struct_type);
             if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] == CLS_memory) {
                 is_ret_memory = true;
@@ -1479,7 +1479,8 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
             else {
                 bool reg_size = false;
                 TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
-                Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
+                Structure* struct_type =
+                    static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
                 switch (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0]) {
                     case CLS_integer: {
                         ret_8b_call_instr(ctx, name, 0l, struct_type, REG_Ax);
@@ -1893,7 +1894,7 @@ static void binary_instr(Ctx ctx, TacBinary* node) {
 static void copy_struct_instr(Ctx ctx, TacCopy* node) {
     TIdentifier src_name = static_cast<TacVariable*>(node->src.get())->name;
     TIdentifier dst_name = static_cast<TacVariable*>(node->dst.get())->name;
-    Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[src_name]->type_t.get());
+    Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, src_name)->type_t.get());
     TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
     TLong offset = 0l;
     while (size > 0l) {
@@ -1941,8 +1942,8 @@ static void getaddr_instr(Ctx ctx, TacGetAddress* node) {
         if (node->src->type() == AST_TacVariable_t) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
             ctx->frontend->addressed_set.insert(name);
-            if (ctx->frontend->symbol_table.find(name) != ctx->frontend->symbol_table.end()
-                && ctx->frontend->symbol_table[name]->attrs->type() == AST_ConstantAttr_t) {
+            if (map_find(ctx->frontend->symbol_table, name) != map_end(ctx->frontend->symbol_table)
+                && map_get(ctx->frontend->symbol_table, name)->attrs->type() == AST_ConstantAttr_t) {
                 src = std::make_shared<AsmData>(name, 0l);
                 goto Lpass;
             }
@@ -1963,7 +1964,7 @@ static void load_struct_instr(Ctx ctx, TacLoad* node) {
     }
     {
         TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
-        Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
+        Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
         TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
         TLong offset = 0l;
         while (size > 0l) {
@@ -2023,7 +2024,7 @@ static void store_struct_instr(Ctx ctx, TacStore* node) {
     }
     {
         TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
-        Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[name]->type_t.get());
+        Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
         TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
         TLong offset = 0l;
         while (size > 0l) {
@@ -2178,7 +2179,7 @@ static void add_ptr_instr(Ctx ctx, TacAddPtr* node) {
 
 static void cp_to_offset_struct_instr(Ctx ctx, TacCopyToOffset* node) {
     TIdentifier src_name = static_cast<TacVariable*>(node->src.get())->name;
-    Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[src_name]->type_t.get());
+    Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, src_name)->type_t.get());
     TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
     TLong offset = 0l;
     while (size > 0l) {
@@ -2232,7 +2233,7 @@ static void cp_to_offset_instr(Ctx ctx, TacCopyToOffset* node) {
 
 static void cp_from_offset_struct_instr(Ctx ctx, TacCopyFromOffset* node) {
     TIdentifier dst_name = static_cast<TacVariable*>(node->dst.get())->name;
-    Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[dst_name]->type_t.get());
+    Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, dst_name)->type_t.get());
     TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
     TLong offset = 0l;
     while (size > 0l) {
@@ -2545,7 +2546,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
     TLong stack_bytes = 16l;
     for (size_t i = 0; i < vec_size(node->params); ++i) {
         TIdentifier param = node->params[i];
-        if (ctx->frontend->symbol_table[param]->type_t->type() == AST_Double_t) {
+        if (map_get(ctx->frontend->symbol_table, param)->type_t->type() == AST_Double_t) {
             if (sse_size < 8) {
                 reg_fun_param_instr(ctx, param, ctx->sse_arg_regs[sse_size]);
                 sse_size++;
@@ -2555,7 +2556,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
                 stack_bytes += 8l;
             }
         }
-        else if (ctx->frontend->symbol_table[param]->type_t->type() != AST_Structure_t) {
+        else if (map_get(ctx->frontend->symbol_table, param)->type_t->type() != AST_Structure_t) {
             if (reg_size < 6) {
                 reg_fun_param_instr(ctx, param, ctx->arg_regs[reg_size]);
                 reg_size++;
@@ -2568,7 +2569,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
         else {
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
-            Structure* struct_type = static_cast<Structure*>(ctx->frontend->symbol_table[param]->type_t.get());
+            Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, param)->type_t.get());
             struct_8b_class(ctx, struct_type);
             if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] != CLS_memory) {
                 struct_reg_size = 0;
@@ -2618,7 +2619,7 @@ static std::unique_ptr<AsmFunction> gen_fun_toplvl(Ctx ctx, TacFunction* node) {
     {
         ctx->p_instrs = &body;
 
-        FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[node->name]->type_t.get());
+        FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
         if (fun_type->ret_type->type() == AST_Structure_t) {
             Structure* struct_type = static_cast<Structure*>(fun_type->ret_type.get());
             struct_8b_class(ctx, struct_type);

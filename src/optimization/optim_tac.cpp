@@ -47,7 +47,7 @@ struct OptimTacContext {
 // Constant folding
 
 static std::shared_ptr<CConst> fold_sign_extend_char_const(Ctx ctx, TacVariable* node, CConstChar* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Int_t: {
             TInt value = (TInt)constant->value;
             return std::make_shared<CConstInt>(value);
@@ -71,7 +71,7 @@ static std::shared_ptr<CConst> fold_sign_extend_char_const(Ctx ctx, TacVariable*
 }
 
 static std::shared_ptr<CConst> fold_sign_extend_int_const(Ctx ctx, TacVariable* node, CConstInt* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Long_t:
         case AST_Pointer_t: {
             TLong value = (TLong)constant->value;
@@ -114,7 +114,7 @@ static void fold_sign_extend_instr(Ctx ctx, TacSignExtend* node, size_t instr_id
 }
 
 static std::shared_ptr<CConst> fold_truncate_int_const(Ctx ctx, TacVariable* node, CConstInt* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
             TChar value = (TChar)constant->value;
@@ -130,7 +130,7 @@ static std::shared_ptr<CConst> fold_truncate_int_const(Ctx ctx, TacVariable* nod
 }
 
 static std::shared_ptr<CConst> fold_truncate_long_const(Ctx ctx, TacVariable* node, CConstLong* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
             TChar value = (TChar)constant->value;
@@ -154,7 +154,7 @@ static std::shared_ptr<CConst> fold_truncate_long_const(Ctx ctx, TacVariable* no
 }
 
 static std::shared_ptr<CConst> fold_truncate_uint_const(Ctx ctx, TacVariable* node, CConstUInt* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
             TChar value = (TChar)constant->value;
@@ -170,7 +170,7 @@ static std::shared_ptr<CConst> fold_truncate_uint_const(Ctx ctx, TacVariable* no
 }
 
 static std::shared_ptr<CConst> fold_truncate_ulong_const(Ctx ctx, TacVariable* node, CConstULong* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
             TChar value = (TChar)constant->value;
@@ -229,7 +229,7 @@ static void fold_truncate_instr(Ctx ctx, TacTruncate* node, size_t instr_idx) {
 }
 
 static std::shared_ptr<CConst> fold_zero_extend_uchar_const(Ctx ctx, TacVariable* node, CConstUChar* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Int_t: {
             TInt value = (TInt)constant->value;
             return std::make_shared<CConstInt>(value);
@@ -253,7 +253,7 @@ static std::shared_ptr<CConst> fold_zero_extend_uchar_const(Ctx ctx, TacVariable
 }
 
 static std::shared_ptr<CConst> fold_zero_extend_uint_const(Ctx ctx, TacVariable* node, CConstUInt* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Long_t:
         case AST_Pointer_t: {
             TLong value = (TLong)constant->value;
@@ -298,7 +298,7 @@ static void fold_zero_extend_instr(Ctx ctx, TacZeroExtend* node, size_t instr_id
 static std::shared_ptr<TacConstant> fold_dbl_to_signed_const(Ctx ctx, TacVariable* node, CConst* constant) {
     THROW_ABORT_IF(constant->type() != AST_CConstDouble_t);
     std::shared_ptr<CConst> fold_constant;
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
             TChar value = (TChar)(static_cast<CConstDouble*>(constant)->value);
@@ -334,7 +334,7 @@ static void fold_dbl_to_signed_instr(Ctx ctx, TacDoubleToInt* node, size_t instr
 static std::shared_ptr<TacConstant> fold_dbl_to_unsigned_const(Ctx ctx, TacVariable* node, CConst* constant) {
     THROW_ABORT_IF(constant->type() != AST_CConstDouble_t);
     std::shared_ptr<CConst> fold_constant;
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_UChar_t: {
             TUChar value = (TUChar)(static_cast<CConstDouble*>(constant)->value);
             fold_constant = std::make_shared<CConstUChar>(value);
@@ -392,9 +392,10 @@ static std::shared_ptr<TacConstant> fold_signed_to_dbl_const(CConst* constant) {
 
 static void fold_signed_to_dbl_instr(Ctx ctx, TacIntToDouble* node, size_t instr_idx) {
     if (node->src->type() == AST_TacConstant_t) {
-        THROW_ABORT_IF(node->dst->type() != AST_TacVariable_t
-                       || ctx->frontend->symbol_table[static_cast<TacVariable*>(node->dst.get())->name]->type_t->type()
-                              != AST_Double_t);
+        THROW_ABORT_IF(
+            node->dst->type() != AST_TacVariable_t
+            || map_get(ctx->frontend->symbol_table, static_cast<TacVariable*>(node->dst.get())->name)->type_t->type()
+                   != AST_Double_t);
         std::shared_ptr<TacValue> src =
             fold_signed_to_dbl_const(static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
@@ -428,9 +429,10 @@ static std::shared_ptr<TacConstant> fold_unsigned_to_dbl_const(CConst* constant)
 
 static void fold_unsigned_to_dbl_instr(Ctx ctx, TacUIntToDouble* node, size_t instr_idx) {
     if (node->src->type() == AST_TacConstant_t) {
-        THROW_ABORT_IF(node->dst->type() != AST_TacVariable_t
-                       || ctx->frontend->symbol_table[static_cast<TacVariable*>(node->dst.get())->name]->type_t->type()
-                              != AST_Double_t);
+        THROW_ABORT_IF(
+            node->dst->type() != AST_TacVariable_t
+            || map_get(ctx->frontend->symbol_table, static_cast<TacVariable*>(node->dst.get())->name)->type_t->type()
+                   != AST_Double_t);
         std::shared_ptr<TacValue> src =
             fold_unsigned_to_dbl_const(static_cast<TacConstant*>(node->src.get())->constant.get());
         std::shared_ptr<TacValue> dst = node->dst;
@@ -980,7 +982,7 @@ static void fold_binary_instr(Ctx ctx, TacBinary* node, size_t instr_idx) {
 }
 
 static std::shared_ptr<CConst> fold_copy_char_const(Ctx ctx, TacVariable* node, CConstChar* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
             return nullptr;
@@ -994,7 +996,7 @@ static std::shared_ptr<CConst> fold_copy_char_const(Ctx ctx, TacVariable* node, 
 }
 
 static std::shared_ptr<CConst> fold_copy_int_const(Ctx ctx, TacVariable* node, CConstInt* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Int_t:
             return nullptr;
         case AST_UInt_t: {
@@ -1007,7 +1009,7 @@ static std::shared_ptr<CConst> fold_copy_int_const(Ctx ctx, TacVariable* node, C
 }
 
 static std::shared_ptr<CConst> fold_copy_long_const(Ctx ctx, TacVariable* node, CConstLong* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Long_t:
         case AST_Pointer_t:
             return nullptr;
@@ -1025,7 +1027,7 @@ static std::shared_ptr<CConst> fold_copy_long_const(Ctx ctx, TacVariable* node, 
 }
 
 static std::shared_ptr<CConst> fold_copy_dbl_const(Ctx ctx, TacVariable* node, CConstDouble* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Long_t: {
             TLong value = (TLong)constant->value;
             return std::make_shared<CConstLong>(value);
@@ -1042,7 +1044,7 @@ static std::shared_ptr<CConst> fold_copy_dbl_const(Ctx ctx, TacVariable* node, C
 }
 
 static std::shared_ptr<CConst> fold_copy_uchar_const(Ctx ctx, TacVariable* node, CConstUChar* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t: {
             TChar value = (TChar)constant->value;
@@ -1056,7 +1058,7 @@ static std::shared_ptr<CConst> fold_copy_uchar_const(Ctx ctx, TacVariable* node,
 }
 
 static std::shared_ptr<CConst> fold_copy_uint_const(Ctx ctx, TacVariable* node, CConstUInt* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Int_t: {
             TInt value = (TInt)constant->value;
             return std::make_shared<CConstInt>(value);
@@ -1069,7 +1071,7 @@ static std::shared_ptr<CConst> fold_copy_uint_const(Ctx ctx, TacVariable* node, 
 }
 
 static std::shared_ptr<CConst> fold_copy_ulong_const(Ctx ctx, TacVariable* node, CConstULong* constant) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Long_t: {
             TLong value = (TLong)constant->value;
             return std::make_shared<CConstLong>(value);
@@ -1371,7 +1373,7 @@ static bool is_const_signed(TacConstant* node) {
 }
 
 static bool is_var_signed(Ctx ctx, TacVariable* node) {
-    switch (ctx->frontend->symbol_table[node->name]->type_t->type()) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_Int_t:
@@ -1489,7 +1491,7 @@ static bool is_copy_same_signedness(Ctx ctx, TacCopy* node) {
 
 static bool is_copy_null_ptr(Ctx ctx, TacCopy* node) {
     if (node->src->type() == AST_TacConstant_t && node->dst->type() == AST_TacVariable_t
-        && ctx->frontend->symbol_table[static_cast<TacVariable*>(node->dst.get())->name]->type_t->type()
+        && map_get(ctx->frontend->symbol_table, static_cast<TacVariable*>(node->dst.get())->name)->type_t->type()
                == AST_Pointer_t) {
         return is_const_null_ptr(static_cast<TacConstant*>(node->src.get()));
     }

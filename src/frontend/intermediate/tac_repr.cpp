@@ -99,10 +99,10 @@ static std::shared_ptr<TacVariable> var_value(CVar* node) {
 
 static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::shared_ptr<Type>&& inner_type) {
     TIdentifier inner_name = repr_var_identifier(ctx->identifiers, node);
-    if (ctx->frontend->symbol_table.find(inner_name) == ctx->frontend->symbol_table.end()) {
+    if (map_find(ctx->frontend->symbol_table, inner_name) == map_end(ctx->frontend->symbol_table)) {
         std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
         std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
-        ctx->frontend->symbol_table[inner_name] = std::move(symbol);
+        map_move_add(ctx->frontend->symbol_table, inner_name, symbol);
     }
     return std::make_shared<TacVariable>(inner_name);
 }
@@ -171,7 +171,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node)
             }
             std::unique_ptr<Symbol> symbol =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-            ctx->frontend->symbol_table[string_const_label] = std::move(symbol);
+            map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
         }
     }
     std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(string_const_label);
@@ -1302,12 +1302,12 @@ static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
     switch (node->init->type()) {
         case AST_CSingleInit_t:
             single_init_instr(ctx, static_cast<CSingleInit*>(node->init.get()),
-                ctx->frontend->symbol_table[node->name]->type_t.get(), node->name);
+                map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->name);
             break;
         case AST_CCompoundInit_t: {
             TLong size = 0l;
             aggr_compound_init_instr(ctx, static_cast<CCompoundInit*>(node->init.get()),
-                ctx->frontend->symbol_table[node->name]->type_t.get(), node->name, size);
+                map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->name, size);
             break;
         }
         default:
@@ -1316,7 +1316,8 @@ static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
 }
 
 static void var_declaration_instr(Ctx ctx, CVarDecl* node) {
-    if (ctx->frontend->symbol_table[node->var_decl->name]->attrs->type() != AST_StaticAttr_t && node->var_decl->init) {
+    if (map_get(ctx->frontend->symbol_table, node->var_decl->name)->attrs->type() != AST_StaticAttr_t
+        && node->var_decl->init) {
         var_decl_instr(ctx, node->var_decl.get());
     }
 }
@@ -1367,7 +1368,7 @@ static void repr_block(Ctx ctx, CBlock* node) {
 
 static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaration* node) {
     TIdentifier name = node->name;
-    bool is_glob = static_cast<FunAttr*>(ctx->frontend->symbol_table[node->name]->attrs.get())->is_glob;
+    bool is_glob = static_cast<FunAttr*>(map_get(ctx->frontend->symbol_table, node->name)->attrs.get())->is_glob;
 
     vector_t(TIdentifier) params = vec_new();
     vec_resize(params, vec_size(node->params));
@@ -1499,8 +1500,9 @@ static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
     {
         ctx->p_toplvls = &static_var_toplvls;
         ctx->p_static_consts = &static_const_toplvls;
-        for (const auto& symbol : ctx->frontend->symbol_table) {
-            symbol_toplvl(ctx, symbol.second.get(), symbol.first);
+        for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
+            const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
+            symbol_toplvl(ctx, pair_second(*symbol).get(), pair_first(*symbol));
         }
         ctx->p_toplvls = NULL;
         ctx->p_static_consts = NULL;

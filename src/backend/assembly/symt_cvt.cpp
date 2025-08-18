@@ -104,7 +104,7 @@ static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* ctx, Structur
 }
 
 std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name) {
-    switch (ctx->symbol_table[name]->type_t->type()) {
+    switch (map_get(ctx->symbol_table, name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t:
@@ -119,9 +119,9 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdenti
         case AST_Double_t:
             return std::make_shared<BackendDouble>();
         case AST_Array_t:
-            return arr_asm_type(ctx, static_cast<Array*>(ctx->symbol_table[name]->type_t.get()));
+            return arr_asm_type(ctx, static_cast<Array*>(map_get(ctx->symbol_table, name)->type_t.get()));
         case AST_Structure_t:
-            return struct_asm_type(ctx, static_cast<Structure*>(ctx->symbol_table[name]->type_t.get()));
+            return struct_asm_type(ctx, static_cast<Structure*>(map_get(ctx->symbol_table, name)->type_t.get()));
         default:
             THROW_ABORT;
     }
@@ -148,7 +148,8 @@ static void cvt_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
             dbl_static_const(ctx);
             break;
         case AST_StringInit_t:
-            string_static_const(ctx, static_cast<Array*>(ctx->frontend->symbol_table[node->name]->type_t.get()));
+            string_static_const(
+                ctx, static_cast<Array*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get()));
             break;
         default:
             THROW_ABORT;
@@ -185,15 +186,16 @@ static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
 }
 
 static void cvt_program(Ctx ctx, AsmProgram* node) {
-    ctx->backend->symbol_table.reserve(ctx->frontend->symbol_table.size());
-    for (const auto& symbol : ctx->frontend->symbol_table) {
-        ctx->symbol = symbol.first;
-        if (symbol.second->type_t->type() == AST_FunType_t) {
-            cvt_fun_type(ctx, static_cast<FunAttr*>(symbol.second->attrs.get()),
-                static_cast<FunType*>(symbol.second->type_t.get()));
+    ctx->backend->symbol_table.reserve(map_size(ctx->frontend->symbol_table));
+    for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
+        const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
+        ctx->symbol = pair_first(*symbol);
+        if (pair_second(*symbol)->type_t->type() == AST_FunType_t) {
+            cvt_fun_type(ctx, static_cast<FunAttr*>(pair_second(*symbol)->attrs.get()),
+                static_cast<FunType*>(pair_second(*symbol)->type_t.get()));
         }
         else {
-            cvt_obj_type(ctx, symbol.second->attrs.get());
+            cvt_obj_type(ctx, pair_second(*symbol)->attrs.get());
         }
     }
 

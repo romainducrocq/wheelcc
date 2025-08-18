@@ -788,7 +788,7 @@ static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t& i) {
 }
 
 static bool is_aliased_name(Ctx ctx, TIdentifier name) {
-    return ctx->frontend->symbol_table[name]->attrs->type() == AST_StaticAttr_t
+    return map_get(ctx->frontend->symbol_table, name)->attrs->type() == AST_StaticAttr_t
            || ctx->frontend->addressed_set.find(name) != ctx->frontend->addressed_set.end();
 }
 
@@ -1258,7 +1258,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, 0) = MASK_FALSE;
 #elif __OPTIM_LEVEL__ == 2
     {
-        FunType* fun_type = static_cast<FunType*>(ctx->frontend->symbol_table[fun_name]->type_t.get());
+        FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, fun_name)->type_t.get());
         GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, 0) = fun_type->ret_reg_mask;
     }
 #endif
@@ -1272,7 +1272,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
             const pair_t(TIdentifier, size_t)* name_id = &ctx->cfg->identifier_id_map[i];
 #if __OPTIM_LEVEL__ == 1
-            if (ctx->frontend->symbol_table[pair_first(*name_id)]->attrs->type() == AST_StaticAttr_t) {
+            if (map_get(ctx->frontend->symbol_table, pair_first(*name_id))->attrs->type() == AST_StaticAttr_t) {
                 SET_DFA_INSTR_SET_AT(ctx->dfa->static_idx, pair_second(*name_id), true);
             }
             if (ctx->frontend->addressed_set.find(pair_first(*name_id)) != ctx->frontend->addressed_set.end()) {

@@ -331,7 +331,7 @@ PairKeyValue(TIdentifier, UPtrSymbol);
 struct FrontEndContext {
     hashmap_t(TIdentifier, TIdentifier) string_const_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
-    std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
+    hashmap_t(TIdentifier, UPtrSymbol) symbol_table;
     std::unordered_set<TIdentifier> addressed_set;
 };
 
