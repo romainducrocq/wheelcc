@@ -128,7 +128,7 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdenti
 }
 
 static void cvt_backend_symbol(Ctx ctx, std::unique_ptr<BackendSymbol>&& node) {
-    ctx->backend->symbol_table[ctx->symbol] = std::move(node);
+    map_move_add(ctx->backend->symbol_table, ctx->symbol, node);
 }
 
 static void dbl_static_const(Ctx ctx) {
@@ -186,7 +186,6 @@ static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
 }
 
 static void cvt_program(Ctx ctx, AsmProgram* node) {
-    ctx->backend->symbol_table.reserve(map_size(ctx->frontend->symbol_table));
     for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
         const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
         ctx->symbol = pair_first(*symbol);

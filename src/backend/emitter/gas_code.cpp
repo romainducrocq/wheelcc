@@ -421,9 +421,9 @@ static void memory_op(Ctx ctx, AsmMemory* node) {
 }
 
 static void data_op(Ctx ctx, AsmData* node) {
-    if (ctx->backend->symbol_table.find(node->name) != ctx->backend->symbol_table.end()
-        && ctx->backend->symbol_table[node->name]->type() == AST_BackendObj_t
-        && static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get())->is_const) {
+    if (map_find(ctx->backend->symbol_table, node->name) != map_end(ctx->backend->symbol_table)
+        && map_get(ctx->backend->symbol_table, node->name)->type() == AST_BackendObj_t
+        && static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get())->is_const) {
         emit(ctx, LBL);
     }
     emit_identifier(ctx, node->name);
@@ -738,8 +738,8 @@ static void call_instr(Ctx ctx, AsmCall* node) {
     emit(ctx, TAB TAB "call ");
     emit_identifier(ctx, node->name);
 #ifndef __APPLE__
-    THROW_ABORT_IF(ctx->backend->symbol_table[node->name]->type() != AST_BackendFun_t);
-    if (!static_cast<BackendFun*>(ctx->backend->symbol_table[node->name].get())->is_def) {
+    THROW_ABORT_IF(map_get(ctx->backend->symbol_table, node->name)->type() != AST_BackendFun_t);
+    if (!static_cast<BackendFun*>(map_get(ctx->backend->symbol_table, node->name).get())->is_def) {
         emit(ctx, "@PLT");
     }
 #endif

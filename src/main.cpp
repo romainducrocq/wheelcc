@@ -146,6 +146,8 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
         frontend.string_const_table = map_new();
         frontend.symbol_table = map_new();
+
+        backend.symbol_table = map_new();
     }
 
     CATCH_ENTER;
@@ -270,6 +272,11 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         pair_second(frontend.symbol_table[i]).reset();
     }
     map_delete(frontend.symbol_table);
+
+    for (size_t i = 0; i < map_size(backend.symbol_table); ++i) {
+        pair_second(backend.symbol_table[i]).reset();
+    }
+    map_delete(backend.symbol_table);
 
     vec_delete(tokens);
     CATCH_EXIT;

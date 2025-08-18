@@ -94,7 +94,7 @@ static void alloc_offset_pseudo_mem(Ctx ctx, AssemblyType* asm_type) {
 static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
     if (map_find(ctx->pseudo_stack_map, node->name) == map_end(ctx->pseudo_stack_map)) {
 
-        BackendObj* backend_obj = static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get());
+        BackendObj* backend_obj = static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get());
         if (backend_obj->is_static) {
             return pseudo_data(node);
         }
@@ -110,7 +110,7 @@ static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
 static std::shared_ptr<AsmOperand> repl_pseudo_mem_op(Ctx ctx, AsmPseudoMem* node) {
     if (map_find(ctx->pseudo_stack_map, node->name) == map_end(ctx->pseudo_stack_map)) {
 
-        BackendObj* backend_obj = static_cast<BackendObj*>(ctx->backend->symbol_table[node->name].get());
+        BackendObj* backend_obj = static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get());
         if (backend_obj->is_static) {
             return pseudo_mem_data(node);
         }
@@ -1003,7 +1003,7 @@ static void fix_instr(Ctx ctx, AsmInstruction* node) {
 static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     vector_t(std::unique_ptr<AsmInstruction>) instructions = vec_new();
     vec_move(&node->instructions, &instructions);
-    BackendFun* backend_fun = static_cast<BackendFun*>(ctx->backend->symbol_table[node->name].get());
+    BackendFun* backend_fun = static_cast<BackendFun*>(map_get(ctx->backend->symbol_table, node->name).get());
 
     vec_clear(node->instructions);
     vec_reserve(node->instructions, vec_size(instructions));

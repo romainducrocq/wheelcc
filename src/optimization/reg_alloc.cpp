@@ -1728,7 +1728,7 @@ Ldowhile:
             goto Ldowhile;
         }
         {
-            BackendFun* backend_fun = static_cast<BackendFun*>(ctx->backend->symbol_table[node->name].get());
+            BackendFun* backend_fun = static_cast<BackendFun*>(map_get(ctx->backend->symbol_table, node->name).get());
             ctx->p_backend_fun = backend_fun;
         }
         reallocate_registers(ctx);

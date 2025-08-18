@@ -2,7 +2,6 @@
 #define _AST_BACK_SYMT_H
 
 #include <memory>
-#include <unordered_map>
 
 #include "util/c_std.hpp"
 
@@ -84,8 +83,11 @@ struct Dummy : Ast {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+typedef std::unique_ptr<BackendSymbol> UPtrBackendSymbol;
+PairKeyValue(TIdentifier, UPtrBackendSymbol);
+
 struct BackEndContext {
-    std::unordered_map<TIdentifier, std::unique_ptr<BackendSymbol>> symbol_table;
+    hashmap_t(TIdentifier, UPtrBackendSymbol) symbol_table;
 };
 
 #endif

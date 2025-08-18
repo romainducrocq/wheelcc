@@ -1892,10 +1892,11 @@ void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
 
 void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend) {
     print_title("Backend Symbol Table");
-    std::cout << "\nDict(" << std::to_string(backend->symbol_table.size()) << "):";
-    for (const auto& backend_symbol : backend->symbol_table) {
-        print_field("[" + std::string(map_get(ctx->hash_table, backend_symbol.first)) + "]", "", 2);
-        print_ast(ctx, backend_symbol.second.get(), 2);
+    std::cout << "\nDict(" << std::to_string(map_size(backend->symbol_table)) << "):";
+    for (size_t i = 0; i < map_size(backend->symbol_table); ++i) {
+        const pair_t(TIdentifier, UPtrBackendSymbol)* bakend_symbol = &backend->symbol_table[i];
+        print_field("[" + std::string(map_get(ctx->hash_table, pair_first(*bakend_symbol))) + "]", "", 2);
+        print_ast(ctx, pair_second(*bakend_symbol).get(), 2);
     }
     std::cout << std::endl;
 }
