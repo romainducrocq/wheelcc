@@ -1871,10 +1871,11 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
 
 void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Structure Typedef Table");
-    std::cout << "\nDict(" << std::to_string(frontend->struct_typedef_table.size()) << "):";
-    for (const auto& struct_typedef : frontend->struct_typedef_table) {
-        print_field("[" + std::string(map_get(ctx->hash_table, struct_typedef.first)) + "]", "", 2);
-        print_ast(ctx, struct_typedef.second.get(), 2);
+    std::cout << "\nDict(" << std::to_string(map_size(frontend->struct_typedef_table)) << "):";
+    for (size_t i = 0; i < map_size(frontend->struct_typedef_table); ++i) {
+        const pair_t(TIdentifier, UPtrStructTypedef)* struct_typedef = &frontend->struct_typedef_table[i];
+        print_field("[" + std::string(map_get(ctx->hash_table, pair_first(*struct_typedef))) + "]", "", 2);
+        print_ast(ctx, pair_second(*struct_typedef).get(), 2);
     }
     std::cout << std::endl;
 }

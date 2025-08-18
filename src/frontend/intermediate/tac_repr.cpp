@@ -227,7 +227,7 @@ static TLong get_arr_scale(Ctx ctx, Array* arr_type) {
 }
 
 static TLong get_struct_scale(Ctx ctx, Structure* struct_type) {
-    return ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+    return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
 }
 
 static TLong get_type_scale(Ctx ctx, Type* type) {
@@ -809,7 +809,7 @@ static void sub_obj_dot_res_instr(TacSubObject* res, TLong member_offset) { res-
 static std::unique_ptr<TacExpResult> dot_res_instr(Ctx ctx, CDot* node) {
     THROW_ABORT_IF(node->structure->exp_type->type() != AST_Structure_t);
     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
-    StructTypedef* struct_typedef = ctx->frontend->struct_typedef_table[struct_type->tag].get();
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
     TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
     std::unique_ptr<TacExpResult> res = repr_res_instr(ctx, node->structure.get());
     switch (res->type()) {
@@ -834,7 +834,7 @@ static std::unique_ptr<TacDereferencedPointer> arrow_res_instr(Ctx ctx, CArrow* 
     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
     THROW_ABORT_IF(ptr_type->ref_type->type() != AST_Structure_t);
     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
-    StructTypedef* struct_typedef = ctx->frontend->struct_typedef_table[struct_type->tag].get();
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
     TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
     std::shared_ptr<TacValue> val = repr_exp_instr(ctx, node->pointer.get());
     if (member_offset > 0l) {

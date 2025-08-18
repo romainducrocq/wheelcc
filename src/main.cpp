@@ -145,6 +145,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         identifiers.hash_table = map_new();
 
         frontend.string_const_table = map_new();
+        frontend.struct_typedef_table = map_new();
         frontend.symbol_table = map_new();
 
         backend.symbol_table = map_new();
@@ -268,6 +269,10 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     map_delete(identifiers.hash_table);
 
     map_delete(frontend.string_const_table);
+    for (size_t i = 0; i < map_size(frontend.struct_typedef_table); ++i) {
+        pair_second(frontend.struct_typedef_table[i]).reset();
+    }
+    map_delete(frontend.struct_typedef_table);
     for (size_t i = 0; i < map_size(frontend.symbol_table); ++i) {
         pair_second(frontend.symbol_table[i]).reset();
     }

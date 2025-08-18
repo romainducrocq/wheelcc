@@ -453,7 +453,7 @@ static std::shared_ptr<AssemblyType> gen_asm_type(Ctx ctx, TacValue* node) {
 }
 
 static std::shared_ptr<AssemblyType> asm_type_8b(Ctx ctx, Structure* struct_type, TLong offset) {
-    TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size - offset;
+    TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size - offset;
     if (size >= 8l) {
         return std::make_shared<QuadWord>();
     }
@@ -471,7 +471,7 @@ static void struct_8b_class(Ctx ctx, Structure* struct_type);
 
 static vector_t(STRUCT_8B_CLS) struct_mem_8b_class(Ctx ctx, Structure* struct_type) {
     vector_t(STRUCT_8B_CLS) struct_8b_cls = vec_new();
-    TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+    TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     while (size > 0l) {
         vec_push_back(struct_8b_cls, CLS_memory);
         size -= 8l;
@@ -482,7 +482,7 @@ static vector_t(STRUCT_8B_CLS) struct_mem_8b_class(Ctx ctx, Structure* struct_ty
 static vector_t(STRUCT_8B_CLS) struct_1_reg_8b_class(Ctx ctx, Structure* struct_type) {
     vector_t(STRUCT_8B_CLS) struct_8b_cls = vec_new();
     vec_push_back(struct_8b_cls, CLS_sse);
-    StructTypedef* struct_typedef = ctx->frontend->struct_typedef_table[struct_type->tag].get();
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
     size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
     for (size_t i = 0; i < members_front; ++i) {
         if (struct_8b_cls[0] == CLS_integer) {
@@ -510,7 +510,7 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
     vector_t(STRUCT_8B_CLS) struct_8b_cls = vec_new();
     vec_push_back(struct_8b_cls, CLS_sse);
     vec_push_back(struct_8b_cls, CLS_sse);
-    StructTypedef* struct_typedef = ctx->frontend->struct_typedef_table[struct_type->tag].get();
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
     size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
     for (size_t i = 0; i < members_front; ++i) {
         if (struct_8b_cls[0] == CLS_integer && struct_8b_cls[1] == CLS_integer) {
@@ -527,7 +527,7 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
             while (member_type->type() == AST_Array_t);
         }
         if (member_type->type() == AST_Structure_t) {
-            size *= ctx->frontend->struct_typedef_table[static_cast<Structure*>(member_type)->tag]->size;
+            size *= map_get(ctx->frontend->struct_typedef_table, static_cast<Structure*>(member_type)->tag)->size;
         }
         else {
             size *= gen_type_alignment(ctx->frontend, member_type);
@@ -591,10 +591,10 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
 static void struct_8b_class(Ctx ctx, Structure* struct_type) {
     if (map_find(ctx->struct_8b_cls_map, struct_type->tag) == map_end(ctx->struct_8b_cls_map)) {
         vector_t(STRUCT_8B_CLS) struct_8b_cls = vec_new();
-        if (ctx->frontend->struct_typedef_table[struct_type->tag]->size > 16l) {
+        if (map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size > 16l) {
             struct_8b_cls = struct_mem_8b_class(ctx, struct_type);
         }
-        else if (ctx->frontend->struct_typedef_table[struct_type->tag]->size > 8l) {
+        else if (map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size > 8l) {
             struct_8b_cls = struct_2_reg_8b_class(ctx, struct_type);
         }
         else {
@@ -726,7 +726,7 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
             ret_1_reg_mask(ctx->p_fun_type, true);
         }
         {
-            TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+            TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
             TLong offset = 0l;
             while (size > 0l) {
                 std::shared_ptr<AsmOperand> src = gen_op(ctx, node->val.get());
@@ -1895,7 +1895,7 @@ static void copy_struct_instr(Ctx ctx, TacCopy* node) {
     TIdentifier src_name = static_cast<TacVariable*>(node->src.get())->name;
     TIdentifier dst_name = static_cast<TacVariable*>(node->dst.get())->name;
     Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, src_name)->type_t.get());
-    TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+    TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     TLong offset = 0l;
     while (size > 0l) {
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
@@ -1965,7 +1965,7 @@ static void load_struct_instr(Ctx ctx, TacLoad* node) {
     {
         TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
         Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
-        TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+        TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
         TLong offset = 0l;
         while (size > 0l) {
             std::shared_ptr<AsmOperand> src = gen_memory(REG_Ax, offset);
@@ -2025,7 +2025,7 @@ static void store_struct_instr(Ctx ctx, TacStore* node) {
     {
         TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
         Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
-        TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+        TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
         TLong offset = 0l;
         while (size > 0l) {
             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(name, offset);
@@ -2180,7 +2180,7 @@ static void add_ptr_instr(Ctx ctx, TacAddPtr* node) {
 static void cp_to_offset_struct_instr(Ctx ctx, TacCopyToOffset* node) {
     TIdentifier src_name = static_cast<TacVariable*>(node->src.get())->name;
     Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, src_name)->type_t.get());
-    TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+    TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     TLong offset = 0l;
     while (size > 0l) {
         std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
@@ -2234,7 +2234,7 @@ static void cp_to_offset_instr(Ctx ctx, TacCopyToOffset* node) {
 static void cp_from_offset_struct_instr(Ctx ctx, TacCopyFromOffset* node) {
     TIdentifier dst_name = static_cast<TacVariable*>(node->dst.get())->name;
     Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, dst_name)->type_t.get());
-    TLong size = ctx->frontend->struct_typedef_table[struct_type->tag]->size;
+    TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     TLong offset = 0l;
     while (size > 0l) {
         std::shared_ptr<AsmOperand> src;
