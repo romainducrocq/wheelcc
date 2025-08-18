@@ -143,6 +143,8 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         identifiers.var_count = 0u;
         identifiers.struct_count = 0u;
         identifiers.hash_table = map_new();
+
+        frontend.string_const_table = map_new();
     }
 
     CATCH_ENTER;
@@ -261,6 +263,8 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         str_delete(pair_second(identifiers.hash_table[i]));
     }
     map_delete(identifiers.hash_table);
+
+    map_delete(frontend.string_const_table);
 
     vec_delete(tokens);
     CATCH_EXIT;

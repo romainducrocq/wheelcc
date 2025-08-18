@@ -1808,13 +1808,14 @@ void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
 
 void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("String Constant Table");
-    std::cout << "\nDict(" << std::to_string(frontend->string_const_table.size()) << "):";
-    for (const auto& static_const : frontend->string_const_table) {
-        print_field("[" + std::string(map_get(ctx->hash_table, static_const.first)) + "]", "", 2);
-        if (frontend->symbol_table.find(static_const.second) != frontend->symbol_table.end()
-            && frontend->symbol_table[static_const.second]->attrs->type() == AST_ConstantAttr_t) {
+    std::cout << "\nDict(" << std::to_string(map_size(frontend->string_const_table)) << "):";
+    for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
+        const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
+        print_field("[" + std::string(map_get(ctx->hash_table, pair_first(*static_const))) + "]", "", 2);
+        if (frontend->symbol_table.find(pair_second(*static_const)) != frontend->symbol_table.end()
+            && frontend->symbol_table[pair_second(*static_const)]->attrs->type() == AST_ConstantAttr_t) {
             ConstantAttr* constant_attr =
-                static_cast<ConstantAttr*>(frontend->symbol_table[static_const.second]->attrs.get());
+                static_cast<ConstantAttr*>(frontend->symbol_table[pair_second(*static_const)]->attrs.get());
             if (constant_attr->static_init->type() == AST_StringInit_t) {
                 std::cout << "\n    String: \"";
                 StringInit* string_init = static_cast<StringInit*>(constant_attr->static_init.get());

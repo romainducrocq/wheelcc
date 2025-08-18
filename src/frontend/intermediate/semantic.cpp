@@ -2037,12 +2037,12 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
     TIdentifier string_const_label;
     {
         TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());
-        if (ctx->frontend->string_const_table.find(string_const) != ctx->frontend->string_const_table.end()) {
-            string_const_label = ctx->frontend->string_const_table[string_const];
+        if (map_find(ctx->frontend->string_const_table, string_const) != map_end(ctx->frontend->string_const_table)) {
+            string_const_label = map_get(ctx->frontend->string_const_table, string_const);
         }
         else {
             string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);
-            ctx->frontend->string_const_table[string_const] = string_const_label;
+            map_add(ctx->frontend->string_const_table, string_const, string_const_label);
             std::shared_ptr<Type> constant_type;
             {
                 TLong size = ((TLong)vec_size(node->literal->value)) + 1l;

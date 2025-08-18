@@ -2,7 +2,6 @@
 #define _AST_AST_H
 
 #include <inttypes.h>
-#include <unordered_map>
 
 #include "util/c_std.hpp"
 

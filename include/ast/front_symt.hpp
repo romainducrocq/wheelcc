@@ -300,6 +300,7 @@ struct StructMember : Ast {
 // struct_typedef(int, int, identifier*, struct_member*)
 typedef std::unique_ptr<StructMember> UPtrStructMember;
 PairKeyValue(TIdentifier, UPtrStructMember);
+
 struct StructTypedef : Ast {
     AST_T type() override;
     StructTypedef();
@@ -328,7 +329,7 @@ typedef std::unique_ptr<Symbol> UPtrSymbol;
 PairKeyValue(TIdentifier, UPtrSymbol);
 
 struct FrontEndContext {
-    std::unordered_map<TIdentifier, TIdentifier> string_const_table;
+    hashmap_t(TIdentifier, TIdentifier) string_const_table;
     std::unordered_map<TIdentifier, std::unique_ptr<StructTypedef>> struct_typedef_table;
     std::unordered_map<TIdentifier, std::unique_ptr<Symbol>> symbol_table;
     std::unordered_set<TIdentifier> addressed_set;
