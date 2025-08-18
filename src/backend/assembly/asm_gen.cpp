@@ -488,7 +488,7 @@ static vector_t(STRUCT_8B_CLS) struct_1_reg_8b_class(Ctx ctx, Structure* struct_
         if (struct_8b_cls[0] == CLS_integer) {
             break;
         }
-        Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i)->member_type.get();
+        Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type.get();
         while (member_type->type() == AST_Array_t) {
             member_type = static_cast<Array*>(member_type)->elem_type.get();
         }
@@ -517,7 +517,7 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
             break;
         }
         TLong size = 1l;
-        Type* member_type = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i)->member_type.get();
+        Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type.get();
         if (member_type->type() == AST_Array_t) {
             do {
                 Array* member_arr_type = static_cast<Array*>(member_type);
@@ -568,7 +568,7 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
                 struct_8b_cls[0] = CLS_integer;
             }
             if (!struct_type->is_union) {
-                member_type = GET_STRUCT_TYPEDEF_BACK(struct_type->tag)->member_type.get();
+                member_type = get_struct_typedef_back(ctx->frontend, struct_type->tag)->member_type.get();
                 while (member_type->type() == AST_Array_t) {
                     member_type = static_cast<Array*>(member_type)->elem_type.get();
                 }

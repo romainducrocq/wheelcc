@@ -335,10 +335,7 @@ struct FrontEndContext {
     std::unordered_set<TIdentifier> addressed_set;
 };
 
-#define GET_STRUCT_TYPEDEF_MEMBER(X, Y) \
-    map_get(ctx->frontend->struct_typedef_table[X]->members, ctx->frontend->struct_typedef_table[X]->member_names[Y])
-#define GET_STRUCT_TYPEDEF_BACK(X)                           \
-    map_get(ctx->frontend->struct_typedef_table[X]->members, \
-        vec_back(ctx->frontend->struct_typedef_table[X]->member_names))
+StructMember* get_struct_typedef_member(FrontEndContext* ctx, TIdentifier tag, TIdentifier member_name);
+StructMember* get_struct_typedef_back(FrontEndContext* ctx, TIdentifier tag);
 
 #endif

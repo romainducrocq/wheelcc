@@ -1741,7 +1741,7 @@ static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::s
 static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>& init_type) {
     for (size_t i = vec_size(node->initializers);
          i < map_size(ctx->frontend->struct_typedef_table[struct_type->tag]->members); ++i) {
-        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, member->member_type.get());
         vec_move_back(node->initializers, zero_init);
     }
@@ -2147,7 +2147,7 @@ static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure*
 
     size = 0l;
     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         if (member->offset != size) {
             check_static_no_init(ctx, nullptr, member->offset - size);
             size = member->offset;
@@ -3239,7 +3239,7 @@ static error_t reslv_struct_init(
     TRY(check_bound_struct_init(ctx, node, struct_type));
 
     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         TRY(reslv_initializer(ctx, node->initializers[i].get(), member->member_type));
     }
     check_struct_init(ctx, node, struct_type, init_type);

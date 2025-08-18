@@ -127,3 +127,17 @@ StructTypedef::~StructTypedef() {
     }
     map_delete(this->members);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef FrontEndContext* Ctx;
+
+StructMember* get_struct_typedef_member(Ctx ctx, TIdentifier tag, TIdentifier member_name) {
+    StructTypedef* struct_typedef = ctx->struct_typedef_table[tag].get();
+    return map_get(struct_typedef->members, struct_typedef->member_names[member_name]).get();
+}
+
+StructMember* get_struct_typedef_back(Ctx ctx, TIdentifier tag) {
+    StructTypedef* struct_typedef = ctx->struct_typedef_table[tag].get();
+    return map_get(struct_typedef->members, vec_back(struct_typedef->member_names)).get();
+}

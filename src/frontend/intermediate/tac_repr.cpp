@@ -1265,7 +1265,7 @@ static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_typ
 static void struct_compound_init_instr(
     Ctx ctx, CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong& size) {
     for (size_t i = vec_size(node->initializers); i-- > 0;) {
-        const auto& member = GET_STRUCT_TYPEDEF_MEMBER(struct_type->tag, i);
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         TLong offset = size + member->offset;
         compound_init_instr(ctx, node->initializers[i].get(), member->member_type.get(), symbol, offset);
     }
