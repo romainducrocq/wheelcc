@@ -1674,8 +1674,7 @@ static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure*
     vector_t(std::unique_ptr<CInitializer>) zero_inits = vec_new();
     vec_reserve(zero_inits, vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names));
     for (size_t i = 0; i < vec_size(ctx->frontend->struct_typedef_table[struct_type->tag]->member_names); ++i) {
-        TIdentifier member_name = ctx->frontend->struct_typedef_table[struct_type->tag]->member_names[i];
-        const auto& member = map_get(ctx->frontend->struct_typedef_table[struct_type->tag]->members, member_name);
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
         vec_move_back(zero_inits, initializer);
     }
