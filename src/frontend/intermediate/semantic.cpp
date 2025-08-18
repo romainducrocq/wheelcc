@@ -3304,8 +3304,7 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
             != map_end(vec_back(ctx->scoped_identifier_maps))) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
         }
-        size_t scope_size = vec_size(ctx->scoped_identifier_maps);
-        map_add(ctx->extern_scope_map, node->name, scope_size);
+        map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
     }
 
     map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
@@ -3329,8 +3328,7 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
 static error_t reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     CATCH_ENTER;
     if (map_find(ctx->extern_scope_map, node->name) == map_end(ctx->extern_scope_map)) {
-        size_t scope_size = vec_size(ctx->scoped_identifier_maps);
-        map_add(ctx->extern_scope_map, node->name, scope_size);
+        map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
     }
 
     map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);

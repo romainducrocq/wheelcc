@@ -216,13 +216,11 @@ static void cfg_rm_block_instr(Ctx ctx, size_t instr_idx, size_t block_id) {
 
 #if __OPTIM_LEVEL__ == 1
 static void cfg_init_label_block(Ctx ctx, TacLabel* node) {
-    size_t label_id = vec_size(ctx->cfg->blocks) - 1;
-    map_add(ctx->cfg->identifier_id_map, node->name, label_id);
+    map_add(ctx->cfg->identifier_id_map, node->name, vec_size(ctx->cfg->blocks) - 1);
 }
 #elif __OPTIM_LEVEL__ == 2
 static void cfg_init_label_block(Ctx ctx, AsmLabel* node) {
-    size_t label_id = vec_size(ctx->cfg->blocks) - 1;
-    map_add(ctx->cfg->identifier_id_map, node->name, label_id);
+    map_add(ctx->cfg->identifier_id_map, node->name, vec_size(ctx->cfg->blocks) - 1);
 }
 #endif
 
@@ -837,8 +835,7 @@ static void elim_add_data_value(Ctx ctx, TacValue* node) {
 static void infer_add_data_name(Ctx ctx, TIdentifier name) {
     if (!is_aliased_name(ctx, name)
         && map_find(ctx->cfg->identifier_id_map, name) == map_end(ctx->cfg->identifier_id_map)) {
-        size_t name_id = REGISTER_MASK_SIZE + ctx->dfa->set_size;
-        map_add(ctx->cfg->identifier_id_map, name, name_id);
+        map_add(ctx->cfg->identifier_id_map, name, REGISTER_MASK_SIZE + ctx->dfa->set_size);
         ctx->dfa->set_size++;
     }
 }
