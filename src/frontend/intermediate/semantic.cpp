@@ -25,7 +25,7 @@ struct SemanticContext {
     hashmap_t(TIdentifier, TIdentifier) goto_map;
     vector_t(hashmap_t(TIdentifier, TIdentifier)) scoped_identifier_maps;
     vector_t(hashmap_t(TIdentifier, Structure)) scoped_struct_maps;
-    std::unordered_set<TIdentifier> label_set;
+    hashset_t(TIdentifier) label_set;
     // Loop labeling
     vector_t(TIdentifier) break_loop_labels;
     vector_t(TIdentifier) continue_loop_labels;
@@ -2520,10 +2520,10 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
 static error_t annotate_goto_label(Ctx ctx, CLabel* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    if (ctx->label_set.find(node->target) != ctx->label_set.end()) {
+    if (set_find(ctx->label_set, node->target) != set_end(ctx->label_set)) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_label_in_scope, str_fmt_name(node->target, &name_fmt)));
     }
-    ctx->label_set.insert(node->target);
+    set_insert(ctx->label_set, node->target);
     FINALLY;
     str_delete(name_fmt);
     CATCH_EXIT;
@@ -2635,7 +2635,7 @@ static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
     string_t name_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     for (size_t i = 0; i < map_size(ctx->goto_map); ++i) {
-        if (ctx->label_set.find(pair_first(ctx->goto_map[i])) == ctx->label_set.end()) {
+        if (set_find(ctx->label_set, pair_first(ctx->goto_map[i])) == set_end(ctx->label_set)) {
             THROW_AT_LINE(map_get(ctx->errors->linebuf_map, pair_second(ctx->goto_map[i])),
                 GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(pair_first(ctx->goto_map[i]), &name_fmt_1),
                     str_fmt_name(node->name, &name_fmt_2)));
@@ -3444,7 +3444,7 @@ static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
     CATCH_ENTER;
     if (is_file_scope(ctx)) {
         map_clear(ctx->goto_map);
-        ctx->label_set.clear();
+        set_clear(ctx->label_set);
         vec_clear(ctx->break_loop_labels);
         vec_clear(ctx->continue_loop_labels);
         ctx->p_switch_statement = nullptr;
@@ -3518,6 +3518,7 @@ error_t analyze_semantic(
         ctx.goto_map = map_new();
         ctx.scoped_identifier_maps = vec_new();
         ctx.scoped_struct_maps = vec_new();
+        ctx.label_set = set_new();
         ctx.break_loop_labels = vec_new();
         ctx.continue_loop_labels = vec_new();
     }
@@ -3535,6 +3536,7 @@ error_t analyze_semantic(
         map_delete(ctx.scoped_struct_maps[i]);
     }
     vec_delete(ctx.scoped_struct_maps);
+    set_delete(ctx.label_set);
     vec_delete(ctx.break_loop_labels);
     vec_delete(ctx.continue_loop_labels);
     CATCH_EXIT;

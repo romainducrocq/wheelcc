@@ -326,6 +326,7 @@ typedef std::unique_ptr<StructTypedef> UPtrStructTypedef;
 PairKeyValue(TIdentifier, UPtrStructTypedef);
 typedef std::unique_ptr<Symbol> UPtrSymbol;
 PairKeyValue(TIdentifier, UPtrSymbol);
+ElementKey(TIdentifier);
 
 struct FrontEndContext {
     hashmap_t(TIdentifier, TIdentifier) string_const_table;
