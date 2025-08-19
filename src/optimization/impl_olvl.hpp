@@ -820,7 +820,7 @@ static bool prop_add_data_idx(Ctx ctx, TacCopy* node, size_t instr_idx, size_t b
 }
 
 static void elim_add_data_name(Ctx ctx, TIdentifier name) {
-    if (map_find(ctx->cfg->identifier_id_map, name) == map_end(ctx->cfg->identifier_id_map)) {
+    if (map_find(ctx->cfg->identifier_id_map, name) == map_end()) {
         map_add(ctx->cfg->identifier_id_map, name, ctx->dfa->set_size);
         ctx->dfa->set_size++;
     }
@@ -833,8 +833,7 @@ static void elim_add_data_value(Ctx ctx, TacValue* node) {
 }
 #elif __OPTIM_LEVEL__ == 2
 static void infer_add_data_name(Ctx ctx, TIdentifier name) {
-    if (!is_aliased_name(ctx, name)
-        && map_find(ctx->cfg->identifier_id_map, name) == map_end(ctx->cfg->identifier_id_map)) {
+    if (!is_aliased_name(ctx, name) && map_find(ctx->cfg->identifier_id_map, name) == map_end()) {
         map_add(ctx->cfg->identifier_id_map, name, REGISTER_MASK_SIZE + ctx->dfa->set_size);
         ctx->dfa->set_size++;
     }

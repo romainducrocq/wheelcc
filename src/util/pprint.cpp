@@ -1813,7 +1813,7 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
     for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
         const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
         print_field("[" + std::string(map_get(ctx->hash_table, pair_first(*static_const))) + "]", "", 2);
-        if (map_find(frontend->symbol_table, pair_second(*static_const)) != map_end(frontend->symbol_table)
+        if (map_find(frontend->symbol_table, pair_second(*static_const)) != map_end()
             && map_get(frontend->symbol_table, pair_second(*static_const))->attrs->type() == AST_ConstantAttr_t) {
             ConstantAttr* constant_attr =
                 static_cast<ConstantAttr*>(map_get(frontend->symbol_table, pair_second(*static_const))->attrs.get());

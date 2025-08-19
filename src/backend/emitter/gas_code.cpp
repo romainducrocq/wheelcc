@@ -421,7 +421,7 @@ static void memory_op(Ctx ctx, AsmMemory* node) {
 }
 
 static void data_op(Ctx ctx, AsmData* node) {
-    if (map_find(ctx->backend->symbol_table, node->name) != map_end(ctx->backend->symbol_table)
+    if (map_find(ctx->backend->symbol_table, node->name) != map_end()
         && map_get(ctx->backend->symbol_table, node->name)->type() == AST_BackendObj_t
         && static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get())->is_const) {
         emit(ctx, LBL);

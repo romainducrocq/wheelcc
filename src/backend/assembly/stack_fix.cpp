@@ -92,7 +92,7 @@ static void alloc_offset_pseudo_mem(Ctx ctx, AssemblyType* asm_type) {
 }
 
 static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
-    if (map_find(ctx->pseudo_stack_map, node->name) == map_end(ctx->pseudo_stack_map)) {
+    if (map_find(ctx->pseudo_stack_map, node->name) == map_end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get());
         if (backend_obj->is_static) {
@@ -108,7 +108,7 @@ static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
 }
 
 static std::shared_ptr<AsmOperand> repl_pseudo_mem_op(Ctx ctx, AsmPseudoMem* node) {
-    if (map_find(ctx->pseudo_stack_map, node->name) == map_end(ctx->pseudo_stack_map)) {
+    if (map_find(ctx->pseudo_stack_map, node->name) == map_end()) {
 
         BackendObj* backend_obj = static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get());
         if (backend_obj->is_static) {

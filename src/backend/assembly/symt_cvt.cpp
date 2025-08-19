@@ -92,7 +92,7 @@ static std::shared_ptr<ByteArray> arr_asm_type(FrontEndContext* ctx, Array* arr_
 static std::shared_ptr<ByteArray> struct_asm_type(FrontEndContext* ctx, Structure* struct_type) {
     TLong size;
     TInt alignment;
-    if (map_find(ctx->struct_typedef_table, struct_type->tag) != map_end(ctx->struct_typedef_table)) {
+    if (map_find(ctx->struct_typedef_table, struct_type->tag) != map_end()) {
         size = map_get(ctx->struct_typedef_table, struct_type->tag)->size;
         alignment = map_get(ctx->struct_typedef_table, struct_type->tag)->alignment;
     }

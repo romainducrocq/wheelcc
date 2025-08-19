@@ -99,7 +99,7 @@ static std::shared_ptr<TacVariable> var_value(CVar* node) {
 
 static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::shared_ptr<Type>&& inner_type) {
     TIdentifier inner_name = repr_var_identifier(ctx->identifiers, node);
-    if (map_find(ctx->frontend->symbol_table, inner_name) == map_end(ctx->frontend->symbol_table)) {
+    if (map_find(ctx->frontend->symbol_table, inner_name) == map_end()) {
         std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
         std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
         map_move_add(ctx->frontend->symbol_table, inner_name, symbol);
@@ -148,7 +148,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node)
     TIdentifier string_const_label;
     {
         TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());
-        if (map_find(ctx->frontend->string_const_table, string_const) != map_end(ctx->frontend->string_const_table)) {
+        if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
             string_const_label = map_get(ctx->frontend->string_const_table, string_const);
         }
         else {

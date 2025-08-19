@@ -136,7 +136,7 @@ static std::shared_ptr<AsmData> dbl_static_const_op(Ctx ctx, TULong binary, TInt
     TIdentifier dbl_const_label;
     {
         TIdentifier dbl_const = make_binary_identifier(ctx, binary);
-        if (map_find(ctx->dbl_const_table, dbl_const) != map_end(ctx->dbl_const_table)) {
+        if (map_find(ctx->dbl_const_table, dbl_const) != map_end()) {
             dbl_const_label = map_get(ctx->dbl_const_table, dbl_const);
         }
         else {
@@ -589,7 +589,7 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
 }
 
 static void struct_8b_class(Ctx ctx, Structure* struct_type) {
-    if (map_find(ctx->struct_8b_cls_map, struct_type->tag) == map_end(ctx->struct_8b_cls_map)) {
+    if (map_find(ctx->struct_8b_cls_map, struct_type->tag) == map_end()) {
         vector_t(STRUCT_8B_CLS) struct_8b_cls = vec_new();
         if (map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size > 16l) {
             struct_8b_cls = struct_mem_8b_class(ctx, struct_type);
@@ -1942,7 +1942,7 @@ static void getaddr_instr(Ctx ctx, TacGetAddress* node) {
         if (node->src->type() == AST_TacVariable_t) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
             set_insert(ctx->frontend->addressed_set, name);
-            if (map_find(ctx->frontend->symbol_table, name) != map_end(ctx->frontend->symbol_table)
+            if (map_find(ctx->frontend->symbol_table, name) != map_end()
                 && map_get(ctx->frontend->symbol_table, name)->attrs->type() == AST_ConstantAttr_t) {
                 src = std::make_shared<AsmData>(name, 0l);
                 goto Lpass;

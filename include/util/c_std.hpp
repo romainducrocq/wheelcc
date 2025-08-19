@@ -136,7 +136,7 @@ typedef sds string_t;
 #define map_add(X, Y, Z) hmput(X, Y, Z)
 #define map_clear(X) map_delete(X)
 #define map_empty(X) (map_size(X) == 0)
-#define map_end(X) -1
+#define map_end() -1
 #define map_erase(X, Y) hmdel(X, Y)
 #define map_find(X, Y) hmgeti(X, Y)
 #define map_get(X, Y) hmget(X, Y)
@@ -167,7 +167,7 @@ typedef sds string_t;
 #define set_delete(X) map_delete(X)
 #define set_size(X) map_size(X)
 #define set_clear(X) map_clear(X)
-#define set_end() map_end(0)
+#define set_end() map_end()
 #define set_find(X, Y) map_find(X, Y)
 #define set_insert(X, Y) map_add(X, Y, 0)
 
