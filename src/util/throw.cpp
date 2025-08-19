@@ -53,7 +53,7 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
     string_t line = str_new(NULL);
     {
         size_t len = 0;
-        char* buf = nullptr;
+        char* buf = NULL;
         FILE* fd = fopen(filename, "rb");
         if (!fd) {
             raise_base_error(ctx);
@@ -63,8 +63,8 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
             if (getline(&buf, &len, fd) == -1) {
                 free(buf);
                 fclose(fd);
-                buf = nullptr;
-                fd = nullptr;
+                buf = NULL;
+                fd = NULL;
                 raise_base_error(ctx);
                 return;
             }
@@ -72,8 +72,8 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
         line = str_new(buf);
         free(buf);
         fclose(fd);
-        buf = nullptr;
-        fd = nullptr;
+        buf = NULL;
+        fd = NULL;
         if (str_back(line) == '\n') {
             str_pop_back(line);
         }

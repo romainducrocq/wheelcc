@@ -41,9 +41,9 @@ error_t open_fread(Ctx ctx, const string_t filename) {
             if (n_fopens == FOPEN_MAX) {
                 ctx->file_reads[i].len = 0;
                 free(ctx->file_reads[i].buf);
-                ctx->file_reads[i].buf = nullptr;
+                ctx->file_reads[i].buf = NULL;
                 fclose(ctx->file_reads[i].fd);
-                ctx->file_reads[i].fd = nullptr;
+                ctx->file_reads[i].fd = NULL;
             }
             break;
         }
@@ -64,7 +64,7 @@ error_t open_fwrite(Ctx ctx, const string_t filename) {
     CATCH_ENTER;
     THROW_ABORT_IF(!vec_empty(ctx->file_reads));
 
-    ctx->fd_write = nullptr;
+    ctx->fd_write = NULL;
     ctx->fd_write = fopen(filename, "wb");
     if (!ctx->fd_write || str_size(filename) >= PATH_MAX) {
         THROW_AT(0, GET_UTIL_MSG(MSG_failed_fwrite, filename));
@@ -80,11 +80,11 @@ bool read_line(Ctx ctx, char*& line, size_t& line_size) {
     ssize_t line_ssize =
         getline(&vec_back(ctx->file_reads).buf, &vec_back(ctx->file_reads).len, vec_back(ctx->file_reads).fd);
     if (line_ssize == -1) {
-        line = nullptr;
+        line = NULL;
         line_size = 0;
         vec_back(ctx->file_reads).len = 0;
         free(vec_back(ctx->file_reads).buf);
-        vec_back(ctx->file_reads).buf = nullptr;
+        vec_back(ctx->file_reads).buf = NULL;
         return false;
     }
     else {
@@ -109,7 +109,7 @@ void write_buffer(Ctx ctx, const char* buf) {
 error_t close_fread(Ctx ctx, size_t linenum) {
     CATCH_ENTER;
     fclose(vec_back(ctx->file_reads).fd);
-    vec_back(ctx->file_reads).fd = nullptr;
+    vec_back(ctx->file_reads).fd = NULL;
     str_delete(vec_back(ctx->file_reads).filename);
     vec_pop_back(ctx->file_reads);
 
@@ -135,23 +135,23 @@ void close_fwrite(Ctx ctx) {
     str_clear(ctx->write_buf);
 
     fclose(ctx->fd_write);
-    ctx->fd_write = nullptr;
+    ctx->fd_write = NULL;
 }
 
 void free_fileio(Ctx ctx) {
     for (size_t i = 0; i < vec_size(ctx->file_reads); ++i) {
         FileRead* file_read = &ctx->file_reads[i];
-        if (file_read->buf != nullptr) {
+        if (file_read->buf != NULL) {
             free(file_read->buf);
-            file_read->buf = nullptr;
+            file_read->buf = NULL;
         }
-        if (file_read->fd != nullptr) {
+        if (file_read->fd != NULL) {
             fclose(file_read->fd);
-            file_read->fd = nullptr;
+            file_read->fd = NULL;
         }
     }
-    if (ctx->fd_write != nullptr) {
+    if (ctx->fd_write != NULL) {
         fclose(ctx->fd_write);
-        ctx->fd_write = nullptr;
+        ctx->fd_write = NULL;
     }
 }

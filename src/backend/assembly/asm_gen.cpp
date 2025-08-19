@@ -762,7 +762,7 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
                 break;
             }
             case CLS_sse:
-                ret_8b_instr(ctx, name, 0l, nullptr, REG_Xmm0);
+                ret_8b_instr(ctx, name, 0l, NULL, REG_Xmm0);
                 break;
             default:
                 THROW_ABORT;
@@ -774,7 +774,7 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
                     ret_8b_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
                     break;
                 case CLS_sse: {
-                    ret_8b_instr(ctx, name, 8l, nullptr, sse_size ? REG_Xmm1 : REG_Xmm0);
+                    ret_8b_instr(ctx, name, 8l, NULL, sse_size ? REG_Xmm1 : REG_Xmm0);
                     sse_size = true;
                     break;
                 }
@@ -1336,7 +1336,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
                 TLong offset = 0l;
                 for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
                     if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[j] == CLS_sse) {
-                        reg_8b_arg_call_instr(ctx, name, offset, nullptr, ctx->sse_arg_regs[sse_size]);
+                        reg_8b_arg_call_instr(ctx, name, offset, NULL, ctx->sse_arg_regs[sse_size]);
                         sse_size++;
                     }
                     else {
@@ -1488,7 +1488,7 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
                         break;
                     }
                     case CLS_sse:
-                        ret_8b_call_instr(ctx, name, 0l, nullptr, REG_Xmm0);
+                        ret_8b_call_instr(ctx, name, 0l, NULL, REG_Xmm0);
                         break;
                     default:
                         THROW_ABORT;
@@ -1500,7 +1500,7 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
                             ret_8b_call_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
                             break;
                         case CLS_sse: {
-                            ret_8b_call_instr(ctx, name, 8l, nullptr, sse_size ? REG_Xmm1 : REG_Xmm0);
+                            ret_8b_call_instr(ctx, name, 8l, NULL, sse_size ? REG_Xmm1 : REG_Xmm0);
                             sse_size = true;
                             break;
                         }
@@ -2587,7 +2587,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
                 TLong offset = 0l;
                 for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
                     if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[j] == CLS_sse) {
-                        reg_8b_fun_param_instr(ctx, param, offset, nullptr, ctx->sse_arg_regs[sse_size]);
+                        reg_8b_fun_param_instr(ctx, param, offset, NULL, ctx->sse_arg_regs[sse_size]);
                         sse_size++;
                     }
                     else {
@@ -2637,7 +2637,7 @@ static std::unique_ptr<AsmFunction> gen_fun_toplvl(Ctx ctx, TacFunction* node) {
 
         ctx->p_fun_type = fun_type;
         gen_instr_list(ctx, node->body);
-        ctx->p_fun_type = nullptr;
+        ctx->p_fun_type = NULL;
         ctx->p_instrs = NULL;
     }
 

@@ -773,7 +773,7 @@ static void alloc_next_color_infer_graph(Ctx ctx) {
 
 static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_name) {
     size_t pruned_idx;
-    InferenceRegister* infer = nullptr;
+    InferenceRegister* infer = NULL;
     for (size_t i = 0; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
         pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
         infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, pruned_name);
@@ -781,7 +781,7 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
             pruned_idx = i;
             break;
         }
-        infer = nullptr;
+        infer = NULL;
     }
     if (!infer) {
         for (size_t i = 0; i < vec_size(ctx->p_infer_graph->unpruned_hard_mask_bits); ++i) {
@@ -791,7 +791,7 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
                 pruned_idx = i;
                 break;
             }
-            infer = nullptr;
+            infer = NULL;
         }
     }
     if (!infer) {
@@ -803,7 +803,7 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
                 pruned_idx = i;
                 break;
             }
-            infer = nullptr;
+            infer = NULL;
         }
         THROW_ABORT_IF(!infer);
         double min_spill_metric = ((double)infer->spill_cost) / infer->degree;
@@ -884,7 +884,7 @@ static void alloc_color_reg_map(Ctx ctx) {
 
 static std::shared_ptr<AsmRegister> alloc_hard_reg(Ctx ctx, TIdentifier name) {
     if (is_aliased_name(ctx, name)) {
-        return nullptr;
+        return NULL;
     }
     set_p_infer_graph(ctx, map_get(ctx->frontend->symbol_table, name)->type_t->type() == AST_Double_t);
     REGISTER_KIND color = map_get(ctx->p_infer_graph->pseudo_reg_map, name).color;
@@ -899,7 +899,7 @@ static std::shared_ptr<AsmRegister> alloc_hard_reg(Ctx ctx, TIdentifier name) {
         return hard_reg;
     }
     else {
-        return nullptr;
+        return NULL;
     }
 }
 
@@ -936,7 +936,7 @@ static void alloc_mov_instr(Ctx ctx, AsmMov* node, size_t instr_idx) {
     REGISTER_KIND src_reg_kind = get_op_reg_kind(ctx, src_op);
     REGISTER_KIND dst_reg_kind = get_op_reg_kind(ctx, dst_op);
     if (src_reg_kind != REG_Sp && src_reg_kind == dst_reg_kind) {
-        set_instr(ctx, nullptr, instr_idx);
+        set_instr(ctx, NULL, instr_idx);
     }
     else {
         if (src_op->type() == AST_AsmPseudo_t) {
@@ -1389,8 +1389,8 @@ static void coal_hard_infer_reg(Ctx ctx, REGISTER_KIND reg_kind, InferenceRegist
 }
 
 static bool coal_infer_regs(Ctx ctx, AsmMov* node) {
-    InferenceRegister* src_infer = nullptr;
-    InferenceRegister* dst_infer = nullptr;
+    InferenceRegister* src_infer = NULL;
+    InferenceRegister* dst_infer = NULL;
     size_t src_idx = get_coalesced_idx(ctx, node->src.get());
     size_t dst_idx = get_coalesced_idx(ctx, node->dst.get());
     if (get_coalescable_infer_regs(ctx, src_infer, dst_infer, src_idx, dst_idx)
@@ -1429,7 +1429,7 @@ static std::shared_ptr<AsmOperand> coal_op_reg(Ctx ctx, TIdentifier name, size_t
         }
     }
     else {
-        return nullptr;
+        return NULL;
     }
 }
 
@@ -1732,10 +1732,10 @@ Ldowhile:
             ctx->p_backend_fun = backend_fun;
         }
         reallocate_registers(ctx);
-        ctx->p_backend_fun = nullptr;
+        ctx->p_backend_fun = NULL;
     }
 Lbreak:
-    ctx->p_infer_graph = nullptr;
+    ctx->p_infer_graph = NULL;
     ctx->p_instrs = NULL;
 }
 

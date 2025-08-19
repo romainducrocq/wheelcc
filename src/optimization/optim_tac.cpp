@@ -985,7 +985,7 @@ static std::shared_ptr<CConst> fold_copy_char_const(Ctx ctx, TacVariable* node, 
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Char_t:
         case AST_SChar_t:
-            return nullptr;
+            return NULL;
         case AST_UChar_t: {
             TUChar value = (TUChar)constant->value;
             return std::make_shared<CConstUChar>(value);
@@ -998,7 +998,7 @@ static std::shared_ptr<CConst> fold_copy_char_const(Ctx ctx, TacVariable* node, 
 static std::shared_ptr<CConst> fold_copy_int_const(Ctx ctx, TacVariable* node, CConstInt* constant) {
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Int_t:
-            return nullptr;
+            return NULL;
         case AST_UInt_t: {
             TUInt value = (TUInt)constant->value;
             return std::make_shared<CConstUInt>(value);
@@ -1012,7 +1012,7 @@ static std::shared_ptr<CConst> fold_copy_long_const(Ctx ctx, TacVariable* node, 
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
         case AST_Long_t:
         case AST_Pointer_t:
-            return nullptr;
+            return NULL;
         case AST_Double_t: {
             TDouble value = (TDouble)constant->value;
             return std::make_shared<CConstDouble>(value);
@@ -1033,7 +1033,7 @@ static std::shared_ptr<CConst> fold_copy_dbl_const(Ctx ctx, TacVariable* node, C
             return std::make_shared<CConstLong>(value);
         }
         case AST_Double_t:
-            return nullptr;
+            return NULL;
         case AST_ULong_t: {
             TULong value = (TULong)constant->value;
             return std::make_shared<CConstULong>(value);
@@ -1051,7 +1051,7 @@ static std::shared_ptr<CConst> fold_copy_uchar_const(Ctx ctx, TacVariable* node,
             return std::make_shared<CConstChar>(value);
         }
         case AST_UChar_t:
-            return nullptr;
+            return NULL;
         default:
             THROW_ABORT;
     }
@@ -1064,7 +1064,7 @@ static std::shared_ptr<CConst> fold_copy_uint_const(Ctx ctx, TacVariable* node, 
             return std::make_shared<CConstInt>(value);
         }
         case AST_UInt_t:
-            return nullptr;
+            return NULL;
         default:
             THROW_ABORT;
     }
@@ -1082,7 +1082,7 @@ static std::shared_ptr<CConst> fold_copy_ulong_const(Ctx ctx, TacVariable* node,
         }
         case AST_Pointer_t:
         case AST_ULong_t:
-            return nullptr;
+            return NULL;
         default:
             THROW_ABORT;
     }
@@ -1126,7 +1126,7 @@ static std::shared_ptr<TacConstant> fold_copy_const(Ctx ctx, TacVariable* node, 
         return std::make_shared<TacConstant>(std::move(fold_constant));
     }
     else {
-        return nullptr;
+        return NULL;
     }
 }
 
@@ -1170,7 +1170,7 @@ static void fold_jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node, size_t instr_idx) 
             set_instr(ctx, std::make_unique<TacJump>(target), instr_idx);
         }
         else {
-            set_instr(ctx, nullptr, instr_idx);
+            set_instr(ctx, NULL, instr_idx);
         }
     }
 }
@@ -1178,7 +1178,7 @@ static void fold_jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node, size_t instr_idx) 
 static void fold_jmp_ne_0_instr(Ctx ctx, TacJumpIfNotZero* node, size_t instr_idx) {
     if (node->condition->type() == AST_TacConstant_t) {
         if (is_const_zero(static_cast<TacConstant*>(node->condition.get())->constant.get())) {
-            set_instr(ctx, nullptr, instr_idx);
+            set_instr(ctx, NULL, instr_idx);
         }
         else {
             TIdentifier target = node->target;
@@ -1262,7 +1262,7 @@ static void unreach_empty_block(Ctx ctx, size_t block_id) {
     for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
          instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
         if (GET_INSTR(instr_idx)) {
-            set_instr(ctx, nullptr, instr_idx);
+            set_instr(ctx, NULL, instr_idx);
         }
     }
     GET_CFG_BLOCK(block_id).size = 0;
@@ -2551,7 +2551,7 @@ static void elim_transfer_live_values(Ctx ctx, size_t instr_idx, size_t next_ins
 static void elim_dst_name_instr(Ctx ctx, TIdentifier name, size_t instr_idx) {
     size_t i = map_get(ctx->cfg->identifier_id_map, name);
     if (!GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-        set_instr(ctx, nullptr, instr_idx);
+        set_instr(ctx, NULL, instr_idx);
     }
 }
 

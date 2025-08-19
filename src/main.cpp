@@ -290,7 +290,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 }
 
 static bool arg_parse_uint8(const char* arg, uint8_t& value) {
-    char* end_ptr = nullptr;
+    char* end_ptr = NULL;
     value = (uint8_t)strtol(arg, &end_ptr, 10);
     return end_ptr == arg;
 }
@@ -350,7 +350,7 @@ error_t main(int, char** argv) {
         errors.fopen_lines = vec_new();
 
         fileio.errors = &errors;
-        fileio.fd_write = nullptr;
+        fileio.fd_write = NULL;
         fileio.write_buf = str_new(NULL);
         fileio.filename = str_new(NULL);
         fileio.file_reads = vec_new();

@@ -1082,8 +1082,7 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_assign_to_void));
         }
         else if (!is_exp_lvalue(node->exp_left.get())) {
-            THROW_AT_LINE(
-                node->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(nullptr, node->unop.get())));
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(NULL, node->unop.get())));
         }
         else if (!is_same_type(node->exp_right->exp_type.get(), node->exp_left->exp_type.get())) {
             TRY(cast_assign(ctx, node->exp_left->exp_type, &node->exp_right));
@@ -1893,7 +1892,7 @@ static void push_zero_static_init(Ctx ctx, TLong byte) {
 static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type);
 
 static void check_static_no_init(Ctx ctx, Type* static_init_type, TLong size) {
-    TLong byte = static_init_type == nullptr ? size : get_type_scale(ctx, static_init_type) * size;
+    TLong byte = static_init_type == NULL ? size : get_type_scale(ctx, static_init_type) * size;
     push_zero_static_init(ctx, byte);
 }
 
@@ -2148,7 +2147,7 @@ static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure*
     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         if (member->offset != size) {
-            check_static_no_init(ctx, nullptr, member->offset - size);
+            check_static_no_init(ctx, NULL, member->offset - size);
             size = member->offset;
         }
         TRY(check_static_init(ctx, node->initializers[i].get(), member->member_type.get()));
@@ -2156,7 +2155,7 @@ static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure*
     }
     size -= map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     if (size != 0l) {
-        check_static_no_init(ctx, nullptr, -1l * size);
+        check_static_no_init(ctx, NULL, -1l * size);
     }
     FINALLY;
     CATCH_EXIT;
@@ -3440,7 +3439,7 @@ static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
         set_clear(ctx->label_set);
         vec_clear(ctx->break_loop_labels);
         vec_clear(ctx->continue_loop_labels);
-        ctx->p_switch_statement = nullptr;
+        ctx->p_switch_statement = NULL;
     }
     TRY(reslv_fun_declaration(ctx, node->fun_decl.get()));
     if (is_file_scope(ctx)) {
