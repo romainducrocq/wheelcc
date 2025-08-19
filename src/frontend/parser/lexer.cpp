@@ -770,7 +770,7 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     filename = get_match(ctx, ctx->match_at + 1, ctx->match_size - 2);
     {
         hash_t includename = str_hash(filename);
-        if (set_find(ctx->includename_set, includename) != set_end(ctx->includename_set)) {
+        if (set_find(ctx->includename_set, includename) != set_end()) {
             EARLY_EXIT;
         }
         set_insert(ctx->includename_set, includename);

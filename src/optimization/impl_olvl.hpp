@@ -789,7 +789,7 @@ static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t& i) {
 
 static bool is_aliased_name(Ctx ctx, TIdentifier name) {
     return map_get(ctx->frontend->symbol_table, name)->attrs->type() == AST_StaticAttr_t
-           || set_find(ctx->frontend->addressed_set, name) != set_end(ctx->frontend->addressed_set);
+           || set_find(ctx->frontend->addressed_set, name) != set_end();
 }
 
 #if __OPTIM_LEVEL__ == 1
@@ -1275,7 +1275,7 @@ static bool init_data_flow_analysis(Ctx ctx,
             if (map_get(ctx->frontend->symbol_table, pair_first(*name_id))->attrs->type() == AST_StaticAttr_t) {
                 SET_DFA_INSTR_SET_AT(ctx->dfa->static_idx, pair_second(*name_id), true);
             }
-            if (set_find(ctx->frontend->addressed_set, pair_first(*name_id)) != set_end(ctx->frontend->addressed_set)) {
+            if (set_find(ctx->frontend->addressed_set, pair_first(*name_id)) != set_end()) {
                 SET_DFA_INSTR_SET_AT(ctx->dfa_o1->addressed_idx, pair_second(*name_id), true);
             }
 #elif __OPTIM_LEVEL__ == 2

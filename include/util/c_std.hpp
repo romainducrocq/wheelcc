@@ -167,7 +167,7 @@ typedef sds string_t;
 #define set_delete(X) map_delete(X)
 #define set_size(X) map_size(X)
 #define set_clear(X) map_clear(X)
-#define set_end(X) map_end(X)
+#define set_end() map_end(0)
 #define set_find(X, Y) map_find(X, Y)
 #define set_insert(X, Y) map_add(X, Y, 0)
 
