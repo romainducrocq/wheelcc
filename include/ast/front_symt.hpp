@@ -3,7 +3,6 @@
 
 #include <inttypes.h>
 #include <memory>
-#include <unordered_set>
 
 #include "util/c_std.hpp"
 
@@ -332,7 +331,7 @@ struct FrontEndContext {
     hashmap_t(TIdentifier, TIdentifier) string_const_table;
     hashmap_t(TIdentifier, UPtrStructTypedef) struct_typedef_table;
     hashmap_t(TIdentifier, UPtrSymbol) symbol_table;
-    std::unordered_set<TIdentifier> addressed_set;
+    hashset_t(TIdentifier) addressed_set;
 };
 
 StructMember* get_struct_typedef_member(FrontEndContext* ctx, TIdentifier tag, TIdentifier member_name);
