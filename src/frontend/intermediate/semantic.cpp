@@ -32,7 +32,7 @@ struct SemanticContext {
     // Identifier resolution
     TIdentifier fun_def_name;
     CSwitch* p_switch_statement;
-    std::unordered_set<TIdentifier> fun_def_set;
+    hashset_t(TIdentifier) fun_def_set;
     std::unordered_set<TIdentifier> struct_def_set;
     std::unordered_set<TIdentifier> union_def_set;
     vector_t(std::shared_ptr<StaticInit>) * p_static_inits;
@@ -1840,7 +1840,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     CATCH_ENTER;
     THROW_ABORT_IF(node->fun_type->type() == AST_Void_t);
 
-    bool is_def = ctx->fun_def_set.find(node->name) != ctx->fun_def_set.end();
+    bool is_def = set_find(ctx->fun_def_set, node->name) != set_end(ctx->fun_def_set);
     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
 
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end(ctx->frontend->symbol_table)) {
@@ -1867,7 +1867,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     }
 
     if (node->body) {
-        ctx->fun_def_set.insert(node->name);
+        set_insert(ctx->fun_def_set, node->name);
         is_def = true;
         ctx->fun_def_name = node->name;
     }
@@ -3521,6 +3521,7 @@ error_t analyze_semantic(
         ctx.label_set = set_new();
         ctx.break_loop_labels = vec_new();
         ctx.continue_loop_labels = vec_new();
+        ctx.fun_def_set = set_new();
     }
     CATCH_ENTER;
     TRY(resolve_program(&ctx, node));
@@ -3539,5 +3540,6 @@ error_t analyze_semantic(
     set_delete(ctx.label_set);
     vec_delete(ctx.break_loop_labels);
     vec_delete(ctx.continue_loop_labels);
+    set_delete(ctx.fun_def_set);
     CATCH_EXIT;
 }
