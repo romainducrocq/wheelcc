@@ -536,16 +536,18 @@ static vector_t(STRUCT_8B_CLS) struct_2_reg_8b_class(Ctx ctx, Structure* struct_
             if (member_type->type() == AST_Structure_t) {
                 Structure* member_struct_type = static_cast<Structure*>(member_type);
                 struct_8b_class(ctx, member_struct_type);
-                if (vec_size(map_get(ctx->struct_8b_cls_map, member_struct_type->tag)) > 1) {
-                    if (map_get(ctx->struct_8b_cls_map, member_struct_type->tag)[0] == CLS_integer) {
+                const vector_t(STRUCT_8B_CLS) member_struct_8b_cls =
+                    map_get(ctx->struct_8b_cls_map, member_struct_type->tag);
+                if (vec_size(member_struct_8b_cls) > 1) {
+                    if (member_struct_8b_cls[0] == CLS_integer) {
                         struct_8b_cls[0] = CLS_integer;
                     }
-                    if (map_get(ctx->struct_8b_cls_map, member_struct_type->tag)[1] == CLS_integer) {
+                    if (member_struct_8b_cls[1] == CLS_integer) {
                         struct_8b_cls[1] = CLS_integer;
                     }
                 }
                 else {
-                    if (map_get(ctx->struct_8b_cls_map, member_struct_type->tag)[0] == CLS_integer) {
+                    if (member_struct_8b_cls[0] == CLS_integer) {
                         struct_8b_cls[0] = CLS_integer;
                         struct_8b_cls[1] = CLS_integer;
                     }
@@ -717,7 +719,8 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
     Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
     struct_8b_class(ctx, struct_type);
-    if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] == CLS_memory) {
+    const vector_t(STRUCT_8B_CLS) struct_8b_cls = map_get(ctx->struct_8b_cls_map, struct_type->tag);
+    if (struct_8b_cls[0] == CLS_memory) {
         {
             std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, -8l);
             std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
@@ -755,7 +758,7 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
     }
     else {
         bool reg_size = false;
-        switch (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0]) {
+        switch (struct_8b_cls[0]) {
             case CLS_integer: {
                 ret_8b_instr(ctx, name, 0l, struct_type, REG_Ax);
                 reg_size = true;
@@ -767,9 +770,9 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
             default:
                 THROW_ABORT;
         }
-        if (vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)) == 2) {
+        if (vec_size(struct_8b_cls) == 2) {
             bool sse_size = !reg_size;
-            switch (map_get(ctx->struct_8b_cls_map, struct_type->tag)[1]) {
+            switch (struct_8b_cls[1]) {
                 case CLS_integer:
                     ret_8b_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
                     break;
@@ -1320,11 +1323,12 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
             TIdentifier name = static_cast<TacVariable*>(arg)->name;
             Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
             struct_8b_class(ctx, struct_type);
-            if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] != CLS_memory) {
+            const vector_t(STRUCT_8B_CLS) struct_8b_cls = map_get(ctx->struct_8b_cls_map, struct_type->tag);
+            if (struct_8b_cls[0] != CLS_memory) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
-                    if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[j] == CLS_sse) {
+                for (size_t j = 0; j < vec_size(struct_8b_cls); ++j) {
+                    if (struct_8b_cls[j] == CLS_sse) {
                         struct_sse_size++;
                     }
                     else {
@@ -1334,8 +1338,8 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
-                    if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[j] == CLS_sse) {
+                for (size_t j = 0; j < vec_size(struct_8b_cls); ++j) {
+                    if (struct_8b_cls[j] == CLS_sse) {
                         reg_8b_arg_call_instr(ctx, name, offset, NULL, ctx->sse_arg_regs[sse_size]);
                         sse_size++;
                     }
@@ -1349,7 +1353,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
             else {
                 TLong offset = 0l;
                 ctx->p_instrs = &stack_instrs;
-                for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
+                for (size_t j = 0; j < vec_size(struct_8b_cls); ++j) {
                     stack_8b_arg_call_instr(ctx, name, offset, struct_type);
                     offset += 8l;
                     stack_padding++;
@@ -1481,7 +1485,8 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
                 TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
                 Structure* struct_type =
                     static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
-                switch (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0]) {
+                const vector_t(STRUCT_8B_CLS) struct_8b_cls = map_get(ctx->struct_8b_cls_map, struct_type->tag);
+                switch (struct_8b_cls[0]) {
                     case CLS_integer: {
                         ret_8b_call_instr(ctx, name, 0l, struct_type, REG_Ax);
                         reg_size = true;
@@ -1493,9 +1498,9 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
                     default:
                         THROW_ABORT;
                 }
-                if (vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)) == 2) {
+                if (vec_size(struct_8b_cls) == 2) {
                     bool sse_size = !reg_size;
-                    switch (map_get(ctx->struct_8b_cls_map, struct_type->tag)[1]) {
+                    switch (struct_8b_cls[1]) {
                         case CLS_integer:
                             ret_8b_call_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
                             break;
@@ -2571,11 +2576,12 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
             size_t struct_sse_size = 9;
             Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, param)->type_t.get());
             struct_8b_class(ctx, struct_type);
-            if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[0] != CLS_memory) {
+            const vector_t(STRUCT_8B_CLS) struct_8b_cls = map_get(ctx->struct_8b_cls_map, struct_type->tag);
+            if (struct_8b_cls[0] != CLS_memory) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
-                for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
-                    if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[j] == CLS_sse) {
+                for (size_t j = 0; j < vec_size(struct_8b_cls); ++j) {
+                    if (struct_8b_cls[j] == CLS_sse) {
                         struct_sse_size++;
                     }
                     else {
@@ -2585,8 +2591,8 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
             }
             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
                 TLong offset = 0l;
-                for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
-                    if (map_get(ctx->struct_8b_cls_map, struct_type->tag)[j] == CLS_sse) {
+                for (size_t j = 0; j < vec_size(struct_8b_cls); ++j) {
+                    if (struct_8b_cls[j] == CLS_sse) {
                         reg_8b_fun_param_instr(ctx, param, offset, NULL, ctx->sse_arg_regs[sse_size]);
                         sse_size++;
                     }
@@ -2599,7 +2605,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
             }
             else {
                 TLong offset = 0l;
-                for (size_t j = 0; j < vec_size(map_get(ctx->struct_8b_cls_map, struct_type->tag)); ++j) {
+                for (size_t j = 0; j < vec_size(struct_8b_cls); ++j) {
                     stack_8b_fun_param_instr(ctx, param, stack_bytes, offset, struct_type);
                     stack_bytes += 8l;
                     offset += 8l;
