@@ -34,7 +34,7 @@ struct SemanticContext {
     CSwitch* p_switch_statement;
     hashset_t(TIdentifier) fun_def_set;
     hashset_t(TIdentifier) struct_def_set;
-    std::unordered_set<TIdentifier> union_def_set;
+    hashset_t(TIdentifier) union_def_set;
     vector_t(std::shared_ptr<StaticInit>) * p_static_inits;
 };
 
@@ -2666,7 +2666,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (struct_type->is_union) {
-        if (ctx->union_def_set.find(struct_type->tag) != ctx->union_def_set.end()) {
+        if (set_find(ctx->union_def_set, struct_type->tag) != set_end(ctx->union_def_set)) {
             EARLY_EXIT;
         }
     }
@@ -3405,7 +3405,7 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     if (map_find(vec_back(ctx->scoped_struct_maps), node->tag) != map_end(vec_back(ctx->scoped_struct_maps))) {
         node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
         if (node->is_union) {
-            if (ctx->union_def_set.find(node->tag) == ctx->union_def_set.end()) {
+            if (set_find(ctx->union_def_set, node->tag) == set_end(ctx->union_def_set)) {
                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
                                               str_fmt_struct_name(node->tag, node->is_union, &struct_fmt_1),
                                               str_fmt_struct_name(node->tag, !node->is_union, &struct_fmt_2)));
@@ -3424,7 +3424,7 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
         }
         node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
         if (node->is_union) {
-            ctx->union_def_set.insert(node->tag);
+            set_insert(ctx->union_def_set, node->tag);
         }
         else {
             set_insert(ctx->struct_def_set, node->tag);
@@ -3523,6 +3523,7 @@ error_t analyze_semantic(
         ctx.continue_loop_labels = vec_new();
         ctx.fun_def_set = set_new();
         ctx.struct_def_set = set_new();
+        ctx.union_def_set = set_new();
     }
     CATCH_ENTER;
     TRY(resolve_program(&ctx, node));
@@ -3543,5 +3544,6 @@ error_t analyze_semantic(
     vec_delete(ctx.continue_loop_labels);
     set_delete(ctx.fun_def_set);
     set_delete(ctx.struct_def_set);
+    set_delete(ctx.union_def_set);
     CATCH_EXIT;
 }
