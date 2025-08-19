@@ -1,5 +1,3 @@
-#include <unordered_set>
-
 #include "util/c_std.hpp"
 #include "util/fileio.hpp"
 #include "util/throw.hpp"
@@ -8,6 +6,8 @@
 
 #include "frontend/parser/errors.hpp"
 #include "frontend/parser/lexer.hpp"
+
+ElementKey(hash_t);
 
 struct LexerContext {
     ErrorsContext* errors;
@@ -19,7 +19,7 @@ struct LexerContext {
     size_t match_at;
     size_t match_size;
     vector_t(const char*) stdlibdirs;
-    std::unordered_set<hash_t> includename_set;
+    hashset_t(hash_t) includename_set;
     vector_t(const char*) * p_includedirs;
     vector_t(Token) * p_toks;
     size_t total_linenum;
@@ -770,10 +770,10 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     filename = get_match(ctx, ctx->match_at + 1, ctx->match_size - 2);
     {
         hash_t includename = str_hash(filename);
-        if (ctx->includename_set.find(includename) != ctx->includename_set.end()) {
+        if (set_find(ctx->includename_set, includename) != set_end(ctx->includename_set)) {
             EARLY_EXIT;
         }
-        ctx->includename_set.insert(includename);
+        set_insert(ctx->includename_set, includename);
     }
     switch (ctx->line[ctx->match_at]) {
         case '<': {
@@ -836,6 +836,7 @@ error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs,
         vec_push_back(ctx.stdlibdirs, "/usr/include/");
         vec_push_back(ctx.stdlibdirs, "/usr/local/include/");
 #endif
+        ctx.includename_set = set_new();
         ctx.p_includedirs = includedirs;
         ctx.p_toks = tokens;
         ctx.total_linenum = 0;
@@ -853,6 +854,7 @@ error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs,
     set_filename(ctx.fileio, filename);
     FINALLY;
     vec_delete(ctx.stdlibdirs);
+    set_delete(ctx.includename_set);
     vec_delete(*includedirs);
     CATCH_EXIT;
 }
