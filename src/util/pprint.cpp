@@ -1799,8 +1799,9 @@ void pprint_ast(IdentifierContext* ctx, Ast* node, const char* name) {
 
 void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Addressed Set");
-    std::cout << "\nSet(" << std::to_string(frontend->addressed_set.size()) << "):";
-    for (const TIdentifier& name : frontend->addressed_set) {
+    std::cout << "\nSet(" << std::to_string(set_size(frontend->addressed_set)) << "):";
+    for (size_t i = 0; i < set_size(frontend->addressed_set); ++i) {
+        TIdentifier name = element_get(frontend->addressed_set[i]);
         print_field("", std::string(map_get(ctx->hash_table, name)), 2);
     }
     std::cout << std::endl;

@@ -1941,7 +1941,7 @@ static void getaddr_instr(Ctx ctx, TacGetAddress* node) {
     {
         if (node->src->type() == AST_TacVariable_t) {
             TIdentifier name = static_cast<TacVariable*>(node->src.get())->name;
-            ctx->frontend->addressed_set.insert(name);
+            set_insert(ctx->frontend->addressed_set, name);
             if (map_find(ctx->frontend->symbol_table, name) != map_end(ctx->frontend->symbol_table)
                 && map_get(ctx->frontend->symbol_table, name)->attrs->type() == AST_ConstantAttr_t) {
                 src = std::make_shared<AsmData>(name, 0l);

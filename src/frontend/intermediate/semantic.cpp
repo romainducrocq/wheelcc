@@ -1,5 +1,4 @@
 #include <memory>
-#include <unordered_set>
 
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"

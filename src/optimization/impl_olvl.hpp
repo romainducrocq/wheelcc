@@ -789,13 +789,13 @@ static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t& i) {
 
 static bool is_aliased_name(Ctx ctx, TIdentifier name) {
     return map_get(ctx->frontend->symbol_table, name)->attrs->type() == AST_StaticAttr_t
-           || ctx->frontend->addressed_set.find(name) != ctx->frontend->addressed_set.end();
+           || set_find(ctx->frontend->addressed_set, name) != set_end(ctx->frontend->addressed_set);
 }
 
 #if __OPTIM_LEVEL__ == 1
 static void dfa_add_aliased_value(Ctx ctx, TacValue* node) {
     if (node->type() == AST_TacVariable_t) {
-        ctx->frontend->addressed_set.insert(static_cast<TacVariable*>(node)->name);
+        set_insert(ctx->frontend->addressed_set, static_cast<TacVariable*>(node)->name);
     }
 }
 
@@ -887,7 +887,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         ctx->dfa_o1->addressed_idx = ctx->dfa->static_idx + 1;
     }
     if (is_addressed_set) {
-        ctx->frontend->addressed_set.clear();
+        set_clear(ctx->frontend->addressed_set);
     }
 #endif
     for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
@@ -1275,7 +1275,7 @@ static bool init_data_flow_analysis(Ctx ctx,
             if (map_get(ctx->frontend->symbol_table, pair_first(*name_id))->attrs->type() == AST_StaticAttr_t) {
                 SET_DFA_INSTR_SET_AT(ctx->dfa->static_idx, pair_second(*name_id), true);
             }
-            if (ctx->frontend->addressed_set.find(pair_first(*name_id)) != ctx->frontend->addressed_set.end()) {
+            if (set_find(ctx->frontend->addressed_set, pair_first(*name_id)) != set_end(ctx->frontend->addressed_set)) {
                 SET_DFA_INSTR_SET_AT(ctx->dfa_o1->addressed_idx, pair_second(*name_id), true);
             }
 #elif __OPTIM_LEVEL__ == 2
