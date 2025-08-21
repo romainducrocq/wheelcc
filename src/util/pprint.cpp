@@ -434,31 +434,6 @@ static void print_CBinaryOp(CBinaryOp* node, size_t tab) {
     }
 }
 
-static void print_CAbstractDeclarator(Ctx ctx, CAbstractDeclarator* node, size_t tab) {
-    assert_print(node, ++tab);
-    switch (node->type()) {
-        case AST_CAbstractDeclarator_t:
-            print_field(++tab, "CAbstractDeclarator: ");
-            break;
-        case AST_CAbstractPointer_t:
-            print_field(++tab, "CAbstractPointer: ");
-            print_CAbstractDeclarator(ctx,
-                static_cast<CAbstractDeclarator*>(static_cast<CAbstractPointer*>(node)->abstract_decltor.get()), tab);
-            break;
-        case AST_CAbstractArray_t:
-            print_field(++tab, "CAbstractArray: ");
-            print_field(tab + 1, "TLong: %zi", (ssize_t) static_cast<CAbstractArray*>(node)->size);
-            print_CAbstractDeclarator(ctx,
-                static_cast<CAbstractDeclarator*>(static_cast<CAbstractArray*>(node)->abstract_decltor.get()), tab);
-            break;
-        case AST_CAbstractBase_t:
-            print_field(++tab, "CAbstractBase: ");
-            break;
-        default:
-            THROW_ABORT;
-    }
-}
-
 static void print_CParam(Ctx ctx, CParam* node, size_t tab) {
     assert_print(node, ++tab);
     switch (node->type()) {
