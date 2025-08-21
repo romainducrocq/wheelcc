@@ -1012,7 +1012,8 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     map_clear(ctx->pseudo_stack_map);
     ctx->p_fix_instrs = &node->instructions;
     // TODO
-    vec_move_back(*ctx->p_fix_instrs, std::unique_ptr<AsmInstruction>(nullptr));
+    std::unique_ptr<AsmInstruction> temp(nullptr);
+    vec_move_back(*ctx->p_fix_instrs, temp);
     // vec_push_back(*ctx->p_fix_instrs, NULL);
 
     bool is_ret = false;
