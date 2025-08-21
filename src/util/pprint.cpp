@@ -60,10 +60,10 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab);
         return;                   \
     }
 
-#define tab_size 2
+#define TAB_SIZE 2
 #define print_field(X, ...)                             \
     do {                                                \
-        printf("\n%*s", (int)(((X)-1) * tab_size), ""); \
+        printf("\n%*s", (int)(((X)-1) * TAB_SIZE), ""); \
         printf(__VA_ARGS__);                            \
     }                                                   \
     while (0)
@@ -96,7 +96,7 @@ static void print_CConst(CConst* node, size_t tab) {
             break;
         case AST_CConstChar_t:
             print_field(++tab, "CConstChar: ");
-            print_field(tab + 1, "TChar: %c", static_cast<CConstChar*>(node)->value);
+            print_field(tab + 1, "TChar: %i", (int)static_cast<CConstChar*>(node)->value);
             break;
         case AST_CConstUChar_t:
             print_field(++tab, "CConstUChar: ");
@@ -118,7 +118,7 @@ static void print_CStringLiteral(CStringLiteral* node, size_t tab) {
     }
     print_field(tab + 1, "List[%zu]: ", vec_size(node->value));
     for (size_t i = 0; i < vec_size(node->value); ++i) {
-        print_field(tab + 2, "TChar: %c", node->value[i]);
+        print_field(tab + 2, "TChar: %i", (int)node->value[i]);
     }
 }
 
@@ -177,7 +177,7 @@ static void print_Type(Ctx ctx, Type* node, size_t tab) {
         case AST_Structure_t:
             print_field(++tab, "Structure: ");
             print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<Structure*>(node)->tag));
-            print_field(tab + 1, "Bool: %s", static_cast<Structure*>(node)->is_union ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<Structure*>(node)->is_union ? "1" : "0");
             break;
         default:
             THROW_ABORT;
@@ -208,7 +208,7 @@ static void print_StaticInit(Ctx ctx, StaticInit* node, size_t tab) {
             break;
         case AST_CharInit_t:
             print_field(++tab, "CharInit: ");
-            print_field(tab + 1, "TChar: %c", static_cast<CharInit*>(node)->value);
+            print_field(tab + 1, "TChar: %i", (int)static_cast<CharInit*>(node)->value);
             break;
         case AST_UCharInit_t:
             print_field(++tab, "UCharInit: ");
@@ -227,7 +227,7 @@ static void print_StaticInit(Ctx ctx, StaticInit* node, size_t tab) {
             print_field(++tab, "StringInit: ");
             print_field(
                 tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<StringInit*>(node)->string_const));
-            print_field(tab + 1, "Bool: %s", static_cast<StringInit*>(node)->is_null_term ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<StringInit*>(node)->is_null_term ? "1" : "0");
             print_CStringLiteral(static_cast<CStringLiteral*>(static_cast<StringInit*>(node)->literal.get()), tab);
             break;
         case AST_PointerInit_t:
@@ -272,12 +272,12 @@ static void print_IdentifierAttr(Ctx ctx, IdentifierAttr* node, size_t tab) {
             break;
         case AST_FunAttr_t:
             print_field(++tab, "FunAttr: ");
-            print_field(tab + 1, "Bool: %s", static_cast<FunAttr*>(node)->is_def ? "True" : "False");
-            print_field(tab + 1, "Bool: %s", static_cast<FunAttr*>(node)->is_glob ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<FunAttr*>(node)->is_def ? "1" : "0");
+            print_field(tab + 1, "Bool: %s", static_cast<FunAttr*>(node)->is_glob ? "1" : "0");
             break;
         case AST_StaticAttr_t:
             print_field(++tab, "StaticAttr: ");
-            print_field(tab + 1, "Bool: %s", static_cast<StaticAttr*>(node)->is_glob ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<StaticAttr*>(node)->is_glob ? "1" : "0");
             print_InitialValue(ctx, static_cast<InitialValue*>(static_cast<StaticAttr*>(node)->init.get()), tab);
             break;
         case AST_ConstantAttr_t:
@@ -653,7 +653,7 @@ static void print_CStatement(Ctx ctx, CStatement* node, size_t tab) {
         case AST_CSwitch_t:
             print_field(++tab, "CSwitch: ");
             print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<CSwitch*>(node)->target));
-            print_field(tab + 1, "Bool: %s", static_cast<CSwitch*>(node)->is_default ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<CSwitch*>(node)->is_default ? "1" : "0");
             print_CExp(ctx, static_cast<CExp*>(static_cast<CSwitch*>(node)->match.get()), tab);
             print_CStatement(ctx, static_cast<CStatement*>(static_cast<CSwitch*>(node)->body.get()), tab);
             print_field(tab + 1, "List[%zu]: ", vec_size(static_cast<CSwitch*>(node)->cases));
@@ -809,7 +809,7 @@ static void print_CStructDeclaration(Ctx ctx, CStructDeclaration* node, size_t t
             THROW_ABORT;
     }
     print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, node->tag));
-    print_field(tab + 1, "Bool: %s", node->is_union ? "True" : "False");
+    print_field(tab + 1, "Bool: %s", node->is_union ? "1" : "0");
     print_field(tab + 1, "List[%zu]: ", vec_size(node->members));
     for (size_t i = 0; i < vec_size(node->members); ++i) {
         print_CMemberDeclaration(ctx, static_cast<CMemberDeclaration*>(node->members[i].get()), tab + 1);
@@ -1134,7 +1134,7 @@ static void print_TacTopLevel(Ctx ctx, TacTopLevel* node, size_t tab) {
         case AST_TacFunction_t:
             print_field(++tab, "TacFunction: ");
             print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<TacFunction*>(node)->name));
-            print_field(tab + 1, "Bool: %s", static_cast<TacFunction*>(node)->is_glob ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<TacFunction*>(node)->is_glob ? "1" : "0");
             print_field(tab + 1, "List[%zu]: ", vec_size(static_cast<TacFunction*>(node)->params));
             for (size_t i = 0; i < vec_size(static_cast<TacFunction*>(node)->params); ++i) {
                 print_field(
@@ -1150,7 +1150,7 @@ static void print_TacTopLevel(Ctx ctx, TacTopLevel* node, size_t tab) {
             print_field(++tab, "TacStaticVariable: ");
             print_field(
                 tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<TacStaticVariable*>(node)->name));
-            print_field(tab + 1, "Bool: %s", static_cast<TacStaticVariable*>(node)->is_glob ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<TacStaticVariable*>(node)->is_glob ? "1" : "0");
             print_Type(ctx, static_cast<Type*>(static_cast<TacStaticVariable*>(node)->static_init_type.get()), tab);
             print_field(tab + 1, "List[%zu]: ", vec_size(static_cast<TacStaticVariable*>(node)->static_inits));
             for (size_t i = 0; i < vec_size(static_cast<TacStaticVariable*>(node)->static_inits); ++i) {
@@ -1230,13 +1230,13 @@ static void print_BackendSymbol(Ctx ctx, BackendSymbol* node, size_t tab) {
             break;
         case AST_BackendObj_t:
             print_field(++tab, "BackendObj: ");
-            print_field(tab + 1, "Bool: %s", static_cast<BackendObj*>(node)->is_static ? "True" : "False");
-            print_field(tab + 1, "Bool: %s", static_cast<BackendObj*>(node)->is_const ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<BackendObj*>(node)->is_static ? "1" : "0");
+            print_field(tab + 1, "Bool: %s", static_cast<BackendObj*>(node)->is_const ? "1" : "0");
             print_AssemblyType(static_cast<AssemblyType*>(static_cast<BackendObj*>(node)->asm_type.get()), tab);
             break;
         case AST_BackendFun_t:
             print_field(++tab, "BackendFun: ");
-            print_field(tab + 1, "Bool: %s", static_cast<BackendFun*>(node)->is_def ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<BackendFun*>(node)->is_def ? "1" : "0");
             print_field(tab + 1, "List[%zu]: ", vec_size(static_cast<BackendFun*>(node)->callee_saved_regs));
             for (size_t i = 0; i < vec_size(static_cast<BackendFun*>(node)->callee_saved_regs); ++i) {
                 print_AsmOperand(
@@ -1408,9 +1408,9 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
         case AST_AsmImm_t:
             print_field(++tab, "AsmImm: ");
             print_field(tab + 1, "TULong: %zu", (size_t) static_cast<AsmImm*>(node)->value);
-            print_field(tab + 1, "Bool: %s", static_cast<AsmImm*>(node)->is_byte ? "True" : "False");
-            print_field(tab + 1, "Bool: %s", static_cast<AsmImm*>(node)->is_quad ? "True" : "False");
-            print_field(tab + 1, "Bool: %s", static_cast<AsmImm*>(node)->is_neg ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<AsmImm*>(node)->is_byte ? "1" : "0");
+            print_field(tab + 1, "Bool: %s", static_cast<AsmImm*>(node)->is_quad ? "1" : "0");
+            print_field(tab + 1, "Bool: %s", static_cast<AsmImm*>(node)->is_neg ? "1" : "0");
             break;
         case AST_AsmRegister_t:
             print_field(++tab, "AsmRegister: ");
@@ -1632,8 +1632,8 @@ static void print_AsmTopLevel(Ctx ctx, AsmTopLevel* node, size_t tab) {
         case AST_AsmFunction_t:
             print_field(++tab, "AsmFunction: ");
             print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<AsmFunction*>(node)->name));
-            print_field(tab + 1, "Bool: %s", static_cast<AsmFunction*>(node)->is_glob ? "True" : "False");
-            print_field(tab + 1, "Bool: %s", static_cast<AsmFunction*>(node)->is_ret_memory ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<AsmFunction*>(node)->is_glob ? "1" : "0");
+            print_field(tab + 1, "Bool: %s", static_cast<AsmFunction*>(node)->is_ret_memory ? "1" : "0");
             print_field(tab + 1, "List[%zu]: ", vec_size(static_cast<AsmFunction*>(node)->instructions));
             for (size_t i = 0; i < vec_size(static_cast<AsmFunction*>(node)->instructions); ++i) {
                 print_AsmInstruction(
@@ -1645,7 +1645,7 @@ static void print_AsmTopLevel(Ctx ctx, AsmTopLevel* node, size_t tab) {
             print_field(
                 tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, static_cast<AsmStaticVariable*>(node)->name));
             print_field(tab + 1, "TInt: %i", static_cast<AsmStaticVariable*>(node)->alignment);
-            print_field(tab + 1, "Bool: %s", static_cast<AsmStaticVariable*>(node)->is_glob ? "True" : "False");
+            print_field(tab + 1, "Bool: %s", static_cast<AsmStaticVariable*>(node)->is_glob ? "1" : "0");
             print_field(tab + 1, "List[%zu]: ", vec_size(static_cast<AsmStaticVariable*>(node)->static_inits));
             for (size_t i = 0; i < vec_size(static_cast<AsmStaticVariable*>(node)->static_inits); ++i) {
                 print_StaticInit(ctx,
