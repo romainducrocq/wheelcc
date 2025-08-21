@@ -1,8 +1,5 @@
 #include "util/pprint.hpp"
 #ifndef __NDEBUG__
-#include <iostream>
-#include <string>
-
 #include "util/c_std.hpp"
 #include "util/str2t.hpp"
 #include "util/throw.hpp"
@@ -27,7 +24,7 @@ void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
     print_title("Tokens");
     printf("\nList[%zu]:", vec_size(tokens));
     for (size_t i = 0; i < vec_size(tokens); ++i) {
-        std::cout << "\n  ";
+        printf("\n  ");
         switch (tokens[i].tok_kind) {
             case TOK_identifier:
             case TOK_string_literal:
@@ -37,10 +34,10 @@ void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
             case TOK_uint_const:
             case TOK_ulong_const:
             case TOK_dbl_const:
-                std::cout << get_tok_kind_fmt(tokens[i].tok_kind) << "(" << get_tok_fmt(ctx, &tokens[i]) << ")";
+                printf("%s(%s)", get_tok_kind_fmt(tokens[i].tok_kind), get_tok_fmt(ctx, &tokens[i]));
                 break;
             default:
-                std::cout << get_tok_fmt(ctx, &tokens[i]);
+                printf("%s", get_tok_fmt(ctx, &tokens[i]));
                 break;
         }
     }
