@@ -1707,7 +1707,7 @@ void pprint_asm_ast(IdentifierContext* ctx, AsmProgram* node) {
 
 void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Addressed Set");
-    std::cout << "\nSet(" << std::to_string(set_size(frontend->addressed_set)) << "):";
+    printf("\nSet(%zu): ", set_size(frontend->addressed_set));
     for (size_t i = 0; i < set_size(frontend->addressed_set); ++i) {
         TIdentifier name = element_get(frontend->addressed_set[i]);
         print_field(2, ": %s", map_get(ctx->hash_table, name));
@@ -1717,7 +1717,7 @@ void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
 
 void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("String Constant Table");
-    std::cout << "\nDict(" << std::to_string(map_size(frontend->string_const_table)) << "):";
+    printf("\nDict(%zu): ", map_size(frontend->string_const_table));
     for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
         const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*static_const)));
@@ -1726,7 +1726,7 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
             ConstantAttr* constant_attr =
                 static_cast<ConstantAttr*>(map_get(frontend->symbol_table, pair_second(*static_const))->attrs.get());
             if (constant_attr->static_init->type() == AST_StringInit_t) {
-                std::cout << "\n    String: \"";
+                printf("\n    String: \"");
                 StringInit* string_init = static_cast<StringInit*>(constant_attr->static_init.get());
                 for (size_t i = 0; i < vec_size(string_init->literal.get()->value); ++i) {
                     TChar byte = string_init->literal.get()->value[i];
@@ -1780,7 +1780,7 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
 
 void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Structure Typedef Table");
-    std::cout << "\nDict(" << std::to_string(map_size(frontend->struct_typedef_table)) << "):";
+    printf("\nDict(%zu): ", map_size(frontend->struct_typedef_table));
     for (size_t i = 0; i < map_size(frontend->struct_typedef_table); ++i) {
         const pair_t(TIdentifier, UPtrStructTypedef)* struct_typedef = &frontend->struct_typedef_table[i];
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*struct_typedef)));
@@ -1791,7 +1791,7 @@ void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* fronte
 
 void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
     print_title("Symbol Table");
-    std::cout << "\nDict(" << std::to_string(map_size(frontend->symbol_table)) << "):";
+    printf("\nDict(%zu): ", map_size(frontend->symbol_table));
     for (size_t i = 0; i < map_size(frontend->symbol_table); ++i) {
         const pair_t(TIdentifier, UPtrSymbol)* symbol = &frontend->symbol_table[i];
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*symbol)));
@@ -1802,7 +1802,7 @@ void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
 
 void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend) {
     print_title("Backend Symbol Table");
-    std::cout << "\nDict(" << std::to_string(map_size(backend->symbol_table)) << "):";
+    printf("\nDict(%zu): ", map_size(backend->symbol_table));
     for (size_t i = 0; i < map_size(backend->symbol_table); ++i) {
         const pair_t(TIdentifier, UPtrBackendSymbol)* bakend_symbol = &backend->symbol_table[i];
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*bakend_symbol)));
